@@ -1,0 +1,624 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.interfaces.client.Client</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.client.interfaces.client-module.html">Module&nbsp;client</a> ::
+        Class&nbsp;Client
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Client</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__3" name="uml_class_diagram_for_entropy__3">
+<area shape="rect" id="node4" href="entropy.client.interfaces.client.Client-class.html#init_singleton" title="entropy.client.interfaces.client.Client.init_singleton" alt="" coords="3136,409,4197,428"/>
+<area shape="rect" id="node4" href="entropy.client.interfaces.client.Client-class.html#destroy" title="entropy.client.interfaces.client.Client.destroy" alt="" coords="3136,428,4197,447"/>
+<area shape="rect" id="node4" href="entropy.client.interfaces.client.Client-class.html#repository_packages_spm_sync" title="Service method used to sync package names with Source Package Manager via &#160;metadata stored in Repository dbs collected at server&#45;time." alt="" coords="3136,447,4197,465"/>
+<area shape="rect" id="node4" href="entropy.client.interfaces.client.Client-class.html#is_destroyed" title="entropy.client.interfaces.client.Client.is_destroyed" alt="" coords="3136,465,4197,484"/>
+<area shape="rect" id="node4" href="entropy.client.interfaces.client.Client-class.html#__del__" title="entropy.client.interfaces.client.Client.__del__" alt="" coords="3136,484,4197,503"/>
+<area shape="rect" id="node1" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="3124,377,4209,509"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="17,120,739,139"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="17,139,739,157"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="17,157,739,176"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="17,176,739,195"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="17,195,739,213"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="17,213,739,232"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="17,232,739,251"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="17,251,739,269"/>
+<area shape="rect" id="node2" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="5,87,749,275"/>
+<area shape="rect" id="node13" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#check_needed_package_download" title="entropy.client.interfaces.fetch.FetchersMixin.check_needed_package_download" alt="" coords="791,148,1437,167"/>
+<area shape="rect" id="node13" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files" title="Fetch multiple files simultaneously on URLs." alt="" coords="791,167,1437,185"/>
+<area shape="rect" id="node13" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files_on_mirrors" title="@param download_map list [(repository,branch,filename,checksum &#160;(digest),signatures,),..] @param checksum bool verify checksum? @param &#160;fetch_abort_function callable method that could raise exceptions" alt="" coords="791,185,1437,204"/>
+<area shape="rect" id="node13" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_file" alt="" coords="791,204,1437,223"/>
+<area shape="rect" id="node13" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file_on_mirrors" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_file_on_mirrors" alt="" coords="791,223,1437,241"/>
+<area shape="rect" id="node3" href="entropy.client.interfaces.fetch.FetchersMixin-class.html" title="entropy.client.interfaces.fetch.FetchersMixin" alt="" coords="779,115,1448,247"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#closeAllQA" title="entropy.client.interfaces.loaders.LoadersMixin.closeAllQA" alt="" coords="1489,101,1775,120"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#closeAllSecurity" title="entropy.client.interfaces.loaders.LoadersMixin.closeAllSecurity" alt="" coords="1489,120,1775,139"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Security" title="entropy.client.interfaces.loaders.LoadersMixin.Security" alt="" coords="1489,139,1775,157"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#RepositorySecurity" title="entropy.client.interfaces.loaders.LoadersMixin.RepositorySecurity" alt="" coords="1489,157,1775,176"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#QA" title="entropy.client.interfaces.loaders.LoadersMixin.QA" alt="" coords="1489,176,1775,195"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Triggers" title="entropy.client.interfaces.loaders.LoadersMixin.Triggers" alt="" coords="1489,195,1775,213"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Repositories" title="entropy.client.interfaces.loaders.LoadersMixin.Repositories" alt="" coords="1489,213,1775,232"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm" title="entropy.client.interfaces.loaders.LoadersMixin.Spm" alt="" coords="1489,232,1775,251"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm_class" title="Return Source Package Manager default plugin class." alt="" coords="1489,251,1775,269"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Package" title="entropy.client.interfaces.loaders.LoadersMixin.Package" alt="" coords="1489,269,1775,288"/>
+<area shape="rect" id="node4" href="entropy.client.interfaces.loaders.LoadersMixin-class.html" title="entropy.client.interfaces.loaders.LoadersMixin" alt="" coords="1477,69,1787,294"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#get_package_action" title="entropy.client.interfaces.methods.MatchMixin.get_package_action" alt="" coords="1828,55,2219,73"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#get_masked_package_reason" title="entropy.client.interfaces.methods.MatchMixin.get_masked_package_reason" alt="" coords="1828,73,2219,92"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#get_match_conflicts" title="entropy.client.interfaces.methods.MatchMixin.get_match_conflicts" alt="" coords="1828,92,2219,111"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_masked" title="entropy.client.interfaces.methods.MatchMixin.is_match_masked" alt="" coords="1828,111,2219,129"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_masked_by_user" title="entropy.client.interfaces.methods.MatchMixin.is_match_masked_by_user" alt="" coords="1828,129,2219,148"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_unmasked_by_user" title="entropy.client.interfaces.methods.MatchMixin.is_match_unmasked_by_user" alt="" coords="1828,148,2219,167"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match" title="entropy.client.interfaces.methods.MatchMixin.mask_match" alt="" coords="1828,167,2219,185"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match" title="entropy.client.interfaces.methods.MatchMixin.unmask_match" alt="" coords="1828,185,2219,204"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_by_atom" title="entropy.client.interfaces.methods.MatchMixin.unmask_match_by_atom" alt="" coords="1828,204,2219,223"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_by_keyslot" title="entropy.client.interfaces.methods.MatchMixin.unmask_match_by_keyslot" alt="" coords="1828,223,2219,241"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_by_atom" title="entropy.client.interfaces.methods.MatchMixin.mask_match_by_atom" alt="" coords="1828,241,2219,260"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_by_keyslot" title="entropy.client.interfaces.methods.MatchMixin.mask_match_by_keyslot" alt="" coords="1828,260,2219,279"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_generic" title="entropy.client.interfaces.methods.MatchMixin.unmask_match_generic" alt="" coords="1828,279,2219,297"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_generic" title="entropy.client.interfaces.methods.MatchMixin.mask_match_generic" alt="" coords="1828,297,2219,316"/>
+<area shape="rect" id="node12" href="entropy.client.interfaces.methods.MatchMixin-class.html#clear_match_mask" title="entropy.client.interfaces.methods.MatchMixin.clear_match_mask" alt="" coords="1828,316,2219,335"/>
+<area shape="rect" id="node5" href="entropy.client.interfaces.methods.MatchMixin-class.html" title="entropy.client.interfaces.methods.MatchMixin" alt="" coords="1816,22,2229,341"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#dependencies_test" title="entropy.client.interfaces.dep.CalculatorsMixin.dependencies_test" alt="" coords="2271,55,3952,73"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#find_belonging_dependency" title="entropy.client.interfaces.dep.CalculatorsMixin.find_belonging_dependency" alt="" coords="2271,73,3952,92"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#atom_match" title="entropy.client.interfaces.dep.CalculatorsMixin.atom_match" alt="" coords="2271,92,3952,111"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#packages_expand" title="entropy.client.interfaces.dep.CalculatorsMixin.packages_expand" alt="" coords="2271,111,3952,129"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_expand" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_expand" alt="" coords="2271,129,3952,148"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_list" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_list" alt="" coords="2271,148,3952,167"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_search" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_search" alt="" coords="2271,167,3952,185"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_match" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_match" alt="" coords="2271,185,3952,204"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_masked_packages_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.get_masked_packages_tree" alt="" coords="2271,204,3952,223"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_required_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.get_required_packages" alt="" coords="2271,223,3952,241"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_reverse_dependency_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.generate_reverse_dependency_tree" alt="" coords="2271,241,3952,260"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_available_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_available_packages" alt="" coords="2271,260,3952,279"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_critical_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_critical_updates" alt="" coords="2271,279,3952,297"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_world_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_world_updates" alt="" coords="2271,316,3952,335"/>
+<area shape="rect" id="node6" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html" title="entropy.client.interfaces.dep.CalculatorsMixin" alt="" coords="2259,22,3963,341"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard" title="Return noticeboard RSS metadata (dict form) for given repository &#160;identifier." alt="" coords="4004,111,4440,129"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_userdata" title="Return noticeboard user metadata dict for given repository identifier." alt="" coords="4004,129,4440,148"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#store_noticeboard_userdata" title="Store given noticeboard metadata for given repository to disk." alt="" coords="4004,148,4440,167"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#set_noticeboard_item_read_status" title="Set given noticeboard item read status." alt="" coords="4004,167,4440,185"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_item_read_status" title="Return noticeboard items read status for given repository identifier." alt="" coords="4004,185,4440,204"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#mark_noticeboard_items_as_read" title="Mark noticeboard items for given repository as &quot;read&quot;." alt="" coords="4004,204,4440,223"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#unmark_noticeboard_items_as_read" title="Unmark noticeboard items for given repository as &quot;read&quot;." alt="" coords="4004,223,4440,241"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#is_noticeboard_marked_as_read" title="Return whether noticeboard for given repository has been marked as &quot;read&quot; &#160;by user." alt="" coords="4004,241,4440,260"/>
+<area shape="rect" id="node14" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#are_noticeboards_marked_as_read" title="Return whether all available repository noticeboards are marked as read." alt="" coords="4004,260,4440,279"/>
+<area shape="rect" id="node7" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html" title="Main interface for handling Repository Notice Board user data, such as notice board items status, metadata retrieval, etc." alt="" coords="3992,78,4451,285"/>
+<area shape="rect" id="node5" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="4492,176,4689,195"/>
+<area shape="rect" id="node5" href="entropy.core.Singleton-class.html#__init__" title="This is a fake method, necessary for Python 3." alt="" coords="4492,195,4689,213"/>
+<area shape="rect" id="node8" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton." alt="" coords="4480,143,4701,219"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#RESOURCES_LOCK_F_REF" title="hash(x)" alt="" coords="4743,31,5073,49"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#RESOURCES_LOCK_F_COUNT" title="entropy.client.interfaces.methods.MiscMixin.RESOURCES_LOCK_F_COUNT" alt="" coords="4743,49,5073,68"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_constants" title="entropy.client.interfaces.methods.MiscMixin.reload_constants" alt="" coords="4743,71,5073,89"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#setup_default_file_perms" title="entropy.client.interfaces.methods.MiscMixin.setup_default_file_perms" alt="" coords="4743,89,5073,108"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_create_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_create_lock" alt="" coords="4743,108,5073,127"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_remove_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_remove_lock" alt="" coords="4743,127,5073,145"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_check_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_check_lock" alt="" coords="4743,145,5073,164"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#check_pid_file_lock" title="entropy.client.interfaces.methods.MiscMixin.check_pid_file_lock" alt="" coords="4743,164,5073,183"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#create_pid_file_lock" title="entropy.client.interfaces.methods.MiscMixin.create_pid_file_lock" alt="" coords="4743,183,5073,201"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#application_lock_check" title="entropy.client.interfaces.methods.MiscMixin.application_lock_check" alt="" coords="4743,201,5073,220"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#lock_check" title="entropy.client.interfaces.methods.MiscMixin.lock_check" alt="" coords="4743,220,5073,239"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#backup_constant" title="entropy.client.interfaces.methods.MiscMixin.backup_constant" alt="" coords="4743,239,5073,257"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#set_priority" title="entropy.client.interfaces.methods.MiscMixin.set_priority" alt="" coords="4743,257,5073,276"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_repositories_config" title="entropy.client.interfaces.methods.MiscMixin.reload_repositories_config" alt="" coords="4743,276,5073,295"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#switch_chroot" title="entropy.client.interfaces.methods.MiscMixin.switch_chroot" alt="" coords="4743,295,5073,313"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.MiscMixin-class.html#get_tmp_dbpath" title="entropy.client.interfaces.methods.MiscMixin.get_tmp_dbpath" alt="" coords="4743,332,5073,351"/>
+<area shape="rect" id="node9" href="entropy.client.interfaces.methods.MiscMixin-class.html" title="entropy.client.interfaces.methods.MiscMixin" alt="" coords="4731,6,5085,357"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#REPO_LIST_CACHE_ID" title="entropy.client.interfaces.cache.CacheMixin.REPO_LIST_CACHE_ID" alt="" coords="5127,40,5745,59"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_cache" title="entropy.client.interfaces.cache.CacheMixin.clear_cache" alt="" coords="5127,61,5745,80"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#update_ugc_cache" title="entropy.client.interfaces.cache.CacheMixin.update_ugc_cache" alt="" coords="5127,80,5745,99"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#all_repositories_checksum" title="entropy.client.interfaces.cache.CacheMixin.all_repositories_checksum" alt="" coords="5127,99,5745,117"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_dump_cache" title="entropy.client.interfaces.cache.CacheMixin.clear_dump_cache" alt="" coords="5127,117,5745,136"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#do_configcache" title="entropy.client.interfaces.cache.CacheMixin.do_configcache" alt="" coords="5127,136,5745,155"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#do_depcache" title="entropy.client.interfaces.cache.CacheMixin.do_depcache" alt="" coords="5127,155,5745,173"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#generate_cache" title="entropy.client.interfaces.cache.CacheMixin.generate_cache" alt="" coords="5127,173,5745,192"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_cache" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_cache" alt="" coords="5127,192,5745,211"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_chash" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_chash" alt="" coords="5127,211,5745,229"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_critical_update_cache_hash" alt="" coords="5127,229,5745,248"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_updates_cache" title="entropy.client.interfaces.cache.CacheMixin.get_critical_updates_cache" alt="" coords="5127,248,5745,267"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache" alt="" coords="5127,267,5745,285"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache_hash" alt="" coords="5127,285,5745,304"/>
+<area shape="rect" id="node8" href="entropy.client.interfaces.cache.CacheMixin-class.html#validate_repositories_cache" title="entropy.client.interfaces.cache.CacheMixin.validate_repositories_cache" alt="" coords="5127,323,5745,341"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.cache.CacheMixin-class.html" title="entropy.client.interfaces.cache.CacheMixin" alt="" coords="5115,15,5757,347"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#validate_repositories" title="entropy.client.interfaces.methods.RepositoryMixin.validate_repositories" alt="" coords="5799,55,6292,73"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#init_generic_memory_repository" title="entropy.client.interfaces.methods.RepositoryMixin.init_generic_memory_repository" alt="" coords="5799,73,6292,92"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#close_all_repositories" title="entropy.client.interfaces.methods.RepositoryMixin.close_all_repositories" alt="" coords="5799,92,6292,111"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#is_repository_connection_cached" title="entropy.client.interfaces.methods.RepositoryMixin.is_repository_connection_cached" alt="" coords="5799,111,6292,129"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#open_repository" title="entropy.client.interfaces.methods.RepositoryMixin.open_repository" alt="" coords="5799,129,6292,148"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#load_repository_database" title="entropy.client.interfaces.methods.RepositoryMixin.load_repository_database" alt="" coords="5799,148,6292,167"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_repository_revision" title="entropy.client.interfaces.methods.RepositoryMixin.get_repository_revision" alt="" coords="5799,167,6292,185"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#update_repository_revision" title="entropy.client.interfaces.methods.RepositoryMixin.update_repository_revision" alt="" coords="5799,185,6292,204"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#add_repository" title="entropy.client.interfaces.methods.RepositoryMixin.add_repository" alt="" coords="5799,204,6292,223"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#remove_repository" title="entropy.client.interfaces.methods.RepositoryMixin.remove_repository" alt="" coords="5799,223,6292,241"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#shift_repository" title="entropy.client.interfaces.methods.RepositoryMixin.shift_repository" alt="" coords="5799,241,6292,260"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#enable_repository" title="entropy.client.interfaces.methods.RepositoryMixin.enable_repository" alt="" coords="5799,260,6292,279"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#disable_repository" title="entropy.client.interfaces.methods.RepositoryMixin.disable_repository" alt="" coords="5799,279,6292,297"/>
+<area shape="rect" id="node10" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#run_repository_post_branch_upgrade_hooks" title="This method is called whenever branch is successfully switched by user and &#160;all the updates have been installed (also look at: &#160;run_repositories_post_branch_switch_hooks())." alt="" coords="5799,316,6292,335"/>
+<area shape="rect" id="node11" href="entropy.client.interfaces.methods.RepositoryMixin-class.html" title="entropy.client.interfaces.methods.RepositoryMixin" alt="" coords="5787,22,6304,341"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__3.gif" alt='' usemap="#uml_class_diagram_for_entropy__3" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="init_singleton"></a><span class="summary-sig-name">init_singleton</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">indexing</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">noclientdb</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">xcache</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">user_xcache</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">repo_validation</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">load_ugc</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">url_fetcher</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">multiple_url_fetcher</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client.init_singleton">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.client.Client-class.html#repository_packages_spm_sync" class="summary-sig-name">repository_packages_spm_sync</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repository_identifier</span>,
+        <span class="summary-sig-arg">repo_db</span>,
+        <span class="summary-sig-arg">force</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Service method used to sync package names with Source Package Manager
+      via metadata stored in Repository dbs collected at server-time.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client.repository_packages_spm_sync">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_destroyed"></a><span class="summary-sig-name">is_destroyed</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client.is_destroyed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__del__"></a><span class="summary-sig-name">__del__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client.__del__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
+      <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#cycleDone">cycleDone</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#inputBox">inputBox</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#nocolor">nocolor</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#notitles">notitles</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#setTitle">setTitle</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#setTotalCycles">setTotalCycles</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#updateProgress">updateProgress</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html">loaders.LoadersMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Package">Package</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#QA">QA</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Repositories">Repositories</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#RepositorySecurity">RepositorySecurity</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Security">Security</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm">Spm</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm_class">Spm_class</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#Triggers">Triggers</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#closeAllQA">closeAllQA</a></code>,
+      <code><a href="entropy.client.interfaces.loaders.LoadersMixin-class.html#closeAllSecurity">closeAllSecurity</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html">cache.CacheMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#all_repositories_checksum">all_repositories_checksum</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_cache">clear_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_dump_cache">clear_dump_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#do_configcache">do_configcache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#do_depcache">do_depcache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#generate_cache">generate_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_cache">get_available_packages_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_chash">get_available_packages_chash</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_update_cache_hash">get_critical_update_cache_hash</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_updates_cache">get_critical_updates_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache">get_world_update_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache_hash">get_world_update_cache_hash</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#purge_cache">purge_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#repository_move_clear_cache">repository_move_clear_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#store_repository_list_cache">store_repository_list_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#update_ugc_cache">update_ugc_cache</a></code>,
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#validate_repositories_cache">validate_repositories_cache</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html">dep.CalculatorsMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#atom_match">atom_match</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_available_packages">calculate_available_packages</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_critical_updates">calculate_critical_updates</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_updates">calculate_updates</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_world_updates">calculate_world_updates</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#check_package_update">check_package_update</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#dependencies_test">dependencies_test</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#find_belonging_dependency">find_belonging_dependency</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_reverse_dependency_tree">generate_reverse_dependency_tree</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_install_queue">get_install_queue</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_masked_packages_tree">get_masked_packages_tree</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_removal_queue">get_removal_queue</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_required_packages">get_required_packages</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_expand">package_set_expand</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_list">package_set_list</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_match">package_set_match</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_search">package_set_search</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#packages_expand">packages_expand</a></code>,
+      <code><a href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#validate_package_removal">validate_package_removal</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html">methods.RepositoryMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#add_package_to_repos">add_package_to_repos</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#add_repository">add_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#backup_database">backup_database</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#client_repository_sanity_check">client_repository_sanity_check</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#close_all_repositories">close_all_repositories</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#disable_repository">disable_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#enable_repository">enable_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_repository_revision">get_repository_revision</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_repository_settings">get_repository_settings</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#init_generic_memory_repository">init_generic_memory_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#is_repository_connection_cached">is_repository_connection_cached</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#list_backedup_client_databases">list_backedup_client_databases</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#load_repository_database">load_repository_database</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#open_client_repository">open_client_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#open_generic_database">open_generic_database</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#open_memory_database">open_memory_database</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#open_repository">open_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#remove_repository">remove_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#reopen_client_repository">reopen_client_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#restore_database">restore_database</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#run_repositories_post_branch_switch_hooks">run_repositories_post_branch_switch_hooks</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#run_repository_post_branch_upgrade_hooks">run_repository_post_branch_upgrade_hooks</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#shift_repository">shift_repository</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#update_repository_revision">update_repository_revision</a></code>,
+      <code><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#validate_repositories">validate_repositories</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html">methods.MiscMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#add_user_package_set">add_user_package_set</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#application_lock_check">application_lock_check</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#backup_constant">backup_constant</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#check_pid_file_lock">check_pid_file_lock</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#create_pid_file_lock">create_pid_file_lock</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_branch_from_download_relative_uri">get_branch_from_download_relative_uri</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_category_description_data">get_category_description_data</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_file_editor">get_file_editor</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_file_viewer">get_file_viewer</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_installed_package_config_protect">get_installed_package_config_protect</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_licenses_to_accept">get_licenses_to_accept</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_meant_packages">get_meant_packages</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_package_groups">get_package_groups</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_package_match_config_protect">get_package_match_config_protect</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_system_config_protect">get_system_config_protect</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_text_license">get_text_license</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_tmp_dbpath">get_tmp_dbpath</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#inject_entropy_database_into_package">inject_entropy_database_into_package</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#is_installed_idpackage_in_system_mask">is_installed_idpackage_in_system_mask</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#list_installed_packages_in_category">list_installed_packages_in_category</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#list_repo_categories">list_repo_categories</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#list_repo_packages_in_category">list_repo_packages_in_category</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#lock_check">lock_check</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#quickpkg">quickpkg</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#quickpkg_handler">quickpkg_handler</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_constants">reload_constants</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_repositories_config">reload_repositories_config</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#remove_user_package_set">remove_user_package_set</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_check_lock">resources_check_lock</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_create_lock">resources_create_lock</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_remove_lock">resources_remove_lock</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#set_branch">set_branch</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#set_priority">set_priority</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#setup_default_file_perms">setup_default_file_perms</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#swap_branch_in_download_relative_uri">swap_branch_in_download_relative_uri</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#switch_chroot">switch_chroot</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#unused_packages_test">unused_packages_test</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html">methods.MatchMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#clear_match_mask">clear_match_mask</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#get_masked_package_reason">get_masked_package_reason</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#get_match_conflicts">get_match_conflicts</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#get_package_action">get_package_action</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_masked">is_match_masked</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_masked_by_user">is_match_masked_by_user</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_unmasked_by_user">is_match_unmasked_by_user</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match">mask_match</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_by_atom">mask_match_by_atom</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_by_keyslot">mask_match_by_keyslot</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_generic">mask_match_generic</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match">unmask_match</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_by_atom">unmask_match_by_atom</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_by_keyslot">unmask_match_by_keyslot</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_generic">unmask_match_generic</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html">fetch.FetchersMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html#check_needed_package_download">check_needed_package_download</a></code>,
+      <code><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file">fetch_file</a></code>,
+      <code><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file_on_mirrors">fetch_file_on_mirrors</a></code>,
+      <code><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files">fetch_files</a></code>,
+      <code><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files_on_mirrors">fetch_files_on_mirrors</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html">noticeboard.NoticeBoardMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#are_noticeboards_marked_as_read">are_noticeboards_marked_as_read</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard">get_noticeboard</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_item_read_status">get_noticeboard_item_read_status</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_userdata">get_noticeboard_userdata</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#is_noticeboard_marked_as_read">is_noticeboard_marked_as_read</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#mark_noticeboard_items_as_read">mark_noticeboard_items_as_read</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#set_noticeboard_item_read_status">set_noticeboard_item_read_status</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#store_noticeboard_userdata">store_noticeboard_userdata</a></code>,
+      <code><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#unmark_noticeboard_items_as_read">unmark_noticeboard_items_as_read</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html">cache.CacheMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.cache.CacheMixin-class.html#REPO_LIST_CACHE_ID">REPO_LIST_CACHE_ID</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html">methods.MiscMixin</a></code></b>:
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#RESOURCES_LOCK_F_COUNT">RESOURCES_LOCK_F_COUNT</a></code>,
+      <code><a href="entropy.client.interfaces.methods.MiscMixin-class.html#RESOURCES_LOCK_F_REF">RESOURCES_LOCK_F_REF</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="repository_packages_spm_sync"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">repository_packages_spm_sync</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repository_identifier</span>,
+        <span class="sig-arg">repo_db</span>,
+        <span class="sig-arg">force</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#Client.repository_packages_spm_sync">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Service method used to sync package names with Source Package Manager 
+  via metadata stored in Repository dbs collected at server-time. Source 
+  Package Manager can change package names, categories or slot and Entropy 
+  repositories must be kept in sync.</p>
+  <p>In other words, it checks for /usr/portage/profiles/updates changes, 
+  of course indirectly, since there is no way entropy.client can directly 
+  depend on Portage.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repository_identifier</code></strong> (string) - repository identifier which repo_db parameter is bound</li>
+        <li><strong class="pname"><code>repo_db</code></strong> (entropy.db.EntropyRepository) - repository database instance</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>bool stating if changes have been made</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:19 2010
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.interfaces.dep.CalculatorsMixin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.client.interfaces.dep-module.html">Module&nbsp;dep</a> ::
+        Class&nbsp;CalculatorsMixin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class CalculatorsMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__6" name="uml_class_diagram_for_entropy__6">
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#dependencies_test" title="entropy.client.interfaces.dep.CalculatorsMixin.dependencies_test" alt="" coords="17,39,1699,57"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#find_belonging_dependency" title="entropy.client.interfaces.dep.CalculatorsMixin.find_belonging_dependency" alt="" coords="17,57,1699,76"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#atom_match" title="entropy.client.interfaces.dep.CalculatorsMixin.atom_match" alt="" coords="17,76,1699,95"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#packages_expand" title="entropy.client.interfaces.dep.CalculatorsMixin.packages_expand" alt="" coords="17,95,1699,113"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_expand" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_expand" alt="" coords="17,113,1699,132"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_list" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_list" alt="" coords="17,132,1699,151"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_search" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_search" alt="" coords="17,151,1699,169"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_match" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_match" alt="" coords="17,169,1699,188"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_masked_packages_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.get_masked_packages_tree" alt="" coords="17,188,1699,207"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_required_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.get_required_packages" alt="" coords="17,207,1699,225"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_reverse_dependency_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.generate_reverse_dependency_tree" alt="" coords="17,225,1699,244"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_available_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_available_packages" alt="" coords="17,244,1699,263"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_critical_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_critical_updates" alt="" coords="17,263,1699,281"/>
+<area shape="rect" id="node19" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_world_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_world_updates" alt="" coords="17,300,1699,319"/>
+<area shape="rect" id="node1" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html" title="entropy.client.interfaces.dep.CalculatorsMixin" alt="" coords="5,6,1709,325"/>
+<area shape="rect" id="node2" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="805,345,912,383"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__6.gif" alt='' usemap="#uml_class_diagram_for_entropy__6" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="dependencies_test"></a><span class="summary-sig-name">dependencies_test</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dbconn</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.dependencies_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="find_belonging_dependency"></a><span class="summary-sig-name">find_belonging_dependency</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matched_atoms</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.find_belonging_dependency">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="atom_match"></a><span class="summary-sig-name">atom_match</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atom</span>,
+        <span class="summary-sig-arg">caseSensitive</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">matchSlot</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">matchTag</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">packagesFilter</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">multiMatch</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">multiRepo</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">matchRevision</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">matchRepo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">server_repos</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">serverInstance</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">extendedResults</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">useCache</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.atom_match">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="packages_expand"></a><span class="summary-sig-name">packages_expand</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">packages</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.packages_expand">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_expand"></a><span class="summary-sig-name">package_set_expand</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_set</span>,
+        <span class="summary-sig-arg">raise_exceptions</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.package_set_expand">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_list"></a><span class="summary-sig-name">package_set_list</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">server_repos</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">serverInstance</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">matchRepo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.package_set_list">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_search"></a><span class="summary-sig-name">package_set_search</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_set</span>,
+        <span class="summary-sig-arg">server_repos</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">serverInstance</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">matchRepo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.package_set_search">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_match"></a><span class="summary-sig-name">package_set_match</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_set</span>,
+        <span class="summary-sig-arg">multiMatch</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">matchRepo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">server_repos</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">serverInstance</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">search</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.package_set_match">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_masked_packages_tree"></a><span class="summary-sig-name">get_masked_packages_tree</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">flat</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">matchfilter</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_masked_packages_tree">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_required_packages"></a><span class="summary-sig-name">get_required_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matched_atoms</span>,
+        <span class="summary-sig-arg">empty_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">deep_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_required_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="generate_reverse_dependency_tree"></a><span class="summary-sig-name">generate_reverse_dependency_tree</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.generate_reverse_dependency_tree">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="calculate_available_packages"></a><span class="summary-sig-name">calculate_available_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">use_cache</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.calculate_available_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="calculate_critical_updates"></a><span class="summary-sig-name">calculate_critical_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">use_cache</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.calculate_critical_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="calculate_updates"></a><span class="summary-sig-name">calculate_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">empty_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">use_cache</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">critical_updates</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.calculate_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="check_package_update"></a><span class="summary-sig-name">check_package_update</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atom</span>,
+        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.check_package_update">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="validate_package_removal"></a><span class="summary-sig-name">validate_package_removal</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.validate_package_removal">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_removal_queue"></a><span class="summary-sig-name">get_removal_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_removal_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_install_queue"></a><span class="summary-sig-name">get_install_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matched_atoms</span>,
+        <span class="summary-sig-arg">empty_deps</span>,
+        <span class="summary-sig-arg">deep_deps</span>,
+        <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_install_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="calculate_world_updates"></a><span class="summary-sig-name">calculate_world_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">empty_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">use_cache</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">critical_updates</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:19 2010
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
