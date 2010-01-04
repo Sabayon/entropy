@@ -8853,7 +8853,7 @@ msgid ""
 "<b><big>Please wait</big></b>\n"
 "<small>...take a little break !</small>"
 msgstr ""
-"<b><big>Veuillez patienter</big><\n"
+"<b><big>Veuillez patienter</big></b>\n"
 "<small>...prenez une pause !</small>"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:4
