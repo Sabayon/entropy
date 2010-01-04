@@ -501,10 +501,10 @@ class SulfurApplicationEventsMixin:
         self.lastPkgPB = action
 
         # Only show add/remove all when showing updates
-        if action == 'updates':
-            self.ui.updatesButtonbox.show()
-        else:
-            self.ui.updatesButtonbox.hide()
+        # if action == 'updates':
+        #    self.ui.updatesButtonbox.show()
+        #else:
+        #    self.ui.updatesButtonbox.hide()
 
         if action == "masked":
             self.setup_masked_pkgs_warning_box()

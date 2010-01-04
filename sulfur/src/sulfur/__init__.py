@@ -376,7 +376,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.repoRefreshButton.show()
         self.ui.vseparator1.hide()
         self.ui.pkgSorter.hide()
-        self.ui.updateButtonView.hide()
+        # self.ui.updateButtonView.hide()
         self.ui.rbAvailable.hide()
         self.ui.rbInstalled.hide()
         self.ui.rbMasked.hide()
@@ -391,7 +391,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.repoRefreshButton.hide()
         self.ui.vseparator1.show()
         self.ui.pkgSorter.show()
-        self.ui.updateButtonView.show()
+        # self.ui.updateButtonView.show()
         self.ui.rbAvailable.show()
         self.ui.rbInstalled.show()
         self.ui.rbMasked.show()
@@ -1449,10 +1449,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if empty:
             self.ui.updatesButtonboxAddRemove.hide()
-            self.ui.pkgSearchArea.hide()
+            self.ui.pkgSorter.hide()
         else:
             self.ui.updatesButtonboxAddRemove.show()
-            self.ui.pkgSearchArea.show()
+            self.ui.pkgSorter.show()
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
         self.progress.total.show()

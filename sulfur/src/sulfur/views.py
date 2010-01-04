@@ -36,7 +36,7 @@ from sulfur.core import UI
 from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
-from sulfur.misc import busy_cursor, normal_cursor
+from sulfur.misc import busy_cursor, normal_cursor, STATUS_BAR_CONTEXT_IDS
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
 from sulfur.event import SulfurSignals
 
@@ -1622,19 +1622,33 @@ class EntropyPackageView:
 
     def vote_submit_thread(self, repository, key, obj):
         status, err_msg = self.Equo.UGC.add_vote(repository, key, int(obj.voted))
+
         if status:
-            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (
-                SulfurConf.color_good, _("Vote registered successfully"),
-                int(obj.voted),)
+            color = SulfurConf.color_good
+            txt1 = _("Vote registered successfully")
+            txt2 = str(int(obj.voted))
         else:
-            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (
-                SulfurConf.color_error, _("Error registering vote"), err_msg,)
-        gtk.gdk.threads_enter()
+            color = SulfurConf.color_error
+            txt1 = _("Error registering vote")
+            txt2 = err_msg
+
+        msg = "<span foreground='%s'><b>%s</b></span>: %s" % (
+                color, txt1, txt2,)
+
         def do_refresh(msg):
+            self.ui.status.push(STATUS_BAR_CONTEXT_IDS['UGC'],
+                "%s: %s" % (txt1, txt2,))
             self.ui.UGCMessageLabel.show()
             self.ui.UGCMessageLabel.set_markup(msg)
             return False
+        def remove_ugc_sts():
+            self.ui.status.pop(STATUS_BAR_CONTEXT_IDS['UGC'])
+            self.ui.UGCMessageLabel.set_markup("")
+            self.ui.UGCMessageLabel.hide()
+            return False
+
         gobject.timeout_add(0, do_refresh, msg)
+        gobject.timeout_add(20*1000, remove_ugc_sts)
         t = ParallelTask(self.refresh_vote_info, obj)
         t.start()
 

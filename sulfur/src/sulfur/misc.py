@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -36,3 +36,6 @@ def normal_cursor(mainwin):
     global CURRENT_CURSOR
     CURRENT_CURSOR = None
 
+STATUS_BAR_CONTEXT_IDS = {
+    'UGC': 1001,
+}
