@@ -279,15 +279,15 @@ class EntropyCacher(Singleton):
                 sys.stdout.write("!!! cannot cache object with key %s\n" % (
                     key,))
                 sys.stdout.flush()
-            if etpUi['debug']:
-                const_debug_write(__name__,
-                    "EntropyCacher.push, async push %s, into %s" % (
-                        key, cache_dir,))
+            #if etpUi['debug']:
+            #   const_debug_write(__name__,
+            #        "EntropyCacher.push, async push %s, into %s" % (
+            #            key, cache_dir,))
         else:
-            if etpUi['debug']:
-                const_debug_write(__name__,
-                    "EntropyCacher.push, sync push %s, into %s" % (
-                        key, cache_dir,))
+            #if etpUi['debug']:
+            #    const_debug_write(__name__,
+            #        "EntropyCacher.push, sync push %s, into %s" % (
+            #            key, cache_dir,))
             entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
 
     def pop(self, key, cache_dir = None):
