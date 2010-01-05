@@ -159,6 +159,7 @@ class SulfurConf:
     proxy = ""
     font_console = 'Monospace 8'
     font_pkgdesc = 'Monospace 8'
+    entropy_uri = 'entropy://'
 
     color_console_font = '#FFFFFF' # black
     color_normal = '#000000' # black

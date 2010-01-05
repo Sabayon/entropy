@@ -450,18 +450,7 @@ class SulfurApplicationEventsMixin:
         normal_cursor(self.ui.main)
         self.switch_notebook_page('output')
 
-        try:
-            rc = self.process_queue(self.queue.packages,
-                remove_repos = [newrepo])
-        except SystemExit:
-            raise
-        except:
-            if self.do_debug:
-                entropy.tools.print_traceback()
-                import pdb; pdb.set_trace()
-            else:
-                raise
-
+        rc = self.install_queue(remove_repos = [newrepo])
         self.reset_queue_progress_bars()
         if rc:
             self.queue.clear()
@@ -573,18 +562,8 @@ class SulfurApplicationEventsMixin:
         fetch_only = self.ui.queueProcessFetchOnly.get_active()
         download_sources = self.ui.queueProcessDownloadSource.get_active()
 
-        rc = True
-        try:
-            rc = self.process_queue(self.queue.packages,
-                fetch_only = fetch_only, download_sources = download_sources)
-        except SystemExit:
-            raise
-        except:
-            if self.do_debug:
-                entropy.tools.print_traceback()
-                import pdb; pdb.set_trace()
-            else:
-                raise
+        rc = self.install_queue(remove_repos = [newrepo],
+            fetch = fetch_only, download_sources = download_sources)
         self.reset_queue_progress_bars()
         if rc and not fetch_only:
             self.queue.clear()       # Clear package queue
@@ -736,7 +715,14 @@ class SulfurApplicationEventsMixin:
 
             txt = entry.get_text()
             if old_txt != txt:
+                self._filterbar_previous_txt = txt
                 return False
+
+            # parse string as action only if pasted
+            if (not self._filterbar_previous_txt) and txt:
+                accepted = self._parse_entropy_action_string(txt)
+                if accepted:
+                    entry.set_text("")
 
             flt = Filter.get('KeywordFilter')
             self.etpbase.set_filter(Filter.processFilters)
@@ -752,9 +738,10 @@ class SulfurApplicationEventsMixin:
             action = self.lastPkgPB
             rb = self.packageRB[action]
             self.on_pkgFilter_toggled(rb, action)
+            self._filterbar_previous_txt = txt
             return False
 
-        gobject.timeout_add(600, go, entry, entry.get_text())
+        gobject.timeout_add(400, go, entry, entry.get_text())
 
     def on_FileQuit( self, widget ):
         self.wait_window.show()

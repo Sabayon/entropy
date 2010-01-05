@@ -111,12 +111,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             okDialog( self.ui.main, _("Oh oh ooooh... Merry Xmas!"))
 
         self.warn_repositories()
-        self.packages_install()
+        pkg_installing = self.packages_install()
+
+        if not pkg_installing:
+            if "--nonoticeboard" not in sys.argv:
+                if not self.Equo.are_noticeboards_marked_as_read():
+                    self.show_notice_board(force = False)
 
     def quit(self, widget = None, event = None, sysexit = True):
         def do_kill(pid):
             try:
-                os.kill(pid, signal.SIGKILL)
+                os.kill(pid, signal.SIGTERM)
             except OSError:
                 pass
         if hasattr(self, "_ugc_pid"):
@@ -193,6 +198,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
         # Left Side Toolbar
         self._notebook_tabs_cache = {}
+        self._filterbar_previous_txt = ''
         self.firstButton = None  # first button
         self.activePage = 'repos'
         self.pageBootstrap = True
@@ -328,6 +334,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_preferences()
         self.setup_events_handling()
 
+        # can lead to sqlite3 db corruptions?
         self.setup_background_cache_generators()
 
     def setup_background_cache_generators(self):
@@ -347,9 +354,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         def file_updates_fill_view():
             try:
-                print "IN"
                 self._populate_files_update()
-                print "OUT"
             except AttributeError: # it is really necessary
                 return
 
@@ -510,6 +515,39 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if rc == -5:
                 self.do_repo_refresh(invalid_repos)
 
+    def _parse_entropy_action_string(self, action_bar_str):
+
+        # entropy://amarok,foo2,foo3 install from filter bar
+        if action_bar_str.startswith(SulfurConf.entropy_uri):
+            atoms = action_bar_str[len(SulfurConf.entropy_uri):].split(",")
+            if atoms:
+                installed = self.atoms_install(atoms)
+                return True
+
+        return False
+
+    def atoms_install(self, atoms, fetch = False):
+
+        # parse atoms
+        matches = []
+        for atom in atoms:
+            pkg_id, repo_id = self.Equo.atom_match(atom)
+            if pkg_id == -1:
+                return False
+            matches.append((pkg_id, repo_id,))
+
+        if not matches:
+            return False
+
+        self.switch_notebook_page('output')
+
+        rc = self.install_queue(fetch = fetch, direct_install_matches = matches)
+        self.reset_queue_progress_bars()
+        if rc:
+            self.queue.clear()
+            self.queueView.refresh()
+        return rc
+
     def packages_install(self):
 
         packages_install = os.environ.get("SULFUR_PACKAGES", '').split(";")
@@ -536,34 +574,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
             fn = packages_install[0]
             self.on_installPackageItem_activate(None, fn)
+            return True
 
         elif atoms_install: # --install <atom1> <atom2> ... support
+            return self.atoms_install(atoms_install, fetch = do_fetch)
 
-            rc = self.add_atoms_to_queue(atoms_install)
-            if not rc:
-                return
-            self.switch_notebook_page('output')
-
-            try:
-                rc = self.process_queue(self.queue.packages,
-                    fetch_only = do_fetch)
-            except SystemExit:
-                raise
-            except:
-                if self.do_debug:
-                    entropy.tools.print_traceback()
-                    import pdb; pdb.set_trace()
-                else:
-                    raise
-
-            self.reset_queue_progress_bars()
-            if rc:
-                self.queue.clear()
-                self.queueView.refresh()
-
-        elif "--nonoticeboard" not in sys.argv:
-            if not self.Equo.are_noticeboards_marked_as_read():
-                self.show_notice_board(force = False)
+        return False
 
     def setup_advisories_filter(self):
         widgets = [
@@ -1624,11 +1640,35 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     return True
         return False
 
-    def process_queue(self, pkgs, remove_repos = None, fetch_only = False,
-            download_sources = False):
+    def install_queue(self, fetch = False, download_sources = False,
+        remove_repos = None, direct_install_matches = None,
+        direct_remove_matches = None):
+        try:
+            rc = self._process_queue(self.queue.packages,
+                fetch_only = fetch, remove_repos = remove_repos,
+                download_sources = download_sources,
+                direct_install_matches = direct_install_matches,
+                direct_remove_matches = direct_remove_matches)
+        except SystemExit:
+            raise
+        except:
+            if self.do_debug:
+                entropy.tools.print_traceback()
+                import pdb; pdb.set_trace()
+            else:
+                raise
+        return rc
+
+    def _process_queue(self, pkgs, remove_repos = None, fetch_only = False,
+            download_sources = False, direct_remove_matches = None,
+            direct_install_matches = None):
 
         if remove_repos is None:
             remove_repos = []
+        if direct_remove_matches is None:
+            direct_remove_matches = []
+        if direct_install_matches is None:
+            direct_install_matches = []
 
         self.show_progress_bars()
 
@@ -1654,8 +1694,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.hide_notebook_tabs_for_install()
         self.set_status_ticker(_("Running tasks"))
         total = 0
-        for key in pkgs:
-            total += len(pkgs[key])
+        if direct_install_matches or direct_remove_matches:
+            total = len(direct_install_matches) + len(direct_remove_matches)
+        else:
+            for key in pkgs:
+                total += len(pkgs[key])
+
+        def do_file_updates_check():
+            self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
+            if self.Equo.FileUpdates.scandata:
+                if len(self.Equo.FileUpdates.scandata) > 0:
+                    switch_back_page = 'filesconf'
+
         state = True
         if total > 0:
 
@@ -1664,17 +1714,24 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
             self.switch_notebook_page('output')
-            queue = []
-            for key in pkgs:
-                if key == "r":
-                    continue
-                queue += pkgs[key]
-            install_queue = [x.matched_atom for x in queue]
-            selected_by_user = set([x.matched_atom for x in queue if \
-                x.selected_by_user])
-            removal_queue = [x.matched_atom[0] for x in pkgs['r']]
-            do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
-                x.do_purge])
+
+            if direct_install_matches or direct_remove_matches:
+                install_queue = direct_install_matches
+                selected_by_user = set(install_queue)
+                removal_queue = direct_remove_matches
+                do_purge_cache = set()
+            else:
+                queue = []
+                for key in pkgs:
+                    if key == "r":
+                        continue
+                    queue += pkgs[key]
+                install_queue = [x.matched_atom for x in queue]
+                selected_by_user = set([x.matched_atom for x in queue if \
+                    x.selected_by_user])
+                removal_queue = [x.matched_atom[0] for x in pkgs['r']]
+                do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
+                    x.do_purge])
 
             # look for critical updates
             crit_block = False
@@ -1774,7 +1831,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if self.do_debug:
                 print_generic("process_queue: end_working")
 
-            if (not fetch_only) and (not download_sources):
+            if (not fetch_only) and (not download_sources) and not \
+                (direct_install_matches or direct_remove_matches):
 
                 if self.do_debug:
                     print_generic("process_queue: cleared caches")
@@ -1794,12 +1852,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.setup_application()
                 if self.do_debug:
                     print_generic("process_queue: scanning for new files")
-                self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
-                if self.Equo.FileUpdates.scandata:
-                    if len(self.Equo.FileUpdates.scandata) > 0:
-                        switch_back_page = 'filesconf'
+                do_file_updates_check()
                 if self.do_debug:
                     print_generic("process_queue: all done")
+
+            if direct_install_matches or direct_remove_matches:
+                do_file_updates_check()
 
         else:
             self.set_status_ticker( _( "No packages selected" ) )

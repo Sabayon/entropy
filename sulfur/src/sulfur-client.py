@@ -32,7 +32,7 @@ MAIN_APP = None
 
 def kill_pid(pid):
     try:
-        os.kill(pid, signal.SIGKILL)
+        os.kill(pid, signal.SIGTERM)
     except OSError:
         pass
 
