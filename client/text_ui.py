@@ -934,7 +934,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
         pkgs = []
 
     # check if I am root
-    if (not entropy.tools.is_root()):
+    if not entropy.tools.is_root():
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
