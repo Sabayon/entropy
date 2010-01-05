@@ -88,12 +88,14 @@ class EntropyCacher(Singleton):
         This is the place where all the properties initialization
         takes place.
         """
+        import threading
         import copy
         self.__copy = copy
         self.__alive = False
         self.__cache_writer = None
         self.__cache_buffer = Lifo()
         self.__proc_pids = set()
+        self.__proc_pids_lock = threading.Lock()
 
     def __copy_obj(self, obj):
         """
@@ -108,22 +110,23 @@ class EntropyCacher(Singleton):
         return self.__copy.deepcopy(obj)
 
     def __clean_pids(self):
-        dead_pids = set()
-        for pid in self.__proc_pids:
+        with self.__proc_pids_lock:
+            dead_pids = set()
+            for pid in self.__proc_pids:
 
-            try:
-                dead = os.waitpid(pid, os.WNOHANG)[0]
-            except OSError as err:
-                if err.errno != 10:
-                    raise
-                dead = True
-            if dead:
-                dead_pids.add(pid)
-            elif not const_pid_exists(pid):
-                dead_pids.add(pid)
+                try:
+                    dead = os.waitpid(pid, os.WNOHANG)[0]
+                except OSError as err:
+                    if err.errno != 10:
+                        raise
+                    dead = True
+                if dead:
+                    dead_pids.add(pid)
+                elif not const_pid_exists(pid):
+                    dead_pids.add(pid)
 
-        if dead_pids:
-            self.__proc_pids.difference_update(dead_pids)
+            if dead_pids:
+                self.__proc_pids.difference_update(dead_pids)
 
     def __wait_cacher_semaphore(self):
         self.__clean_pids()
@@ -164,8 +167,7 @@ class EntropyCacher(Singleton):
 
             pid = os.fork()
             if pid == 0:
-                for data in massive_data:
-                    (key, cache_dir), data = data
+                for (key, cache_dir), data in massive_data:
                     d_o = entropy.dump.dumpobj
                     if d_o is not None:
                         d_o(key, data, dump_dir = cache_dir)
@@ -175,7 +177,8 @@ class EntropyCacher(Singleton):
                     const_debug_write(__name__,
                         "EntropyCacher.__cacher [%s], writing %s objs" % (
                             pid, len(massive_data),))
-                self.__proc_pids.add(pid)
+                with self.__proc_pids_lock:
+                    self.__proc_pids.add(pid)
                 del massive_data[:]
                 del massive_data
 
