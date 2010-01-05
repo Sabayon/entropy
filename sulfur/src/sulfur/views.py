@@ -523,8 +523,6 @@ class EntropyPackageView:
         self.view_expanded = True
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
-        self.view.connect("enter-notify-event", self.treeview_enter_notify)
-        self.view.connect("leave-notify-event", self.treeview_leave_notify)
         self.store = self.setupView()
         self.dummyCats = {}
         self.__install_statuses = {}
@@ -631,12 +629,6 @@ class EntropyPackageView:
         self.__current_model_injector_class = injector
         self.Injector = injector(self.store, self.Equo, self.etpbase,
             self.dummyCats)
-
-    def treeview_enter_notify(self, widget, event):
-        self.main_window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
-
-    def treeview_leave_notify(self, widget, event):
-        self.main_window.window.set_cursor(None)
 
     def reset_install_menu(self):
         self.install_install.show()
