@@ -105,6 +105,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if entropy.tools.is_april_first():
             okDialog( self.ui.main,
                 _("April 1st, w0000h0000! Gonna erase your hard disk!"))
+        elif entropy.tools.is_st_valentine():
+            okDialog( self.ui.main, _("Love love love... <3"))
+        elif entropy.tools.is_xmas():
+            okDialog( self.ui.main, _("Oh oh ooooh... Merry Xmas!"))
 
         self.warn_repositories()
         self.packages_install()
@@ -1451,7 +1455,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if empty:
             self.ui.updatesButtonboxAddRemove.hide()
             self.ui.pkgSorter.hide()
-        else:
+        elif not SulfurConf.simple_mode:
             self.ui.updatesButtonboxAddRemove.show()
             self.ui.pkgSorter.show()
 
