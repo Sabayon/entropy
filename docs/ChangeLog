@@ -1,3 +1,57 @@
+commit d63b02397be758ef6700fade2b60bcbc885bc6ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:06:59 2010 +0100
+
+    [equo] small code style update
+
+commit 3c3de3395dd43fbc686643bcd362de358daeb15e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:05:07 2010 +0100
+
+    [entropy.spm] PortagePlugin: fix issue that caused pkg_postrm, pkg_prerm to not run due to missing portage_tmpdir directory
+
+commit 622645334559e1e709ebf56a95cd1247c1268c55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 11:35:58 2010 +0100
+
+    [sulfur] auto hide noticeboard if notice.rss is empty
+
+commit 1472c6dcca829aa9f540add9bce77bfbcb1401cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 10:37:22 2010 +0100
+
+    [sulfur] add some tooltips around
+
+commit 7e4470a094cff291309e1f9024e024706993ca49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 10:36:59 2010 +0100
+
+    [sulfur] another place where very important code was missing
+
+commit 0be7f9f258e79bc80802c492ea99bf430f86813b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 10:36:42 2010 +0100
+
+    [entropy.tools] add very important code that was missing
+
+commit bf21c51d90505349ded0687b7427a892003267f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 09:57:28 2010 +0100
+
+    [entropy.db] fix typo in comment
+
+commit 10b2097a5f9c0defefc0c70f11937d876a81b281
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 09:56:50 2010 +0100
+
+    [sulfur] when calling populate_advisories with background = True, do not push dialog boxes
+
+commit 8ac966da5a49412765b25e561b65dea694ddcf6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 00:01:27 2010 +0100
+
+    Update ChangeLog for version 0.99.20.12
+
 commit f8442505a6618f5334a33bcde9be741f57b28bf3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 5 00:00:04 2010 +0100
