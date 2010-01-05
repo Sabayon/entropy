@@ -1,3 +1,102 @@
+commit dcbdd4adaec493117d1e84aa879991c16c7a3c90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:44:25 2010 +0100
+
+    [todo] update TODO
+
+commit b51df0a241ef1207dbdc0b21aa7bcbdff1ee9400
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:44:11 2010 +0100
+
+    [sulfur] fix typo in message string
+
+commit f4fab23617f6bdaf49faf58de84036f571a40292
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:43:51 2010 +0100
+
+    [po] update translations
+
+commit 6f93b5c3758ce790b32ee18bc96e2e26487881d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:25:08 2010 +0100
+
+    [sulfur] fix incorrect function call
+
+commit a54c10a38b296c69dae370df41bed640366d1043
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:20:49 2010 +0100
+
+    [sulfur] more and more sulfur love <3
+
+commit 372a906982ff764c54e8551dafc7ffe205af3cfe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:20:28 2010 +0100
+
+    [entropy.cache] disable some debugging output for now
+
+commit 633bcc3074125ab4cfaf1b069cdba775863bc0ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 18:09:38 2010 +0100
+
+    [sulfur] more tooltips text, and UI love
+
+commit 46d0e24fa5a15ab38faf085852a0530c69d9d4df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 16:55:09 2010 +0100
+
+    [sulfur] several filterbar graphical improvements
+    
+    :: do not use SIGKILL (use SIGTERM)
+    :: improve filterbar performance, add filterbar action handling
+
+commit 93505949548cbf427ff86634d26f5c5f19578ece
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 16:52:59 2010 +0100
+
+    [entropy.cache] EntropyCacher: avoid threading issues when dealing with the list of current child processes
+
+commit ee458d5de5aa29736c5f1b13587ff66f8c983b49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 14:53:57 2010 +0100
+
+    [entropy.cache] EntropyCacher now uses multi-processing (on modern CPUs, performances skyrocket)
+
+commit f8490e6540c31a566f0a45cad8daba5b61c38e4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:46:57 2010 +0100
+
+    [sulfur] hide System Files tab when empty
+
+commit ab7ab22029323fa4673c380dedeb078f2dfe0de4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:46:20 2010 +0100
+
+    [entropy.cache] add --debug support to EntropyCacher
+
+commit be13e5eee4c1015e05d92864c571fc1c3a1c92dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:41:44 2010 +0100
+
+    [entropy.cache] remove debugging output
+
+commit 203a8ee245aaa302c7fdd8db06524446f5f303e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:40:40 2010 +0100
+
+    [sulfur] on every quit, make sure to kill any existing child process
+
+commit b284a39b04f3b7421916719310ba4b74216a7db2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:39:46 2010 +0100
+
+    [entropy.cache] improve EntropyCacher, make it working over multiple processes, do not use thread locks, change API
+
+commit 17b6024802c3b78899d02c3b12b8e8e60fab2a4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 12:07:24 2010 +0100
+
+    Update ChangeLog for version 0.99.20.13
+
 commit d63b02397be758ef6700fade2b60bcbc885bc6ff
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 5 12:06:59 2010 +0100
