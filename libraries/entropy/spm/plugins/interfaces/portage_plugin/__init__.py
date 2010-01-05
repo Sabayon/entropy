@@ -16,7 +16,7 @@ import shutil
 import tempfile
 import subprocess
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
-    const_convert_to_unicode, const_convert_to_rawstring
+    const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidData, InvalidAtom
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
@@ -1622,6 +1622,9 @@ class PortagePlugin(SpmPlugin):
         if portage_tmpdir is None:
             portage_tmpdir = tempfile.mkdtemp()
             portage_tmpdir_created = True
+        elif not os.path.isdir(portage_tmpdir):
+            os.makedirs(portage_tmpdir, 0o774)
+            const_setup_perms(portage_tmpdir, etpConst['entropygid'])
 
         if portage_tmpdir:
             mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
@@ -1631,7 +1634,8 @@ class PortagePlugin(SpmPlugin):
         portdir = os.path.join(portage_tmpdir, "portdir")
         portdir_lic = os.path.join(portdir, "licenses")
         if not os.path.isdir(portdir):
-            os.mkdir(portdir) # portage_tmpdir must be available!
+            os.mkdir(portdir, 0o774)
+            const_setup_perms(portdir, etpConst['entropygid'])
         # create licenses subdir
         if not os.path.isdir(portdir_lic):
             os.mkdir(portdir_lic)
@@ -1984,6 +1988,7 @@ class PortagePlugin(SpmPlugin):
 
                 stdfile.flush()
                 sys.stdout = oldstdout
+                sys.stderr = oldstderr
                 entropy.tools.print_traceback()
 
                 self.log_message(
