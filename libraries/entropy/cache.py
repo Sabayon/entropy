@@ -63,7 +63,7 @@ class EntropyCacher(Singleton):
         ...
         >>> # now flush all the caches to disk, and make sure all
         >>> # is written
-        >>> cacher.sync(wait = True)
+        >>> cacher.sync()
         ...
         >>> # now fetch something from the cache
         >>> data = cacher.pop('my_identifier1')
@@ -83,13 +83,11 @@ class EntropyCacher(Singleton):
         This is the place where all the properties initialization
         takes place.
         """
-        import threading
         import copy
         self.__copy = copy
         self.__alive = False
         self.__cache_writer = None
         self.__cache_buffer = Lifo()
-        self.__cache_lock = threading.Lock()
 
     def __copy_obj(self, obj):
         """
@@ -103,7 +101,7 @@ class EntropyCacher(Singleton):
         """
         return self.__copy.deepcopy(obj)
 
-    def __cacher(self):
+    def __cacher(self, run_until_empty = False):
         """
         This is where the actual asynchronous copy takes
         place. __cacher runs on a different threads and
@@ -111,15 +109,13 @@ class EntropyCacher(Singleton):
         thread-safe. It just loops over and over until
         __alive becomes False.
         """
-        while True:
-            if not self.__alive:
-                break
-            with self.__cache_lock:
-                try:
-                    data = self.__cache_buffer.pop()
-                except (ValueError, TypeError,):
-                    # TypeError is when objects are being destroyed
-                    break # stack empty
+        while self.__alive or run_until_empty:
+            try:
+                data = self.__cache_buffer.pop()
+            except (ValueError, TypeError,):
+                # TypeError is when objects are being destroyed
+                break # stack empty
+            print "pop", id(data) 
             (key, cache_dir), data = data
             d_o = entropy.dump.dumpobj
             if not d_o:
@@ -138,8 +134,7 @@ class EntropyCacher(Singleton):
 
         @return: None
         """
-        with self.__cache_lock:
-            self.__cache_buffer.clear()
+        self.__cache_buffer.clear()
         self.__cache_writer = TimeScheduled(1, self.__cacher)
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
@@ -167,45 +162,21 @@ class EntropyCacher(Singleton):
 
         @return: None
         """
-
-        watch_dog = 80
-        while self.__cache_buffer.is_filled() and (watch_dog > 0):
-            watch_dog -= 1
-            time.sleep(0.125)
         self.__alive = False
-
-        with self.__cache_lock:
-            self.__cache_buffer.clear()
-        if self.__cache_writer != None:
+        if self.__cache_writer is not None:
             self.__cache_writer.kill()
             self.__cache_writer.join()
             self.__cache_writer = None
+        self.sync()
 
-    def sync(self, wait = False):
+    def sync(self):
         """
         This method can be called anytime and forces the instance
         to flush all the cache writes queued to disk. If wait == False
         a watchdog prevents this call to get stuck in case of write
         buffer overloads.
-
-        @keyword wait: indicates if waiting until done (synchronous mode) or not
-        @type wait: bool
-        @rtype: None
-        @return: None
         """
-        if not self.__alive:
-            self.__cache_buffer.clear()
-            return
-
-        watch_dog = 40
-        while self.__cache_buffer.is_filled() and ((watch_dog > 0) or wait) \
-            and self.__alive:
-
-            if not wait:
-                watch_dog -= 1
-            time.sleep(0.125)
-
-        self.__cache_buffer.clear()
+        self.__cacher(run_until_empty = True)
 
     def discard(self):
         """
@@ -214,8 +185,6 @@ class EntropyCacher(Singleton):
         @return: None
         """
         self.__cache_buffer.clear()
-        with self.__cache_lock:
-            self.__cache_buffer.clear() # make sure twice
 
     def push(self, key, data, async = True, cache_dir = None):
         """
@@ -241,16 +210,15 @@ class EntropyCacher(Singleton):
             cache_dir = entropy.dump.D_DIR
 
         if async:
-            with self.__cache_lock:
-                try:
-                    self.__cache_buffer.push(((key, cache_dir,),
-                        self.__copy_obj(data),))
-                except TypeError:
-                    # sometimes, very rarely, copy.deepcopy() is unable
-                    # to properly copy an object (blame Python bug)
-                    sys.stdout.write("!!! cannot cache object with key %s\n" % (
-                        key,))
-                    sys.stdout.flush()
+            try:
+                self.__cache_buffer.push(((key, cache_dir,),
+                    self.__copy_obj(data),))
+            except TypeError:
+                # sometimes, very rarely, copy.deepcopy() is unable
+                # to properly copy an object (blame Python bug)
+                sys.stdout.write("!!! cannot cache object with key %s\n" % (
+                    key,))
+                sys.stdout.flush()
         else:
             entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
 
@@ -270,11 +238,10 @@ class EntropyCacher(Singleton):
         if cache_dir is None:
             cache_dir = entropy.dump.D_DIR
 
-        with self.__cache_lock:
-            l_o = entropy.dump.loadobj
-            if not l_o:
-                return
-            return l_o(key, dump_dir = cache_dir)
+        l_o = entropy.dump.loadobj
+        if not l_o:
+            return
+        return l_o(key, dump_dir = cache_dir)
 
     @staticmethod
     def clear_cache_item(cache_item, cache_dir = None):

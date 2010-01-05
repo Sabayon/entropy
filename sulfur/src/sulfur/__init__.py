@@ -343,7 +343,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # configuration files update cache generation
         def file_updates_cache_gen():
             self.Equo.FileUpdates.scanfs(quiet = True)
-            self.Cacher.sync(wait = True)
+            self.Cacher.sync()
 
         self._fork_function(file_updates_cache_gen, None)
 
@@ -714,7 +714,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             gobject.timeout_add(45*1000, emit_ugc_update)
         else:
             self._ugc_update()
-            self.Cacher.sync(wait = True)
+            self.Cacher.sync()
             print_generic("UGC child process done")
             os._exit(0)
 
