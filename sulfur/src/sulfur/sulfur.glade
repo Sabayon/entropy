@@ -2203,7 +2203,7 @@
             <child>
               <widget class="GtkVBox" id="vbox18">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Application can alter your system configuration, merge requested changes manually</property>
+                <property name="tooltip" translatable="yes">Applications can alter your system configuration, merge requested changes manually</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioSystemImage">
