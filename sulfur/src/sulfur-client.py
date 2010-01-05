@@ -10,10 +10,13 @@
     B{Entropy Package Manager Graphical Client}.
 
 """
-
+import os
 import sys
+import signal
+
 import gtk
 import gobject
+
 sys.path.insert(0, "../../libraries")
 sys.path.insert(1, "../../client")
 sys.path.insert(2, "./")
@@ -27,20 +30,40 @@ from sulfur.setup import const
 
 MAIN_APP = None
 
+def kill_pid(pid):
+    try:
+        os.kill(pid, signal.SIGKILL)
+    except OSError:
+        pass
+
+def kill_threads():
+    entropy.tools.kill_threads()
+    if MAIN_APP is not None:
+        try:
+            for pid in MAIN_APP._fork_pids:
+                kill_pid(pid)
+        except AttributeError:
+            pass
+        try:
+            if MAIN_APP._ugc_pid is not None:
+                kill_pid(MAIN_APP._ugc_pid)
+        except AttributeError:
+            pass
+
 def handle_exception(exc_class, exc_instance, exc_tb):
 
     # restore original exception handler, to avoid loops
     uninstall_exception_handler()
 
     if exc_class is KeyboardInterrupt:
-        entropy.tools.kill_threads()
+        kill_threads()
         print("Quit by User (KeyboardInterrupt)")
         if MAIN_APP is not None:
             MAIN_APP.quit()
         raise SystemExit(0)
 
     if exc_class is SystemExit:
-        entropy.tools.kill_threads()
+        kill_threads()
         print("Quit by User (SystemExit)")
         if MAIN_APP is not None:
             MAIN_APP.quit()
@@ -58,7 +81,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     my = ExceptionDialog()
     my.show(errmsg = t_back) 
-    entropy.tools.kill_threads()
+    kill_threads()
     if MAIN_APP is not None:
         MAIN_APP.quit(sysexit = False)
 
@@ -81,6 +104,6 @@ gobject.threads_init()
 gtk.gdk.threads_enter()
 gtk.main()
 gtk.gdk.threads_leave()
-entropy.tools.kill_threads()
+kill_threads()
 MAIN_APP.quit()
 raise SystemExit(0)
