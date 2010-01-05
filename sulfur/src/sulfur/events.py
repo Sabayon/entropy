@@ -553,7 +553,7 @@ class SulfurApplicationEventsMixin:
     def on_repoDeSelect_clicked(self, widget):
         self.repoView.deselect_all()
 
-    def on_queueProcess_clicked( self, widget ):
+    def on_queueProcess_clicked(self, widget):
 
         if self.queue.total() == 0: # Check there are any packages in the queue
             self.set_status_ticker(_('No packages in queue'))
@@ -562,8 +562,8 @@ class SulfurApplicationEventsMixin:
         fetch_only = self.ui.queueProcessFetchOnly.get_active()
         download_sources = self.ui.queueProcessDownloadSource.get_active()
 
-        rc = self.install_queue(remove_repos = [newrepo],
-            fetch = fetch_only, download_sources = download_sources)
+        rc = self.install_queue(fetch = fetch_only,
+            download_sources = download_sources)
         self.reset_queue_progress_bars()
         if rc and not fetch_only:
             self.queue.clear()       # Clear package queue

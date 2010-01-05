@@ -128,10 +128,10 @@
                 <property name="border_width">3</property>
                 <property name="orientation">vertical</property>
                 <child>
-                  <widget class="GtkHBox" id="hbox76">
+                  <widget class="GtkHBox" id="headerHbox">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkHBox" id="hbox77">
+                      <widget class="GtkHBox" id="rbUpdatesAdvancedBox">
                         <property name="visible">True</property>
                         <property name="spacing">4</property>
                         <child>
@@ -139,7 +139,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="tooltip" translatable="yes">Sync repositories to fetch latest updates</property>
+                            <property name="tooltip" translatable="yes">Download updated repositories containing new applications</property>
                             <property name="image_position">top</property>
                             <signal name="clicked" handler="on_repoRefreshButton_clicked"/>
                             <child>
@@ -159,9 +159,9 @@
                                   </packing>
                                 </child>
                                 <child>
-                                  <widget class="GtkLabel" id="label89">
+                                  <widget class="GtkLabel" id="rbRefreshLabel">
                                     <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Reload</property>
+                                    <property name="label" translatable="yes">Refresh</property>
                                     <property name="justify">center</property>
                                   </widget>
                                   <packing>
@@ -513,6 +513,24 @@
                                 <property name="position">0</property>
                               </packing>
                             </child>
+                            <child>
+                              <widget class="GtkEntry" id="pkgFilter">
+                                <property name="height_request">26</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip" translatable="yes">Filter currently shown items, or paste entropy::// action strings (for eg. entropy://amarok, to install Amarok!)</property>
+                                <property name="invisible_char">&#x25CF;</property>
+                                <property name="primary_icon_stock">gtk-find</property>
+                                <property name="primary_icon_sensitive">True</property>
+                                <property name="secondary_icon_sensitive">True</property>
+                                <property name="primary_icon_tooltip_text">Clear filter bar</property>
+                                <signal name="changed" handler="on_pkg_search_change"/>
+                                <signal name="icon_release" handler="on_pkgFilter_icon_release"/>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
                           </widget>
                         </child>
                       </widget>
@@ -532,23 +550,13 @@
                     <property name="visible">True</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <widget class="GtkAlignment" id="alignment2">
+                      <widget class="GtkHBox" id="rbUpdatesSimpleHbox">
                         <property name="visible">True</property>
-                        <property name="top_padding">3</property>
                         <child>
-                          <widget class="GtkEntry" id="pkgFilter">
-                            <property name="height_request">26</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="tooltip" translatable="yes">Filter currently shown items, or paste entropy::// action strings (for eg. entropy://amarok, to install Amarok!)</property>
-                            <property name="invisible_char">&#x25CF;</property>
-                            <property name="primary_icon_stock">gtk-find</property>
-                            <property name="primary_icon_sensitive">True</property>
-                            <property name="secondary_icon_sensitive">True</property>
-                            <property name="primary_icon_tooltip_text">Clear filter bar</property>
-                            <signal name="changed" handler="on_pkg_search_change"/>
-                            <signal name="icon_release" handler="on_pkgFilter_icon_release"/>
-                          </widget>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
                         </child>
                       </widget>
                       <packing>

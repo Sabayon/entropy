@@ -168,6 +168,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if self.do_debug:
                 print_generic("_fork_function: leave %s" % (child_function,))
         else:
+            sys.excepthook = sys.__excepthook__
             child_function()
             os._exit(0)
 
@@ -399,10 +400,36 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbMasked.hide()
         self.ui.rbPkgSets.hide()
 
-        # not here self.ui.systemVbox.show()
+        if self.filesView.is_filled():
+            self.ui.systemVbox.show()
+        else:
+            self.ui.systemVbox.hide()
+
         self.ui.securityVbox.hide()
         self.ui.prefsVbox.hide()
         self.ui.reposVbox.hide()
+
+        # move top header buttons
+        adv_content = self.ui.rbUpdatesAdvancedBox
+        if adv_content.get_parent() is self.ui.headerHbox:
+            self.ui.headerHbox.remove(adv_content)
+            self.ui.rbUpdatesSimpleHbox.pack_start(adv_content, expand = False,
+                fill = False)
+            self.ui.rbUpdatesSimpleHbox.reorder_child(adv_content, 0)
+
+        self.ui.rbRefreshLabel.hide()
+        self.ui.rbUpdatesLabel.hide()
+        self.ui.rbAllLabel.hide()
+        self.ui.rbPkgSetsLabel1.hide()
+        self.ui.pkgFilter.set_size_request(-1, 40)
+
+        # move filterbar
+        filter_bar = self.ui.pkgFilter
+        if filter_bar.get_parent() is self.ui.appTopRightVbox:
+            self.ui.appTopRightVbox.remove(filter_bar)
+            self.ui.rbUpdatesSimpleHbox.pack_start(filter_bar, expand = True,
+                fill = True)
+            self.ui.rbUpdatesSimpleHbox.reorder_child(filter_bar, -1)
 
     def switch_advanced_mode(self):
         self.ui.servicesMenuItem.show()
@@ -419,6 +446,28 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.securityVbox.show()
         self.ui.prefsVbox.show()
         self.ui.reposVbox.show()
+
+        # move top header buttons
+        adv_content = self.ui.rbUpdatesAdvancedBox
+        if adv_content.get_parent() is self.ui.rbUpdatesSimpleHbox:
+            self.ui.rbUpdatesSimpleHbox.remove(adv_content)
+            self.ui.headerHbox.pack_start(adv_content, expand = False,
+                fill = False)
+            self.ui.headerHbox.reorder_child(adv_content, 0)
+
+        self.ui.rbRefreshLabel.show()
+        self.ui.rbUpdatesLabel.show()
+        self.ui.rbAllLabel.show()
+        self.ui.rbPkgSetsLabel1.show()
+        self.ui.pkgFilter.set_size_request(-1, 26)
+
+        # move filterbar
+        filter_bar = self.ui.pkgFilter
+        if filter_bar.get_parent() is self.ui.rbUpdatesSimpleHbox:
+            self.ui.rbUpdatesSimpleHbox.remove(filter_bar)
+            self.ui.appTopRightVbox.pack_start(filter_bar, expand = True,
+                fill = True)
+            self.ui.appTopRightVbox.reorder_child(filter_bar, -1)
 
     def setup_pkg_sorter(self):
 

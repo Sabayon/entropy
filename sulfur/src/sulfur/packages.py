@@ -40,6 +40,7 @@ class Queue:
         self.etpbase = None
         self.pkgView = None
         self.queueView = None
+        self.ui = None
         self.Sulfur = SulfurApplication
         from . import dialogs
         self.dialogs = dialogs

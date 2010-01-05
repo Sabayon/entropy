@@ -1538,7 +1538,7 @@ class EntropyPackageView:
         self.view.collapse_all()
         self.view_expanded = True
 
-    def setupView( self ):
+    def setupView(self):
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
@@ -2100,7 +2100,13 @@ class EntropyFilesView:
         self.view.get_selection().set_mode( gtk.SELECTION_SINGLE )
         return model
 
-    def populate( self, scandata ):
+    def is_filled(self):
+        first = self.model.get_iter_first()
+        if not first:
+            return False
+        return True
+
+    def populate(self, scandata):
         self.model.clear()
         keys = sorted(scandata.keys())
         for key in keys:
