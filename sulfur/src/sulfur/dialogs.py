@@ -279,13 +279,23 @@ class NoticeBoardWindow(MenuSkel):
         self.view = self.nb_ui.noticeView
         self.model = self.setup_view()
 
-    def load(self, repoids):
+    def load(self, repoids, auto_hide = True):
         self.repoids = repoids
         self.show_data()
-        self.view.expand_all()
-        self.nb_ui.noticeBoardStfu.set_active(
-            self.Entropy.are_noticeboards_marked_as_read())
-        self.nb_ui.noticeBoardWindow.show()
+
+        # check if we actually pushed something to show
+        do_show = True
+        if auto_hide and (not self.model.get_iter_first()):
+            do_show = False
+
+        if do_show:
+            self.view.expand_all()
+            self.nb_ui.noticeBoardStfu.set_active(
+                self.Entropy.are_noticeboards_marked_as_read())
+            self.nb_ui.noticeBoardWindow.show()
+        else:
+            self.nb_ui.noticeBoardWindow.destroy()
+            del self.nb_ui
 
     def setup_view(self):
         model = gtk.TreeStore( gobject.TYPE_PYOBJECT )
