@@ -17,7 +17,7 @@
 """
 import os
 import sys
-from entropy.const import etpConst
+from entropy.const import etpConst, etpUi, const_debug_write
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
@@ -116,6 +116,10 @@ class EntropyCacher(Singleton):
                 # TypeError is when objects are being destroyed
                 break # stack empty
             (key, cache_dir), data = data
+            if etpUi['debug']:
+                const_debug_write(__name__,
+                    "EntropyCacher.__cacher, writing %s to %s" % (
+                        key, cache_dir,))
             d_o = entropy.dump.dumpobj
             if not d_o:
                 break
@@ -218,7 +222,15 @@ class EntropyCacher(Singleton):
                 sys.stdout.write("!!! cannot cache object with key %s\n" % (
                     key,))
                 sys.stdout.flush()
+            if etpUi['debug']:
+                const_debug_write(__name__,
+                    "EntropyCacher.push, async push %s, into %s" % (
+                        key, cache_dir,))
         else:
+            if etpUi['debug']:
+                const_debug_write(__name__,
+                    "EntropyCacher.push, sync push %s, into %s" % (
+                        key, cache_dir,))
             entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
 
     def pop(self, key, cache_dir = None):
