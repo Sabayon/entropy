@@ -341,6 +341,34 @@ def is_april_first():
         return True
     return False
 
+def is_xmas():
+    """
+    Return whether today is April, 1st.
+    Please keep the joke.
+
+    @return: True if April 1st
+    @rtype: bool
+    """
+    xmas = "25-12"
+    cur_time = time.strftime("%d-%m")
+    if xmas == cur_time:
+        return True
+    return False
+
+def is_st_valentine():
+    """
+    Return whether today is April, 1st.
+    Please keep the joke.
+
+    @return: True if April 1st
+    @rtype: bool
+    """
+    st_val = "14-02"
+    cur_time = time.strftime("%d-%m")
+    if st_val == cur_time:
+        return True
+    return False
+
 def add_proxy_opener(module, data):
     """
     Add proxy opener to urllib module.
