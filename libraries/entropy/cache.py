@@ -17,7 +17,7 @@
 """
 import os
 import sys
-from entropy.const import etpConst, etpUi, const_debug_write
+from entropy.const import etpConst, etpUi, const_debug_write, const_pid_exists
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
@@ -39,6 +39,11 @@ class EntropyCacher(Singleton):
             'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
             'library_breakage': 'libs_break/library_breakage_',
         }
+
+    # Max amount of processes to spawn
+    _PROC_LIMIT = 10
+    # Max number of cache objects written at once
+    _OBJS_WRITTEN_AT_ONCE = 50
 
     """
     Entropy asynchronous and synchronous cache writer
@@ -88,6 +93,7 @@ class EntropyCacher(Singleton):
         self.__alive = False
         self.__cache_writer = None
         self.__cache_buffer = Lifo()
+        self.__proc_pids = set()
 
     def __copy_obj(self, obj):
         """
@@ -101,6 +107,33 @@ class EntropyCacher(Singleton):
         """
         return self.__copy.deepcopy(obj)
 
+    def __clean_pids(self):
+        dead_pids = set()
+        for pid in self.__proc_pids:
+
+            try:
+                dead = os.waitpid(pid, os.WNOHANG)[0]
+            except OSError as err:
+                if err.errno != 10:
+                    raise
+                dead = True
+            if dead:
+                dead_pids.add(pid)
+            elif not const_pid_exists(pid):
+                dead_pids.add(pid)
+
+        if dead_pids:
+            self.__proc_pids.difference_update(dead_pids)
+
+    def __wait_cacher_semaphore(self):
+        self.__clean_pids()
+        while len(self.__proc_pids) > EntropyCacher._PROC_LIMIT:
+            if etpUi['debug']:
+                const_debug_write(__name__,
+                    "EntropyCacher.__wait_cacher_semaphore: too many pids")
+            time.sleep(0.1)
+            self.__clean_pids()
+
     def __cacher(self, run_until_empty = False):
         """
         This is where the actual asynchronous copy takes
@@ -110,20 +143,41 @@ class EntropyCacher(Singleton):
         __alive becomes False.
         """
         while self.__alive or run_until_empty:
-            try:
-                data = self.__cache_buffer.pop()
-            except (ValueError, TypeError,):
-                # TypeError is when objects are being destroyed
-                break # stack empty
-            (key, cache_dir), data = data
-            if etpUi['debug']:
-                const_debug_write(__name__,
-                    "EntropyCacher.__cacher, writing %s to %s" % (
-                        key, cache_dir,))
-            d_o = entropy.dump.dumpobj
-            if not d_o:
+
+            massive_data = []
+            massive_data_count = EntropyCacher._OBJS_WRITTEN_AT_ONCE
+            while massive_data_count > 0:
+                massive_data_count -= 1
+                try:
+                    data = self.__cache_buffer.pop()
+                except (ValueError, TypeError,):
+                    # TypeError is when objects are being destroyed
+                    break # stack empty
+                massive_data.append(data)
+
+            # this must stay before massive_data to make sure to clean
+            # every defunct process
+            self.__wait_cacher_semaphore()
+
+            if not massive_data:
                 break
-            d_o(key, data, dump_dir = cache_dir)
+
+            pid = os.fork()
+            if pid == 0:
+                for data in massive_data:
+                    (key, cache_dir), data = data
+                    d_o = entropy.dump.dumpobj
+                    if d_o is not None:
+                        d_o(key, data, dump_dir = cache_dir)
+                os._exit(0)
+            else:
+                if etpUi['debug']:
+                    const_debug_write(__name__,
+                        "EntropyCacher.__cacher [%s], writing %s objs" % (
+                            pid, len(massive_data),))
+                self.__proc_pids.add(pid)
+                del massive_data[:]
+                del massive_data
 
     def __del__(self):
         self.stop()
