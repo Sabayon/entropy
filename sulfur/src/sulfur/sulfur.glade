@@ -540,10 +540,12 @@
                             <property name="height_request">26</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="tooltip" translatable="yes">Filter currently shown items, or paste entropy::// action strings (for eg. entropy://amarok, to install Amarok!)</property>
                             <property name="invisible_char">&#x25CF;</property>
                             <property name="primary_icon_stock">gtk-find</property>
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
+                            <property name="primary_icon_tooltip_text">Clear filter bar</property>
                             <signal name="changed" handler="on_pkg_search_change"/>
                             <signal name="icon_release" handler="on_pkgFilter_icon_release"/>
                           </widget>
@@ -1032,7 +1034,6 @@
             <child>
               <widget class="GtkVBox" id="securityVbox">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Browse security advisories</property>
                 <property name="border_width">6</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
@@ -1474,6 +1475,7 @@
             <child>
               <widget class="GtkVBox" id="vbox2">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Security advisories, make sure your 'puter is really secure</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioSecurityImage">
@@ -1503,7 +1505,6 @@
             <child>
               <widget class="GtkVBox" id="reposVbox">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Browse configured repositories</property>
                 <property name="border_width">5</property>
                 <property name="orientation">vertical</property>
                 <child>
@@ -1855,6 +1856,7 @@
             <child>
               <widget class="GtkVBox" id="vbox17">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Update, enable, disable application repositories</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioReposImage">
@@ -1883,7 +1885,6 @@
             </child>
             <child>
               <widget class="GtkVBox" id="systemVbox">
-                <property name="tooltip" translatable="yes">Browse configuration files updates</property>
                 <property name="border_width">6</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
@@ -2194,6 +2195,7 @@
             <child>
               <widget class="GtkVBox" id="vbox18">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Application can alter your system configuration, merge requested changes manually</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioSystemImage">
@@ -2224,7 +2226,6 @@
               <widget class="GtkVBox" id="prefsVbox">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                <property name="tooltip" translatable="yes">Browse preferences</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkHBox" id="hbox13">
@@ -4797,6 +4798,7 @@ Relaxed</property>
             <child>
               <widget class="GtkVBox" id="vbox19">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Change Sulfur preferences</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioPrefsImage">
@@ -4826,7 +4828,6 @@ Relaxed</property>
             <child>
               <widget class="GtkVBox" id="queueVbox">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Browse install queue</property>
                 <property name="border_width">6</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
@@ -5044,6 +5045,7 @@ Relaxed</property>
             <child>
               <widget class="GtkVBox" id="vbox16">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Applications marked for install or removal are here!</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioQueueImage">
@@ -5073,7 +5075,6 @@ Relaxed</property>
             <child>
               <widget class="GtkVBox" id="progressVBox">
                 <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Browse install/remove process</property>
                 <property name="border_width">6</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">6</property>
@@ -5390,6 +5391,7 @@ Relaxed</property>
             <child>
               <widget class="GtkVBox" id="vbox24">
                 <property name="visible">True</property>
+                <property name="tooltip" translatable="yes">Monitor applications install/removal execution process</property>
                 <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioInstallImage">

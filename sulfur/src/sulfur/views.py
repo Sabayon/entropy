@@ -1559,7 +1559,7 @@ class EntropyPackageView:
         self.view.append_column( column1 )
         column1.set_clickable( True )
 
-        self.create_text_column( _( "Package" ), 'namedesc', size = 300,
+        self.create_text_column( _( "Application" ), 'namedesc', size = 300,
             expand = True, set_height = myheight, clickable = True,
             click_cb = self.on_package_column_clicked)
 
@@ -1950,7 +1950,7 @@ class EntropyQueueView:
     def setup_view( self ):
 
         cell1 = gtk.CellRendererText()
-        column1 = gtk.TreeViewColumn( _( "Packages" ), cell1, markup=0 )
+        column1 = gtk.TreeViewColumn( _( "Applications" ), cell1, markup=0 )
         column1.set_resizable( True )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column1.set_expand(True)
@@ -1988,27 +1988,27 @@ class EntropyQueueView:
 
         model = gtk.TreeStore(gobject.TYPE_STRING)
 
-        label = "<b>%s</b>" % (_( "Packages to remove" ),)
+        label = "<b>%s</b>" % (_( "Applications to remove" ),)
         mylist = self.queue.packages['r']
         if mylist:
             self.populate_list( model, label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages to downgrade" ),)
+        label = "<b>%s</b>" % (_( "Applications to downgrade" ),)
         mylist = self.queue.packages['d']
         if mylist:
             self.populate_list( label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages to install" ),)
+        label = "<b>%s</b>" % (_( "Applications to install" ),)
         mylist = self.queue.packages['i']
         if mylist:
             self.populate_list( model, label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages to update" ),)
+        label = "<b>%s</b>" % (_( "Applications to update" ),)
         mylist = self.queue.packages['u']
         if mylist:
             self.populate_list( model, label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages to reinstall" ),)
+        label = "<b>%s</b>" % (_( "Applications to reinstall" ),)
         mylist = self.queue.packages['rr']
         if mylist:
             self.populate_list( model, label, mylist )
@@ -2141,7 +2141,7 @@ class EntropyAdvisoriesView:
         self.view.append_column( column0 )
 
         cell1 = gtk.CellRendererText()
-        column1 = gtk.TreeViewColumn( _("GLSA id."), cell1, markup = 1 )
+        column1 = gtk.TreeViewColumn( _("Security id."), cell1, markup = 1 )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column1.set_fixed_width( 80 )
         column1.set_resizable( True )
@@ -2149,7 +2149,7 @@ class EntropyAdvisoriesView:
         self.view.append_column( column1 )
 
         cell2 = gtk.CellRendererText()
-        column2 = gtk.TreeViewColumn( _( "Package key" ), cell2, markup = 2 )
+        column2 = gtk.TreeViewColumn( _( "Application name" ), cell2, markup = 2 )
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column2.set_fixed_width( 210 )
         column2.set_resizable( True )
