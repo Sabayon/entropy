@@ -115,7 +115,6 @@ class EntropyCacher(Singleton):
             except (ValueError, TypeError,):
                 # TypeError is when objects are being destroyed
                 break # stack empty
-            print "pop", id(data) 
             (key, cache_dir), data = data
             d_o = entropy.dump.dumpobj
             if not d_o:
