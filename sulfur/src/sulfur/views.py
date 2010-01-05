@@ -1996,7 +1996,7 @@ class EntropyQueueView:
         label = "<b>%s</b>" % (_( "Applications to downgrade" ),)
         mylist = self.queue.packages['d']
         if mylist:
-            self.populate_list( label, mylist )
+            self.populate_list( model, label, mylist )
 
         label = "<b>%s</b>" % (_( "Applications to install" ),)
         mylist = self.queue.packages['i']
