@@ -5653,7 +5653,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         get_def_string = ''
         if get_extended:
-            # FIXME: this small snipped is here for backward compat
+            # FIXME: this small snippet is here for backward compat
             if self._doesColumnInTableExist("provide", "is_default"):
                 get_def_string = ",provide.is_default"
             else:
