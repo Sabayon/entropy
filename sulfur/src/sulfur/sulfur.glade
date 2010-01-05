@@ -1883,7 +1883,6 @@
             </child>
             <child>
               <widget class="GtkVBox" id="systemVbox">
-                <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Browse configuration files updates</property>
                 <property name="border_width">6</property>
                 <property name="orientation">vertical</property>

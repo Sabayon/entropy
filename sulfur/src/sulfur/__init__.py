@@ -186,7 +186,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.queueView = EntropyQueueView(self.ui.queueView, self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView,
             self.ui, self.etpbase, self.ui.main, self)
-        self.filesView = EntropyFilesView(self.ui.filesView)
+        self.filesView = EntropyFilesView(self.ui.filesView, self.ui.systemVbox)
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView,
             self.ui, self.etpbase)
         self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
@@ -345,7 +345,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.Equo.FileUpdates.scanfs(quiet = True)
             self.Cacher.sync()
 
-        self._fork_function(file_updates_cache_gen, None)
+        def file_updates_fill_view():
+            try:
+                print "IN"
+                self._populate_files_update()
+                print "OUT"
+            except AttributeError: # it is really necessary
+                return
+
+        self._fork_function(file_updates_cache_gen, file_updates_fill_view)
 
     def setup_events_handling(self):
 
@@ -386,6 +394,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbMasked.hide()
         self.ui.rbPkgSets.hide()
 
+        # not here self.ui.systemVbox.show()
         self.ui.securityVbox.hide()
         self.ui.prefsVbox.hide()
         self.ui.reposVbox.hide()
@@ -401,6 +410,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbMasked.show()
         self.ui.rbPkgSets.show()
 
+        self.ui.systemVbox.show()
         self.ui.securityVbox.show()
         self.ui.prefsVbox.show()
         self.ui.reposVbox.show()

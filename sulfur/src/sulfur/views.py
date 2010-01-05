@@ -1950,7 +1950,7 @@ class EntropyQueueView:
     def setup_view( self ):
 
         cell1 = gtk.CellRendererText()
-        column1= gtk.TreeViewColumn( _( "Packages" ), cell1, markup=0 )
+        column1 = gtk.TreeViewColumn( _( "Packages" ), cell1, markup=0 )
         column1.set_resizable( True )
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column1.set_expand(True)
@@ -2059,11 +2059,12 @@ class EntropyQueueView:
 
 class EntropyFilesView:
 
-    def __init__( self, widget ):
+    def __init__(self, widget, show_widget):
         self.view = widget
         self.model = self.setup_view()
+        self.show_widget = show_widget
 
-    def setup_view( self ):
+    def setup_view(self):
 
         model = gtk.TreeStore( gobject.TYPE_INT, gobject.TYPE_STRING,
             gobject.TYPE_STRING, gobject.TYPE_STRING )
@@ -2109,6 +2110,8 @@ class EntropyFilesView:
                     scandata[key]['revision']
                 ]
             )
+        if keys:
+            self.show_widget.show()
 
 class EntropyAdvisoriesView:
 
