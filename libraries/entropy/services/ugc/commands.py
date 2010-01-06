@@ -760,7 +760,7 @@ class UGC(SocketCommands):
             return None, "error: %s" % (e,)
 
         subject = 'Entropy Error Reporting Handler'
-        destination_email = 'entropy.errors@sabayon.org'
+        destination_email = 'website@sabayon.org'
         sender_email = mydict.get('email', 'www-data@sabayon.org')
         if not self.entropyTools.is_valid_email(sender_email):
             sender_email = 'www-data@sabayon.org'
