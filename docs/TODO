@@ -1,12 +1,13 @@
 
   0.99.30:
 
-    - entropy.output API rework
     - sulfur: orphans check
+    - entropy.output API rework
     - equo bashcomp
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
+    - reagent repo move, --deps also revdeps
 
   0.99.40:
 
