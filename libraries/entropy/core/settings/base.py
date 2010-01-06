@@ -1190,7 +1190,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                             repodata['dbrevision']
                         my_repodata[reponame]['dbcformat'] = \
                             repodata['dbcformat']
-                else:
+
+                elif repodata['plain_database']:
 
                     my_repodata[reponame] = repodata.copy()
                     if not excluded:
@@ -1248,12 +1249,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
         # validate using mtime
         dmp_path = etpConst['dumpstoragedir']
         for repoid in repoids:
+
+            found_into = 'available'
             if repoid in data['available']:
                 repo_data = data['available'][repoid]
             elif repoid in data['excluded']:
                 repo_data = data['excluded'][repoid]
+                found_into = 'excluded'
             else:
                 continue
+
+            # validate repository settings
+            if not repo_data['plain_database'].strip():
+                data[found_into].pop(repoid)
+                if repoid in data['order']:
+                    data['order'].remove(repoid)
 
             repo_db_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasefile'])
