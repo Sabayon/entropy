@@ -1,3 +1,69 @@
+commit a10e5b0d6ceaa99f11229cb542b8fa5a6b2b33c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 11:09:36 2010 +0100
+
+    [todo] update TODO
+
+commit c92fe7de13e554e6674559bf6ce29a128288785c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 11:08:37 2010 +0100
+
+    [entropy.client.services.ugc] when retrieving repository metadata, also look through excluded ones
+
+commit bbeb3cd71b5b4ab8ed3a3dedc38e9113aaab422c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 11:08:02 2010 +0100
+
+    [sulfur] sulfur.glade: update "Refresh" icon
+
+commit 876f6d058cc0d8f3b2574a3c8193f32ccca89749
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 11:07:06 2010 +0100
+
+    [sulfur] fix package info window for packages whose repositories are disabled
+
+commit da5fe28b71d3872813f0776fe49494e516595083
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 10:39:51 2010 +0100
+
+    [entropy.cache] EntropyCacher: reset excepthook when running inside child process
+
+commit 4691369df36cd919da94f34109eb7679c269ae67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 08:58:52 2010 +0100
+
+    [entropy.core.settings.base] SystemSettings._repositories_parser: metadata filter is done at the end
+
+commit b5ec1f027602cdfdef32bfaa65ec3c441f9fdfd0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 01:21:10 2010 +0100
+
+    [entropy.fetchers] when loading URLs with urllib, catch ValueError exceptions too
+
+commit 01a0b22dd1831f8d5cfdffafa75c6fc4ee2795b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 01:17:06 2010 +0100
+
+    [entropy.core.settings.base] SystemSettings._repositories_parser, validate repository db URL parameter
+
+commit 4851ed8318e8af720a28ced310d731d3b9641ede
+Author: Ian Whyman <ian.whyman@sabayon.org>
+Date:   Tue Jan 5 23:05:23 2010 +0000
+
+    [sulfur/views.py] Get rid of silly crosshair! w00t
+
+commit fa2ab74abd6ec4d5599de1f8ed19261142190432
+Author: Ian Whyman <ian.whyman@sabayon.org>
+Date:   Tue Jan 5 22:46:28 2010 +0000
+
+    [sulfur/sulfur.glade] Align pkgSorter and pkgFilter Correctly, add padding to swPkg to make it look tidier
+
+commit 46836ed6c64613945eb767c88431d6448a61269c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 22:50:02 2010 +0100
+
+    Update ChangeLog for version 0.99.20.14
+
 commit dcbdd4adaec493117d1e84aa879991c16c7a3c90
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 5 22:44:25 2010 +0100
