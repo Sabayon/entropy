@@ -200,6 +200,17 @@ class EntropyPackage:
             return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))
         return EquoIntf.is_match_unmasked_by_user(self.matched_atom)
 
+    def _get_nameDesc_get_installed_ver(self):
+        ver_str = ''
+        if self.installed_match:
+            idpackage = self.installed_match[0]
+            from_ver = EquoIntf.clientDbconn.retrieveVersion(idpackage)
+            from_tag = EquoIntf.clientDbconn.retrieveVersionTag(idpackage)
+            if from_tag:
+                from_tag = '#%s' % (from_tag,)
+            ver_str = from_ver+from_tag
+        return ver_str
+
     def get_nameDesc(self):
 
         if self.pkgset:
@@ -209,16 +220,25 @@ class EntropyPackage:
                 SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
             return t
 
-        ugc_string = ''
-        atom = self.get_name()
-        repo = self.get_repository()
-        repo_clean = self.get_repository_clean()
+        if self.__namedesc_cache is not None:
+            atom, repo, repo_clean, key, desc, ver_str = self.__namedesc_cache
+        else:
+            atom = self.get_name()
+            repo = self.get_repository()
+            repo_clean = self.get_repository_clean()
+            key = self.entropyTools.dep_getkey(atom)
+            desc = self.get_description(markup = False)
+            ver_str = self._get_nameDesc_get_installed_ver()
+            self.__namedesc_cache = atom, repo, repo_clean, key, desc, ver_str
 
         key = self.entropyTools.dep_getkey(atom)
         downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo_clean, key)
         ugc_string = "<small>[%s]</small> " % (downloads,)
+        if ver_str:
+            ver_str = ' <small>{%s: <span foreground="%s">%s</span>}</small>' % (
+                _("from"), SulfurConf.color_title2, ver_str,)
 
-        t = ugc_string+'/'.join(atom.split("/")[1:])
+        t = '/'.join(atom.split("/")[1:]) + ver_str
         if self.masked:
             t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (
                 SulfurConf.color_title2,
@@ -227,8 +247,9 @@ class EntropyPackage:
         desc = self.get_description(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
-        t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (
-            SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
+        t += '\n' + ugc_string + \
+            '<small><span foreground=\'%s\'>%s</span></small>' % (
+                SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
         return t
 
     def get_only_name(self):

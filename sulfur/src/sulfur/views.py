@@ -1569,9 +1569,10 @@ class EntropyPackageView:
         column2.connect("clicked", self.on_vote_column_clicked)
         self.view.append_column( column2 )
 
-        self.create_text_column( _( "Repository" ), 'repoid', size = 130,
-            set_height = myheight, clickable = True,
-            click_cb = self.on_repository_column_clicked)
+        # This is against Sulfur Love (tm)
+        # self.create_text_column( _( "Repository" ), 'repoid', size = 130,
+        #    set_height = myheight, clickable = True,
+        #    click_cb = self.on_repository_column_clicked)
 
         return store
 

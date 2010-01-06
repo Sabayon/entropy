@@ -17,6 +17,7 @@
             - remove "server_repos", use "matchRepo"
         - entropy.client, rename validRepositories into enabled_repositories
         - entropy.client, rename clientDbconn into installed_db
+        - entropy.db => retrieveVersionTag => retrieveTag
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier

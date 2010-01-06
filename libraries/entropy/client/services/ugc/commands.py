@@ -12,7 +12,8 @@
 
 import os
 from entropy.exceptions import *
-from entropy.const import etpConst, const_get_stringtype, const_debug_write
+from entropy.const import etpConst, const_get_stringtype, const_debug_write, \
+    const_convert_to_rawstring
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
@@ -716,9 +717,9 @@ class Client(Base):
         xml_comp_string = zlib.compress(xml_string)
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:report_error',
-            xml_comp_string,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:report_error'),
+            const_convert_to_rawstring(xml_comp_string),
         )
 
         return self.do_generic_handler(cmd, session_id)
