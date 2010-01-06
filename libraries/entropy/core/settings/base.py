@@ -1191,7 +1191,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                         my_repodata[reponame]['dbcformat'] = \
                             repodata['dbcformat']
 
-                elif repodata['plain_database']:
+                else:
 
                     my_repodata[reponame] = repodata.copy()
                     if not excluded:
