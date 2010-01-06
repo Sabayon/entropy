@@ -761,26 +761,27 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if self._spawning_ugc or self.disable_ugc:
             return
 
-        eapi3_repos = []
-        for repoid in self.Equo.validRepositories:
-            aware = self.Equo.UGC.is_repository_eapi3_aware(repoid)
-            if aware:
-                eapi3_repos.append(repoid)
+        if not force:
+            eapi3_repos = []
+            for repoid in self.Equo.validRepositories:
+                aware = self.Equo.UGC.is_repository_eapi3_aware(repoid)
+                if aware:
+                    eapi3_repos.append(repoid)
 
-        cache_available = True
-        for repoid in eapi3_repos:
-            if not self.Equo.is_ugc_cached(repoid):
-                cache_available = False
+            cache_available = True
+            for repoid in eapi3_repos:
+                if not self.Equo.is_ugc_cached(repoid):
+                    cache_available = False
 
-        pingus_id = "sulfur_ugc_content_spawn"
-        # check if at least 2 hours are passed since last check
-        if not self._mtime_pingus.hours_passed(pingus_id, 2) and \
-            cache_available:
+            pingus_id = "sulfur_ugc_content_spawn"
+            # check if at least 2 hours are passed since last check
+            if not self._mtime_pingus.hours_passed(pingus_id, 2) and \
+                cache_available:
 
-            if self.do_debug:
-                print_generic("UGC not syncing, 2 hours are not passed")
-            return
-        self._mtime_pingus.ping(pingus_id)
+                if self.do_debug:
+                    print_generic("UGC not syncing, 2 hours are not passed")
+                return
+            self._mtime_pingus.ping(pingus_id)
 
         def emit_ugc_update():
             # emit ugc update signal
