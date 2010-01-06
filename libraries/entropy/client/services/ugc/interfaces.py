@@ -209,7 +209,8 @@ class Client:
                     login_data = self.read_login(repository)
                     if login_data == None:
                         status, msg = self.login(repository)
-                        if not status: return status, msg
+                        if not status:
+                            return status, msg
                         username, password = self.read_login(repository)
                     else:
                         stored_pass = True
@@ -230,7 +231,7 @@ class Client:
                 cmd_func = getattr(srv.CmdInterface, func)
             except AttributeError:
                 return False, 'local function not available'
-            rslt = cmd_func(*args,**kwargs)
+            rslt = cmd_func(*args, **kwargs)
             try:
                 srv.close_session(session)
                 srv.disconnect()
