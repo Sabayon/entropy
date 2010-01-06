@@ -117,8 +117,8 @@
           <widget class="GtkNotebook" id="notebook">
             <property name="visible">True</property>
             <property name="can_focus">True</property>
-            <property name="tab_pos">left</property>
-            <property name="scrollable">True</property>
+            <property name="border_width">2</property>
+            <property name="show_border">False</property>
             <signal name="switch_page" handler="on_notebook_switch_page"/>
             <signal name="select_page" handler="on_notebook_select_page"/>
             <signal name="change_current_page" handler="on_notebook_change_current_page"/>
@@ -1015,14 +1015,16 @@
               </widget>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox15">
+              <widget class="GtkHBox" id="vbox15">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Browse applications</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioPkgImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="pixel_size">0</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
@@ -1485,14 +1487,15 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox2">
+              <widget class="GtkHBox" id="vbox2">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Security advisories, make sure your 'puter is really secure</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioSecurityImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
@@ -1866,14 +1869,15 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox17">
+              <widget class="GtkHBox" id="vbox17">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Update, enable, disable application repositories</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioReposImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
@@ -2205,14 +2209,15 @@
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox18">
+              <widget class="GtkHBox" id="vbox18">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Applications can alter your system configuration, merge requested changes manually</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioSystemImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
@@ -4760,14 +4765,15 @@ Relaxed</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox19">
+              <widget class="GtkHBox" id="vbox19">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Change Sulfur preferences</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioPrefsImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
@@ -5007,14 +5013,15 @@ Relaxed</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox16">
+              <widget class="GtkHBox" id="vbox16">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Applications marked for install or removal are here!</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioQueueImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
@@ -5353,14 +5360,15 @@ Relaxed</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="vbox24">
+              <widget class="GtkHBox" id="vbox24">
                 <property name="visible">True</property>
                 <property name="tooltip" translatable="yes">Monitor applications install/removal execution process</property>
-                <property name="orientation">vertical</property>
+                <property name="spacing">2</property>
                 <child>
                   <widget class="GtkImage" id="sideRadioInstallImage">
                     <property name="visible">True</property>
                     <property name="stock">gtk-missing-image</property>
+                    <property name="icon-size">2</property>
                   </widget>
                   <packing>
                     <property name="position">0</property>
