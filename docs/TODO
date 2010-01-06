@@ -2,6 +2,7 @@
   0.99.30:
 
     - entropy.output API rework
+    - sulfur: orphans check
     - equo bashcomp
     - entropy.tools API docs merge
     - entropy.server API rework
