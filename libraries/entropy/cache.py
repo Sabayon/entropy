@@ -17,7 +17,10 @@
 """
 import os
 import sys
-from entropy.const import etpConst, etpUi, const_debug_write, const_pid_exists
+import tempfile
+import time
+from entropy.const import etpConst, etpUi, const_debug_write, \
+    const_pid_exists, const_setup_perms
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
@@ -359,3 +362,114 @@ class EntropyCacher(Singleton):
             if key in excluded_items:
                 continue
             EntropyCacher.clear_cache_item(value, cache_dir = cache_dir)
+
+class MtimePingus(object):
+
+    """
+    This class can be used to store on-disk mtime of executed calls. This can
+    be handy for cache expiration validation.
+    Example of usage:
+
+    >>> from entropy.cache import MtimePingus
+    >>> pingus = MtimePingus()
+    >>> pingus.ping("my_action_string")
+    >>> pingus.pong("my_action_string)
+    19501230123.0
+    >>> pingus.hours_passed("my_action_string", 3)
+    False
+    >>> pingus.minutes_passed("my_action_string", 60)
+    False
+    >>> pingus seconds_passed("my_action_string", 15)
+    False
+    """
+
+    PINGUS_DIR = os.path.join(etpConst['entropyworkdir'], "pingus_cache")
+
+    def __init__(self):
+        object.__init__(self)
+        try:
+            if not os.path.isdir(MtimePingus.PINGUS_DIR):
+                os.makedirs(MtimePingus.PINGUS_DIR, 0o775)
+                const_setup_perms(MtimePingus.PINGUS_DIR, etpConst['entropygid'])
+        except (OSError, IOError,):
+            MtimePingus.PINGUS_DIR = tempfile.mkdtemp() # what else can I do?
+
+    def _hash_key(self, key):
+        """
+        Create a hash representation of string.
+        """
+        return str(hash(key))
+
+    def ping(self, action_string):
+        """
+        Actually store a ping action mtime.
+
+        @param action_string: action identifier
+        @type action_string: string
+        """
+        _hash = self._hash_key(action_string)
+        entropy.dump.dumpobj(_hash, time.time(),
+            dump_dir = MtimePingus.PINGUS_DIR)
+
+    def pong(self, action_string):
+        """
+        Actually retrieve a ping action mtime.
+
+        @param action_string: action identifier
+        @type action_string: string
+        @return: mtime (float) or None
+        @rtype: float or None
+        """
+        _hash = self._hash_key(action_string)
+        return entropy.dump.loadobj(_hash, dump_dir = MtimePingus.PINGUS_DIR)
+
+    def seconds_passed(self, action_string, seconds):
+        """
+        Determine whether given seconds are passed since last ping against
+        action_string. This also returns True if action_string does not exist.
+
+        @param action_string: action identifier
+        @type action_string: string
+        @param seconds: seconds passed
+        @type seconds: int
+        @return: True, if seconds are passed
+        @rtype: bool
+        """
+        mtime = self.pong(action_string)
+        if mtime is None:
+            return True
+        return time.time() > (mtime + seconds)
+
+    def minutes_passed(self, action_string, minutes):
+        """
+        Determine whether given minutes are passed since last ping against
+        action_string. This also returns True if action_string does not exist.
+
+        @param action_string: action identifier
+        @type action_string: string
+        @param minutes: minutes passed
+        @type minutes: int
+        @return: True, if minutes are passed
+        @rtype: bool
+        """
+        mtime = self.pong(action_string)
+        if mtime is None:
+            return True
+        return time.time() > (mtime + minutes*60)
+
+    def hours_passed(self, action_string, hours):
+        """
+        Determine whether given hours are passed since last ping against
+        action_string. This also returns True if action_string does not exist.
+
+        @param action_string: action identifier
+        @type action_string: string
+        @param hours: minutes passed
+        @type hours: int
+        @return: True, if hours are passed
+        @rtype: bool
+        """
+        mtime = self.pong(action_string)
+        if mtime is None:
+            return True
+        return time.time() > (mtime + hours*3600)
