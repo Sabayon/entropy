@@ -67,6 +67,26 @@ class CacheMixin:
             status = False
         return status
 
+    def is_ugc_cached(self, repository):
+        """
+        Determine whether User Generated Content cache is available for
+        given repository.
+
+        @param repository: Entropy repository identifier
+        @type repository: string
+        @return: True if available
+        @rtype: bool
+        """
+        down_cache = self.UGC.UGCCache.get_downloads_cache(repository)
+        if down_cache is None:
+            return False
+
+        vote_ache = self.UGC.UGCCache.get_vote_cache(repository)
+        if vote_ache is None:
+            return False
+
+        return True
+
     def _get_available_packages_chash(self):
         # client digest not needed, cache is kept updated
         return str(hash("%s|%s|%s" % (
