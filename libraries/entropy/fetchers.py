@@ -195,6 +195,11 @@ class UrlFetcher:
                 self.__status = "-3"
                 return self.__status
 
+            except ValueError: # malformed, unsupported URL? raised by urllib
+                self.__close(True)
+                self.__status = "-3"
+                return self.__status
+
             except:
                 print_traceback()
                 raise
