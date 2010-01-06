@@ -1,3 +1,63 @@
+commit b91e7d2c8b2ddd2a28a48f1f3847da9971da94e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 20:57:32 2010 +0100
+
+    [todo] update TODO
+
+commit 736a10f82355225e5f6c48323a4fa412cec03bd9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 20:56:27 2010 +0100
+
+    [sulfur] improve UGC cache retrieval
+
+commit 0994cb05fc54fa1799494abf5e65e7d136c2c497
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 20:56:06 2010 +0100
+
+    [entropy.client.interfaces.cache] add new method is_ugc_cached()
+
+commit 5c5fe80b6f4f7c1ac8606b900fde7f802a9e30ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 20:55:38 2010 +0100
+
+    [entropy.client.services.ugc] port some more code to Python3 string type madness
+
+commit 5cb088e8c90dd2ccb0608085200252297f398609
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 20:55:03 2010 +0100
+
+    [entropy.cache] introduce new class, MtimePingus :-)
+
+commit d63871e38d5b6c81d61c43acae2d72cb82b35183
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 19:51:01 2010 +0100
+
+    [entropy.misc] LogFile: deal with closed files on write
+
+commit f9f0051023dceca660b4c5950c6c41eadb07c3bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 19:25:39 2010 +0100
+
+    [entropy] merge some changes around (blame git for the mess)
+
+commit 406c880091f6fb10c2fba48ce1a40f290cb09231
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 19:07:47 2010 +0100
+
+    [entropy.client.services.ugc.interfaces] code style update
+
+commit c12275838a7ae1f1e5ef26123221117c6699336c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 19:07:18 2010 +0100
+
+    [entropy.services.ugc] update error reporting email
+
+commit 098b415cf962a4b692035a16c548a76e589c7c1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 18:20:56 2010 +0100
+
+    Update ChangeLog for version 0.99.20.15
+
 commit a10e5b0d6ceaa99f11229cb542b8fa5a6b2b33c2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jan 6 11:09:36 2010 +0100
