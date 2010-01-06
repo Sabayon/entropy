@@ -1122,6 +1122,9 @@ class LogFile:
             self._logfile.write ("* %s\n" % (mystr))
         except UnicodeEncodeError:
             self._logfile.write ("* %s\n" % (mystr.encode('utf-8'),))
+        except ValueError:
+            # file closed!
+            return
         self._logfile.flush()
 
     def set_loglevel(self, level):
