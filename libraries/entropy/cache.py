@@ -167,6 +167,8 @@ class EntropyCacher(Singleton):
 
             pid = os.fork()
             if pid == 0:
+                # make sure there's nothing weird bound to exception hook
+                sys.excepthook = sys.__excepthook__
                 for (key, cache_dir), data in massive_data:
                     d_o = entropy.dump.dumpobj
                     if d_o is not None:
