@@ -23,16 +23,16 @@ class Base:
     def __init__(self, OutputInterface, Service):
 
         if not hasattr(OutputInterface, 'updateProgress'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise AttributeError(
+                "OutputInterface does not have an updateProgress method")
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise AttributeError(
+                "OutputInterface does not have an updateProgress method")
 
         from entropy.services.ugc.interfaces import Client as Cl
         if not isinstance(Service, Cl):
-                mytxt = _("A valid entropy.services.ugc.interfaces.Client based instance is needed")
-                raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service, mytxt,))
+            raise AttributeError(
+                "entropy.services.ugc.interfaces.Client needed")
 
         import socket, zlib, struct
         import entropy.tools as entropyTools
@@ -153,7 +153,8 @@ class Base:
             self.entropyTools.print_traceback()
             return None
 
-    def convert_stream_to_object(self, data, gzipped, repository = None, arch = None, product = None):
+    def convert_stream_to_object(self, data, gzipped, repository = None,
+        arch = None, product = None):
 
         # unstream object
         error = False
@@ -180,7 +181,8 @@ class Base:
             error = True
         return data, error
 
-    def retrieve_command_answer(self, cmd, session_id, repository = None, arch = None, product = None, compression = False):
+    def retrieve_command_answer(self, cmd, session_id, repository = None,
+        arch = None, product = None, compression = False):
 
         tries = 3
         lasterr = None
@@ -220,7 +222,8 @@ class Base:
                 lasterr = False
                 continue
 
-            objdata, error = self.convert_stream_to_object(data, compression, repository, arch, product)
+            objdata, error = self.convert_stream_to_object(data, compression,
+                repository, arch, product)
             if not error:
                 return objdata
 
@@ -230,7 +233,8 @@ class Base:
 
         while True:
             try:
-                result = self.retrieve_command_answer(cmd, session_id, compression = compression)
+                result = self.retrieve_command_answer(cmd, session_id,
+                    compression = compression)
                 if result == None:
                     return False, 'command not supported' # untranslated on purpose
                 return result
@@ -242,7 +246,12 @@ class Base:
 
     def set_gzip_compression(self, session, do):
         self.Service.check_socket_connection()
-        cmd = "%s %s %s %s zlib" % (session, 'session_config', 'compression', do,)
+        cmd = "%s %s %s %s zlib" % (
+            const_convert_to_rawstring(session),
+            const_convert_to_rawstring('session_config'),
+            const_convert_to_rawstring('compression'), 
+            const_convert_to_rawstring(do),
+        )
         self.Service.transmit(cmd)
         data = self.Service.receive()
         if data == self.Service.answers['ok']:
@@ -252,67 +261,67 @@ class Base:
     def service_login(self, username, password, session_id):
 
         cmd = "%s %s %s %s" % (
-            session_id,
-            'login',
-            username,
-            password,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('login'),
+            const_convert_to_rawstring(username),
+            const_convert_to_rawstring(password),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def service_logout(self, username, session_id):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'logout',
-            username,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('logout'),
+            const_convert_to_rawstring(username),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def get_logged_user_data(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'user_data',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('user_data'),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def is_user(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'is_user',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('is_user'),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def is_developer(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'is_developer',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('is_developer'),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def is_moderator(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'is_moderator',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('is_moderator'),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def is_administrator(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'is_administrator',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('is_administrator'),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def available_commands(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'available_commands',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('available_commands'),
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -322,23 +331,27 @@ class Client(Base):
     def __init__(self, EntropyInterface, ServiceInterface):
         Base.__init__(self, EntropyInterface, ServiceInterface)
 
-    def differential_packages_comparison(self, session_id, idpackages, repository, arch, product):
+    def differential_packages_comparison(self, session_id, idpackages,
+        repository, arch, product):
 
-        myidlist = ' '.join([str(x) for x in idpackages])
+        myidlist = const_convert_to_rawstring(
+            ' '.join([str(x) for x in idpackages]))
         cmd = "%s %s %s %s %s %s %s" % (
-            session_id,
-            'repository_server:dbdiff',
-            repository,
-            arch,
-            product,
-            self.SystemSettings['repositories']['branch'],
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('repository_server:dbdiff'),
+            const_convert_to_rawstring(repository),
+            const_convert_to_rawstring(arch),
+            const_convert_to_rawstring(product),
+            const_convert_to_rawstring(
+                self.SystemSettings['repositories']['branch']),
             myidlist,
         )
 
         # enable zlib compression
         compression = self.set_gzip_compression(session_id, True)
 
-        data = self.do_generic_handler(cmd, session_id, tries = 5, compression = compression)
+        data = self.do_generic_handler(cmd, session_id, tries = 5,
+            compression = compression)
 
         # disable compression
         self.set_gzip_compression(session_id, False)
@@ -348,50 +361,56 @@ class Client(Base):
     def get_repository_treeupdates(self, session_id, repository, arch, product):
 
         cmd = "%s %s %s %s %s %s" % (
-            session_id,
-            'repository_server:treeupdates',
-            repository,
-            arch,
-            product,
-            self.SystemSettings['repositories']['branch'],
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('repository_server:treeupdates'),
+            const_convert_to_rawstring(repository),
+            const_convert_to_rawstring(arch),
+            const_convert_to_rawstring(product),
+            const_convert_to_rawstring(
+                self.SystemSettings['repositories']['branch']),
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
     def get_package_sets(self, session_id, repository, arch, product):
 
         cmd = "%s %s %s %s %s %s" % (
-            session_id,
-            'repository_server:get_package_sets',
-            repository,
-            arch,
-            product,
-            self.SystemSettings['repositories']['branch'],
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('repository_server:get_package_sets'),
+            const_convert_to_rawstring(repository),
+            const_convert_to_rawstring(arch),
+            const_convert_to_rawstring(product),
+            const_convert_to_rawstring(
+                self.SystemSettings['repositories']['branch']),
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
     def get_repository_metadata(self, session_id, repository, arch, product):
 
         cmd = "%s %s %s %s %s %s" % (
-            session_id,
-            'repository_server:get_repository_metadata',
-            repository,
-            arch,
-            product,
-            self.SystemSettings['repositories']['branch'],
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring(
+                'repository_server:get_repository_metadata'),
+            const_convert_to_rawstring(repository),
+            const_convert_to_rawstring(arch),
+            const_convert_to_rawstring(product),
+            const_convert_to_rawstring(
+                self.SystemSettings['repositories']['branch']),
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
-    def get_strict_package_information(self, session_id, idpackages, repository, arch, product):
+    def get_strict_package_information(self, session_id, idpackages,
+        repository, arch, product):
 
         cmd = "%s %s %s %s %s %s %s %s" % (
-            session_id,
-            'repository_server:pkginfo_strict',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('repository_server:pkginfo_strict'),
             True,
-            repository,
-            arch,
-            product,
-            self.SystemSettings['repositories']['branch'],
-            ' '.join([str(x) for x in idpackages]),
+            const_convert_to_rawstring(repository),
+            const_convert_to_rawstring(arch),
+            const_convert_to_rawstring(product),
+            const_convert_to_rawstring(
+                self.SystemSettings['repositories']['branch']),
+            const_convert_to_rawstring(' '.join([str(x) for x in idpackages])),
         )
 
         # enable zlib compression
@@ -431,9 +450,9 @@ class Client(Base):
             xml_string = self.entropyTools.xml_from_dict(mydict)
 
             cmd = "%s %s %s" % (
-                session_id,
-                'ugc:do_download_stats',
-                xml_string,
+                const_convert_to_rawstring(session_id),
+                const_convert_to_rawstring('ugc:do_download_stats'),
+                const_convert_to_rawstring(xml_string),
             )
             last_srv_rc_data = self.do_generic_handler(cmd, session_id)
             if not isinstance(last_srv_rc_data, tuple):
@@ -445,8 +464,8 @@ class Client(Base):
     def ugc_get_downloads(self, session_id, pkgkey):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:get_downloads',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_downloads'),
             pkgkey,
         )
         return self.do_generic_handler(cmd, session_id)
@@ -454,8 +473,8 @@ class Client(Base):
     def ugc_get_alldownloads(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'ugc:get_alldownloads',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_alldownloads'),
         )
 
         # enable zlib compression
@@ -471,27 +490,27 @@ class Client(Base):
     def ugc_do_vote(self, session_id, pkgkey, vote):
 
         cmd = "%s %s %s %s" % (
-            session_id,
-            'ugc:do_vote',
-            pkgkey,
-            vote,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:do_vote'),
+            const_convert_to_rawstring(pkgkey),
+            const_convert_to_rawstring(vote),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_get_vote(self, session_id, pkgkey):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:get_vote',
-            pkgkey,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_vote'),
+            const_convert_to_rawstring(pkgkey),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_get_allvotes(self, session_id):
 
         cmd = "%s %s" % (
-            session_id,
-            'ugc:get_allvotes',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_allvotes'),
         )
 
         # enable zlib compression
@@ -514,10 +533,10 @@ class Client(Base):
         xml_string = self.entropyTools.xml_from_dict(mydict)
 
         cmd = "%s %s %s %s" % (
-            session_id,
-            'ugc:add_comment',
-            pkgkey,
-            xml_string,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:add_comment'),
+            const_convert_to_rawstring(pkgkey),
+            const_convert_to_rawstring(xml_string),
         )
 
         return self.do_generic_handler(cmd, session_id)
@@ -532,82 +551,82 @@ class Client(Base):
         xml_string = self.entropyTools.xml_from_dict(mydict)
 
         cmd = "%s %s %s %s" % (
-            session_id,
-            'ugc:edit_comment',
-            iddoc,
-            xml_string,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:edit_comment'),
+            const_convert_to_rawstring(iddoc),
+            const_convert_to_rawstring(xml_string),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_remove_comment(self, session_id, iddoc):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:remove_comment',
-            iddoc,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:remove_comment'),
+            const_convert_to_rawstring(iddoc),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_remove_image(self, session_id, iddoc):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:remove_image',
-            iddoc,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:remove_image'),
+            const_convert_to_rawstring(iddoc),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_remove_file(self, session_id, iddoc):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:remove_file',
-            iddoc,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:remove_file'),
+            const_convert_to_rawstring(iddoc),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_remove_youtube_video(self, session_id, iddoc):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:remove_youtube_video',
-            iddoc,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:remove_youtube_video'),
+            const_convert_to_rawstring(iddoc),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_get_docs(self, session_id, pkgkey):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:get_alldocs',
-            pkgkey,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_alldocs'),
+            const_convert_to_rawstring(pkgkey),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_get_textdocs(self, session_id, pkgkey):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:get_textdocs',
-            pkgkey,
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_textdocs'),
+            const_convert_to_rawstring(pkgkey),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_get_textdocs_by_identifiers(self, session_id, identifiers):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:get_textdocs_by_identifiers',
-            ' '.join([str(x) for x in identifiers]),
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_textdocs_by_identifiers'),
+            const_convert_to_rawstring(' '.join([str(x) for x in identifiers])),
         )
         return self.do_generic_handler(cmd, session_id)
 
     def ugc_get_documents_by_identifiers(self, session_id, identifiers):
 
         cmd = "%s %s %s" % (
-            session_id,
-            'ugc:get_documents_by_identifiers',
-            ' '.join([str(x) for x in identifiers]),
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:get_documents_by_identifiers'),
+            const_convert_to_rawstring(' '.join([str(x) for x in identifiers])),
         )
         return self.do_generic_handler(cmd, session_id)
 
@@ -619,9 +638,9 @@ class Client(Base):
         import zlib
         # enable stream
         cmd = "%s %s %s on" % (
-            session_id,
-            'session_config',
-            'stream',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('session_config'),
+            const_convert_to_rawstring('stream'),
         )
         status, msg = self.do_generic_handler(cmd, session_id)
         if not status:
@@ -657,7 +676,7 @@ class Client(Base):
 
             chunk = zlib.compress(chunk, 7) # compression level 1-9
             cmd = "%s %s %s" % (
-                session_id,
+                const_convert_to_rawstring(session_id),
                 'stream',
                 chunk,
             )
@@ -676,9 +695,9 @@ class Client(Base):
 
         # disable config
         cmd = "%s %s %s off" % (
-            session_id,
-            'session_config',
-            'stream',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('session_config'),
+            const_convert_to_rawstring('stream'),
         )
         status, msg = self.do_generic_handler(cmd, session_id)
         if not status:
@@ -686,7 +705,8 @@ class Client(Base):
 
         return True, stream_status, stream_msg
 
-    def ugc_send_file(self, session_id, pkgkey, file_path, doc_type, title, description, keywords):
+    def ugc_send_file(self, session_id, pkgkey, file_path, doc_type, title,
+        description, keywords):
 
         status, rem_status, err_msg = self.ugc_send_file_stream(session_id, file_path)
         if not (status and rem_status):
@@ -703,8 +723,8 @@ class Client(Base):
         xml_string = self.entropyTools.xml_from_dict(mydict)
 
         cmd = "%s %s %s %s" % (
-            session_id,
-            'ugc:register_stream',
+            const_convert_to_rawstring(session_id),
+            const_convert_to_rawstring('ugc:register_stream'),
             pkgkey,
             xml_string,
         )
