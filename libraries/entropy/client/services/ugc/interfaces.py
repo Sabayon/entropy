@@ -43,6 +43,9 @@ class Client:
     def connect_to_service(self, repository, timeout = None):
 
         avail_data = self.Entropy.SystemSettings['repositories']['available']
+        # also try excluded repos
+        if repository not in avail_data:
+            avail_data = self.Entropy.SystemSettings['repositories']['excluded']
         if repository not in avail_data:
             raise RepositoryError("RepositoryError: %s" % (
                 _('repository is not available'),))
