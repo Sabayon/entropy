@@ -3778,8 +3778,13 @@ def dict_from_xml_extended(xml_string):
     entropy = entropies[0]
     items = entropy.getElementsByTagName('item')
 
+    def convert_raw(obj):
+        if isinstance(obj, str):
+            return obj
+        return obj.encode('raw_unicode_escape')
+
     my_map = {
-        "str": str,
+        "str": convert_raw,
         "unicode": unicode,
         "list": list,
         "set": set,
@@ -3810,6 +3815,7 @@ def dict_from_xml_extended(xml_string):
         elif mytype == "None":
             mydict[key] = None
         else:
+            print key, mytype_m
             mydict[key] = mytype_m(data)
     return mydict
 
