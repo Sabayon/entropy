@@ -151,7 +151,7 @@
                                   <widget class="GtkImage" id="image104">
                                     <property name="visible">True</property>
                                     <property name="xpad">15</property>
-                                    <property name="stock">gtk-refresh</property>
+                                    <property name="stock">gtk-goto-bottom</property>
                                     <property name="icon-size">5</property>
                                   </widget>
                                   <packing>
