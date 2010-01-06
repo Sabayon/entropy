@@ -75,6 +75,7 @@ class EntropyPackage:
         self.set_remove_incomplete = False
         self.is_downgrade = False
         self.is_group = False
+        self.__namedesc_cache = None
 
         if self.pkgset:
 

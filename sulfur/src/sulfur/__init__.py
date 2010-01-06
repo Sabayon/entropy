@@ -38,7 +38,7 @@ import entropy.tools
 from entropy.const import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
-from entropy.cache import EntropyCacher
+from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
 
 # Sulfur Imports
@@ -124,9 +124,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 os.kill(pid, signal.SIGTERM)
             except OSError:
                 pass
-        if hasattr(self, "_ugc_pid"):
-            if isinstance(self._ugc_pid, int):
-                do_kill(self._ugc_pid)
         if hasattr(self, '_fork_pids'):
             for pid in self._fork_pids:
                 do_kill(pid)
@@ -293,9 +290,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # init flags
         self.disable_ugc = False
-        self._ugc_pid = None
         self._fork_pids = []
+        self._ugc_pid = None
 
+        self._mtime_pingus = MtimePingus()
         self._spawning_ugc = False
         self._preferences = None
         self.skipMirrorNow = False
@@ -742,56 +740,63 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_user_generated_content(self):
 
         if "--nougc" not in sys.argv:
-            gobject.timeout_add(30*1000,
+            gobject.timeout_add(20*1000,
                 self.spawn_user_generated_content_first)
-            gobject.timeout_add(600*1000,
-                self.spawn_user_generated_content)
+            gobject.timeout_add(7200*1000, # 2 hours
+                self.spawn_user_generated_content, False)
 
     def spawn_user_generated_content_first(self):
-        self.spawn_user_generated_content()
+        self.spawn_user_generated_content(force = False)
         # this makes the whole thing to terminate
         return False
 
-    def spawn_user_generated_content(self):
+    def spawn_user_generated_content(self, force = True):
 
         if self.do_debug:
             print_generic("entering UGC")
 
-        if self._ugc_pid is not None:
-            # flush defunct process
-            try:
-                dead, return_code = os.waitpid(self._ugc_pid, os.WNOHANG)
-            except OSError:
-                dead = True
+        if self.Equo.UGC is None:
+            return
+
+        if self._spawning_ugc or self.disable_ugc:
+            return
+
+        eapi3_repos = []
+        for repoid in self.Equo.validRepositories:
+            aware = self.Equo.UGC.is_repository_eapi3_aware(repoid)
+            if aware:
+                eapi3_repos.append(repoid)
+
+        cache_available = True
+        for repoid in eapi3_repos:
+            if not self.Equo.is_ugc_cached(repoid):
+                cache_available = False
+
+        pingus_id = "sulfur_ugc_content_spawn"
+        # check if at least 2 hours are passed since last check
+        if not self._mtime_pingus.hours_passed(pingus_id, 2) and \
+            cache_available:
+
             if self.do_debug:
-                print_generic("Previous UGC pid %s dead? => %s" % (
-                    self._ugc_pid, dead,))
-            if const_pid_exists(self._ugc_pid):
-                if self.do_debug:
-                    print_generic("UGC pid %s still running" % (self._ugc_pid,))
-                return
-            elif self.do_debug:
-                print_generic("Previous UGC pid %s DEAD" % (self._ugc_pid,))
+                print_generic("UGC not syncing, 2 hours are not passed")
+            return
+        self._mtime_pingus.ping(pingus_id)
 
         def emit_ugc_update():
             # emit ugc update signal
+            self._spawning_ugc = False
             SulfurSignals.emit('ugc_data_update')
             if self.do_debug:
                 print_generic("UGC data update signal emitted")
             return False
 
-        pid = os.fork()
-        if pid != 0:
-            self._ugc_pid = pid
-            # since this is multiprocess and GTK signals are not multiprocess
-            # we need to "guess" when the UGC sync is complete and spawn an
-            # ugc_data_update signal.
-            gobject.timeout_add(45*1000, emit_ugc_update)
-        else:
+        def do_ugc_sync():
             self._ugc_update()
             self.Cacher.sync()
             print_generic("UGC child process done")
-            os._exit(0)
+
+        self._spawning_ugc = True
+        self._fork_function(do_ugc_sync, emit_ugc_update)
 
         if self.do_debug:
             print_generic("quitting UGC")
@@ -799,17 +804,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         return True
 
     def _ugc_update(self):
-
-        if self._spawning_ugc or self._is_working or self.disable_ugc:
-            return
-
-        self._is_working = True
-        self._spawning_ugc = True
-
-        if self.Equo.UGC == None:
-            self._is_working = False
-            self._spawning_ugc = False
-            return
 
         for repo in self.Equo.validRepositories:
             if self.do_debug:
@@ -820,9 +814,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 t2 = time.time()
                 td = t2 - t1
                 print_generic("completed UGC update for", repo, "took", td)
-
-        self._is_working = False
-        self._spawning_ugc = False
 
     def fill_pref_db_backup_page(self):
         self.dbBackupStore.clear()
