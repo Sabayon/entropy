@@ -4653,8 +4653,10 @@ class PkgInfoMenu(MenuSkel):
 
         if remote:
             self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"), pkg.repoid,))
-        else:
+        elif repo in avail_repos:
             self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(avail_repos[repo]['description']),))
+        else:
+            self.pkginfo_ui.location.set_markup("%s: %s" % (_("Removed repository"), repo,))
 
         self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
         tag = pkg.tag
