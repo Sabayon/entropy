@@ -51,10 +51,10 @@ class EntropyPackageViewModelInjector:
         self.expand = True
 
     def pkgset_inject(self, packages):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def packages_inject(self, packages):
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def inject(self, packages, pkgsets):
         if pkgsets:
@@ -193,10 +193,10 @@ class NameRevSortPackageViewModelInjector(NameSortPackageViewModelInjector):
         NameSortPackageViewModelInjector.__init__(self, *args, **kwargs)
         self.reverse = True
 
-class DownloadSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class DownloadSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
 
     def packages_inject(self, packages):
 
@@ -217,10 +217,10 @@ class DownloadSortPackageViewModelInjector(EntropyPackageViewModelInjector):
         for po in packages:
             self.model.append( None, (po,) )
 
-class VoteSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class VoteSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
         self.reverse = False
 
     def packages_inject(self, packages):
@@ -249,10 +249,10 @@ class VoteRevSortPackageViewModelInjector(VoteSortPackageViewModelInjector):
         VoteSortPackageViewModelInjector.__init__(self, *args, **kwargs)
         self.reverse = True
 
-class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class RepoSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
 
     def packages_inject(self, packages):
 
@@ -273,10 +273,10 @@ class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
         for po in packages:
             self.model.append( None, (po,) )
 
-class DateSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class DateSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
 
     def packages_inject(self, packages):
 
@@ -297,10 +297,10 @@ class DateSortPackageViewModelInjector(EntropyPackageViewModelInjector):
         for po in packages:
             self.model.append( None, (po,) )
 
-class DateGroupedSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class DateGroupedSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
 
     def packages_inject(self, packages):
 
@@ -337,10 +337,10 @@ class DateGroupedSortPackageViewModelInjector(EntropyPackageViewModelInjector):
             for po in dates[date]:
                 self.model.append( parent, (po,) )
 
-class LicenseSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class LicenseSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
 
     def packages_inject(self, packages):
 
@@ -370,10 +370,10 @@ class LicenseSortPackageViewModelInjector(EntropyPackageViewModelInjector):
             for po in licenses[lic]:
                 self.model.append( parent, (po,) )
 
-class GroupSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+class GroupSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
         self.expand = False
 
     def packages_inject(self, packages):

@@ -495,6 +495,14 @@ class SulfurApplicationEventsMixin:
         #else:
         #    self.ui.updatesButtonbox.hide()
 
+        if action == "pkgsets":
+            self._old_pkgsorter_status = \
+                self.ui.pkgSorter.get_property('sensitive')
+            self.ui.pkgSorter.set_property('sensitive', False)
+        elif hasattr(self, '_old_pkgsorter_status'):
+            self.ui.pkgSorter.set_property('sensitive',
+                self._old_pkgsorter_status)
+
         if action == "masked":
             self.setup_masked_pkgs_warning_box()
             self.ui.maskedWarningBox.show()
