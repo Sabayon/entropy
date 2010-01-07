@@ -1,3 +1,39 @@
+commit 136e19d535ad0a43aaa82019b404b07d34476b9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 09:39:45 2010 +0100
+
+    [sulfur] comment out pids killing function, might lead (needs investigation) to sqlite3 db corruption
+
+commit 2e09e64ebfc37b21a2401d2663502c010a44cb7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 09:37:49 2010 +0100
+
+    [sulfur] _ugc_pid does not exist anymore
+
+commit 6f24283985e01b6e4213a729a6c21845b83d2845
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 09:37:17 2010 +0100
+
+    [sulfur] improve repository management dialog
+
+commit ba86055d93a7fe1fa17f3e1fe2c7c5170f154853
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 09:36:35 2010 +0100
+
+    [sulfur] improve usability of InputDialog widgets
+
+commit c0490929acd26bc6b0e4ad4f9d475728ffbaeec9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 09:36:07 2010 +0100
+
+    [sulfur] fix askQuestion and inputBox
+
+commit 9fda9840d4994be825c60c393ed981154a755595
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 07:59:09 2010 +0100
+
+    Update ChangeLog for version 0.99.20.18
+
 commit f6e00bf9c6c4ff5323e425e249c461da12762170
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 7 07:53:03 2010 +0100
