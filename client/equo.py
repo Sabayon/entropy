@@ -773,7 +773,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     if exc_class is KeyboardInterrupt:
         raise SystemExit(1)
 
-    t_back = entropy.tools.get_traceback()
+    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
 
     if exc_class is OSError:
         if exc_instance.errno == 28:
@@ -797,7 +797,8 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
         raise SystemExit(1)
 
-    exception_data = entropy.tools.print_exception(True)
+    exception_data = entropy.tools.print_exception(returndata = True,
+        tb_data = exc_tb)
     exception_stack = t_back
     ferror.write(const_convert_to_rawstring("\nRevision: " + \
         etpConst['entropyversion'] + "\n\n"))
@@ -842,7 +843,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
     else:
         print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayon.org.")))
-        raise SystemExit(4)
+    raise SystemExit(1)
 
 def install_exception_handler():
     sys.excepthook = handle_exception
