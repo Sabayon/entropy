@@ -363,7 +363,7 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
             multifetch = multifetch
         )
         if rc[1] != 0:
-            return 1, rc[0]
+            return rc
     else:
         print_info(red(" @@ ") + \
             blue("%s." % (_("Nothing to update"),) ))
@@ -717,7 +717,7 @@ def _show_package_info(found_pkg_atoms, deps, action_name = None):
                 rc = E_CLIENT.askQuestion("     %s" % (
                     _("Would you like to continue ?"),) )
             if rc == _("No"):
-                return True, (0, 0)
+                return True, (126, -1)
 
     return False, (0, 0)
 
@@ -1207,7 +1207,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
         if etpUi['ask']:
             rc = E_CLIENT.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
             if rc == _("No"):
-                return 0, 0
+                return 126, -1
 
         if etpUi['pretend']:
             return 0, 0
