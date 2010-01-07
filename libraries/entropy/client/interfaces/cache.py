@@ -44,7 +44,7 @@ class CacheMixin:
             os.makedirs(etpConst['dumpstoragedir'], 0o775)
             const_setup_perms(etpConst['dumpstoragedir'],
                 etpConst['entropygid']) 
-        except (shutil.Error, IOError):
+        except (shutil.Error, IOError, OSError,):
             pass # ignore cache purge errors?
         finally:
             self.Cacher.start()
