@@ -90,17 +90,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
 
-        self.wait_window = WaitWindow(self.ui.main)
-
     def init(self):
 
-        self.wait_window.show()
         self.setup_gui()
         # show UI
         if "--nomaximize" not in sys.argv:
             self.ui.main.maximize()
         self.ui.main.show()
-        self.wait_window.hide()
 
         if entropy.tools.is_april_first():
             okDialog( self.ui.main,
@@ -138,7 +134,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def exit_now(self):
         entropy.tools.kill_threads()
-        self.wait_window.show()
         try:
             gtk.main_quit()
         except RuntimeError:
@@ -1246,7 +1241,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not meta_cached and not background:
             self.set_busy()
-            self.wait_window.show()
 
         try:
             cached = self.etpbase.get_groups(meta_id)
@@ -1262,7 +1256,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not meta_cached and not background:
             self.unset_busy()
-            self.wait_window.hide()
 
         if widget is not None:
             widget.grab_remove()
@@ -1550,7 +1543,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
 
-        self.wait_window.show()
         self.set_busy()
         if not matches:
             # resolve atoms ?
@@ -1559,7 +1551,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if match[0] != -1:
                     matches.add(match)
         if not matches:
-            self.wait_window.hide()
             okDialog( self.ui.main,
                 _("No packages need or can be queued at the moment.") )
             self.unset_busy()
@@ -1602,7 +1593,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.queueView.refresh()
         self.ui.viewPkg.queue_draw()
 
-        self.wait_window.hide()
         self.unset_busy()
         return rc
 

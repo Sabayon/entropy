@@ -51,26 +51,22 @@ class SulfurApplicationEventsMixin:
             return True
 
     def on_dbBackupButton_clicked(self, widget):
-        self.wait_window.show()
         self.start_working()
         status, err_msg = self.Equo.backup_database(
             etpConst['etpdatabaseclientfilepath'])
         self.end_working()
         if not status:
-            self.wait_window.hide()
             okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),
                 err_msg,) )
             return
         okDialog( self.ui.main, "%s" % (_("Backup complete"),) )
         self.fill_pref_db_backup_page()
         self.dbBackupView.queue_draw()
-        self.wait_window.hide()
 
     def on_dbRestoreButton_clicked(self, widget):
         model, myiter = self.dbBackupView.get_selection().get_selected()
         if myiter == None: return
         dbpath = model.get_value(myiter, 0)
-        self.wait_window.show()
         self.start_working()
         status, err_msg = self.Equo.restore_database(dbpath,
             etpConst['etpdatabaseclientfilepath'])
@@ -79,13 +75,11 @@ class SulfurApplicationEventsMixin:
         self.reset_cache_status()
         self.show_packages()
         if not status:
-            self.wait_window.hide()
             okDialog( self.ui.main, "%s: %s" % (_("Error during restore"),
                 err_msg,) )
             return
         self.fill_pref_db_backup_page()
         self.dbBackupView.queue_draw()
-        self.wait_window.hide()
         okDialog( self.ui.main, "%s" % (_("Restore complete"),) )
 
     def on_dbDeleteButton_clicked(self, widget):
@@ -677,7 +671,6 @@ class SulfurApplicationEventsMixin:
                 TextReadDialog(mytitle, license_text)
 
     def on_select_clicked(self, widget):
-        self.wait_window.show()
         self.set_busy()
         self.start_working()
         busy_cursor(self.ui.main)
@@ -685,15 +678,12 @@ class SulfurApplicationEventsMixin:
         self.end_working()
         self.unset_busy()
         normal_cursor(self.ui.main)
-        self.wait_window.hide()
 
     def on_deselect_clicked(self, widget):
         self.ui.pkgFilter.set_text("")
         self.on_clear_clicked(widget)
-        self.wait_window.show()
         self.set_busy()
         self.pkgView.deselect_all()
-        self.wait_window.hide()
         self.unset_busy()
 
     def on_skipMirror_clicked(self, widget):
@@ -746,7 +736,6 @@ class SulfurApplicationEventsMixin:
         gobject.timeout_add(400, go, entry, entry.get_text())
 
     def on_FileQuit( self, widget ):
-        self.wait_window.show()
         self.quit()
 
     def on_HelpAbout( self, widget = None ):
