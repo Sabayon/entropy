@@ -7616,17 +7616,25 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def __atomMatchFetchCache(self, *args):
         if self.xcache:
-            ck_sum = hash(self.checksum())
+            ck_sum = hash(self.checksum(strict = False))
+            hash_str = self.__atomMatch_gen_hash_str(args)
             cached = self.dumpTools.loadobj("%s/%s/%s_%s" % (
-                self.dbMatchCacheKey, self.dbname, ck_sum, hash(tuple(args)),))
+                self.dbMatchCacheKey, self.dbname, ck_sum, hash(hash_str),))
             if cached is not None:
                 return cached
+
+    def __atomMatch_gen_hash_str(self, args):
+        hash_str = '|'
+        for arg in args:
+            hash_str += '%s|' % (arg,)
+        return hash_str
 
     def __atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
             ck_sum = hash(self.checksum(strict = False))
+            hash_str = self.__atomMatch_gen_hash_str(args)
             self.Cacher.push("%s/%s/%s_%s" % (
-                self.dbMatchCacheKey, self.dbname, ck_sum, hash(tuple(args)),),
+                self.dbMatchCacheKey, self.dbname, ck_sum, hash(hash_str),),
                 kwargs.get('result')
             )
 
@@ -7637,9 +7645,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if rc != 0:
             return cached_obj
 
-        # data must be int !
-        if not self.entropyTools.isnumber(data):
-            return None
+        if multiMatch:
+            # data must be set !
+            if not isinstance(data, set):
+                return None
+        else:
+            # data must be int !
+            if not self.entropyTools.isnumber(data):
+                return None
+
 
         if (not extendedResults) and (not multiMatch):
             if not self.isIdpackageAvailable(data):
@@ -7656,8 +7670,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         elif (not extendedResults) and multiMatch:
             # (set([x[0] for x in dbpkginfo]),0)
-            idpackages = set(data)
-            if not self.areIdpackagesAvailable(idpackages):
+            if not self.areIdpackagesAvailable(data):
                 return None
 
         return cached_obj
