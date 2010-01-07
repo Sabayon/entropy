@@ -1355,5 +1355,25 @@ def const_debug_write(identifier, msg):
             sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
         sys.stdout.flush()
 
+def const_get_caller():
+    """
+    When called inside a function, return the caller function name.
+
+    @return: caller function name
+    @rtype: string
+    """
+    import inspect
+    return inspect.stack()[3][3]
+
+def const_get_stack():
+    """
+    Return current function stack in form of list of tuples
+
+    @return: current function stack
+    @rtype: list
+    """
+    import inspect
+    return inspect.stack()
+
 # load config
 initconfig_entropy_constants(etpSys['rootdir'])
