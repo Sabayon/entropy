@@ -1,3 +1,39 @@
+commit a622c1fc063e6f564a94237feaaf813fc74bfc1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 11:19:03 2010 +0100
+
+    [sulfur] show packages sorter widget in simple mode too, improve its handling
+
+commit 566e9b7796574eca84bca9ce165e17f6ffd1100a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 11:08:50 2010 +0100
+
+    [equo] fix install_packages return codes when user answers No to questions
+
+commit bfada2a3385fcfff3161e085786996f93686a907
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 11:01:30 2010 +0100
+
+    [entropy.db] fix EntropyRepository on disk cache writer and reader functions
+
+commit e3fef812b6eb81a8758bdd9571058d332757a472
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 11:00:21 2010 +0100
+
+    [entropy.const] add const_get_caller and const_get_stack functions
+
+commit 906f127cbf0870ac60aa50b196a1266c77b151bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 10:00:30 2010 +0100
+
+    [sulfur] fix packages sorter widget functionality with package sets tab
+
+commit e8bc910a45470c3d76148d368f6b37e5ee187e10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 09:41:36 2010 +0100
+
+    Update ChangeLog for version 0.99.20.19
+
 commit 136e19d535ad0a43aaa82019b404b07d34476b9c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 7 09:39:45 2010 +0100
