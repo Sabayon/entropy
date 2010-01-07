@@ -1,3 +1,15 @@
+commit f6e00bf9c6c4ff5323e425e249c461da12762170
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 07:53:03 2010 +0100
+
+    [equo] fix equo exception handler (traceback retrieval + threads termination)
+
+commit 921432c9a5c7df8ecf0c30749838f2da09437b5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 07:41:58 2010 +0100
+
+    Update ChangeLog for version 0.99.20.17
+
 commit 066c36c8cfd253e5f594700041bda517e753919c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 7 07:36:13 2010 +0100
