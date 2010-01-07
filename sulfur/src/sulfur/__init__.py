@@ -86,7 +86,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE, 'main', 'entropy' )
-        ui.main.hide()
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
 
