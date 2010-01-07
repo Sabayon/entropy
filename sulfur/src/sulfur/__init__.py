@@ -383,6 +383,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if do_simple:
             self.switch_simple_mode()
             self.ui.advancedMode.set_active(0)
+            # switch back to updates
+            self.set_package_radio("updates")
         else:
             self.switch_advanced_mode()
             self.ui.advancedMode.set_active(1)
@@ -393,7 +395,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.servicesMenuItem.hide()
         self.ui.repoRefreshButton.show()
         self.ui.vseparator1.hide()
-        self.ui.pkgSorter.hide()
+        # self.ui.pkgSorter.hide()
         # self.ui.updateButtonView.hide()
         self.ui.rbAvailable.hide()
         self.ui.rbInstalled.hide()
@@ -435,7 +437,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.servicesMenuItem.show()
         self.ui.repoRefreshButton.hide()
         self.ui.vseparator1.show()
-        self.ui.pkgSorter.show()
+        # self.ui.pkgSorter.show()
         # self.ui.updateButtonView.show()
         self.ui.rbAvailable.show()
         self.ui.rbInstalled.show()
@@ -1523,10 +1525,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if empty:
             self.ui.updatesButtonboxAddRemove.hide()
-            self.ui.pkgSorter.hide()
+            self.ui.pkgSorter.set_property('sensitive', False)
         elif not SulfurConf.simple_mode:
             self.ui.updatesButtonboxAddRemove.show()
-            self.ui.pkgSorter.show()
+            if self.lastPkgPB != "pkgsets":
+                self.ui.pkgSorter.set_property('sensitive', True)
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
         self.progress.total.show()

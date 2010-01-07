@@ -489,12 +489,6 @@ class SulfurApplicationEventsMixin:
         rb.grab_add()
         self.lastPkgPB = action
 
-        # Only show add/remove all when showing updates
-        # if action == 'updates':
-        #    self.ui.updatesButtonbox.show()
-        #else:
-        #    self.ui.updatesButtonbox.hide()
-
         if action == "pkgsets":
             self._old_pkgsorter_status = \
                 self.ui.pkgSorter.get_property('sensitive')
