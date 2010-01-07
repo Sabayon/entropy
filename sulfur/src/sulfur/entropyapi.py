@@ -383,6 +383,8 @@ class Equo(EquoInterface):
 
         gobject.idle_add(do_ask)
         while th_id not in self._mthread_rc['askQuestion']:
+            while gtk.events_pending(): # otherwise it won't work
+                gtk.main_iteration()
             time.sleep(0.4)
         return self._mthread_rc['askQuestion'].pop(th_id)
 
@@ -404,6 +406,8 @@ class Equo(EquoInterface):
 
         gobject.idle_add(do_ask)
         while th_id not in self._mthread_rc['inputBox']:
+            while gtk.events_pending(): # otherwise it won't work
+                gtk.main_iteration()
             time.sleep(0.4)
         return self._mthread_rc['inputBox'].pop(th_id)
 
