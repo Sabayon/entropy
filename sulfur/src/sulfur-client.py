@@ -44,11 +44,6 @@ def kill_threads():
                 kill_pid(pid)
         except AttributeError:
             pass
-        try:
-            if MAIN_APP._ugc_pid is not None:
-                kill_pid(MAIN_APP._ugc_pid)
-        except AttributeError:
-            pass
 
 def handle_exception(exc_class, exc_instance, exc_tb):
 
