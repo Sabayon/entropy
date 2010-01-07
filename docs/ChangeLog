@@ -1,3 +1,21 @@
+commit 066c36c8cfd253e5f594700041bda517e753919c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 07:36:13 2010 +0100
+
+    [entropy.client.interfaces.cache] for some reasons this commit was eaten somewhere (fix clear_cache)
+
+commit b7cc94bf2f92e3414c1b741f0865f69e1eec739f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 21:10:33 2010 +0100
+
+    [sulfur] actually handle force argument when deciding to call _ugc_update()
+
+commit 37ad184763856a23342019003db6823655c6def9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 6 20:57:57 2010 +0100
+
+    Update ChangeLog for version 0.99.20.16
+
 commit b91e7d2c8b2ddd2a28a48f1f3847da9971da94e5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jan 6 20:57:32 2010 +0100
