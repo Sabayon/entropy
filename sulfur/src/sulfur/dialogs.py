@@ -6025,7 +6025,8 @@ def questionDialog(parent, msg, title = _("Sulfur Question"), get_response = Fal
     return False
 
 def choiceDialog(parent, msg, title, buttons):
-    return MessageDialog(parent, title, msg, type = "custom", custom_buttons = buttons).getrc()
+    return MessageDialog(parent, title, msg, type = "custom",
+        custom_buttons = buttons).getrc()
 
 def inputDialog(parent, title, input_parameters, cancel):
     w = InputDialog(parent, title, input_parameters, cancel)
@@ -6068,6 +6069,7 @@ class InputDialog:
         self.identifiers_table = {}
         self.cb_table = {}
         self.entry_text_table = {}
+        self.entry_enter_event_widgets = []
         row_count = 0
         for input_id, input_text, input_cb, passworded in input_parameters:
 
@@ -6149,6 +6151,7 @@ class InputDialog:
                 elif input_type == "filled_text":
 
                     input_widget = gtk.Entry()
+                    self.entry_enter_event_widgets.append(input_widget)
                     input_widget.set_text(combo_options)
                     if passworded:
                         input_widget.set_visibility(False)
@@ -6206,7 +6209,9 @@ class InputDialog:
                 self.entry_text_table[input_id] = input_text
                 mytable.attach(input_label, 0, 1, row_count, row_count+1)
                 input_entry = gtk.Entry()
-                if passworded: input_entry.set_visibility(False)
+                self.entry_enter_event_widgets.append(input_entry)
+                if passworded:
+                    input_entry.set_visibility(False)
 
                 self.identifiers_table[input_id] = input_entry
                 self.cb_table[input_entry] = input_cb
@@ -6240,8 +6245,19 @@ class InputDialog:
             mywin.set_transient_for(parent)
             mywin.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
         mywin.set_default_size(350, -1)
+
+        for entry in self.entry_enter_event_widgets:
+            entry.connect("activate", self._got_entry_activate)
+
         mywin.show_all()
 
+
+    def _got_entry_activate(self, widget):
+        last_one = len(self.entry_enter_event_widgets) == 1
+        if not last_one:
+            last_one = widget is self.entry_enter_event_widgets[-1]
+        if last_one:
+            return self.do_ok(widget)
 
     def do_ok(self, widget):
         # fill self.parameters
@@ -6299,7 +6315,9 @@ class MessageDialog:
     def getrc(self):
         return self.rc
 
-    def __init__ (self, parent, title, text, type = "ok", default=None, custom_buttons=None, custom_icon=None):
+    def __init__ (self, parent, title, text, type = "ok", default=None,
+        custom_buttons=None, custom_icon=None):
+
         self.rc = None
         docustom = 0
         if type == 'ok':
@@ -6354,7 +6372,7 @@ class MessageDialog:
         #dialog.format_secondary_markup(cleanMarkupString(text))
         dialog.set_position (gtk.WIN_POS_CENTER)
         dialog.set_default_response(defaultchoice)
-        dialog.show_all ()
+        dialog.show_all()
 
         rc = dialog.run()
 
