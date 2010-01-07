@@ -576,7 +576,7 @@
                   <widget class="GtkScrolledWindow" id="swPkg">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hadjustment">0 0 862 86.200000000000003 775.80000000000007 862</property>
+                    <property name="hadjustment">0 0 939 93.900000000000006 845.10000000000002 939</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
@@ -3126,30 +3126,12 @@ Relaxed</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="tooltip" translatable="yes">Generate login information</property>
                                         <signal name="clicked" handler="on_ugcLoginButton_clicked"/>
                                         <child>
-                                          <widget class="GtkHBox" id="hbox43">
+                                          <widget class="GtkImage" id="image3">
                                             <property name="visible">True</property>
-                                            <child>
-                                              <widget class="GtkImage" id="image31">
-                                                <property name="visible">True</property>
-                                                <property name="stock">gtk-connect</property>
-                                              </widget>
-                                              <packing>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <widget class="GtkLabel" id="label39">
-                                                <property name="visible">True</property>
-                                                <property name="label" translatable="yes">_Generate Login</property>
-                                                <property name="use_markup">True</property>
-                                                <property name="use_underline">True</property>
-                                              </widget>
-                                              <packing>
-                                                <property name="position">1</property>
-                                              </packing>
-                                            </child>
+                                            <property name="stock">gtk-connect</property>
                                           </widget>
                                         </child>
                                       </widget>
@@ -3164,6 +3146,7 @@ Relaxed</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="tooltip" translatable="yes">Discard login information</property>
                                         <signal name="clicked" handler="on_ugcClearLoginButton_clicked"/>
                                         <child>
                                           <widget class="GtkHBox" id="hbox44">
@@ -3175,17 +3158,6 @@ Relaxed</property>
                                               </widget>
                                               <packing>
                                                 <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <widget class="GtkLabel" id="label40">
-                                                <property name="visible">True</property>
-                                                <property name="label" translatable="yes">_Remove Login</property>
-                                                <property name="use_markup">True</property>
-                                                <property name="use_underline">True</property>
-                                              </widget>
-                                              <packing>
-                                                <property name="position">1</property>
                                               </packing>
                                             </child>
                                           </widget>
@@ -3216,6 +3188,7 @@ Relaxed</property>
                                         <child>
                                           <widget class="GtkHBox" id="hbox45">
                                             <property name="visible">True</property>
+                                            <property name="tooltip" translatable="yes">Clear all credentials</property>
                                             <child>
                                               <widget class="GtkImage" id="image34">
                                                 <property name="visible">True</property>
@@ -3223,17 +3196,6 @@ Relaxed</property>
                                               </widget>
                                               <packing>
                                                 <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <widget class="GtkLabel" id="label41">
-                                                <property name="visible">True</property>
-                                                <property name="label" translatable="yes">_Clear all credentials</property>
-                                                <property name="use_markup">True</property>
-                                                <property name="use_underline">True</property>
-                                              </widget>
-                                              <packing>
-                                                <property name="position">1</property>
                                               </packing>
                                             </child>
                                           </widget>
@@ -3250,6 +3212,7 @@ Relaxed</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="tooltip" translatable="yes">Clear all cache</property>
                                         <signal name="clicked" handler="on_ugcClearCacheButton_clicked"/>
                                         <child>
                                           <widget class="GtkHBox" id="hbox46">
@@ -3261,17 +3224,6 @@ Relaxed</property>
                                               </widget>
                                               <packing>
                                                 <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                            <child>
-                                              <widget class="GtkLabel" id="label42">
-                                                <property name="visible">True</property>
-                                                <property name="label" translatable="yes">_Clear all cache</property>
-                                                <property name="use_markup">True</property>
-                                                <property name="use_underline">True</property>
-                                              </widget>
-                                              <packing>
-                                                <property name="position">1</property>
                                               </packing>
                                             </child>
                                           </widget>
@@ -5461,11 +5413,13 @@ Relaxed</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox4">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <widget class="GtkVBox" id="vbox34">
             <property name="visible">True</property>
             <property name="border_width">5</property>
+            <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
               <widget class="GtkHBox" id="hbox50">
@@ -5506,6 +5460,7 @@ Relaxed</property>
               <widget class="GtkVBox" id="errLongBox">
                 <property name="width_request">500</property>
                 <property name="height_request">200</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkScrolledWindow" id="errSW">
                     <property name="can_focus">True</property>
@@ -5721,10 +5676,12 @@ Relaxed</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox6">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child>
           <widget class="GtkVBox" id="vbox41">
             <property name="visible">True</property>
+            <property name="orientation">vertical</property>
             <property name="spacing">6</property>
             <child>
               <widget class="GtkLabel" id="confAction">
@@ -5869,6 +5826,7 @@ Relaxed</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox8">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <widget class="GtkLabel" id="msgText">
             <property name="visible">True</property>
@@ -5948,9 +5906,11 @@ Relaxed</property>
     <child internal-child="vbox">
       <widget class="GtkVBox" id="dialog-vbox9">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <widget class="GtkVBox" id="vbox58">
             <property name="visible">True</property>
+            <property name="orientation">vertical</property>
             <child>
               <widget class="GtkHBox" id="hbox82">
                 <property name="visible">True</property>
@@ -6081,6 +6041,7 @@ Relaxed</property>
     <child>
       <widget class="GtkVBox" id="vbox82">
         <property name="visible">True</property>
+        <property name="orientation">vertical</property>
         <child>
           <widget class="GtkHBox" id="hbox120">
             <property name="visible">True</property>
@@ -6089,7 +6050,7 @@ Relaxed</property>
                 <property name="visible">True</property>
                 <property name="xpad">6</property>
                 <property name="pixel_size">64</property>
-                <property name="icon_name">gtk-edit</property>
+                <property name="icon_name">preferences-system-network</property>
               </widget>
               <packing>
                 <property name="expand">False</property>
@@ -6119,6 +6080,7 @@ Relaxed</property>
         <child>
           <widget class="GtkVBox" id="vbox83">
             <property name="visible">True</property>
+            <property name="orientation">vertical</property>
             <child>
               <widget class="GtkFrame" id="frame4">
                 <property name="visible">True</property>
@@ -6128,6 +6090,7 @@ Relaxed</property>
                   <widget class="GtkAlignment" id="alignment78">
                     <property name="visible">True</property>
                     <property name="top_padding">8</property>
+                    <property name="bottom_padding">8</property>
                     <property name="left_padding">12</property>
                     <property name="right_padding">12</property>
                     <child>
@@ -6312,12 +6275,14 @@ gz</property>
                           <widget class="GtkVBox" id="vbox85">
                             <property name="height_request">120</property>
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <widget class="GtkHBox" id="hbox125">
                                 <property name="visible">True</property>
                                 <child>
                                   <widget class="GtkVBox" id="vbox87">
                                     <property name="visible">True</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
                                       <widget class="GtkScrolledWindow" id="scrolledwindow47">
                                         <property name="visible">True</property>
@@ -6403,6 +6368,7 @@ gz</property>
                                 <child>
                                   <widget class="GtkVBox" id="vbox88">
                                     <property name="visible">True</property>
+                                    <property name="orientation">vertical</property>
                                     <child>
                                       <widget class="GtkButton" id="mirrorUp">
                                         <property name="visible">True</property>
