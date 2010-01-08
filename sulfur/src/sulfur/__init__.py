@@ -1372,6 +1372,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.disable_ugc = False
         self.show_notebook_tabs_after_install()
+        self.spawn_user_generated_content_first()
         return not repoConn.sync_errors
 
     def reset_progress_text(self):
