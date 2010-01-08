@@ -253,6 +253,8 @@ class EntropyPackage:
                 EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
 
         desc = self.get_description(markup = False)
+        if not desc:
+            desc = _("No description")
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
         t += '\n' + ugc_string + \
