@@ -36,6 +36,9 @@
         - more sexy UI
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
+    - smart apps live generated from system, i mean,
+        "equo smart prepare" will current app deps (deep), tarball everything
+        into the same dir and create a .app file.
 
   1.0 - deprecations:
 
