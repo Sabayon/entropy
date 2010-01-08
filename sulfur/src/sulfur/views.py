@@ -347,7 +347,8 @@ class LicenseSortPackageViewModelInjector(DefaultPackageViewModelInjector):
         licenses = {}
         for po in packages:
             try:
-                lics = po.lic.strip().split()
+                lics = [x for x in po.lic.strip().split() if x not in \
+                    ("(", "||", ")",)]
             except (TypeError, AttributeError, ValueError,):
                 lics = []
 
