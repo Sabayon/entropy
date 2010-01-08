@@ -1515,13 +1515,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if action == "pkgsets":
             show_pkgsets = True
 
-        if empty:
+        if not allpkgs:
             self.ui.updatesButtonboxAddRemove.hide()
-            self.ui.pkgSorter.set_property('sensitive', False)
         elif not SulfurConf.simple_mode:
             self.ui.updatesButtonboxAddRemove.show()
-            if self.lastPkgPB != "pkgsets":
-                self.ui.pkgSorter.set_property('sensitive', True)
+
+        if not allpkgs or (self.lastPkgPB == "pkgsets"):
+            self.ui.pkgSorter.set_property('sensitive', False)
+        elif allpkgs and (self.lastPkgPB != "pkgsets"):
+            self.ui.pkgSorter.set_property('sensitive', True)
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
         self.progress.total.show()
