@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from entropy.const import etpUi
 from entropy.output import print_generic
 
 class Filtering:
@@ -109,7 +110,11 @@ class KeywordFilter(BaseFilter):
             else:
 
                 for field in self.fields:
-                    value = getattr(pkg, field)
+                    try:
+                        value = getattr(pkg, field)
+                    except:
+                        if etpUi['debug']:
+                            raise
                     if not value:
                         continue
                     if value.lower().find(crit) != -1:
