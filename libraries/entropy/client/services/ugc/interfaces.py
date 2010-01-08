@@ -517,18 +517,33 @@ class Cache:
             return
         del self.xcache[repository][item]
 
-    def _get_store_cache_file(self, iddoc, repository, doc_url):
-        return "%s/%s/iddoc_%s/%s" % (Cache.CACHE_KEYS['ugc_docs'],
-            repository, iddoc, doc_url,)
+    def _get_store_cache_file(self, iddoc, repository, doc_url,
+        setup_dir = False):
+        base_dir = os.path.join(Cache.CACHE_DIR,
+            Cache.CACHE_KEYS['ugc_docs'], repository, str(iddoc))
+        cache_path = os.path.join(base_dir, "_"+doc_url)
+        cache_dir = os.path.dirname(cache_path)
+
+        if setup_dir and (not os.path.isdir(cache_dir)):
+            try:
+                os.makedirs(cache_dir, 0o775)
+                const_setup_perms(cache_dir, etpConst['entropygid'])
+            except (OSError, IOError,):
+                return cache_path
+
+        return cache_path
 
     def _get_vote_cache_file(self, repository):
-        return self._get_vote_cache_dir(repository)
+        return os.path.join(Cache.CACHE_DIR,
+            self._get_vote_cache_dir(repository))
 
     def _get_downloads_cache_file(self, repository):
-        return self._get_downloads_cache_dir(repository)
+        return os.path.join(Cache.CACHE_DIR,
+            self._get_downloads_cache_dir(repository))
 
     def _get_alldocs_cache_file(self, pkgkey, repository):
-        return self._get_alldocs_cache_dir(repository)+"/"+pkgkey
+        return os.path.join(Cache.CACHE_DIR,
+            self._get_alldocs_cache_dir(repository)+"/"+pkgkey)
 
     def _get_alldocs_cache_dir(self, repository):
         return Cache.CACHE_KEYS['ugc_docs']+"/"+repository
@@ -558,8 +573,8 @@ class Cache:
         return os.path.join(Cache.CACHE_DIR, cache_file)
 
     def store_document(self, iddoc, repository, doc_url):
-        cache_file = os.path.join(Cache.CACHE_DIR,
-            self._get_store_cache_file(iddoc, repository, doc_url))
+        cache_file = self._get_store_cache_file(iddoc, repository, doc_url,
+            setup_dir = True)
         cache_dir = os.path.dirname(cache_file)
 
         if not os.access(cache_dir, os.W_OK):
@@ -592,8 +607,7 @@ class Cache:
         return cache_file
 
     def get_stored_document(self, iddoc, repository, doc_url):
-        cache_file = os.path.join(Cache.CACHE_DIR,
-            self._get_store_cache_file(iddoc, repository, doc_url))
+        cache_file = self._get_store_cache_file(iddoc, repository, doc_url)
         if os.path.isfile(cache_file) and os.access(cache_file, os.R_OK):
             return cache_file
 
@@ -652,7 +666,7 @@ class Cache:
             cache_file = self._get_vote_cache_file(repository)
             try:
                 data = entropy.dump.loadobj(
-                    self._complete_cache_path(cache_file),
+                    cache_file,
                     complete_path = True)
                 if data != None:
                     self._set_live_cache_item(repository, cache_key, data)
@@ -668,9 +682,7 @@ class Cache:
         with self.CacheLock:
             cache_file = self._get_downloads_cache_file(repository)
             try:
-                data = entropy.dump.loadobj(
-                    self._complete_cache_path(cache_file),
-                    complete_path = True)
+                data = entropy.dump.loadobj(cache_file, complete_path = True)
                 if data != None:
                     self._set_live_cache_item(repository, cache_key, data)
             except (IOError, EOFError, OSError):
@@ -687,9 +699,7 @@ class Cache:
         with self.CacheLock:
             cache_file = self._get_alldocs_cache_file(pkgkey, repository)
             try:
-                data = entropy.dump.loadobj(
-                    self._complete_cache_path(cache_file),
-                    complete_path = True)
+                data = entropy.dump.loadobj(cache_file, complete_path = True)
                 if data != None:
                     cached[pkgkey] = data
                     self._set_live_cache_item(repository, cache_key, cached)
@@ -703,24 +713,21 @@ class Cache:
                 self._get_vote_cache_key(repository))
 
             cache_file = self._get_vote_cache_file(repository)
-            entropy.dump.dumpobj(self._complete_cache_path(cache_file),
-                vote_dict, complete_path = True)
+            entropy.dump.dumpobj(cache_file, vote_dict, complete_path = True)
 
     def save_downloads_cache(self, repository, down_dict):
         with self.CacheLock:
             self._clear_live_cache_item(repository,
                 self._get_downloads_cache_key(repository))
             cache_file = self._get_downloads_cache_file(repository)
-            entropy.dump.dumpobj(self._complete_cache_path(cache_file),
-                down_dict, complete_path = True)
+            entropy.dump.dumpobj(cache_file, down_dict, complete_path = True)
 
     def save_alldocs_cache(self, pkgkey, repository, alldocs_dict):
         with self.CacheLock:
             self._clear_live_cache_item(repository,
                 self._get_alldocs_cache_key(repository))
             cache_file = self._get_alldocs_cache_file(pkgkey, repository)
-            entropy.dump.dumpobj(self._complete_cache_path(cache_file),
-                alldocs_dict, complete_path = True)
+            entropy.dump.dumpobj(cache_file, alldocs_dict, complete_path = True)
 
     def get_package_vote(self, repository, pkgkey):
         cache = self.get_vote_cache(repository)
