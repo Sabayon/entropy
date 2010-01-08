@@ -249,10 +249,6 @@ class SulfurApplicationEventsMixin:
             self.Equo.remove_repository(repoid)
             self.reset_cache_status()
             self.setup_repoView()
-            msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),
-                _("Update Repositories"), _("or the"), _("Regenerate Cache"),
-                _("now"))
-            okDialog( self.ui.main, msg )
 
     def on_repoEdit_clicked( self, widget ):
         my = AddRepositoryWindow(self, self.ui.main, self.Equo)
