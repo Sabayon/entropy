@@ -1,3 +1,45 @@
+commit a945625bb7f3cc9376f50a829fc3d808302da7ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 8 09:39:05 2010 +0100
+
+    [sulfur] it happens that corrupted repositories cause sulfur packages filter logic to crash. This is not really the right place.
+
+commit 895b9fd9b6af7259c583930cd9e1420cd6295fbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 8 09:36:58 2010 +0100
+
+    [sulfur] fix package sorter sensitivity handling
+
+commit 11657e25d23d9abaa8d371b87344144c68dcc0d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 8 09:26:47 2010 +0100
+
+    [entropy.client.services.ugc] fix UGC cache handling (caused PermissionDenied exceptions)
+
+commit cb88f3ab1c890ea599e2d42f600ef4768919e995
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 8 08:48:29 2010 +0100
+
+    [entropy.core.settings.base] handle UGC metadata setup from split repo strings correctly
+
+commit e7e53c19441a295c0d4aba2d6f6581116027755f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 14:17:38 2010 +0100
+
+    [sulfur] never hide main window, this is against sulfur love
+
+commit ac90bbe140b61b37b3dad9459c580b6b087578a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 14:04:57 2010 +0100
+
+    [sulfur] kill wait window, it's against sulfur love
+
+commit 5ffbd5a3af48cc9fccb36230830fed3f8069a3fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 7 11:19:40 2010 +0100
+
+    Update ChangeLog for version 0.99.20.20
+
 commit a622c1fc063e6f564a94237feaaf813fc74bfc1d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 7 11:19:03 2010 +0100
