@@ -63,8 +63,7 @@ def query(options):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
         else:
-            if not opt.startswith("-"):
-                myopts.append(opt)
+            myopts.append(opt)
 
     if not myopts:
         return -10

@@ -639,12 +639,25 @@ CMDS_MAP = {
 options = sys.argv[1:]
 _options = []
 
+supported_short_opts = ["-a", "-q", "-v", "-p", "-N"]
+
 opt_r = re.compile("^(\\-)([a-z]+)$")
 for n in range(len(options)):
+
     if opt_r.match(options[n]):
-        x = options[n]
+        x_found_opts = ["-%s" % (d,) for d in options[n][1:]]
+
+        supported = True
+        for x in x_found_opts:
+            if x not in supported_short_opts:
+                supported = False
+                break
+
+        if not supported or not x_found_opts:
+            continue
+
         del options[n]
-        options.extend(["-%s" % (d,) for d in x[1:]])
+        options.extend(x_found_opts)
 
 for opt in options:
     if opt in ["--nocolor", "-N"]:
