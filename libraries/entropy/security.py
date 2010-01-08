@@ -253,7 +253,7 @@ class System:
         try:
             repo_sec = self.Entropy.RepositorySecurity(
                 keystore_dir = self.__gpg_keystore_dir)
-        except RepositorySecurity.GPGError:
+        except Repository.GPGError:
             return None # GPG not available
         return repo_sec
 
