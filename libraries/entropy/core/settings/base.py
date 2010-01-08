@@ -1191,6 +1191,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
                         my_repodata[reponame]['dbcformat'] = \
                             repodata['dbcformat']
 
+                        my_repodata[reponame]['service_uri'] = \
+                            repodata['service_uri']
+                        my_repodata[reponame]['service_port'] = \
+                            repodata['service_port']
+                        my_repodata[reponame]['ssl_service_port'] = \
+                            repodata['ssl_service_port']
+
                 else:
 
                     my_repodata[reponame] = repodata.copy()
