@@ -347,14 +347,18 @@ class LicenseSortPackageViewModelInjector(DefaultPackageViewModelInjector):
         licenses = {}
         for po in packages:
             try:
-                lic = po.lic
+                lics = po.lic.strip().split()
             except (TypeError, AttributeError, ValueError,):
-                lic = None
-            if lic is not None:
-                if not lic.strip():
-                    lic = _("Not available")
+                lics = []
+
+            if not lics:
+                lic = _("Not available")
                 lic_obj = licenses.setdefault(lic, [])
                 lic_obj.append(po)
+            else:
+                for lic in lics:
+                    lic_obj = licenses.setdefault(lic, [])
+                    lic_obj.append(po)
 
         for lic in sorted(licenses):
 
