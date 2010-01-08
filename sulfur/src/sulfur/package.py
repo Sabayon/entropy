@@ -204,14 +204,20 @@ class EntropyPackage:
 
     def _get_nameDesc_get_installed_ver(self):
         ver_str = ''
-        if self.installed_match:
-            idpackage = self.installed_match[0]
-            from_ver = EquoIntf.clientDbconn.retrieveVersion(idpackage)
-            from_tag = EquoIntf.clientDbconn.retrieveVersionTag(idpackage)
-            if from_tag:
-                from_tag = '#%s' % (from_tag,)
-            ver_str = from_ver+from_tag
-        return ver_str
+        if not self.installed_match:
+            return ver_str
+
+        idpackage = self.installed_match[0]
+        if (self.matched_atom[1] == 0) and (self.matched_id == idpackage):
+            # there are no updates
+            return ver_str
+
+        from_ver = EquoIntf.clientDbconn.retrieveVersion(idpackage)
+        from_tag = EquoIntf.clientDbconn.retrieveVersionTag(idpackage)
+        if from_tag:
+            from_tag = '#%s' % (from_tag,)
+
+        return from_ver+from_tag
 
     def get_nameDesc(self):
 
