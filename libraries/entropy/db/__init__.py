@@ -33,7 +33,7 @@ import hashlib
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
     const_convert_to_rawstring, const_cmp
-from entropy.exceptions import IncorrectParameter, InvalidAtom, \
+from entropy.exceptions import InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted, RepositoryPluginError, SPMError
 from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
@@ -421,18 +421,18 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if self.dbname == etpConst['clientdbid']:
             self.db_branch = None
 
-        if dbFile is None:
-            raise IncorrectParameter("IncorrectParameter: %s" % (
-                _("valid database path needed"),) )
+        self.dbFile = dbFile
+        self.xcache = xcache
+        if self.dbFile is None:
+            raise AttributeError("valid database path needed")
 
         self.__write_mutex = self.threading.RLock()
         self.dbapi2 = dbapi2
         # setup service interface
         self.readOnly = readOnly
-        self.xcache = xcache
+
         self.indexing = indexing
         self.skipChecks = skipChecks
-        self.dbFile = dbFile
         self.live_cache = {}
 
         # create connection
@@ -475,6 +475,25 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if structure_update:
             self._databaseStructureUpdates()
+
+    def __show_info(self):
+        first_part = "<EntropyRepository instance at %s, %s, closed: %s" % (
+            hex(id(self)), self.dbFile, self.dbclosed,)
+        second_part = ", ro: %s, caching: %s, indexing: %s" % (
+            self.readOnly, self.xcache, self.indexing,)
+        third_part = ", name: %s, skip_upd: %s>" % (
+            self.dbname, self.skipChecks,)
+
+        return first_part + second_part + third_part
+
+    def __repr__(self):
+        return self.__show_info()
+
+    def __str__(self):
+        return self.__show_info()
+
+    def __unicode__(self):
+        return self.__show_info()
 
     def setCacheSize(self, size):
         """
