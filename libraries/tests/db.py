@@ -168,6 +168,34 @@ class EntropyRepositoryTest(unittest.TestCase):
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
+    def test_db_cache(self):
+        test_pkg = _misc.get_test_entropy_package_provide()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+
+        # enable cache
+        self.test_db.xcache = True
+        key = new_data['category'] + "/" + new_data['name']
+
+        from entropy.cache import EntropyCacher
+        cacher = EntropyCacher()
+        cacher.start()
+
+        cached = self.test_db._EntropyRepository__atomMatchFetchCache(
+            key, True, False, False, None, None, False, False, True)
+        self.assert_(cached is None)
+
+        # now store
+        self.test_db._EntropyRepository__atomMatchStoreCache(
+            key, True, False, False, None, None, False, False, True,
+            result = (123, 0)
+        )
+        cacher.sync()
+
+        cached = self.test_db._EntropyRepository__atomMatchFetchCache(
+            key, True, False, False, None, None, False, False, True)
+        self.assertEqual(cached, (123, 0))
+
     def test_db_insert_compare_match(self):
 
         # insert/compare
