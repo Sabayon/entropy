@@ -46,7 +46,7 @@ class EntropyCacher(Singleton):
     # Max amount of processes to spawn
     _PROC_LIMIT = 10
     # Max number of cache objects written at once
-    _OBJS_WRITTEN_AT_ONCE = 50
+    _OBJS_WRITTEN_AT_ONCE = 150
 
     """
     Entropy asynchronous and synchronous cache writer
