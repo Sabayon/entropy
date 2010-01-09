@@ -1,9 +1,8 @@
 
   0.99.30:
 
-    - sulfur: why terminal respawns
     - sulfur: remove double progress bar (merge into one)
-    - sulfur: orphans check
+    - sulfur: move repoman outside sulfur codebase
     - entropy.output API rework
     - equo bashcomp
     - entropy.tools API docs merge
