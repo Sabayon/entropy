@@ -1537,7 +1537,8 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                         )
                         print_info(mytxt)
                         for match in items:
-                            key, slot = E_CLIENT.clientDbconn.retrieveKeySlot(match[0])
+                            key, slot = E_CLIENT.clientDbconn.retrieveKeySlot(
+                                match[0])
                             if (key, slot) not in items_cache:
                                 print_info(red("    # ") + blue(key) + ":" + \
                                     brown(str(slot)) + red(" ?"))
@@ -1555,7 +1556,8 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
 
         look_for_orphaned_packages = True
         # now print the selected packages
-        print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
+        print_info(red(" @@ ")+blue("%s:" % (
+            _("These are the chosen packages"),) ))
         totalatoms = len(found_pkg_atoms)
         atomscounter = 0
         for idpackage in found_pkg_atoms:
@@ -1600,7 +1602,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             if idpackage not in package_sizes:
                 package_sizes[idpackage] = on_disk_size, pkg_size
 
-        if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
+        if etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']:
             print_info(red(" @@ ") + \
                 blue("%s: " % (_("Packages involved"),) ) + str(totalatoms))
 
@@ -1620,16 +1622,19 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             rc = E_CLIENT.askQuestion(question)
             if rc == _("No"):
                 look_for_orphaned_packages = False
-                if (not deps):
+                if not deps:
                     return 0, 0
 
         removal_queue = []
         atomscounter = len(plain_removal_queue)
 
         if look_for_orphaned_packages:
-            choosen_removal_queue = E_CLIENT.get_removal_queue(plain_removal_queue, deep = deep)
+            choosen_removal_queue = E_CLIENT.get_removal_queue(
+                plain_removal_queue, deep = deep)
             if choosen_removal_queue:
-                print_info(red(" @@ ")+blue("%s:" % (_("This is the new removal queue"),) ))
+
+                print_info(red(" @@ ") + \
+                    blue("%s:" % (_("This is the new removal queue"),) ))
                 totalatoms = str(len(choosen_removal_queue))
 
                 atomscounter = 0
@@ -1640,16 +1645,20 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                     if not rematom:
                         continue
 
-                    installedfrom = E_CLIENT.clientDbconn.getInstalledPackageRepository(idpackage)
+                    installedfrom = \
+                        E_CLIENT.clientDbconn.getInstalledPackageRepository(
+                            idpackage)
                     if installedfrom is None:
                         installedfrom = _("Not available")
 
-                    on_disk_size = E_CLIENT.clientDbconn.retrieveOnDiskSize(idpackage)
+                    on_disk_size = E_CLIENT.clientDbconn.retrieveOnDiskSize(
+                        idpackage)
                     pkg_size = E_CLIENT.clientDbconn.retrieveSize(idpackage)
                     disksize = entropy.tools.bytes_into_human(on_disk_size)
                     repositoryInfo = bold("[") + brown(installedfrom) \
                         + bold("]")
                     stratomscounter = str(atomscounter)
+
                     while len(stratomscounter) < len(totalatoms):
                         stratomscounter = " "+stratomscounter
                     disksizeinfo = bold(" [")+brown(str(disksize))+bold("]")
@@ -1664,7 +1673,10 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             else:
                 writechar("\n")
 
-        mytxt = "%s: %s" % (blue(_("Packages needing to be removed")), red(str(atomscounter)),)
+        mytxt = "%s: %s" % (
+            blue(_("Packages needing to be removed")),
+            red(str(atomscounter)),
+        )
         print_info(red(" @@ ")+mytxt)
 
         total_removal_size = 0
@@ -1693,16 +1705,19 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             return 0, 0
 
         if etpUi['ask'] or human:
-            question = "     %s" % (_("Would you like to proceed ?"),)
+            question = "     %s" % (
+                _("Would you like to proceed ?"),)
             if human:
-                question = "     %s" % (_("Would you like to proceed with a selective removal ?"),)
+                question = "     %s" % (
+                    _("Would you like to proceed with a selective removal ?"),)
             rc = E_CLIENT.askQuestion(question)
             if rc == _("No") and not human:
                 return 0, 0
             elif rc == _("Yes") and human:
                 doSelectiveRemoval = True
             elif rc == _("No") and human:
-                rc = E_CLIENT.askQuestion("     %s" % (_("Would you like to skip this step then ?"),))
+                rc = E_CLIENT.askQuestion("     %s" % (
+                    _("Would you like to skip this step then ?"),))
                 if rc == _("Yes"):
                     return 0, 0
         elif deps:
@@ -1711,7 +1726,8 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                 back = True
             )
 
-        for idpackage in plain_removal_queue: # append at the end requested packages if not in queue
+        # append at the end requested packages if not in queue
+        for idpackage in plain_removal_queue:
             if idpackage not in removal_queue:
                 removal_queue.append(idpackage)
 
