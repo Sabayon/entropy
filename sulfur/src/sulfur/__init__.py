@@ -93,7 +93,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.setup_gui()
         # show UI
-        if "--nomaximize" not in sys.argv:
+        if "--maximize" in sys.argv:
             self.ui.main.maximize()
         self.ui.main.show()
 
