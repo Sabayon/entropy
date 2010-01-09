@@ -64,7 +64,7 @@ class _Total:
             return 0
         return (now*100)/total
 
-    def clear( self ):
+    def clear(self):
         self.progress.set_fraction(0)
         self.progress.set_text(" ")
         self.lastFrac = -1
@@ -76,7 +76,7 @@ class _Total:
         absProgress = self.nowProgress + absStep
         self.setAbsProgress(absProgress, prefix)
 
-    def setAbsProgress( self, now, prefix = None ):
+    def setAbsProgress(self, now, prefix = None):
         if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
             return
         self.gtk_loop()
@@ -87,7 +87,7 @@ class _Total:
             text = "%s : %3i%%" % (prefix, percent)
         else:
             text = "%3i%%" % (percent,)
-        self.progress.set_text( text )
+        self.progress.set_text(text)
 
     def gtk_loop(self):
         while gtk.events_pending():
@@ -95,62 +95,62 @@ class _Total:
 
 class Base:
 
-    def __init__( self, ui, set_page_func, parent ):
+    def __init__(self, ui, set_page_func, parent):
         self.ui = ui
         self.set_page_func = set_page_func
         self.parent = parent
-        self.ui.progressMainLabel.set_text( "" )
-        self.ui.progressSubLabel.set_text( "" )
-        self.ui.progressExtraLabel.set_text( "" )
-        self.total = _Total( self.ui.totalProgressBar )
-        self.ui.progressBar.set_fraction( 0 )
-        self.ui.progressBar.set_text( " " )
+        self.ui.progressMainLabel.set_text("")
+        self.ui.progressSubLabel.set_text("")
+        self.ui.progressExtraLabel.set_text("")
+        self.total = _Total(self.ui.totalProgressBar)
+        self.ui.progressBar.set_fraction(0)
+        self.ui.progressBar.set_text(" ")
         self.lastFrac = -1
 
-    def show( self ):
+    def show(self):
         def run():
             self.ui.progressBox.show()
-            self.set_page_func( 'output' )
+            self.set_page_func('output')
             self.lastFrac = -1
             return False
         gobject.idle_add(run)
 
-    def reset_progress( self ):
+    def reset_progress(self):
         def run():
             self.lastFrac = -1
-            self.ui.progressBar.set_fraction( 0 )
+            self.ui.progressBar.set_fraction(0)
             self.ui.progressBar.set_text(" ")
             return False
         gobject.idle_add(run)
 
-    def hide( self, clean=False ):
+    def hide(self, clean=False):
         def run():
             self.ui.progressBox.hide()
             if clean:
-                self.ui.progressMainLabel.set_text( "" )
-                self.ui.progressSubLabel.set_text( "" )
-                self.ui.progressExtraLabel.set_text( "" )
-                self.ui.progressBar.set_fraction( 0 )
-                self.ui.progressBar.set_text( " " )
+                self.ui.progressMainLabel.set_text("")
+                self.ui.progressSubLabel.set_text("")
+                self.ui.progressExtraLabel.set_text("")
+                self.ui.progressBar.set_fraction(0)
+                self.ui.progressBar.set_text(" ")
             return False
         gobject.idle_add(run)
 
-    def setTotal( self, now, total ):
+    def setTotal(self, now, total):
         def run(now, total):
-            self.total.setProgress( now, total )
+            self.total.setProgress(now, total)
             return False
         gobject.idle_add(run, now, total)
 
-    def set_progress( self, frac, text=None ):
+    def set_progress(self, frac, text=None):
         def run(frac, text):
             if frac == self.lastFrac: return
             if frac > 1 or frac == 0.0: return
             if frac >= 0 and frac <= 1:
-                self.ui.progressBar.set_fraction( frac )
+                self.ui.progressBar.set_fraction(frac)
             else:
-                self.ui.progressBar.set_fraction( 0 )
+                self.ui.progressBar.set_fraction(0)
             if text != None:
-                self.ui.progressBar.set_text( text )
+                self.ui.progressBar.set_text(text)
             self.lastFrac = frac
             self.gtk_loop()
             return False
@@ -158,34 +158,35 @@ class Base:
 
     def set_text(self, text):
         def run(text):
-            self.ui.progressBar.set_text( text )
+            self.ui.progressBar.set_text(text)
             return False
         gobject.idle_add(run, text)
 
-    def set_mainLabel( self, text ):
+    def set_mainLabel(self, text):
         def run(text):
-            self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
-            self.ui.progressSubLabel.set_text( "" )
-            self.ui.progressExtraLabel.set_text( "" )
+            self.ui.progressMainLabel.set_markup("<b>%s</b>" % (text,))
+            self.ui.progressSubLabel.set_text("")
+            self.ui.progressExtraLabel.set_text("")
             return False
         gobject.idle_add(run, text)
 
-    def set_subLabel( self, text ):
-        def run(text):
-            mytxt = const_convert_to_unicode(text)
-            if len(mytxt) > 80:
-                mytxt = mytxt[:80].strip()+"..."
-            self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
-            self.ui.progressExtraLabel.set_text( "" )
-            return False
-        gobject.idle_add(run, text)
-
-    def set_extraLabel( self, text ):
+    def set_subLabel(self, text):
         def run(text):
             mytxt = const_convert_to_unicode(text)
             if len(mytxt) > 80:
                 mytxt = mytxt[:80].strip()+"..."
-            self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
+            self.ui.progressSubLabel.set_markup("%s" % (cleanMarkupString(mytxt),))
+            self.ui.progressExtraLabel.set_text("")
+            return False
+        gobject.idle_add(run, text)
+
+    def set_extraLabel(self, text):
+        def run(text):
+            mytxt = const_convert_to_unicode(text)
+            if len(mytxt) > 80:
+                mytxt = mytxt[:80].strip()+"..."
+            self.ui.progressExtraLabel.set_markup(
+                "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt))
             self.lastFrac = -1
             return False
         gobject.idle_add(run, text)
