@@ -132,7 +132,7 @@ class SulfurConsole(vte.Terminal):
         vte.Terminal.__init__(self)
         self.reset()
         self.chars_count = 0
-        self.max_chars = 3000
+        self.max_chars = 6000
 
     def _dosettings(self):
         imgpath = os.path.join(const.PIXMAPS_PATH,
