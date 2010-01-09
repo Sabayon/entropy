@@ -265,18 +265,9 @@ def show_config_files_to_update():
             mytxt = "%s: %s" % (red(_("Please run")), bold("equo conf update"))
             print_warning(mytxt)
 
-def upgrade_packages(onlyfetch = False, replay = False, resume = False,
-    skipfirst = False, human = False, dochecksum = True, multifetch = 1):
-
-    # check if I am root
-    if not entropy.tools.is_root():
-        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
-        print_warning(mytxt)
-        etpUi['pretend'] = True
-
+def _upgrade_package_handle_calculation(resume, replay, onlyfetch):
     if not resume:
 
-        print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
         try:
             update, remove, fine, spm_fine = E_CLIENT.calculate_updates(
                 empty_deps = replay)
@@ -284,7 +275,7 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
             # handled in equo.py
             raise
 
-        if (etpUi['verbose'] or etpUi['pretend']):
+        if etpUi['verbose'] or etpUi['pretend']:
             print_info(red(" @@ ") + "%s => %s" % (
                     bold(str(len(update))),
                     darkgreen(_("Packages matching update")),
@@ -301,49 +292,59 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
                 )
             )
 
-        del fine
-
         # clear old resume information
-        if etpConst['uid'] == 0:
-            try:
-                entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], {})
-                entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
-                entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], [])
-                if (not etpUi['pretend']):
-                    # store resume information
-                    resume_cache = {}
-                    resume_cache['ask'] = etpUi['ask']
-                    resume_cache['verbose'] = etpUi['verbose']
-                    resume_cache['onlyfetch'] = onlyfetch
-                    resume_cache['remove'] = remove
-                    entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], resume_cache)
-            except (OSError, IOError):
-                pass
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], {})
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], [])
+        if not etpUi['pretend']:
+            # store resume information
+            resume_cache = {}
+            resume_cache['ask'] = etpUi['ask']
+            resume_cache['verbose'] = etpUi['verbose']
+            resume_cache['onlyfetch'] = onlyfetch
+            resume_cache['remove'] = remove
+            entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], resume_cache)
 
-    else: # if resume, load cache if possible
+        return update, remove, onlyfetch, True
 
-        # check if there's something to resume
-        resume_cache = entropy.dump.loadobj(EQUO_CACHE_IDS['world'])
-        if (not resume_cache) or (etpConst['uid'] != 0): # None or {}
-            print_error(red("%s." % (_("Nothing to resume"),) ))
-            return 128, -1
-        else:
-            try:
-                update = []
-                remove = resume_cache['remove']
-                etpUi['ask'] = resume_cache['ask']
-                etpUi['verbose'] = resume_cache['verbose']
-                onlyfetch = resume_cache['onlyfetch']
-                entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], list(remove))
-            except (OSError, IOError, KeyError):
-                print_error(red("%s." % (_("Resume cache corrupted"),) ))
-                try:
-                    entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], {})
-                    entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
-                    entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], [])
-                except (OSError, IOError):
-                    pass
-                return 128, -1
+    # check if there's something to resume
+    resume_cache = entropy.dump.loadobj(EQUO_CACHE_IDS['world'])
+    if (not resume_cache) or (not entropy.tools.is_root()): # None or {}
+        print_error(red("%s." % (_("Nothing to resume"),) ))
+        return None, None, None, False
+
+    try:
+        update = []
+        remove = resume_cache['remove']
+        etpUi['ask'] = resume_cache['ask']
+        etpUi['verbose'] = resume_cache['verbose']
+        onlyfetch = resume_cache['onlyfetch']
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], list(remove))
+    except KeyError:
+        print_error(red("%s." % (_("Resume cache corrupted"),) ))
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], {})
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], [])
+        onlyfetch = False
+        return None, None, None, False
+
+    return update, remove, onlyfetch, True
+
+def upgrade_packages(onlyfetch = False, replay = False, resume = False,
+    skipfirst = False, human = False, dochecksum = True, multifetch = 1):
+
+    # check if I am root
+    if not entropy.tools.is_root():
+        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        print_warning(mytxt)
+        etpUi['pretend'] = True
+
+    print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
+
+    update, remove, onlyfetch, valid = _upgrade_package_handle_calculation(
+        resume, replay, onlyfetch)
+    if not valid:
+        return 128, -1
 
     # disable collisions protection, better
     sys_set_client_plg_id = \
