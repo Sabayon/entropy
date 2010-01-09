@@ -282,7 +282,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_advisories_filter()
 
         self.setup_images()
-        self.setup_labels()
 
         # init flags
         self.disable_ugc = False
@@ -725,16 +724,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.ui.progressImage.set_from_pixbuf(p)
             except gobject.GError:
                 pass
-
-    def setup_labels(self):
-        """ setup misc application labels """
-
-        mytxt = "<span size='x-large' foreground='#8A381B'>%s</span>" % (
-            _("Preferences"),)
-        self.ui.preferencesTitleLabel.set_markup(mytxt)
-        mytxt = "<span foreground='#084670'>%s</span>" % (
-            _("Some configuration options are critical for the health of your System. Be careful."),)
-        self.ui.preferencesLabel.set_markup(mytxt)
 
     def setup_user_generated_content(self):
 
