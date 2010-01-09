@@ -140,7 +140,7 @@ class EntropyCacher(Singleton):
             time.sleep(0.1)
             self.__clean_pids()
 
-    def __cacher(self, run_until_empty = False):
+    def __cacher(self, run_until_empty = False, sync = False):
         """
         This is where the actual asynchronous copy takes
         place. __cacher runs on a different threads and
@@ -184,6 +184,8 @@ class EntropyCacher(Singleton):
                             pid, len(massive_data),))
                 with self.__proc_pids_lock:
                     self.__proc_pids.add(pid)
+                if sync:
+                    os.waitpid(pid, 0)
                 del massive_data[:]
                 del massive_data
 
@@ -241,7 +243,7 @@ class EntropyCacher(Singleton):
         a watchdog prevents this call to get stuck in case of write
         buffer overloads.
         """
-        self.__cacher(run_until_empty = True)
+        self.__cacher(run_until_empty = True, sync = True)
 
     def discard(self):
         """
