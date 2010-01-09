@@ -1,6 +1,7 @@
 
   0.99.30:
 
+    - sulfur: remove double progress bar (merge into one)
     - sulfur: orphans check
     - entropy.output API rework
     - equo bashcomp
