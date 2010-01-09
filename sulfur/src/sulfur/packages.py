@@ -683,19 +683,24 @@ class EntropyPackages:
             self.pkgCache[pkgdata] = yp
         return yp, new
 
-    def _pkg_get_installed(self):
+    def __inst_pkg_setup(self, idpackage):
+        try:
+            yp, new = self.get_package_item((idpackage, 0))
+        except RepositoryError:
+            return 0
+        yp.action = 'r'
+        yp.installed_match = (idpackage, 0,)
+        yp.color = SulfurConf.color_install
+        return yp
 
-        gp_call = self.get_package_item
-        def fm(idpackage):
-            try:
-                yp, new = gp_call((idpackage, 0))
-            except RepositoryError:
-                return 0
-            yp.action = 'r'
-            yp.installed_match = (idpackage, 0,)
-            yp.color = SulfurConf.color_install
-            return yp
-        return [x for x in map(fm,
+    def _pkg_get_orphans(self):
+        updates, remove, fine, spm_fine = self.Entropy.calculate_updates(
+                critical_updates = False)
+        return [x for x in map(self.__inst_pkg_setup, remove) if not \
+            isinstance(x, int)]
+
+    def _pkg_get_installed(self):
+        return [x for x in map(self.__inst_pkg_setup,
             self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom')) if \
                 not isinstance(x, int)]
 
@@ -721,7 +726,7 @@ class EntropyPackages:
     def _pkg_get_updates_raw(self):
         return self._pkg_get_updates(critical_updates = False)
 
-    def _pkg_get_updates(self, critical_updates = True):
+    def _pkg_get_updates(self, critical_updates = True, orphans = False):
 
         gp_call = self.get_package_item
         cdb_atomMatch = self.Entropy.clientDbconn.atomMatch
@@ -1022,6 +1027,7 @@ class EntropyPackages:
             "queued": self._pkg_get_queued,
             "available": self._pkg_get_available,
             "updates": self._pkg_get_updates,
+            "orphans": self._pkg_get_orphans,
             "unfiltered_updates": self._pkg_get_updates_raw,
             "reinstallable": self._pkg_get_reinstallable,
             "masked": self._pkg_get_masked,

@@ -292,6 +292,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._mtime_pingus = MtimePingus()
         self._spawning_ugc = False
         self._preferences = None
+        self._orphans_message_shown = False
         self.skipMirrorNow = False
         self.abortQueueNow = False
         self.doProgress = False
@@ -1449,6 +1450,42 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.skipMirror.hide()
         self.skipMirror = False
 
+    def add_to_queue(self, pkgs, action, always_ask):
+
+        q_cache = {}
+        for obj in pkgs:
+            q_cache[obj.matched_atom] = obj.queued
+            obj.queued = action
+
+        status, myaction = self.queue.add(pkgs, always_ask = always_ask)
+        if status != 0:
+            for obj in pkgs:
+                obj.queued = q_cache.get(obj.matched_atom)
+            return False
+
+        self.queueView.refresh()
+        self.ui.viewPkg.queue_draw()
+        return True
+
+    def _show_orphans_message(self, orphans):
+
+        confirm = ConfirmationDialog( self.ui.main,
+            orphans,
+            top_text = _("These packages are no longer available"),
+            sub_text = _("These packages should be removed because support has been dropped. Do you want to remove them?"),
+            bottom_text = '',
+            bottom_data = ''
+        )
+        result = confirm.run()
+        ok = False
+        if result == -5: # ok
+            ok = True
+        confirm.destroy()
+
+        if not ok:
+            return False
+        return self.add_to_queue(orphans, "r", False)
+
     def show_packages(self, back_to_page = None, on_init = False):
 
         self.ui_lock(True)
@@ -1485,7 +1522,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.start_working()
 
         allpkgs = []
-        if self.doProgress: next(self.progress.total) # -> Get lists
+        if self.doProgress:
+            next(self.progress.total) # -> Get lists
         self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
         self.progress.set_subLabel(
             _('Entropy is indexing the repositories. It will take a few seconds'))
@@ -1526,6 +1564,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         elif allpkgs and (self.lastPkgPB != "pkgsets"):
             self.ui.pkgSorter.set_property('sensitive', True)
 
+        if not self._orphans_message_shown:
+            if action == "updates" and empty:
+                orphans = self.etpbase.get_raw_groups('orphans')
+                if self.do_debug:
+                    print_generic("show_packages: found orphans %s" % (orphans,))
+                if orphans:
+                    self._orphans_message_shown = True
+                    self._show_orphans_message(orphans)
+
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
         self.progress.total.show()
 
@@ -1543,7 +1590,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.reset_queue_progress_bars()
         self.disable_ugc = False
 
-    def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
+    def add_atoms_to_queue(self, atoms, always_ask = False, matches = None):
+
+        if matches is None:
+            matches = set()
 
         self.set_busy()
         if not matches:
@@ -1580,20 +1630,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 continue
             found_objs.append(obj)
 
-
-        q_cache = {}
-        for obj in found_objs:
-            q_cache[obj.matched_atom] = obj.queued
-            obj.queued = "u"
-
-        status, myaction = self.queue.add(found_objs, always_ask = always_ask)
-        if status != 0:
-            rc = False
-            for obj in found_objs:
-                obj.queued = q_cache.get(obj.matched_atom)
-
-        self.queueView.refresh()
-        self.ui.viewPkg.queue_draw()
+        rc = self.add_to_queue(found_objs, "u", always_ask)
 
         self.unset_busy()
         return rc

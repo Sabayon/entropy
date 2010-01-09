@@ -424,15 +424,12 @@ class SulfurApplicationEventsMixin:
         pkgs = []
         for idpackage, atom in atomsfound:
             yp, new = self.etpbase.get_package_item((idpackage, newrepo,))
-            yp.action = 'i'
-            yp.queued = 'i'
             pkgs.append(yp)
 
         busy_cursor(self.ui.main)
-        status, myaction = self.queue.add(pkgs)
-        if status != 0:
-            for obj in pkgs:
-                obj.queued = None
+
+        done = self.add_to_queue(pkgs, "i", False)
+        if not done:
             clean_n_quit(newrepo)
             normal_cursor(self.ui.main)
             return
