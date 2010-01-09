@@ -798,6 +798,8 @@ class EntropyPackages:
                 yp, new = self.get_package_item(match)
             except RepositoryError:
                 continue
+            if yp.keyslot is None: # broken entry?
+                continue
             key, slot = yp.keyslot
             installed_match = self.Entropy.clientDbconn.atomMatch(key,
                 matchSlot = slot)
