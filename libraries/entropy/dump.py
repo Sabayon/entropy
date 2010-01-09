@@ -105,9 +105,6 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
                 else:
                     pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
-                # effectively sync on disk
-                os.fsync(dmp_f.fileno())
-
             const_setup_file(dmpfile, E_GID, 0o664)
 
         except RuntimeError:
@@ -147,7 +144,6 @@ def serialize(myobj, ser_f, do_seek = True):
     else:
         pickle.dump(myobj, ser_f)
     ser_f.flush()
-    os.fsync(ser_f.fileno())
     if do_seek:
         ser_f.seek(0)
     return ser_f
