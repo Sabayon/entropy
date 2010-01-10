@@ -1,4 +1,4 @@
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayon.org>
@@ -14,18 +14,21 @@
 import sys
 # Entropy Imports
 if "--debugdev" not in sys.argv:
+    sys.path.insert(0, "/usr/lib/entropy/repoman")
     sys.path.insert(0, "/usr/lib/entropy/sulfur")
     sys.path.insert(0, "/usr/lib/entropy/client")
     sys.path.insert(0, "/usr/lib/entropy/libraries")
 sys.path.insert(0, "../../libraries")
 sys.path.insert(0, "../../client")
 sys.path.insert(0, "sulfur")
+sys.path.insert(0, "repoman")
 
 from sulfur.entropyapi import Equo
 # Sulfur Imports
 import gtk, gobject
 from sulfur.setup import const
-from sulfur.dialogs import RepositoryManagerMenu, ExceptionDialog
+from sulfur.dialogs import ExceptionDialog
+from repoman import RepositoryManagerMenu
 
 class MyRepositoryManager(RepositoryManagerMenu):
 
