@@ -115,6 +115,7 @@ class KeywordFilter(BaseFilter):
                     except:
                         if etpUi['debug']:
                             raise
+                        value = None
                     if not value:
                         continue
                     if value.lower().find(crit) != -1:
