@@ -1,7 +1,6 @@
 
   0.99.30:
 
-    - sulfur: move repoman outside sulfur codebase
     - equo bashcomp
     - entropy.output API rework
     - entropy.tools API docs merge
@@ -21,6 +20,7 @@
         - entropy.client, rename validRepositories into enabled_repositories
         - entropy.client, rename clientDbconn into installed_db
         - entropy.db => retrieveVersionTag => retrieveTag
+    - sulfur: code refactoring
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier
