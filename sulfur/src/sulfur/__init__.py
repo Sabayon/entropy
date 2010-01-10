@@ -413,8 +413,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.rbUpdatesSimpleHbox.reorder_child(adv_content, 0)
 
-        self.ui.rbRefreshLabel.hide()
+        # updates label
+        self.ui.rbUpdatesSimpleLabel.show()
         self.ui.rbUpdatesLabel.hide()
+
+        self.ui.rbRefreshLabel.hide()
         self.ui.rbAllLabel.hide()
         self.ui.rbPkgSetsLabel1.hide()
         self.ui.pkgFilter.set_size_request(-1, 40)
@@ -451,16 +454,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.headerHbox.reorder_child(adv_content, 0)
 
-        self.ui.rbRefreshLabel.show()
+        # updates label
+        self.ui.rbUpdatesSimpleLabel.hide()
         self.ui.rbUpdatesLabel.show()
+
+        self.ui.rbRefreshLabel.show()
         self.ui.rbAllLabel.show()
         self.ui.rbPkgSetsLabel1.show()
         self.ui.pkgFilter.set_size_request(-1, 26)
-
-        # Change Labels to be more pr0 friendly
-        self.ui.rbAllLabel.set_label('All')
-        self.ui.rbUpdatesLabel.set_label('Updates')
-        self.ui.rbRefreshLabel.set_label('Refresh')
 
         # move filterbar
         filter_bar = self.ui.pkgFilter
@@ -1460,6 +1461,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return False
         return self.add_to_queue(orphans, "r", False)
 
+    def _set_updates_label(self, updates_count):
+        # set both simple and advanced mode labels
+        txt_simple = "<b>%s</b>" % (updates_count,)
+        txt_adv = txt_simple + " <small>%s</small>" % (_("updates"),)
+        self.ui.rbUpdatesSimpleLabel.set_markup(txt_adv)
+        self.ui.rbUpdatesLabel.set_markup(txt_adv)
+
     def show_packages(self, back_to_page = None, on_init = False):
 
         self.ui_lock(True)
@@ -1512,6 +1520,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if bootstrap:
             self.end_working()
+
+        # set updates label
+        if action == 'updates':
+            self._set_updates_label(len(allpkgs))
 
         empty = False
         if on_init and (not allpkgs) and action == "updates":
