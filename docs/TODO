@@ -1,7 +1,6 @@
 
   0.99.30:
 
-    - sulfur: remove double progress bar (merge into one)
     - sulfur: move repoman outside sulfur codebase
     - entropy.output API rework
     - equo bashcomp

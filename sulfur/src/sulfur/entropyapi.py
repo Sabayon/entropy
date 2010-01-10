@@ -26,7 +26,7 @@ from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
 
 # Entropy Imports
-from entropy.const import etpConst
+from entropy.const import etpConst, etpUi
 from entropy.output import print_generic
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.fetchers import UrlFetcher
@@ -40,8 +40,6 @@ class QueueExecutor:
         self.Entropy = SulfurApplication.Equo
         self.__on_lic_request = False
         self.__on_lic_rc = None
-        # reset fetcher last average count
-        GuiUrlFetcher.gui_last_avg = 0
         # clear download mirrors status
         self.Entropy.MirrorStatus.clear()
 
@@ -84,7 +82,7 @@ class QueueExecutor:
         3 = license not accepted
         """
 
-        if selected_by_user == None:
+        if selected_by_user is None:
             selected_by_user = set()
 
         # unmask packages
@@ -117,24 +115,6 @@ class QueueExecutor:
         for lic in licenses:
             self.Entropy.clientDbconn.acceptLicense(lic)
 
-        totalqueue = len(runQueue)
-        steps_here = 2
-        if fetch_only:
-            steps_here = 1
-        progress_step = float(1)/((totalqueue*steps_here)+len(removalQueue))
-        step = progress_step
-        myrange = []
-        while progress_step < 1.0:
-            myrange.append(step)
-            progress_step += step
-        myrange.append(step)
-
-        def do_total_setup():
-            self.Entropy.progress.total.setup( myrange )
-            return False
-        gobject.timeout_add(0, do_total_setup)
-
-
         def do_skip_show():
             self.Sulfur.skipMirrorNow = False
             self.Sulfur.ui.skipMirror.show()
@@ -142,86 +122,137 @@ class QueueExecutor:
             return False
         gobject.timeout_add(0, do_skip_show)
 
-        # first fetch all
-        fetchqueue = 0
-        mykeys = {}
-
         fetch_action = "fetch"
         fetch_string = "%s: " % (_("Fetching"),)
         if download_sources:
             fetch_string = "%s: " % (_("Downloading sources"),)
             fetch_action = "source"
 
-        for pkg_info in runQueue:
-
-            self.Sulfur.queue_bombing()
-
-            fetchqueue += 1
-            pkg = self.Entropy.Package()
-            metaopts = {}
-            metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
-            pkg.prepare(pkg_info, fetch_action, metaopts)
-
-            myrepo = pkg.pkgmeta['repository']
-            if myrepo not in mykeys:
-                mykeys[myrepo] = set()
-            mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
-                pkg.pkgmeta['atom']))
-
-            self.Entropy.updateProgress(
-                fetch_string+pkg.pkgmeta['atom'],
-                importance = 2,
-                count = (fetchqueue, totalqueue)
-            )
-            rc = pkg.run()
-            if rc != 0:
-                return 1
-            pkg.kill()
-            del pkg
-
-        if not download_sources:
-            def spawn_ugc():
-                try:
-                    if self.Entropy.UGC != None:
-                        for myrepo in mykeys:
-                            mypkgkeys = sorted(mykeys[myrepo])
-                            self.Entropy.UGC.add_download_stats(myrepo,
-                                mypkgkeys)
-                except:
-                    pass
-            spawn_ugc()
-
-        def do_skip_hide():
-            self.Sulfur.ui.skipMirror.hide()
-            return False
-        gobject.timeout_add(0, do_skip_hide)
-
+        totalqueue = len(runQueue)
+        steps_here = 2
         if fetch_only or download_sources:
-            return 0
+            steps_here = 1
 
-        # then removalQueue
-        # NOT conflicts! :-)
-        totalremovalqueue = len(removalQueue)
-        currentremovalqueue = 0
-        for rem_data in removalQueue:
+        total_steps = (totalqueue*steps_here)+len(removalQueue)
+        steps_counter = total_steps
+        self.Entropy.set_progress_divider(steps_counter)
+        # reset fetcher last average count
+        GuiUrlFetcher.gui_last_avg = 0
+        GuiUrlFetcher.set_divider(steps_counter)
+        progress_step_count = 0
 
-            self.Sulfur.queue_bombing()
+        try:
 
-            idpackage = rem_data[0]
-            currentremovalqueue += 1
+            mykeys = {}
 
-            metaopts = {}
-            metaopts['removeconfig'] = rem_data[1]
-            if idpackage in do_purge_cache:
-                metaopts['removeconfig'] = True
-            pkg = self.Entropy.Package()
-            pkg.prepare((idpackage,), "remove", metaopts)
+            for pkg_info in runQueue:
 
-            if 'remove_installed_vanished' not in pkg.pkgmeta:
+                self.Sulfur.queue_bombing()
+
+                progress_step_count += 1
+                pkg = self.Entropy.Package()
+                metaopts = {}
+                metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
+                pkg.prepare(pkg_info, fetch_action, metaopts)
+
+                myrepo = pkg.pkgmeta['repository']
+                if myrepo not in mykeys:
+                    mykeys[myrepo] = set()
+                mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
+                    pkg.pkgmeta['atom']))
+
                 self.Entropy.updateProgress(
-                    "%s: " % (_("Removing"),) + pkg.pkgmeta['removeatom'],
+                    fetch_string+pkg.pkgmeta['atom'],
                     importance = 2,
-                    count = (currentremovalqueue, totalremovalqueue)
+                    count = (progress_step_count, total_steps)
+                )
+                rc = pkg.run()
+                if rc != 0:
+                    return 1
+                pkg.kill()
+                del pkg
+
+            if not download_sources:
+                def spawn_ugc():
+                    try:
+                        if self.Entropy.UGC != None:
+                            for myrepo in mykeys:
+                                mypkgkeys = sorted(mykeys[myrepo])
+                                self.Entropy.UGC.add_download_stats(myrepo,
+                                    mypkgkeys)
+                    except:
+                        pass
+                spawn_ugc()
+
+            def do_skip_hide():
+                self.Sulfur.ui.skipMirror.hide()
+                return False
+            gobject.timeout_add(0, do_skip_hide)
+
+            if fetch_only or download_sources:
+                return 0
+
+            # then removalQueue
+            # NOT conflicts! :-)
+            for rem_data in removalQueue:
+
+                self.Sulfur.queue_bombing()
+
+                idpackage = rem_data[0]
+                progress_step_count += 1
+
+                metaopts = {}
+                metaopts['removeconfig'] = rem_data[1]
+                if idpackage in do_purge_cache:
+                    metaopts['removeconfig'] = True
+                pkg = self.Entropy.Package()
+                pkg.prepare((idpackage,), "remove", metaopts)
+
+                if 'remove_installed_vanished' not in pkg.pkgmeta:
+                    self.Entropy.updateProgress(
+                        "%s: " % (_("Removing"),) + pkg.pkgmeta['removeatom'],
+                        importance = 2,
+                        count = (progress_step_count, total_steps)
+                    )
+
+                    rc = pkg.run()
+                    if rc != 0:
+                        return 1
+
+                    pkg.kill()
+
+                del metaopts
+                del pkg
+
+            def do_skip_one_show():
+                self.Sulfur.skipMirrorNow = False
+                self.Sulfur.ui.skipMirror.show()
+                return False
+
+            gobject.timeout_add(0, do_skip_one_show)
+
+            for pkg_info in runQueue:
+                progress_step_count += 1
+
+                self.Sulfur.queue_bombing()
+
+                metaopts = {}
+                metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
+                metaopts['removeconfig'] = False
+
+                if pkg_info in selected_by_user:
+                    metaopts['install_source'] = etpConst['install_sources']['user']
+                else:
+                    metaopts['install_source'] = \
+                        etpConst['install_sources']['automatic_dependency']
+
+                pkg = self.Entropy.Package()
+                pkg.prepare(pkg_info, "install", metaopts)
+
+                self.Entropy.updateProgress(
+                    "%s: " % (_("Installing"),) + pkg.pkgmeta['atom'],
+                    importance = 2,
+                    count = (progress_step_count, total_steps)
                 )
 
                 rc = pkg.run()
@@ -229,59 +260,39 @@ class QueueExecutor:
                     return 1
 
                 pkg.kill()
+                del metaopts
+                del pkg
 
-            del metaopts
-            del pkg
+            def do_skip_hide_again():
+                self.Sulfur.ui.skipMirror.hide()
+                self.Sulfur.ui.abortQueue.hide()
+                return False
+            gobject.timeout_add(0, do_skip_hide_again)
 
-        def do_skip_one_show():
-            self.Sulfur.skipMirrorNow = False
-            self.Sulfur.ui.skipMirror.show()
-            return False
-
-        gobject.timeout_add(0, do_skip_one_show)
-
-        totalqueue = len(runQueue)
-        currentqueue = 0
-        for pkg_info in runQueue:
-            currentqueue += 1
-
-            self.Sulfur.queue_bombing()
-
-            metaopts = {}
-            metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
-            metaopts['removeconfig'] = False
-
-            if pkg_info in selected_by_user:
-                metaopts['install_source'] = etpConst['install_sources']['user']
-            else:
-                metaopts['install_source'] = \
-                    etpConst['install_sources']['automatic_dependency']
-
-            pkg = self.Entropy.Package()
-            pkg.prepare(pkg_info, "install", metaopts)
-
-            self.Entropy.updateProgress(
-                "%s: " % (_("Installing"),) + pkg.pkgmeta['atom'],
-                importance = 2,
-                count = (currentqueue, totalqueue)
-            )
-
-            rc = pkg.run()
-            if rc != 0:
-                return 1
-
-            pkg.kill()
-            del metaopts
-            del pkg
-
-        def do_skip_hide_again():
-            self.Sulfur.ui.skipMirror.hide()
-            self.Sulfur.ui.abortQueue.hide()
-            return False
-        gobject.timeout_add(0, do_skip_hide_again)
+        finally:
+            self.Entropy.reset_progress_divider()
+            GuiUrlFetcher.reset_divider()
 
         return 0
 
+def _calculate_progress_bar_pos(cur_prog, divider, average):
+    step_len = 1.0/divider
+    scaled_prog = average * step_len
+
+    seek_pos = 0.0
+    while seek_pos <= cur_prog:
+        seek_pos += step_len
+    # we've found the max value in range
+    bar_max = seek_pos
+    bar_min = seek_pos - step_len
+    to_prog = bar_min + scaled_prog
+
+    if etpUi['debug']:
+        print_generic("_calculate_progress_bar_pos: raw => %s, cur => %s"
+        ", step => %s, scaled => %s, bar min => %s, result => %s" % (
+            average, cur_prog, step_len, scaled_prog,
+            bar_min, to_prog,))
+    return to_prog
 
 class Equo(EquoInterface):
 
@@ -291,8 +302,9 @@ class Equo(EquoInterface):
         self.output = None
         self.progress = None
         self.urlFetcher = None
+        self._progress_divider = 1
         self.xcache = True # force xcache enabling
-        if "--debug" in sys.argv:
+        if etpUi['debug']:
             self.UGC.quiet = False
         self._mthread_rc = {
             'askQuestion': {},
@@ -307,20 +319,34 @@ class Equo(EquoInterface):
         self.output = application.output
         self.ui = application.ui
 
+    def set_progress_divider(self, divider):
+        if divider < 1: # avoid growing to infinity
+            divider = 1
+        self._progress_divider = divider
+
+    def reset_progress_divider(self):
+        self._progress_divider = 1
+
     def updateProgress(self, text, header = "", footer = "", back = False,
             importance = 0, type = "info", count = [], percent = False):
 
         count_str = ""
         if self.progress:
+
             if count:
                 count_str = "(%s/%s) " % (str(count[0]), str(count[1]),)
+
+                cur_prog = _calculate_progress_bar_pos(
+                    self.progress.get_progress(),
+                        self._progress_divider, float(count[0])/count[1])
+
                 if importance == 0:
                     progress_text = text
                 else:
-                    percent_int = int(round((float(count[0])/count[1])*100, 1))
-                    progress_text = str(percent_int) + "%"
-                self.progress.set_progress(
-                    round((float(count[0])/count[1]), 1), progress_text )
+                    progress_text = str(int(cur_prog)) + "%"
+
+                self.progress.set_progress(cur_prog, progress_text)
+
             if importance == 1:
                 myfunc = self.progress.set_subLabel
             elif importance == 2:
@@ -400,6 +426,25 @@ class Equo(EquoInterface):
 class GuiUrlFetcher(UrlFetcher):
 
     gui_last_avg = 0
+    _default_divider = 1
+    _divider = _default_divider
+    _use_progress_bar = True
+
+    @staticmethod
+    def set_divider(divider):
+        GuiUrlFetcher._divider = divider
+
+    @staticmethod
+    def get_divider():
+        return GuiUrlFetcher._divider
+
+    @staticmethod
+    def reset_divider():
+        GuiUrlFetcher._divider = GuiUrlFetcher._default_divider
+
+    @staticmethod
+    def enable_progress_bar(enable):
+        GuiUrlFetcher._use_progress_bar = enable
 
     def connect_to_gui(self, progress):
         self.progress = progress
@@ -427,8 +472,13 @@ class GuiUrlFetcher(UrlFetcher):
 
         if (myavg > GuiUrlFetcher.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
-            self.progress.set_progress(round(float(self.__average)/100, 1),
-                str(myavg)+"%")
+            if GuiUrlFetcher._use_progress_bar:
+                cur_prog = _calculate_progress_bar_pos(
+                    self.progress.get_progress(),
+                        GuiUrlFetcher._divider, float(self.__average)/100)
+                cur_prog_str = str(int(cur_prog * 100))
+                self.progress.set_progress(cur_prog, cur_prog_str+"%")
+
             human_dt = self.entropyTools.bytes_into_human(self.__datatransfer)
             self.progress.set_extraLabel("%s/%s kB @ %s" % (
                     str(round(float(self.__downloadedsize)/1024, 1)),

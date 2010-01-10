@@ -22,77 +22,6 @@ import gobject
 import gtk
 from sulfur.setup import cleanMarkupString
 
-class _Total:
-
-    def __init__(self, widget):
-        self.progress = widget
-        self.steps = []
-        self.nowProgres = 0.0
-        self.numSteps = 0
-        self.currentStep = 0
-        self.stepError = False
-        self.lastFrac = -1
-        self.clear()
-
-    def setup(self, steps):
-        self.steps = steps
-        self.numSteps = len(steps)
-        self.currentStep = 0
-        self.nowProgress = 0.0
-        self.stepError = False
-        self.clear()
-
-    def hide(self):
-        self.progress.hide()
-
-    def show(self):
-        self.progress.show()
-
-    def next(self):
-        now = 0.0
-        if self.currentStep < self.numSteps:
-            self.currentStep += 1
-            for i in range(0, self.currentStep):
-                now += self.steps[i]
-                self.nowProgress = now
-                self.setAbsProgress(now)
-            return True
-        return False
-
-    def _percent(self, total, now):
-        if total == 0:
-            return 0
-        return (now*100)/total
-
-    def clear(self):
-        self.progress.set_fraction(0)
-        self.progress.set_text(" ")
-        self.lastFrac = -1
-
-    def setProgress(self, now, total, prefix = None):
-        relStep = float(now)/float(total)
-        curStep = self.steps[self.currentStep]
-        absStep = curStep * relStep
-        absProgress = self.nowProgress + absStep
-        self.setAbsProgress(absProgress, prefix)
-
-    def setAbsProgress(self, now, prefix = None):
-        if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
-            return
-        self.gtk_loop()
-        self.lastFrac = now+0.01
-        percent = int(self._percent(1, now))
-        self.progress.set_fraction(now)
-        if prefix:
-            text = "%s : %3i%%" % (prefix, percent)
-        else:
-            text = "%3i%%" % (percent,)
-        self.progress.set_text(text)
-
-    def gtk_loop(self):
-        while gtk.events_pending():
-           gtk.main_iteration()
-
 class Base:
 
     def __init__(self, ui, set_page_func, parent):
@@ -102,28 +31,31 @@ class Base:
         self.ui.progressMainLabel.set_text("")
         self.ui.progressSubLabel.set_text("")
         self.ui.progressExtraLabel.set_text("")
-        self.total = _Total(self.ui.totalProgressBar)
         self.ui.progressBar.set_fraction(0)
         self.ui.progressBar.set_text(" ")
-        self.lastFrac = -1
+        self.lastFrac = 0.0
+        self.lastFracSync = 0.0
 
     def show(self):
+        self.lastFracSync = 0.0
         def run():
             self.ui.progressBox.show()
             self.set_page_func('output')
-            self.lastFrac = -1
+            self.lastFrac = 0.0
             return False
         gobject.idle_add(run)
 
     def reset_progress(self):
+        self.lastFracSync = 0.0
         def run():
-            self.lastFrac = -1
+            self.lastFrac = 0.0
             self.ui.progressBar.set_fraction(0)
             self.ui.progressBar.set_text(" ")
             return False
         gobject.idle_add(run)
 
     def hide(self, clean=False):
+        self.lastFracSync = 0.0
         def run():
             self.ui.progressBox.hide()
             if clean:
@@ -132,26 +64,28 @@ class Base:
                 self.ui.progressExtraLabel.set_text("")
                 self.ui.progressBar.set_fraction(0)
                 self.ui.progressBar.set_text(" ")
+                self.lastFrac = 0.0
             return False
         gobject.idle_add(run)
 
-    def setTotal(self, now, total):
-        def run(now, total):
-            self.total.setProgress(now, total)
-            return False
-        gobject.idle_add(run, now, total)
+    def get_progress(self):
+        return self.lastFracSync
 
     def set_progress(self, frac, text=None):
+        self.lastFracSync = frac
         def run(frac, text):
-            if frac == self.lastFrac: return
-            if frac > 1 or frac == 0.0: return
+            if frac == self.lastFrac:
+                return
+            self.lastFrac = frac
+            if frac > 1 or frac == 0.0:
+                return
             if frac >= 0 and frac <= 1:
                 self.ui.progressBar.set_fraction(frac)
             else:
                 self.ui.progressBar.set_fraction(0)
+
             if text != None:
                 self.ui.progressBar.set_text(text)
-            self.lastFrac = frac
             self.gtk_loop()
             return False
         gobject.idle_add(run, frac, text)
@@ -187,7 +121,6 @@ class Base:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressExtraLabel.set_markup(
                 "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt))
-            self.lastFrac = -1
             return False
         gobject.idle_add(run, text)
 

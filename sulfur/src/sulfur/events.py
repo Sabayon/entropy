@@ -528,7 +528,6 @@ class SulfurApplicationEventsMixin:
     def on_cacheButton_clicked(self, widget):
         self.repoView.get_selected()
         self.switch_notebook_page('output')
-        self.clean_entropy_caches(alone = True)
         self.switch_notebook_page('repos')
 
     def on_repoDeSelect_clicked(self, widget):

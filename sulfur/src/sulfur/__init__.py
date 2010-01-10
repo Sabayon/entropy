@@ -1212,16 +1212,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 continue
             break
 
-    def clean_entropy_caches(self, alone = False):
-        if alone:
-            self.progress.total.hide()
+    def clean_entropy_caches(self):
         self.Equo.clear_cache()
         # clear views
         self.etpbase.clear_groups()
         self.etpbase.clear_cache()
         self.setup_application()
-        if alone:
-            self.progress.total.show()
 
     def populate_advisories(self, widget, show, background = False):
 
@@ -1292,18 +1288,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.disable_ugc = True
         self.hide_notebook_tabs_for_install()
-        """
-        # set steps
-        progress_step = float(1)/(len(repos))
-        step = progress_step
-        myrange = []
-        while progress_step < 1.0:
-            myrange.append(step)
-            progress_step += step
-        myrange.append(step)
-        self.progress.total.setup( myrange )
-        """
-        self.progress.total.hide()
 
         self.progress.set_mainLabel(_('Initializing Repository module...'))
         force = self.ui.forceRepoUpdate.get_active()
@@ -1378,18 +1362,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.hide_progress_bars()
 
     def hide_progress_bars(self):
-        self.progress.total.hide()
         self.ui.progressBar.hide()
         #self.progress.hide()
 
     def show_progress_bars(self):
-        self.progress.total.show()
         self.ui.progressBar.show()
         #self.progress.show()
 
     def reset_queue_progress_bars(self):
         self.progress.reset_progress()
-        self.progress.total.clear()
 
     def setup_repoView(self):
         self.repoView.populate()
@@ -1418,7 +1399,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def progress_log(self, msg, extra = None):
         self.progress.set_subLabel( msg )
-        self.progress.set_progress( 0, " " ) # Blank the progress bar.
 
         mytxt = []
         slice_count = self.console.get_column_count()
@@ -1503,7 +1483,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 print_generic("show_packages: bootstrap True due to empty avail cache")
             bootstrap = True
             self.switch_notebook_page('output')
-        self.progress.total.hide()
 
         if bootstrap:
             if self.do_debug:
@@ -1516,8 +1495,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.start_working()
 
         allpkgs = []
-        if self.doProgress:
-            next(self.progress.total) # -> Get lists
         self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
         self.progress.set_subLabel(
             _('Entropy is indexing the repositories. It will take a few seconds'))
@@ -1527,7 +1504,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             msg = "%s: %s" % (_('Calculating'), flt,)
             self.set_status_ticker(msg)
             allpkgs += self.etpbase.get_groups(flt)
-        if self.doProgress: next(self.progress.total) # -> Sort Lists
 
         if action == "updates":
             msg = "%s: available" % (_('Calculating'),)
@@ -1568,7 +1544,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self._show_orphans_message(orphans)
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
-        self.progress.total.show()
 
         if self.doProgress:
             self.progress.hide() #Hide Progress
@@ -1718,6 +1693,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 download_sources = download_sources,
                 direct_install_matches = direct_install_matches,
                 direct_remove_matches = direct_remove_matches)
+            return rc
         except SystemExit:
             raise
         except:
@@ -1726,7 +1702,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 import pdb; pdb.set_trace()
             else:
                 raise
-        return rc
 
     def _process_queue(self, pkgs, remove_repos = None, fetch_only = False,
             download_sources = False, direct_remove_matches = None,
