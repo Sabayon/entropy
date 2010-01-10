@@ -1558,8 +1558,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 orphans = self.etpbase.get_raw_groups('orphans')
                 if self.do_debug:
                     print_generic("show_packages: found orphans %s" % (orphans,))
+                self._orphans_message_shown = True
                 if orphans:
-                    self._orphans_message_shown = True
                     self._show_orphans_message(orphans)
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
