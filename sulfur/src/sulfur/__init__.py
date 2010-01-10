@@ -1514,11 +1514,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.end_working()
 
         empty = False
-        if not allpkgs and action == "updates":
+        if on_init and (not allpkgs) and action == "updates":
+            # directly show available pkgs if no updates are available
+            # at startup
+            self.switch_application_tab("available", on_init = True)
+            return
+
+        elif not allpkgs and action == "updates":
             allpkgs = self.etpbase.get_groups('fake_updates')
             empty = True
 
-        self.set_status_ticker("%s: %s %s" % (_("Showing"), len(allpkgs), _("items"),))
+        self.set_status_ticker("%s: %s %s" % (
+            _("Showing"), len(allpkgs), _("items"),))
 
         show_pkgsets = False
         if action == "pkgsets":
@@ -1919,6 +1926,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def switch_notebook_page(self, page):
         self.on_PageButton_changed(None, page)
+
+    def switch_application_tab(self, action, on_init = False):
+        rb = self.packageRB[action]
+        rb.set_active(True)
+        self.on_pkgFilter_toggled(rb, action, on_init = on_init)
 
 ####### events
 

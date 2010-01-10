@@ -468,10 +468,7 @@ class SulfurApplicationEventsMixin:
                 new_mode = 0
             self.switch_application_mode(new_mode)
 
-    def on_pkgFilter_toggled(self, rb, action):
-
-        if not rb.get_active():
-            return
+    def on_pkgFilter_toggled(self, rb, action, on_init = False):
 
         rb.grab_add()
         self.lastPkgPB = action
@@ -492,7 +489,7 @@ class SulfurApplicationEventsMixin:
         else:
             self.ui.queueReviewAndInstallBox.hide()
 
-        self.show_packages()
+        self.show_packages(on_init = on_init)
         rb.grab_remove()
 
     def on_repoRefreshButton_clicked(self, widget):
