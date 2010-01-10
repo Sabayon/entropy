@@ -84,8 +84,9 @@ class Base:
             else:
                 self.ui.progressBar.set_fraction(0)
 
-            if text != None:
+            if text is not None:
                 self.ui.progressBar.set_text(text)
+
             self.gtk_loop()
             return False
         gobject.idle_add(run, frac, text)
