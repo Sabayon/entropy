@@ -38,8 +38,7 @@ from entropy.misc import TimeScheduled, ParallelTask
 from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
 from sulfur.dialogs import okDialog, inputBox, TextReadDialog, questionDialog, \
-    RepositoryManagerMenu, FileChooser, AboutDialog, errorMessage, \
-    AddRepositoryWindow
+    FileChooser, AboutDialog, errorMessage, AddRepositoryWindow
 from sulfur.misc import busy_cursor, normal_cursor
 
 
@@ -773,11 +772,6 @@ class SulfurApplicationEventsMixin:
             if logged_data: self.Equo.UGC.remove_login(repoid)
         self.load_ugc_repositories()
         self.set_status_ticker("%s" % (_("UGC credentials cleared"),))
-
-    def on_repoManagerMenuItem_activate(self, widget):
-        mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
-        rc = mymenu.load()
-        if not rc: del mymenu
 
     def on_noticeBoardMenuItem_activate(self, widget):
         self.show_notice_board()

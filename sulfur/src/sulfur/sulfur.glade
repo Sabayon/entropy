@@ -73,15 +73,6 @@
                         <signal name="activate" handler="on_noticeBoardMenuItem_activate"/>
                       </widget>
                     </child>
-                    <child>
-                      <widget class="GtkMenuItem" id="repoManagerMenuItem">
-                        <property name="visible">True</property>
-                        <property name="label" translatable="yes">_Remote Repository Manager</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_repoManagerMenuItem_activate"/>
-                        <signal name="activate" handler="on_remoteSMenuItem_activate"/>
-                      </widget>
-                    </child>
                   </widget>
                 </child>
               </widget>
@@ -593,7 +584,7 @@
                   <widget class="GtkScrolledWindow" id="swPkg">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hadjustment">0 0 939 93.900000000000006 845.10000000000002 939</property>
+                    <property name="hadjustment">0 0 961 96.100000000000009 864.89999999999998 961</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
