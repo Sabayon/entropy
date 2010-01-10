@@ -1240,14 +1240,12 @@ class Repository:
             if not self.force:
                 updated = self.__handle_repository_update(repo)
                 if updated:
-                    self.Entropy.cycleDone()
                     self.already_updated += 1
                     continue
 
             locked = self.__handle_repository_lock(repo)
             if locked:
                 self.not_available += 1
-                self.Entropy.cycleDone()
                 continue
 
             # clear database interface cache belonging to this repository
@@ -1286,7 +1284,6 @@ class Repository:
                     down_status, sig_down_status, downloaded_db_item = \
                         self.__handle_database_download(repo, cmethod)
                     if not down_status:
-                        self.Entropy.cycleDone()
                         self.not_available += 1
                         do_skip = True
                         skip_this_repo = True
@@ -1327,7 +1324,6 @@ class Repository:
                         time.sleep(5)
                         locked = self.__handle_repository_lock(repo)
                         if locked:
-                            self.Entropy.cycleDone()
                             self.not_available += 1
                             do_skip = True
                             skip_this_repo = True
@@ -1365,7 +1361,6 @@ class Repository:
                     # delete all
                     self.__remove_repository_files(repo)
                     self.sync_errors = True
-                    self.Entropy.cycleDone()
                     continue
 
                 rc = self._check_downloaded_database(repo, cmethod)
@@ -1373,7 +1368,6 @@ class Repository:
                     # delete all
                     self.__remove_repository_files(repo)
                     self.sync_errors = True
-                    self.Entropy.cycleDone()
                     continue
 
             # GPG pubkey install hook
@@ -1406,7 +1400,6 @@ class Repository:
                     # delete all
                     self.__remove_repository_files(repo)
                     self.sync_errors = True
-                    self.Entropy.cycleDone()
                     continue
 
                 unpack_url, unpack_path = self._construct_paths(unpacked_item,
@@ -1436,7 +1429,6 @@ class Repository:
                 # delete all
                 self.__remove_repository_files(repo)
                 self.sync_errors = True
-                self.Entropy.cycleDone()
                 files_to_remove.append(dbfile_old)
                 for path in files_to_remove:
                     try:
@@ -1479,7 +1471,6 @@ class Repository:
             self._run_post_update_repository_hook(repo)
 
             self.updated_repos.add(repo)
-            self.Entropy.cycleDone()
 
             # remove garbage
             if os.access(dbfile_old, os.R_OK) and os.path.isfile(dbfile_old):

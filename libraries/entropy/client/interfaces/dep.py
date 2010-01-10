@@ -1512,21 +1512,18 @@ class CalculatorsMixin:
                 return cached
 
         available = []
-        self.setTotalCycles(len(self.validRepositories))
         avail_dep_text = _("Calculating available packages for")
         for repo in self.validRepositories:
             try:
                 dbconn = self.open_repository(repo)
                 dbconn.validateDatabase()
             except (RepositoryError, SystemDatabaseError):
-                self.cycleDone()
                 continue
             try:
                 # db may be corrupted, we cannot deal with it here
                 idpackages = [x for x in dbconn.listAllIdpackages(
                     order_by = 'atom') if dbconn.idpackageValidator(x)[0] != -1]
             except dbconn.dbapi2.OperationalError:
-                self.cycleDone()
                 continue
             count = 0
             maxlen = len(idpackages)
@@ -1554,14 +1551,12 @@ class CalculatorsMixin:
                 except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError,
                     self.dbapi2.OperationalError,):
 
-                    self.cycleDone()
                     do_break = True
                     continue
                 if not matches:
                     myavailable.append((idpackage, repo))
 
             available += myavailable[:]
-            self.cycleDone()
 
         if self.xcache:
             self.Cacher.push("%s%s" % (
