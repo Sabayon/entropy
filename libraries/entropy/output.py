@@ -974,15 +974,6 @@ class TextInterface:
                     break
         return results
 
-    # useful for reimplementation
-    # in this wait you can send a signal to a widget (total progress bar?)
-    def cycleDone(self):
-        """
-        Not actually implemented. Can be useful for external applications and
-        its used to determine when a certain transaction is done.
-        """
-        pass
-
     def setTitle(self, title):
         """
         Set application title.
@@ -992,22 +983,9 @@ class TextInterface:
         """
         xterm_title(title)
 
-    def setTotalCycles(self, total):
-        """
-        Not actually implemented. Can be useful for external applications and
-        its used to set the amount of logical transactions that this interface
-        has to go through.
-        """
-        pass
-
     def nocolor(self):
         """
         Disable coloured output. Used for terminals.
         """
         nocolor()
 
-    def notitles(self):
-        """
-        Disable the ability to effectively set the application title.
-        """
-        notitles()
