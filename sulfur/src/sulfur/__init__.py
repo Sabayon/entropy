@@ -421,9 +421,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.pkgFilter.set_size_request(-1, 40)
 
         # Change Labels to be more n00b friendly
-        self.ui.rbAllLabel.set_label('Show All Packages')
-        self.ui.rbUpdatesLabel.set_label('Show Available Updates')
-        self.ui.rbRefreshLabel.set_label('Get Latest Entropy Database')
+        self.ui.rbAllLabel.set_label('All Applications')
+        self.ui.rbUpdatesLabel.set_label('Available Updates')
+        self.ui.rbRefreshLabel.set_label('Get Latest Repositories')
 
         # move filterbar
         filter_bar = self.ui.pkgFilter
