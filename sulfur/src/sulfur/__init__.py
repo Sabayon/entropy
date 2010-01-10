@@ -413,17 +413,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.rbUpdatesSimpleHbox.reorder_child(adv_content, 0)
 
-        # labels left active for usability
-        #self.ui.rbRefreshLabel.hide()
-        #self.ui.rbUpdatesLabel.hide()
-        #self.ui.rbAllLabel.hide()
+        self.ui.rbRefreshLabel.hide()
+        self.ui.rbUpdatesLabel.hide()
+        self.ui.rbAllLabel.hide()
         self.ui.rbPkgSetsLabel1.hide()
         self.ui.pkgFilter.set_size_request(-1, 40)
-
-        # Change Labels to be more n00b friendly
-        self.ui.rbAllLabel.set_label('All Applications')
-        self.ui.rbUpdatesLabel.set_label('Available Updates')
-        self.ui.rbRefreshLabel.set_label('Get Latest Repositories')
 
         # move filterbar
         filter_bar = self.ui.pkgFilter
