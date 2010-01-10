@@ -152,33 +152,32 @@ class QueueExecutor:
             fetch_string = "%s: " % (_("Downloading sources"),)
             fetch_action = "source"
 
-        for packageInfo in runQueue:
+        for pkg_info in runQueue:
 
             self.Sulfur.queue_bombing()
 
             fetchqueue += 1
-            Package = self.Entropy.Package()
+            pkg = self.Entropy.Package()
             metaopts = {}
             metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
-            Package.prepare(packageInfo, fetch_action, metaopts)
+            pkg.prepare(pkg_info, fetch_action, metaopts)
 
-            myrepo = Package.pkgmeta['repository']
+            myrepo = pkg.pkgmeta['repository']
             if myrepo not in mykeys:
                 mykeys[myrepo] = set()
             mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
-                Package.pkgmeta['atom']))
+                pkg.pkgmeta['atom']))
 
             self.Entropy.updateProgress(
-                fetch_string+Package.pkgmeta['atom'],
+                fetch_string+pkg.pkgmeta['atom'],
                 importance = 2,
                 count = (fetchqueue, totalqueue)
             )
-            rc = Package.run()
+            rc = pkg.run()
             if rc != 0:
                 return 1
-            Package.kill()
-            del Package
-            self.Entropy.cycleDone()
+            pkg.kill()
+            del pkg
 
         if not download_sources:
             def spawn_ugc():
@@ -215,25 +214,24 @@ class QueueExecutor:
             metaopts['removeconfig'] = rem_data[1]
             if idpackage in do_purge_cache:
                 metaopts['removeconfig'] = True
-            Package = self.Entropy.Package()
-            Package.prepare((idpackage,), "remove", metaopts)
+            pkg = self.Entropy.Package()
+            pkg.prepare((idpackage,), "remove", metaopts)
 
-            if 'remove_installed_vanished' not in Package.pkgmeta:
+            if 'remove_installed_vanished' not in pkg.pkgmeta:
                 self.Entropy.updateProgress(
-                    "Removing: "+Package.pkgmeta['removeatom'],
+                    "%s: " % (_("Removing"),) + pkg.pkgmeta['removeatom'],
                     importance = 2,
                     count = (currentremovalqueue, totalremovalqueue)
                 )
 
-                rc = Package.run()
+                rc = pkg.run()
                 if rc != 0:
                     return 1
 
-                Package.kill()
+                pkg.kill()
 
-            self.Entropy.cycleDone()
             del metaopts
-            del Package
+            del pkg
 
         def do_skip_one_show():
             self.Sulfur.skipMirrorNow = False
@@ -244,7 +242,7 @@ class QueueExecutor:
 
         totalqueue = len(runQueue)
         currentqueue = 0
-        for packageInfo in runQueue:
+        for pkg_info in runQueue:
             currentqueue += 1
 
             self.Sulfur.queue_bombing()
@@ -253,29 +251,28 @@ class QueueExecutor:
             metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
             metaopts['removeconfig'] = False
 
-            if packageInfo in selected_by_user:
+            if pkg_info in selected_by_user:
                 metaopts['install_source'] = etpConst['install_sources']['user']
             else:
                 metaopts['install_source'] = \
                     etpConst['install_sources']['automatic_dependency']
 
-            Package = self.Entropy.Package()
-            Package.prepare(packageInfo, "install", metaopts)
+            pkg = self.Entropy.Package()
+            pkg.prepare(pkg_info, "install", metaopts)
 
             self.Entropy.updateProgress(
-                "Installing: "+Package.pkgmeta['atom'],
+                "%s: " % (_("Installing"),) + pkg.pkgmeta['atom'],
                 importance = 2,
                 count = (currentqueue, totalqueue)
             )
 
-            rc = Package.run()
+            rc = pkg.run()
             if rc != 0:
                 return 1
 
-            Package.kill()
-            self.Entropy.cycleDone()
+            pkg.kill()
             del metaopts
-            del Package
+            del pkg
 
         def do_skip_hide_again():
             self.Sulfur.ui.skipMirror.hide()
@@ -343,18 +340,6 @@ class Equo(EquoInterface):
 
         elif not back:
             print_generic(count_str+text)
-
-    def cycleDone(self):
-        def update_gui():
-            self.progress.total.next() 
-            return False
-        gobject.timeout_add(0, update_gui)
-
-    def setTotalCycles(self, total):
-        def update_gui():
-            self.progress.total.setup( list(range(total)) )
-            return False
-        gobject.timeout_add(0, update_gui)
 
     def askQuestion(self, question, importance = 0, responses = None,
         parent = None, from_myself = False):
