@@ -1286,11 +1286,11 @@ class RepositoryManagerMenu(MenuSkel):
 
     def remove_entropy_packages(self, matched_atoms, reload_func = None):
 
-        rc = self.Entropy.askQuestion(_("Are you sure you want to remove the selected packages ? (For EVA!)"))
+        rc = self.Entropy.ask_question(_("Are you sure you want to remove the selected packages ? (For EVA!)"))
         if rc != _("Yes"):
             return
 
-        rc = self.Entropy.askQuestion(_("This is your last chance, are you really really really sure?"))
+        rc = self.Entropy.ask_question(_("This is your last chance, are you really really really sure?"))
         if rc != _("Yes"):
             return
 

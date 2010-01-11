@@ -155,7 +155,7 @@ class Client:
             if not login_status:
                 srv.close_session(session)
                 srv.disconnect()
-                self.Entropy.askQuestion("%s: %s" % (
+                self.Entropy.ask_question("%s: %s" % (
                     _("Access denied. Login failed"), login_msg,),
                     responses = [_("Ok")])
                 attempts -= 1
@@ -164,7 +164,7 @@ class Client:
             # login accepted, store it?
             srv.close_session(session)
             srv.disconnect()
-            rc = self.Entropy.askQuestion(
+            rc = self.Entropy.ask_question(
                 _("Login successful. Do you want to save these credentials ?"))
             save = False
             if rc == _("Yes"):

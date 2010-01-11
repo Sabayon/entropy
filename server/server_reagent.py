@@ -395,7 +395,7 @@ def update(options):
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if r_request_ask:
-                rc = Entropy.askQuestion(">>   %s" % (_("Would you like to transform them now ?"),) )
+                rc = Entropy.ask_question(">>   %s" % (_("Would you like to transform them now ?"),) )
             else:
                 rc = _("Yes")
             if rc == _("Yes"):
@@ -421,7 +421,7 @@ def update(options):
             new_to_be_removed = set()
             for idpackage, repoid in to_be_removed:
                 show_rm(idpackage, repoid)
-                rc = Entropy.askQuestion(">>   %s" % (_("Remove this package?"),))
+                rc = Entropy.ask_question(">>   %s" % (_("Remove this package?"),))
                 if rc == _("Yes"):
                     new_to_be_removed.add((idpackage, repoid,))
             to_be_removed = new_to_be_removed
@@ -433,7 +433,7 @@ def update(options):
                 show_rm(idpackage, repoid)
 
             if r_request_ask:
-                rc = Entropy.askQuestion(">>   %s" % (_("Would you like to remove them now ?"),) )
+                rc = Entropy.ask_question(">>   %s" % (_("Would you like to remove them now ?"),) )
             else:
                 rc = _("Yes")
             if rc == _("Yes"):
@@ -450,7 +450,7 @@ def update(options):
             new_to_be_added = set()
             for tb_atom, tb_counter in to_be_added:
                 print_info(brown("    # ")+red(tb_atom))
-                rc = Entropy.askQuestion(">>   %s" % (_("Add this package?"),))
+                rc = Entropy.ask_question(">>   %s" % (_("Add this package?"),))
                 if rc == _("Yes"):
                     new_to_be_added.add((tb_atom, tb_counter,))
             to_be_added = new_to_be_added
@@ -494,7 +494,7 @@ def update(options):
                 print_info(brown("  # ")+item_txt)
 
             if r_request_ask:
-                rc = Entropy.askQuestion(">>   %s (%s %s)" % (
+                rc = Entropy.ask_question(">>   %s (%s %s)" % (
                         _("Would you like to package them now ?"),
                         _("inside"),
                         Entropy.default_repository,
@@ -607,7 +607,7 @@ def database(options):
                 blue(_("These are the packages that would be marked")),
                 bold(to_branch), len(pkglist), darkgreen(_("packages")),))
 
-            rc = Entropy.askQuestion(_("Would you like to continue ?"))
+            rc = Entropy.ask_question(_("Would you like to continue ?"))
             if rc == _("No"):
                 return 4
 
@@ -662,7 +662,7 @@ def database(options):
             print_info(red("   # ")+blue("[")+red(branch)+blue("] ")+bold(pkgatom))
 
 
-        rc = Entropy.askQuestion(_("Would you like to continue ?"))
+        rc = Entropy.ask_question(_("Would you like to continue ?"))
         if rc == _("No"):
             return 0
 
@@ -706,7 +706,7 @@ def database(options):
             print_info(darkred("    # ")+brown(pkgatom))
 
         # ask to continue
-        rc = Entropy.askQuestion(_("Would you like to continue ?"))
+        rc = Entropy.ask_question(_("Would you like to continue ?"))
         if rc == _("No"):
             return 0
 

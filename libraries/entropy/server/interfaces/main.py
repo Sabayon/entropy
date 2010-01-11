@@ -117,7 +117,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         out_intf = self._metadata.get('output_interface')
         if out_intf is not None:
             entropy_repository_instance.output = out_intf.output
-            entropy_repository_instance.askQuestion = out_intf.askQuestion
+            entropy_repository_instance.ask_question = out_intf.ask_question
 
         return 0
 
@@ -1001,7 +1001,7 @@ class Server(Singleton, TextInterface):
                 type = "warning",
                 header = darkred(" !!! ")
             )
-            answer = self.askQuestion(
+            answer = self.ask_question(
                 _("Do you want to initialize your default repository ?"))
             if answer == _("No"):
                 mytxt = red("%s.") % (
@@ -1945,7 +1945,7 @@ class Server(Singleton, TextInterface):
                 download_queue[from_branch], idpackage_map)
 
             if ask:
-                rc_question = self.askQuestion(
+                rc_question = self.ask_question(
                     _("Would you like to continue ?"))
                 if rc_question == _("No"):
                     continue
@@ -2284,7 +2284,7 @@ class Server(Singleton, TextInterface):
                 in pull_deps_matches]
 
         if ask:
-            rc_question = self.askQuestion(_("Would you like to continue ?"))
+            rc_question = self.ask_question(_("Would you like to continue ?"))
             if rc_question == _("No"):
                 return switched
 
@@ -3562,7 +3562,7 @@ class Server(Singleton, TextInterface):
                 header = darkred(" !!! ")
             )
 
-            rc_question = self.askQuestion(_("Do you want to continue ?"))
+            rc_question = self.ask_question(_("Do you want to continue ?"))
             if rc_question == _("No"):
                 return
             try:
@@ -3613,7 +3613,7 @@ class Server(Singleton, TextInterface):
                 f_tree.flush()
                 f_tree.close()
 
-            rc_question = self.askQuestion(
+            rc_question = self.ask_question(
                 _("Would you like to sync packages first (important!) ?"))
             if rc_question == _("Yes"):
                 self.MirrorsService.sync_packages(repo = repo)
@@ -3801,7 +3801,7 @@ class Server(Singleton, TextInterface):
                 )
 
         if ask:
-            rc_question = self.askQuestion(
+            rc_question = self.ask_question(
                 _("Would you like to continue ?"))
             if rc_question == _("No"):
                 return set(), set(), {}
@@ -4015,7 +4015,7 @@ class Server(Singleton, TextInterface):
                 to_download.add((idpackage, pkg_path,))
 
         if to_download and ask:
-            rc_question = self.askQuestion(_("Would you like to continue ?"))
+            rc_question = self.ask_question(_("Would you like to continue ?"))
             if rc_question == _("No"):
                 # = downloaded fine, downloaded error
                 return False, available, set(), set()

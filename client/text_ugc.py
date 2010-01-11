@@ -227,7 +227,7 @@ def _ugc_votes(entropy_client, options):
                 blue(str(vote)),
             )
         )
-        rc = entropy_client.askQuestion(_("Do you want to submit?"))
+        rc = entropy_client.ask_question(_("Do you want to submit?"))
         if rc != _("Yes"):
             return 1
 
@@ -408,7 +408,7 @@ def _ugc_documents(entropy_client, options):
                 blue(doc_type[1]),
             )
         )
-        rc = entropy_client.askQuestion(_("Do you want to submit?"))
+        rc = entropy_client.ask_question(_("Do you want to submit?"))
         if rc != _("Yes"):
             return 1
 
@@ -484,7 +484,7 @@ def _ugc_documents(entropy_client, options):
                 )
             )
             return 1
-        rc = entropy_client.askQuestion(_("Would you like to review them?"))
+        rc = entropy_client.ask_question(_("Would you like to review them?"))
         if rc == _("Yes"):
             data, err_msg = entropy_client.UGC.get_documents_by_identifiers(
                 repository, identifiers)
@@ -502,7 +502,7 @@ def _ugc_documents(entropy_client, options):
             for comment_dict in data:
                 _show_document(comment_dict, repository, comment_dict['pkgkey'])
 
-        rc = entropy_client.askQuestion(
+        rc = entropy_client.ask_question(
             _("Would you like to continue with the removal?"))
         if rc != _("Yes"):
             return 1

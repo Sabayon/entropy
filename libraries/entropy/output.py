@@ -749,7 +749,7 @@ class TextInterface:
         myfunc(header+count_str+text+footer, back = back, flush = False)
         _flush_stdouterr()
 
-    def askQuestion(self, question, importance = 0, responses = None):
+    def ask_question(self, question, importance = 0, responses = None):
 
         """
         Questions asking function. It asks the user to answer the question given
@@ -955,7 +955,7 @@ class TextInterface:
                         myresult = False
                         input_type, data = input_text
                         if input_type == "checkbox":
-                            answer = self.askQuestion(data)
+                            answer = self.ask_question(data)
                             if answer == _("Yes"):
                                 myresult = True
                         elif input_type == "combo":

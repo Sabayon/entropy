@@ -1631,7 +1631,7 @@ class UGCAddMenu(MenuSkel):
             return False
 
         # confirm ?
-        rc = self.Entropy.askQuestion(_("Do you confirm your submission?"))
+        rc = self.Entropy.ask_question(_("Do you confirm your submission?"))
         if rc != _("Yes"):
             return False
 

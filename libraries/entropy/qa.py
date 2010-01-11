@@ -73,7 +73,7 @@ class QAEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         out_intf = self._metadata.get('output_interface')
         if out_intf is not None:
             entropy_repository_instance.output = out_intf.output
-            entropy_repository_instance.askQuestion = out_intf.askQuestion
+            entropy_repository_instance.ask_question = out_intf.ask_question
 
         return 0
 
@@ -377,10 +377,10 @@ class QAInterface(EntropyPluginStore):
                             header = blue("     # ")
                     )
             if ask:
-                rc_ask = self.Output.askQuestion(_("Do you want to add them?"))
+                rc_ask = self.Output.ask_question(_("Do you want to add them?"))
                 if rc_ask == _("No"):
                     continue
-                rc_ask = self.Output.askQuestion(_("Selectively?"))
+                rc_ask = self.Output.ask_question(_("Selectively?"))
                 if rc_ask == _("Yes"):
                     newmissing = set()
                     new_blacklist = set()
@@ -395,11 +395,11 @@ class QAInterface(EntropyPluginStore):
                             type = "info",
                             header = blue(" @@ ")
                         )
-                        rc_ask = self.Output.askQuestion(_("Want to add?"))
+                        rc_ask = self.Output.ask_question(_("Want to add?"))
                         if rc_ask == _("Yes"):
                             newmissing.add(dependency)
                         else:
-                            rc_ask = self.Output.askQuestion(
+                            rc_ask = self.Output.ask_question(
                                 _("Want to blacklist?"))
                             if rc_ask == _("Yes"):
                                 new_blacklist.add(dependency)

@@ -205,15 +205,15 @@ def _database_resurrect(entropy_client):
         red(_("Please use this function ONLY if you are using an Entropy-aware distribution.")),
     )
     print_warning(mytxt)
-    rc = entropy_client.askQuestion("     %s" % (
+    rc = entropy_client.ask_question("     %s" % (
         _("Can I continue ?"),) )
     if rc == _("No"):
         return 0
-    rc = entropy_client.askQuestion("     %s" % (
+    rc = entropy_client.ask_question("     %s" % (
         _("Are you REALLY sure ?"),) )
     if rc == _("No"):
         return 0
-    rc = entropy_client.askQuestion("     %s" % (
+    rc = entropy_client.ask_question("     %s" % (
         _("Do you even know what you're doing ?"),) )
     if rc == _("No"):
         return 0
@@ -447,7 +447,7 @@ def _database_spmsync(entropy_client):
         print_info(red(" %s." % (_("Entropy locked, giving up"),)))
         return 2
 
-    rc = entropy_client.askQuestion(_("Are you ready ?"))
+    rc = entropy_client.ask_question(_("Are you ready ?"))
     if rc == _("No"):
         return 0
 
@@ -474,7 +474,7 @@ def _database_spmsync(entropy_client):
         if to_be_removed:
             rc = _("Yes")
             if etpUi['ask']:
-                rc = entropy_client.askQuestion(">>   %s" % (
+                rc = entropy_client.ask_question(">>   %s" % (
                     _("Continue with removal ?"),))
             if rc == _("Yes"):
                 queue = 0
@@ -505,7 +505,7 @@ def _database_spmsync(entropy_client):
             print_info(darkgreen("   # ")+red(x[0]))
         rc = _("Yes")
         if etpUi['ask']:
-            rc = entropy_client.askQuestion(">>   %s" % (
+            rc = entropy_client.ask_question(">>   %s" % (
                 _("Continue with adding ?"),) )
         if rc == _("No"):
             entropy_client.resources_remove_lock()
@@ -586,13 +586,13 @@ def _database_generate(entropy_client):
     )
     print_warning(mytxt)
     print_warning(red(_("If you dont know what you're doing just, don't do this. Really. I'm not joking.")))
-    rc = entropy_client.askQuestion("  %s" % (_("Understood ?"),))
+    rc = entropy_client.ask_question("  %s" % (_("Understood ?"),))
     if rc == _("No"):
         return 0
-    rc = entropy_client.askQuestion("  %s" % (_("Really ?"),) )
+    rc = entropy_client.ask_question("  %s" % (_("Really ?"),) )
     if rc == _("No"):
         return 0
-    rc = entropy_client.askQuestion("  %s. %s" % (
+    rc = entropy_client.ask_question("  %s. %s" % (
         _("This is your last chance"), _("Ok?"),) )
     if rc == _("No"):
         return 0

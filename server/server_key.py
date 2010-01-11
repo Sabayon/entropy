@@ -217,7 +217,7 @@ def _create_keys(entropy_srv, repo):
             ),
             type = "warning"
         )
-        answer = entropy_srv.askQuestion(_("Would you like to continue?"))
+        answer = entropy_srv.ask_question(_("Would you like to continue?"))
         if answer == _("No"):
             return 1
 
@@ -304,7 +304,7 @@ def _delete_keys(entropy_srv, repo):
         )
         return 0
 
-    answer = entropy_srv.askQuestion(_("Are you really sure?"))
+    answer = entropy_srv.ask_question(_("Are you really sure?"))
     if answer == _("No"):
         return 1
 

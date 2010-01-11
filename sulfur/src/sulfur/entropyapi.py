@@ -307,7 +307,7 @@ class Equo(EquoInterface):
         if etpUi['debug']:
             self.UGC.quiet = False
         self._mthread_rc = {
-            'askQuestion': {},
+            'ask_question': {},
             'inputBox': {},
         }
 
@@ -367,7 +367,7 @@ class Equo(EquoInterface):
         elif not back:
             print_generic(count_str+text)
 
-    def askQuestion(self, question, importance = 0, responses = None,
+    def ask_question(self, question, importance = 0, responses = None,
         parent = None, from_myself = False):
 
         if responses is None:
@@ -390,14 +390,14 @@ class Equo(EquoInterface):
                 result = responses[choice]
             except IndexError:
                 result = responses[0]
-            self._mthread_rc['askQuestion'][th_id] = result
+            self._mthread_rc['ask_question'][th_id] = result
 
         gobject.idle_add(do_ask)
-        while th_id not in self._mthread_rc['askQuestion']:
+        while th_id not in self._mthread_rc['ask_question']:
             while gtk.events_pending(): # otherwise it won't work
                 gtk.main_iteration()
             time.sleep(0.4)
-        return self._mthread_rc['askQuestion'].pop(th_id)
+        return self._mthread_rc['ask_question'].pop(th_id)
 
     def inputBox(self, title, input_parameters, cancel_button = True,
         parent = None):

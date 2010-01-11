@@ -108,7 +108,7 @@ def update(entropy_client, cmd = None):
                 print_info(darkred("%s: " % (_("Configuration file"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
-                    rc = entropy_client.askQuestion(
+                    rc = entropy_client.ask_question(
                         ">>   %s" % (_("Overwrite ?"),) )
                     if rc == _("No"):
                         continue
@@ -136,7 +136,7 @@ def update(entropy_client, cmd = None):
                 print_info(darkred("%s: " % (_("Configuration file"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
-                    rc = entropy_client.askQuestion(
+                    rc = entropy_client.ask_question(
                         ">>   %s" % (_("Discard ?"),) )
                     if rc == _("No"):
                         continue

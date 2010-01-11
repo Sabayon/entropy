@@ -122,7 +122,7 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
         print_info(brown("\t[")+red("%s:" % (_("from"),))+bold(_("installed"))+brown("]")+" - "+atom)
 
     if (not etpUi['quiet']) or (etpUi['ask']):
-        rc = entropy_client.askQuestion(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
+        rc = entropy_client.ask_question(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
         if rc == _("No"):
             return 0
 
@@ -293,7 +293,7 @@ def smart_pkg_handler(entropy_client, mypackages):
         pkgInfo[pkg] = atom
         print_info(brown("\t[")+red("%s:" % (_("from"),))+pkg[1]+brown("]")+" - "+atom)
 
-    rc = entropy_client.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
+    rc = entropy_client.ask_question(">>   %s" % (_("Would you like to create the packages above ?"),))
     if rc == _("No"):
         return 0
 
@@ -438,7 +438,7 @@ def smart_apps_handler(entropy_client, mypackages):
         print_info(brown("\t[") + red("%s:" % (_("from"),)) + pkg[1] + \
             red("|SMART") + brown("]") + " - " + atom)
 
-    rc = entropy_client.askQuestion(">>   %s" % (
+    rc = entropy_client.ask_question(">>   %s" % (
         _("Would you like to create the packages above ?"),))
     if rc == _("No"):
         return 0

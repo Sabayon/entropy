@@ -405,7 +405,7 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
             do_run = False
             if human:
                 do_run = True
-                rc = E_CLIENT.askQuestion("     %s" % (
+                rc = E_CLIENT.ask_question("     %s" % (
                     _("Would you like to scan them ?"),) )
                 if rc == _("No"):
                     do_run = False
@@ -709,10 +709,10 @@ def _show_package_info(found_pkg_atoms, deps, action_name = None):
 
         if etpUi['ask']:
             if deps:
-                rc = E_CLIENT.askQuestion("     %s" % (
+                rc = E_CLIENT.ask_question("     %s" % (
                     _("Would you like to continue with dependencies calculation ?"),) )
             else:
-                rc = E_CLIENT.askQuestion("     %s" % (
+                rc = E_CLIENT.ask_question("     %s" % (
                     _("Would you like to continue ?"),) )
             if rc == _("No"):
                 return True, (126, -1)
@@ -1232,7 +1232,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                 print_info(darkred(" !!! ")+bold(_("Attention")))
 
         if etpUi['ask']:
-            rc = E_CLIENT.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
+            rc = E_CLIENT.ask_question("     %s" % (_("Would you like to execute the queue ?"),) )
             if rc == _("No"):
                 return 126, -1
 
@@ -1472,7 +1472,7 @@ def mask_unmask_packages(packages, action):
         return 0, 0
 
     if etpUi['ask']:
-        answer = E_CLIENT.askQuestion(_("Would you like to continue?"))
+        answer = E_CLIENT.ask_question(_("Would you like to continue?"))
         if answer == _("No"):
             return 0, 0
 
@@ -1548,7 +1548,7 @@ def configure_packages(packages):
             str(totalatoms))
 
     if etpUi['ask']:
-        rc = E_CLIENT.askQuestion(question = "     %s" % (
+        rc = E_CLIENT.ask_question(question = "     %s" % (
             _("Would you like to configure them now ?"),))
         if rc == _("No"):
             return 0, 0
@@ -1684,7 +1684,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             look_for_orphaned_packages = False
 
         if etpUi['ask'] and not etpUi['pretend']:
-            rc = E_CLIENT.askQuestion(question)
+            rc = E_CLIENT.ask_question(question)
             if rc == _("No"):
                 look_for_orphaned_packages = False
                 if not deps:
@@ -1775,13 +1775,13 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             if human:
                 question = "     %s" % (
                     _("Would you like to proceed with a selective removal ?"),)
-            rc = E_CLIENT.askQuestion(question)
+            rc = E_CLIENT.ask_question(question)
             if rc == _("No") and not human:
                 return 0, 0
             elif rc == _("Yes") and human:
                 doSelectiveRemoval = True
             elif rc == _("No") and human:
-                rc = E_CLIENT.askQuestion("     %s" % (
+                rc = E_CLIENT.ask_question("     %s" % (
                     _("Would you like to skip this step then ?"),))
                 if rc == _("Yes"):
                     return 0, 0
@@ -1853,7 +1853,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             print_info(red(" -- ")+bold("(")+blue(str(currentqueue)) + "/" + \
                 red(totalqueue)+bold(") ")+">>> "+darkgreen(atom))
             if doSelectiveRemoval:
-                rc = E_CLIENT.askQuestion("     %s" % (_("Remove this one ?"),) )
+                rc = E_CLIENT.ask_question("     %s" % (_("Remove this one ?"),) )
                 if rc == _("No"):
                     # update resume cache
                     ignored.append(idpackage)
@@ -1967,7 +1967,7 @@ def dependencies_test():
                     print_info(blue("      # ")+darkgreen(x))
 
         if (etpUi['ask']):
-            rc = E_CLIENT.askQuestion("     %s"  % (_("Would you like to install the available packages ?"),) )
+            rc = E_CLIENT.ask_question("     %s"  % (_("Would you like to install the available packages ?"),) )
             if rc == _("No"):
                 return 0, 0
         else:
@@ -2045,7 +2045,7 @@ def libraries_test(listfiles = False, dump = False):
 
     if atomsdata:
         if (etpUi['ask']):
-            rc = E_CLIENT.askQuestion("     %s" % (_("Would you like to install them ?"),) )
+            rc = E_CLIENT.ask_question("     %s" % (_("Would you like to install them ?"),) )
             if rc == _("No"):
                 restore_qstats()
                 return 0, atomsdata
