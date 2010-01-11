@@ -22,7 +22,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, etpUi, \
     const_setup_file, const_get_stringtype, const_debug_write
 from entropy.output import TextInterface, purple, red, darkgreen, \
-    bold, brown, blue, darkred
+    bold, brown, blue, darkred, teal
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.i18n import _
@@ -2192,6 +2192,12 @@ class Server(Singleton, TextInterface):
             new_tag_string = "[%s: %s]" % (darkgreen(_("new tag")),
                 brown(new_tag),)
 
+        # open both repos here to make sure it's all fine with them
+        dbconn = self.open_server_repository(read_only = True,
+            no_upload = True, repo = repo)
+        todbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = to_repo)
+
         my_qa = self.QA()
         branch = self.SystemSettings['repositories']['branch']
         pull_deps_matches = []
@@ -2209,10 +2215,37 @@ class Server(Singleton, TextInterface):
                 type = "info",
                 header = brown("    # ")
             )
+
+            # check if there are pkgs that are going to be overwritten
+            # and warn user about that.
+            from_name, from_category, from_slot, from_injected = \
+                dbconn.retrieveName(idpackage), \
+                dbconn.retrieveCategory(idpackage), \
+                dbconn.retrieveSlot(idpackage), \
+                dbconn.isInjected(idpackage)
+            to_rm_idpackages = todbconn.retrieve_packages_to_remove(from_name,
+                from_category, from_slot, from_injected)
+            for to_rm_idpackage in to_rm_idpackages:
+                self.updateProgress(
+                    "    [=>%s|%s] %s" % (
+                            darkred(to_repo),
+                            bold(_("remove")),
+                            blue(todbconn.retrieveAtom(to_rm_idpackage)),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = purple("    # ")
+                )
+
             # do we want to pull in also package dependencies?
             if pull_deps:
-                dep_idpackages = my_qa.get_deep_dependency_list(dbconn,
-                    idpackage)
+                dep_idpackages = list(my_qa.get_deep_dependency_list(dbconn,
+                    idpackage))
+                revdeps_idpackages = [x for x in \
+                    dbconn.retrieveReverseDependencies(idpackage) if x not \
+                        in dep_idpackages]
+                dep_idpackages.extend(revdeps_idpackages)
+
                 for dep_idpackage in dep_idpackages:
 
                     my_dep_match = (dep_idpackage, repo,)
@@ -2222,16 +2255,28 @@ class Server(Singleton, TextInterface):
                         continue
 
                     pull_deps_matches.append(my_dep_match)
-                    self.updateProgress(
-                        "[%s|%s] %s" % (
-                            brown(branch),
-                            blue(_("dependency")),
-                            purple(dbconn.retrieveAtom(dep_idpackage)),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = purple("    >> ")
-                    )
+                    if dep_idpackage in revdeps_idpackages:
+                        self.updateProgress(
+                            "[%s|%s] %s" % (
+                                brown(branch),
+                                blue(_("reverse dependency")),
+                                teal(dbconn.retrieveAtom(dep_idpackage)),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = purple("    >> ")
+                        )
+                    else:
+                        self.updateProgress(
+                            "[%s|%s] %s" % (
+                                brown(branch),
+                                blue(_("dependency")),
+                                purple(dbconn.retrieveAtom(dep_idpackage)),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = purple("    >> ")
+                        )
 
         if pull_deps:
             # put deps first!
@@ -2342,9 +2387,6 @@ class Server(Singleton, TextInterface):
             data = dbconn.getPackageData(idpackage)
             if new_tag != None:
                 data['versiontag'] = new_tag
-
-            todbconn = self.open_server_repository(read_only = False,
-                no_upload = True, repo = to_repo)
 
             # GPG
             # before inserting new pkg, drop GPG signature and re-sign
