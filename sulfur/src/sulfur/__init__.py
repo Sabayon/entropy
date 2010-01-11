@@ -1554,7 +1554,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.pkgSorter.set_property('sensitive', True)
 
         if not self._orphans_message_shown:
-            if action == "updates" and empty:
+            if action == "updates" and \
+                (not self.etpbase.get_raw_groups('updates')):
+
                 orphans = self.etpbase.get_raw_groups('orphans')
                 if self.do_debug:
                     print_generic("show_packages: found orphans %s" % (orphans,))
