@@ -257,24 +257,6 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
         os.remove(new_path)
 
-    def test_compress_stuff(self):
-        paths = [_misc.get_test_entropy_package4(),
-            _misc.get_test_entropy_package3()]
-
-        fd, tmp_path = tempfile.mkstemp()
-        et.compress_files(tmp_path, paths)
-        orig_md5 = "cc3b3af2235b27adad3c604c0d4632b5"
-        md5 = et.md5sum(tmp_path)
-        self.assertEqual(orig_md5, md5)
-
-        tmp_dir = tempfile.mkdtemp()
-        et.universal_uncompress(tmp_path, tmp_dir)
-        self.assert_(os.listdir(tmp_dir))
-
-        os.close(fd)
-        os.remove(tmp_path)
-        shutil.rmtree(tmp_dir)
-
     def test_unpack_gzip(self):
         import gzip
         fd, tmp_path = tempfile.mkstemp(suffix = ".gz")
