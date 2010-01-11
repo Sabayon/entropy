@@ -999,7 +999,7 @@ class QAInterface(EntropyPluginStore):
             a list of atom strings instead of list of db match tuples.
         @type atoms: bool
         @return: list of dependencies in form of matching tuple list
-            ( [(idpackage, repoid,) ... ] ) or plain dependency list (if
+            set([123,321,...idpackage,]) or plain dependency list (if
             atom == True -- set([atom_string1, atom_string2, atom_string3])
         @rtype: list or set
         """
