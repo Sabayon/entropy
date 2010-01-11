@@ -6,7 +6,6 @@
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
-    - reagent repo move, --deps also revdeps (and also warn about ver downgrade)
     - UGC: pkg icon support
 
   0.99.40:
