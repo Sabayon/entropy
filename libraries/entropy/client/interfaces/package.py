@@ -2157,13 +2157,13 @@ class Package:
 
         if 'remove_installed_vanished' in self.pkgmeta:
             self.xterm_title += ' %s' % (_("Installed package vanished"),)
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             rc = self.vanished_step()
             return rc
 
         if 'fetch_not_available' in self.pkgmeta:
             self.xterm_title += ' %s' % (_("Fetch not available"),)
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             rc = self.fetch_not_available_step()
             return rc
 
@@ -2172,32 +2172,32 @@ class Package:
                 _("Fetching"),
                 os.path.basename(self.pkgmeta['download']),
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.fetch_step()
 
         def do_multi_fetch():
             self.xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
                 len(self.pkgmeta['multi_fetch_list']), _("packages"),)
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.multi_fetch_step()
 
         def do_sources_fetch():
             self.xterm_title += ' %s: %s' % (
                 _("Fetching sources"),
                 os.path.basename(self.pkgmeta['atom']),)
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.sources_fetch_step()
 
         def do_checksum():
             self.xterm_title += ' %s: %s' % (_("Verifying"),
                 os.path.basename(self.pkgmeta['download']),)
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.checksum_step()
 
         def do_multi_checksum():
             self.xterm_title += ' %s: %s %s' % (_("Multi Verification"),
                 len(self.pkgmeta['multi_checksum_list']), _("packages"),)
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.multi_checksum_step()
 
         def do_unpack():
@@ -2213,7 +2213,7 @@ class Package:
                     mytxt,
                     os.path.basename(self.pkgmeta['atom']),
                 )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.unpack_step()
 
         def do_remove_conflicts():
@@ -2224,7 +2224,7 @@ class Package:
                 _("Installing"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.install_step()
 
         def do_remove():
@@ -2232,7 +2232,7 @@ class Package:
                 _("Removing"),
                 self.pkgmeta['removeatom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.remove_step()
 
         def do_logmessages():
@@ -2243,7 +2243,7 @@ class Package:
                 _("Cleaning"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.cleanup_step()
 
         def do_postinstall():
@@ -2251,7 +2251,7 @@ class Package:
                 _("Postinstall"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.postinstall_step()
 
         def do_preinstall():
@@ -2259,7 +2259,7 @@ class Package:
                 _("Preinstall"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.preinstall_step()
 
         def do_preremove():
@@ -2267,7 +2267,7 @@ class Package:
                 _("Preremove"),
                 self.pkgmeta['removeatom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.preremove_step()
 
         def do_postremove():
@@ -2275,7 +2275,7 @@ class Package:
                 _("Postremove"),
                 self.pkgmeta['removeatom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.postremove_step()
 
         def do_config():
@@ -2283,7 +2283,7 @@ class Package:
                 _("Configuring"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.setTitle(self.xterm_title)
+            self.Entropy.set_title(self.xterm_title)
             return self.config_step()
 
         steps_data = {

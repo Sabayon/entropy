@@ -977,7 +977,7 @@ class TextInterface:
                     break
         return results
 
-    def setTitle(self, title):
+    def set_title(self, title):
         """
         Set application title.
 
@@ -985,10 +985,3 @@ class TextInterface:
         @type title: string
         """
         xterm_title(title)
-
-    def nocolor(self):
-        """
-        Disable coloured output. Used for terminals.
-        """
-        nocolor()
-

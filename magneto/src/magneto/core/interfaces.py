@@ -19,6 +19,7 @@ import dbus
 import dbus.exceptions
 
 # Entropy imports
+from entropy.output import nocolor
 from entropy.client.interfaces import Client
 from entropy.const import etpConst
 import entropy.tools
@@ -403,7 +404,7 @@ class Entropy(Client):
         self.progress_tooltip = self.__magneto.update_tooltip
         self.progress_tooltip_message_title = _("Updates Notification")
         self.applet_last_message = ''
-        self.nocolor()
+        nocolor()
 
     def updateProgress(self, text, header = "", footer = "", back = False,
             importance = 0, type = "info", count = [], percent = False):

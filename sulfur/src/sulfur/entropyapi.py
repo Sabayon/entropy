@@ -27,7 +27,7 @@ import gobject
 
 # Entropy Imports
 from entropy.const import etpConst, etpUi
-from entropy.output import print_generic
+from entropy.output import print_generic, nocolor
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
@@ -314,7 +314,7 @@ class Equo(EquoInterface):
     def connect_to_gui(self, application):
         self.progress = application.progress
         self.urlFetcher = GuiUrlFetcher
-        self.nocolor()
+        nocolor()
         self.progress_log = application.progress_log_write
         self.output = application.output
         self.ui = application.ui
