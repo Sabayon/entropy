@@ -220,7 +220,7 @@ def repositories(options):
                 ('new_mdeps', ('list', ('Manual dependencies', current_mdeps),),
                     dep_check_cb, True)
             ]
-            data = Entropy.inputBox(_("Manual dependencies editor"), input_params)
+            data = Entropy.input_box(_("Manual dependencies editor"), input_params)
             if data is None:
                 return 4
             new_mdeps = sorted(data.get('new_mdeps', []))
@@ -766,7 +766,7 @@ def database(options):
         ]
 
         while True:
-            data = Entropy.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
+            data = Entropy.input_box(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
             if data is None:
                 return 1
             myid, dbx = data['db']

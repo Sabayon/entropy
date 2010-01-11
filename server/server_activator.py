@@ -216,7 +216,7 @@ def notice(options):
             return True
 
         input_params = [('idx', _('Press Enter to continue'), fake_callback, False)]
-        data = Entropy.inputBox('', input_params, cancel_button = True)
+        data = Entropy.input_box('', input_params, cancel_button = True)
 
 
     def show_notice_selector(title, mydict):
@@ -243,7 +243,7 @@ def notice(options):
         def fake_callback(s):
             return s
         input_params = [('id', blue(_('Choose one by typing its identifier')), fake_callback, False)]
-        data = Entropy.inputBox(title, input_params, cancel_button = True)
+        data = Entropy.input_box(title, input_params, cancel_button = True)
         if not isinstance(data, dict):
             return -1
         try:
@@ -265,7 +265,7 @@ def notice(options):
             ('url', _('Relevant URL (optional)'), fake_callback_tr, False),
         ]
 
-        data = Entropy.inputBox(blue("%s") % (_("Repository notice board, new item insertion"),), input_params, cancel_button = True)
+        data = Entropy.input_box(blue("%s") % (_("Repository notice board, new item insertion"),), input_params, cancel_button = True)
         if data is None:
             return 0
         status = Entropy.MirrorsService.update_notice_board(title = data['title'], notice_text = data['text'], link = data['url'])

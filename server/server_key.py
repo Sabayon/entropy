@@ -241,7 +241,7 @@ def _create_keys(entropy_srv, repo):
         ('pass', purple(_("Insert passphrase (empty=no passphrase)")),
             mycb_ok, False),
     ]
-    data = entropy_srv.inputBox(
+    data = entropy_srv.input_box(
         blue("%s") % (_("Repository GPG keypair creation"),),
         input_data, cancel_button = True)
 

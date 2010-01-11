@@ -17,7 +17,7 @@ def fake_callback(s):
 input_params = [
     ('password','Password',fake_callback,True)
 ]
-data = Entropy.inputBox(
+data = Entropy.input_box(
     'insert root password',
     input_params,
     cancel_button = True

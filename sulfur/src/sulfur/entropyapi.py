@@ -308,7 +308,7 @@ class Equo(EquoInterface):
             self.UGC.quiet = False
         self._mthread_rc = {
             'ask_question': {},
-            'inputBox': {},
+            'input_box': {},
         }
 
     def connect_to_gui(self, application):
@@ -399,7 +399,7 @@ class Equo(EquoInterface):
             time.sleep(0.4)
         return self._mthread_rc['ask_question'].pop(th_id)
 
-    def inputBox(self, title, input_parameters, cancel_button = True,
+    def input_box(self, title, input_parameters, cancel_button = True,
         parent = None):
 
         if parent is None:
@@ -413,14 +413,14 @@ class Equo(EquoInterface):
         def do_ask():
             result = inputDialog(parent, title, input_parameters,
                 cancel = cancel_button)
-            self._mthread_rc['inputBox'][th_id] = result
+            self._mthread_rc['input_box'][th_id] = result
 
         gobject.idle_add(do_ask)
-        while th_id not in self._mthread_rc['inputBox']:
+        while th_id not in self._mthread_rc['input_box']:
             while gtk.events_pending(): # otherwise it won't work
                 gtk.main_iteration()
             time.sleep(0.4)
-        return self._mthread_rc['inputBox'].pop(th_id)
+        return self._mthread_rc['input_box'].pop(th_id)
 
 
 class GuiUrlFetcher(UrlFetcher):

@@ -178,7 +178,7 @@ class AddRepositoryWindow(MenuSkel):
         if urldata[1] != None:
             text = self.repoMirrorsView.get_text(urldata)
             self.repoMirrorsView.remove(urldata)
-            text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"),
+            text = input_box(self.addrepo_ui.addRepoWin, _("Insert URL"),
                 _("Enter a download mirror, HTTP or FTP")+"   ",
                 input_text = text)
             # call liststore and tell to add
@@ -191,7 +191,7 @@ class AddRepositoryWindow(MenuSkel):
             self.repoMirrorsView.remove(urldata)
 
     def on_repoMirrorAdd_clicked( self, widget ):
-        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"),
+        text = input_box(self.addrepo_ui.addRepoWin, _("Insert URL"),
             _("Enter a download mirror, HTTP or FTP")+"   ")
         # call liststore and tell to add
         if text:
@@ -204,7 +204,7 @@ class AddRepositoryWindow(MenuSkel):
                 self.repoMirrorsView.add(text)
 
     def on_repoInsert_clicked( self, widget ):
-        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"),
+        text = input_box(self.addrepo_ui.addRepoWin, _("Insert Repository"),
             _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
@@ -2458,7 +2458,7 @@ class AboutDialog(gtk.Window):
         gobject.idle_add(self.__scroll, begin)
 
 
-def inputBox( parent, title, text, input_text = None):
+def input_box( parent, title, text, input_text = None):
     dlg = EntryDialog(parent, title, text)
     if input_text:
         dlg.entry.set_text(input_text)

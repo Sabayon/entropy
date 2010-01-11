@@ -37,7 +37,7 @@ from entropy.misc import TimeScheduled, ParallelTask
 
 from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
-from sulfur.dialogs import okDialog, inputBox, TextReadDialog, questionDialog, \
+from sulfur.dialogs import okDialog, input_box, TextReadDialog, questionDialog, \
     FileChooser, AboutDialog, errorMessage, AddRepositoryWindow
 from sulfur.misc import busy_cursor, normal_cursor
 
@@ -303,19 +303,19 @@ class SulfurApplicationEventsMixin:
         self.setup_preferences()
 
     def on_configProtectNew_clicked(self, widget):
-        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        data = input_box( self.ui.main, _("New"), _("Please insert a new path"))
         if not data:
             return
         self.configProtectModel.append([data])
 
     def on_configProtectMaskNew_clicked(self, widget):
-        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        data = input_box( self.ui.main, _("New"), _("Please insert a new path"))
         if not data:
             return
         self.configProtectMaskModel.append([data])
 
     def on_configProtectSkipNew_clicked(self, widget):
-        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        data = input_box( self.ui.main, _("New"), _("Please insert a new path"))
         if not data:
             return
         self.configProtectSkipModel.append([data])
@@ -339,7 +339,7 @@ class SulfurApplicationEventsMixin:
         model, myiter = self.configProtectView.get_selection().get_selected()
         if myiter:
             item = model.get_value( myiter, 0 )
-            data = inputBox( self.ui.main, _("New"),
+            data = input_box( self.ui.main, _("New"),
                 _("Please edit the selected path"), input_text = item)
             if not data:
                 return
@@ -350,7 +350,7 @@ class SulfurApplicationEventsMixin:
         model, myiter = self.configProtectMaskView.get_selection().get_selected()
         if myiter:
             item = model.get_value( myiter, 0 )
-            data = inputBox( self.ui.main, _("New"),
+            data = input_box( self.ui.main, _("New"),
                 _("Please edit the selected path"), input_text = item)
             if not data:
                 return
@@ -361,7 +361,7 @@ class SulfurApplicationEventsMixin:
         model, myiter = self.configProtectSkipView.get_selection().get_selected()
         if myiter:
             item = model.get_value( myiter, 0 )
-            data = inputBox( self.ui.main, _("New"),
+            data = input_box( self.ui.main, _("New"),
                 _("Please edit the selected path"), input_text = item)
             if not data:
                 return
@@ -837,7 +837,7 @@ class SulfurApplicationEventsMixin:
                 ('atoms', ('list', (_('Package atoms'), [],),), lv_callback, False)
             ]
 
-        data = self.Equo.inputBox(
+        data = self.Equo.input_box(
             edit_title,
             input_params,
             cancel_button = True
@@ -881,7 +881,7 @@ class SulfurApplicationEventsMixin:
                 fake_callback, False)
         ]
 
-        data = self.Equo.inputBox(
+        data = self.Equo.input_box(
             _('Choose what Package Set you want to remove'),
             input_params,
             cancel_button = True

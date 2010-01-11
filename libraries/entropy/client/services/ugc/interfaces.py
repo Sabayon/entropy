@@ -136,7 +136,7 @@ class Client:
                 ('username', _('Username'), fake_callback, False),
                 ('password', _('Password'), fake_callback, True)
             ]
-            login_data = self.Entropy.inputBox(
+            login_data = self.Entropy.input_box(
                 "%s %s %s" % (
                     _('Please login against'), repository, _('repository'),),
                 input_params,

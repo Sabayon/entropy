@@ -227,7 +227,7 @@ def _show_notice(entropy_client, key, mydict):
         return True
 
     input_params = [('idx', _('Press Enter to continue'), fake_callback, False)]
-    entropy_client.inputBox('', input_params, cancel_button = True)
+    entropy_client.input_box('', input_params, cancel_button = True)
     return
 
 
@@ -254,7 +254,7 @@ def _show_notice_selector(entropy_client, title, mydict):
         return s
     input_params = [('id',
         blue(_('Choose one by typing its identifier')), fake_callback, False)]
-    data = entropy_client.inputBox(title, input_params, cancel_button = True)
+    data = entropy_client.input_box(title, input_params, cancel_button = True)
     if not isinstance(data, dict):
         return -1
     try:

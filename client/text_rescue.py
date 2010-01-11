@@ -146,7 +146,7 @@ def _database_restore(entropy_client):
     ]
 
     while True:
-        data = entropy_client.inputBox(
+        data = entropy_client.input_box(
             red(_("Entropy installed packages database restore tool")),
                 input_params, cancel_button = True)
         if data is None:

@@ -68,7 +68,7 @@ class RemoteConnectionMenu(MenuSkel):
             ('user', _("Username"), fake_callback, False),
             ('ssl', ('checkbox', _('SSL Connection'),), fake_callback_cb, False),
         ]
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Choose what kind of test you would like to run'),
             input_params,
             cancel_button = True
@@ -1322,7 +1322,7 @@ class RepositoryManagerMenu(MenuSkel):
         if not use:
             input_params.append(('use', _('USE flags, space separated'), fake_callback, False),)
         if input_params:
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Insert command parameters'),
                 input_params,
                 cancel_button = True
@@ -1755,7 +1755,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('to_repo', ('combo', (_('To repository'), avail_repos),), fake_callback_repos, False),
             ('do_copy', ('checkbox', _('Execute copy'),), fake_callback_cb, False),
         ]
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Entropy packages move/copy'),
             input_params,
             cancel_button = True
@@ -1919,7 +1919,7 @@ class RepositoryManagerMenu(MenuSkel):
                 ('link', _('Link (URL)'), fake_callback, False),
                 ('notice_text', ("text", _('Notice text'),), fake_callback, False),
             ]
-            data = self.Entropy.inputBox(
+            data = self.Entropy.input_box(
                 _('Insert your new notice board entry'),
                 input_params,
                 cancel_button = True
@@ -2030,7 +2030,7 @@ class RepositoryManagerMenu(MenuSkel):
             input_params = [
                 ('exec_type', ('combo', (_('Execution mode'), [_("Execute all"), _("Execute only selected")]),), fake_callback, False)
             ]
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Choose the execution mode'),
                 input_params,
                 cancel_button = True
@@ -2075,7 +2075,7 @@ class RepositoryManagerMenu(MenuSkel):
                     ('pkg_check', ('checkbox', _("Packages check"),), fake_callback_cb, False,),
                 ]
 
-                data = self.Entropy.inputBox(
+                data = self.Entropy.input_box(
                     "[%s] %s" % (repoid, _('Choose sync options'),),
                     input_params,
                     cancel_button = True
@@ -2166,7 +2166,7 @@ class RepositoryManagerMenu(MenuSkel):
                 objects.append(obj)
 
             if objects:
-                mydata = self.Entropy.inputBox(
+                mydata = self.Entropy.input_box(
                     _('Choose the destination repository'),
                     input_params,
                     cancel_button = True
@@ -2186,7 +2186,7 @@ class RepositoryManagerMenu(MenuSkel):
             input_params = [
                 ('exec_type', ('combo', (_('Execution mode'), [_("Execute all"), _("Execute only selected")]),), fake_callback, False)
             ]
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Choose the execution mode'),
                 input_params,
                 cancel_button = True
@@ -2712,7 +2712,7 @@ class RepositoryManagerMenu(MenuSkel):
         data = {}
         data['categories'] = categories
         if input_params:
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Insert categories'),
                 input_params,
                 cancel_button = True
@@ -2745,7 +2745,7 @@ class RepositoryManagerMenu(MenuSkel):
         data = {}
         data['categories'] = categories
         if input_params:
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Insert categories (if you want)'),
                 input_params,
                 cancel_button = True
@@ -2875,7 +2875,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('verbose', ('checkbox', _('Verbose'),), fake_bool_cb, verbose,),
             ('nocolor', ('checkbox', _('No color'),), fake_bool_cb, nocolor,),
         ]
-        mydata = self.Entropy.inputBox(
+        mydata = self.Entropy.input_box(
             _('Insert packages removal parameters'),
             input_params,
             cancel_button = True
@@ -2925,7 +2925,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('ldflags', _('Custom LDFLAGS'), fake_true_callback, False),
             ('cflags', _('Custom CFLAGS'), fake_true_callback, False),
         ]
-        mydata = self.Entropy.inputBox(
+        mydata = self.Entropy.input_box(
             _('Insert compilation parameters'),
             input_params,
             cancel_button = True
@@ -2978,7 +2978,7 @@ class RepositoryManagerMenu(MenuSkel):
         if not atoms:
             input_params.append(('atoms', _('Atoms, space separated'), fake_callback, False),)
         if input_params:
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Insert Package Information parameters'),
                 input_params,
                 cancel_button = True
@@ -3028,7 +3028,7 @@ class RepositoryManagerMenu(MenuSkel):
         ]
         if myfrom == "processing":
             input_params.append(('autorefresh', ("checkbox", _('Auto refresh'),), fake_callback_cb, True))
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Insert output parameters'),
             input_params,
             cancel_button = True
@@ -3059,7 +3059,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('note', _('Note'), fake_callback, False),
             ('extended_text', ("text", _('Extended note'),), fake_callback, False),
         ]
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Insert your new pinboard item'),
             input_params,
             cancel_button = True
@@ -3136,7 +3136,7 @@ class RepositoryManagerMenu(MenuSkel):
         input_params = [
             ('list_type', ('combo', (_('List type'), ['affected', 'new', 'all']),), fake_callback, False),
         ]
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Choose what kind of list you want to see'),
             input_params,
             cancel_button = True
@@ -3213,7 +3213,7 @@ class RepositoryManagerMenu(MenuSkel):
             input_params.append(('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False))
 
         if input_params:
-            mydata = self.Entropy.inputBox(
+            mydata = self.Entropy.input_box(
                 _('Choose from which repository'),
                 input_params,
                 cancel_button = True
@@ -3269,7 +3269,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('search_type', ('combo', (_('Search type'), search_types),), fake_callback, False),
             ('search_string', _('Search string'), fake_callback, False)
         ]
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Entropy Search'),
             input_params,
             cancel_button = True
@@ -3302,7 +3302,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback_cb, False),
         ]
 
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Choose the repository'),
             input_params,
             cancel_button = True
@@ -3324,7 +3324,7 @@ class RepositoryManagerMenu(MenuSkel):
         for repo in avail_repos:
             input_params.append((repo, ('checkbox', "%s: %s" % (_('Repository'), repo,),), fake_callback_cb, False))
 
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Choose the repositories you want to scan'),
             input_params,
             cancel_button = True
@@ -3351,7 +3351,7 @@ class RepositoryManagerMenu(MenuSkel):
             ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False),
             ('mode', ('combo', (_('Choose mode'), [_("Server check"), _("Mirrors check")]),), fake_callback, False),
         ]
-        data = self.Entropy.inputBox(
+        data = self.Entropy.input_box(
             _('Choose what kind of test you would like to run'),
             input_params,
             cancel_button = True
@@ -3391,7 +3391,7 @@ class RepositoryManagerMenu(MenuSkel):
                 ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False),
             ]
         if input_params:
-            data = self.Entropy.inputBox(
+            data = self.Entropy.input_box(
                 _('Choose what notice board you want to see'),
                 input_params,
                 cancel_button = True

@@ -807,7 +807,7 @@ class TextInterface:
         xterm_title_reset()
         _flush_stdouterr()
 
-    def inputBox(self, title, input_parameters, cancel_button = True):
+    def input_box(self, title, input_parameters, cancel_button = True):
         """
         Generic input box (form) creator and data collector.
 

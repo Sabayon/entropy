@@ -175,7 +175,7 @@ def _ugc_votes(entropy_client, options):
         input_data = [('vote', darkred(_("Insert your vote (from 1 to 5)")),
             mycb, False)]
 
-        data = entropy_client.inputBox(
+        data = entropy_client.input_box(
             blue("%s") % (_("Entropy UGC vote submission"),),
                 input_data, cancel_button = True)
 
@@ -343,7 +343,7 @@ def _ugc_documents(entropy_client, options):
                 ', '.join(["(%s) %s" % (brown(x[0]), darkgreen(x[1]),) for x \
                     in valid_types])), types_cb, False),
         ]
-        data = entropy_client.inputBox(
+        data = entropy_client.input_box(
             blue("%s") % (_("Entropy UGC document submission"),),
             input_data, cancel_button = True)
 
@@ -363,7 +363,7 @@ def _ugc_documents(entropy_client, options):
         if data['type'] in upload_needed_types:
             input_data = [('path', darkred(_("Insert document path")),
                 path_cb, False)]
-            u_data = entropy_client.inputBox(
+            u_data = entropy_client.input_box(
                 blue("%s") % (_("Entropy UGC document submission"),),
                 input_data, cancel_button = True)
             if not u_data:
