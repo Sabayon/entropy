@@ -572,7 +572,8 @@ def _do_text_community(main_cmd, options):
     return rc
 
 def _do_text_cleanup(main_cmd, options):
-    entropy.tools.cleanup([etpConst['packagestmpdir'],
+    import text_tools
+    text_tools.cleanup([etpConst['packagestmpdir'],
         etpConst['logdir'], etpConst['entropyunpackdir'],
         etpConst['packagesbindir']])
     return 0

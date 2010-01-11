@@ -2894,33 +2894,6 @@ def convert_seconds_to_fancy_output(seconds):
     output.reverse()
     return ':'.join(output)
 
-# Temporary files cleaner
-def cleanup(toCleanDirs = None):
-    """
-    docstring_title
-
-    @keyword toCleanDirs: 
-    @type toCleanDirs: 
-    @return: 
-    @rtype: 
-    """
-    if not toCleanDirs:
-        toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
-
-    counter = 0
-    for xdir in toCleanDirs:
-        print_info(red(" * ")+"Cleaning "+darkgreen(xdir)+" directory...",
-            back = True)
-        if os.path.isdir(xdir):
-            dircontent = os.listdir(xdir)
-            if dircontent != []:
-                for data in dircontent:
-                    subprocess.call(["rm", "-rf", os.path.join(xdir, data)])
-                    counter += 1
-
-    print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
-    return 0
-
 def flatten(l, ltypes = (list, tuple)):
     """
     docstring_title

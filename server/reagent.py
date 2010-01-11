@@ -230,7 +230,8 @@ elif main_cmd == "revdeps":
 
 # cleanup
 elif main_cmd == "cleanup":
-    rc = entropy.tools.cleanup()
+    import text_tools
+    rc = text_tools.cleanup()
 
 # deptest tool
 elif main_cmd == "spm":
