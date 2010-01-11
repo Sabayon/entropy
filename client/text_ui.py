@@ -128,17 +128,17 @@ def package(options):
     E_CLIENT = Client()
 
     try:
-        if (options[0] == "deptest"):
+        if options[0] == "deptest":
             rc, garbage = dependencies_test()
 
-        elif (options[0] == "unusedpackages"):
+        elif options[0] == "unusedpackages":
             rc, garbage = unused_packages_test(do_size_sort = e_req_sort_size)
 
-        elif (options[0] == "libtest"):
+        elif options[0] == "libtest":
             rc, garbage = libraries_test(listfiles = e_req_listfiles,
                 dump = e_req_dump)
 
-        elif (options[0] == "source"):
+        elif options[0] == "source":
 
             if myopts or my_etp_pkg_paths:
                 rc, status = download_sources(myopts, deps = e_req_deps,
@@ -149,7 +149,7 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif (options[0] == "fetch"):
+        elif options[0] == "fetch":
 
             if myopts or my_etp_pkg_paths:
                 rc, status = download_packages(myopts, deps = e_req_deps,
@@ -161,7 +161,7 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif (options[0] == "install"):
+        elif options[0] == "install":
             if myopts or my_etp_pkg_paths or e_req_resume:
                 rc, garbage = install_packages(myopts, deps = e_req_deps,
                     emptydeps = e_req_empty_deps,
@@ -176,7 +176,7 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif (options[0] in ("world", "upgrade",)):
+        elif options[0] in ("world", "upgrade"):
             if options[0] == "world": # print deprecation warning
                 print_warning("")
                 print_warning("'%s' %s: '%s'" % (
@@ -191,14 +191,14 @@ def package(options):
                 dochecksum = e_req_checksum,
                 multifetch = e_req_multifetch)
 
-        elif (options[0] == "hop"):
+        elif options[0] == "hop":
             if myopts:
                 rc, status = branch_hop(myopts[0])
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif (options[0] == "remove"):
+        elif options[0] == "remove":
             if myopts or e_req_resume:
                 rc, status = remove_packages(myopts, deps = e_req_deps,
                 deep = e_req_deep, remove_config_files = e_req_config_files,
@@ -207,9 +207,23 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif (options[0] == "config"):
+        elif options[0] == "config":
             if myopts:
                 rc, status = configure_packages(myopts)
+            else:
+                print_error(red(" %s." % (_("Nothing to do"),) ))
+                rc = 126
+
+        elif options[0] == "mask":
+            if myopts:
+                rc, status = mask_unmask_packages(myopts, options[0])
+            else:
+                print_error(red(" %s." % (_("Nothing to do"),) ))
+                rc = 126
+
+        elif options[0] == "unmask":
+            if myopts:
+                rc, status = mask_unmask_packages(myopts, options[0])
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -218,7 +232,7 @@ def package(options):
             rc = -10
 
         conf_cache_excl = ("hop", "fetch", "source", "deptest", "libtest",
-            "unusedpackages",)
+            "unusedpackages", "mask", "unmask")
         if (options[0] not in conf_cache_excl) and (rc not in (125, 126, -10)) \
             and (not etpUi['pretend']) and (not etpUi['quiet']):
             show_config_files_to_update()
@@ -544,24 +558,7 @@ def _show_masked_pkg_info(package, from_user = True):
         # search similar packages
         # you meant...?
         if len(package) > 3:
-            items = E_CLIENT.get_meant_packages(package)
-            if items:
-                mytxt = "%s %s %s %s %s" % (
-                    bold("   ?"),
-                    red(_("When you wrote")),
-                    bold(package),
-                    darkgreen(_("You Meant(tm)")),
-                    red(_("one of these below?")),
-                )
-                print_info(mytxt)
-                items_cache = set()
-                for m_idpackage, m_repo in items:
-                    dbc = E_CLIENT.open_repository(m_repo)
-                    key, slot = dbc.retrieveKeySlot(m_idpackage)
-                    if (key, slot) not in items_cache:
-                        print_info(red("    # ")+blue(key)+":" + \
-                            brown(str(slot))+red(" ?"))
-                    items_cache.add((key, slot))
+            _show_you_meant(package, False)
 
     else:
         print_error(red("    # ")+blue("%s: " % (_("Not found"),) ) + \
@@ -721,6 +718,34 @@ def _show_package_info(found_pkg_atoms, deps, action_name = None):
                 return True, (126, -1)
 
     return False, (0, 0)
+
+def _show_you_meant(package, from_installed):
+    items = E_CLIENT.get_meant_packages(package,
+        from_installed = from_installed)
+    if not items:
+        return
+
+    items_cache = set()
+    mytxt = "%s %s %s %s %s" % (
+        bold("   ?"),
+        red(_("When you wrote")),
+        bold(package),
+        darkgreen(_("You Meant(tm)")),
+        red(_("one of these below?")),
+    )
+    print_info(mytxt)
+    for match in items:
+        if from_installed:
+            dbconn = E_CLIENT.clientDbconn
+            idpackage = match[0]
+        else:
+            dbconn = E_CLIENT.open_repository(match[1])
+            idpackage = match[0]
+        key, slot = dbconn.retrieveKeySlot(idpackage)
+        if (key, slot) not in items_cache:
+            print_info(red("    # ")+blue(key)+":" + \
+                brown(str(slot))+red(" ?"))
+        items_cache.add((key, slot))
 
 def _generate_run_queue(found_pkg_atoms, deps, emptydeps, deepdeps, relaxeddeps):
 
@@ -1042,8 +1067,9 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                 installedTag = ''
                 installedRev = 0
                 installedRepo = None
-                pkginstalled = E_CLIENT.clientDbconn.atomMatch(entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
-                if (pkginstalled[1] == 0):
+                pkginstalled = E_CLIENT.clientDbconn.atomMatch(
+                    entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                if pkginstalled[1] == 0:
                     # found an installed package
                     idx = pkginstalled[0]
                     installedVer = E_CLIENT.clientDbconn.retrieveVersion(idx)
@@ -1388,13 +1414,91 @@ def install_packages(packages = None, atomsdata = None, deps = True,
         pass
     return 0, 0
 
-def configure_packages(packages = None):
-
-    if packages is None:
-        packages = []
+def mask_unmask_packages(packages, action):
 
     # check if I am root
-    if (not entropy.tools.is_root()):
+    if not entropy.tools.is_root():
+        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        print_warning(mytxt)
+        etpUi['pretend'] = True
+
+    found_pkg_atoms = []
+    for package in packages:
+        idpackage, repoid = E_CLIENT.atom_match(package, packagesFilter = False)
+        if idpackage == -1:
+            mytxt = "## %s: %s %s." % (
+                red(_("ATTENTION")),
+                bold(const_convert_to_unicode(package)),
+                red(_("is not available")),
+            )
+            print_warning(mytxt)
+            if len(package) > 3:
+                _show_you_meant(package, from_installed = False)
+            continue
+        found_pkg_atoms.append(package)
+
+    if not found_pkg_atoms:
+        print_error(red("%s." % (_("No packages found"),) ))
+        return 125, -1
+
+    if etpUi['ask'] or etpUi['pretend']:
+        mytxt = "%s:" % (blue(_("These are the packages that would be masked")),)
+        print_info(red(" @@ ")+mytxt)
+
+    match_data = {}
+
+    for package in found_pkg_atoms:
+        matches, rc = E_CLIENT.atom_match(package, multiMatch = True,
+            multiRepo = True, packagesFilter = False)
+        match_data[package] = matches
+
+
+        flags = darkgreen(" [")
+        if action == "mask":
+            flags += brown("M")
+        else:
+            flags += red("U")
+        flags += darkgreen("] ")
+        print_info(darkred(" ##")+flags+purple(package))
+
+        if rc == 0:
+            # also show found pkgs
+            for idpackage, repoid in matches:
+                dbconn = E_CLIENT.open_repository(repoid)
+                pkgatom = dbconn.retrieveAtom(idpackage)
+                print_info("    -> "+entropy.tools.enlightenatom(pkgatom))
+
+    if etpUi['pretend']:
+        return 0, 0
+
+    if etpUi['ask']:
+        answer = E_CLIENT.askQuestion(_("Would you like to continue?"))
+        if answer == _("No"):
+            return 0, 0
+
+    for package, matches in match_data.items():
+        for match in matches:
+            # effectively do action
+            if action == "mask":
+                done = E_CLIENT.mask_match_generic(match, package)
+            else:
+                done = E_CLIENT.unmask_match_generic(match, package)
+            if not done:
+                mytxt = "## %s: %s %s." % (
+                    red(_("ATTENTION")),
+                    bold(const_convert_to_unicode(package)),
+                    red(_("action not executed")),
+                )
+                print_warning(mytxt)
+
+    print_info("Have a nice day.")
+
+    return 0, 0
+
+def configure_packages(packages):
+
+    # check if I am root
+    if not entropy.tools.is_root():
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1411,26 +1515,8 @@ def configure_packages(packages = None):
                 red(_("is not installed")),
             )
             print_warning(mytxt)
-            if len(package) < 4:
-                continue
-            items = E_CLIENT.get_meant_packages(package, from_installed = True)
-            if items:
-                items_cache = set()
-                mytxt = "%s %s %s %s %s" % (
-                    bold("   ?"),
-                    red(_("When you wrote")),
-                    bold(package),
-                    darkgreen(_("You Meant(tm)")),
-                    red(_("one of these below?")),
-                )
-                print_info(mytxt)
-                for match in items:
-                    key, slot = E_CLIENT.clientDbconn.retrieveKeySlot(match[0])
-                    if (key, slot) not in items_cache:
-                        print_info(red("    # ")+blue(key)+":" + \
-                            brown(str(slot))+red(" ?"))
-                    items_cache.add((key, slot))
-                del items_cache
+            if len(package) > 3:
+                _show_you_meant(package, True)
             continue
         found_pkg_atoms.append(idpackage)
 
@@ -1471,7 +1557,7 @@ def configure_packages(packages = None):
     currentqueue = 0
     for idpackage in found_pkg_atoms:
         currentqueue += 1
-        xterm_header = "E_CLIENT (%s) :: " % (_("configure"),) + \
+        xterm_header = "Entropy (%s) :: " % (_("configure"),) + \
             str(currentqueue) + " of " + totalqueue + " ::"
         Package = E_CLIENT.Package()
         Package.prepare((idpackage,), "config")
@@ -1521,30 +1607,8 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                         red(_("is not installed")),
                     )
                     print_warning(mytxt)
-                    if len(package) < 4:
-                        continue
-
-                    items = E_CLIENT.get_meant_packages(package,
-                        from_installed = True)
-
-                    if items:
-                        items_cache = set()
-                        mytxt = "%s %s %s %s %s" % (
-                            bold("   ?"),
-                            red(_("When you wrote")),
-                            bold(package),
-                            darkgreen(_("You Meant(tm)")),
-                            red(_("one of these below?")),
-                        )
-                        print_info(mytxt)
-                        for match in items:
-                            key, slot = E_CLIENT.clientDbconn.retrieveKeySlot(
-                                match[0])
-                            if (key, slot) not in items_cache:
-                                print_info(red("    # ") + blue(key) + ":" + \
-                                    brown(str(slot)) + red(" ?"))
-                            items_cache.add((key, slot))
-                        del items_cache
+                    if len(package) > 3:
+                        _show_you_meant(package, True)
                     continue
                 found_pkg_atoms.append(idpackage)
 

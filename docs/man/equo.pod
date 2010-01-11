@@ -404,6 +404,38 @@ resume previously interrupted operations
 
 =back
 
+=item B<mask>
+
+mask one or more packages
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=back
+
+=item B<unmask>
+
+unmask one or more packages
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=back
+
 =item B<config>
 
 configure one or more installed packages
