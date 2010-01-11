@@ -89,18 +89,21 @@ class Client:
         if aware != None:
             return aware
 
-        srv = self.get_service_connection(repository, check = False,
-            timeout = 6)
-        if srv == None:
-            aware = False
-        else:
-            session = srv.open_session()
-            if session != None:
-                srv.close_session(session)
-                srv.disconnect()
-                aware = True
-            else:
+        try:
+            srv = self.get_service_connection(repository, check = False,
+                timeout = 6)
+            if srv == None:
                 aware = False
+            else:
+                session = srv.open_session()
+                if session != None:
+                    srv.close_session(session)
+                    srv.disconnect()
+                    aware = True
+                else:
+                    aware = False
+        except TimeoutError:
+            aware = False
 
         self.UGCCache._set_live_cache_item(repository,
             'is_repository_eapi3_aware', aware)
