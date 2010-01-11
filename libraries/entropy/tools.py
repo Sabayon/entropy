@@ -26,7 +26,7 @@ import grp
 import pwd
 import hashlib
 import random
-from entropy.output import TextInterface, print_info, print_generic, red, \
+from entropy.output import TextInterface, print_generic, red, \
     darkgreen, green, blue, purple, teal, brown
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
