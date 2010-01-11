@@ -22,7 +22,7 @@ from entropy.exceptions import PermissionDenied, InvalidData, \
     IncorrectParameter, SPMError
 from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
-    darkblue, red, purple, darkred, print_info, print_error, print_warning
+    darkblue, red, purple, darkred
 from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
