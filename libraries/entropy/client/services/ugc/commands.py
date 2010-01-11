@@ -22,12 +22,12 @@ class Base:
 
     def __init__(self, OutputInterface, Service):
 
-        if not hasattr(OutputInterface, 'updateProgress'):
+        if not hasattr(OutputInterface, 'output'):
             raise AttributeError(
-                "OutputInterface does not have an updateProgress method")
-        elif not hasattr(OutputInterface.updateProgress, '__call__'):
+                "OutputInterface does not have an output method")
+        elif not hasattr(OutputInterface.output, '__call__'):
             raise AttributeError(
-                "OutputInterface does not have an updateProgress method")
+                "OutputInterface does not have an output method")
 
         from entropy.services.ugc.interfaces import Client as Cl
         if not isinstance(Service, Cl):
@@ -61,7 +61,7 @@ class Base:
         # elaborate answer
         if data == None:
             mytxt = _("feature not supported remotely")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
                         bold(str(repository)),
@@ -79,7 +79,7 @@ class Base:
             answer_id = self.standard_answers_map['not_supported_remotely']
         elif not data:
             mytxt = _("service temporarily not available")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
                         bold(str(repository)),
@@ -98,7 +98,7 @@ class Base:
         elif data == self.Service.answers['no']:
             # command failed
             mytxt = _("command failed")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
                         bold(str(repository)),
@@ -122,7 +122,7 @@ class Base:
                 if len(data) > 10:
                     data = data[:10] + "[...]"
 
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s: %s" % (
                         darkblue(_("repo")),
                         bold(str(repository)),
@@ -163,7 +163,7 @@ class Base:
         except (EOFError, IOError, self.zlib.error, self.dumpTools.pickle.UnpicklingError,):
             const_debug_write(__name__, self.entropyTools.get_traceback())
             mytxt = _("cannot convert stream into object")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
                         bold(str(repository)),
@@ -660,7 +660,7 @@ class Client(Base):
         while chunk:
 
             if (not self.Service.quiet) or self.Service.show_progress:
-                self.Output.updateProgress(
+                self.Output.output(
                     "%s, %s: %s" % (
                         blue(_("User Generated Content")),
                         darkgreen(_("sending file")),

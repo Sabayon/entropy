@@ -110,7 +110,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         line_data = line.strip().split()
         if len(line_data) < 5:
             # mmh... not possible to properly parse data
-            self.updateProgress(line.strip(), back = True)
+            self.output(line.strip(), back = True)
             return
 
         percent = line_data[1]
@@ -125,7 +125,7 @@ class EntropySshUriHandler(EntropyUriHandler):
             brown("[") + str(percent) + brown("]") + \
             " " + eta + " " + tx_speed
 
-        self.updateProgress(current_txt, back = True)
+        self.output(current_txt, back = True)
 
     def _update_progress(self, std_r):
         read_buf = ""

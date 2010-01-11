@@ -24,12 +24,12 @@ class Client:
         do_cache_connection = False, do_cache_session = False,
         socket_timeout = 120.0):
 
-        if not hasattr(OutputInterface, 'updateProgress'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
+        if not hasattr(OutputInterface, 'output'):
+            mytxt = _("OutputInterface does not have an output method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (
                 OutputInterface, mytxt,))
-        elif not hasattr(OutputInterface.updateProgress, '__call__'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
+        elif not hasattr(OutputInterface.output, '__call__'):
+            mytxt = _("OutputInterface does not have an output method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (
                 OutputInterface, mytxt,))
 

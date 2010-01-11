@@ -22,7 +22,7 @@ def get_gpg(entropy_srv):
     obj = Repository()
     global GPG_MSG_SHOWN
     if not GPG_MSG_SHOWN:
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
             blue(_("GPG interface loaded, home directory")),
             brown(Repository.GPG_HOME),)
         )
@@ -43,7 +43,7 @@ def key(myopts):
     def validate_repos(repos, entropy_srv):
         for repo in repos:
             if repo not in avail_repos:
-                entropy_srv.updateProgress("'%s' %s" % (
+                entropy_srv.output("'%s' %s" % (
                     blue(repo), _("repository not available"),),
                     type = "error")
                 return 1
@@ -63,7 +63,7 @@ def key(myopts):
         try:
             repo_sec = get_gpg(entropy_srv)
         except Repository.GPGError as err:
-            entropy_srv.updateProgress("%s: %s" % (
+            entropy_srv.output("%s: %s" % (
                 _("GnuPG not available"), err,),
                     type = "error")
             return 1
@@ -113,12 +113,12 @@ def key(myopts):
 
 def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
 
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
         blue(_("Importing keypair for repository")), purple(repo),))
 
     repo_sec = get_gpg(entropy_srv)
     if repo_sec.is_keypair_available(repo):
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
                 blue(_("Another keypair already exists for repository")),
                 purple(repo),
             ),
@@ -130,13 +130,13 @@ def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
     finger_print = repo_sec.install_key(repo, privkey_path)
     repo_sec.install_key(repo, pubkey_path, ignore_nothing_imported = True)
 
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
             darkgreen(_("Imported GPG key with fingerprint")),
             bold(finger_print),
         ),
         type = "info"
     )
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
             darkgreen(_("Now you should sign all the packages in it")),
             blue(repo),
         ),
@@ -157,7 +157,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
 
     try:
         if not func_check(repo):
-            entropy_srv.updateProgress("%s: %s" % (
+            entropy_srv.output("%s: %s" % (
                     blue(_("No keypair available for repository")),
                     purple(repo),
                 ),
@@ -165,7 +165,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
             )
             return 1
     except repo_sec.KeyExpired:
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
                 darkred(_("Keypair is EXPIRED for repository")),
                 purple(repo),
             ),
@@ -173,7 +173,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
         )
         return 1
 
-    entropy_srv.updateProgress("%s: %s" % (blue(key_msg), purple(repo),))
+    entropy_srv.output("%s: %s" % (blue(key_msg), purple(repo),))
     if is_pubkey:
         key_stream = repo_sec.get_pubkey(repo)
     else:
@@ -185,7 +185,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
             dest_w.write(key_stream)
             dest_w.flush()
     except IOError as err:
-        entropy_srv.updateProgress("%s: %s [%s]" % (
+        entropy_srv.output("%s: %s [%s]" % (
                 darkgreen(_("Unable to export GPG key for repository")),
                 bold(repo),
                 err,
@@ -194,7 +194,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
         )
         return 1
 
-    entropy_srv.updateProgress("%s: %s [%s]" % (
+    entropy_srv.output("%s: %s [%s]" % (
             darkgreen(_("Exported GPG key for repository")),
             bold(repo),
             brown(store_path),
@@ -206,12 +206,12 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
 
 def _create_keys(entropy_srv, repo):
 
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
         blue(_("Creating keys for repository")), purple(repo),))
 
     repo_sec = get_gpg(entropy_srv)
     if repo_sec.is_keypair_available(repo):
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
                 blue(_("Another key already exists for repository")),
                 purple(repo),
             ),
@@ -257,28 +257,28 @@ def _create_keys(entropy_srv, repo):
     key_fp = repo_sec.create_keypair(repo, passphrase = data['pass'],
         name_email = data['name_email'],
         expiration_days = int(data['expiration']))
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
             darkgreen(_("Produced GPG key with fingerprint")),
             bold(key_fp),
         ),
         type = "info"
     )
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
             darkgreen(_("Now you should sign all the packages in it")),
             blue(repo),
         ),
         type = "warning"
     )
-    entropy_srv.updateProgress(
+    entropy_srv.output(
         darkgreen(_("Make friggin' sure to generate a revoke key and store it in a very safe place.")),
         type = "warning"
     )
-    entropy_srv.updateProgress(
+    entropy_srv.output(
         "# gpg --homedir '%s' --armor --output revoke.asc --gen-revoke '%s'" % (
             Repository.GPG_HOME, key_fp),
         type = "info"
     )
-    entropy_srv.updateProgress("%s" % (
+    entropy_srv.output("%s" % (
             darkgreen(_("You may also want to send your keys to a key server")),
         ),
         type = "info"
@@ -291,12 +291,12 @@ def _create_keys(entropy_srv, repo):
     return 0
 
 def _delete_keys(entropy_srv, repo):
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
         blue(_("Deleting keys for repository")), purple(repo),))
 
     repo_sec = get_gpg(entropy_srv)
     if not repo_sec.is_keypair_available(repo):
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
                 blue(_("No keys available for given repository")),
                 purple(repo),
             ),
@@ -311,7 +311,7 @@ def _delete_keys(entropy_srv, repo):
     try:
         key_meta = repo_sec.get_key_metadata(repo)
     except KeyError:
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
                 darkgreen(_("Keys metadata not available for")),
                 bold(repo),
             ),
@@ -324,7 +324,7 @@ def _delete_keys(entropy_srv, repo):
     dbconn.dropGpgSignatures()
 
     repo_sec.delete_keypair(repo)
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
             darkgreen(_("Deleted GPG key with fingerprint")),
             bold(key_meta['fingerprint']),
         ),
@@ -338,7 +338,7 @@ def _show_status(entropy_srv, repo):
     try:
         key_meta = repo_sec.get_key_metadata(repo)
     except KeyError:
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
                 darkgreen(_("Keys metadata not available for")),
                 bold(repo),
             ),
@@ -346,7 +346,7 @@ def _show_status(entropy_srv, repo):
         )
         return 1
 
-    entropy_srv.updateProgress("%s: %s" % (
+    entropy_srv.output("%s: %s" % (
             brown(_("GPG information for repository")),
             bold(repo),
         ),
@@ -376,7 +376,7 @@ def _show_status(entropy_srv, repo):
         ('expires', _("Expires on"), print_date),
     ]
     for key_id, key_desc, out_func in out_data:
-        entropy_srv.updateProgress("%s: %s" % (
+        entropy_srv.output("%s: %s" % (
             teal(key_desc), out_func(key_meta[key_id]),))
 
     return 0

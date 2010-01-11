@@ -37,7 +37,7 @@ class CalculatorsMixin:
 
             if (count%150 == 0) or (count == length) or (count == 1):
                 atom = dbconn.retrieveAtom(idpackage)
-                self.updateProgress(
+                self.output(
                     darkgreen(_("Checking %s") % (bold(atom),)),
                     importance = 0,
                     type = "info",
@@ -1337,7 +1337,7 @@ class CalculatorsMixin:
             if not quiet:
                 count += 1
                 if (count%10 == 0) or (count == atomlen) or (count == 1):
-                    self.updateProgress(sort_dep_text, importance = 0,
+                    self.output(sort_dep_text, importance = 0,
                         type = "info", back = True, header = ":: ",
                         footer = " ::", percent = True,
                         count = (count, atomlen)
@@ -1454,7 +1454,7 @@ class CalculatorsMixin:
 
             count += 1
             p_atom = self.clientDbconn.retrieveAtom(idpackage)
-            self.updateProgress(
+            self.output(
                 blue(rem_dep_text + " %s" % (purple(p_atom),)),
                 importance = 0,
                 type = "info",
@@ -1534,7 +1534,7 @@ class CalculatorsMixin:
                     break
                 count += 1
                 if (count % 10 == 0) or (count == 1) or (count == maxlen):
-                    self.updateProgress(
+                    self.output(
                         avail_dep_text + " %s" % (repo,),
                         importance = 0,
                         type = "info",
@@ -1646,7 +1646,7 @@ class CalculatorsMixin:
 
             count += 1
             if (count%10 == 0) or (count == maxlen) or (count == 1):
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 0,
                     type = "info",

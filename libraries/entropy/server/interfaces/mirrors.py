@@ -49,7 +49,7 @@ class Server:
         self.SystemSettings = self.Entropy.SystemSettings
 
         mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 2,
             type = "info",
@@ -58,7 +58,7 @@ class Server:
         mytxt = _("mirror")
         for mirror in self.Entropy.get_remote_mirrors(repo):
             mirror = EntropyTransceiver.hide_sensible_data(mirror)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue("%s: %s") % (mytxt, darkgreen(mirror),),
                 importance = 0,
                 type = "info",
@@ -87,7 +87,7 @@ class Server:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s] %s: %s" % (
                     brown(repo),
                     blue(_("listing branches in mirror")),
@@ -143,7 +143,7 @@ class Server:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s] %s: %s => %s" % (
                     brown(repo),
                     blue(_("looking for file in mirror")),
@@ -215,7 +215,7 @@ class Server:
             lock_text = _("unlocking")
             if lock:
                 lock_text = _("locking")
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s %s" % (
                     brown(repo),
                     darkgreen(crippled_uri),
@@ -240,7 +240,7 @@ class Server:
             with txc as handler:
 
                 if lock and handler.is_file(lock_file):
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s] %s" % (
                                 brown(repo),
                                 darkgreen(crippled_uri),
@@ -253,7 +253,7 @@ class Server:
                     continue
 
                 elif not lock and not handler.is_file(lock_file):
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s] %s" % (
                                 brown(repo),
                                 darkgreen(crippled_uri),
@@ -306,7 +306,7 @@ class Server:
             lock_text = _("unlocking")
             if lock:
                 lock_text = _("locking")
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s %s..." % (
                             blue(repo),
                             red(crippled_uri),
@@ -331,7 +331,7 @@ class Server:
             with txc as handler:
 
                 if lock and handler.is_file(lock_file):
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s] %s" % (
                             blue(repo),
                             red(crippled_uri),
@@ -344,7 +344,7 @@ class Server:
                     continue
 
                 elif not lock and not handler.is_file(lock_file):
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s] %s" % (
                             blue(repo),
                             red(crippled_uri),
@@ -396,7 +396,7 @@ class Server:
 
         rc_upload = txc_handler.upload(lock_file, remote_path)
         if rc_upload:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s %s" % (
                     blue(repo),
                     red(crippled_uri),
@@ -408,7 +408,7 @@ class Server:
                 header = red(" @@ ")
             )
         else:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s: %s - %s %s" % (
                     blue(repo),
                     red(crippled_uri),
@@ -447,7 +447,7 @@ class Server:
 
         rc_delete = txc_handler.delete(remote_path)
         if rc_delete:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s" % (
                             blue(repo),
                             red(crippled_uri),
@@ -462,7 +462,7 @@ class Server:
             else:
                 self.remove_local_database_download_lockfile(repo)
         else:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s: %s - %s" % (
                     blue(repo),
                     red(crippled_uri),
@@ -537,7 +537,7 @@ class Server:
             txc = self.Entropy.Transceiver(uri)
             with txc as handler:
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|#%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
@@ -559,7 +559,7 @@ class Server:
                     pkg_to_join_path)
                 download_dir = os.path.dirname(download_path)
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|#%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
@@ -578,7 +578,7 @@ class Server:
 
                 rc_download = handler.download(remote_path, download_path)
                 if not rc_download:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|#%s] %s: %s %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
@@ -597,7 +597,7 @@ class Server:
                     no_upload = True, repo = repo)
                 idpackage = dbconn.getIDPackageFromDownload(pkg_relative_path)
                 if idpackage == -1:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|#%s] %s: %s %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
@@ -613,7 +613,7 @@ class Server:
                     return False
 
                 storedmd5 = dbconn.retrieveDigest(idpackage)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|#%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
@@ -629,7 +629,7 @@ class Server:
 
                 md5check = entropy.tools.compare_md5(download_path, storedmd5)
                 if md5check:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|#%s] %s: %s %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
@@ -644,7 +644,7 @@ class Server:
                     )
                     return True
                 else:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|#%s] %s: %s %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
@@ -661,7 +661,7 @@ class Server:
                         os.remove(download_path)
 
         # if we get here it means the files hasn't been downloaded properly
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|#%s] %s: %s %s" % (
                 brown(repo),
                 darkgreen(crippled_uri),
@@ -727,7 +727,7 @@ class Server:
                     revision = int(f_rev.readline().strip())
                 except ValueError:
                     mytxt = _("mirror hasn't valid database revision file")
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s] %s: %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
@@ -742,7 +742,7 @@ class Server:
                 f_rev.close()
 
             elif dlcount == 0:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
@@ -756,7 +756,7 @@ class Server:
                 revision = 0
 
             else:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
@@ -826,7 +826,7 @@ class Server:
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
         mytmpdir = tempfile.mkdtemp()
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s] %s %s" % (
                 brown(repo),
                 blue(_("downloading notice board from mirrors to")),
@@ -848,7 +848,7 @@ class Server:
             )
             errors, m_fine_uris, m_broken_uris = downloader.go()
             if not errors:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s] %s: %s" % (
                         brown(repo),
                         blue(_("notice board downloaded successfully from")),
@@ -875,7 +875,7 @@ class Server:
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
         rss_file = os.path.basename(rss_path)
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s] %s %s" % (
                     brown(repo),
                     blue(_("removing notice board from")),
@@ -899,7 +899,7 @@ class Server:
             m_broken_uris = sorted(m_broken_uris)
             m_broken_uris = [EntropyTransceiver.get_uri_name(x) \
                 for x in m_broken_uris]
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s] %s %s" % (
                         brown(repo),
                         blue(_("notice board removal failed on")),
@@ -910,7 +910,7 @@ class Server:
                 header = blue(" @@ ")
             )
             return False
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s] %s" % (
                     brown(repo),
                     blue(_("notice board removal success")),
@@ -929,7 +929,7 @@ class Server:
         mirrors = self.Entropy.get_remote_mirrors(repo)
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s] %s %s" % (
                     brown(repo),
                     blue(_("uploading notice board from")),
@@ -952,7 +952,7 @@ class Server:
             m_broken_uris = sorted(m_broken_uris)
             m_broken_uris = [EntropyTransceiver.get_uri_name(x) \
                 for x in m_broken_uris]
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s] %s %s" % (
                         brown(repo),
                         blue(_("notice board upload failed on")),
@@ -963,7 +963,7 @@ class Server:
                 header = blue(" @@ ")
             )
             return False
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s] %s" % (
                     brown(repo),
                     blue(_("notice board upload success")),
@@ -1361,7 +1361,7 @@ class Server:
 
     def _show_package_sets_messages(self, repo):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s] %s:" % (
                 brown(repo),
                 blue(_("configured package sets")),
@@ -1372,7 +1372,7 @@ class Server:
         )
         sets_data = self.Entropy.package_set_list(matchRepo = [repo])
         if not sets_data:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s" % (_("None configured"),),
                 importance = 0,
                 type = "info",
@@ -1380,7 +1380,7 @@ class Server:
             )
             return
         for s_repo, s_name, s_sets in sets_data:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue("%s" % (s_name,)),
                 importance = 0,
                 type = "info",
@@ -1389,7 +1389,7 @@ class Server:
 
     def _show_eapi3_upload_messages(self, crippled_uri, database_path, repo):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|%s:%s] %s" % (
                 brown(repo),
                 darkgreen(crippled_uri),
@@ -1401,7 +1401,7 @@ class Server:
             type = "info",
             header = darkgreen(" * ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (_("database path"), blue(database_path),),
             importance = 0,
             type = "info",
@@ -1414,7 +1414,7 @@ class Server:
         if repo is None:
             repo = self.Entropy.default_repository
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|%s:%s] %s" % (
                 brown(repo),
                 darkgreen(crippled_uri),
@@ -1426,13 +1426,13 @@ class Server:
             type = "info",
             header = darkgreen(" * ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (_("database path"), blue(database_path),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (
                 _("dump light"),
                 blue(upload_data['dump_path_light']),
@@ -1441,7 +1441,7 @@ class Server:
             type = "info",
             header = brown("    # ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (
                 _("dump light checksum"),
                 blue(upload_data['dump_path_digest_light']),
@@ -1451,7 +1451,7 @@ class Server:
             header = brown("    # ")
         )
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
             importance = 0,
             type = "info",
@@ -1461,7 +1461,7 @@ class Server:
     def _show_eapi1_upload_messages(self, crippled_uri, database_path,
         upload_data, cmethod, repo):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|%s:%s] %s" % (
                 brown(repo),
                 darkgreen(crippled_uri),
@@ -1474,13 +1474,13 @@ class Server:
             header = darkgreen(" * "),
             back = True
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (_("database path"), blue(database_path),),
             importance = 0,
             type = "info",
             header = brown("    # ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (
                 _("compressed database path"),
                 blue(upload_data['compressed_database_path']),
@@ -1489,7 +1489,7 @@ class Server:
             type = "info",
             header = brown("    # ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (
                 _("database checksum"),
                 blue(upload_data['database_path_digest']),
@@ -1498,7 +1498,7 @@ class Server:
             type = "info",
             header = brown("    # ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (
                 _("compressed checksum"),
                 blue(upload_data['compressed_database_path_digest']),
@@ -1507,7 +1507,7 @@ class Server:
             type = "info",
             header = brown("    # ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
             importance = 0,
             type = "info",
@@ -1520,7 +1520,7 @@ class Server:
             if not repo_sec.is_keypair_available(repo):
                 raise KeyError("no key avail")
         except RepositorySecurity.KeyExpired:
-            self.Entropy.updateProgress("%s: %s" % (
+            self.Entropy.output("%s: %s" % (
                     darkred(_("Keys for repository are expired")),
                     bold(repo),
                 ),
@@ -1619,7 +1619,7 @@ class Server:
                 handler.is_file(remote_lock_file):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|%s] %s, %s" % (
                         brown(str(repo)),
                         darkgreen(crippled_uri),
@@ -1639,7 +1639,7 @@ class Server:
                     count += 1
                     time.sleep(1)
                     if not handler.is_file(remote_lock_file):
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             red("[repo:%s|%s|%s] %s !" % (
                                     repo,
                                     crippled_uri,
@@ -1715,7 +1715,7 @@ class Server:
                 err,
                 _("Bumping old data back"),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning"
@@ -1756,7 +1756,7 @@ class Server:
             database_path = self.Entropy.get_local_database_file(repo)
 
             if disabled_eapis:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|%s] %s: %s" % (
                         blue(repo),
                         red(crippled_uri),
@@ -1787,7 +1787,7 @@ class Server:
 
             self.lock_mirrors_for_download(True, [uri], repo = repo)
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s|%s] %s" % (
                     blue(repo),
                     red(crippled_uri),
@@ -1910,7 +1910,7 @@ class Server:
                     my_broken_uris = sorted([
                         (EntropyTransceiver.get_uri_name(x[0]),
                             x[1]) for x in m_broken_uris])
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|%s] %s" % (
                             repo,
                             crippled_uri,
@@ -1923,7 +1923,7 @@ class Server:
                     )
                     # get reason
                     reason = my_broken_uris[0][1]
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         blue("%s: %s" % (_("reason"), reason,)),
                         importance = 0,
                         type = "error",
@@ -1982,7 +1982,7 @@ class Server:
                     repo = repo, disabled_eapis = disabled_eapis)
             mytmpdir = tempfile.mkdtemp()
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s|%s] %s" % (
                     brown(repo),
                     darkgreen(crippled_uri),
@@ -1995,7 +1995,7 @@ class Server:
             )
             files_to_sync = sorted(download_data.keys())
             for myfile in files_to_sync:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "%s: %s" % (
                         blue(_("download path")),
                         brown(download_data[myfile]),
@@ -2028,7 +2028,7 @@ class Server:
                     my_broken_uris = sorted([
                         (EntropyTransceiver.get_uri_name(x[0]),
                             x[1]) for x in m_broken_uris])
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|%s] %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
@@ -2041,7 +2041,7 @@ class Server:
                     )
                     # get reason
                     reason = my_broken_uris[0][1]
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         blue("%s: %s" % (_("reason"), reason,)),
                         importance = 0,
                         type = "error",
@@ -2154,7 +2154,7 @@ class Server:
             repo)
 
         if not download_latest and not upload_queue:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s" % (
                     brown(repo),
                     red(_("sync")), # something short please
@@ -2171,7 +2171,7 @@ class Server:
             download_errors, fine_uris, broken_uris = self.download_database(
                 [download_uri], repo = repo)
             if download_errors:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         red(_("sync")),
@@ -2203,7 +2203,7 @@ class Server:
             if (deps_not_found or base_deps_not_found) \
                 and not self.Entropy.community_repo:
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         red(_("sync")),
@@ -2220,7 +2220,7 @@ class Server:
             if problems:
                 return 4, set(), set()
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s] %s" % (
                     brown(repo),
                     red(_("config files")), # something short please
@@ -2236,7 +2236,7 @@ class Server:
             errors, fine_uris, broken_uris = self.upload_database(uris,
                 repo = repo)
             if errors:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         red(_("sync")),
@@ -2250,7 +2250,7 @@ class Server:
                 return 2, fine_uris, broken_uris
 
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s] %s" % (
                 brown(repo),
                 red(_("sync")),
@@ -2307,7 +2307,7 @@ class Server:
 
 
     def _show_local_sync_stats(self, upload_files, local_files):
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:" % (
                 blue(_("Local statistics")),
             ),
@@ -2315,7 +2315,7 @@ class Server:
             type = "info",
             header = red(" @@ ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             red("%s:\t\t%s %s" % (
                     blue(_("upload directory")),
                     bold(str(upload_files)),
@@ -2326,7 +2326,7 @@ class Server:
             type = "info",
             header = red(" @@ ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             red("%s:\t\t%s %s" % (
                     blue(_("packages directory")),
                     bold(str(local_files)),
@@ -2345,7 +2345,7 @@ class Server:
         for package, size in upload:
             package = darkgreen(os.path.basename(package))
             size = blue(entropy.tools.bytes_into_human(size))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
                     blue(_("upload")),
@@ -2359,7 +2359,7 @@ class Server:
         for package, size in download:
             package = darkred(os.path.basename(package))
             size = blue(entropy.tools.bytes_into_human(size))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
                     darkred(_("download")),
@@ -2373,7 +2373,7 @@ class Server:
         for package, size in copy:
             package = darkblue(os.path.basename(package))
             size = blue(entropy.tools.bytes_into_human(size))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
                     darkgreen(_("copy")),
@@ -2387,7 +2387,7 @@ class Server:
         for package, size in removal:
             package = brown(os.path.basename(package))
             size = blue(entropy.tools.bytes_into_human(size))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
                     red(_("remove")),
@@ -2399,7 +2399,7 @@ class Server:
                 header = red("    # ")
             )
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t\t%s" % (
                 blue(_("Packages to be removed")),
                 darkred(str(len(removal))),
@@ -2408,7 +2408,7 @@ class Server:
             type = "info",
             header = blue(" @@ ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t%s" % (
                 darkgreen(_("Packages to be moved locally")),
                 darkgreen(str(len(copy))),
@@ -2417,7 +2417,7 @@ class Server:
             type = "info",
             header = blue(" @@ ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t\t%s" % (
                 bold(_("Packages to be uploaded")),
                 bold(str(len(upload))),
@@ -2427,7 +2427,7 @@ class Server:
             header = blue(" @@ ")
         )
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t\t%s" % (
                 darkred(_("Total removal size")),
                 darkred(
@@ -2439,7 +2439,7 @@ class Server:
             header = blue(" @@ ")
         )
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t\t%s" % (
                 blue(_("Total upload size")),
                 blue(entropy.tools.bytes_into_human(metainfo['upload'])),
@@ -2448,7 +2448,7 @@ class Server:
             type = "info",
             header = blue(" @@ ")
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t\t%s" % (
                 brown(_("Total download size")),
                 brown(entropy.tools.bytes_into_human(metainfo['download'])),
@@ -2494,7 +2494,7 @@ class Server:
             repo)
         self._show_local_sync_stats(upload_files, local_files)
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s: %s" % (blue(_("Remote statistics for")), red(crippled_uri),),
             importance = 1,
             type = "info",
@@ -2507,7 +2507,7 @@ class Server:
                 self._calculate_remote_package_files(uri, branch, handler,
                     repo = repo)
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "%s:\t\t\t%s %s" % (
                 blue(_("remote packages")),
                 bold(str(remote_files)),
@@ -2521,7 +2521,7 @@ class Server:
         mytxt = blue("%s ...") % (
             _("Calculating queues"),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2719,7 +2719,7 @@ class Server:
                 remove_filename)
             remove_filepath_hash = remove_filepath + \
                 etpConst['packagesmd5fileext']
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
                     brown(repo),
                     red("sync"),
@@ -2738,7 +2738,7 @@ class Server:
             if os.path.isfile(remove_filepath_hash):
                 os.remove(remove_filepath_hash)
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|%s] %s" % (
                 brown(repo),
                 red(_("sync")),
@@ -2765,7 +2765,7 @@ class Server:
                 os.path.basename(from_file))
             to_file_hash = to_file+etpConst['packagesmd5fileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s|%s] %s: %s" % (
                     brown(repo),
                     red("sync"),
@@ -2820,7 +2820,7 @@ class Server:
                 (EntropyTransceiver.get_uri_name(x[0]), x[1]) for \
                     x in m_broken_uris]
             reason = my_broken_uris[0][1]
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s] %s: %s, %s: %s" % (
                     brown(branch),
                     blue(_("upload errors")),
@@ -2834,7 +2834,7 @@ class Server:
             )
             return errors, m_fine_uris, m_broken_uris
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[branch:%s] %s: %s" % (
                 brown(branch),
                 blue(_("upload completed successfully")),
@@ -2876,7 +2876,7 @@ class Server:
                 (EntropyTransceiver.get_uri_name(x), y,) \
                     for x, y in m_broken_uris]
             reason = my_broken_uris[0][1]
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
                     brown(repo),
                     red(_("sync")),
@@ -2892,7 +2892,7 @@ class Server:
             )
             return errors, m_fine_uris, m_broken_uris
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|%s] %s: %s" % (
                 brown(repo),
                 red(_("sync")),
@@ -2920,7 +2920,7 @@ class Server:
         for upload_package in packages_list:
             qa_count += 1
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s: %s" % (
                     purple(_("QA checking package file")),
                     darkgreen(os.path.basename(upload_package)),
@@ -2940,7 +2940,7 @@ class Server:
         if qa_some_faulty:
 
             for qa_faulty_pkg in qa_some_faulty:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|branch:%s] %s: %s" % (
                         brown(repo),
                         self.SystemSettings['repositories']['branch'],
@@ -2961,7 +2961,7 @@ class Server:
         if repo is None:
             repo = self.Entropy.default_repository
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s] %s" % (
                 repo,
                 red(_("sync")),
@@ -2987,7 +2987,7 @@ class Server:
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             mirror_errors = False
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[repo:%s|%s|branch:%s] %s: %s" % (
                     repo,
                     red(_("sync")),
@@ -3005,7 +3005,7 @@ class Server:
                     remote_packages_data = self.calculate_packages_to_sync(uri,
                         self.SystemSettings['repositories']['branch'], repo)
             except self.socket.error as err:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
                         repo,
                         red(_("sync")),
@@ -3023,7 +3023,7 @@ class Server:
 
             if (not upload_queue) and (not download_queue) and \
                 (not removal_queue):
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s: %s" % (
                         repo,
                         red(_("sync")),
@@ -3038,7 +3038,7 @@ class Server:
                 successfull_mirrors.add(uri)
                 continue
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s:" % (blue(_("Expanding queues")),),
                 importance = 1,
                 type = "info",
@@ -3060,7 +3060,7 @@ class Server:
 
             if not len(upload)+len(download)+len(removal)+len(copy):
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s %s" % (
                         self.Entropy.default_repository,
                         red(_("sync")),
@@ -3130,7 +3130,7 @@ class Server:
                     mirrors_errors = True
 
             except KeyboardInterrupt:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s" % (
                         repo,
                         red(_("sync")),
@@ -3149,7 +3149,7 @@ class Server:
                 broken_mirrors.add(uri)
                 successfull_mirrors.clear()
                 # so that people will realize this is a very bad thing
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
                         repo,
                         red(_("sync")),
@@ -3171,7 +3171,7 @@ class Server:
                 entropy.tools.print_traceback()
                 mirrors_errors = True
                 broken_mirrors.add(uri)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
                         repo,
                         red(_("sync")),
@@ -3189,7 +3189,7 @@ class Server:
                 exc_txt = entropy.tools.print_exception(
                     returndata = True)
                 for line in exc_txt:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         repr(line),
                         importance = 1,
                         type = "error",
@@ -3197,7 +3197,7 @@ class Server:
                     )
 
                 if len(successfull_mirrors) > 0:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[repo:%s|%s|branch:%s] %s" % (
                             repo,
                             red(_("sync")),
@@ -3310,7 +3310,7 @@ class Server:
         if repo is None:
             repo = self.Entropy.default_repository
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[repo:%s|%s|branch:%s] %s" % (
                 brown(repo),
                 red(_("tidy")),
@@ -3327,7 +3327,7 @@ class Server:
         branch_data['errors'] = False
         branch = self.SystemSettings['repositories']['branch']
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[branch:%s] %s" % (
                 brown(branch),
                 blue(_("collecting expired packages in the selected branches")),
@@ -3379,7 +3379,7 @@ class Server:
         branch_data['removal'] = removal[:]
 
         if not removal:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s] %s" % (
                     brown(branch),
                     blue(_("nothing to remove on this branch")),
@@ -3390,7 +3390,7 @@ class Server:
             )
             return errors, branch_data
         else:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s] %s:" % (
                     brown(branch),
                     blue(_("these are the expired packages")),
@@ -3400,7 +3400,7 @@ class Server:
                 header = blue(" @@ ")
             )
             for package in removal:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[branch:%s] %s: %s" % (
                             brown(branch),
                             blue(_("remove")),
@@ -3429,7 +3429,7 @@ class Server:
             self.Entropy.get_remote_packages_relative_path(repo), branch)
         for uri in self.Entropy.get_remote_mirrors(repo):
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s] %s..." % (
                     brown(branch),
                     blue(_("removing packages remotely")),
@@ -3456,7 +3456,7 @@ class Server:
                         for x in m_broken_uris]
 
                 reason = my_broken_uris[0][1]
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[branch:%s] %s: %s, %s: %s" % (
                         brown(branch),
                         blue(_("remove errors")),
@@ -3471,7 +3471,7 @@ class Server:
                 branch_data['errors'] = True
                 errors = True
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[branch:%s] %s..." % (
                     brown(branch),
                     blue(_("removing packages locally")),
@@ -3495,7 +3495,7 @@ class Server:
                     package_path_expired)
                 for myfile in my_rm_list:
                     if os.path.isfile(myfile):
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "[branch:%s] %s: %s" % (
                                 brown(branch),
                                 blue(_("removing")),

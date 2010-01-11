@@ -522,14 +522,14 @@ class Base:
                 atoms_removed = []
                 matches_injected = set()
 
-                if to_inject: Entropy.updateProgress(_("Running package injection"))
+                if to_inject: Entropy.output(_("Running package injection"))
 
                 # run inject
                 for idpackage, repoid in to_inject:
                     matches_injected.add((idpackage, repoid,))
                     Entropy.transform_package_into_injected(idpackage, repo = repoid)
 
-                if to_remove: Entropy.updateProgress(_("Running package removal"))
+                if to_remove: Entropy.output(_("Running package removal"))
 
                 # run remove
                 remdata = {}
@@ -553,7 +553,7 @@ class Base:
                     problems = Entropy.check_config_file_updates()
                     if problems:
                         return False, mydict
-                    Entropy.updateProgress(_("Running package quickpkg"))
+                    Entropy.output(_("Running package quickpkg"))
 
                 # run quickpkg
                 for repoid in to_add:
@@ -572,14 +572,14 @@ class Base:
                     if not package_files: continue
                     package_files = [(os.path.join(store_dir, x), False) for x in package_files]
 
-                    Entropy.updateProgress( "[%s|%s] %s" % (
+                    Entropy.output( "[%s|%s] %s" % (
                             repoid,
                             Entropy.SystemSettings['repositories']['branch'],
                             _("Adding packages"),
                         )
                     )
                     for package_file, inject in package_files:
-                        Entropy.updateProgress("    %s" % (package_file,))
+                        Entropy.output("    %s" % (package_file,))
 
                     idpackages = Entropy.add_packages_to_repository(package_files, ask = False, repo = repoid)
                     matches_added |= set([(x, repoid,) for x in idpackages])
@@ -859,24 +859,24 @@ class Base:
         def sync_remote_databases(repoid, pretend):
 
             rdb_status = Entropy.MirrorsService.get_remote_databases_status()
-            Entropy.updateProgress(
+            Entropy.output(
                 "%s:" % (_("Remote Entropy Database Repository Status"),),
                 header = " * "
             )
             for myuri, myrev in rdb_status:
-                Entropy.updateProgress("\t %s:\t %s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
-                Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"), myrev,))
+                Entropy.output("\t %s:\t %s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
+                Entropy.output("\t  * %s: %s" % (_("Database revision"), myrev,))
             local_revision = Entropy.get_local_database_revision(repoid)
-            Entropy.updateProgress("\t  * %s: %s" % (_("Database local revision currently at"), local_revision,))
+            Entropy.output("\t  * %s: %s" % (_("Database local revision currently at"), local_revision,))
             if pretend:
                 return 0, set(), set()
 
             errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases(no_upload = False)
             remote_status = Entropy.MirrorsService.get_remote_databases_status(repoid)
-            Entropy.updateProgress(" * %s: " % (_("Remote Entropy Database Repository Status"),))
+            Entropy.output(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:
-                Entropy.updateProgress("\t %s:\t%s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
-                Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"), myrev,) )
+                Entropy.output("\t %s:\t%s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
+                Entropy.output("\t  * %s: %s" % (_("Database revision"), myrev,) )
 
             return errors, fine_uris, broken_uris
 
@@ -1098,7 +1098,7 @@ class Base:
         if std_data != None: mystdin = std_data[0]
         return mystdin
 
-    def _file_updateProgress(self, f, *myargs, **mykwargs):
+    def _file_output(self, f, *myargs, **mykwargs):
 
         f.flush()
         back = mykwargs.get("back")

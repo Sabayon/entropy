@@ -280,14 +280,14 @@ class PortagePlugin(SpmPlugin):
 
     def init_singleton(self, OutputInterface):
 
-        mytxt = _("OutputInterface does not have an updateProgress method")
-        if not hasattr(OutputInterface, 'updateProgress'):
+        mytxt = _("OutputInterface does not have an output method")
+        if not hasattr(OutputInterface, 'output'):
             raise AttributeError(mytxt)
-        elif not hasattr(OutputInterface.updateProgress, '__call__'):
+        elif not hasattr(OutputInterface.output, '__call__'):
             raise AttributeError(mytxt)
 
         # interface only needed OutputInterface functions
-        self.updateProgress = OutputInterface.updateProgress
+        self.output = OutputInterface.output
         self.askQuestion = OutputInterface.askQuestion
 
         # importing portage stuff
@@ -1889,7 +1889,7 @@ class PortagePlugin(SpmPlugin):
                     brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(package)),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 0,
                     header = red("   ## ")
@@ -1901,7 +1901,7 @@ class PortagePlugin(SpmPlugin):
                     darkred(tmp_file),
                     brown(phase),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 0,
                     header = red("   ## ")
@@ -1949,7 +1949,7 @@ class PortagePlugin(SpmPlugin):
             except EOFError as e:
                 sys.stderr = oldstderr
                 # stuff on system is broken, ignore it
-                self.updateProgress(
+                self.output(
                     darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
                         str(e) + darkred(" - ignoring"),
                     importance = 1,
@@ -1961,7 +1961,7 @@ class PortagePlugin(SpmPlugin):
             except ImportError as e:
                 sys.stderr = oldstderr
                 # stuff on system is broken, ignore it
-                self.updateProgress(
+                self.output(
                     darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
                         str(e) + darkred(" - ignoring"),
                     importance = 1,
@@ -2002,7 +2002,7 @@ class PortagePlugin(SpmPlugin):
                     brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(package)),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 0,
                     header = red("   ## ")
@@ -2014,7 +2014,7 @@ class PortagePlugin(SpmPlugin):
                     darkred(tmp_file),
                     brown(phase),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 0,
                     header = red("   ## ")
@@ -2081,7 +2081,7 @@ class PortagePlugin(SpmPlugin):
                 err,
             )
             for txt in (mytxt, mytxt2,):
-                self.updateProgress(
+                self.output(
                     txt,
                     importance = 0,
                     header = red("   ## ")
@@ -2120,7 +2120,7 @@ class PortagePlugin(SpmPlugin):
 
         for myatom in runatoms:
 
-            self.updateProgress(
+            self.output(
                 red("%s: " % (_("repackaging"),) )+blue(myatom),
                 importance = 1,
                 type = "warning",
@@ -2142,7 +2142,7 @@ class PortagePlugin(SpmPlugin):
                     blue(myatom),
                     _("do it manually"),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -2161,7 +2161,7 @@ class PortagePlugin(SpmPlugin):
                 red(_("package files rebuild did not run properly")),
                 red(_("Please update packages manually")),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -2257,7 +2257,7 @@ class PortagePlugin(SpmPlugin):
                     red(_("Syncing with")),
                     blue(updates_dir),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -2294,7 +2294,7 @@ class PortagePlugin(SpmPlugin):
                             blue(str(sorted(quickpkg_list))),
                             _("do it manually"),
                         )
-                        self.updateProgress(
+                        self.output(
                             mytxt,
                             importance = 1,
                             type = "warning",
@@ -2401,7 +2401,7 @@ class PortagePlugin(SpmPlugin):
                 mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot update Portage database to destination")),
                     purple(pkg_dir), e,)
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -2417,7 +2417,7 @@ class PortagePlugin(SpmPlugin):
                     mytxt = "%s: %s [%s]" % (
                         brown(_("SPM uid update error")), pkg_dir, err,
                     )
-                    self.updateProgress(
+                    self.output(
                         red("QA: ") + mytxt,
                         importance = 1,
                         type = "warning",
@@ -2471,7 +2471,7 @@ class PortagePlugin(SpmPlugin):
             mytxt = "%s: %s" % (
                 brown(_("Cannot update SPM installed pkgs file")), world_file,
             )
-            self.updateProgress(
+            self.output(
                 red("QA: ") + mytxt + ": " + repr(e),
                 importance = 1,
                 type = "warning",
@@ -2660,7 +2660,7 @@ class PortagePlugin(SpmPlugin):
         make_conf_variables_check = ["CHOST"]
 
         if not os.path.isfile(system_make_conf):
-            entropy_client.updateProgress(
+            entropy_client.output(
                 "%s %s. %s." % (
                     red(system_make_conf),
                     blue(_("does not exist")), blue(_("Overwriting")),
@@ -2708,7 +2708,7 @@ class PortagePlugin(SpmPlugin):
 
                         # there can't be bash vars with a
                         # space after its name on declaration
-                        entropy_client.updateProgress(
+                        entropy_client.output(
                             "%s: %s %s. %s." % (
                                 red(system_make_conf), bold(repr(setting)),
                                 blue(_("variable differs")), red(_("Updating")),
@@ -2723,7 +2723,7 @@ class PortagePlugin(SpmPlugin):
 
             if differences:
 
-                entropy_client.updateProgress(
+                entropy_client.output(
                     "%s: %s." % (
                         red(system_make_conf),
                         blue(_("updating critical variables")),
@@ -2736,7 +2736,7 @@ class PortagePlugin(SpmPlugin):
                 shutil.copy2(system_make_conf,
                     "%s.entropy_backup" % (system_make_conf,))
 
-                entropy_client.updateProgress(
+                entropy_client.output(
                     "%s: %s." % (
                         red(system_make_conf),
                         darkgreen("writing changes to disk"),
@@ -2794,7 +2794,7 @@ class PortagePlugin(SpmPlugin):
         if (repo_profile_link_data != current_profile_link) and \
             repo_profile_link_data:
 
-            entropy_client.updateProgress(
+            entropy_client.output(
                 "%s: %s %s. %s." % (
                     red(system_make_profile), blue("link"),
                     blue(_("differs")), red(_("Updating")),
@@ -2809,7 +2809,7 @@ class PortagePlugin(SpmPlugin):
                 os.rename(system_make_profile+merge_sfx, system_make_profile)
             else:
                 # revert change, link does not exist yet
-                entropy_client.updateProgress(
+                entropy_client.output(
                     "%s: %s %s. %s." % (
                         red(system_make_profile), blue("new link"),
                         blue(_("does not exist")), red(_("Reverting")),
@@ -2826,7 +2826,7 @@ class PortagePlugin(SpmPlugin):
 
         # are we root?
         if etpConst['uid'] != 0:
-            entropy_client.updateProgress(
+            entropy_client.output(
                 brown(_("Skipping configuration files update, you are not root.")),
                 importance = 1,
                 type = "info",
@@ -3287,7 +3287,7 @@ class PortagePlugin(SpmPlugin):
                 deps = ' '.join(deps)
             except Exception as e:
                 entropy.tools.print_traceback()
-                self.updateProgress(
+                self.output(
                     darkred("%s: %s: %s :: %s") % (
                         _("Error calculating dependencies"),
                         str(Exception),
@@ -3527,7 +3527,7 @@ class PortagePlugin(SpmPlugin):
                     warned = 0
                     if len(newdeparray[-1]) == 0:
                         mytxt = "%s. (%s)" % (_("Empty target in string"), _("Deprecated"),)
-                        self.updateProgress(
+                        self.output(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
                             type = "error",
@@ -3536,7 +3536,7 @@ class PortagePlugin(SpmPlugin):
                         warned = 1
                     if len(newdeparray) != 2:
                         mytxt = "%s. (%s)" % (_("Nested use flags without parenthesis"), _("Deprecated"),)
-                        self.updateProgress(
+                        self.output(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
                             type = "error",
@@ -3544,7 +3544,7 @@ class PortagePlugin(SpmPlugin):
                         )
                         warned = 1
                     if warned:
-                        self.updateProgress(
+                        self.output(
                             darkred("PortagePlugin._use_reduce(): "+" ".join(map(str, [head]+newdeparray))),
                             importance = 0,
                             type = "error",
@@ -3942,7 +3942,7 @@ class PortagePlugin(SpmPlugin):
                     continue
                 elf_class = entropy.tools.read_elf_class(unpack_obj)
             except IOError as err:
-                self.updateProgress("%s: %s => %s" % (
+                self.output("%s: %s => %s" % (
                     _("IOError while reading"), unpack_obj, repr(err),),
                     type = "warning")
                 continue

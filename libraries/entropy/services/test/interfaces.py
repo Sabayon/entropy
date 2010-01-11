@@ -18,7 +18,7 @@ class Server(SocketHost):
     class FakeServiceInterface:
         def __init__(self, *args, **kwargs):
             self.Text = TextInterface()
-            self.Text.updateProgress(":: FakeServiceInterface loaded ::")
+            self.Text.output(":: FakeServiceInterface loaded ::")
 
     def __init__(self, do_ssl = False, stdout_logging = True,
         entropy_interface_kwargs = {}, **kwargs):

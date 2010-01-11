@@ -122,7 +122,7 @@ class FetchersMixin:
             mytxt += blue(" %s: ") % (_("Mirror"),)
             mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
             mytxt += " - %s." % (_("maximum failure threshold reached"),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -149,7 +149,7 @@ class FetchersMixin:
                 mytxt += "[%s] %s " % (brown(basef), blue("@"),)
                 mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
                 # now fetch the new one
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -164,7 +164,7 @@ class FetchersMixin:
                 basef = os.path.basename(fname)
                 mytxt += "[%s] %s %s " % (brown(basef), darkred(_("success")), blue("@"),)
                 mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -176,7 +176,7 @@ class FetchersMixin:
                 darkred("/"),
                 darkblue(_("second")),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -206,7 +206,7 @@ class FetchersMixin:
                 else:
                     self.MirrorStatus.add_failing_mirror(best_mirror, 5)
                     mytxt += " - %s." % (_("unknown reason"),)
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -326,7 +326,7 @@ class FetchersMixin:
             raise
         except:
             if etpUi['debug']:
-                self.updateProgress(
+                self.output(
                     "fetch_file:",
                     importance = 1,
                     type = "warning",
@@ -383,7 +383,7 @@ class FetchersMixin:
                 mytxt += blue(" %s: ") % (_("Mirror"),)
                 mytxt += red(self.entropyTools.spliturl(uri)[1])
                 mytxt += " - %s." % (_("maximum failure threshold reached"),)
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -413,7 +413,7 @@ class FetchersMixin:
                     mytxt += blue("%s: ") % (_("Downloading from"),)
                     mytxt += red(self.entropyTools.spliturl(uri)[1])
                     # now fetch the new one
-                    self.updateProgress(
+                    self.output(
                         mytxt,
                         importance = 1,
                         type = "warning",
@@ -432,7 +432,7 @@ class FetchersMixin:
                         mytxt += red(self.entropyTools.spliturl(uri)[1])
                         human_bytes = self.entropyTools.bytes_into_human(data_transfer)
                         mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
-                        self.updateProgress(
+                        self.output(
                             mytxt,
                             importance = 1,
                             type = "info",
@@ -476,7 +476,7 @@ class FetchersMixin:
                         else:
                             self.MirrorStatus.add_failing_mirror(uri, 5)
                             error_message += " - %s." % (_("unknown reason"),)
-                        self.updateProgress(
+                        self.output(
                             error_message,
                             importance = 1,
                             type = "warning",

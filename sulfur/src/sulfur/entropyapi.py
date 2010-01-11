@@ -161,7 +161,7 @@ class QueueExecutor:
                 mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
                     pkg.pkgmeta['atom']))
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     fetch_string+pkg.pkgmeta['atom'],
                     importance = 2,
                     count = (progress_step_count, total_steps)
@@ -209,7 +209,7 @@ class QueueExecutor:
                 pkg.prepare((idpackage,), "remove", metaopts)
 
                 if 'remove_installed_vanished' not in pkg.pkgmeta:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "%s: " % (_("Removing"),) + pkg.pkgmeta['removeatom'],
                         importance = 2,
                         count = (progress_step_count, total_steps)
@@ -249,7 +249,7 @@ class QueueExecutor:
                 pkg = self.Entropy.Package()
                 pkg.prepare(pkg_info, "install", metaopts)
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "%s: " % (_("Installing"),) + pkg.pkgmeta['atom'],
                     importance = 2,
                     count = (progress_step_count, total_steps)
@@ -299,7 +299,7 @@ class Equo(EquoInterface):
     def init_singleton(self, *args, **kwargs):
         EquoInterface.init_singleton(self, *args, **kwargs)
         self.progress_log = None
-        self.output = None
+        self.std_output = None
         self.progress = None
         self.urlFetcher = None
         self._progress_divider = 1
@@ -316,7 +316,7 @@ class Equo(EquoInterface):
         self.urlFetcher = GuiUrlFetcher
         nocolor()
         self.progress_log = application.progress_log_write
-        self.output = application.output
+        self.std_output = application.std_output
         self.ui = application.ui
 
     def set_progress_divider(self, divider):
@@ -327,7 +327,7 @@ class Equo(EquoInterface):
     def reset_progress_divider(self):
         self._progress_divider = 1
 
-    def updateProgress(self, text, header = "", footer = "", back = False,
+    def output(self, text, header = "", footer = "", back = False,
             importance = 0, type = "info", count = [], percent = False):
 
         count_str = ""
@@ -461,7 +461,7 @@ class GuiUrlFetcher(UrlFetcher):
         self.__remotesize = total_size
         self.__datatransfer = data_transfer
 
-    def updateProgress(self):
+    def output(self):
 
         if self.progress == None:
             return

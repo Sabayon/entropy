@@ -1639,8 +1639,8 @@ class UGCAddMenu(MenuSkel):
 
         old_show_progress = self.Entropy.UGC.show_progress
         self.Entropy.UGC.show_progress = True
-        bck_updateProgress = self.Entropy.updateProgress
-        self.Entropy.updateProgress = self.do_label_update_progress
+        bck_output = self.Entropy.output
+        self.Entropy.output = self.do_label_update_progress
         try:
             t = ParallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
             t.start()
@@ -1652,7 +1652,7 @@ class UGCAddMenu(MenuSkel):
             rslt, data = t.get_rc()
         finally:
             self.Entropy.UGC.show_progress = old_show_progress
-            self.Entropy.updateProgress = bck_updateProgress
+            self.Entropy.output = bck_output
 
 
         self.hide_loading()

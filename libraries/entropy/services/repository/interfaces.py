@@ -112,7 +112,7 @@ class Server(SocketHost):
                     continue
                 self.syscache['dbs_not_available'].add(x)
                 mytxt = blue("%s.") % (_("database does not exist. Locking services for it"),)
-                self.updateProgress(
+                self.output(
                     "[%s] %s" % (
                             brown(str(x)),
                             mytxt,
@@ -130,7 +130,7 @@ class Server(SocketHost):
                     self.eapi3_lock_repo(*x)
                     do_clear.add(repository)
                     mytxt = blue("%s.") % (_("database got locked. Locking services for it"),)
-                    self.updateProgress(
+                    self.output(
                         "[%s] %s" % (
                                 brown(str(x)),
                                 mytxt,
@@ -155,7 +155,7 @@ class Server(SocketHost):
                         _("cannot unlock database, compressed file not found"),
                         compressed_dbpath,
                     )
-                    self.updateProgress(
+                    self.output(
                         "[%s] %s" % (
                                 brown(str(x)),
                                 mytxt,
@@ -175,7 +175,7 @@ class Server(SocketHost):
                     _("unpacking compressed database"),
                     compressed_dbpath,
                 )
-                self.updateProgress(
+                self.output(
                     "[%s] %s" % (
                             brown(str(x)),
                             mytxt,
@@ -197,7 +197,7 @@ class Server(SocketHost):
                     _("unlocking and indexing database"),
                     _("hash"),
                 )
-                self.updateProgress(
+                self.output(
                     "[%s] %s" % (
                             brown(str(x)),
                             mytxt,
@@ -208,7 +208,7 @@ class Server(SocketHost):
                 # woohoo, got unlocked eventually
                 mydb = self.open_db(mydbpath, docache = False)
                 mydb.createAllIndexes()
-                self.updateProgress(
+                self.output(
                     darkgreen(str(mydb.checksum(do_order = True, strict = False, strings = True))),
                     importance = 1,
                     type = "info"

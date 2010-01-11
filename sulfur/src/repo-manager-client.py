@@ -48,7 +48,7 @@ class ManagerApplication:
         self.Equo = Equo()
         self.ui = None
         self.progress_log_write = sys.stdout
-        self.output = sys.stdout
+        self.std_output = sys.stdout
         self.progress = None
         self.Equo.connect_to_gui(self)
 

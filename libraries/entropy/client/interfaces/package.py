@@ -150,7 +150,7 @@ class Package:
                 return True
 
             if err_msg:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "%s: %s, %s" % (
                         darkred(_("Package signature verification error for")),
                         purple("GPG"),
@@ -181,7 +181,7 @@ class Package:
                     if hash_val is None:
                         continue
                     if hash_type not in enabled_hashes:
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "%s %s" % (
                                 purple(hash_type.upper()),
                                 darkgreen(_("disabled")),
@@ -196,7 +196,7 @@ class Package:
                     if cmp_func is None:
                         continue
 
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "%s: %s" % (blue(_("Checking package signature")),
                             purple(hash_type.upper()),),
                         importance = 0,
@@ -206,7 +206,7 @@ class Package:
                     )
                     valid = cmp_func(pkg_disk_path, hash_val)
                     if valid is None:
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "%s '%s' %s" % (
                                 darkred(_("Package signature verification")),
                                 purple(hash_type.upper()),
@@ -218,7 +218,7 @@ class Package:
                         )
                         continue
                     if not valid:
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "%s: %s %s" % (
                                 darkred(_("Package signature")),
                                 purple(hash_type.upper()),
@@ -229,7 +229,7 @@ class Package:
                             header = darkred("   ## ")
                         )
                         return 1
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "%s %s" % (
                             purple(hash_type.upper()),
                             darkgreen(_("matches")),
@@ -245,7 +245,7 @@ class Package:
 
         while dlcount <= 5:
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue(_("Checking package checksum...")),
                 importance = 0,
                 type = "info",
@@ -257,7 +257,7 @@ class Package:
                 checksum = checksum)
             if dlcheck == 0:
                 basef = os.path.basename(download)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "%s: %s" % (
                         blue(_("Package checksum matches")),
                         darkgreen(basef),
@@ -283,7 +283,7 @@ class Package:
                 mytxt = _("Checksum does not match. Download attempt #%s") % (
                     dlcount,
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     darkred(mytxt),
                     importance = 0,
                     type = "warning",
@@ -299,7 +299,7 @@ class Package:
                     fetch_abort_function = self.fetch_abort_function
                 )
                 if fetch != 0:
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         blue(_("Cannot properly fetch package! Quitting.")),
                         importance = 0,
                         type = "error",
@@ -315,7 +315,7 @@ class Package:
             mytxt = _("Cannot fetch package or checksum does not match")
             mytxt2 = _("Try to download latest repositories")
             for txt in (mytxt, mytxt2,):
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "%s." % (blue(txt),),
                     importance = 0,
                     type = "info",
@@ -456,7 +456,7 @@ class Package:
             )
             return 1
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "SPM: %s" % (brown(_("configuration phase")),),
             importance = 0,
             header = red("   ## ")
@@ -476,7 +476,7 @@ class Package:
             blue(_("Removing from Entropy")),
             red(self.pkgmeta['removeatom']),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -618,7 +618,7 @@ class Package:
                             darkgreen(prot_msg),
                             blue(item),
                         )
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             mytxt,
                             importance = 1,
                             type = "info",
@@ -639,7 +639,7 @@ class Package:
                     brown(_("Protecting config file")),
                     sys_root_item,
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -657,7 +657,7 @@ class Package:
             except UnicodeEncodeError:
                 msg = _("This package contains a badly encoded file !!!")
                 mytxt = brown(msg)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     red("QA: ")+mytxt,
                     importance = 1,
                     type = "warning",
@@ -708,7 +708,7 @@ class Package:
 
 
         if colliding_path_messages:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s:" % (_("Collision found during removal of"),),
                 importance = 1,
                 type = "warning",
@@ -716,7 +716,7 @@ class Package:
             )
 
         for path in sorted(colliding_path_messages):
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 purple(path),
                 importance = 0,
                 type = "warning",
@@ -809,7 +809,7 @@ class Package:
             blue(_("Updating database")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -827,7 +827,7 @@ class Package:
                 "Remove old package: %s" % (self.pkgmeta['removeatom'],)
             )
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue(_("Cleaning previously installed information...")),
                 importance = 1,
                 type = "info",
@@ -1162,7 +1162,7 @@ class Package:
                 mytxt = darkred(_("%s is a file when should be a " \
                 "directory !! Removing in 20 seconds...") % (rootdir,))
 
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     red("QA: ")+mytxt,
                     importance = 1,
                     type = "warning",
@@ -1190,7 +1190,7 @@ class Package:
                     )
                     mytxt2 = _("Removing in 20 seconds !!")
                     for txt in (mytxt, mytxt2,):
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             darkred("QA: ") + darkred(txt),
                             importance = 1,
                             type = "warning",
@@ -1311,7 +1311,7 @@ class Package:
                             darkgreen(msg),
                             blue(pre_tofile),
                         )
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             mytxt,
                             importance = 1,
                             type = "info",
@@ -1359,7 +1359,7 @@ class Package:
                 )
                 mytxt2 = _("Removing in 20 seconds !!")
                 for txt in (mytxt, mytxt2,):
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         darkred("QA: ") + darkred(txt),
                         importance = 1,
                         type = "warning",
@@ -1414,7 +1414,7 @@ class Package:
                     const_convert_to_unicode(tofile),
                     _("please report"),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     red("QA: ")+darkred(mytxt),
                     importance = 1,
                     type = "warning",
@@ -1558,7 +1558,7 @@ class Package:
                     _("Skipping file installation/removal"),
                     tofile,
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -1599,7 +1599,7 @@ class Package:
                 "Protecting config file: %s" % (oldtofile,)
             )
             mytxt = red("%s: %s") % (_("Protecting config file"), oldtofile,)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1620,7 +1620,7 @@ class Package:
                 blue(tofile),
                 darkred(_("cannot overwrite")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 red("QA: ")+mytxt,
                 importance = 1,
                 type = "warning",
@@ -1680,7 +1680,7 @@ class Package:
 
             mytxt = "%s: %s" % (blue(_("Downloading")), brown(url),)
             # now fetch the new one
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1700,13 +1700,13 @@ class Package:
                 mytxt += red(entropy.tools.spliturl(url)[1])
                 human_bytes = entropy.tools.bytes_into_human(data_transfer)
                 mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     importance = 1,
                     type = "info",
                     header = red("   ## ")
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "%s: %s" % (blue(_("Local path")), brown(dest_file),),
                     importance = 1,
                     type = "info",
@@ -1728,7 +1728,7 @@ class Package:
                     error_message += " - %s." % (_("discarded download"),)
                 else:
                     error_message += " - %s: %s" % (_("unknown reason"), rc,)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     error_message,
                     importance = 1,
                     type = "warning",
@@ -1745,7 +1745,7 @@ class Package:
 
         mytxt = "%s: %s" % (blue(_("Downloading archive")),
             red(os.path.basename(self.pkgmeta['download'])),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1773,7 +1773,7 @@ class Package:
             blue(_("Error")),
             rc,
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "error",
@@ -1792,7 +1792,7 @@ class Package:
             _("archives"),
         )
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1811,13 +1811,13 @@ class Package:
         mytxt2 = _("Try to update your repositories and retry")
         mytxt3 = "%s: %s" % (brown(_("Error")), bold(str(rc)),)
         for txt in (mytxt, mytxt2,):
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s." % (darkred(txt),),
                 importance = 0,
                 type = "info",
                 header = red("   ## ")
             )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt3,
             importance = 0,
             type = "info",
@@ -1825,7 +1825,7 @@ class Package:
         )
 
         for repo, branch, fname, cksum, signatures in err_list:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[%s:%s|%s] %s" % (blue(repo), brown(branch),
                     darkgreen(cksum), darkred(fname),),
                 importance = 1,
@@ -1836,7 +1836,7 @@ class Package:
         return rc
 
     def fetch_not_available_step(self):
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             blue(_("Package cannot be downloaded, unknown error.")),
             importance = 1,
             type = "info",
@@ -1845,7 +1845,7 @@ class Package:
         return 0
 
     def vanished_step(self):
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             blue(_("Installed package in queue vanished, skipping.")),
             importance = 1,
             type = "info",
@@ -1871,7 +1871,7 @@ class Package:
                 blue(_("Unpacking package")),
                 red(os.path.basename(self.pkgmeta['download'])),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1882,7 +1882,7 @@ class Package:
                 blue(_("Merging package")),
                 red(os.path.basename(self.pkgmeta['atom'])),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1904,7 +1904,7 @@ class Package:
                     blue(_("Error")),
                     rc,
                 )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 errormsg,
                 importance = 1,
                 type = "error",
@@ -1918,7 +1918,7 @@ class Package:
             blue(_("Installing package")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1926,7 +1926,7 @@ class Package:
         )
         if self.pkgmeta.get('description'):
             mytxt = "[%s]" % (purple(self.pkgmeta.get('description')),)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1941,7 +1941,7 @@ class Package:
                 blue(_("Error")),
                 rc,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -1955,7 +1955,7 @@ class Package:
             blue(_("Removing data")),
             red(self.pkgmeta['removeatom']),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1970,7 +1970,7 @@ class Package:
                 blue(_("Error")),
                 rc,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -1984,7 +1984,7 @@ class Package:
             blue(_("Cleaning")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2101,7 +2101,7 @@ class Package:
             blue(_("Configuring package")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2116,13 +2116,13 @@ class Package:
                 blue(_("Error")),
                 conf_rc,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 darkred(mytxt),
                 importance = 1,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt2,
                 importance = 1,
                 type = "error",
@@ -2136,13 +2136,13 @@ class Package:
                 blue(_("Error")),
                 conf_rc,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 darkred(mytxt),
                 importance = 1,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt2,
                 importance = 1,
                 type = "error",
@@ -2328,7 +2328,7 @@ class Package:
         # lock
         acquired = self.Entropy.resources_create_lock()
         if not acquired:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue(_("Cannot acquire Entropy resources lock.")),
                 importance = 2,
                 type = "error",
@@ -2341,7 +2341,7 @@ class Package:
             self.Entropy.resources_remove_lock()
 
         if rc != 0:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue(_("An error occured. Action aborted.")),
                 importance = 2,
                 type = "error",

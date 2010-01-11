@@ -153,7 +153,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         if self._verbose:
             mytxt = _("connecting with user")
-            self.updateProgress(
+            self.output(
                 "[ftp:%s] %s: %s" % (
                     darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),
                 ),
@@ -168,7 +168,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         if self._verbose:
             mytxt = _("switching to")
-            self.updateProgress(
+            self.output(
                 "[ftp:%s] %s: %s" % (
                     darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),
                 ),
@@ -222,7 +222,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     def __set_cwd(self, mydir, dodir = False):
         if self._verbose:
             mytxt = _("switching to")
-            self.updateProgress(
+            self.output(
                 "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),
                     mytxt, blue(mydir),),
                 importance = 1,
@@ -307,7 +307,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 bytes_into_human(self.__datatransfer) + \
                 "/" + _("sec")
 
-            self.updateProgress(current_txt, back = True)
+            self.output(current_txt, back = True)
             self.__oldprogress_t = cur_t
 
     def _get_file_size(self, filename):
@@ -381,7 +381,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     _("retrying"),
                     tries+1,
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -434,7 +434,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     _("retrying"),
                     tries+1,
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",

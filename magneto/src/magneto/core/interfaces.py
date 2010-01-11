@@ -406,7 +406,7 @@ class Entropy(Client):
         self.applet_last_message = ''
         nocolor()
 
-    def updateProgress(self, text, header = "", footer = "", back = False,
+    def output(self, text, header = "", footer = "", back = False,
             importance = 0, type = "info", count = [], percent = False):
 
         count_str = ""

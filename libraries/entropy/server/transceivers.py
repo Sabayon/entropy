@@ -88,7 +88,7 @@ class TransceiverServerHandler:
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "[%s|#%s|(%s/%s)] %s: %s" % (
                 blue(crippled_uri),
                 darkgreen(str(tries)),
@@ -111,7 +111,7 @@ class TransceiverServerHandler:
             if valid_md5: # seems valid
                 ckres = compare_md5(local_filepath, remote_md5)
             if ckres:
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                         blue(crippled_uri),
                         darkgreen(str(tries)),
@@ -129,7 +129,7 @@ class TransceiverServerHandler:
             # ouch!
             elif not valid_md5:
                 # mmmh... malformed md5, try with handlers
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                         blue(crippled_uri),
                         darkgreen(str(tries)),
@@ -144,7 +144,7 @@ class TransceiverServerHandler:
                     header = brown(" @@ ")
                 )
             else: # it's really bad!
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                         blue(crippled_uri),
                         darkgreen(str(tries)),
@@ -221,7 +221,7 @@ class TransceiverServerHandler:
 
                 while tries < 5:
                     tries += 1
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[%s|#%s|(%s/%s)] %s: %s" % (
                             blue(crippled_uri),
                             darkgreen(str(tries)),
@@ -240,7 +240,7 @@ class TransceiverServerHandler:
                         rc = self.handler_verify_upload(mypath, uri,
                             counter, maxcount, tries, remote_md5 = remote_md5)
                     if rc:
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "[%s|#%s|(%s/%s)] %s %s: %s" % (
                                         blue(crippled_uri),
                                         darkgreen(str(tries)),
@@ -258,7 +258,7 @@ class TransceiverServerHandler:
                         fine.add(uri)
                         break
                     else:
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "[%s|#%s|(%s/%s)] %s %s: %s" % (
                                         blue(crippled_uri),
                                         darkgreen(str(tries)),
@@ -277,7 +277,7 @@ class TransceiverServerHandler:
 
                 if not done:
 
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         "[%s|(%s/%s)] %s %s: %s - %s: %s" % (
                                 blue(crippled_uri),
                                 blue(str(counter)),
@@ -294,7 +294,7 @@ class TransceiverServerHandler:
                     )
 
                     if mypath not in self.critical_files:
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             "[%s|(%s/%s)] %s: %s, %s..." % (
                                 blue(crippled_uri),
                                 blue(str(counter)),
@@ -331,7 +331,7 @@ class TransceiverServerHandler:
         for uri in self.uris:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[%s|%s] %s..." % (
                     blue(crippled_uri),
                     brown(action),
@@ -347,7 +347,7 @@ class TransceiverServerHandler:
                 self.Entropy.get_remote_database_relative_path(self.repo),
                 branch)
 
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "[%s|%s] %s %s..." % (
                     blue(crippled_uri),
                     brown(action),

@@ -168,13 +168,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_gui(self):
 
         self.pty = pty.openpty()
-        self.output = fakeoutfile(self.pty[1])
+        self.std_output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
         self.do_debug = const.debug
 
         if not self.do_debug:
-            sys.stdout = self.output
-            sys.stderr = self.output
+            sys.stdout = self.std_output
+            sys.stderr = self.std_output
             sys.stdin = self.input
 
         # load "loading" pix
@@ -269,7 +269,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # this is a workaround for buggy vte.Terminal when using
         # file descriptors. This will make fakeoutfile to use
         # our external writer instead of using os.write
-        self.output.external_writer = self.progress_log_write
+        self.std_output.external_writer = self.progress_log_write
 
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)

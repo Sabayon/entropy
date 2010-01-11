@@ -116,7 +116,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         out_intf = self._metadata.get('output_interface')
         if out_intf is not None:
-            entropy_repository_instance.updateProgress = out_intf.updateProgress
+            entropy_repository_instance.output = out_intf.output
             entropy_repository_instance.askQuestion = out_intf.askQuestion
 
         return 0
@@ -142,7 +142,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             if sts.is_tainted(dbfile) and not sts.is_unlock_msg(dbfile):
                 u_msg = "[%s] %s" % (brown(repo),
                     darkgreen(_("mirrors have not been unlocked. Sync them.")),)
-                self._server.updateProgress(
+                self._server.output(
                     u_msg,
                     importance = 1,
                     type = "warning",
@@ -356,7 +356,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 red(_("quickpkg manually to update embedded db")),
                 red(_("Repository database updated anyway")),
             )
-            self._server.updateProgress(
+            self._server.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -864,7 +864,7 @@ class Server(Singleton, TextInterface):
         )
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
-        self.ClientService.updateProgress = self.updateProgress
+        self.ClientService.output = self.output
         self.validRepositories = self.ClientService.validRepositories
         entropy.tools = self.ClientService.entropyTools
         self.dumpTools = self.ClientService.dumpTools
@@ -991,7 +991,7 @@ class Server(Singleton, TextInterface):
         if not self.is_repository_initialized(repoid):
             mytxt = blue("%s.") % (
                 _("Your default repository is not initialized"),)
-            self.updateProgress(
+            self.output(
                 "[%s:%s] %s" % (
                     brown("repo"),
                     purple(repoid),
@@ -1006,7 +1006,7 @@ class Server(Singleton, TextInterface):
             if answer == _("No"):
                 mytxt = red("%s.") % (
                     _("Continuing with an uninitialized repository"),)
-                self.updateProgress(
+                self.output(
                     "[%s:%s] %s" % (
                         brown("repo"),
                         purple(repoid),
@@ -1031,7 +1031,7 @@ class Server(Singleton, TextInterface):
             type_txt = _("community repository")
         # ..on repository: <repository_name>
         mytxt = _("Entropy Server Interface Instance on repository")
-        self.updateProgress(
+        self.output(
             blue("%s: %s, %s: %s (%s: %s)" % (
                     mytxt,
                     red(self.default_repository),
@@ -1048,14 +1048,14 @@ class Server(Singleton, TextInterface):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         repos = list(srv_set['repositories'].keys())
         mytxt = blue("%s:") % (_("Currently configured repositories"),)
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
             header = red(" @@ ")
         )
         for repo in repos:
-            self.updateProgress(
+            self.output(
                 darkgreen(repo),
                 importance = 0,
                 type = "info",
@@ -1166,7 +1166,7 @@ class Server(Singleton, TextInterface):
         # check if the database is locked locally
         lock_file = self.MirrorsService.get_database_lockfile(repo)
         if os.path.isfile(lock_file):
-            self.updateProgress(
+            self.output(
                 red(_("Entropy database is already locked by you :-)")),
                 importance = 1,
                 type = "info",
@@ -1175,7 +1175,7 @@ class Server(Singleton, TextInterface):
         else:
             # check if the database is locked REMOTELY
             mytxt = "%s ..." % (_("Locking and Syncing Entropy database"),)
-            self.updateProgress(
+            self.output(
                 red(mytxt),
                 importance = 1,
                 type = "info",
@@ -1190,7 +1190,7 @@ class Server(Singleton, TextInterface):
                     repo = repo)
                 if given_up:
                     mytxt = "%s:" % (_("Mirrors status table"),)
-                    self.updateProgress(
+                    self.output(
                         darkgreen(mytxt),
                         importance = 1,
                         type = "info",
@@ -1206,7 +1206,7 @@ class Server(Singleton, TextInterface):
                             db_st2_info = red(_("Locked"))
 
                         crippled_uri = EntropyTransceiver.get_uri_name(db_uri)
-                        self.updateProgress(
+                        self.output(
                             "%s: [%s: %s] [%s: %s]" % (
                                 bold(crippled_uri),
                                 brown(_("database")),
@@ -1394,7 +1394,7 @@ class Server(Singleton, TextInterface):
                         branch = use_branch, repo = repo)
             elif warnings and not is_new:
                 mytxt = _("Entropy database is corrupted!")
-                self.updateProgress(
+                self.output(
                     darkred(mytxt),
                     importance = 1,
                     type = "warning",
@@ -1403,7 +1403,7 @@ class Server(Singleton, TextInterface):
 
         if not read_only and valid and indexing:
 
-            self.updateProgress(
+            self.output(
                 "[repo:%s|%s] %s" % (
                         blue(repo),
                         red(_("database")),
@@ -1473,7 +1473,7 @@ class Server(Singleton, TextInterface):
 
             if (count%150 == 0) or (count == length) or (count == 1):
                 atom = dbconn.retrieveAtom(idpackage)
-                self.updateProgress(
+                self.output(
                     darkgreen(mytxt)+" "+bold(atom),
                     importance = 0,
                     type = "info",
@@ -1495,7 +1495,7 @@ class Server(Singleton, TextInterface):
     def dependencies_test(self, repo = None):
 
         mytxt = "%s %s" % (blue(_("Running dependencies test")), red("..."))
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 2,
             type = "info",
@@ -1524,7 +1524,7 @@ class Server(Singleton, TextInterface):
                         crying_atoms[atom].add((iatom, repo))
 
             mytxt = blue("%s:") % (_("These are the dependencies not found"),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1532,21 +1532,21 @@ class Server(Singleton, TextInterface):
             )
             mytxt = "%s:" % (_("Needed by"),)
             for atom in deps_not_matched:
-                self.updateProgress(
+                self.output(
                     red(atom),
                     importance = 1,
                     type = "info",
                     header = blue("   # ")
                 )
                 if atom in crying_atoms:
-                    self.updateProgress(
+                    self.output(
                         red(mytxt),
                         importance = 0,
                         type = "info",
                         header = blue("      # ")
                     )
                     for my_dep, myrepo in crying_atoms[atom]:
-                        self.updateProgress(
+                        self.output(
                             "[%s:%s] %s" % (
                                 blue(_("by repo")),
                                 darkred(myrepo),
@@ -1559,7 +1559,7 @@ class Server(Singleton, TextInterface):
         else:
 
             mytxt = blue(_("Every dependency is satisfied. It's all fine."))
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 2,
                 type = "info",
@@ -1579,7 +1579,7 @@ class Server(Singleton, TextInterface):
                 (_("Broken and matched packages list"), pkg_list_path,),
             ]
             mytxt = "%s:" % (purple(_("Dumping results into these files")),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1587,7 +1587,7 @@ class Server(Singleton, TextInterface):
             )
             for txt, path in dmp_data:
                 mytxt = "%s: %s" % (blue(txt), path,)
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 0,
                     type = "info",
@@ -1609,7 +1609,7 @@ class Server(Singleton, TextInterface):
 
         if (not brokenexecs) and (not packages_matched):
             mytxt = "%s." % (_("System is healthy"),)
-            self.updateProgress(
+            self.output(
                 blue(mytxt),
                 importance = 2,
                 type = "info",
@@ -1618,7 +1618,7 @@ class Server(Singleton, TextInterface):
             return 0, None
 
         mytxt = "%s..." % (_("Matching libraries with Spm, please wait"),)
-        self.updateProgress(
+        self.output(
             blue(mytxt),
             importance = 1,
             type = "info",
@@ -1632,7 +1632,7 @@ class Server(Singleton, TextInterface):
 
         if packages:
             mytxt = "%s:" % (_("These are the matched packages"),)
-            self.updateProgress(
+            self.output(
                 red(mytxt),
                 importance = 1,
                 type = "info",
@@ -1640,7 +1640,7 @@ class Server(Singleton, TextInterface):
             )
             for my_atom, my_elf_id in packages:
                 package_slot = my_atom, my_elf_id
-                self.updateProgress(
+                self.output(
                     "%s [elf:%s]" % (
                         purple(my_atom),
                         darkgreen(str(my_elf_id)),
@@ -1650,7 +1650,7 @@ class Server(Singleton, TextInterface):
                     header = red("     # ")
                 )
                 for filename in sorted(packages[package_slot]):
-                    self.updateProgress(
+                    self.output(
                         darkgreen(filename),
                         importance = 0,
                         type = "info",
@@ -1667,14 +1667,14 @@ class Server(Singleton, TextInterface):
                     pkg_f.flush()
             pkgstring = ' '.join(pkgstring_list)
             mytxt = "%s: %s" % (darkgreen(_("Packages string")), pkgstring,)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
                 header = red(" @@ ")
             )
         else:
-            self.updateProgress(
+            self.output(
                 red(_("No matched packages")),
                 importance = 1,
                 type = "info",
@@ -1687,7 +1687,7 @@ class Server(Singleton, TextInterface):
 
         mytxt = "%s %s" % (
             blue(_("Running orphaned SPM packages test")), red("..."),)
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 2,
             type = "info",
@@ -1699,7 +1699,7 @@ class Server(Singleton, TextInterface):
         count = 0
         for installed_package in installed_packages:
             count += 1
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                     darkgreen(_("Scanning package")),
                     brown(installed_package),),
@@ -1716,7 +1716,7 @@ class Server(Singleton, TextInterface):
             tree_atom = self.Spm().match_package(pkg_atom)
             if not tree_atom:
                 not_found[installed_package] = pkg_atom
-                self.updateProgress(
+                self.output(
                     "%s: %s" % (
                         blue(pkg_atom),
                         darkred(_("not found anymore")),
@@ -1729,7 +1729,7 @@ class Server(Singleton, TextInterface):
 
         if not_found:
             not_found_list = ' '.join([not_found[x] for x in sorted(not_found)])
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                         blue(_("Packages string")),
                         not_found_list,
@@ -1758,7 +1758,7 @@ class Server(Singleton, TextInterface):
             os.makedirs(dbdir)
 
         mytxt = red("%s ...") % (_("Initializing an empty database"),)
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1774,7 +1774,7 @@ class Server(Singleton, TextInterface):
             bold(dbpath),
             red(_("successfully initialized")),
         )
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1790,7 +1790,7 @@ class Server(Singleton, TextInterface):
             if " " in package_tag:
                 raise ValueError
         except (UnicodeDecodeError, UnicodeEncodeError, ValueError,):
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                     blue(_("Invalid tag specified")),
                     package_tag,
@@ -1812,7 +1812,7 @@ class Server(Singleton, TextInterface):
                 invalid_atoms.append(dbconn.retrieveAtom(idpackage))
 
         if invalid_atoms:
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                     blue(_("Packages already tagged, action aborted")),
                     ', '.join([darkred(str(x)) for x in invalid_atoms]),
@@ -1855,7 +1855,7 @@ class Server(Singleton, TextInterface):
         if branch in from_branches:
             from_branches = [x for x in from_branches if x != branch]
 
-        self.updateProgress(
+        self.output(
             "[%s=>%s|%s] %s" % (
                 darkgreen(', '.join(from_branches)),
                 darkred(branch),
@@ -1881,7 +1881,7 @@ class Server(Singleton, TextInterface):
 
         mapped_branches = [x for x in idpackage_map if idpackage_map[x]]
         if not mapped_branches:
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s !" % (
                     darkgreen(', '.join(from_branches)),
                     darkred(branch),
@@ -1906,7 +1906,7 @@ class Server(Singleton, TextInterface):
 
         def generate_queue(branch, repo, from_branch, down_q, idpackage_map):
 
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s" % (
                     darkgreen(from_branch),
                     darkred(branch),
@@ -1921,7 +1921,7 @@ class Server(Singleton, TextInterface):
 
             for idpackage in idpackage_map[from_branch]:
                 atom = dbconn.retrieveAtom(idpackage)
-                self.updateProgress(
+                self.output(
                     "[%s=>%s|%s] %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
@@ -1975,7 +1975,7 @@ class Server(Singleton, TextInterface):
                     for downloaded_path, idpackage in \
                         download_queue[from_branch]:
 
-                        self.updateProgress(
+                        self.output(
                             "[%s=>%s|%s|%s] %s: %s" % (
                                 darkgreen(from_branch),
                                 darkred(branch),
@@ -1994,7 +1994,7 @@ class Server(Singleton, TextInterface):
                         db_md5hash = dbconn.retrieveDigest(idpackage)
                         if md5hash != db_md5hash:
                             errors = True
-                            self.updateProgress(
+                            self.output(
                                 "[%s=>%s|%s|%s] %s: %s" % (
                                     darkgreen(from_branch),
                                     darkred(branch),
@@ -2019,7 +2019,7 @@ class Server(Singleton, TextInterface):
                             for x, y in m_broken_uris]
                         reason = my_broken_uris[0][1]
 
-                    self.updateProgress(
+                    self.output(
                         "[%s=>%s|%s] %s, %s: %s" % (
                             darkgreen(from_branch),
                             darkred(branch),
@@ -2037,7 +2037,7 @@ class Server(Singleton, TextInterface):
 
                 all_fine = True
 
-                self.updateProgress(
+                self.output(
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
@@ -2051,7 +2051,7 @@ class Server(Singleton, TextInterface):
                 )
 
         if not all_fine:
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s" % (
                     darkgreen(', '.join(from_branches)),
                     darkred(branch),
@@ -2066,7 +2066,7 @@ class Server(Singleton, TextInterface):
 
         for from_branch in sorted(mapped_branches):
 
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(from_branch),
                     darkred(branch),
@@ -2082,7 +2082,7 @@ class Server(Singleton, TextInterface):
             down_queue = download_queue[from_branch]
             for package_path, idpackage in down_queue:
 
-                self.updateProgress(
+                self.output(
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
@@ -2116,7 +2116,7 @@ class Server(Singleton, TextInterface):
                 dbconn.switchBranch(idpackage, branch)
                 dbconn.commitChanges()
 
-                self.updateProgress(
+                self.output(
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
@@ -2147,7 +2147,7 @@ class Server(Singleton, TextInterface):
 
         # avoid setting __default__ as default server repo
         if etpConst['clientserverrepoid'] in (to_repo, from_repo):
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                     blue(_("Cannot touch system database")),
                     red(etpConst['clientserverrepoid']),
@@ -2167,7 +2167,7 @@ class Server(Singleton, TextInterface):
         mytxt = _("Preparing to move selected packages to")
         if do_copy:
             mytxt = _("Preparing to copy selected packages to")
-        self.updateProgress(
+        self.output(
             "%s %s:" % (
                 blue(mytxt),
                 red(to_repo),
@@ -2176,7 +2176,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = red(" @@ ")
         )
-        self.updateProgress(
+        self.output(
             "%s: %s" % (
                 bold(_("Note")),
                 red(_("all old packages with conflicting scope will be " \
@@ -2204,7 +2204,7 @@ class Server(Singleton, TextInterface):
         for idpackage, repo in my_matches:
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo)
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s " % (
                         darkgreen(repo),
                         darkred(to_repo),
@@ -2226,7 +2226,7 @@ class Server(Singleton, TextInterface):
             to_rm_idpackages = todbconn.retrieve_packages_to_remove(from_name,
                 from_category, from_slot, from_injected)
             for to_rm_idpackage in to_rm_idpackages:
-                self.updateProgress(
+                self.output(
                     "    [=>%s|%s] %s" % (
                             darkred(to_repo),
                             bold(_("remove")),
@@ -2256,7 +2256,7 @@ class Server(Singleton, TextInterface):
 
                     pull_deps_matches.append(my_dep_match)
                     if dep_idpackage in revdeps_idpackages:
-                        self.updateProgress(
+                        self.output(
                             "[%s|%s] %s" % (
                                 brown(branch),
                                 blue(_("reverse dependency")),
@@ -2267,7 +2267,7 @@ class Server(Singleton, TextInterface):
                             header = purple("    >> ")
                         )
                     else:
-                        self.updateProgress(
+                        self.output(
                             "[%s|%s] %s" % (
                                 brown(branch),
                                 blue(_("dependency")),
@@ -2295,7 +2295,7 @@ class Server(Singleton, TextInterface):
             match_atom = dbconn.retrieveAtom(idpackage)
             package_filename = os.path.basename(
                 dbconn.retrieveDownloadURL(idpackage))
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
@@ -2315,7 +2315,7 @@ class Server(Singleton, TextInterface):
                 from_file = os.path.join(self.get_local_upload_directory(repo),
                     match_branch, package_filename)
             if not os.path.isfile(from_file):
-                self.updateProgress(
+                self.output(
                     "[%s=>%s|%s] %s: %s -> %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
@@ -2354,7 +2354,7 @@ class Server(Singleton, TextInterface):
             ]
 
             for from_item, to_item in copy_data:
-                self.updateProgress(
+                self.output(
                         "[%s=>%s|%s] %s: %s" % (
                             darkgreen(repo),
                             darkred(to_repo),
@@ -2370,7 +2370,7 @@ class Server(Singleton, TextInterface):
                 if os.path.isfile(from_item):
                     shutil.copy2(from_item, to_item)
 
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
                     darkred(to_repo),
@@ -2396,7 +2396,7 @@ class Server(Singleton, TextInterface):
                 repo_sec = RepositorySecurity()
             except RepositorySecurity.GPGError as err:
                 if old_gpg:
-                    self.updateProgress(
+                    self.output(
                         "[repo:%s] %s %s: %s." % (
                             darkgreen(to_repo),
                             darkred(_("GPG key was available in")),
@@ -2413,7 +2413,7 @@ class Server(Singleton, TextInterface):
                 data['signatures']['gpg'] = self.__get_gpg_signature(repo_sec,
                     to_repo, to_file)
 
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
                     darkred(to_repo),
@@ -2431,7 +2431,7 @@ class Server(Singleton, TextInterface):
             todbconn.commitChanges()
 
             if not do_copy:
-                self.updateProgress(
+                self.output(
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
@@ -2449,7 +2449,7 @@ class Server(Singleton, TextInterface):
                 dbconn.removePackage(idpackage)
                 dbconn.commitChanges()
 
-            self.updateProgress(
+            self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
                     darkred(to_repo),
@@ -2485,7 +2485,7 @@ class Server(Singleton, TextInterface):
 
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
-        self.updateProgress(
+        self.output(
             red("[repo: %s] %s: %s" % (
                     darkgreen(repo),
                     _("adding package"),
@@ -2556,7 +2556,7 @@ class Server(Singleton, TextInterface):
         dbconn.storeInstalledPackage(idpackage, repo)
         atom = dbconn.retrieveAtom(idpackage)
 
-        self.updateProgress(
+        self.output(
             "[repo:%s] %s: %s %s: %s" % (
                     darkgreen(repo),
                     blue(_("added package")),
@@ -2571,7 +2571,7 @@ class Server(Singleton, TextInterface):
 
         manual_deps = sorted(dbconn.retrieveManualDependencies(idpackage))
         if manual_deps:
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s" % (
                         darkgreen(repo),
                         blue(_("manual dependencies for")),
@@ -2582,7 +2582,7 @@ class Server(Singleton, TextInterface):
                 header = darkgreen("   ## ")
             )
             for m_dep in manual_deps:
-                self.updateProgress(
+                self.output(
                     brown(m_dep),
                     importance = 1,
                     type = "warning",
@@ -2636,7 +2636,7 @@ class Server(Singleton, TextInterface):
         for package_filepath, inject in packages_data:
 
             mycount += 1
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("adding package")),
@@ -2659,7 +2659,7 @@ class Server(Singleton, TextInterface):
                 to_be_injected.add((idpackage, destination_path))
             except Exception as err:
                 entropy.tools.print_traceback()
-                self.updateProgress(
+                self.output(
                     "[repo:%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(_("Exception caught, closing tasks")),
@@ -2733,7 +2733,7 @@ class Server(Singleton, TextInterface):
             if not repo_sec.is_keypair_available(repo):
                 return None # GPG is not enabled
         except RepositorySecurity.KeyExpired as err:
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s, %s." % (
                     darkgreen(repo),
                     darkred(_("GPG key expired")),
@@ -2746,7 +2746,7 @@ class Server(Singleton, TextInterface):
             )
             return None
         except RepositorySecurity.GPGError as err:
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s, %s." % (
                     darkgreen(repo),
                     darkred(_("GPG got unexpected error")),
@@ -2770,7 +2770,7 @@ class Server(Singleton, TextInterface):
             repo = self.default_repository
 
         # now inject metadata into tbz2 packages
-        self.updateProgress(
+        self.output(
             "[repo:%s] %s:" % (
                 darkgreen(repo),
                 blue(_("Injecting entropy metadata into built packages")),
@@ -2786,7 +2786,7 @@ class Server(Singleton, TextInterface):
         try:
             repo_sec = RepositorySecurity()
         except RepositorySecurity.GPGError as err:
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("JFYI, GPG infrastructure failed to load")),
@@ -2799,7 +2799,7 @@ class Server(Singleton, TextInterface):
             repo_sec = None # gnupg not found, perhaps report it
 
         for idpackage, package_path in injection_data:
-            self.updateProgress(
+            self.output(
                 "[repo:%s|%s] %s: %s" % (
                     darkgreen(repo),
                     brown(str(idpackage)),
@@ -2837,7 +2837,7 @@ class Server(Singleton, TextInterface):
                 gpg_sign)
             entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
-            self.updateProgress(
+            self.output(
                 "[repo:%s|%s] %s: %s" % (
                     darkgreen(repo),
                     brown(str(idpackage)),
@@ -2851,7 +2851,7 @@ class Server(Singleton, TextInterface):
             dbconn.commitChanges()
 
     def check_config_file_updates(self):
-        self.updateProgress(
+        self.output(
             "[%s] %s" % (
                 red(_("config files")), # something short please
                 blue(_("checking system")),
@@ -2864,7 +2864,7 @@ class Server(Singleton, TextInterface):
         # scanning for config files not updated
         scandata = self.ClientService.FileUpdates.scanfs(dcache = False)
         if scandata:
-            self.updateProgress(
+            self.output(
                 "[%s] %s" % (
                     red(_("config files")), # something short please
                     blue(_("there are configuration files not updated yet")),
@@ -2874,7 +2874,7 @@ class Server(Singleton, TextInterface):
                 header = darkred(" @@ ")
             )
             for key in scandata:
-                self.updateProgress(
+                self.output(
                     "%s" % (brown(etpConst['systemroot'] + \
                         scandata[key]['destination'])),
                     importance = 1,
@@ -2893,7 +2893,7 @@ class Server(Singleton, TextInterface):
             no_upload = True, repo = repo)
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("removing package")),
@@ -2905,7 +2905,7 @@ class Server(Singleton, TextInterface):
             )
             dbconn.removePackage(idpackage)
         self.close_server_database(dbconn)
-        self.updateProgress(
+        self.output(
             "[repo:%s] %s" % (
                 darkgreen(repo),
                 blue(_("removal complete")),
@@ -3193,7 +3193,7 @@ class Server(Singleton, TextInterface):
             try:
                 rev = int(rev)
             except ValueError:
-                self.updateProgress(
+                self.output(
                     "[repo:%s] %s: %s - %s" % (
                             darkgreen(repo),
                             blue(_("invalid database revision")),
@@ -3510,7 +3510,7 @@ class Server(Singleton, TextInterface):
         idpackages_added = set()
 
         mytxt = red("%s ...") % (_("Initializing Entropy database"),)
-        self.updateProgress(
+        self.output(
             mytxt, importance = 1,
             type = "info", header = darkgreen(" * "),
             back = True
@@ -3555,7 +3555,7 @@ class Server(Singleton, TextInterface):
                 red(_("database already exists")),
                 self.get_local_database_file(repo),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -3581,7 +3581,7 @@ class Server(Singleton, TextInterface):
             revisions_file = "/entropy-revisions-dump.txt"
             # dump revisions - as a backup
             if revisions_match:
-                self.updateProgress(
+                self.output(
                     "%s: %s" % (
                         red(_("Dumping current revisions to file")),
                         darkgreen(revisions_file),
@@ -3598,7 +3598,7 @@ class Server(Singleton, TextInterface):
             # dump treeupdates - as a backup
             treeupdates_file = "/entropy-treeupdates-dump.txt"
             if treeupdates_actions:
-                self.updateProgress(
+                self.output(
                     "%s: %s" % (
                         # do not translate treeupdates
                         red(_("Dumping current 'treeupdates' actions to file")),
@@ -3635,7 +3635,7 @@ class Server(Singleton, TextInterface):
                     x + etpConst['packagesexpirationfileext']))]
 
             if pkglist:
-                self.updateProgress(
+                self.output(
                     "%s '%s' %s %s" % (
                         red(_("Reinitializing Entropy database for branch")),
                         bold(self.SystemSettings['repositories']['branch']),
@@ -3653,7 +3653,7 @@ class Server(Singleton, TextInterface):
             for pkg in pkglist:
                 counter += 1
 
-                self.updateProgress(
+                self.output(
                     "[repo:%s|%s] %s: %s" % (
                         darkgreen(repo),
                         brown(branch),
@@ -3688,7 +3688,7 @@ class Server(Singleton, TextInterface):
                     revision = add_revision)
                 idpackages_added.add(idpackage)
 
-                self.updateProgress(
+                self.output(
                     "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
                             repo,
                             brown(branch),
@@ -3744,7 +3744,7 @@ class Server(Singleton, TextInterface):
                         blue(_("cannot match")),
                         bold(package),
                     )
-                    self.updateProgress(
+                    self.output(
                         mytxt,
                         importance = 1,
                         type = "warning",
@@ -3757,7 +3757,7 @@ class Server(Singleton, TextInterface):
         if repo is None:
             repo = self.default_repository
 
-        self.updateProgress(
+        self.output(
             "[%s] %s:" % (
                 red("remote"),
                 blue(_("Integrity verification of the selected packages")),
@@ -3773,7 +3773,7 @@ class Server(Singleton, TextInterface):
         branch = self.SystemSettings['repositories']['branch']
 
         if world:
-            self.updateProgress(
+            self.output(
                 blue(
                     _("All the packages in repository will be checked.")),
                 importance = 1,
@@ -3783,7 +3783,7 @@ class Server(Singleton, TextInterface):
         else:
             mytxt = red("%s:") % (
                 _("This is the list of the packages that would be checked"),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -3793,7 +3793,7 @@ class Server(Singleton, TextInterface):
                 pkgatom = dbconn.retrieveAtom(idpackage)
                 down_url = dbconn.retrieveDownloadURL(idpackage)
                 pkgfile = os.path.basename(down_url)
-                self.updateProgress(
+                self.output(
                     red(pkgatom) + " -> " + bold(os.path.join(branch, pkgfile)),
                     importance = 1,
                     type = "info",
@@ -3813,7 +3813,7 @@ class Server(Singleton, TextInterface):
         for uri in self.get_remote_mirrors(repo):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            self.updateProgress(
+            self.output(
                 "[repo:%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("Working on mirror")),
@@ -3838,7 +3838,7 @@ class Server(Singleton, TextInterface):
                     pkgfile = dbconn.retrieveDownloadURL(idpackage) 
                     pkghash = dbconn.retrieveDigest(idpackage)
 
-                    self.updateProgress(
+                    self.output(
                         "[%s] %s: %s" % (
                             brown(crippled_uri),
                             blue(_("checking hash")),
@@ -3855,7 +3855,7 @@ class Server(Singleton, TextInterface):
 
                     ck_remote = handler.get_md5(pkgfile)
                     if ck_remote is None:
-                        self.updateProgress(
+                        self.output(
                             "[%s] %s: %s %s" % (
                                 brown(crippled_uri),
                                 blue(_("digest verification of")),
@@ -3873,7 +3873,7 @@ class Server(Singleton, TextInterface):
                         match.add(idpackage)
                     else:
                         not_match.add(idpackage)
-                        self.updateProgress(
+                        self.output(
                             "[%s] %s: %s %s" % (
                                 brown(crippled_uri),
                                 blue(_("package")),
@@ -3892,7 +3892,7 @@ class Server(Singleton, TextInterface):
             if broken_packages:
                 mytxt = blue("%s:") % (
                     _("This is the list of broken packages"),)
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -3903,21 +3903,21 @@ class Server(Singleton, TextInterface):
                         brown(_("Mirror")),
                         bold(mirror),
                     )
-                    self.updateProgress(
+                    self.output(
                         mytxt,
                         importance = 1,
                         type = "info",
                         header = red("   <> ")
                     )
                     for broken_package in broken_packages[mirror]:
-                        self.updateProgress(
+                        self.output(
                             blue(broken_package),
                             importance = 1,
                             type = "info",
                             header = red("      - ")
                         )
 
-            self.updateProgress(
+            self.output(
                 "%s:" % (
                     blue(_("Statistics")),
                 ),
@@ -3925,7 +3925,7 @@ class Server(Singleton, TextInterface):
                 type = "info",
                 header = red(" @@ ")
             )
-            self.updateProgress(
+            self.output(
                 "[%s] %s:\t%s" % (
                     red(crippled_uri),
                     brown(_("Number of checked packages")),
@@ -3935,7 +3935,7 @@ class Server(Singleton, TextInterface):
                 type = "info",
                header = brown("   # ")
             )
-            self.updateProgress(
+            self.output(
                 "[%s] %s:\t%s" % (
                     red(crippled_uri),
                     darkgreen(_("Number of healthy packages")),
@@ -3945,7 +3945,7 @@ class Server(Singleton, TextInterface):
                 type = "info",
                header = brown("   # ")
             )
-            self.updateProgress(
+            self.output(
                 "[%s] %s:\t%s" % (
                     red(crippled_uri),
                     darkred(_("Number of broken packages")),
@@ -3979,7 +3979,7 @@ class Server(Singleton, TextInterface):
 
             pkgatom = dbconn.retrieveAtom(idpackage)
             if os.path.isfile(bindir_path):
-                self.updateProgress(
+                self.output(
                     "[%s] %s :: %s" % (
                         darkgreen(_("available")),
                         blue(pkgatom),
@@ -3991,7 +3991,7 @@ class Server(Singleton, TextInterface):
                 )
                 available.add(idpackage)
             elif os.path.isfile(uploaddir_path):
-                self.updateProgress(
+                self.output(
                     "[%s] %s :: %s" % (
                         darkred(_("upload/ignored")),
                         blue(pkgatom),
@@ -4002,7 +4002,7 @@ class Server(Singleton, TextInterface):
                     header = darkgreen("   # ")
                 )
             else:
-                self.updateProgress(
+                self.output(
                     "[%s] %s :: %s" % (
                         brown(_("download")),
                         blue(pkgatom),
@@ -4029,7 +4029,7 @@ class Server(Singleton, TextInterface):
 
         not_downloaded = set()
         mytxt = blue("%s ...") % (_("Starting to download missing files"),)
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -4040,7 +4040,7 @@ class Server(Singleton, TextInterface):
             if not_downloaded:
                 mytxt = blue("%s ...") % (
                     _("Searching missing/broken files on another mirror"),)
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -4059,7 +4059,7 @@ class Server(Singleton, TextInterface):
                     not_downloaded.add(pkg_path)
 
             if not not_downloaded:
-                self.updateProgress(
+                self.output(
                     red(_("Binary packages downloaded successfully.")),
                     importance = 1,
                     type = "info",
@@ -4070,7 +4070,7 @@ class Server(Singleton, TextInterface):
         if not_downloaded:
             mytxt = blue("%s:") % (
                 _("These are the packages that cannot be found online"),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -4078,7 +4078,7 @@ class Server(Singleton, TextInterface):
             )
             for pkg_path in not_downloaded:
                 downloaded_errors.add(pkg_path)
-                self.updateProgress(
+                self.output(
                         brown(pkg_path),
                         importance = 1,
                         type = "warning",
@@ -4086,7 +4086,7 @@ class Server(Singleton, TextInterface):
                 )
             downloaded_errors |= not_downloaded
             mytxt = "%s." % (_("They won't be checked"),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -4100,7 +4100,7 @@ class Server(Singleton, TextInterface):
         if repo is None:
             repo = self.default_repository
 
-        self.updateProgress(
+        self.output(
             "[%s] %s:" % (
                 red(_("local")),
                 blue(_("Integrity verification of the selected packages")),
@@ -4115,7 +4115,7 @@ class Server(Singleton, TextInterface):
             repo = repo)
 
         if world:
-            self.updateProgress(
+            self.output(
                 blue(_("All the packages in repository will be checked.")),
                 importance = 1,
                 type = "info",
@@ -4139,7 +4139,7 @@ class Server(Singleton, TextInterface):
             currentcounter += 1
             pkg_path = dbconn.retrieveDownloadURL(idpackage)
 
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                     blue(_("checking status of")),
                     darkgreen(pkg_path),
@@ -4159,7 +4159,7 @@ class Server(Singleton, TextInterface):
                 fine.add(idpackage)
             else:
                 failed.add(idpackage)
-                self.updateProgress(
+                self.output(
                     "%s: %s -- %s: %s" % (
                             blue(_("package")),
                             darkgreen(pkg_path),
@@ -4174,7 +4174,7 @@ class Server(Singleton, TextInterface):
 
         if failed:
             mytxt = blue("%s:") % (_("This is the list of broken packages"),)
-            self.updateProgress(
+            self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -4183,7 +4183,7 @@ class Server(Singleton, TextInterface):
             for idpackage in failed:
                 atom = dbconn.retrieveAtom(idpackage)
                 down_p = dbconn.retrieveDownloadURL(idpackage)
-                self.updateProgress(
+                self.output(
                         blue("[atom:%s] %s" % (atom, down_p,)),
                         importance = 0,
                         type = "warning",
@@ -4191,13 +4191,13 @@ class Server(Singleton, TextInterface):
                 )
 
         # print stats
-        self.updateProgress(
+        self.output(
             red("Statistics:"),
             importance = 1,
             type = "info",
             header = blue(" * ")
         )
-        self.updateProgress(
+        self.output(
             brown("%s => %s" % (
                     len(fine) + len(failed),
                     _("checked packages"),
@@ -4207,7 +4207,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             darkgreen("%s => %s" % (
                     len(fine),
                     _("healthy packages"),
@@ -4217,7 +4217,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             darkred("%s => %s" % (
                     len(failed),
                     _("broken packages"),
@@ -4227,7 +4227,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             blue("%s => %s" % (
                     len(downloaded_fine),
                     _("downloaded packages"),
@@ -4237,7 +4237,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             bold("%s => %s" % (
                     len(downloaded_errors),
                     _("failed downloads"),
@@ -4263,7 +4263,7 @@ class Server(Singleton, TextInterface):
         if repo is None:
             repo = self.default_repository
 
-        self.updateProgress(
+        self.output(
             "[%s] %s: %s" % (
                 red(_("local")),
                 blue(_("GPG signing packages for repository")),
@@ -4277,7 +4277,7 @@ class Server(Singleton, TextInterface):
         dbconn = self.open_server_repository(repo = repo, read_only = False)
         idpackages = dbconn.listAllIdpackages()
 
-        self.updateProgress(
+        self.output(
             blue(_("All the missing packages in repository will be downloaded.")),
             importance = 1,
             type = "info",
@@ -4293,7 +4293,7 @@ class Server(Singleton, TextInterface):
         try:
             repo_sec = RepositorySecurity()
         except RepositorySecurity.GPGError as err:
-            self.updateProgress("%s: %s" % (
+            self.output("%s: %s" % (
                     darkgreen(_("GnuPG not available")),
                     err,
                 ),
@@ -4311,7 +4311,7 @@ class Server(Singleton, TextInterface):
         if kp_expired:
             for x in (1, 2, 3):
                 # SPAM!
-                self.updateProgress("%s: %s" % (
+                self.output("%s: %s" % (
                         darkred(_("Keys for repository are expired")),
                         bold(repo),
                     ),
@@ -4319,7 +4319,7 @@ class Server(Singleton, TextInterface):
                     header = bold(" !!! ")
                 )
         elif not kp_avail:
-            self.updateProgress("%s: %s" % (
+            self.output("%s: %s" % (
                     darkgreen(_("Keys not available for")),
                     bold(repo),
                 ),
@@ -4349,7 +4349,7 @@ class Server(Singleton, TextInterface):
                 raise OnlineMirrorError("WTF!?!?! => %s, %s" % (
                     pkg_path, pkg_atom,))
 
-            self.updateProgress(
+            self.output(
                 "%s: %s" % (
                     blue(_("signing package")),
                     darkgreen(os.path.basename(pkg_path)),
@@ -4363,7 +4363,7 @@ class Server(Singleton, TextInterface):
 
             gpg_sign = self.__get_gpg_signature(repo_sec, repo, pkg_path)
             if gpg_sign is None:
-                self.updateProgress(
+                self.output(
                     "%s: %s" % (
                         darkred(_("Unknown error signing package")),
                         darkgreen(os.path.basename(pkg_path)),
@@ -4384,13 +4384,13 @@ class Server(Singleton, TextInterface):
             fine += 1
 
         # print stats
-        self.updateProgress(
+        self.output(
             red("Statistics:"),
             importance = 1,
             type = "info",
             header = blue(" * ")
         )
-        self.updateProgress(
+        self.output(
             brown("%s => %s" % (
                     fine,
                     _("signed packages"),
@@ -4400,7 +4400,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             darkred("%s => %s" % (
                     failed,
                     _("broken packages"),
@@ -4410,7 +4410,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             blue("%s => %s" % (
                     len(downloaded_fine),
                     _("downloaded packages"),
@@ -4420,7 +4420,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = brown("   # ")
         )
-        self.updateProgress(
+        self.output(
             bold("%s => %s" % (
                     len(downloaded_errors),
                     _("failed downloads"),
@@ -4445,7 +4445,7 @@ class Server(Singleton, TextInterface):
                 bold(to_branch),
                 blue(_("and retry")),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -4454,7 +4454,7 @@ class Server(Singleton, TextInterface):
             return None
 
         mytxt = red("%s ...") % (_("Copying database (if not exists)"),)
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -4486,7 +4486,7 @@ class Server(Singleton, TextInterface):
             shutil.copytree(old_branch_dbdir, branch_dbdir)
 
         mytxt = red("%s ...") % (_("Switching packages"),)
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -4518,7 +4518,7 @@ class Server(Singleton, TextInterface):
             atom = dbconn.retrieveAtom(idpackage)
             if cur_branch == to_branch:
                 already_switched.add(idpackage)
-                self.updateProgress(
+                self.output(
                     red("%s %s, %s %s" % (
                             _("Ignoring"),
                             bold(atom),
@@ -4534,7 +4534,7 @@ class Server(Singleton, TextInterface):
                 ignored.add(idpackage)
                 continue
 
-            self.updateProgress(
+            self.output(
                 "[%s=>%s] %s" % (
                     brown(cur_branch),
                     bold(to_branch),
@@ -4557,7 +4557,7 @@ class Server(Singleton, TextInterface):
 
         self.close_server_database(dbconn)
         mytxt = blue("%s.") % (_("migration loop completed"),)
-        self.updateProgress(
+        self.output(
             "[%s=>%s] %s" % (
                     brown(from_branch),
                     bold(to_branch),

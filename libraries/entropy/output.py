@@ -693,7 +693,7 @@ class TextInterface:
 
     """
 
-    def updateProgress(self, text, header = "", footer = "", back = False,
+    def output(self, text, header = "", footer = "", back = False,
         importance = 0, type = "info", count = None, percent = False):
 
         """
@@ -848,11 +848,11 @@ class TextInterface:
             mydict = {}
             counter = 1
             option_text, option_list = option_data
-            self.updateProgress(option_text)
+            self.output(option_text)
             for item in option_list:
                 mydict[counter] = item
                 txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
-                self.updateProgress(txt)
+                self.output(txt)
                 counter += 1
             while True:
                 myresult = readtext("%s:" % (_('Selected number'),)).decode('utf-8')
@@ -867,16 +867,16 @@ class TextInterface:
         def list_editor(option_data, can_cancel, callback):
 
             def selaction():
-                self.updateProgress('')
-                self.updateProgress(darkred(_("Please select an option")))
+                self.output('')
+                self.output(darkred(_("Please select an option")))
                 if can_cancel:
-                    self.updateProgress("  ("+blue("-1")+") "+darkred(_("Discard all")))
-                self.updateProgress("  ("+blue("0")+")  "+darkgreen(_("Confirm")))
-                self.updateProgress("  ("+blue("1")+")  "+brown(_("Add item")))
-                self.updateProgress("  ("+blue("2")+")  "+darkblue(_("Remove item")))
-                self.updateProgress("  ("+blue("3")+")  "+darkgreen(_("Show current list")))
+                    self.output("  ("+blue("-1")+") "+darkred(_("Discard all")))
+                self.output("  ("+blue("0")+")  "+darkgreen(_("Confirm")))
+                self.output("  ("+blue("1")+")  "+brown(_("Add item")))
+                self.output("  ("+blue("2")+")  "+darkblue(_("Remove item")))
+                self.output("  ("+blue("3")+")  "+darkgreen(_("Show current list")))
                 # wait user interaction
-                self.updateProgress('')
+                self.output('')
                 action = readtext(darkgreen(_("Your choice (type a number and press enter):"))+" ")
                 return action
 
@@ -886,27 +886,27 @@ class TextInterface:
             if can_cancel: valid_actions.insert(0, -1)
             option_text, option_list = option_data
             txt = "%s:" % (blue(option_text),)
-            self.updateProgress(txt)
+            self.output(txt)
 
             for item in option_list:
                 mydict[counter] = item
                 txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
-                self.updateProgress(txt)
+                self.output(txt)
                 counter += 1
 
             def show_current_list():
                 for key in sorted(mydict):
                     txt = "[%s] %s" % (darkgreen(str(key)), blue(mydict[key]),)
-                    self.updateProgress(txt)
+                    self.output(txt)
 
             while True:
                 try:
                     action = int(selaction())
                 except (ValueError, TypeError,):
-                    self.updateProgress(_("You don't have typed a number."), type = "warning")
+                    self.output(_("You don't have typed a number."), type = "warning")
                     continue
                 if action not in valid_actions:
-                    self.updateProgress(_("Invalid action."), type = "warning")
+                    self.output(_("Invalid action."), type = "warning")
                     continue
                 if action == -1:
                     raise KeyboardInterrupt
@@ -921,7 +921,7 @@ class TextInterface:
                             mydict[counter] = s_el
                             counter += 1
                         except (ValueError,):
-                            self.updateProgress(_("Invalid string."), type = "warning")
+                            self.output(_("Invalid string."), type = "warning")
                             continue
                         break
                     show_current_list()
@@ -934,7 +934,7 @@ class TextInterface:
                                 raise ValueError
                             del mydict[s_el]
                         except (ValueError, TypeError,):
-                            self.updateProgress(_("Invalid element."), type = "warning")
+                            self.output(_("Invalid element."), type = "warning")
                             continue
                         break
                     show_current_list()

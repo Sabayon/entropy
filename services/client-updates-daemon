@@ -75,7 +75,7 @@ def write_output(*args, **kwargs):
     DAEMON_LOG.write(message)
     DAEMON_LOG.flush()
     if DAEMON_DEBUG:
-        TEXT.updateProgress(*args, **kwargs)
+        TEXT.output(*args, **kwargs)
 
 class DaemonUrlFetcher(UrlFetcher):
 
@@ -93,7 +93,7 @@ class DaemonUrlFetcher(UrlFetcher):
         self.__remotesize = total_size
         self.__datatransfer = data_transfer
 
-    def updateProgress(self):
+    def output(self):
         myavg = abs(int(round(float(self.__average), 1)))
         if abs((myavg - self.daemon_last_avg)) < 1:
             return
@@ -110,14 +110,14 @@ class Entropy(Client):
         # validate currently available repos
         # manually, to not taint logs
         self.validate_repositories(quiet = True)
-        self.updateProgress(
+        self.output(
             "Loading Entropy Updates daemon: check every %ss, logfile: %s" % (
                 CHECK_DELAY_SECS, DAEMON_LOGFILE,)
             )
         # reset application lock status
         self.application_lock_check(silent = True)
 
-    def updateProgress(self, *args, **kwargs):
+    def output(self, *args, **kwargs):
         return write_output(*args, **kwargs)
 
 

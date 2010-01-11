@@ -1721,11 +1721,11 @@ class Client:
     def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25.0):
         #, server_ca_cert = None, server_cert = None):
 
-        if not hasattr(OutputInterface, 'updateProgress'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
+        if not hasattr(OutputInterface, 'output'):
+            mytxt = _("OutputInterface does not have an output method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
-        elif not hasattr(OutputInterface.updateProgress, '__call__'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
+        elif not hasattr(OutputInterface.output, '__call__'):
+            mytxt = _("OutputInterface does not have an output method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
 
         from entropy.client.services.ugc.commands import Base
@@ -2005,7 +2005,7 @@ class Client:
         def print_timeout_err():
             if not self.quiet:
                 mytxt = _("connection error while receiving data")
-                self.Output.updateProgress(
+                self.Output.output(
                     "[%s:%s|timeout:%s] %s: %s" % (
                             brown(self.hostname),
                             bold(str(self.hostport)),
@@ -2046,7 +2046,7 @@ class Client:
                         # RAUSS!
                         if not self.quiet:
                             mytxt = _("command not supported. receive aborted")
-                            self.Output.updateProgress(
+                            self.Output.output(
                                 "[%s:%s] %s" % (
                                         brown(self.hostname),
                                         bold(str(self.hostport)),
@@ -2060,7 +2060,7 @@ class Client:
                     elif len(data) < len(myeos):
                         if not self.quiet:
                             mytxt = _("malformed EOS. receive aborted")
-                            self.Output.updateProgress(
+                            self.Output.output(
                                 "[%s:%s] %s" % (
                                         brown(self.hostname),
                                         bold(str(self.hostport)),
@@ -2101,7 +2101,7 @@ class Client:
             except ValueError as e:
                 if not self.quiet:
                     mytxt = _("malformed data. receive aborted")
-                    self.Output.updateProgress(
+                    self.Output.output(
                         "[%s:%s] %s: %s" % (
                                 brown(self.hostname),
                                 bold(str(self.hostport)),
@@ -2116,7 +2116,7 @@ class Client:
             except self.socket.timeout as e:
                 if not self.quiet:
                     mytxt = _("connection timed out while receiving data")
-                    self.Output.updateProgress(
+                    self.Output.output(
                         "[%s:%s] %s: %s" % (
                                 brown(self.hostname),
                                 bold(str(self.hostport)),
@@ -2159,7 +2159,7 @@ class Client:
             except self.SSL_exceptions['SysCallError'] as e:
                 if not self.quiet:
                     mytxt = _("syscall error while receiving data")
-                    self.Output.updateProgress(
+                    self.Output.output(
                         "[%s:%s] %s: %s" % (
                                 brown(self.hostname),
                                 bold(str(self.hostport)),
@@ -2182,7 +2182,7 @@ class Client:
     def reconnect_socket(self):
         if not self.quiet:
             mytxt = _("Reconnecting to socket")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s] %s" % (
                         brown(str(self.hostname)),
                         bold(str(self.hostport)),
@@ -2227,7 +2227,7 @@ class Client:
                 # inform about certificate verification
                 if not self.quiet:
                     mytxt = _("Warning: you are using an emergency SSL interface, SSL certificate can't be verified. Please install dev-python/pyopenssl")
-                    self.Output.updateProgress(
+                    self.Output.output(
                         "[%s:%s] %s" % (
                                 brown(str(self.hostname)),
                                 bold(str(self.hostport)),
@@ -2238,7 +2238,7 @@ class Client:
                         header = self.output_header
                     )
                     mytxt = _("Service issuer")
-                    self.Output.updateProgress(
+                    self.Output.output(
                         "[%s:%s] %s: %s" % (
                                 brown(str(self.hostname)),
                                 bold(str(self.hostport)),
@@ -2272,7 +2272,7 @@ class Client:
 
         if not self.quiet:
             mytxt = _("Successfully connected to host")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s] %s" % (
                         brown(self.hostname),
                         bold(str(self.hostport)),
@@ -2312,7 +2312,7 @@ class Client:
             pass
         if not self.quiet:
             mytxt = _("Successfully disconnected from host")
-            self.Output.updateProgress(
+            self.Output.output(
                 "[%s:%s] %s" % (
                         brown(self.hostname),
                         bold(str(self.hostport)),

@@ -582,8 +582,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.FileUpdates = None
         self.validRepositories = []
         self.UGC = None
-        # supporting external updateProgress stuff, you can point self.progress
-        # to your progress bar and reimplement updateProgress
+        # supporting external output stuff, you can point self.progress
+        # to your progress bar and reimplement output
         self.progress = None
         self.clientDbconn = None
         self.safe_mode = 0
@@ -771,7 +771,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                     bold(_("ATTENTION")),
                     red(_("forcing packages metadata update")),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -781,7 +781,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                     red(_("Updating system database using repository")),
                     blue(repository_identifier),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "info",

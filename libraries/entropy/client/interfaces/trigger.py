@@ -49,7 +49,7 @@ class Trigger:
                 e,
                 _("please fix"),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 0,
                 header = bold(" !!! ")
@@ -191,7 +191,7 @@ class Trigger:
         except Exception as e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
             tb = self.entropyTools.get_traceback()
-            self.Entropy.updateProgress(tb, importance = 0, type = "error")
+            self.Entropy.output(tb, importance = 0, type = "error")
             self.Entropy.clientLog.write(tb)
             self.Entropy.clientLog.log(
                 "[Trigger]",
@@ -205,7 +205,7 @@ class Trigger:
                 bold(mykey),
                 brown(_("Please report it")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -424,7 +424,7 @@ class Trigger:
 
     def trigger_spm_postinstall(self):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "SPM: %s" % (brown(_("post-install phase")),),
             importance = 0,
             header = red("   ## ")
@@ -433,7 +433,7 @@ class Trigger:
 
     def trigger_spm_preinstall(self):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "SPM: %s" % (brown(_("pre-install phase")),),
             importance = 0,
             header = red("   ## ")
@@ -442,7 +442,7 @@ class Trigger:
 
     def trigger_spm_preremove(self):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "SPM: %s" % (brown(_("pre-remove phase")),),
             importance = 0,
             header = red("   ## ")
@@ -451,7 +451,7 @@ class Trigger:
 
     def trigger_spm_postremove(self):
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             "SPM: %s" % (brown(_("post-remove phase")),),
             importance = 0,
             header = red("   ## ")

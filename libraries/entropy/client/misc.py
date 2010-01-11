@@ -139,7 +139,7 @@ class FileUpdates:
                         if mydict['automerge']:
                             if not quiet:
                                 mytxt = _("Automerging file")
-                                self.Entropy.updateProgress(
+                                self.Entropy.output(
                                     darkred("%s: %s") % (
                                         mytxt,
                                         darkgreen(etpConst['systemroot'] + mydict['source']),
@@ -160,7 +160,7 @@ class FileUpdates:
                                             blue("error"),
                                             e,
                                         )
-                                        self.Entropy.updateProgress(
+                                        self.Entropy.output(
                                             mytxt,
                                             importance = 1,
                                             type = "warning"
@@ -172,7 +172,7 @@ class FileUpdates:
 
                         if not quiet:
                             try:
-                                self.Entropy.updateProgress(
+                                self.Entropy.output(
                                     "("+blue(str(counter))+") " + red(" file: ") + \
                                     os.path.dirname(filepath) + "/" + os.path.basename(filepath)[10:],
                                     importance = 1,

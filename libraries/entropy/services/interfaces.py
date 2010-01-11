@@ -221,7 +221,7 @@ class SocketHost:
             self.context.use_certificate_file(self.SSL['cert'])
             self.context.load_verify_locations(self.SSL['ca_cert'])
             self.context.load_client_ca(self.SSL['ca_cert'])
-            self.HostInterface.updateProgress('SSL context loaded, key: %s - cert: %s, CA cert: %s, CA pkey: %s' % (
+            self.HostInterface.output('SSL context loaded, key: %s - cert: %s, CA cert: %s, CA pkey: %s' % (
                     self.SSL['key'],
                     self.SSL['cert'],
                     self.SSL['ca_cert'],
@@ -249,7 +249,7 @@ class SocketHost:
             allowed = self.ip_blacklist_check(client_address[0])
             if allowed: allowed = self.ip_max_connections_check(client_address[0])
             if not allowed:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s | SSL: %s] connection refused, ip blacklisted or maximum connections per IP reached' % (
                         client_address,
                         self.do_ssl,
@@ -259,7 +259,7 @@ class SocketHost:
 
             allowed = self.max_connections_check(request)
             if not allowed:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s | SSL: %s] connection refused (max connections reached: %s)' % (
                         client_address,
                         self.do_ssl,
@@ -270,7 +270,7 @@ class SocketHost:
 
             ### let's go!
             self.HostInterface.connections += 1
-            self.HostInterface.updateProgress(
+            self.HostInterface.output(
                 '[from: %s | SSL: %s] connection established (%s of %s max connections)' % (
                     client_address,
                     self.do_ssl,
@@ -296,7 +296,7 @@ class SocketHost:
                 conn_data += 1
                 per_host_connections[ip_address] += 1
                 if conn_data > max_conn_per_ip:
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] ------- :EEK: !! connection closed too many simultaneous connections from host (current: %s | limit: %s) -------' % (
                             ip_address,
                             conn_data,
@@ -306,7 +306,7 @@ class SocketHost:
                     return False
                 elif conn_data > max_conn_per_ip_barrier:
                     times = [5, 6, 7, 8]
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] ------- :EEEK: !! connection warning simultaneous connection barrier reached from host (current: %s | soft limit: %s) -------' % (
                             ip_address,
                             conn_data,
@@ -344,7 +344,7 @@ class SocketHost:
             """Finish one request by instantiating RequestHandlerClass."""
             self.RequestHandlerClass(request, client_address, self)
 
-            self.HostInterface.updateProgress(
+            self.HostInterface.output(
                 '[from: %s] connection closed (%s of %s max connections)' % (
                     client_address,
                     self.HostInterface.connections - 1,
@@ -404,7 +404,7 @@ class SocketHost:
                 data = None
 
                 if self.__DEBUG:
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         '[from: %s] request arrived :: counter: %s | buf_data: %s' % (
                             self.client_address,
                             self.__data_counter,
@@ -433,7 +433,7 @@ class SocketHost:
                         elif data == self.server.processor.HostInterface.answers['noop']:
                             return False
                         elif len(data) < len(self.myeos):
-                            self.server.processor.HostInterface.updateProgress(
+                            self.server.processor.HostInterface.output(
                                 'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
                                     self.server.server_address,
                                     "malformed EOS",
@@ -485,7 +485,7 @@ class SocketHost:
                     self.server.processor.HostInterface.socketLog.write(repr(data))
                     self.server.processor.HostInterface.socketLog.write(repr(self))
                     self.server.processor.HostInterface.socketLog.write(repr(self.__inst_token))
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
                             "malformed transmission",
@@ -494,7 +494,7 @@ class SocketHost:
                     )
                     return True
                 except self.socket.timeout as e:
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
                             e,
@@ -503,7 +503,7 @@ class SocketHost:
                     )
                     return True
                 except self.socket.sslerror as e:
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         'interrupted: %s, SSL socket error reason: %s - from client: %s' % (
                             self.server.server_address,
                             e,
@@ -524,7 +524,7 @@ class SocketHost:
                 except self.ssl_exceptions['ZeroReturnError']:
                     return True
                 except self.ssl_exceptions['Error'] as e:
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         'interrupted: SSL Error, reason: %s - from client: %s' % (
                             e,
                             self.client_address,
@@ -532,7 +532,7 @@ class SocketHost:
                     )
                     return True
                 except InterruptError as e:
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         'interrupted: Command Error, reason: %s - from client: %s' % (
                             e,
                             self.client_address,
@@ -595,7 +595,7 @@ class SocketHost:
                             if dead:
                                 break
                             if seconds > my_timeout:
-                                self.server.processor.HostInterface.updateProgress(
+                                self.server.processor.HostInterface.output(
                                     'interrupted: forked request timeout: %s,%s from client: %s' % (
                                         seconds,
                                         dead,
@@ -629,14 +629,14 @@ class SocketHost:
 
                 try:
                     if self.__DEBUG:
-                        self.server.processor.HostInterface.updateProgress(
+                        self.server.processor.HostInterface.output(
                             '[from: %s] calling data_receiver' % (
                                 self.client_address,
                             )
                         )
                     dobreak = self.data_receiver()
                     if self.__DEBUG:
-                        self.server.processor.HostInterface.updateProgress(
+                        self.server.processor.HostInterface.output(
                             '[from: %s] quitting data_receiver :: dobreak: %s' % (
                                 self.client_address,
                                 dobreak,
@@ -645,7 +645,7 @@ class SocketHost:
                     if dobreak:
                         break
                 except Exception as e:
-                    self.server.processor.HostInterface.updateProgress(
+                    self.server.processor.HostInterface.output(
                         'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
                             Exception,
                             e,
@@ -677,7 +677,7 @@ class SocketHost:
 
         def handle_termination_commands(self, data):
             if data.strip() in self.HostInterface.termination_commands:
-                self.HostInterface.updateProgress('close: %s' % (self.client_address,))
+                self.HostInterface.output('close: %s' % (self.client_address,))
                 self.transmit(self.HostInterface.answers['cl'])
                 return "close"
 
@@ -781,7 +781,7 @@ class SocketHost:
             authenticator = None
             cmd_data = self.HostInterface.valid_commands.get(cmd)
             if not isinstance(cmd_data, dict):
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] command error: invalid command: %s' % (
                         self.client_address,
                         cmd,
@@ -792,7 +792,7 @@ class SocketHost:
                 try:
                     authenticator = self.load_authenticator()
                 except ConnectionError as e:
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] authenticator error: cannot load: %s' % (
                             self.client_address,
                             e,
@@ -803,7 +803,7 @@ class SocketHost:
                     self.HostInterface.socketLog.write(tb)
                     return "close"
                 except Exception as e:
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] authenticator error: cannot load: %s - unknown error' % (
                             self.client_address,
                             e,
@@ -840,7 +840,7 @@ class SocketHost:
                 out_reason = darkblue(str(out_reason))
                 out_args = brown(str(out_args))
 
-            self.HostInterface.updateProgress(
+            self.HostInterface.output(
                 '[from: %s] command validation :: called %s: length: %s, args: '
                 '%s, session: %s, valid: %s, reason: %s' % (
                     self.client_address,
@@ -866,14 +866,14 @@ class SocketHost:
                 try:
                     run_task_out = self.run_task(cmd, args, session, Entropy, authenticator)
                     if etpUi['debug']:
-                        self.HostInterface.updateProgress(
+                        self.HostInterface.output(
                             '[from: %s] command executed: result %s' % (
                                 self.client_address,
                                 run_task_out,
                             )
                         )
                 except self.socket.timeout:
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] command error: timeout, closing connection' % (
                             self.client_address,
                         )
@@ -883,7 +883,7 @@ class SocketHost:
                     del Entropy
                     return "close"
                 except self.socket.error as e:
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] command error: socket error: %s' % (
                             self.client_address,
                             e,
@@ -894,7 +894,7 @@ class SocketHost:
                     del Entropy
                     return "close"
                 except self.HostInterface.SSL_exceptions['SysCallError'] as e:
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] command error: SSL SysCallError: %s' % (
                             self.client_address,
                             e,
@@ -910,7 +910,7 @@ class SocketHost:
                     print(tb)
                     self.HostInterface.socketLog.write(tb)
                     # store error
-                    self.HostInterface.updateProgress(
+                    self.HostInterface.output(
                         '[from: %s] command error: %s, type: %s' % (
                             self.client_address,
                             e,
@@ -960,7 +960,7 @@ class SocketHost:
             if not etpUi['debug'] and len(p_args) > 30:
                 p_args = p_args[:29] + ["---truncated---"]
 
-            self.HostInterface.updateProgress(
+            self.HostInterface.output(
                 '[from: %s] run_task :: called %s: args: %s, session: %s' % (
                     self.client_address,
                     cmd,
@@ -1017,7 +1017,7 @@ class SocketHost:
             if not etpUi['debug'] and len(p_args) > 30:
                 p_args = p_args[:29] + ["---truncated---"]
 
-            self.HostInterface.updateProgress(
+            self.HostInterface.output(
                 '[from: %s] called %s: args: %s, kwargs: %s' % (
                     self.client_address,
                     cmd,
@@ -1309,7 +1309,7 @@ class SocketHost:
 
             status, user, uid, reason = authenticator.docmd_login(myargs)
             if status:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] user %s logged in successfully, session: %s' % (
                         client_address,
                         user,
@@ -1320,7 +1320,7 @@ class SocketHost:
                 transmitter(self.HostInterface.answers['ok'])
                 return True, reason
             elif user == None:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] user -not specified- login failed, session: %s, reason: %s' % (
                         client_address,
                         session,
@@ -1330,7 +1330,7 @@ class SocketHost:
                 transmitter(self.HostInterface.answers['no'])
                 return False, reason
             else:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] user %s login failed, session: %s, reason: %s' % (
                         client_address,
                         user,
@@ -1352,7 +1352,7 @@ class SocketHost:
         def docmd_logout(self, transmitter, authenticator, session, client_address, myargs):
             status, user, reason = authenticator.docmd_logout(myargs)
             if status:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] user %s logged out successfully, session: %s, args: %s ' % (
                         client_address,
                         user,
@@ -1364,7 +1364,7 @@ class SocketHost:
                 transmitter(self.HostInterface.answers['ok'])
                 return True, reason
             elif user == None:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (
                         client_address,
                         session,
@@ -1375,7 +1375,7 @@ class SocketHost:
                 transmitter(self.HostInterface.answers['no'])
                 return False, reason
             else:
-                self.HostInterface.updateProgress(
+                self.HostInterface.output(
                     '[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (
                         client_address,
                         user,
@@ -1609,7 +1609,7 @@ class SocketHost:
         try:
             from OpenSSL import SSL, crypto
         except ImportError as e:
-            self.updateProgress('Unable to load OpenSSL, error: %s' % (repr(e),))
+            self.output('Unable to load OpenSSL, error: %s' % (repr(e),))
             return
         self.SSL_exceptions['WantReadError'] = SSL.WantReadError
         self.SSL_exceptions['Error'] = SSL.Error
@@ -1846,13 +1846,13 @@ class SocketHost:
                 auth_uid = self.sessions[session_id]['auth_uid'] # is kept alive?
                 if (is_running) or (auth_uid == -1):
                     if auth_uid == -1:
-                        self.updateProgress('not killing session %s, since it is kept alive by auth_uid=-1' % (session_id,) )
+                        self.output('not killing session %s, since it is kept alive by auth_uid=-1' % (session_id,) )
                     continue
                 cur_time = time.time()
                 ttl = self.session_ttl
                 check_time = sess_time + ttl
                 if cur_time > check_time:
-                    self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id, ttl,) )
+                    self.output('killing session %s, ttl: %ss: no activity' % (session_id, ttl,) )
                     self._destroy_session(session_id)
 
     def setup_hostname(self):
@@ -1904,7 +1904,7 @@ class SocketHost:
         with self.SessionsLock:
             if session in self.sessions:
                 self.sessions[session]['t'] = time.time()
-                self.updateProgress('session time updated for %s' % (session,) )
+                self.output('session time updated for %s' % (session,) )
 
     def set_session_running(self, session):
         with self.SessionsLock:
@@ -1946,12 +1946,12 @@ class SocketHost:
             except self.socket.error as e:
                 if e[0] == 98:
                     # Address already in use
-                    self.updateProgress('address already in use (%s, port: %s), waiting 5 seconds...' % (self.hostname, self.port,))
+                    self.output('address already in use (%s, port: %s), waiting 5 seconds...' % (self.hostname, self.port,))
                     time.sleep(5)
                     continue
                 else:
                     raise
-        self.updateProgress('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname, self.port, self.timeout,))
+        self.output('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname, self.port, self.timeout,))
         self.Server.serve_forever()
         self.Gc.kill()
 
@@ -2003,11 +2003,11 @@ class SocketHost:
         else:
             channel.sendall(self.append_eos(data))
 
-    def updateProgress(self, *args, **kwargs):
+    def output(self, *args, **kwargs):
         message = args[0]
         if message != self.last_print:
             self.socketLog.log("[SocketHost]", etpConst['logging']['normal_loglevel_id'],
                 str(args[0]))
             if self.__output != None and self.stdout_logging:
-                self.__output.updateProgress(*args,**kwargs)
+                self.__output.output(*args,**kwargs)
             self.last_print = message

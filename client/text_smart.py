@@ -200,7 +200,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
             shutil.copy2(tbz2, etptbz2path)
         info_package = bold(os.path.basename(etptbz2path)) + ": "
-        entropy_client.updateProgress(
+        entropy_client.output(
             red(info_package + _("Extracting package metadata") + " ..."),
             importance = 0,
             type = "info",
@@ -208,7 +208,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
             back = True
         )
         mydata = Spm.extract_package_metadata(etptbz2path)
-        entropy_client.updateProgress(
+        entropy_client.output(
             red(info_package + _("Package extraction complete")),
             importance = 0,
             type = "info",

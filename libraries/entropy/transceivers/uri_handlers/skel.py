@@ -117,7 +117,7 @@ class EntropyUriHandler(object, TextInterface):
         if not isinstance(output_interface, TextInterface):
             raise AttributeError(
                 "expected a valid TextInterface based instance")
-        self.updateProgress = output_interface.updateProgress
+        self.output = output_interface.output
         self.askQuestion = output_interface.askQuestion
 
     def set_speed_limit(self, speed_limit):

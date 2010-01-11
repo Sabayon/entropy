@@ -24,14 +24,14 @@ def cache(options):
     entropy_client = Client(noclientdb = True)
     try:
         if cmd == "clean":
-            entropy_client.updateProgress(
+            entropy_client.output(
                 blue(_("Cleaning Entropy cache, please wait ...")),
                 type = "info",
                 header = brown(" @@ "),
                 back = True
             )
             entropy_client.clear_cache()
-            entropy_client.updateProgress(
+            entropy_client.output(
                 darkgreen(_("Entropy cache cleaned.")),
                 type = "info",
                 header = brown(" @@ ")

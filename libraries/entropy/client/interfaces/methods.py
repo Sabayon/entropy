@@ -70,12 +70,12 @@ class RepositoryMixin:
                 t = _("Repository") + " " + repoid + " " + \
                     _("is not available") + ". " + _("Cannot validate")
                 t2 = _("Please update your repositories now in order to remove this message!")
-                self.updateProgress(
+                self.output(
                     darkred(t),
                     importance = 1,
                     type = "warning"
                 )
-                self.updateProgress(
+                self.output(
                     purple(t2),
                     header = bold("!!! "),
                     importance = 1,
@@ -90,7 +90,7 @@ class RepositoryMixin:
 
                 t = _("Repository") + " " + repoid + " " + \
                     _("is corrupted") + ". " + _("Cannot validate")
-                self.updateProgress(
+                self.output(
                                     darkred(t),
                                     importance = 1,
                                     type = "warning"
@@ -168,7 +168,7 @@ class RepositoryMixin:
         if repoid not in repo_data:
             t = _("bad repository id specified")
             if repoid not in self.__repo_error_messages_cache:
-                self.updateProgress(
+                self.output(
                     darkred(t),
                     importance = 2,
                     type = "warning"
@@ -184,7 +184,7 @@ class RepositoryMixin:
             if not os.path.isfile(dbfile):
                 t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
                 if repoid not in self.__repo_error_messages_cache:
-                    self.updateProgress(
+                    self.output(
                         darkred(t),
                         importance = 2,
                         type = "warning"
@@ -440,7 +440,7 @@ class RepositoryMixin:
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
             mytxt = "%s, %s" % (_("System database not found or corrupted"),
                 _("running in safe mode using empty database from RAM"),)
-            self.updateProgress(
+            self.output(
                 darkred(mytxt),
                 importance = 1,
                 type = "warning",
@@ -492,7 +492,7 @@ class RepositoryMixin:
         return conn
 
     def client_repository_sanity_check(self):
-        self.updateProgress(
+        self.output(
             darkred(_("Sanity Check") + ": " + _("system database")),
             importance = 2,
             type = "warning"
@@ -504,7 +504,7 @@ class RepositoryMixin:
         scanning_txt = _("Scanning...")
         for x in idpkgs:
             count += 1
-            self.updateProgress(
+            self.output(
                                     darkgreen(scanning_txt),
                                     importance = 0,
                                     type = "info",
@@ -517,7 +517,7 @@ class RepositoryMixin:
             except Exception as e:
                 entropy.tools.print_traceback()
                 errors = True
-                self.updateProgress(
+                self.output(
                     darkred(_("Errors on idpackage %s, error: %s")) % (x, e),
                     importance = 0,
                     type = "warning"
@@ -525,7 +525,7 @@ class RepositoryMixin:
 
         if not errors:
             t = _("Sanity Check") + ": %s" % (bold(_("PASSED")),)
-            self.updateProgress(
+            self.output(
                 darkred(t),
                 importance = 2,
                 type = "warning"
@@ -533,7 +533,7 @@ class RepositoryMixin:
             return 0
         else:
             t = _("Sanity Check") + ": %s" % (bold(_("CORRUPTED")),)
-            self.updateProgress(
+            self.output(
                 darkred(t),
                 importance = 2,
                 type = "warning"
@@ -596,7 +596,7 @@ class RepositoryMixin:
                     blue(dbpath),
                     darkred(_("permission denied")),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "error",
@@ -613,7 +613,7 @@ class RepositoryMixin:
         comp_dbpath = os.path.join(backup_dir, comp_dbname)
         if not silent:
             mytxt = "%s: %s ..." % (darkgreen(_("Backing up database to")), blue(comp_dbpath),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -629,7 +629,7 @@ class RepositoryMixin:
 
         if not silent:
             mytxt = "%s: %s" % (darkgreen(_("Database backed up successfully")), blue(comp_dbpath),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -649,7 +649,7 @@ class RepositoryMixin:
                 if not silent:
                     mytxt = "%s: %s, %s" % (darkred(_("Cannot restore selected backup")),
                         blue(backup_path), darkred(_("permission denied")),)
-                    self.updateProgress(
+                    self.output(
                         mytxt,
                         importance = 1,
                         type = "error",
@@ -660,7 +660,7 @@ class RepositoryMixin:
         if not silent:
             mytxt = "%s: %s => %s ..." % (darkgreen(_("Restoring backed up database")),
                 blue(os.path.basename(backup_path)), blue(db_destination),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -679,7 +679,7 @@ class RepositoryMixin:
         if not silent:
             mytxt = "%s: %s" % (darkgreen(_("Database restored successfully")),
                 blue(db_destination),)
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1054,7 +1054,7 @@ class MiscMixin:
         locked = entropy.tools.application_lock_check(gentle = True)
         if locked:
             if not silent:
-                self.updateProgress(
+                self.output(
                     red(_("Another Entropy instance is currently active, cannot satisfy your request.")),
                     importance = 1,
                     type = "error",
@@ -1074,7 +1074,7 @@ class MiscMixin:
             locked = check_function()
             if not locked:
                 if lock_count > 0:
-                    self.updateProgress(
+                    self.output(
                         blue(_("Resources unlocked, let's go!")),
                         importance = 1,
                         type = "info",
@@ -1086,7 +1086,7 @@ class MiscMixin:
                 break
             if lock_count >= max_lock_count:
                 mycalc = max_lock_count*sleep_seconds/60
-                self.updateProgress(
+                self.output(
                     blue(_("Resources still locked after %s minutes, giving up!")) % (mycalc,),
                     importance = 1,
                     type = "warning",
@@ -1094,7 +1094,7 @@ class MiscMixin:
                 )
                 return True # gave up
             lock_count += 1
-            self.updateProgress(
+            self.output(
                 blue(_("Resources locked, sleeping %s seconds, check #%s/%s")) % (
                         sleep_seconds,
                         lock_count,

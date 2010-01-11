@@ -487,7 +487,7 @@ class Repository:
             darkgreen(os.path.basename(dbfilename)),
             red("..."),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 0,
             back = True,
@@ -500,7 +500,7 @@ class Repository:
                 red(_("Cannot open digest")),
                 red(_("Cannot verify database integrity")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -511,7 +511,7 @@ class Repository:
                 red(_("Downloaded database status")),
                 bold(_("OK")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -522,7 +522,7 @@ class Repository:
                 red(_("Downloaded database status")),
                 darkred(_("ERROR")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -532,7 +532,7 @@ class Repository:
                 red(_("An error occured while checking database integrity")),
                 red(_("Giving up")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -547,7 +547,7 @@ class Repository:
         avail_data = self.Entropy.SystemSettings['repositories']['available']
         repo_data = avail_data[repo]
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             bold("%s") % ( repo_data['description'] ),
             importance = 2,
             type = "info",
@@ -556,7 +556,7 @@ class Repository:
         )
         mytxt = "%s: %s" % (red(_("Database URL")),
             darkgreen(repo_data['database']),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -564,7 +564,7 @@ class Repository:
         )
         mytxt = "%s: %s" % (red(_("Database local path")),
             darkgreen(repo_data['dbpath']),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -572,7 +572,7 @@ class Repository:
         )
         mytxt = "%s: %s" % (red(_("Database EAPI")),
             darkgreen(str(self.dbformat_eapi)),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -666,7 +666,7 @@ class Repository:
             prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
                 darkred(_("remote database suddenly locked")),)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -683,7 +683,7 @@ class Repository:
                 blue(str(len(added_ids))),
                 darkred(str(threshold)),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -714,7 +714,7 @@ class Repository:
 
             count += 1
             mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
@@ -737,7 +737,7 @@ class Repository:
                 if pkgdata is None:
                     mytxt = "%s: %s" % ( blue(_("Fetch error on segment")),
                         darkred(str(segment)),)
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         mytxt, importance = 1, type = "warning",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -747,7 +747,7 @@ class Repository:
                         blue(_("Service status")),
                         darkred("remote database suddenly locked"),
                     )
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -760,7 +760,7 @@ class Repository:
                         pkgdata[0], pkgdata[1],
                         darkred("Error processing the command"),
                     )
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -781,7 +781,7 @@ class Repository:
                         darkred("Error storing data"),
                         e,
                     )
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -805,7 +805,7 @@ class Repository:
                     blue(_("EAPI3 Service status")),
                     darkred(_("cannot fetch repository metadata")),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     importance = 0,
                     type = "info",
@@ -826,7 +826,7 @@ class Repository:
                 blue(_("EAPI3 Service status")),
                 darkred(_("cannot update treeupdates data")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -845,7 +845,7 @@ class Repository:
                 blue(_("EAPI3 Service status")),
                 darkred(_("cannot update package sets data")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -869,7 +869,7 @@ class Repository:
                     blue(_("Fetch error on segment while adding")),
                     darkred(str(segment)),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt, importance = 1, type = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
@@ -880,7 +880,7 @@ class Repository:
                 blue(_("Injecting package")),
                 darkgreen(mydata['atom']),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
@@ -893,7 +893,7 @@ class Repository:
             except (self.__dbapi2.Error,) as err:
                 if etpUi['debug']:
                     entropy.tools.print_traceback()
-                self.Entropy.updateProgress("%s: %s" % (
+                self.Entropy.output("%s: %s" % (
                     blue(_("repository error while adding packages")),
                     err,),
                     importance = 1, type = "warning",
@@ -902,7 +902,7 @@ class Repository:
                 mydbconn.closeDB()
                 return False
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             blue(_("Packages injection complete")), importance = 0,
             type = "info", header = "\t",
         )
@@ -918,7 +918,7 @@ class Repository:
             mytxt = "%s: %s" % (
                 blue(_("Removing package")),
                 darkred(str(myatom)),)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
@@ -926,7 +926,7 @@ class Repository:
                 mydbconn.removePackage(idpackage, do_cleanup = False,
                     do_commit = False)
             except (self.__dbapi2.Error,):
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     blue(_("repository error while removing packages")),
                     importance = 1, type = "warning",
                     header = "\t", count = (count, maxcount,)
@@ -934,7 +934,7 @@ class Repository:
                 mydbconn.closeDB()
                 return False
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             blue(_("Packages removal complete")),
             importance = 0, type = "info",
             header = "\t",
@@ -949,17 +949,17 @@ class Repository:
         if secure_checksum == mychecksum:
             result = True
         else:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 blue(_("Database checksum doesn't match remote.")),
                 importance = 0, type = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('local'), mychecksum,)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt, importance = 0,
                 type = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('remote'), secure_checksum,)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt, importance = 0,
                 type = "info", header = "\t",
             )
@@ -1008,7 +1008,7 @@ class Repository:
 
         def do_warn_user(fingerprint):
             mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt + ":",
                 type = "warning",
                 header = "\t"
@@ -1016,7 +1016,7 @@ class Repository:
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
                 etpConst['etpclientgpgdir'], fingerprint,)
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "$ " + mytxt,
                 type = "warning",
                 header = "\t"
@@ -1028,13 +1028,13 @@ class Repository:
             mytxt = "%s," % (
                 purple(_("This repository suports GPG-signed packages")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "warning",
                 header = "\t"
             )
             mytxt = purple(_("you may want to install GnuPG to take advantage of this feature"))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "warning",
                 header = "\t"
@@ -1068,7 +1068,7 @@ class Repository:
                     purple(_("GPG key changed for")),
                     bold(repoid),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "warning",
                     header = "\t"
@@ -1077,7 +1077,7 @@ class Repository:
                     darkgreen(fingerprint),
                     purple(downloaded_key_fp),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "warning",
                     header = "\t"
@@ -1088,7 +1088,7 @@ class Repository:
                     purple(_("GPG key already installed for")),
                     bold(repoid),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "info",
                     header = "\t"
@@ -1101,7 +1101,7 @@ class Repository:
                 purple(_("GPG key EXPIRED for repository")),
                 bold(repoid),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "warning",
                 header = "\t"
@@ -1113,7 +1113,7 @@ class Repository:
             purple(_("Installing GPG key for repository")),
             brown(repoid),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = "\t",
@@ -1126,7 +1126,7 @@ class Repository:
                 darkred(_("Error during GPG key installation")),
                 err,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "error",
                 header = "\t"
@@ -1137,7 +1137,7 @@ class Repository:
             purple(_("Successfully installed GPG key for repository")),
             brown(repoid),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = "\t"
@@ -1146,7 +1146,7 @@ class Repository:
             darkgreen(_("Fingerprint")),
             bold(fingerprint),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = "\t"
@@ -1184,7 +1184,7 @@ class Repository:
                 darkgreen(_("Verifying GPG signature of")),
                 brown(file_name),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "info",
                 header = blue("\t@@ "),
@@ -1198,7 +1198,7 @@ class Repository:
                     darkgreen(_("Verified GPG signature of")),
                     brown(file_name),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "info",
                     header = blue("\t@@ ")
@@ -1208,7 +1208,7 @@ class Repository:
                     darkred(_("Error during GPG verification of")),
                     file_name,
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "error",
                     header = "\t%s " % (bold("!!!"),)
@@ -1217,7 +1217,7 @@ class Repository:
                     purple(_("It could mean a potential security risk")),
                     err_msg,
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "error",
                     header = "\t%s " % (bold("!!!"),)
@@ -1309,7 +1309,7 @@ class Repository:
                             blue(_("EAPI3 Service error")),
                             darkred(repr(err)),
                         )
-                        self.Entropy.updateProgress(
+                        self.Entropy.output(
                             mytxt,
                             importance = 0,
                             type = "info",
@@ -1464,7 +1464,7 @@ class Repository:
                     blue(_("Configuration files update error, not critical, continuing")),
                     err,
                 )
-                self.Entropy.updateProgress(mytxt, importance = 0,
+                self.Entropy.output(mytxt, importance = 0,
                     type = "info", header = blue("  # "),)
 
             # execute post update repo hook
@@ -1499,7 +1499,7 @@ class Repository:
                 self.Entropy.close_all_repositories()
 
         if self.sync_errors:
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 red(_("Something bad happened. Please have a look.")),
                 importance = 1,
                 type = "warning",
@@ -1529,7 +1529,7 @@ class Repository:
                 blue(_("a new release is available")),
                 darkred(_("Mind to install it before any other package")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1546,7 +1546,7 @@ class Repository:
 
         mytxt = "%s %s %s" % (red(_("Unpacking database to")),
             darkgreen(file_to_unpack), red("..."),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -1563,7 +1563,7 @@ class Repository:
         if myrc != 0:
             mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),
                 red(_("Skipping repository")),)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1588,7 +1588,7 @@ class Repository:
             red("..."),
         )
         # download checksum
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -1611,7 +1611,7 @@ class Repository:
                 red(_("Cannot fetch checksum")),
                 red(_("Cannot verify database integrity")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1649,7 +1649,7 @@ class Repository:
                 bold(_("Attention")),
                 red(_("remote database got suddenly locked")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1658,7 +1658,7 @@ class Repository:
 
         # starting to download
         mytxt = "%s ..." % (red(_("Downloading repository database")),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1718,7 +1718,7 @@ class Repository:
         if not down_status:
             mytxt = "%s: %s." % (bold(_("Attention")),
                 red(_("database does not exist online")),)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1734,7 +1734,7 @@ class Repository:
         if not update:
             mytxt = "%s: %s." % (bold(_("Attention")),
                 red(_("database is already up to date")),)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1747,7 +1747,7 @@ class Repository:
             if locked:
                 mytxt = "%s: %s." % (bold(_("Attention")),
                     red(_("database will be ready soon")),)
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     importance = 1,
                     type = "info",
@@ -1765,7 +1765,7 @@ class Repository:
                 red(_("Repository is being updated")),
                 red(_("Try again in a few minutes")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1803,7 +1803,7 @@ class Repository:
             red(_("please wait")),
             red("..."),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -1823,7 +1823,7 @@ class Repository:
         except Exception as e:
             entropy.tools.print_traceback(f = self.Entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1875,7 +1875,7 @@ class Repository:
         ]
 
         def my_show_info(txt):
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 txt,
                 importance = 0,
                 type = "info",
@@ -1884,7 +1884,7 @@ class Repository:
             )
 
         def my_show_down_status(message, mytype):
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 message,
                 importance = 0,
                 type = mytype,
@@ -1892,13 +1892,13 @@ class Repository:
             )
 
         def my_show_file_unpack(fp):
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s: %s" % (darkgreen(_("unpacked meta file")), brown(fp),),
                 header = blue("\t  << ")
             )
 
         def my_show_file_rm(fp):
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "%s: %s" % (darkgreen(_("removed meta file")), purple(fp),),
                 header = blue("\t  << ")
             )
@@ -2001,7 +2001,7 @@ class Repository:
             red(_("Repository revision")),
             bold(str(self.Entropy.get_repository_revision(repo))),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2015,7 +2015,7 @@ class Repository:
         # renice a bit, to avoid eating resources
         old_prio = self.Entropy.set_priority(15)
         mytxt = red("%s ...") % (_("Indexing Repository metadata"),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2042,7 +2042,7 @@ class Repository:
 
         # let's dance!
         mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 2,
             type = "info",

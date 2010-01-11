@@ -52,7 +52,7 @@ class ClientEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         out_intf = self._metadata.get('output_interface')
         if out_intf is not None:
-            entropy_repository_instance.updateProgress = out_intf.updateProgress
+            entropy_repository_instance.output = out_intf.output
             entropy_repository_instance.askQuestion = out_intf.askQuestion
 
         return 0

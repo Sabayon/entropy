@@ -80,11 +80,11 @@ class UrlFetcher:
         self.__Output = OutputInterface
         if self.__Output == None:
             self.__Output = TextInterface()
-        elif not hasattr(self.__Output, 'updateProgress'):
-            mytxt = _("Output interface passed doesn't have the updateProgress method")
+        elif not hasattr(self.__Output, 'output'):
+            mytxt = _("Output interface passed doesn't have the output method")
             raise AttributeError(mytxt)
-        elif not hasattr(self.__Output.updateProgress, '__call__'):
-            mytxt = _("Output interface passed doesn't have the updateProgress method")
+        elif not hasattr(self.__Output.output, '__call__'):
+            mytxt = _("Output interface passed doesn't have the output method")
             raise AttributeError(mytxt)
 
     def _init_vars(self):
@@ -288,14 +288,14 @@ class UrlFetcher:
                     self.__updatestep, self.__show_speed, self.__datatransfer,
                     self.__time_remaining, self.__time_remaining_secs
                 )
-                self.updateProgress()
+                self.output()
                 self.__oldaverage = self.__average
             if self.__speedlimit:
                 while self.__datatransfer > self.__speedlimit*1024:
                     time.sleep(0.1)
                     self._update_speed()
                     if self.__show_speed:
-                        self.updateProgress()
+                        self.output()
                         self.__oldaverage = self.__average
 
         self._push_progress_to_output()
@@ -412,9 +412,9 @@ class UrlFetcher:
         if len(average) < 2:
             average = " "+average
         current_txt += " <->  "+average+"% "+bartext
-        self.__Output.updateProgress(current_txt, back = True)
+        self.__Output.output(current_txt, back = True)
 
-    def updateProgress(self):
+    def output(self):
         """
         Main fetch progress callback. You can reimplement this to refresh
         your output devices.
@@ -462,11 +462,11 @@ class MultipleUrlFetcher:
         self.__Output = OutputInterface
         if self.__Output == None:
             self.__Output = TextInterface()
-        elif not hasattr(self.__Output, 'updateProgress'):
-            mytxt = _("Output interface passed doesn't have the updateProgress method")
+        elif not hasattr(self.__Output, 'output'):
+            mytxt = _("Output interface passed doesn't have the output method")
             raise AttributeError("IncorrectParameter: %s" % (mytxt,))
-        elif not hasattr(self.__Output.updateProgress, '__call__'):
-            mytxt = _("Output interface passed doesn't have the updateProgress method")
+        elif not hasattr(self.__Output.output, '__call__'):
+            mytxt = _("Output interface passed doesn't have the output method")
             raise AttributeError("IncorrectParameter: %s" % (mytxt,))
 
         self.__url_fetcher = UrlFetcherClass
@@ -507,8 +507,8 @@ class MultipleUrlFetcher:
                 klass.__init__(self, *args, **kwargs)
                 self.__multiple_fetcher = multiple
 
-            def updateProgress(self):
-                return self.__multiple_fetcher.updateProgress()
+            def output(self):
+                return self.__multiple_fetcher.output()
 
             def _push_progress_to_output(self):
                 return
@@ -563,7 +563,7 @@ class MultipleUrlFetcher:
     def show_download_files_info(self):
         count = 0
         pl = self.__url_path_list[:]
-        self.__Output.updateProgress(
+        self.__Output.output(
             "%s: %s %s" % (
                 darkblue(_("Aggregated download")),
                 darkred(str(len(pl))),
@@ -577,7 +577,7 @@ class MultipleUrlFetcher:
             count += 1
             fname = os.path.basename(url)
             uri = spliturl(url)[1]
-            self.__Output.updateProgress(
+            self.__Output.output(
                 "[%s] %s => %s" % (
                     darkblue(str(count)),
                     darkgreen(uri),
@@ -685,9 +685,9 @@ class MultipleUrlFetcher:
             if len(myavg) < 2:
                 myavg = " "+myavg
             current_txt += " <->  "+myavg+"% "+bartext+" "
-            self.__Output.updateProgress(current_txt, back = True)
+            self.__Output.output(current_txt, back = True)
 
         self.__old_average = average
 
-    def updateProgress(self):
+    def output(self):
         return self._push_progress_to_output()

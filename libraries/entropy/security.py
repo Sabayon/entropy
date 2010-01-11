@@ -267,7 +267,7 @@ class System:
 
         def do_warn_user(fingerprint):
             mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt + ":",
                 type = "warning",
                 header = red("   # ")
@@ -275,7 +275,7 @@ class System:
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
                 self.__gpg_keystore_dir, fingerprint,)
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 "$ " + mytxt,
                 type = "warning",
                 header = red("   # ")
@@ -305,7 +305,7 @@ class System:
                     purple(_("GPG key changed for")),
                     bold(easy_url),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "warning",
                     header = red("   # ")
@@ -314,7 +314,7 @@ class System:
                     darkgreen(fingerprint),
                     purple(downloaded_key_fp),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "warning",
                     header = red("   # ")
@@ -324,7 +324,7 @@ class System:
                     purple(_("GPG key already installed for")),
                     bold(easy_url),
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     type = "info",
                     header = red("   # ")
@@ -337,7 +337,7 @@ class System:
                 purple(_("GPG key EXPIRED for URL")),
                 bold(easy_url),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "warning",
                 header = red("   # ")
@@ -348,7 +348,7 @@ class System:
             purple(_("Installing GPG key for URL")),
             brown(easy_url),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = red("   # "),
@@ -362,7 +362,7 @@ class System:
                 darkred(_("Error during GPG key installation")),
                 err,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "error",
                 header = red("   # ")
@@ -373,7 +373,7 @@ class System:
             purple(_("Successfully installed GPG key for URL")),
             brown(easy_url),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = red("   # ")
@@ -382,7 +382,7 @@ class System:
             darkgreen(_("Fingerprint")),
             bold(fingerprint),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = red("   # ")
@@ -407,7 +407,7 @@ class System:
                 purple(_("Error during GPG verification of")),
                 os.path.basename(self.download_package),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "error",
                 header = red("   # ") + bold(" !!! ")
@@ -416,7 +416,7 @@ class System:
                 purple(_("It could mean a potential security risk")),
                 err_msg,
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 type = "error",
                 header = red("   # ") + bold(" !!! ")
@@ -427,7 +427,7 @@ class System:
             bold(_("Security Advisories")),
             purple(_("GPG key verification successful")),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             type = "info",
             header = red("   # ")
@@ -609,7 +609,7 @@ class System:
 
             count += 1
             if not etpUi['quiet']:
-                self.Entropy.updateProgress(":: " + \
+                self.Entropy.output(":: " + \
                     str(round((float(count)/maxlen)*100, 1)) + "% ::",
                     importance = 0, type = "info", back = True)
 
@@ -634,7 +634,7 @@ class System:
                     blue(_("advisory broken")),
                     more_info,
                 )
-                self.Entropy.updateProgress(
+                self.Entropy.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -982,7 +982,7 @@ class System:
             bold(_("Security Advisories")),
             blue(_("testing service connection")),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 2,
             type = "info",
@@ -995,7 +995,7 @@ class System:
             blue(_("getting latest advisories")),
             red("..."),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 2,
             type = "info",
@@ -1036,7 +1036,7 @@ class System:
                 darkgreen(_("already up to date")),
             )
 
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             advtext,
             importance = 2,
             type = "info",
@@ -1056,7 +1056,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("cannot download checksum, sorry")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
@@ -1080,7 +1080,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("unable to download advisories, sorry")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
@@ -1094,7 +1094,7 @@ class System:
             blue(_("Verifying checksum")),
             red("..."),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1110,7 +1110,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("cannot open packages, sorry")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
@@ -1123,7 +1123,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("cannot read the checksum, sorry")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
@@ -1136,7 +1136,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("digest verification failed, sorry")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
@@ -1149,7 +1149,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkgreen(_("verification successful")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1170,7 +1170,7 @@ class System:
                         bold(_("Security Advisories")),
                         purple(_("GPG service not available")),
                     )
-                    self.Entropy.updateProgress(
+                    self.Entropy.output(
                         mytxt,
                         type = "info",
                         header = red("   # ")
@@ -1196,7 +1196,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("digest verification failed, try again later")),
             )
-            self.Entropy.updateProgress(
+            self.Entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
@@ -1210,7 +1210,7 @@ class System:
             blue(_("installing")),
             red("..."),
         )
-        self.Entropy.updateProgress(
+        self.Entropy.output(
             mytxt,
             importance = 1,
             type = "info",

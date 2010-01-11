@@ -712,7 +712,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             blue(_("Running fixpackages")),
             red(_("it could take a while")),
         )
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "warning",
@@ -733,7 +733,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 red(_("action")),
                 blue(action),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -751,7 +751,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 bold(_("ENTROPY")),
                 blue(_("package move actions complete")),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -774,7 +774,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             bold(_("ENTROPY")),
             blue(_("package moves completed successfully")),
         )
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -994,7 +994,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     red(_("to")),
                     blue(to_path),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -6277,7 +6277,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             _("Syncing current database"),
             _("please wait"),
         )
-        self.updateProgress(
+        self.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -6293,7 +6293,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 red(_("Removing entry")),
                 blue(str(self.retrieveAtom(idpackage))),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -6312,7 +6312,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 red(_("Adding entry")),
                 blue(str(dbconn.retrieveAtom(idpackage))),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -6353,13 +6353,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         dbapi = self.getApi()
         if int(dbapi) > int(etpConst['etpapi']):
-            self.updateProgress(
+            self.output(
                 red(_("Repository EAPI > Entropy EAPI.")),
                 importance = 1,
                 type = "warning",
                 header = " * ! * ! * ! * "
             )
-            self.updateProgress(
+            self.output(
                 red(_("Please update Equo/Entropy as soon as possible !")),
                 importance = 1,
                 type = "warning",
@@ -6407,7 +6407,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """)
         for name, x, sql in self.cursor.fetchall():
 
-            self.updateProgress(
+            self.output(
                 red("%s " % (
                     _("Exporting database table"),
                 ) ) + "["+blue(str(name))+"]",
@@ -6455,7 +6455,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             dumpfile.flush()
         except:
             pass
-        self.updateProgress(
+        self.output(
             red(_("Database Export complete.")),
             importance = 0,
             type = "info",
@@ -7155,7 +7155,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                             red(_("Spm error occured")),
                             str(err),
                         )
-                        self.updateProgress(
+                        self.output(
                             mytxt,
                             importance = 1,
                             type = "warning"
@@ -7169,7 +7169,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                             red(_("Spm Unique Identifier not found for")),
                             self.retrieveAtom(myid),
                         )
-                        self.updateProgress(
+                        self.output(
                             mytxt,
                             importance = 1,
                             type = "warning"
@@ -7248,7 +7248,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     purple(self.dbname),
                     red(_("updating repository metadata layout, please wait!")),
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning"
@@ -7349,7 +7349,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 bold(_("ATTENTION")),
                 red(_("generating provided_libs metadata, please wait!")),
             )
-            self.updateProgress(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "warning"
@@ -7363,7 +7363,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     red("cannot generate provided_libs metadata"),
                     err,
                 )
-                self.updateProgress(
+                self.output(
                     mytxt,
                     importance = 1,
                     type = "warning"
@@ -7566,7 +7566,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         total = len(depends)
         mydata = set()
         am = self.atomMatch
-        up = self.updateProgress
+        up = self.output
         self.taintReverseDependenciesMetadata()
         self.commitChanges()
         for iddep, atom in depends:
