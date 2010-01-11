@@ -451,45 +451,48 @@ def print_menu(data, args = None):
             if command is None:
                 writechar("\n")
         else:
-            n_ident = item[0]
+            n_indent = item[0]
             name = item[1]
             n_d_ident = item[2]
             desc = item[3]
             if command is not None:
                 name_strip = name.split()[0].strip()
-                if name_strip == command and n_ident == search_depth:
+                if name_strip == command and n_indent == search_depth:
                     try:
                         command = args.pop(0)
-                        search_depth = n_ident + 1
+                        search_depth = n_indent + 1
                     except IndexError:
                         command = "##unused_from_now_on"
                         section_found = True
-                        indent_level = n_ident
+                        indent_level = n_indent
                 elif section_found:
-                    if n_ident <= indent_level:
+                    if n_indent <= indent_level:
                         return
                 else:
                     continue
 
-            if n_ident == 0:
+            if n_indent == 0:
                 writechar("  ")
             # setup identation
-            while n_ident > 0:
-                n_ident -= 1
+            ind_th = 0
+            if command is not None: # so that partial --help looks nicer
+                ind_th = 1
+            while n_indent > ind_th:
+                n_indent -= 1
                 writechar("\t")
-            n_ident = item[0]
+            n_indent = item[0]
 
             # write name
-            if n_ident == 0:
+            if n_indent == 0:
                 myfunc = darkgreen
-            elif n_ident == 1:
+            elif n_indent == 1:
                 myfunc = blue
                 myfunc_desc = darkgreen
-            elif n_ident == 2:
+            elif n_indent == 2:
                 if not name.startswith("--"):
                     myfunc = red
                 myfunc_desc = brown
-            elif n_ident == 3:
+            elif n_indent == 3:
                 myfunc = darkblue
                 myfunc_desc = purple
             func_out = myfunc(name)
