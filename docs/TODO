@@ -2,7 +2,6 @@
   0.99.30:
 
     - equo bashcomp
-    - entropy.output API rework
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
