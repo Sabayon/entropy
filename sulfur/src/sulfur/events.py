@@ -607,6 +607,8 @@ class SulfurApplicationEventsMixin:
                     # Package Category Group
                     self.pkgView.set_filtering_string(obj.onlyname,
                         run_it = False)
+                elif obj.is_pkgset_cat:
+                    break
                 else:
                     self.pkgView.set_filtering_string(obj.onlyname + "/")
                 break

@@ -94,15 +94,15 @@ class EntropyPackage:
                 self.description = self.set_name
                 self.matched_repo = self.set_name
 
+            self.matched_id = etpConst['packagesetprefix']
             self.from_installed = False
             self.dbconn = None
             self.dummy_type = -2
             self.is_set_dep = True
             self.set_names = set()
-            self.onlyname = matched_atom
-            self.name = matched_atom
+            self.onlyname = self.set_name
+            self.name = self.set_name
             self.set_category = False
-            self.matched_id = "@"
 
         elif self.remote:
 
