@@ -340,7 +340,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         #    self.populate_advisories(None, "affected", background = True)
 
         #self._fork_function(security.get_advisories_metadata,
-        #    advisories_populate)
+        #    advisories_populate)0.0714049339294
 
         # configuration files update cache generation
         def file_updates_cache_gen():
@@ -1516,7 +1516,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if action == "updates":
             msg = "%s: available" % (_('Calculating'),)
             self.set_status_ticker(msg)
+            # speed up first queue taint iteration
             self.etpbase.get_groups("available")
+            self.etpbase.get_groups("installed")
+            self.etpbase.get_groups("reinstallable")
+            self.etpbase.get_groups("masked")
+            self.etpbase.get_groups("user_unmasked")
+            self.etpbase.get_groups("downgrade")
 
         if bootstrap:
             self.end_working()
