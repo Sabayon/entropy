@@ -335,12 +335,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_background_cache_generators(self):
 
         # security cache generation
-        security = self.Equo.Security()
-        def advisories_populate():
-            self.populate_advisories(None, "affected", background = True)
+        #security = self.Equo.Security()
+        #def advisories_populate():
+        #    self.populate_advisories(None, "affected", background = True)
 
-        self._fork_function(security.get_advisories_metadata,
-            advisories_populate)
+        #self._fork_function(security.get_advisories_metadata,
+        #    advisories_populate)
 
         # configuration files update cache generation
         def file_updates_cache_gen():
