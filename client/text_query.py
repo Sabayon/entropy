@@ -1105,17 +1105,19 @@ def list_installed_packages(Equo = None, dbconn = None):
     return 0
 
 
-def search_package(packages, Equo = None):
+def search_package(packages, Equo = None, get_results = False,
+    from_installed = False, ignore_installed = False):
 
     if Equo is None:
         Equo = EquoInterface()
 
-    if not etpUi['quiet']:
+    if not etpUi['quiet'] and not get_results:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
 
     # search inside each available database
     repo_number = 0
     found = False
+    rc_results = []
 
     def do_search(dbconn, from_client = False):
         my_found = False
@@ -1136,10 +1138,14 @@ def search_package(packages, Equo = None):
 
                     my_found = True
                     for pkg in result:
-                        print_package_info(pkg[1], dbconn, Equo = Equo,
-                        extended = etpUi['verbose'], clientSearch = from_client)
+                        if get_results:
+                            rc_results.append(dbconn.retrieveAtom(pkg[1]))
+                        else:
+                            print_package_info(pkg[1], dbconn, Equo = Equo,
+                                extended = etpUi['verbose'],
+                                    clientSearch = from_client)
 
-                    if not etpUi['quiet']:
+                    if not etpUi['quiet'] and not get_results:
                         found_len = len(result)
                         print_info(blue(" %s: " % (_("Keyword"),) ) + \
                             bold("\t"+package))
@@ -1152,41 +1158,45 @@ def search_package(packages, Equo = None):
 
         return my_found
 
-    for repo in Equo.validRepositories:
-        repo_number += 1
+    if not from_installed:
+        for repo in Equo.validRepositories:
+            repo_number += 1
 
-        if not etpUi['quiet']:
-            print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+            if not etpUi['quiet'] and not get_results:
+                print_info(blue("  #" + str(repo_number)) + \
+                    bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
-        dbconn = Equo.open_repository(repo)
-        my_found = do_search(dbconn)
-        if my_found:
-            found = True
+            dbconn = Equo.open_repository(repo)
+            my_found = do_search(dbconn)
+            if my_found:
+                found = True
 
     # try to actually match something in installed packages db
-    if not found and (Equo.clientDbconn is not None):
+    if not found and (Equo.clientDbconn is not None) and not ignore_installed:
         do_search(Equo.clientDbconn, from_client = True)
 
-    if not etpUi['quiet'] and not found:
+    if not etpUi['quiet'] and not found and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
 
+    if get_results:
+        return rc_results
     return 0
 
 def match_package(packages, multiMatch = False, multiRepo = False,
-    showRepo = False, showDesc = False, Equo = None):
+    showRepo = False, showDesc = False, Equo = None, get_results = False):
 
     if Equo is None:
         Equo = EquoInterface()
 
-    if not etpUi['quiet']:
+    if not etpUi['quiet'] and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Matching"),) ),
             back = True)
     found = False
+    rc_results = []
 
     for package in packages:
 
-        if not etpUi['quiet']:
+        if not etpUi['quiet'] and not get_results:
             print_info("%s: %s" % (blue("  # "), bold(package),))
 
         match = Equo.atom_match(package, multiMatch = multiMatch,
@@ -1203,20 +1213,26 @@ def match_package(packages, multiMatch = False, multiRepo = False,
 
             for match in matches:
                 dbconn = Equo.open_repository(match[1])
-                print_package_info(match[0], dbconn, showRepoOnQuiet = showRepo,
-                    showDescOnQuiet = showDesc, Equo = Equo,
-                    extended = etpUi['verbose'])
+                if get_results:
+                    rc_results.append(dbconn.retrieveAtom(match[0]))
+                else:
+                    print_package_info(match[0], dbconn,
+                        showRepoOnQuiet = showRepo,
+                            showDescOnQuiet = showDesc, Equo = Equo,
+                                extended = etpUi['verbose'])
                 found = True
 
-            if not etpUi['quiet']:
+            if not etpUi['quiet'] and not get_results:
                 print_info(blue(" %s: " % (
                     _("Keyword"),) ) + bold("\t"+package))
                 print_info(blue(" %s:   " % (_("Found"),) ) + \
                     bold("\t"+str(len(matches)))+red(" %s" % (_("entries"),) ))
 
-    if not etpUi['quiet'] and not found:
+    if not etpUi['quiet'] and not found and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
 
+    if get_results:
+        return rc_results
     return 0
 
 def search_slotted_packages(slots, dbconn = None, Equo = None):
