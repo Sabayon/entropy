@@ -185,7 +185,11 @@ class EntropyCacher(Singleton):
                 with self.__proc_pids_lock:
                     self.__proc_pids.add(pid)
                 if sync:
-                    os.waitpid(pid, 0)
+                    try:
+                        os.waitpid(pid, 0)
+                    except OSError as err:
+                        if err.errno != 10:
+                            raise
                 del massive_data[:]
                 del massive_data
 
