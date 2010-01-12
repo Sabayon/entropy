@@ -1,3 +1,21 @@
+commit 08e27a3e3eab6a8467c44c453b0c875597b1f163
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 18:44:21 2010 +0100
+
+    [sulfur] handle EntropyPackage metadata retrieval while shutdown
+
+commit e7eec5bd1b42c0e44fec27e981551695dc14fc6b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 18:42:32 2010 +0100
+
+    [sulfur] fix two small pkgsets glitches
+
+commit 054c34beec140a1d603b160f4dac23d709d954da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 16:35:27 2010 +0100
+
+    Update ChangeLog for version 0.99.24
+
 commit 19da4c92c6eef96e49c24790ba414d36eaa3e217
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 12 16:35:02 2010 +0100
