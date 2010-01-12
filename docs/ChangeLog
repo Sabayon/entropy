@@ -1,3 +1,15 @@
+commit ae3a2432d36ea96a394ae33fc161c6a6a1525467
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Tue Jan 12 21:07:41 2010 +0100
+
+    [entropy.cache] EntropyCacher: do not crash when pid is already gone
+
+commit 4d8995201d77e93ce3ebc6228bd4b0b544f346a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 18:46:48 2010 +0100
+
+    Update ChangeLog for version 0.99.24.1
+
 commit 08e27a3e3eab6a8467c44c453b0c875597b1f163
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 12 18:44:21 2010 +0100
