@@ -1,3 +1,437 @@
+commit 19da4c92c6eef96e49c24790ba414d36eaa3e217
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 16:35:02 2010 +0100
+
+    [todo] update TODO
+
+commit 9b106e909cfbe796501e667d4383a65c7591b0f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 16:33:35 2010 +0100
+
+    [sulfur] improve pkgs enqueue/dequeue speed by preloading most of pkg groups
+
+commit 20677fb69313666ab065f9a584112a595baf6326
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 16:26:00 2010 +0100
+
+    [sulfur] disable parallel security cache generation, causes sqlite3 db corruption (fuck sqlite!!!!)
+
+commit 18784536062b3affc2e5fb5140ef83f82882fe83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 16:04:32 2010 +0100
+
+    [misc] drop +x from file
+
+commit 08a0acf439a44acc25cdb90aec9ea6f822f3dffa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 15:53:35 2010 +0100
+
+    [po] update translations
+
+commit a402830809d376abd2ccb28d7398e9236c7bca6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 15:53:17 2010 +0100
+
+    [todo] update TODO
+
+commit 477e135134619c76ff9d0c09781f21a4036d75c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 15:52:12 2010 +0100
+
+    [entropy/equo] implement bash completion (yay!), move CLI related functions to text_tools module
+
+commit 09a51bedcdb0ee67f677d1e3a8dd45a7d00d511d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 12 15:51:13 2010 +0100
+
+    [equo] text_query: improve search_package function usability
+
+commit e50b32cb16128c9703024fee03cd818a2cc8e2fd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 18:07:44 2010 +0100
+
+    [todo] update TODO
+
+commit 40f090310b41a1dd11f8267d29bc92d6118d872f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 18:05:47 2010 +0100
+
+    [entropy.output] rename TextInterface.inputBox into input_box
+
+commit 41212188f57af9b54cb396478b4fa32fabcbf484
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 17:59:26 2010 +0100
+
+    [entropy.output] rename TextInterface.askQuestion into ask_question
+
+commit 8f94c4a8b4f2fd32947a2b57fe597f6b6443ecbe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 17:38:55 2010 +0100
+
+    [entropy.output] TextInterface: rename updateProgress into output
+
+commit eb84b60da4e31e00914d0ec996ec914db59b9b31
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 17:04:05 2010 +0100
+
+    [tests] remove bogus test (unreliable)
+
+commit d1b123cf2721a8f3413625a35211f937cf83bc0a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 16:48:59 2010 +0100
+
+    [entropy.output] start to factor out TextInterface class
+
+commit 802dd082d0f1735924f002518311faf4ba139264
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 13:14:21 2010 +0100
+
+    [sulfur] improve orphans warning message conditional
+
+commit 82fcd1e40f984cb8f6e43e194bd421f14b5cd795
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 12:46:23 2010 +0100
+
+    [entropy.client.services.ugc] catch TimeoutError exceptions
+
+commit 6718939c8601234d3a9b0fe9f6464a7ebbbbf99a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 10:32:34 2010 +0100
+
+    [entropy.client] ban print_* calls
+
+commit e58966cf3198d78bc956d203e812e9ae9d6a3b3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 10:32:24 2010 +0100
+
+    [entropy.tools] ban print_* calls
+
+commit ccc292eba41a8c43c238713d2433b5be5f2b1c3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 10:28:43 2010 +0100
+
+    [entropy] ban print_info calls from entropy package, create text_tools module
+
+commit 6aaac0b1b4e3cdde9689295b6b502d18210bbadc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 10:18:49 2010 +0100
+
+    [todo] update TODO
+
+commit b535fc2663a0df1e27746dacb800228bce558416
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 10:17:51 2010 +0100
+
+    [entropy.server] when moving pkgs from a repo to another, also pull revdeps and warn about pkgs overwrite
+
+commit 86f3d165aebd62997959d01c9af481490d2132e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 10:17:42 2010 +0100
+
+    [entropy.qa] fix docstring
+
+commit 711f65d2e84d3e4a7e65fad5ce10af9c741c3f33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 09:50:53 2010 +0100
+
+    [todo] update TODO
+
+commit 44daf628420385dc6abddf6d9cbea022c34f65ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 09:50:27 2010 +0100
+
+    [equo] add "equo mask" and "equo unmask" commands support
+
+commit cdce2d908342cb7906376007c10fafbab4820c80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 11 09:50:07 2010 +0100
+
+    [entropy.output] improve partial --help output
+
+commit 74e275aa76a03c4b708fc644d9f007aa1354055a
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Mon Jan 11 00:39:15 2010 +0100
+
+    [sulfur] small code style update
+
+commit 1c492026f5061146f2c76179e3d9f0945bb6081e
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Mon Jan 11 00:33:35 2010 +0100
+
+    [po] update translations
+
+commit 77d3d27938a3bc85605f13c569a34461e3c5393f
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Mon Jan 11 00:33:22 2010 +0100
+
+    [todo] update TODO
+
+commit 7ad830aa0bae3315377c9c00d3845d16f53219cc
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Mon Jan 11 00:33:01 2010 +0100
+
+    [sulfur] move repository manager code away from sulfur codebase
+
+commit 34500b4667e95c9a8f7d293c55df32a5f9892722
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Mon Jan 11 00:05:56 2010 +0100
+
+    [sulfur] drop Repository Manager references from Sulfur
+
+commit 2cdc924ac1a3aeae67fc9eaf11945a5a8f13af21
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Mon Jan 11 00:02:22 2010 +0100
+
+    [todo] update TODO
+
+commit b88fb0e9a84aa7a4b7a19a67eca191702b084c14
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sun Jan 10 23:31:19 2010 +0100
+
+    [sulfur] properly set orphans pkgs warning shown bool
+
+commit 2a4ebd39b0d2116b6be4cbeb9971b067fa91c150
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 23:18:16 2010 +0100
+
+    [todo] update TODO
+
+commit 2ce42f5cb682621cb2a12895e97d832973953d3e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 22:36:41 2010 +0100
+
+    [sulfur] show updates count into updates button
+
+commit 47facc3820b01d21d89b0b781a14e391f8514956
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 22:04:32 2010 +0100
+
+    [sulfur] directly show available pkgs if no updates are available
+
+commit 687703daa83f1d6e1056fd44365f6d59986da86c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 17:00:20 2010 +0100
+
+    [sulfur] removed second progress bar, made progress handling back working
+
+commit f187b2bf33ce05e8249aa3a71803c55d08ed350b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 09:58:03 2010 +0100
+
+    [entropy.output] remove ill-conceived TextInterface methods
+
+commit 824c2ba9f77b590a1032392fd29b71e4579777e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 09:56:45 2010 +0100
+
+    [sulfur] remove entropy.output.TextInterface.cycleDone calls and reimplementation
+
+commit b712fe33c100f9390d314404d09828cc6d4be1ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 09:56:11 2010 +0100
+
+    [entropy.client] remove entropy.output.TextInterface.cycleDone and setTotalCycles calls
+
+commit 73206fc803484964ecf9e4188f9448e1810c80b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 09:38:07 2010 +0100
+
+    [sulfur] all these labels below simple buttons take much space and we already have tooltips for usability
+
+commit b09f7d5a493032fcbc83aea92fc85253dac2929c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 09:35:06 2010 +0100
+
+    [sulfur] fix ill-conceived Ian's label content
+
+commit 991f94ff844cc9e3ce478591ce319434c29e5f39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 10 09:28:23 2010 +0100
+
+    [sulfur] fix undefined reference
+
+commit b8ba1f7761cd311f9ea11eb88e4fe3a0516b0828
+Author: Ian Whyman <ian.whyman@sabayon.org>
+Date:   Sun Jan 10 00:55:59 2010 +0000
+
+    [sulfur] Improve usability of simple mode, they are 'simple' users afterall =P
+
+commit d3f90d08ed3286f7e5dd1c9c09a192eeabb9bc9b
+Author: Ian Whyman <ian.whyman@sabayon.org>
+Date:   Sat Jan 9 22:29:05 2010 +0000
+
+    [sulfur] Remove old icons, fix icon names
+
+commit b13d385bc883607cbf321f73485a3a2a94ac9d43
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 23:57:12 2010 +0100
+
+    [sulfur] remove preferences label, not needed, fix window height issue
+
+commit 522080841a517b2e5139145d37bc7954f0fef707
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 23:53:37 2010 +0100
+
+    [sulfur] stop maximizing sulfur by default
+
+commit 53aef0f098d1dc78fd27b11866b987aaf99b6eee
+Author: Ian Whyman <ian.whyman@sabayon.org>
+Date:   Wed Jan 6 00:37:42 2010 +0000
+
+    [sulfur] Move things about a bit, general UI improvements, shrink icons
+
+commit 2e6c1647e600db4a86c2711208506e7a0022f88c
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 22:01:53 2010 +0100
+
+    [todo] update TODO
+
+commit 46c48b270a71d2668fbb2614c4ee9f6f3fd741b2
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 22:01:14 2010 +0100
+
+    [sulfur] inform user about orphan packages on system
+
+commit 50be056d6a665bea777aa235ff46254be32f4f61
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 20:59:26 2010 +0100
+
+    [sulfur] some code style update
+
+commit ad4033aada329f98073b38758ec4af34f0d74518
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 20:59:00 2010 +0100
+
+    [sulfur] improve vte.Terminal max number of chars shown to 6000
+
+commit 974b8b34f4e4ed25380b4d690530bc10f727d690
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 20:55:08 2010 +0100
+
+    [entropy.db] EntropyRepository: add __repr__, __str__ and __unicode__ methods
+
+commit aacb6818d4a6c8802515af7728ea8f6909e3b5fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 9 18:34:43 2010 +0100
+
+    [todo] update TODO
+
+commit f4a8bc4fec32ea271f2c4882497d6a0185f2911d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 9 18:18:49 2010 +0100
+
+    [todo] update TODO
+
+commit a7cde7b08a4107300fd7d3a481341dc827bde350
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 9 18:15:38 2010 +0100
+
+    [entropy.cache] EntropyCacher: grow cache sync object chunk size by 3x
+
+commit 8683b3eca8345e1037a286eed839aae9ea576bb5
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 10:36:46 2010 +0100
+
+    [sulfur] make sure that keyslot property returns valid data
+
+commit 57b87f0c42070bf671719aa5e71ce321b0c6b461
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 01:17:55 2010 +0100
+
+    Revert "[entropy.dump] effectively sync filesystem for written files"
+    
+    This reverts commit cda58f4155e907e6f224927670b0e40c5e2353f7.
+
+commit 412da7279bd618c63c53238d30179fafdbdb0048
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 9 09:44:33 2010 +0100
+
+    [equo] split upgrade_packages function
+
+commit dbf1d93fa095651782c78f77c92c8b51e530765a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 9 09:14:28 2010 +0100
+
+    [equo] some code style update
+
+commit a2d6e75ad5604fac6c94cba1dce362e323f57596
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 01:06:59 2010 +0100
+
+    [tests] add EntropyRepository cache storage tests
+
+commit 80545362a88b7f0b979a3a3dd132448c81c20fcc
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 01:05:56 2010 +0100
+
+    [entropy.cache] EntropyCacher: sync() method will run synchronously
+
+commit cda58f4155e907e6f224927670b0e40c5e2353f7
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 9 01:05:14 2010 +0100
+
+    [entropy.dump] effectively sync filesystem for written files
+
+commit 6a622d914eda583deca34cbc9c6c5bc623915fb2
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 23:58:39 2010 +0100
+
+    [sulfur] when description is not available, show "No description"
+
+commit 5f8b4fbc90acef3b875ea1c7dd3841b0c8286079
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 21:16:47 2010 +0100
+
+    [entropy.security] fix undefined variable
+
+commit d5df42f9814f47b0a3f1eba3fe6749ed07984324
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 16:44:54 2010 +0100
+
+    [equo] fix short options support (for eg, "-qt" is not supported)
+
+commit 7fd8c368e942508af4ab690232fc5954fcfae8a3
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 14:04:50 2010 +0100
+
+    [sulfur] improve license sorter (filter out unwanted strings)
+
+commit 644c504b541d2daf9367856dffae893201cbad78
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 14:04:34 2010 +0100
+
+    [sulfur] after repo sync, spawn UGC update
+
+commit 6ee154a0a00af614f29344d6f9c06b73dac8fac7
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 14:04:10 2010 +0100
+
+    [events] do not tell user to do stuff after having removed a repo
+
+commit 70319aed16d51cc0fd6b151a94c985e9536efdd1
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 14:03:19 2010 +0100
+
+    [sulfur] do not show upgrade/downgrade information for installed packages (or non-updates)
+
+commit e1a27dedb52bbe6180ad5d12ee9fe88dbccb2563
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 8 12:24:02 2010 +0100
+
+    [entropy.const] rename smart applications extension to ".app"
+
+commit d9239f6c32fad2f405323776c921626ac03ffb2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 8 11:39:37 2010 +0100
+
+    [sulfur] sulfur love, improve per-license package sorter
+
+commit 691db1fe1217f269e8bfc84d7de856b51d050621
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 8 09:40:28 2010 +0100
+
+    Update ChangeLog for version 0.99.20.21
+
 commit a945625bb7f3cc9376f50a829fc3d808302da7ea
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 8 09:39:05 2010 +0100
