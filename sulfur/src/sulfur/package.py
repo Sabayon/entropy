@@ -239,6 +239,9 @@ class EntropyPackage:
             ver_str = self._get_nameDesc_get_installed_ver()
             self.__namedesc_cache = atom, repo, repo_clean, key, desc, ver_str
 
+        if atom is None: # wtf!
+            return 'N/A'
+
         key = self.entropyTools.dep_getkey(atom)
         downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo_clean, key)
         ugc_string = "<small>[%s]</small> " % (downloads,)
