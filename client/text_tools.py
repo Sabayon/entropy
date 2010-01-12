@@ -13,7 +13,7 @@ import os
 import subprocess
 
 from entropy.const import etpConst
-from entropy.output import print_info, darkgreen
+from entropy.output import print_info, print_generic, darkgreen
 from entropy.i18n import _
 
 # Temporary files cleaner
@@ -35,3 +35,157 @@ def cleanup(directories = None):
     print_info("%s: %s %s" % (
         _("Cleaned"), counter, _("files and directories"),))
     return 0
+
+def print_bascomp(data, cmdline, cb_map):
+    """
+    Print bash completion string for readline consumption using Entropy
+    menu declaration format.
+
+    @param data: Entropy menu declaration format
+    @type data: list
+    @param cmdline: list of cmdline args
+    @type cmdline: list
+    @param cb_map: map of completed commands callbacks, signature:
+        <list of args to append> cb_map_callback(cur_cmdline)
+    @type cb_map: dict
+    """
+    cmdline = cmdline[1:]
+    cmdline_len = len(cmdline) # drop --stuff
+
+    comp_line = []
+    previous_complete = False
+    if cmdline:
+        last_cmdline = cmdline[-1]
+    else:
+        last_cmdline = '###impossible'
+
+    try:
+        prev_cmdline = cmdline[-2]
+    except IndexError:
+        prev_cmdline = None
+    cur_cb = cb_map.get(prev_cmdline)
+    if cur_cb is not None:
+        ext_comp_line = cur_cb(cmdline)
+        if ext_comp_line:
+            comp_line.extend(ext_comp_line)
+
+    got_inside = False
+
+    for item in data:
+
+        if item is None:
+            continue
+
+        if item[0] == cmdline_len:
+
+            if item[1].startswith("--") and \
+                not last_cmdline.startswith("-"):
+                # skip --opts
+                continue
+
+            got_inside = True
+            if item[1] == last_cmdline:
+                cmdline_len += 1
+                previous_complete = True
+                continue
+            elif item[1].startswith(last_cmdline):
+                comp_line.append(item[1])
+            elif previous_complete:
+                comp_line.append(item[1])
+
+        if (item[0] < cmdline_len) and got_inside and previous_complete:
+            break
+
+    if comp_line:
+        print_generic(' '.join(comp_line))
+
+def print_menu(data, args = None):
+    """
+    Function used by Entropy text client (will be moved from here) to
+    print the menu output given a properly formatted list.
+    This method is not intended for general used and will be moved away from
+    here.
+    """
+    if args == None:
+        args = []
+
+    def orig_myfunc(x):
+        return x
+    def orig_myfunc_desc(x):
+        return x
+
+    try:
+        i = args.index("--help")
+        del args[i]
+        command = args.pop(0)
+    except ValueError:
+        command = None
+    except IndexError:
+        command = None
+    section_found = False
+    search_depth = 1
+
+
+    for item in data:
+        myfunc = orig_myfunc
+        myfunc_desc = orig_myfunc_desc
+
+        if not item:
+            if command is None:
+                writechar("\n")
+        else:
+            n_indent = item[0]
+            name = item[1]
+            n_d_ident = item[2]
+            desc = item[3]
+            if command is not None:
+                name_strip = name.split()[0].strip()
+                if name_strip == command and n_indent == search_depth:
+                    try:
+                        command = args.pop(0)
+                        search_depth = n_indent + 1
+                    except IndexError:
+                        command = "##unused_from_now_on"
+                        section_found = True
+                        indent_level = n_indent
+                elif section_found:
+                    if n_indent <= indent_level:
+                        return
+                else:
+                    continue
+
+            if n_indent == 0:
+                writechar("  ")
+            # setup identation
+            ind_th = 0
+            if command is not None: # so that partial --help looks nicer
+                ind_th = 1
+            while n_indent > ind_th:
+                n_indent -= 1
+                writechar("\t")
+            n_indent = item[0]
+
+            # write name
+            if n_indent == 0:
+                myfunc = darkgreen
+            elif n_indent == 1:
+                myfunc = blue
+                myfunc_desc = darkgreen
+            elif n_indent == 2:
+                if not name.startswith("--"):
+                    myfunc = red
+                myfunc_desc = brown
+            elif n_indent == 3:
+                myfunc = darkblue
+                myfunc_desc = purple
+            func_out = myfunc(name)
+            print_generic(func_out, end = "")
+
+            # write desc
+            if desc:
+                while n_d_ident > 0:
+                    n_d_ident -= 1
+                    writechar("\t")
+                desc = myfunc_desc(desc)
+                print_generic(desc, end = "")
+            writechar("\n")

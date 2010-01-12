@@ -21,9 +21,10 @@ sys.path.insert(0, '../client')
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, TransceiverError, PermissionDenied, FileNotFound, \
     SPMError, IncorrectParameter
-from entropy.output import red, darkred, darkgreen, print_menu, TextInterface, \
+from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
     is_stdout_a_tty
+from text_tools import print_menu, print_bascomp
 from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 import entropy.tools
 try:
@@ -65,6 +66,7 @@ help_opts = [
     (1, '--help', 2, _('this output')),
     (1, '--version', 1, _('print version')),
     (1, '--nocolor', 1, _('disable colorized output')),
+    (1, '--bashcomp', 1, _('print a bash completion script to stdout')),
     None,
     (0, _('Application Options'), 0, None),
     None,
@@ -80,7 +82,7 @@ help_opts = [
     (1, 'notice [repos]', 1, _('repository notice board reader')),
     (1, 'status', 2, _('show respositories status')),
     None,
-    (1, 'search', 2, _('search packages in repositories')),
+    (1, 'search', 2, _('search packages in repositories'), ),
     (1, 'match', 2, _('match a package in repositories')),
     (2, '--multimatch', 1, _('return all the possible matches')),
     (2, '--multirepo', 1, _('return matches from every repository')),
@@ -646,6 +648,43 @@ CMDS_MAP = {
 
 }
 
+def _match_bashcomp(cmdline):
+    # speed up loading, preload singleton with faster settings
+    from entropy.client.interfaces import Client
+    client = Client(repo_validation = False, load_ugc = False,
+        indexing = False, noclientdb = True)
+    if client.clientDbconn is None:
+        return []
+    import text_query
+    return text_query.match_package([cmdline[-1]], Equo = client,
+        get_results = True, multiMatch = "--multimatch" in cmdline,
+        multiRepo = "--multirepo" in cmdline)
+
+def _search_bashcomp(cmdline, from_installed = False, ignore_installed = False):
+    # speed up loading, preload singleton with faster settings
+    from entropy.client.interfaces import Client
+    client = Client(repo_validation = False, load_ugc = False,
+        indexing = False, noclientdb = True)
+    if client.clientDbconn is None:
+        return []
+    import text_query
+    return text_query.search_package([cmdline[-1]], Equo = client,
+        get_results = True, from_installed = from_installed,
+            ignore_installed = ignore_installed)
+
+def _remove_bashcomp(cmdline):
+    return _search_bashcomp(cmdline, from_installed = True)
+
+def _install_bashcomp(cmdline):
+    return _search_bashcomp(cmdline, ignore_installed = True)
+
+BASHCOMP_MAP = {
+    'search': _search_bashcomp,
+    'match': _match_bashcomp,
+    'remove': _remove_bashcomp,
+    'install': _install_bashcomp,
+}
+
 options = sys.argv[1:]
 _options = []
 
@@ -669,6 +708,7 @@ for n in range(len(options)):
         del options[n]
         options.extend(x_found_opts)
 
+bashcomp_enabled = False
 for opt in options:
     if opt in ["--nocolor", "-N"]:
         nocolor()
@@ -678,17 +718,23 @@ for opt in options:
         etpUi['quiet'] = True
     elif opt in ["--verbose", "-v"]:
         etpUi['verbose'] = True
+    elif opt == "--bashcomp":
+        bashcomp_enabled = True
     elif opt in ["--ask", "-a"]:
         etpUi['ask'] = True
     elif opt in ["--pretend", "-p"]:
         etpUi['pretend'] = True
-    elif (opt == "--ihateprint"):
+    elif opt == "--ihateprint":
         etpUi['mute'] = True
-    elif (opt == "--clean"):
+    elif opt == "--clean":
         etpUi['clean'] = True
     else:
         _options.append(opt)
 options = _options
+
+if bashcomp_enabled:
+    print_bascomp(help_opts + help_opts_extended, options, BASHCOMP_MAP)
+    raise SystemExit(0)
 
 if "help" in options:
     options.insert(0, "--help")

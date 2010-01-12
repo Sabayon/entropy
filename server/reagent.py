@@ -19,10 +19,11 @@ sys.path.insert(4, '/usr/lib/entropy/libraries')
 sys.path.insert(5, '/usr/lib/entropy/server')
 from entropy.i18n import _
 import entropy.tools
-from entropy.output import red, print_menu, print_error, print_generic, \
+from entropy.output import red, print_error, print_generic, \
     is_stdout_a_tty, nocolor, etpUi
 from entropy.const import etpConst, const_kill_threads
 from entropy.core.settings.base import SystemSettings
+from text_tools import print_menu
 SysSettings = SystemSettings()
 
 # Check if we need to disable colors

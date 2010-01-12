@@ -17,7 +17,8 @@ etpConst['socket_service']['hostname'] = "*"
 from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 from entropy.tools import get_year
-from entropy.output import print_menu, nocolor
+from entropy.output import nocolor
+from text_tools import print_menu
 
 myopts = [
     None,

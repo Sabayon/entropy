@@ -23,10 +23,11 @@ if "--ssl" in sys.argv:
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
-from entropy.output import print_menu, nocolor
+from entropy.output import nocolor
 from entropy.tools import get_year
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
+from text_tools import print_menu
 SysSettings = SystemSettings()
 
 myopts = [
