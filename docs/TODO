@@ -1,7 +1,7 @@
 
   0.99.30:
 
-    - equo bashcomp
+    - sulfur speed issue
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
@@ -16,6 +16,7 @@
             - remove "server_repos", use "matchRepo"
         - entropy.client, rename validRepositories into enabled_repositories
         - entropy.client, rename clientDbconn into installed_db
+        - entropy.client, closeAllSecurity, closeAllQA
         - entropy.db => retrieveVersionTag => retrieveTag
     - sulfur: code refactoring
     - PackageKit integration
