@@ -1,7 +1,6 @@
 
   0.99.30:
 
-    - sulfur speed issue
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
