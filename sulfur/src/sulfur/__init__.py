@@ -1532,11 +1532,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self._set_updates_label(len(allpkgs))
 
         empty = False
+        do_switch_to = None
         if on_init and (not allpkgs) and action == "updates":
             # directly show available pkgs if no updates are available
             # at startup
-            self.switch_application_tab("available", on_init = True)
-            return
+            if SulfurConf.simple_mode:
+                do_switch_to = "all"
+            else:
+                do_switch_to = "available"
 
         elif not allpkgs and action == "updates":
             allpkgs = self.etpbase.get_groups('fake_updates')
@@ -1585,6 +1588,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.reset_progress_text()
         self.reset_queue_progress_bars()
         self.disable_ugc = False
+
+        if do_switch_to:
+            rb = self.packageRB[do_switch_to]
+            gobject.timeout_add(300, rb.clicked)
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = None):
 
