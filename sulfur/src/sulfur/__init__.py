@@ -1512,11 +1512,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.set_status_ticker(msg)
             # speed up first queue taint iteration
             self.etpbase.get_groups("available")
-            self.etpbase.get_groups("installed")
-            self.etpbase.get_groups("reinstallable")
-            self.etpbase.get_groups("masked")
-            self.etpbase.get_groups("user_unmasked")
-            self.etpbase.get_groups("downgrade")
+            def do_more_caching():
+                self.etpbase.get_groups("installed")
+                self.etpbase.get_groups("reinstallable")
+                self.etpbase.get_groups("masked")
+                self.etpbase.get_groups("user_unmasked")
+                self.etpbase.get_groups("downgrade")
+            gobject.idle_add(do_more_caching)
 
         if bootstrap:
             self.end_working()
