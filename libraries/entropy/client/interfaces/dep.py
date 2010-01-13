@@ -200,10 +200,10 @@ class CalculatorsMixin:
             dbconn = self.open_repository(repoid)
         return dbconn
 
-    def atom_match(self, atom, caseSensitive = True, matchSlot = None,
-            packagesFilter = True, multiMatch = False, multiRepo = False,
-            matchRevision = None, matchRepo = None, server_repos = None,
-            serverInstance = None, extendedResults = False, useCache = True):
+    def atom_match(self, atom, matchSlot = None, packagesFilter = True,
+            multiMatch = False, multiRepo = False, matchRevision = None,
+            matchRepo = None, server_repos = None, serverInstance = None,
+            extendedResults = False, useCache = True):
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
@@ -222,12 +222,12 @@ class CalculatorsMixin:
             k_mr = matchRevision
         repos_ck = self._all_repositories_checksum()
 
-        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
             atom, k_ms, packagesFilter,
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
-            multiMatch, multiRepo, caseSensitive,
+            multiMatch, multiRepo,
             k_mr, extendedResults,
             u_hash,
         )
@@ -263,7 +263,6 @@ class CalculatorsMixin:
                 try:
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
-                        caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
                         packagesFilter = packagesFilter,
                         matchRevision = matchRevision,
@@ -323,7 +322,6 @@ class CalculatorsMixin:
                         dbconn = self.__atom_match_open_db(q_repo, serverInstance)
                         query_data, query_rc = dbconn.atomMatch(
                             atom,
-                            caseSensitive = caseSensitive,
                             matchSlot = matchSlot,
                             packagesFilter = packagesFilter,
                             multiMatch = True,
@@ -339,7 +337,6 @@ class CalculatorsMixin:
                     dbconn = self.__atom_match_open_db(dbpkginfo[1], serverInstance)
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
-                        caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
                         packagesFilter = packagesFilter,
                         multiMatch = True,

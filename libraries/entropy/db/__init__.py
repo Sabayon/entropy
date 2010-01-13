@@ -5369,14 +5369,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """, (tag,))
         return self._cur2set(cur)
 
-    def searchLicenses(self, mylicense, caseSensitive = False, atoms = False):
+    def searchLicenses(self, mylicense, sensitive = False, atoms = False):
         """
         Search packages using given license (mylicense).
 
         @param mylicense: license name to search
         @type mylicense: string
-        @keyword caseSensitive: search in case sensitive mode (default off)
-        @type caseSensitive: bool
+        @keyword sensitive: search in case sensitive mode (default off)
+        @type sensitive: bool
         @keyword atoms: return list of atoms instead of package identifiers
         @type atoms: bool
         @return: list of packages using given license
@@ -5390,7 +5390,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if atoms:
             request = "baseinfo.atom,baseinfo.idpackage"
 
-        if caseSensitive:
+        if sensitive:
             cur = self.cursor.execute("""
             SELECT %s FROM baseinfo,licenses
             WHERE licenses.license LIKE (?) AND
@@ -8204,8 +8204,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         return set(filter(myfilter, foundIDs))
 
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None,
-        multiMatch = False, packagesFilter = True, matchRevision = None,
+    def atomMatch(self, atom, matchSlot = None, multiMatch = False,
+        packagesFilter = True, matchRevision = None,
         extendedResults = False, useCache = True):
 
         """
@@ -8214,8 +8214,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         @param atom: atom or dependency to match in repository
         @type atom: unicode string
-        @keyword caseSensitive: match in case sensitive mode
-        @type caseSensitive: bool
         @keyword matchSlot: match packages with given slot
         @type matchSlot: string
         @keyword multiMatch: match all the available packages, not just the
@@ -8243,8 +8241,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if useCache:
             cached = self.__atomMatchFetchCache(
-                atom, caseSensitive, matchSlot,
-                multiMatch, packagesFilter, matchRevision,
+                atom, matchSlot, multiMatch, packagesFilter, matchRevision,
                 extendedResults
             )
             if isinstance(cached, tuple):
@@ -8323,7 +8320,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             # IDs found in the database that match our search
             foundIDs = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
-                caseSensitive, multiMatch)
+                multiMatch)
 
         ### FILTERING
         # filter slot and tag
@@ -8345,7 +8342,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 else:
                     x = (-1, 1, None, None, None,)
                 self.__atomMatchStoreCache(
-                    atom, caseSensitive, matchSlot,
+                    atom, matchSlot,
                     multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 1)
                 )
@@ -8356,7 +8353,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 else:
                     x = -1
                 self.__atomMatchStoreCache(
-                    atom, caseSensitive, matchSlot,
+                    atom, matchSlot,
                     multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 1)
                 )
@@ -8367,7 +8364,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 x = set([(x[0], 0, x[1], self.retrieveVersionTag(x[0]), \
                     self.retrieveRevision(x[0])) for x in dbpkginfo])
                 self.__atomMatchStoreCache(
-                    atom, caseSensitive, matchSlot,
+                    atom, matchSlot,
                     multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
@@ -8375,7 +8372,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             else:
                 x = set([x[0] for x in dbpkginfo])
                 self.__atomMatchStoreCache(
-                    atom, caseSensitive, matchSlot,
+                    atom, matchSlot,
                     multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
@@ -8388,14 +8385,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self.retrieveRevision(x[0]),)
 
                 self.__atomMatchStoreCache(
-                    atom, caseSensitive, matchSlot,
+                    atom, matchSlot,
                     multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
             else:
                 self.__atomMatchStoreCache(
-                    atom, caseSensitive, matchSlot,
+                    atom, matchSlot,
                     multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x[0], 0)
                 )
@@ -8416,29 +8413,27 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if extendedResults:
             x = (x, 0, newer[0], newer[1], newer[2])
             self.__atomMatchStoreCache(
-                atom, caseSensitive, matchSlot,
+                atom, matchSlot,
                 multiMatch, packagesFilter, matchRevision,
                 extendedResults, result = (x, 0)
             )
             return x, 0
         else:
             self.__atomMatchStoreCache(
-                atom, caseSensitive, matchSlot,
+                atom, matchSlot,
                 multiMatch, packagesFilter, matchRevision,
                 extendedResults, result = (x, 0)
             )
             return x, 0
 
-    def __generate_found_ids_match(self, pkgkey, pkgname, pkgcat, caseSensitive,
-        multiMatch):
+    def __generate_found_ids_match(self, pkgkey, pkgname, pkgcat, multiMatch):
 
         if pkgcat == "null":
-            results = self.searchPackagesByName(pkgname,
-                sensitive = caseSensitive, justid = True)
+            results = self.searchPackagesByName(pkgname, sensitive = True,
+                justid = True)
         else:
             results = self.searchPackagesByNameAndCategory(name = pkgname,
-                category = pkgcat, sensitive = caseSensitive, justid = True
-            )
+                sensitive = True, category = pkgcat, justid = True)
 
         mypkgcat = pkgcat
         mypkgname = pkgname
@@ -8498,7 +8493,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 # we searched by name, we need to search using category
                 results = self.searchPackagesByNameAndCategory(
                     name = mypkgname, category = mypkgcat,
-                    sensitive = caseSensitive, justid = True
+                    sensitive = True, justid = True
                 )
 
             # if we get here, we have found the needed IDs
