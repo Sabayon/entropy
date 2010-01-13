@@ -8121,7 +8121,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def _packagesFilter(self, results):
         """
-        Packages filter used by atomMatch, input must me foundIDs,
+        Packages filter used by atomMatch, input must me found_ids,
         a list like this: [608, 1867].
 
         """
@@ -8184,7 +8184,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         elif operators == "<=" and compare > -1:
             return token
 
-    def __filterSlotTagUse(self, foundIDs, slot, tag, use, operators):
+    def __filterSlotTagUse(self, found_ids, slot, tag, use, operators):
 
         def myfilter(idpackage):
 
@@ -8202,7 +8202,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             return True
 
-        return set(filter(myfilter, foundIDs))
+        return set(filter(myfilter, found_ids))
 
     def atomMatch(self, atom, matchSlot = None, multiMatch = False,
         packagesFilter = True, extendedResults = False, useCache = True):
@@ -8230,16 +8230,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             If multiMatch is True, a tuple composed by a set (containing package
             identifiers) and command status is returned.
         @rtype: tuple or set
-        @todo: improve documentation here
         """
-
         if not atom:
             return -1, 1
 
         if useCache:
             cached = self.__atomMatchFetchCache(
                 atom, matchSlot, multiMatch, packagesFilter, extendedResults)
-            if isinstance(cached, tuple):
+            if cached is not None:
 
                 try:
                     cached = self.__atomMatchValidateCache(cached,
@@ -8247,7 +8245,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
 
-            if isinstance(cached, tuple):
+            if cached is not None:
                 return cached
 
         matchTag = entropy.tools.dep_gettag(atom)
@@ -8281,7 +8279,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         pkgcat = ''
         pkgversion = ''
         strippedAtom = ''
-        foundIDs = []
+        found_ids = []
         dbpkginfo = set()
 
         if scan_atom:
@@ -8313,20 +8311,20 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
 
             # IDs found in the database that match our search
-            foundIDs = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
+            found_ids = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
                 multiMatch)
 
         ### FILTERING
         # filter slot and tag
-        if foundIDs:
-            foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot,
+        if found_ids:
+            found_ids = self.__filterSlotTagUse(found_ids, matchSlot,
                 matchTag, matchUse, direction)
             if packagesFilter:
-                foundIDs = self._packagesFilter(foundIDs)
+                found_ids = self._packagesFilter(found_ids)
         ### END FILTERING
 
-        if foundIDs:
-            dbpkginfo = self.__handle_found_ids_match(foundIDs, direction,
+        if found_ids:
+            dbpkginfo = self.__handle_found_ids_match(found_ids, direction,
                 matchTag, matchRevision, justname, strippedAtom, pkgversion)
 
         if not dbpkginfo:
@@ -8515,14 +8513,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         return set([idpackage])
 
 
-    def __handle_found_ids_match(self, foundIDs, direction, matchTag,
+    def __handle_found_ids_match(self, found_ids, direction, matchTag,
             matchRevision, justname, strippedAtom, pkgversion):
 
         dbpkginfo = set()
         # now we have to handle direction
         if ((direction) or ((not direction) and (not justname)) or \
             ((not direction) and (not justname) \
-                and strippedAtom.endswith("*"))) and foundIDs:
+                and strippedAtom.endswith("*"))) and found_ids:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \
@@ -8545,7 +8543,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         pkgversion)
                     pkgversion = entropy.tools.remove_revision(pkgversion)
 
-                for idpackage in foundIDs:
+                for idpackage in found_ids:
 
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
@@ -8576,7 +8574,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         # remove
                         entropy.tools.remove_revision(pkgversion)
 
-                    for idpackage in foundIDs:
+                    for idpackage in found_ids:
 
                         revcmp = 0
                         tagcmp = 0
@@ -8650,6 +8648,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         else: # just the key
 
-            dbpkginfo = set([(x, self.retrieveVersion(x),) for x in foundIDs])
+            dbpkginfo = set([(x, self.retrieveVersion(x),) for x in found_ids])
 
         return dbpkginfo
