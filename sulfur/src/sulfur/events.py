@@ -453,7 +453,19 @@ class SulfurApplicationEventsMixin:
         if page == "filesconf":
             self._populate_files_update()
         elif page == "glsa":
-            self.populate_advisories(None, 'affected')
+
+            def adv_populate():
+                self.populate_advisories(None, "affected")
+
+            def setup_metadata():
+                self.advisoriesView.populate_loading_message()
+                self.gtk_loop()
+                security = self.Equo.Security()
+                security.get_advisories_metadata()
+                gobject.timeout_add(0, adv_populate)
+
+            gobject.idle_add(setup_metadata)
+
         if do_set:
             self.set_notebook_page(const.PAGES[page])
 

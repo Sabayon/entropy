@@ -35,7 +35,8 @@ if "/usr/lib/entropy/sulfur" not in sys.path:
 
 from entropy.exceptions import OnlineMirrorError, QueueError
 import entropy.tools
-from entropy.const import *
+from entropy.const import etpConst, const_get_stringtype, \
+    initconfig_entropy_constants
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
@@ -334,14 +335,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_background_cache_generators(self):
 
-        # security cache generation
-        #security = self.Equo.Security()
-        #def advisories_populate():
-        #    self.populate_advisories(None, "affected", background = True)
-
-        #self._fork_function(security.get_advisories_metadata,
-        #    advisories_populate)0.0714049339294
-
         # configuration files update cache generation
         def file_updates_cache_gen():
             self.Equo.FileUpdates.scanfs(quiet = True)
@@ -352,8 +345,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self._populate_files_update()
             except AttributeError: # it is really necessary
                 return
+            gobject.idle_add(file_updates_cache_gen)
 
-        self._fork_function(file_updates_cache_gen, file_updates_fill_view)
+        gobject.idle_add(file_updates_fill_view)
 
     def setup_events_handling(self):
 
@@ -1591,7 +1585,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if do_switch_to:
             rb = self.packageRB[do_switch_to]
-            gobject.timeout_add(300, rb.clicked)
+            gobject.timeout_add(200, rb.clicked)
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = None):
 

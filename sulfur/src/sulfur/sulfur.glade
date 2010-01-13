@@ -1063,7 +1063,7 @@
                   <widget class="GtkHBox" id="hbox25">
                     <property name="visible">True</property>
                     <child>
-                      <widget class="GtkHBox" id="hbox26">
+                      <widget class="GtkHBox" id="advisoriesButtonsBox">
                         <property name="visible">True</property>
                         <property name="spacing">8</property>
                         <child>

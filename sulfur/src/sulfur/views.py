@@ -37,7 +37,8 @@ from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
 from sulfur.misc import busy_cursor, normal_cursor, STATUS_BAR_CONTEXT_IDS
-from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
+from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
+    PkgInfoMenu
 from sulfur.event import SulfurSignals
 
 
@@ -607,6 +608,15 @@ class EntropyPackageView:
         self.pkgset_remove.set_image(self.img_pkgset_remove)
         self.pkgset_undoremove.set_image(self.img_pkgset_undoremove)
 
+        menus = [self.pkgset_menu, self.install_menu,
+            self.updates_menu, self.installed_menu]
+
+        for menu in menus:
+            property_menu_item = gtk.ImageMenuItem(gtk.STOCK_PROPERTIES)
+            property_menu_item.connect("activate", self.run_properties_menu)
+            property_menu_item.show()
+            menu.append(property_menu_item)
+
         self.model_injector_rotation = {
             'package': [NameSortPackageViewModelInjector,
                 NameRevSortPackageViewModelInjector,
@@ -842,6 +852,14 @@ class EntropyPackageView:
             event_y -= self.selection_width+5
         abs_y += (self.selection_width-event_y)
         return int(abs_x), int(abs_y), True
+
+    def run_properties_menu(self, menu_item):
+        objs = self.collect_selected_items()
+        for obj in objs:
+            if obj.is_group or obj.is_pkgset_cat:
+                continue
+            mymenu = PkgInfoMenu(self.Equo, obj, self.ui.main)
+            mymenu.load()
 
     def run_install_menu_stuff(self, objs):
         self.reset_install_menu()
@@ -2126,7 +2144,7 @@ class EntropyAdvisoriesView:
         self.ui = ui
         self._xcache = {}
 
-    def setup_view( self ):
+    def setup_view(self):
         model = gtk.ListStore(
                                 gobject.TYPE_PYOBJECT,
                                 gobject.TYPE_STRING,
@@ -2224,6 +2242,18 @@ class EntropyAdvisoriesView:
                 return False
         return True
 
+    def populate_loading_message(self):
+        self.model.clear()
+        self.ui.advisoriesButtonsBox.set_sensitive(False)
+        self.model.append(
+            [
+                (None, None, None),
+                "---------",
+                "<b>%s</b>" % (_("Please wait, loading..."),),
+                "<small>%s</small>" % (_("Advisories are being loaded"),)
+            ]
+        )
+
     def populate(self, security_interface, adv_metadata, show,
         use_cache = False):
 
@@ -2271,6 +2301,7 @@ class EntropyAdvisoriesView:
         # cache item
         self._xcache[show] = model_data[:]
 
+        self.ui.advisoriesButtonsBox.set_sensitive(True)
         if not model_data:
             self.model.append(
                 [
