@@ -42,6 +42,8 @@ from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.plugin_store import EntropyRepositoryPluginStore
+import entropy.tools
+import entropy.dump
 
 try:
     from sqlite3 import dbapi2
@@ -385,8 +387,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             """
 
-    import entropy.tools as entropyTools
-    import entropy.dump as dumpTools
     import threading
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
         dbname = 'etpdb:', indexing = True, skipChecks = False):
@@ -447,11 +447,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         structure_update = False
         if not self.skipChecks:
 
-            if not self.entropyTools.is_user_in_entropy_group():
+            if not entropy.tools.is_user_in_entropy_group():
                 # forcing since we won't have write access to db
                 self.indexing = False
             # live systems don't like wasting RAM
-            if self.entropyTools.islive():
+            if entropy.tools.islive():
                 self.indexing = False
 
             try:
@@ -459,7 +459,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self._doesTableExist('baseinfo') and \
                     self._doesTableExist('extrainfo'):
 
-                    if self.entropyTools.islive(): # this works
+                    if entropy.tools.islive(): # this works
                         if etpConst['systemroot']:
                             structure_update = True
                     else:
@@ -631,7 +631,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 atom = doaction[1]
                 from_slot = doaction[2]
                 to_slot = doaction[3]
-                atom_key = self.entropyTools.dep_getkey(atom)
+                atom_key = entropy.tools.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, sm_rc = self.atomMatch(atom, matchSlot = from_slot,
                     multiMatch = True)
@@ -658,14 +658,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 dep_atoms = self.searchDependency(atom_key, like = True,
                     multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) \
-                    and self.entropyTools.dep_getkey(x) == atom_key]
+                    and entropy.tools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
 
             elif doaction[0] == "move":
 
                 atom = doaction[1] # usually a key
-                atom_key = self.entropyTools.dep_getkey(atom)
+                atom_key = entropy.tools.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, m_rc = self.atomMatch(atom, multiMatch = True)
                 if m_rc == 1:
@@ -688,7 +688,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 dep_atoms = self.searchDependency(atom_key, like = True,
                     multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if \
-                    self.entropyTools.dep_getkey(x) == atom_key]
+                    entropy.tools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
 
@@ -722,7 +722,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             spm = get_spm(self)
             spm.packages_repositories_metadata_update()
         except:
-            self.entropyTools.print_traceback()
+            entropy.tools.print_traceback()
 
         spm_moves = set()
         quickpkg_atoms = set()
@@ -768,7 +768,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     Exception,
                     e,
                 )
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
 
         mytxt = "%s: %s." % (
             bold(_("ENTROPY")),
@@ -807,7 +807,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype: list
         """
         dep_from = move_command[0]
-        key_from = self.entropyTools.dep_getkey(dep_from)
+        key_from = entropy.tools.dep_getkey(dep_from)
         key_to = move_command[1]
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
@@ -845,7 +845,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         for iddep in iddeps:
             # update string
             mydep = self.getDependency(iddep)
-            mydep_key = self.entropyTools.dep_getkey(mydep)
+            mydep_key = entropy.tools.dep_getkey(mydep)
             # avoid changing wrong atoms -> dev-python/qscintilla-python would
             # become x11-libs/qscintilla if we don't do this check
             if mydep_key != key_from:
@@ -893,7 +893,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype: list
         """
         atom = slotmove_command[0]
-        atomkey = self.entropyTools.dep_getkey(atom)
+        atomkey = entropy.tools.dep_getkey(atom)
         slot_from = slotmove_command[1]
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
@@ -915,7 +915,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             for iddep in iddeps:
                 # update string
                 mydep = self.getDependency(iddep)
-                mydep_key = self.entropyTools.dep_getkey(mydep)
+                mydep_key = entropy.tools.dep_getkey(mydep)
                 if mydep_key != atomkey:
                     continue
                 if not mydep.endswith(":"+slot_from): # probably slotted dep
@@ -963,12 +963,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             key = command[1]
             category, name = key.split("/", 1)
-            dep_key = self.entropyTools.dep_getkey(key)
+            dep_key = entropy.tools.dep_getkey(key)
 
             try:
                 spm = get_spm(self)
             except:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 continue
 
             script_path = spm.get_installed_package_build_script_path(dep_key)
@@ -979,7 +979,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             mydirs = [os.path.join(pkg_path, x) for x in \
                 os.listdir(pkg_path) if \
-                self.entropyTools.dep_getkey(os.path.join(category, x)) \
+                entropy.tools.dep_getkey(os.path.join(category, x)) \
                     == dep_key]
             mydirs = [x for x in mydirs if os.path.isdir(x)]
 
@@ -1109,7 +1109,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 formatted_content = formattedContent)
 
         # build atom string, server side
-        pkgatom = self.entropyTools.create_package_atom_string(
+        pkgatom = entropy.tools.create_package_atom_string(
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
 
@@ -1286,7 +1286,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             trigger = 1
 
         # baseinfo
-        pkgatom = self.entropyTools.create_package_atom_string(
+        pkgatom = entropy.tools.create_package_atom_string(
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
         # add atom metadatum
@@ -1663,7 +1663,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: license name identifier (idlicense)
         @rtype: int
         """
-        if not self.entropyTools.is_valid_string(pkglicense):
+        if not entropy.tools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
         with self.__write_mutex:
             cur = self.cursor.execute("""
@@ -2289,7 +2289,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         def mymf(source):
 
             if (not source) or \
-            (not self.entropyTools.is_valid_string(source)):
+            (not entropy.tools.is_valid_string(source)):
                 return 0
 
             idsource = self.isSourceAvailable(source)
@@ -2638,9 +2638,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.connection.text_factory = lambda x: const_convert_to_unicode(x)
 
         # setup random table name
-        randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
+        randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
         while self._doesTableExist(randomtable):
-            randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
+            randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
 
         # create random table
         self.cursor.execute("""
@@ -3467,7 +3467,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type branch: string
         """
 
-        mytime = str(self.entropyTools.get_current_unix_time())
+        mytime = str(entropy.tools.get_current_unix_time())
         with self.__write_mutex:
             myupdates = [
                 (repository, x, branch, mytime,) for x in actions \
@@ -4653,7 +4653,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if not licname.strip():
                 continue
 
-            if not self.entropyTools.is_valid_string(licname):
+            if not entropy.tools.is_valid_string(licname):
                 continue
 
             cur = self.cursor.execute("""
@@ -4691,7 +4691,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if not licname.strip():
                 continue
 
-            if not self.entropyTools.is_valid_string(licname):
+            if not entropy.tools.is_valid_string(licname):
                 continue
 
             cur = self.cursor.execute("""
@@ -5197,7 +5197,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         if self.readOnly:
             return
-        if not self.entropyTools.is_user_in_entropy_group():
+        if not entropy.tools.is_user_in_entropy_group():
             return
 
         plugins = self.get_plugins()
@@ -5226,7 +5226,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: "license" metadatum identifier (idlicense)
         @rtype: int
         """
-        if not self.entropyTools.is_valid_string(pkglicense):
+        if not entropy.tools.is_valid_string(pkglicense):
             pkglicense = ' '
 
         cur = self.cursor.execute("""
@@ -5383,7 +5383,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype: set or list
         @todo: check if is_valid_string is really required
         """
-        if not self.entropyTools.is_valid_string(mylicense):
+        if not entropy.tools.is_valid_string(mylicense):
             return []
 
         request = "baseinfo.idpackage"
@@ -7376,7 +7376,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         def collect_provided(pkg_dir, content):
 
             provided_libs = set()
-            ldpaths = self.entropyTools.collect_linker_paths()
+            ldpaths = entropy.tools.collect_linker_paths()
             for obj, ftype in list(content.items()):
 
                 if ftype == "dir":
@@ -7395,10 +7395,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 # do not trust ftype
                 if os.path.isdir(unpack_obj):
                     continue
-                if not self.entropyTools.is_elf_file(unpack_obj):
+                if not entropy.tools.is_elf_file(unpack_obj):
                     continue
 
-                elf_class = self.entropyTools.read_elf_class(unpack_obj)
+                elf_class = entropy.tools.read_elf_class(unpack_obj)
                 provided_libs.add((obj_name, obj, elf_class,))
 
             return provided_libs
@@ -7637,7 +7637,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if self.xcache:
             ck_sum = hash(self.checksum(strict = False))
             hash_str = self.__atomMatch_gen_hash_str(args)
-            cached = self.dumpTools.loadobj("%s/%s/%s_%s" % (
+            cached = entropy.dump.loadobj("%s/%s/%s_%s" % (
                 self.dbMatchCacheKey, self.dbname, ck_sum, hash(hash_str),))
             if cached is not None:
                 return cached
@@ -7670,7 +7670,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 return None
         else:
             # data must be int !
-            if not self.entropyTools.isnumber(data):
+            if not entropy.tools.isnumber(data):
                 return None
 
 
@@ -8261,30 +8261,30 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if isinstance(cached, tuple):
                 return cached
 
-        atomTag = self.entropyTools.dep_gettag(atom)
+        atomTag = entropy.tools.dep_gettag(atom)
         try:
-            matchUse = self.entropyTools.dep_getusedeps(atom)
+            matchUse = entropy.tools.dep_getusedeps(atom)
         except InvalidAtom:
             matchUse = ()
-        atomSlot = self.entropyTools.dep_getslot(atom)
-        atomRev = self.entropyTools.dep_get_entropy_revision(atom)
+        atomSlot = entropy.tools.dep_getslot(atom)
+        atomRev = entropy.tools.dep_get_entropy_revision(atom)
         if isinstance(atomRev, int):
             if atomRev < 0: atomRev = None
 
         # use match
-        scan_atom = self.entropyTools.remove_usedeps(atom)
+        scan_atom = entropy.tools.remove_usedeps(atom)
         # tag match
-        scan_atom = self.entropyTools.remove_tag(scan_atom)
+        scan_atom = entropy.tools.remove_tag(scan_atom)
         if (matchTag is None) and (atomTag is not None):
             matchTag = atomTag
 
         # slot match
-        scan_atom = self.entropyTools.remove_slot(scan_atom)
+        scan_atom = entropy.tools.remove_slot(scan_atom)
         if (matchSlot is None) and (atomSlot is not None):
             matchSlot = atomSlot
 
         # revision match
-        scan_atom = self.entropyTools.remove_entropy_revision(scan_atom)
+        scan_atom = entropy.tools.remove_entropy_revision(scan_atom)
         if (matchRevision is None) and (atomRev is not None):
             matchRevision = atomRev
 
@@ -8302,20 +8302,20 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             while True:
                 # check for direction
-                strippedAtom = self.entropyTools.dep_getcpv(scan_atom)
+                strippedAtom = entropy.tools.dep_getcpv(scan_atom)
                 if scan_atom[-1] == "*":
                     strippedAtom += "*"
                 direction = scan_atom[0:-len(strippedAtom)]
 
-                justname = self.entropyTools.isjustname(strippedAtom)
+                justname = entropy.tools.isjustname(strippedAtom)
                 pkgkey = strippedAtom
                 if justname == 0:
                     # get version
-                    data = self.entropyTools.catpkgsplit(strippedAtom)
+                    data = entropy.tools.catpkgsplit(strippedAtom)
                     if data is None:
                         break # badly formatted
                     pkgversion = data[2]+"-"+data[3]
-                    pkgkey = self.entropyTools.dep_getkey(strippedAtom)
+                    pkgkey = entropy.tools.dep_getkey(strippedAtom)
 
                 splitkey = pkgkey.split("/")
                 if (len(splitkey) == 2):
@@ -8422,7 +8422,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             versions.add(info_tuple)
             pkgdata[info_tuple] = x[0]
 
-        newer = self.entropyTools.get_entropy_newer_version(list(versions))[0]
+        newer = entropy.tools.get_entropy_newer_version(list(versions))[0]
         x = pkgdata[newer]
         if extendedResults:
             x = (x, 0, newer[0], newer[1], newer[2])
@@ -8561,21 +8561,21 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 # remove gentoo revision (-r0 if none)
                 if (direction == "="):
                     if (pkgversion.split("-")[-1] == "r0"):
-                        pkgversion = self.entropyTools.remove_revision(
+                        pkgversion = entropy.tools.remove_revision(
                             pkgversion)
 
                 if (direction == "~"):
-                    pkgrevision = self.entropyTools.dep_get_spm_revision(
+                    pkgrevision = entropy.tools.dep_get_spm_revision(
                         pkgversion)
-                    pkgversion = self.entropyTools.remove_revision(pkgversion)
+                    pkgversion = entropy.tools.remove_revision(pkgversion)
 
                 for idpackage in foundIDs:
 
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
-                        myrev = self.entropyTools.dep_get_spm_revision(
+                        myrev = entropy.tools.dep_get_spm_revision(
                             dbver)
-                        myver = self.entropyTools.remove_revision(dbver)
+                        myver = entropy.tools.remove_revision(dbver)
                         if myver == pkgversion and pkgrevision <= myrev:
                             # found
                             dbpkginfo.add((idpackage, dbver))
@@ -8598,7 +8598,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     # remove revision (-r0 if none)
                     if pkgversion.endswith("r0"):
                         # remove
-                        self.entropyTools.remove_revision(pkgversion)
+                        entropy.tools.remove_revision(pkgversion)
 
                     for idpackage in foundIDs:
 
@@ -8613,7 +8613,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                             tagcmp = const_cmp(matchTag, dbtag)
 
                         dbver = self.retrieveVersion(idpackage)
-                        pkgcmp = self.entropyTools.compare_versions(
+                        pkgcmp = entropy.tools.compare_versions(
                             pkgversion, dbver)
 
                         if pkgcmp is None:
