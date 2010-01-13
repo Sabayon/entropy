@@ -143,8 +143,7 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atom_match(package, matchRepo = [repo],
-                matchTag = '')
+            match = Entropy.atom_match(package + '#', matchRepo = [repo])
             if (match[1] == repo):
                 idpackages.append(match[0])
             else:
@@ -174,7 +173,7 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atom_match(package, matchRepo = [repo], matchTag = '')
+            match = Entropy.atom_match(package + '#', matchRepo = [repo])
             if match[1] == repo:
                 idpackages.append(match[0])
             else:

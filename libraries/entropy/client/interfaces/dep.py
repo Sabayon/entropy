@@ -201,10 +201,9 @@ class CalculatorsMixin:
         return dbconn
 
     def atom_match(self, atom, caseSensitive = True, matchSlot = None,
-            matchTag = None, packagesFilter = True,
-            multiMatch = False, multiRepo = False, matchRevision = None,
-            matchRepo = None, server_repos = None, serverInstance = None,
-            extendedResults = False, useCache = True):
+            packagesFilter = True, multiMatch = False, multiRepo = False,
+            matchRevision = None, matchRepo = None, server_repos = None,
+            serverInstance = None, extendedResults = False, useCache = True):
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
@@ -214,21 +213,18 @@ class CalculatorsMixin:
 
         u_hash = ""
         k_ms = "//"
-        k_mt = "@#@"
         k_mr = "-1"
         if isinstance(matchRepo, (list, tuple, set)):
             u_hash = hash(frozenset(matchRepo))
         if const_isstring(matchSlot):
             k_ms = matchSlot
-        if const_isstring(matchTag):
-            k_mt = matchTag
         if const_isstring(matchRevision):
             k_mr = matchRevision
         repos_ck = self._all_repositories_checksum()
 
-        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
-            atom, k_ms, k_mt, packagesFilter,
+            atom, k_ms, packagesFilter,
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
             multiMatch, multiRepo, caseSensitive,
@@ -269,7 +265,6 @@ class CalculatorsMixin:
                         atom,
                         caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
-                        matchTag = matchTag,
                         packagesFilter = packagesFilter,
                         matchRevision = matchRevision,
                         extendedResults = extendedResults,
@@ -330,7 +325,6 @@ class CalculatorsMixin:
                             atom,
                             caseSensitive = caseSensitive,
                             matchSlot = matchSlot,
-                            matchTag = matchTag,
                             packagesFilter = packagesFilter,
                             multiMatch = True,
                             extendedResults = extendedResults
@@ -347,7 +341,6 @@ class CalculatorsMixin:
                         atom,
                         caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
-                        matchTag = matchTag,
                         packagesFilter = packagesFilter,
                         multiMatch = True,
                         extendedResults = extendedResults

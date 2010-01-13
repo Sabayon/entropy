@@ -8205,8 +8205,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         return set(filter(myfilter, foundIDs))
 
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None,
-        multiMatch = False, matchTag = None, packagesFilter = True,
-        matchRevision = None, extendedResults = False, useCache = True):
+        multiMatch = False, packagesFilter = True, matchRevision = None,
+        extendedResults = False, useCache = True):
 
         """
         Match given atom (or dependency) in repository and return its package
@@ -8221,8 +8221,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @keyword multiMatch: match all the available packages, not just the
             best one
         @type multiMatch: bool
-        @keyword matchTag: match packages with given tag
-        @type matchTag: string
         @keyword packagesFilter: enable package masking filter
         @type packagesFilter: bool
         @keyword matchRevision: match packages with given entropy revision
@@ -8246,8 +8244,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if useCache:
             cached = self.__atomMatchFetchCache(
                 atom, caseSensitive, matchSlot,
-                multiMatch, matchTag,
-                packagesFilter, matchRevision,
+                multiMatch, packagesFilter, matchRevision,
                 extendedResults
             )
             if isinstance(cached, tuple):
@@ -8261,7 +8258,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if isinstance(cached, tuple):
                 return cached
 
-        atomTag = entropy.tools.dep_gettag(atom)
+        matchTag = entropy.tools.dep_gettag(atom)
         try:
             matchUse = entropy.tools.dep_getusedeps(atom)
         except InvalidAtom:
@@ -8275,8 +8272,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         scan_atom = entropy.tools.remove_usedeps(atom)
         # tag match
         scan_atom = entropy.tools.remove_tag(scan_atom)
-        if (matchTag is None) and (atomTag is not None):
-            matchTag = atomTag
 
         # slot match
         scan_atom = entropy.tools.remove_slot(scan_atom)
@@ -8351,8 +8346,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     x = (-1, 1, None, None, None,)
                 self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchTag,
-                    packagesFilter, matchRevision,
+                    multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 1)
                 )
                 return x, 1
@@ -8363,8 +8357,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     x = -1
                 self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchTag,
-                    packagesFilter, matchRevision,
+                    multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 1)
                 )
                 return x, 1
@@ -8375,8 +8368,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self.retrieveRevision(x[0])) for x in dbpkginfo])
                 self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchTag,
-                    packagesFilter, matchRevision,
+                    multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
@@ -8384,8 +8376,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 x = set([x[0] for x in dbpkginfo])
                 self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchTag,
-                    packagesFilter, matchRevision,
+                    multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
@@ -8398,16 +8389,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchTag,
-                    packagesFilter, matchRevision,
+                    multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
             else:
                 self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchTag,
-                    packagesFilter, matchRevision,
+                    multiMatch, packagesFilter, matchRevision,
                     extendedResults, result = (x[0], 0)
                 )
                 return x[0], 0
@@ -8428,16 +8417,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             x = (x, 0, newer[0], newer[1], newer[2])
             self.__atomMatchStoreCache(
                 atom, caseSensitive, matchSlot,
-                multiMatch, matchTag,
-                packagesFilter, matchRevision,
+                multiMatch, packagesFilter, matchRevision,
                 extendedResults, result = (x, 0)
             )
             return x, 0
         else:
             self.__atomMatchStoreCache(
                 atom, caseSensitive, matchSlot,
-                multiMatch, matchTag,
-                packagesFilter, matchRevision,
+                multiMatch, packagesFilter, matchRevision,
                 extendedResults, result = (x, 0)
             )
             return x, 0
