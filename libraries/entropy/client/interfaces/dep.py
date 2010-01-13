@@ -201,8 +201,8 @@ class CalculatorsMixin:
         return dbconn
 
     def atom_match(self, atom, matchSlot = None, packagesFilter = True,
-            multiMatch = False, multiRepo = False, matchRevision = None,
-            matchRepo = None, server_repos = None, serverInstance = None,
+            multiMatch = False, multiRepo = False, matchRepo = None,
+            server_repos = None, serverInstance = None,
             extendedResults = False, useCache = True):
 
         # support match in repository from shell
@@ -213,23 +213,18 @@ class CalculatorsMixin:
 
         u_hash = ""
         k_ms = "//"
-        k_mr = "-1"
         if isinstance(matchRepo, (list, tuple, set)):
             u_hash = hash(frozenset(matchRepo))
         if const_isstring(matchSlot):
             k_ms = matchSlot
-        if const_isstring(matchRevision):
-            k_mr = matchRevision
         repos_ck = self._all_repositories_checksum()
 
-        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
             atom, k_ms, packagesFilter,
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
-            multiMatch, multiRepo,
-            k_mr, extendedResults,
-            u_hash,
+            multiMatch, multiRepo, extendedResults, u_hash,
         )
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
 
@@ -265,7 +260,6 @@ class CalculatorsMixin:
                         atom,
                         matchSlot = matchSlot,
                         packagesFilter = packagesFilter,
-                        matchRevision = matchRevision,
                         extendedResults = extendedResults,
                         useCache = use_cache
                     )

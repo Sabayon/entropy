@@ -8205,8 +8205,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         return set(filter(myfilter, foundIDs))
 
     def atomMatch(self, atom, matchSlot = None, multiMatch = False,
-        packagesFilter = True, matchRevision = None,
-        extendedResults = False, useCache = True):
+        packagesFilter = True, extendedResults = False, useCache = True):
 
         """
         Match given atom (or dependency) in repository and return its package
@@ -8221,8 +8220,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type multiMatch: bool
         @keyword packagesFilter: enable package masking filter
         @type packagesFilter: bool
-        @keyword matchRevision: match packages with given entropy revision
-        @type matchRevision: int
         @keyword extendedResults: return extended results
         @type extendedResults: bool
         @keyword useCache: use on-disk cache
@@ -8241,9 +8238,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if useCache:
             cached = self.__atomMatchFetchCache(
-                atom, matchSlot, multiMatch, packagesFilter, matchRevision,
-                extendedResults
-            )
+                atom, matchSlot, multiMatch, packagesFilter, extendedResults)
             if isinstance(cached, tuple):
 
                 try:
@@ -8261,9 +8256,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         except InvalidAtom:
             matchUse = ()
         atomSlot = entropy.tools.dep_getslot(atom)
-        atomRev = entropy.tools.dep_get_entropy_revision(atom)
-        if isinstance(atomRev, int):
-            if atomRev < 0: atomRev = None
+        matchRevision = entropy.tools.dep_get_entropy_revision(atom)
+        if isinstance(matchRevision, int):
+            if matchRevision < 0:
+                matchRevision = None
 
         # use match
         scan_atom = entropy.tools.remove_usedeps(atom)
@@ -8277,8 +8273,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # revision match
         scan_atom = entropy.tools.remove_entropy_revision(scan_atom)
-        if (matchRevision is None) and (atomRev is not None):
-            matchRevision = atomRev
 
         direction = ''
         justname = True
@@ -8343,7 +8337,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     x = (-1, 1, None, None, None,)
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
-                    multiMatch, packagesFilter, matchRevision,
+                    multiMatch, packagesFilter,
                     extendedResults, result = (x, 1)
                 )
                 return x, 1
@@ -8354,7 +8348,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     x = -1
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
-                    multiMatch, packagesFilter, matchRevision,
+                    multiMatch, packagesFilter,
                     extendedResults, result = (x, 1)
                 )
                 return x, 1
@@ -8365,7 +8359,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self.retrieveRevision(x[0])) for x in dbpkginfo])
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
-                    multiMatch, packagesFilter, matchRevision,
+                    multiMatch, packagesFilter,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
@@ -8373,7 +8367,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 x = set([x[0] for x in dbpkginfo])
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
-                    multiMatch, packagesFilter, matchRevision,
+                    multiMatch, packagesFilter,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
@@ -8386,14 +8380,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
-                    multiMatch, packagesFilter, matchRevision,
+                    multiMatch, packagesFilter,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
             else:
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
-                    multiMatch, packagesFilter, matchRevision,
+                    multiMatch, packagesFilter,
                     extendedResults, result = (x[0], 0)
                 )
                 return x[0], 0
@@ -8414,14 +8408,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             x = (x, 0, newer[0], newer[1], newer[2])
             self.__atomMatchStoreCache(
                 atom, matchSlot,
-                multiMatch, packagesFilter, matchRevision,
+                multiMatch, packagesFilter,
                 extendedResults, result = (x, 0)
             )
             return x, 0
         else:
             self.__atomMatchStoreCache(
                 atom, matchSlot,
-                multiMatch, packagesFilter, matchRevision,
+                multiMatch, packagesFilter,
                 extendedResults, result = (x, 0)
             )
             return x, 0
