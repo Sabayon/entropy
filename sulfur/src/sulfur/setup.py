@@ -187,7 +187,7 @@ class SulfurConf:
     filelist = True
     changelog = False
     disable_repo_page = False
-    branding_title = 'Sulfur'
+    branding_title = 'Entropy Store'
     dummy_empty = 0
     dummy_category = 1
 
