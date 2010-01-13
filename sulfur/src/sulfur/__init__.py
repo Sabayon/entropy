@@ -327,11 +327,26 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # hide progress Tab by default
         self.ui.progressVBox.hide()
 
+        self.setup_labels()
         self.setup_preferences()
         self.setup_events_handling()
 
         # can lead to sqlite3 db corruptions?
         self.setup_background_cache_generators()
+
+    def setup_labels(self):
+
+        # make Sulfur label look nicer
+        self.ui.rbAllSimpleLabel.set_markup("<small>%s</small>" % (
+            _("Applications"),))
+
+        small_widgets = [self.ui.rbRefreshLabel, self.ui.rbUpdatesLabel,
+            self.ui.rbAvailableLabel, self.ui.rbInstalledLabel,
+            self.ui.rbMaskedLabel, self.ui.rbAllLabel,
+            self.ui.rbPkgSetsLabel, self.ui.rbPkgSetsLabel1]
+        for widget in small_widgets:
+            txt = widget.get_text()
+            widget.set_markup("<small>%s</small>" % (txt,))
 
     def setup_background_cache_generators(self):
 
@@ -410,6 +425,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # updates label
         self.ui.rbUpdatesSimpleLabel.show()
         self.ui.rbUpdatesLabel.hide()
+        # all label
+        self.ui.rbAllSimpleLabel.show()
 
         self.ui.rbRefreshLabel.hide()
         self.ui.rbAllLabel.hide()
@@ -451,6 +468,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # updates label
         self.ui.rbUpdatesSimpleLabel.hide()
         self.ui.rbUpdatesLabel.show()
+        # all label
+        self.ui.rbAllSimpleLabel.hide()
 
         self.ui.rbRefreshLabel.show()
         self.ui.rbAllLabel.show()
