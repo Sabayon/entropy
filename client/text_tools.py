@@ -13,7 +13,7 @@ import os
 import subprocess
 
 from entropy.const import etpConst
-from entropy.output import print_info, print_generic, darkgreen
+from entropy.output import print_info, print_generic, darkgreen, writechar
 from entropy.i18n import _
 
 # Temporary files cleaner
