@@ -24,6 +24,7 @@ from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     readtext, print_generic
 from entropy.client.interfaces import Client
 from entropy.i18n import _
+from text_tools import countdown
 
 import entropy.tools
 import entropy.dump
@@ -1786,7 +1787,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                 if rc == _("Yes"):
                     return 0, 0
         elif deps:
-            entropy.tools.countdown(
+            countdown(
                 what = red(" @@ ")+blue("%s " % (_("Starting removal in"),)),
                 back = True
             )

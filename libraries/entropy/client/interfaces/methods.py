@@ -1051,7 +1051,8 @@ class MiscMixin:
         # check if another instance is running
         etpConst['applicationlock'] = False
         const_setup_entropy_pid(just_read = True)
-        locked = entropy.tools.application_lock_check(gentle = True)
+
+        locked = etpConst['applicationlock']
         if locked:
             if not silent:
                 self.output(

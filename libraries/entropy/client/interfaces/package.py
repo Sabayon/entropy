@@ -1168,7 +1168,6 @@ class Package:
                     type = "warning",
                     header = red(" !!! ")
                 )
-                entropy.tools.ebeep(20)
                 os.remove(rootdir)
 
             # if our directory is a symlink instead, then copy the symlink
@@ -1197,7 +1196,6 @@ class Package:
                             header = red(" !!! ")
                         )
 
-                    entropy.tools.ebeep(20)
                     # fucking kill it in any case!
                     # rootdir must die! die die die die!
                     # /me brings chainsaw
@@ -1365,7 +1363,6 @@ class Package:
                         type = "warning",
                         header = red(" !!! ")
                     )
-                entropy.tools.ebeep(20)
 
                 try:
                     shutil.rmtree(tofile, True)

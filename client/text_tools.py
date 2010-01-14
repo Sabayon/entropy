@@ -9,7 +9,9 @@
     B{Entropy Client text-based tools}.
 
 """
+import sys
 import os
+import time
 import subprocess
 
 from entropy.const import etpConst
@@ -189,3 +191,27 @@ def print_menu(data, args = None):
                 desc = myfunc_desc(desc)
                 print_generic(desc, end = "")
             writechar("\n")
+
+def countdown(secs = 5, what = "Counting...", back = False):
+    """
+    Print countdown.
+
+    @keyword secs: countdown seconds
+    @type secs: int
+    @keyword what: countdown text
+    @type what: string
+    @keyword back: write \n at the end if True
+    @type back: bool
+    """
+    if secs:
+        if back:
+            try:
+                print_generic(red(">>") + " " + what, end = "")
+            except UnicodeEncodeError:
+                print_generic(red(">>") + " " + what.encode('utf-8'), end = "")
+        else:
+            print_generic(what)
+        for i in range(secs)[::-1]:
+            sys.stdout.write(purple(str(i+1)+" "))
+            sys.stdout.flush()
+            time.sleep(1)

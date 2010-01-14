@@ -430,7 +430,7 @@ def is_valid_unicode(string):
     @param string: string to test
     @type string: string
     @return: True if string is unicode
-    @rtype: 
+    @rtype: bool
     """
     if const_isunicode(string):
         return True
@@ -665,58 +665,26 @@ def movefile(src, dest, src_basedir = None):
 
     return True
 
-def ebeep(count = 5):
-    """
-    docstring_title
-
-    @keyword count: 
-    @type count: 
-    @return: 
-    @rtype: 
-    """
-    mycount = count
-    while mycount > 0:
-        os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
-        mycount -= 1
-
-def application_lock_check(gentle = False):
-    """
-    docstring_title
-
-    @keyword gentle: 
-    @type gentle: 
-    @return: 
-    @rtype: 
-    """
-    if etpConst['applicationlock']:
-        if not gentle:
-            SystemExit(10)
-        return True
-    return False
-
 def get_random_number():
     """
-    docstring_title
+    Return a random number between 10000 and 99999.
 
-    @return: 
-    @rtype: 
+    @return: random number
+    @rtype: int
     """
-    try:
-        return abs(hash(os.urandom(2)))%99999
-    except NotImplementedError:
-        random.seed()
-        return random.randint(10000, 99999)
+    random.seed()
+    return random.randint(10000, 99999)
 
 def split_indexable_into_chunks(mystr, chunk_len):
     """
-    docstring_title
+    Split indexable object into chunks.
 
-    @param mystr: 
-    @type mystr: 
-    @param chunk_len: 
-    @type chunk_len: 
-    @return: 
-    @rtype: 
+    @param mystr: indexable object
+    @type mystr: Python object
+    @param chunk_len: maximum length of a single chunk
+    @type chunk_len: int
+    @return: list of chunks
+    @rtype: list
     """
     chunks = []
     my = mystr[:]
@@ -729,47 +697,21 @@ def split_indexable_into_chunks(mystr, chunk_len):
         mylen -= my_chunk_len
     return chunks
 
-def countdown(secs = 5, what = "Counting...", back = False):
-    """
-    docstring_title
-
-    @keyword secs: 
-    @type secs: 
-    @keyword what: 
-    @type what: 
-    @keyword back: 
-    @type back: 
-    @return: 
-    @rtype: 
-    """
-    if secs:
-        if back:
-            try:
-                print_generic(red(">>") + " " + what, end = "")
-            except UnicodeEncodeError:
-                print_generic(red(">>") + " " + what.encode('utf-8'), end = "")
-        else:
-            print_generic(what)
-        for i in range(secs)[::-1]:
-            sys.stdout.write(purple(str(i+1)+" "))
-            sys.stdout.flush()
-            time.sleep(1)
-
 def md5sum(filepath):
     """
-    docstring_title
+    Calculate md5 hash of given file at path.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file
+    @type filepath: string
+    @return: md5 hex digest
+    @rtype: string
     """
     m = hashlib.md5()
     readfile = open(filepath, "rb")
-    block = readfile.read(1024)
+    block = readfile.read(16384)
     while block:
         m.update(block)
-        block = readfile.read(1024)
+        block = readfile.read(16384)
     readfile.close()
     return m.hexdigest()
 
@@ -784,10 +726,10 @@ def sha512(filepath):
     """
     m = hashlib.sha512()
     readfile = open(filepath, "rb")
-    block = readfile.read(1024)
+    block = readfile.read(16384)
     while block:
         m.update(block)
-        block = readfile.read(1024)
+        block = readfile.read(16384)
     readfile.close()
     return m.hexdigest()
 
@@ -802,10 +744,10 @@ def sha256(filepath):
     """
     m = hashlib.sha256()
     readfile = open(filepath, "rb")
-    block = readfile.read(1024)
+    block = readfile.read(16384)
     while block:
         m.update(block)
-        block = readfile.read(1024)
+        block = readfile.read(16384)
     readfile.close()
     return m.hexdigest()
 
@@ -820,10 +762,10 @@ def sha1(filepath):
     """
     m = hashlib.sha1()
     readfile = open(filepath, "rb")
-    block = readfile.read(1024)
+    block = readfile.read(16384)
     while block:
         m.update(block)
-        block = readfile.read(1024)
+        block = readfile.read(16384)
     readfile.close()
     return m.hexdigest()
 
@@ -847,10 +789,10 @@ def md5sum_directory(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
             readfile = open(myfile, "rb")
-            block = readfile.read(1024)
+            block = readfile.read(16384)
             while block:
                 m.update(block)
-                block = readfile.read(1024)
+                block = readfile.read(16384)
             readfile.close()
     return m.hexdigest()
 
@@ -874,10 +816,10 @@ def md5obj_directory(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
             readfile = open(myfile, "rb")
-            block = readfile.read(1024)
+            block = readfile.read(16384)
             while block:
                 m.update(block)
-                block = readfile.read(1024)
+                block = readfile.read(16384)
             readfile.close()
     return m
 
@@ -896,10 +838,10 @@ def uncompress_file(file_path, destination_path, opener):
     """
     f_out = open(destination_path, "wb")
     f_in = opener(file_path, "rb")
-    data = f_in.read(8192)
+    data = f_in.read(16384)
     while data:
         f_out.write(data)
-        data = f_in.read(8192)
+        data = f_in.read(16384)
     f_out.flush()
     f_out.close()
     f_in.close()
@@ -924,10 +866,10 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
         f_out = opener(destination_path, "wb", compresslevel = compress_level)
     else:
         f_out = opener(destination_path, "wb")
-    data = f_in.read(8192)
+    data = f_in.read(16384)
     while data:
         f_out.write(data)
-        data = f_in.read(8192)
+        data = f_in.read(16384)
     if hasattr(f_out, 'flush'):
         f_out.flush()
     f_out.close()
@@ -1087,10 +1029,10 @@ def unpack_bzip2(bzip2filepath):
     filepath = bzip2filepath[:-4] # remove .bz2
     item = open(filepath, "wb")
     filebz2 = bz2.BZ2File(bzip2filepath, "rb")
-    chunk = filebz2.read(8192)
+    chunk = filebz2.read(16384)
     while chunk:
         item.write(chunk)
-        chunk = filebz2.read(8192)
+        chunk = filebz2.read(16384)
     filebz2.close()
     item.flush()
     item.close()
@@ -1129,10 +1071,10 @@ def aggregate_edb(tbz2file, dbfile):
     f = open(tbz2file, "ab")
     f.write(const_convert_to_rawstring(etpConst['databasestarttag']))
     g = open(dbfile, "rb")
-    chunk = g.read(8192)
+    chunk = g.read(16384)
     while chunk:
         f.write(chunk)
-        chunk = g.read(8192)
+        chunk = g.read(16384)
     g.close()
     f.flush()
     f.close()
@@ -1162,10 +1104,10 @@ def extract_edb(tbz2file, dbpath = None):
         return None
 
     db = open(dbpath, "wb")
-    data = old.read(1024)
+    data = old.read(16384)
     while data:
         db.write(data)
-        data = old.read(1024)
+        data = old.read(16384)
     db.flush()
     db.close()
 
