@@ -136,6 +136,7 @@ class const:
                 "nl - Andre Parhan",
                 "pt - Lucas Paulino Azevedo",
                 "ru - Maksim Belyanovskiy",
+                "sk - Bystrík Pešl",
                 "zh - N/A",
                 )
             ),
