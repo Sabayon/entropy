@@ -1,3 +1,97 @@
+commit 28f64a053cd8951f4d1556e30cfb603cee5f32b7
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Thu Jan 14 14:47:56 2010 +0100
+
+    [equo] add missing import
+
+commit e18d0f0682ffab704b1409c70834a6774916d980
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Thu Jan 14 08:21:36 2010 +0100
+
+    [todo] update TODO
+
+commit 9f41850d1e5a2e7ba073fde335465f05732c919b
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 23:17:37 2010 +0100
+
+    [sulfur] improve buttons usability
+
+commit 8b6be3f8a166f54c01a1ed990dc6ea5380836a44
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 22:48:49 2010 +0100
+
+    [sulfur] execute package groups preloading in parallel
+
+commit a38a5e6c79cd9bf24683ea1b5f426a282220fe67
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 22:44:22 2010 +0100
+
+    [sulfur] several improvements
+    
+    :: show properties menu item on right click on packages view
+    :: fully load security advisories metadata in parallel
+    :: improve UI responsiveness
+
+commit ba1a9e06f14b513f235346455a0f268d6fbc3406
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 18:17:38 2010 +0100
+
+    [sulfur] when no updates are available, properly switch to "available" or "all" tab
+
+commit c51345e97750236d51dc458d2810396273b931f9
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 18:07:16 2010 +0100
+
+    [sulfur] set window title to "Entropy Store"
+
+commit ccae202a06fcb8d0fa2fa6b91e9b4f6b7d37fefb
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 18:06:10 2010 +0100
+
+    [entropy.db] code style update (partial)
+
+commit d768e1bf70f62039f387e902db09e9047112b556
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 17:59:01 2010 +0100
+
+    [entropy.db/entropy.client] remove matchRevision from atom_match and atomMatch (use proper atom syntax instead)
+
+commit 0b9b4596e566f49939fddd17d7f42cd1f60f88dd
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 17:53:50 2010 +0100
+
+    [entropy.db/entropy.client] remove caseSensitive argument from atom_match and atomMatch (never used and unwanted)
+
+commit 43f62fe86c69264b2887b0920e564ab054cbf54b
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 17:44:51 2010 +0100
+
+    [entropy.client/entropy.db] drop matchTag argument from atom_match and atomMatch (use proper atom syntax instead!)
+
+commit ebdc53afd823d20ba7029ddc3da58c915483d808
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 17:44:23 2010 +0100
+
+    [tests] disable test_timesched, causes random lockups
+
+commit 192bc0a6c1b45fe02571a6322a0a71b91f277935
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 17:31:46 2010 +0100
+
+    [entropy.db] code style update
+
+commit f62eab1c4d57ee2eb4dd93c3e4b705d1784fc69b
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Wed Jan 13 17:26:36 2010 +0100
+
+    [entropy.db] atomMatch: drop matchUse argument, unused and potentially not portable
+
+commit 9b438f37c70452eb6597b32e4454f2ef6b2b4ae4
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Tue Jan 12 21:08:11 2010 +0100
+
+    Update ChangeLog for version 0.99.24.2
+
 commit ae3a2432d36ea96a394ae33fc161c6a6a1525467
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Tue Jan 12 21:07:41 2010 +0100
