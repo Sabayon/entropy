@@ -717,12 +717,12 @@ def md5sum(filepath):
 
 def sha512(filepath):
     """
-    docstring_title
+    Calculate SHA512 hash of given file at path.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file
+    @type filepath: string
+    @return: SHA512 hex digest
+    @rtype: string
     """
     m = hashlib.sha512()
     readfile = open(filepath, "rb")
@@ -735,12 +735,12 @@ def sha512(filepath):
 
 def sha256(filepath):
     """
-    docstring_title
+    Calculate SHA256 hash of given file at path.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file
+    @type filepath: string
+    @return: SHA256 hex digest
+    @rtype: string
     """
     m = hashlib.sha256()
     readfile = open(filepath, "rb")
@@ -753,12 +753,12 @@ def sha256(filepath):
 
 def sha1(filepath):
     """
-    docstring_title
+    Calculate SHA1 hash of given file at path.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file
+    @type filepath: string
+    @return: SHA1 hex digest
+    @rtype: string
     """
     m = hashlib.sha1()
     readfile = open(filepath, "rb")
@@ -771,12 +771,12 @@ def sha1(filepath):
 
 def md5sum_directory(directory):
     """
-    docstring_title
+    Return md5 hex digest of files in given directory
 
-    @param directory: 
-    @type directory: 
-    @return: 
-    @rtype: 
+    @param directory: path to directory
+    @type directory: string
+    @return: md5 hex digest
+    @rtype: string
     """
     if not os.path.isdir(directory):
         DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
@@ -798,12 +798,12 @@ def md5sum_directory(directory):
 
 def md5obj_directory(directory):
     """
-    docstring_title
+    Return hashlib.md5 instance of calculated md5 of files in given directory
 
-    @param directory: 
-    @type directory: 
-    @return: 
-    @rtype: 
+    @param directory: path to directory
+    @type directory: string
+    @return: hashlib.md5 instance
+    @rtype: hashlib.md5
     """
     if not os.path.isdir(directory):
         DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
@@ -825,16 +825,15 @@ def md5obj_directory(directory):
 
 def uncompress_file(file_path, destination_path, opener):
     """
-    docstring_title
+    Uncompress file at file_path into destination_path using file opener
+    function passed.
 
-    @param file_path: 
-    @type file_path: 
-    @param destination_path: 
-    @type destination_path: 
-    @param opener: 
-    @type opener: 
-    @return: 
-    @rtype: 
+    @param file_path: path to file
+    @type file_path: string
+    @param destination_path: destination path
+    @type destination_path: string
+    @param opener: file_path opener function
+    @type opener: function
     """
     f_out = open(destination_path, "wb")
     f_in = opener(file_path, "rb")
@@ -848,18 +847,18 @@ def uncompress_file(file_path, destination_path, opener):
 
 def compress_file(file_path, destination_path, opener, compress_level = None):
     """
-    docstring_title
+    Compress file at file_path into destination_path (file path) using
+    transparent compression file opener and given compression level (from 0
+    to 9).
 
-    @param file_path: 
-    @type file_path: 
-    @param destination_path: 
-    @type destination_path: 
-    @param opener: 
-    @type opener: 
-    @keyword compress_level: 
-    @type compress_level: 
-    @return: 
-    @rtype: 
+    @param file_path: path to compress
+    @type file_path: string
+    @param destination_path: path where to save compressed file
+    @type destination_path: string
+    @param opener: compressed file_path open function
+    @type opener: function
+    @keyword compress_level: compression level, from 0 to 9
+    @type compress_level: int
     """
     f_in = open(file_path, "rb")
     if compress_level != None:
@@ -875,19 +874,19 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
     f_out.close()
     f_in.close()
 
-# files_to_compress must be a list of valid file paths
 def compress_files(dest_file, files_to_compress, compressor = "bz2"):
     """
-    docstring_title
+    Compress file paths listed inside files_to_compress into dest_file using
+    given compression type "compressor". Supported compression types are
+    "bz2" and "gz".
 
-    @param dest_file: 
-    @type dest_file: 
-    @param files_to_compress: 
-    @type files_to_compress: 
-    @keyword compressor: 
-    @type compressor: 
-    @return: 
-    @rtype: 
+    @param dest_file: path where to save compressed file
+    @type dest_file: string
+    @param files_to_compress: list of file paths to compress
+    @type files_to_compress: list
+    @keyword compressor: compressor type
+    @type compressor: string
+    @raise AttributeError: if compressor value is unsupported
     """
 
     if compressor not in ("bz2", "gz",):
@@ -911,16 +910,18 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
 
 def universal_uncompress(compressed_file, dest_path, catch_empty = False):
     """
-    docstring_title
+    Universally uncompress (automatic detection) compressed file at
+    compressed_file into dest_path. "catch_empty" is used in case of
+    empty compressed files, in which case a tarfile.ReadError exception
+    is raised.
 
-    @param compressed_file: 
-    @type compressed_file: 
-    @param dest_path: 
-    @type dest_path: 
-    @keyword catch_empty: 
-    @type catch_empty: 
-    @return: 
-    @rtype: 
+    @param compressed_file: path to compressed file
+    @type compressed_file: string
+    @param dest_path: path where to uncompress compressed file content
+    @type dest_path: string
+    @keyword catch_empty: if True, empty compressed file won't cause
+        tarfile.ReadError exception to be raised
+    @type catch_empty: bool
     """
 
     try:
@@ -996,12 +997,12 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
 def unpack_gzip(gzipfilepath):
     """
-    docstring_title
+    Unpack .gz file.
 
-    @param gzipfilepath: 
-    @type gzipfilepath: 
-    @return: 
-    @rtype: 
+    @param gzipfilepath: path to .gz file
+    @type gzipfilepath: string
+    @return: path to uncompressed file
+    @rtype: string
     """
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
@@ -1018,12 +1019,12 @@ def unpack_gzip(gzipfilepath):
 
 def unpack_bzip2(bzip2filepath):
     """
-    docstring_title
+    Unpack .bz2 file.
 
-    @param bzip2filepath: 
-    @type bzip2filepath: 
-    @return: 
-    @rtype: 
+    @param bzip2filepath: path to .bz2 file
+    @type bzip2filepath: string
+    @return: path to uncompressed file
+    @rtype: string
     """
     import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
@@ -1075,7 +1076,7 @@ def extract_edb(tbz2file, dbpath = None):
     if not dbpath:
         dbpath = tbz2file[:-5] + ".db"
 
-    start_position = locate_edb(old)
+    start_position = _locate_edb(old)
     if not start_position:
         old.close()
         try:
@@ -1094,15 +1095,7 @@ def extract_edb(tbz2file, dbpath = None):
 
     return dbpath
 
-def locate_edb(fileobj):
-    """
-    docstring_title
-
-    @param fileobj: 
-    @type fileobj: 
-    @return: 
-    @rtype: 
-    """
+def _locate_edb(fileobj):
 
     # position old to the end
     fileobj.seek(0, os.SEEK_END)
@@ -1153,7 +1146,7 @@ def remove_edb(tbz2file, savedir):
     """
     old = open(tbz2file, "rb")
 
-    start_position = locate_edb(old)
+    start_position = _locate_edb(old)
     if not start_position:
         old.close()
         return None
@@ -3062,7 +3055,7 @@ def is_entropy_package_file(tbz2file):
         return False
     try:
         obj = open(tbz2file, "rb")
-        entry_point = locate_edb(obj)
+        entry_point = _locate_edb(obj)
         if entry_point is None:
             obj.close()
             return False
