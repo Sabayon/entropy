@@ -1038,25 +1038,6 @@ def unpack_bzip2(bzip2filepath):
     item.close()
     return filepath
 
-def backup_client_repository():
-    """
-    docstring_title
-
-    @return: 
-    @rtype: 
-    """
-    if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-        rnd = get_random_number()
-        source = etpConst['etpdatabaseclientfilepath']
-        dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
-        shutil.copy2(source, dest)
-        user = os.stat(source)[4]
-        group = os.stat(source)[5]
-        os.chown(dest, user, group)
-        shutil.copystat(source, dest)
-        return dest
-    return ""
-
 def aggregate_edb(tbz2file, dbfile):
     """
     docstring_title

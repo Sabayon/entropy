@@ -25,6 +25,26 @@ from entropy.i18n import _
 # strictly depending on Portage atm
 from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
 
+def _backup_client_repository():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
+    if not os.path.isfile(etpConst['etpdatabaseclientfilepath']):
+        return
+
+    rnd = entropy.tools.get_random_number()
+    source = etpConst['etpdatabaseclientfilepath']
+    dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
+    shutil.copy2(source, dest)
+    user = os.stat(source)[4]
+    group = os.stat(source)[5]
+    os.chown(dest, user, group)
+    shutil.copystat(source, dest)
+    return dest
+
 def test_spm(entropy_client):
     # test if portage is available
     try:
@@ -225,8 +245,8 @@ def _database_resurrect(entropy_client):
     # if exist, copy old database
     print_info(red(" @@ ") + \
         blue(_("Creating backup of the previous database, if exists.")))
-    newfile = entropy.tools.backup_client_repository()
-    if (newfile):
+    newfile = _backup_client_repository()
+    if newfile is not None:
         print_info(red(" @@ ") + \
             blue(_("Previous database copied to file"))+" "+newfile)
 
@@ -616,8 +636,8 @@ def _database_generate(entropy_client):
     print_info(red(" @@ ") + \
         blue(_("Creating backup of the previous database, if exists.")) + \
         red(" @@"))
-    newfile = entropy.tools.backup_client_repository()
-    if newfile:
+    newfile = _backup_client_repository()
+    if newfile is not None:
         print_info(red(" @@ ") + blue(_("Previous database copied to file")) + \
             " " + newfile+red(" @@"))
 
