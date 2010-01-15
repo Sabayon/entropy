@@ -217,7 +217,8 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         )
         # append arbitrary revision
         mydata['revision'] = 9999
-        mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"
+        mydata['download'] = mydata['download'][:-len(etpConst['packagesext'])] + \
+            "~9999" + etpConst['packagesext']
         # migrate to the proper format
         final_tbz2path = os.path.join(os.path.dirname(etptbz2path), os.path.basename(mydata['download']))
         shutil.move(etptbz2path, final_tbz2path)
@@ -233,7 +234,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         del yyy, xxx
         Qa.test_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
-        entropy.tools.aggregate_edb(tbz2file = etptbz2path, dbfile = dbpath)
+        entropy.tools.aggregate_entropy_metadata(etptbz2path, dbpath)
         os.remove(dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Inflated package"),))+etptbz2path)
 
@@ -244,8 +245,11 @@ def deflate_handler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflating"),))+tbz2, back = True)
-        mytbz2 = entropy.tools.remove_edb(tbz2, savedir)
-        tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
+        save_path = os.path.join(savedir, os.path.basename(tbz2))
+        ext_rc = entropy.tools.remove_entropy_metadata(tbz2, save_path)
+        if not ext_rc:
+            return 1
+        tbz2name = os.path.basename(mytbz2)[:-len(etpConst['packagesext'])]
         tbz2name = entropy.tools.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(mytbz2)+os.path.sep+tbz2name
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflated package"),))+newtbz2)
@@ -257,12 +261,15 @@ def extract_handler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracting Entropy metadata from"),))+tbz2, back = True)
-        dbpath = savedir+os.path.sep+os.path.basename(tbz2)[:-4]+"db"
+        dbpath = savedir+os.path.sep+os.path.basename(tbz2)
+        dbpath = dbpath[:-len(etpConst['packagesext'])]+".db"
         if os.path.isfile(dbpath):
             os.remove(dbpath)
         # extract
-        out = entropy.tools.extract_edb(tbz2, dbpath = dbpath)
-        print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracted Entropy metadata from"),))+out)
+        dump_rc = entropy.tools.dump_entropy_metadata(tbz2, dbpath)
+        if not dump_rc:
+            return 1
+        print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracted Entropy metadata from"),))+dbpath)
 
     return 0
 
@@ -345,7 +352,9 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     tmpdbfile = dbfile+"--readingdata"
     for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
-        entropy.tools.extract_edb(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[package]['download'], tmpdbfile)
+        entropy.tools.dump_entropy_metadata(
+            etpConst['entropyworkdir'] + os.path.sep + \
+                matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
         mydbconn = entropy_client.open_generic_database(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
@@ -394,7 +403,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
         print_error(darkred(" * ")+red("%s." % (_("Compressed file does not exist"),)))
         return 1
 
-    entropy.tools.aggregate_edb(smart_package_path, dbfile)
+    entropy.tools.aggregate_entropy_metadata(smart_package_path, dbfile)
     print_info("\t"+smart_package_path)
     shutil.rmtree(unpackdir, True)
     return 0

@@ -24,7 +24,7 @@ from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     readtext, print_generic
 from entropy.client.interfaces import Client
 from entropy.i18n import _
-from text_tools import countdown
+from text_tools import countdown, enlightenatom
 
 import entropy.tools
 import entropy.dump
@@ -1134,7 +1134,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                         oldtag = "|"+darkred(installedTag)+oldtag
                     oldinfo += oldtag
 
-                print_info(darkred(" ##")+flags+repoinfo+entropy.tools.enlightenatom(pkgatom)+"|"+red(str(pkgrev))+oldinfo)
+                print_info(darkred(" ##")+flags+repoinfo+enlightenatom(pkgatom)+"|"+red(str(pkgrev))+oldinfo)
 
         deltaSize = onDiskUsedSize - onDiskFreedSize
         neededSize = deltaSize
@@ -1158,7 +1158,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                     if installedfrom is None:
                         installedfrom = _("Not available")
                     repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
-                    print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+entropy.tools.enlightenatom(pkgatom))
+                    print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
 
         if (run_queue) or (removal_queue) and not etpUi['quiet']:
             # show download info
@@ -1467,7 +1467,7 @@ def mask_unmask_packages(packages, action):
             for idpackage, repoid in matches:
                 dbconn = E_CLIENT.open_repository(repoid)
                 pkgatom = dbconn.retrieveAtom(idpackage)
-                print_info("    -> "+entropy.tools.enlightenatom(pkgatom))
+                print_info("    -> "+enlightenatom(pkgatom))
 
     if etpUi['pretend']:
         return 0, 0
@@ -1542,7 +1542,7 @@ def configure_packages(packages):
         mytxt = " | %s: " % (_("Installed from"),)
         print_info("   # " + red("(") + brown(str(atomscounter)) + "/" + \
             blue(str(totalatoms))+red(")") + " " + \
-            entropy.tools.enlightenatom(pkgatom) + mytxt + red(installedfrom))
+            enlightenatom(pkgatom) + mytxt + red(installedfrom))
 
     if etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']:
         print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) ) + \
@@ -1642,7 +1642,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                         brown(str(atomscounter)),
                         blue(str(totalatoms)),
                         # every package matching app-foo is masked
-                        entropy.tools.enlightenatom(pkgatom),
+                        enlightenatom(pkgatom),
                         red(_("vital package")),
                         red(_("Removal forbidden")),
                     )
@@ -1663,7 +1663,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             print_info("   # " + red("(") + brown(str(atomscounter)) + "/" + \
                 blue(str(totalatoms)) + red(")") + \
                 " [%s] " % (brown(installedfrom),) + \
-                entropy.tools.enlightenatom(pkgatom) + disksizeinfo)
+                enlightenatom(pkgatom) + disksizeinfo)
 
             if idpackage not in package_sizes:
                 package_sizes[idpackage] = on_disk_size, pkg_size
@@ -1729,7 +1729,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
                         stratomscounter = " "+stratomscounter
                     disksizeinfo = bold(" [")+brown(str(disksize))+bold("]")
                     print_info(darkred(" ## ")+repositoryInfo+" " + \
-                        entropy.tools.enlightenatom(rematom)+disksizeinfo)
+                        enlightenatom(rematom)+disksizeinfo)
 
                     if idpackage not in package_sizes:
                         package_sizes[idpackage] = on_disk_size, pkg_size

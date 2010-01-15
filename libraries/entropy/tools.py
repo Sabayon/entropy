@@ -1039,20 +1039,18 @@ def unpack_bzip2(bzip2filepath):
     item.close()
     return filepath
 
-def aggregate_edb(tbz2file, dbfile):
+def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
     """
-    docstring_title
+    Add Entropy metadata dump file to given Entropy package file.
 
-    @param tbz2file: 
-    @type tbz2file: 
-    @param dbfile: 
-    @type dbfile: 
-    @return: 
-    @rtype: 
+    @param entropy_package_file: path to Entropy package file
+    @type entropy_package_file: string
+    @param entropy_metadata_file: path to Entropy metadata file
+    @type entropy_metadata_file: string
     """
-    f = open(tbz2file, "ab")
+    f = open(entropy_package_file, "ab")
     f.write(const_convert_to_rawstring(etpConst['databasestarttag']))
-    g = open(dbfile, "rb")
+    g = open(entropy_metadata_file, "rb")
     chunk = g.read(16384)
     while chunk:
         f.write(chunk)
@@ -1061,29 +1059,23 @@ def aggregate_edb(tbz2file, dbfile):
     f.flush()
     f.close()
 
-def extract_edb(tbz2file, dbpath = None):
+def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
     """
-    docstring_title
+    Dump Entropy package metadata from Entropy package file to
+    entropy_metadata_file
 
-    @param tbz2file: 
-    @type tbz2file: 
-    @keyword dbpath: 
-    @type dbpath: 
-    @return: 
-    @rtype: 
+    @param entropy_package_file: path to Entropy package file
+    @type entropy_package_file: string
+    @keyword entropy_metadata_file: path where to store extracted metadata
+    @type entropy_metadata_file: string
+    @return: True, if extraction went successful
+    @rtype: bool
     """
-    old = open(tbz2file, "rb")
-    if not dbpath:
-        dbpath = tbz2file[:-5] + ".db"
-
+    old = open(entropy_package_file, "rb")
     start_position = _locate_edb(old)
     if not start_position:
         old.close()
-        try:
-            os.remove(dbpath)
-        except OSError:
-            return None
-        return None
+        return False
 
     db = open(dbpath, "wb")
     data = old.read(16384)
@@ -1093,7 +1085,7 @@ def extract_edb(tbz2file, dbpath = None):
     db.flush()
     db.close()
 
-    return dbpath
+    return True
 
 def _locate_edb(fileobj):
 
@@ -1133,57 +1125,55 @@ def _locate_edb(fileobj):
 
     return start_position
 
-def remove_edb(tbz2file, savedir):
+def remove_entropy_metadata(entropy_package_file, save_path):
     """
-    docstring_title
+    Remove Entropy metadata from Entropy package file. Save new Entropy package
+    file into save_path.
 
-    @param tbz2file: 
-    @type tbz2file: 
-    @param savedir: 
-    @type savedir: 
-    @return: 
-    @rtype: 
+    @param entropy_package_file: path to Entropy package file
+    @type entropy_package_file: string
+    @param save_path: path where to save new "Entropy" package file (without
+        Entropy metadata)
+    @type save_path: string
+    @return: True, if removal went successful
+    @rtype: bool
     """
-    old = open(tbz2file, "rb")
+    with open(entropy_package_file, "rb") as old:
 
-    start_position = _locate_edb(old)
-    if not start_position:
-        old.close()
-        return None
+        start_position = _locate_edb(old)
+        if not start_position:
+            old.close()
+            return False
 
-    new_path = os.path.join(savedir, os.path.basename(tbz2file))
-    new = open(new_path, "wb")
+        with open(save_path, "wb") as new:
+            old.seek(0)
+            counter = 0
+            max_read_len = 1024
+            db_tag = const_convert_to_rawstring(etpConst['databasestarttag'])
+            db_tag_len = len(db_tag)
+            start_position -= db_tag_len
 
-    old.seek(0)
-    counter = 0
-    max_read_len = 1024
-    db_tag = const_convert_to_rawstring(etpConst['databasestarttag'])
-    db_tag_len = len(db_tag)
-    start_position -= db_tag_len
+            while counter < start_position:
+                delta = start_position - counter
+                if delta < max_read_len:
+                    max_read_len = delta
+                xbytes = old.read(max_read_len)
+                read_bytes = len(xbytes)
+                new.write(xbytes)
+                counter += read_bytes
 
-    while counter < start_position:
-        delta = start_position - counter
-        if delta < max_read_len:
-            max_read_len = delta
-        xbytes = old.read(max_read_len)
-        read_bytes = len(xbytes)
-        new.write(xbytes)
-        counter += read_bytes
+            new.flush()
 
-    new.flush()
-    new.close()
-    old.close()
-    return os.path.join(savedir, os.path.basename(tbz2file))
+    return True
 
-# This function creates the .md5 file related to the given package file
 def create_md5_file(filepath):
     """
-    docstring_title
+    Create valid MD5 file off filepath.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: file path to read
+    @type filepath: string
+    @return: path to MD5 file
+    @rtype: string
     """
     md5hash = md5sum(filepath)
     hashfile = filepath+etpConst['packagesmd5fileext']
@@ -1199,77 +1189,77 @@ def create_md5_file(filepath):
 
 def create_sha512_file(filepath):
     """
-    docstring_title
+    Create valid SHA512 file off filepath.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: file path to read
+    @type filepath: string
+    @return: path to SHA512 file
+    @rtype: string
     """
     sha512hash = sha512(filepath)
     hashfile = filepath+etpConst['packagessha512fileext']
     f = open(hashfile, "w")
-    tbz2name = os.path.basename(filepath)
+    fname = os.path.basename(filepath)
     if sys.hexversion >= 0x3000000:
-        f.write(sha512hash+"  "+tbz2name+"\n")
+        f.write(sha512hash+"  "+fname+"\n")
     else:
-        f.write(sha512hash+"  "+tbz2name.encode('utf-8')+"\n")
+        f.write(sha512hash+"  "+fname.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
 
 def create_sha256_file(filepath):
     """
-    docstring_title
+    Create valid SHA256 file off filepath.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: file path to read
+    @type filepath: string
+    @return: path to SHA256 file
+    @rtype: string
     """
     sha256hash = sha256(filepath)
     hashfile = filepath+etpConst['packagessha256fileext']
     f = open(hashfile, "w")
-    tbz2name = os.path.basename(filepath)
+    fname = os.path.basename(filepath)
     if sys.hexversion >= 0x3000000:
-        f.write(sha256hash+"  "+tbz2name+"\n")
+        f.write(sha256hash+"  "+fname+"\n")
     else:
-        f.write(sha256hash+"  "+tbz2name.encode('utf-8')+"\n")
+        f.write(sha256hash+"  "+fname.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
 
 def create_sha1_file(filepath):
     """
-    docstring_title
+    Create valid SHA1 file off filepath.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: file path to read
+    @type filepath: string
+    @return: path to SHA1 file
+    @rtype: string
     """
     sha1hash = sha1(filepath)
     hashfile = filepath+etpConst['packagessha1fileext']
     f = open(hashfile, "w")
-    tbz2name = os.path.basename(filepath)
+    fname = os.path.basename(filepath)
     if sys.hexversion >= 0x3000000:
-        f.write(sha1hash+"  "+tbz2name+"\n")
+        f.write(sha1hash+"  "+fname+"\n")
     else:
-        f.write(sha1hash+"  "+tbz2name.encode('utf-8')+"\n")
+        f.write(sha1hash+"  "+fname.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
 
 def compare_md5(filepath, checksum):
     """
-    docstring_title
+    Compare MD5 of filepath with the one given (checksum).
 
-    @param filepath: 
-    @type filepath: 
-    @param checksum: 
-    @type checksum: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file to "md5sum"
+    @type filepath: string
+    @param checksum: known to be good MD5 checksum
+    @type checksum: string
+    @return: True, if MD5 matches
+    @rtype: bool
     """
     checksum = str(checksum)
     result = md5sum(filepath)
@@ -1280,14 +1270,14 @@ def compare_md5(filepath, checksum):
 
 def compare_sha512(filepath, checksum):
     """
-    docstring_title
+    Compare SHA512 of filepath with the one given (checksum).
 
-    @param filepath: 
-    @type filepath: 
-    @param checksum: 
-    @type checksum: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file to check
+    @type filepath: string
+    @param checksum: known to be good SHA512 checksum
+    @type checksum: string
+    @return: True, if SHA512 matches
+    @rtype: bool
     """
     checksum = str(checksum)
     result = sha512(filepath)
@@ -1298,14 +1288,14 @@ def compare_sha512(filepath, checksum):
 
 def compare_sha256(filepath, checksum):
     """
-    docstring_title
+    Compare SHA256 of filepath with the one given (checksum).
 
-    @param filepath: 
-    @type filepath: 
-    @param checksum: 
-    @type checksum: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file to check
+    @type filepath: string
+    @param checksum: known to be good SHA256 checksum
+    @type checksum: string
+    @return: True, if SHA256 matches
+    @rtype: bool
     """
     checksum = str(checksum)
     result = sha256(filepath)
@@ -1316,14 +1306,14 @@ def compare_sha256(filepath, checksum):
 
 def compare_sha1(filepath, checksum):
     """
-    docstring_title
+    Compare SHA1 of filepath with the one given (checksum).
 
-    @param filepath: 
-    @type filepath: 
-    @param checksum: 
-    @type checksum: 
-    @return: 
-    @rtype: 
+    @param filepath: path to file to check
+    @type filepath: string
+    @param checksum: known to be good SHA1 checksum
+    @type checksum: string
+    @return: True, if SHA1 matches
+    @rtype: bool
     """
     checksum = str(checksum)
     result = sha1(filepath)
@@ -1334,12 +1324,12 @@ def compare_sha1(filepath, checksum):
 
 def md5string(string):
     """
-    docstring_title
+    Return md5 hex digest of given string
 
-    @param string: 
-    @type string: 
-    @return: 
-    @rtype: 
+    @param string: string to "md5"
+    @type string: string
+    @return: md5 hex digest
+    @rtype: string
     """
     if const_isunicode(string):
         string = const_convert_to_rawstring(string)
@@ -1349,12 +1339,13 @@ def md5string(string):
 
 def generic_file_content_parser(filepath):
     """
-    docstring_title
+    Generic unix-style file content parser. Return a list of parsed lines with
+    filtered comments.
 
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
+    @param filepath: configuration file to parse
+    @type filepath: string
+    @return: list representing file content
+    @rtype: list
     """
     data = []
     if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
@@ -1369,71 +1360,6 @@ def generic_file_content_parser(filepath):
                 continue
             data.append(line)
     return data
-
-def allocate_masked_file(maskfile, fromfile):
-    """
-    docstring_title
-
-    @param maskfile: 
-    @type maskfile: 
-    @param fromfile: 
-    @type fromfile: 
-    @return: 
-    @rtype: 
-    """
-
-    # check if file and tofile are equal
-    if os.path.isfile(maskfile) and os.path.isfile(fromfile):
-        old = md5sum(fromfile)
-        new = md5sum(maskfile)
-        if old == new:
-            return maskfile, False
-
-    counter = -1
-    newfile = ""
-    previousfile = ""
-
-    while True:
-        counter += 1
-        txtcounter = str(counter)
-        oldtxtcounter = str(counter-1)
-        txtcounter_len = 4-len(txtcounter)
-        cnt = 0
-        while cnt < txtcounter_len:
-            txtcounter = "0"+txtcounter
-            oldtxtcounter = "0"+oldtxtcounter
-            cnt += 1
-        newfile = os.path.join(os.path.dirname(maskfile),
-            "._cfg" + txtcounter + "_" + os.path.basename(maskfile))
-        if counter > 0:
-            previousfile = os.path.join(os.path.dirname(maskfile),
-                "._cfg" + oldtxtcounter + "_" + os.path.basename(maskfile))
-        else:
-            previousfile = os.path.join(os.path.dirname(maskfile),
-                "._cfg0000_" + os.path.basename(maskfile))
-        if not os.path.exists(newfile):
-            break
-    if not newfile:
-        newfile = os.path.join(os.path.dirname(maskfile),
-            "._cfg0000_" + os.path.basename(maskfile))
-    else:
-
-        if os.path.exists(previousfile):
-
-            # compare fromfile with previousfile
-            new = md5sum(fromfile)
-            old = md5sum(previousfile)
-            if new == old:
-                return previousfile, False
-
-            # compare old and new, if they match,
-            # suggest previousfile directly
-            new = md5sum(maskfile)
-            old = md5sum(previousfile)
-            if (new == old):
-                return previousfile, False
-
-    return newfile, True
 
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
@@ -1555,40 +1481,6 @@ def isvalidatom(myatom, allow_blockers = True):
         # cat/pkg
         return 1
     return 0
-
-def enlightenatom(atom):
-    """
-    Colorize package atoms with standard colors.
-
-    @param atom: atom string
-    @type atom: string
-    @return: colorized string
-    @rtype: string
-    """
-    entropy_rev = dep_get_entropy_revision(atom)
-    if entropy_rev is None:
-        entropy_rev = ''
-    else:
-        entropy_rev = '~%s' % (str(entropy_rev),)
-    entropy_tag = dep_gettag(atom)
-    if entropy_tag is None:
-        entropy_tag = ''
-    else:
-        entropy_tag = '#%s' % (entropy_tag,)
-    clean_atom = remove_entropy_revision(atom)
-    clean_atom = remove_tag(clean_atom)
-    only_cpv = dep_getcpv(clean_atom)
-    operator = get_operator(clean_atom)
-    if operator is None:
-        operator = ''
-    cat, name, pv, rev = catpkgsplit(only_cpv)
-    if rev == "r0":
-        rev = ''
-    else:
-        rev = '-%s' % (rev,)
-    return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
-        darkgreen(name), purple("-"+pv), purple(rev), brown(entropy_tag),
-        teal(entropy_rev),)
 
 def catsplit(mydep):
     """
@@ -2308,12 +2200,12 @@ def get_entropy_newer_version(versions):
 
 def isnumber(x):
     """
-    docstring_title
+    Determine whether x is a number of any sort. "x" can be a string or float.
 
-    @param x: 
-    @type x: 
-    @return: 
-    @rtype: 
+    @param x: misterious object
+    @type x: Python object
+    @return: True, if x can be converted to int
+    @rtype: bool
     """
     try:
         int(x)
@@ -2324,14 +2216,15 @@ def isnumber(x):
 
 def istextfile(filename, blocksize = 512):
     """
-    docstring_title
+    Return whether file at filename is a text file by reading the first
+    blocksize bytes.
 
-    @param filename: 
-    @type filename: 
-    @keyword blocksize: 
-    @type blocksize: 
-    @return: 
-    @rtype: 
+    @param filename: file path to parse
+    @type filename: string
+    @keyword blocksize: chunk of bytes to read
+    @type blocksize: int
+    @return: True, if text file
+    @rtype: bool
     """
     f = open(filename, "r")
     r = istext(f.read(blocksize))
@@ -2340,12 +2233,12 @@ def istextfile(filename, blocksize = 512):
 
 def istext(mystring):
     """
-    docstring_title
+    Determine whether given string is text.
 
-    @param s: 
-    @type s: 
-    @return: 
-    @rtype: 
+    @param mystring: string to parse
+    @type mystring: string
+    @return: True, if string is text
+    @rtype: bool
     """
 
     if sys.hexversion >= 0x3000000:
@@ -2355,7 +2248,8 @@ def istext(mystring):
     else:
         import string
         _null_trans = string.maketrans("", "")
-        text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
+        text_characters = "".join(list(map(chr, list(range(32, 127)))) + \
+            list("\n\r\t\b"))
 
     if "\0" in mystring:
         return False

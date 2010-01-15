@@ -32,16 +32,16 @@ class ToolsTest(unittest.TestCase):
         sys.stdout.flush()
 
 
-    def test_extract_edb(self):
+    def test_dump_entropy_metadata(self):
 
         client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         fd, tmp_path = tempfile.mkstemp()
 
         for test_pkg in self.test_pkgs:
-            out_path = et.extract_edb(test_pkg, tmp_path)
-            self.assertNotEqual(out_path, None)
-            dbconn = client.open_generic_database(out_path)
+            et.dump_entropy_metadata(test_pkg, tmp_path)
+            self.assertNotEqual(tmp_path, None)
+            dbconn = client.open_generic_database(tmp_path)
             dbconn.validateDatabase()
             dbconn.listAllIdpackages()
             dbconn.closeDB()
@@ -50,18 +50,19 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
 
 
-    def test_remove_edb(self):
+    def test_remove_entropy_metadata(self):
 
-        tmp_path = tempfile.mkdtemp()
+        fd, tmp_path = tempfile.mkstemp()
+        os.close(fd)
 
         for test_pkg in self.test_pkgs:
             self.assert_(et.is_entropy_package_file(test_pkg))
-            out_path = et.remove_edb(test_pkg, tmp_path)
-            self.assertNotEqual(out_path, None)
-            self.assert_(os.path.isfile(out_path))
-            self.assert_(not et.is_entropy_package_file(out_path))
+            ext_rc = et.remove_entropy_metadata(test_pkg, tmp_path)
+            self.assertNotEqual(ext_rc, False)
+            self.assert_(os.path.isfile(tmp_path))
+            self.assert_(not et.is_entropy_package_file(tmp_path))
 
-        shutil.rmtree(tmp_path)
+        os.remove(tmp_path)
 
 
     def test_tb(self):
@@ -291,18 +292,17 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
         os.remove(new_path)
 
-    def test_remove_edb(self):
+    def test_remove_entropy_metadata2(self):
         fd, tmp_path = tempfile.mkstemp()
-        tmp_dir = tempfile.mkdtemp()
-        shutil.copy2(_misc.get_test_entropy_package4(), tmp_path)
-
-        new_path = et.remove_edb(tmp_path, tmp_dir)
-        orig_md5 = "ab1f147202838c6ee9c6fc3511537279"
-        self.assertEqual(orig_md5, et.md5sum(new_path))
-
         os.close(fd)
+
+        ext_rc = et.remove_entropy_metadata(
+            _misc.get_test_entropy_package4(), tmp_path)
+        self.assert_(ext_rc)
+        orig_md5 = "ab1f147202838c6ee9c6fc3511537279"
+        self.assertEqual(orig_md5, et.md5sum(tmp_path))
+
         os.remove(tmp_path)
-        shutil.rmtree(tmp_dir)
 
     def test_create_md5_file(self):
         fd, tmp_path = tempfile.mkstemp(
@@ -391,24 +391,6 @@ class ToolsTest(unittest.TestCase):
         os.close(fd)
         os.remove(tmp_path)
         os.remove(sha_path)
-
-    def test_allocate_masked_file(self):
-        fd, tmp_path = tempfile.mkstemp()
-        fd2, tmp_path2 = tempfile.mkstemp()
-
-        os.write(fd, const_convert_to_rawstring("this is new"))
-        os.fsync(fd)
-
-        new_path, done = et.allocate_masked_file(tmp_path, tmp_path2)
-        self.assert_(done)
-        predicted_new = os.path.join(os.path.dirname(tmp_path), "._cfg0000_" + \
-            os.path.basename(tmp_path))
-        self.assertEqual(predicted_new, new_path)
-
-        os.close(fd)
-        os.remove(tmp_path)
-        os.close(fd2)
-        os.remove(tmp_path2)
 
     def test_isjustpkgname(self):
         self.assert_(et.isjustpkgname("foo"))

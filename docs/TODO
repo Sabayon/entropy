@@ -8,15 +8,7 @@
 
   0.99.40:
 
-    - entropy.client API rework
-        - entropy.client.interfaces.dep:
-            - atom_match without serverInstance & bullshit
-                (add repo_opener argument instead)
-            - remove "server_repos", use "matchRepo"
-        - entropy.client, rename validRepositories into enabled_repositories
-        - entropy.client, rename clientDbconn into installed_db
-        - entropy.client, closeAllSecurity, closeAllQA
-        - entropy.db => retrieveVersionTag => retrieveTag
+    - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
     - sulfur: code refactoring
     - PackageKit integration
     - ability to also install build dependencies
@@ -27,15 +19,19 @@
 
   1.0_beta1:
 
+    - entropy.client API rework
+        - entropy.client.interfaces.dep:
+            - atom_match without serverInstance & bullshit
+                (add repo_opener argument instead)
+            - remove "server_repos", use "matchRepo"
+        - entropy.client, rename validRepositories into enabled_repositories
+        - entropy.client, rename clientDbconn into installed_db
+        - entropy.client, closeAllSecurity, closeAllQA
+        - entropy.db => retrieveVersionTag => retrieveTag
     - entropy package metadata .dtd specs
     - complete API documentation
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
-    - move all the portage related stuff in entropy.tools to entropy.spm
-        => prototype class defining transformations (collect them from tools)
-    - smart apps live generated from system, i mean,
-        "equo smart prepare" will current app deps (deep), tarball everything
-        into the same dir and create a .app file.
 
   1.0 - deprecations:
 

@@ -15,9 +15,11 @@ import time
 import subprocess
 
 from entropy.const import etpConst
-from entropy.output import print_info, print_generic, darkgreen, writechar, \
-    blue, red, brown, darkblue, purple
+from entropy.output import print_info, print_generic, writechar, blue, red, \
+    brown, darkblue, purple, teal, darkgreen
 from entropy.i18n import _
+
+import entropy.tools
 
 # Temporary files cleaner
 def cleanup(directories = None):
@@ -216,3 +218,37 @@ def countdown(secs = 5, what = "Counting...", back = False):
             sys.stdout.write(purple(str(i+1)+" "))
             sys.stdout.flush()
             time.sleep(1)
+
+def enlightenatom(atom):
+    """
+    Colorize package atoms with standard colors.
+
+    @param atom: atom string
+    @type atom: string
+    @return: colorized string
+    @rtype: string
+    """
+    entropy_rev = entropy.tools.dep_get_entropy_revision(atom)
+    if entropy_rev is None:
+        entropy_rev = ''
+    else:
+        entropy_rev = '~%s' % (str(entropy_rev),)
+    entropy_tag = entropy.tools.dep_gettag(atom)
+    if entropy_tag is None:
+        entropy_tag = ''
+    else:
+        entropy_tag = '#%s' % (entropy_tag,)
+    clean_atom = entropy.tools.remove_entropy_revision(atom)
+    clean_atom = entropy.tools.remove_tag(clean_atom)
+    only_cpv = entropy.tools.dep_getcpv(clean_atom)
+    operator = entropy.tools.get_operator(clean_atom)
+    if operator is None:
+        operator = ''
+    cat, name, pv, rev = entropy.tools.catpkgsplit(only_cpv)
+    if rev == "r0":
+        rev = ''
+    else:
+        rev = '-%s' % (rev,)
+    return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
+        darkgreen(name), purple("-"+pv), purple(rev), brown(entropy_tag),
+        teal(entropy_rev),)

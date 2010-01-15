@@ -32,6 +32,8 @@ from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
 from entropy.db.skel import EntropyRepositoryPlugin
 
+import entropy.tools
+
 class QAEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
     def __init__(self, qa_interface, metadata = None):
@@ -537,8 +539,8 @@ class QAInterface(EntropyPluginStore):
             else:
                 broken_libs_mask_regexp.append(reg_lib)
 
-        ldpaths = set(self.entropyTools.collect_linker_paths())
-        ldpaths |= self.entropyTools.collect_paths()
+        ldpaths = set(entropy.tools.collect_linker_paths())
+        ldpaths |= entropy.tools.collect_paths()
 
         # some crappy packages put shit here too
         ldpaths.add("/usr/share")
@@ -598,7 +600,7 @@ class QAInterface(EntropyPluginStore):
                         return 0
                     if not os.path.isfile(filepath):
                         return 0
-                    if not self.entropyTools.is_elf_file(filepath):
+                    if not entropy.tools.is_elf_file(filepath):
                         return 0
                     return filepath[sys_root_len:]
 
@@ -665,12 +667,12 @@ class QAInterface(EntropyPluginStore):
 
             real_exec_path = etpConst['systemroot'] + executable
 
-            myelfs = self.entropyTools.read_elf_dynamic_libraries(
+            myelfs = entropy.tools.read_elf_dynamic_libraries(
                 real_exec_path)
 
             mylibs = set()
             for mylib in myelfs:
-                lib_path = self.entropyTools.resolve_dynamic_library(mylib,
+                lib_path = entropy.tools.resolve_dynamic_library(mylib,
                     executable)
                 if not lib_path:
                     mylibs.add(mylib)
@@ -696,7 +698,7 @@ class QAInterface(EntropyPluginStore):
                         mylib_guess = os.path.join(my_real_exec_dir, mylib)
                         if os.access(mylib_guess, os.R_OK) and \
                             os.path.isfile(mylib_guess):
-                            if self.entropyTools.is_elf_file(mylib_guess):
+                            if entropy.tools.is_elf_file(mylib_guess):
                                 # we have found the missing library,
                                 # which wasn't in LDPATH, booooo @ package
                                 # developers !! boooo!
@@ -707,7 +709,7 @@ class QAInterface(EntropyPluginStore):
             broken_sym_found = set()
             if broken_symbols and not mylibs:
 
-                read_broken_syms = self.entropyTools.read_elf_broken_symbols(
+                read_broken_syms = entropy.tools.read_elf_broken_symbols(
                         real_exec_path)
                 my_broken_syms = set()
                 for read_broken_sym in read_broken_syms:
@@ -833,9 +835,9 @@ class QAInterface(EntropyPluginStore):
                 continue
             if not os.path.isfile(myfile):
                 continue
-            if not self.entropyTools.is_elf_file(myfile):
+            if not entropy.tools.is_elf_file(myfile):
                 continue
-            mylibs[myfile] = self.entropyTools.read_elf_dynamic_libraries(
+            mylibs[myfile] = entropy.tools.read_elf_dynamic_libraries(
                 myfile)
 
         broken_libs = {}
@@ -844,7 +846,7 @@ class QAInterface(EntropyPluginStore):
                 # is this inside myself ?
                 if is_contained(myneeded, mycontent):
                     continue
-                found = self.entropyTools.resolve_dynamic_library(myneeded,
+                found = entropy.tools.resolve_dynamic_library(myneeded,
                     mylib)
                 if found:
                     continue
@@ -880,7 +882,7 @@ class QAInterface(EntropyPluginStore):
         rdepends = {}
         rdepends_plain = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
-        ldpaths = set(self.entropyTools.collect_linker_paths())
+        ldpaths = set(entropy.tools.collect_linker_paths())
         deps_content = set()
         dependencies = self.get_deep_dependency_list(dbconn, idpackage,
             atoms = True)
@@ -1059,10 +1061,9 @@ class QAInterface(EntropyPluginStore):
         """
         from entropy.db import EntropyRepository, dbapi2
         fd, tmp_path = tempfile.mkstemp()
-        extract_path = self.entropyTools.extract_edb(pkg_path, tmp_path)
-        if extract_path is None:
-            if os.path.isfile(tmp_path):
-                os.remove(tmp_path)
+        dump_rc = entropy.tools.dump_entropy_metadata(pkg_path, tmp_path)
+        if not dump_rc:
+            os.remove(tmp_path)
             os.close(fd)
             return False # error!
         try:
@@ -1185,7 +1186,7 @@ class ErrorReportInterface:
         if mydict:
             mydict['username'] = proxy_settings['username']
             mydict['password'] = proxy_settings['password']
-            self.entropyTools.add_proxy_opener(urlmod, mydict)
+            entropy.tools.add_proxy_opener(urlmod, mydict)
         else:
             # unset
             urlmod._opener = None

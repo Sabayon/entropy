@@ -382,9 +382,9 @@ class RepositoryMixin:
         atoms_contained = []
         basefile = os.path.basename(pkg_file)
         db_dir = tempfile.mkdtemp()
-        dbfile = entropy.tools.extract_edb(pkg_file,
-            dbpath = db_dir+"/packages.db")
-        if dbfile == None:
+        dbfile = os.path.join(db_dir, "packages.db")
+        dump_rc = entropy.tools.dump_entropy_metadata(pkg_file, dbfile)
+        if not dump_rc:
             return -1, atoms_contained
         # add dbfile
         repodata = {}
@@ -1466,8 +1466,7 @@ class MiscMixin:
             dbconn.bumpTreeUpdatesActions(treeupdates_actions)
         dbconn.commitChanges()
         dbconn.closeDB()
-        entropy.tools.aggregate_edb(tbz2file = package_filename,
-            dbfile = tmp_path)
+        entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
         os.remove(tmp_path)
 
     def quickpkg(self, atomstring, savedir = None):
