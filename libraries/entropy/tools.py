@@ -1077,7 +1077,7 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
         old.close()
         return False
 
-    db = open(dbpath, "wb")
+    db = open(entropy_metadata_file, "wb")
     data = old.read(16384)
     while data:
         db.write(data)
