@@ -494,7 +494,7 @@
                                   <widget class="GtkLabel" id="rbPkgSetsLabel1">
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Run Queue</property>
+                                    <property name="label" translatable="yes">Queue</property>
                                     <property name="use_markup">True</property>
                                   </widget>
                                   <packing>
@@ -601,7 +601,7 @@
                   <widget class="GtkScrolledWindow" id="swPkg">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hadjustment">0 0 961 96.100000000000009 864.89999999999998 961</property>
+                    <property name="hadjustment">0 0 1400 140 1260 1400</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
@@ -815,51 +815,6 @@
                       </packing>
                     </child>
                     <child>
-                      <widget class="GtkAlignment" id="queueReviewAndInstallBox">
-                        <property name="height_request">64</property>
-                        <property name="top_padding">10</property>
-                        <property name="bottom_padding">10</property>
-                        <property name="left_padding">4</property>
-                        <property name="right_padding">4</property>
-                        <child>
-                          <widget class="GtkButton" id="queueReviewAndInstall">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="on_queueReviewAndInstall_clicked"/>
-                            <child>
-                              <widget class="GtkHBox" id="hbox96">
-                                <property name="visible">True</property>
-                                <child>
-                                  <widget class="GtkImage" id="image77">
-                                    <property name="visible">True</property>
-                                    <property name="stock">gtk-apply</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label85">
-                                    <property name="visible">True</property>
-                                    <property name="label" translatable="yes">Review for Install...</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                              </widget>
-                            </child>
-                          </widget>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
                       <widget class="GtkHButtonBox" id="pkgsetsButtonBox">
                         <property name="border_width">8</property>
                         <property name="layout_style">end</property>
@@ -1007,6 +962,194 @@
                         <property name="expand">False</property>
                         <property name="fill">False</property>
                         <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkHBox" id="queueTabBox">
+                        <child>
+                          <widget class="GtkHButtonBox" id="hbuttonbox20">
+                            <property name="visible">True</property>
+                            <property name="spacing">5</property>
+                            <property name="layout_style">start</property>
+                            <child>
+                              <widget class="GtkButton" id="queueSave">
+                                <property name="label">gtk-save</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="can_default">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="use_stock">True</property>
+                                <signal name="clicked" handler="on_queueSave_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkButton" id="queueOpen">
+                                <property name="label">gtk-open</property>
+                                <property name="sensitive">False</property>
+                                <property name="can_focus">True</property>
+                                <property name="can_default">True</property>
+                                <property name="receives_default">True</property>
+                                <property name="use_stock">True</property>
+                                <signal name="clicked" handler="on_queueOpen_clicked"/>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkButton" id="queueClean">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="on_queueClean_clicked"/>
+                                <child>
+                                  <widget class="GtkHBox" id="hbox129">
+                                    <property name="visible">True</property>
+                                    <child>
+                                      <widget class="GtkImage" id="image101">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">1</property>
+                                        <property name="stock">gtk-clear</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="label112">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0</property>
+                                        <property name="label" translatable="yes">Cl_ean</property>
+                                        <property name="use_underline">True</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </widget>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkVBox" id="vbox109">
+                            <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <widget class="GtkCheckButton" id="queueProcessFetchOnly">
+                                <property name="label" translatable="yes">Download only</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="has_tooltip">True</property>
+                                <property name="tooltip" translatable="yes">If selected, packages will be downloaded only</property>
+                                <property name="draw_indicator">True</property>
+                              </widget>
+                              <packing>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <widget class="GtkCheckButton" id="queueProcessDownloadSource">
+                                <property name="label" translatable="yes">Download source code</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="draw_indicator">True</property>
+                              </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="padding">8</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <widget class="GtkHButtonBox" id="hbuttonbox19">
+                            <property name="visible">True</property>
+                            <property name="layout_style">end</property>
+                            <child>
+                              <widget class="GtkButton" id="queueProcess">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="can_default">True</property>
+                                <property name="receives_default">True</property>
+                                <signal name="clicked" handler="on_queueProcess_clicked"/>
+                                <child>
+                                  <widget class="GtkAlignment" id="alignment53">
+                                    <property name="visible">True</property>
+                                    <property name="xscale">0</property>
+                                    <property name="yscale">0</property>
+                                    <child>
+                                      <widget class="GtkHBox" id="hbox86">
+                                        <property name="visible">True</property>
+                                        <property name="spacing">2</property>
+                                        <child>
+                                          <widget class="GtkImage" id="image191">
+                                            <property name="visible">True</property>
+                                            <property name="stock">gtk-cdrom</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <widget class="GtkLabel" id="label131">
+                                            <property name="visible">True</property>
+                                            <property name="label" translatable="yes">_Commit Actions</property>
+                                            <property name="use_underline">True</property>
+                                          </widget>
+                                          <packing>
+                                            <property name="expand">False</property>
+                                            <property name="fill">False</property>
+                                            <property name="position">1</property>
+                                          </packing>
+                                        </child>
+                                      </widget>
+                                    </child>
+                                  </widget>
+                                </child>
+                              </widget>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                          </widget>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
+                      </widget>
+                      <packing>
+                        <property name="pack_type">end</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                   </widget>
@@ -4762,254 +4905,6 @@ Relaxed</property>
               </packing>
             </child>
             <child>
-              <widget class="GtkVBox" id="queueVbox">
-                <property name="visible">True</property>
-                <property name="border_width">6</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">6</property>
-                <child>
-                  <widget class="GtkScrolledWindow" id="scrolledwindow20">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="hscrollbar_policy">automatic</property>
-                    <property name="vscrollbar_policy">automatic</property>
-                    <property name="shadow_type">in</property>
-                    <child>
-                      <widget class="GtkTreeView" id="queueView">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                      </widget>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkHBox" id="hbox85">
-                    <property name="visible">True</property>
-                    <child>
-                      <widget class="GtkHButtonBox" id="hbuttonbox20">
-                        <property name="visible">True</property>
-                        <property name="spacing">5</property>
-                        <property name="layout_style">start</property>
-                        <child>
-                          <widget class="GtkButton" id="queueSave">
-                            <property name="label">gtk-save</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="can_default">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_queueSave_clicked"/>
-                          </widget>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkButton" id="queueOpen">
-                            <property name="label">gtk-open</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="can_default">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_stock">True</property>
-                            <signal name="clicked" handler="on_queueOpen_clicked"/>
-                          </widget>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkButton" id="queueClean">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">True</property>
-                            <signal name="clicked" handler="on_queueClean_clicked"/>
-                            <child>
-                              <widget class="GtkHBox" id="hbox129">
-                                <property name="visible">True</property>
-                                <child>
-                                  <widget class="GtkImage" id="image101">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">1</property>
-                                    <property name="stock">gtk-clear</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkLabel" id="label112">
-                                    <property name="visible">True</property>
-                                    <property name="xalign">0</property>
-                                    <property name="label" translatable="yes">Cl_ean</property>
-                                    <property name="use_underline">True</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                              </widget>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkVBox" id="vbox109">
-                        <property name="visible">True</property>
-                        <child>
-                          <widget class="GtkCheckButton" id="queueProcessFetchOnly">
-                            <property name="label" translatable="yes">Download only</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="tooltip" translatable="yes">If selected, packages will be downloaded only</property>
-                            <property name="draw_indicator">True</property>
-                          </widget>
-                          <packing>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkCheckButton" id="queueProcessDownloadSource">
-                            <property name="label" translatable="yes">Download source code</property>
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="draw_indicator">True</property>
-                          </widget>
-                          <packing>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">False</property>
-                        <property name="padding">8</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <widget class="GtkHButtonBox" id="hbuttonbox19">
-                        <property name="visible">True</property>
-                        <property name="layout_style">end</property>
-                        <child>
-                          <widget class="GtkButton" id="queueProcess">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="can_default">True</property>
-                            <property name="receives_default">False</property>
-                            <signal name="clicked" handler="on_queueProcess_clicked"/>
-                            <child>
-                              <widget class="GtkAlignment" id="alignment53">
-                                <property name="visible">True</property>
-                                <property name="xscale">0</property>
-                                <property name="yscale">0</property>
-                                <child>
-                                  <widget class="GtkHBox" id="hbox86">
-                                    <property name="visible">True</property>
-                                    <property name="spacing">2</property>
-                                    <child>
-                                      <widget class="GtkImage" id="image191">
-                                        <property name="visible">True</property>
-                                        <property name="stock">gtk-cdrom</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="label131">
-                                        <property name="visible">True</property>
-                                        <property name="label" translatable="yes">_Commit Actions</property>
-                                        <property name="use_underline">True</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                </child>
-                              </widget>
-                            </child>
-                          </widget>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                      </widget>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
-                  </widget>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="pack_type">end</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="position">5</property>
-              </packing>
-            </child>
-            <child>
-              <widget class="GtkHBox" id="vbox16">
-                <property name="visible">True</property>
-                <property name="tooltip" translatable="yes">Applications marked for install or removal are here!</property>
-                <property name="spacing">2</property>
-                <child>
-                  <widget class="GtkImage" id="sideRadioQueueImage">
-                    <property name="visible">True</property>
-                    <property name="stock">gtk-missing-image</property>
-                    <property name="icon-size">2</property>
-                  </widget>
-                  <packing>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <widget class="GtkLabel" id="label5">
-                    <property name="visible">True</property>
-                    <property name="label" translatable="yes">Installation</property>
-                  </widget>
-                  <packing>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </widget>
-              <packing>
-                <property name="position">1</property>
-                <property name="tab_fill">False</property>
-                <property name="type">tab</property>
-              </packing>
-            </child>
-            <child>
               <widget class="GtkVBox" id="progressVBox">
                 <property name="visible">True</property>
                 <property name="border_width">6</property>
@@ -5104,7 +4999,7 @@ Relaxed</property>
                             <child>
                               <widget class="GtkButton" id="skipMirror">
                                 <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
+                                <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_skipMirror_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment52">
@@ -5152,7 +5047,7 @@ Relaxed</property>
                             <child>
                               <widget class="GtkButton" id="abortQueue">
                                 <property name="can_focus">True</property>
-                                <property name="receives_default">False</property>
+                                <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_abortQueue_clicked"/>
                                 <child>
                                   <widget class="GtkAlignment" id="alignment6">
@@ -5311,12 +5206,13 @@ Relaxed</property>
                 </child>
               </widget>
               <packing>
-                <property name="position">6</property>
+                <property name="position">5</property>
               </packing>
             </child>
             <child>
               <widget class="GtkHBox" id="vbox24">
                 <property name="visible">True</property>
+                <property name="has_tooltip">True</property>
                 <property name="tooltip" translatable="yes">Monitor applications install/removal execution process</property>
                 <property name="spacing">2</property>
                 <child>
@@ -5340,8 +5236,17 @@ Relaxed</property>
                 </child>
               </widget>
               <packing>
-                <property name="position">6</property>
+                <property name="position">5</property>
                 <property name="tab_fill">False</property>
+                <property name="type">tab</property>
+              </packing>
+            </child>
+            <child>
+              <placeholder/>
+            </child>
+            <child>
+              <placeholder/>
+              <packing>
                 <property name="type">tab</property>
               </packing>
             </child>

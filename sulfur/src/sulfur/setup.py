@@ -80,8 +80,7 @@ class const:
     # Page -> Notebook page numbers
     PAGE_REPOS = 2
     PAGE_PKG = 0
-    PAGE_OUTPUT = 6
-    PAGE_QUEUE = 5
+    PAGE_OUTPUT = 5
     PAGE_FILESCONF = 3
     PAGE_GLSA = 1
     PAGE_PREFERENCES = 4
@@ -89,7 +88,6 @@ class const:
        'packages'  : PAGE_PKG,
        'repos'     : PAGE_REPOS,
        'output'    : PAGE_OUTPUT,
-       'queue'     : PAGE_QUEUE,
        'filesconf' : PAGE_FILESCONF,
        'glsa'      : PAGE_GLSA,
        'preferences': PAGE_PREFERENCES

@@ -440,7 +440,6 @@ class SulfurApplicationEventsMixin:
         self.reset_queue_progress_bars()
         if rc:
             self.queue.clear()
-            self.queueView.refresh()
             return True
         else: # not done
             clean_n_quit(newrepo)
@@ -470,7 +469,7 @@ class SulfurApplicationEventsMixin:
             self.set_notebook_page(const.PAGES[page])
 
     def on_queueReviewAndInstall_clicked(self, widget):
-        self.switch_notebook_page("queue")
+        self.switch_notebook_page("packages")
 
     def on_advancedMode_toggled(self, widget):
         if not self.in_mode_loading:
@@ -496,9 +495,9 @@ class SulfurApplicationEventsMixin:
             self.ui.pkgsetsButtonBox.hide()
 
         if action == "queued":
-            self.ui.queueReviewAndInstallBox.show()
+            self.ui.queueTabBox.show()
         else:
-            self.ui.queueReviewAndInstallBox.hide()
+            self.ui.queueTabBox.hide()
 
         self.show_packages(on_init = on_init)
         rb.grab_remove()
@@ -555,9 +554,6 @@ class SulfurApplicationEventsMixin:
         self.reset_queue_progress_bars()
         if rc and not fetch_only:
             self.queue.clear()       # Clear package queue
-            self.queueView.refresh() # Refresh Package Queue
-        #if fetch_only:
-        #    self.switch_notebook_page('queue')
 
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (
@@ -595,10 +591,9 @@ class SulfurApplicationEventsMixin:
                 pkg.queued = key
                 self.queue.packages[key].append(pkg)
 
-            self.queueView.refresh()
-
     def on_queueClean_clicked(self, widget):
         self.reset_cache_status()
+        self.set_package_radio("updates")
         self.show_packages()
 
     def on_adv_doubleclick( self, widget, iterator, path ):
@@ -969,8 +964,10 @@ class SulfurApplicationEventsMixin:
                 _("All the missing dependencies are going to be added to the queue"))
 
         rc = self.add_atoms_to_queue(found_deps)
-        if rc: self.switch_notebook_page("queue")
-        else: self.switch_notebook_page("preferences")
+        if rc:
+            self.switch_notebook_page("packages")
+        else:
+            self.switch_notebook_page("preferences")
         self.ui_lock(False)
         self.end_working()
         self.progress.reset_progress()
@@ -1039,8 +1036,10 @@ class SulfurApplicationEventsMixin:
                 _("All the broken packages are going to be added to the queue"))
 
         rc = self.add_atoms_to_queue([], matches = matches)
-        if rc: self.switch_notebook_page("queue")
-        else: self.switch_notebook_page("preferences")
+        if rc:
+            self.switch_notebook_page("packages")
+        else:
+            self.switch_notebook_page("preferences")
 
         do_stop()
 

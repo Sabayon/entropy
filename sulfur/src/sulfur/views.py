@@ -440,7 +440,7 @@ class EntropyPackageView:
 
     ROW_HEIGHT = 35
 
-    def __init__( self, treeview, qview, ui, etpbase, main_window,
+    def __init__( self, treeview, queue, ui, etpbase, main_window,
         application = None ):
 
         self.Equo = Equo()
@@ -532,8 +532,7 @@ class EntropyPackageView:
         self.store = self.setupView()
         self.dummyCats = {}
         self.__install_statuses = {}
-        self.queue = qview.queue
-        self.queueView = qview
+        self.queue = queue
         self.ui = ui
         self.etpbase = etpbase
         self.clear_updates()
@@ -1080,7 +1079,6 @@ class EntropyPackageView:
                 obj.queued = queued
                 obj.do_purge = do_purge
 
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1108,7 +1106,6 @@ class EntropyPackageView:
             for obj in self.selected_objs+self.loaded_reinstallables:
                 obj.queued = q_cache.get(obj.matched_atom)
 
-        self.queueView.refresh()
         normal_cursor(self.main_window)
 
     def on_reinstall_activate(self, widget):
@@ -1326,7 +1323,6 @@ class EntropyPackageView:
                     dummy_obj.queued = c_action
                 item.queued = c_action
 
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1388,7 +1384,6 @@ class EntropyPackageView:
                 item.queued = c_action
 
 
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1426,14 +1421,12 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         if self.selected_objs:
             self.add_to_queue(self.selected_objs, action)
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
         busy_cursor(self.main_window)
         self.remove_queued(self.selected_objs)
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1452,7 +1445,6 @@ class EntropyPackageView:
                 # also update original objects
                 for obj in self.selected_objs:
                     obj.queued = "u"
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1466,7 +1458,6 @@ class EntropyPackageView:
         selected_objs = self.get_installed_pkg_objs_for_selected()
         self.remove_queued(selected_objs)
         self.remove_queued(self.selected_objs)
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1482,7 +1473,6 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         if objs:
             self.add_to_package_mask(objs)
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1491,7 +1481,6 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         if self.selected_objs:
             self.add_to_package_mask(self.selected_objs)
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1500,7 +1489,6 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         if self.selected_objs:
             self.add_to_package_mask(self.selected_objs)
-        self.queueView.refresh()
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1629,7 +1617,6 @@ class EntropyPackageView:
         atom = obj.name
         key = dep_getkey(atom)
 
-        self.queueView.refresh()
         self.view.queue_draw()
 
         t = ParallelTask(self.vote_submit_thread, repository, key, obj)
@@ -1672,10 +1659,6 @@ class EntropyPackageView:
         time.sleep(5)
         obj.voted = 0.0
         def do_refresh():
-            try:
-                self.queueView.refresh()
-            except self.Equo.dbapi2.ProgrammingError:
-                pass
             self.view.queue_draw()
             return False
         gobject.timeout_add(0, do_refresh)
@@ -1925,7 +1908,6 @@ class EntropyPackageView:
         else:
             for obj in mylist:
                 obj.queued = None
-        self.queueView.refresh()
         self.view.queue_draw()
 
     def clear_updates(self):
@@ -1950,7 +1932,6 @@ class EntropyPackageView:
             obj.queued = None
         self.queue.remove(xlist)
         self.clear_updates()
-        self.queueView.refresh()
         self.view.queue_draw()
 
 class EntropyQueueView:

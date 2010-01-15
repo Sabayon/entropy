@@ -183,9 +183,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.queue = Queue(self)
         self.etpbase.connect_queue(self.queue)
-        self.queueView = EntropyQueueView(self.ui.queueView, self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView,
-            self.ui, self.etpbase, self.ui.main, self)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queue, self.ui,
+            self.etpbase, self.ui.main, self)
         self.filesView = EntropyFilesView(self.ui.filesView, self.ui.systemVbox)
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView,
             self.ui, self.etpbase)
@@ -609,7 +608,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.reset_queue_progress_bars()
         if rc:
             self.queue.clear()
-            self.queueView.refresh()
         return rc
 
     def packages_install(self):
@@ -710,9 +708,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.create_sidebar_button(self.ui.sideRadioPrefsImage,
             "preferences.png", 'preferences' )
-
-        self.create_sidebar_button(self.ui.sideRadioQueueImage,
-            "button-queue.png", 'queue' )
 
         self.create_sidebar_button(self.ui.sideRadioInstallImage,
             "button-output.png", 'output' )
@@ -1397,10 +1392,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.isBusy = False
         normal_cursor(self.ui.main)
 
-    def set_package_radio( self, tag ):
+    def set_package_radio(self, tag):
         self.lastPkgPB = tag
         widget = self.packageRB[tag]
-        widget.set_active( True )
+        widget.set_active(True)
 
     def set_notebook_page(self, page):
         ''' Switch to Page in GUI'''
@@ -1451,8 +1446,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 obj.queued = q_cache.get(obj.matched_atom)
             return False
 
-        self.queueView.refresh()
-        self.ui.viewPkg.queue_draw()
         return True
 
     def _show_orphans_message(self, orphans):
@@ -1658,7 +1651,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.etpbase.clear_groups()
         self.etpbase.clear_cache()
         self.queue.clear()
-        self.queueView.refresh()
         # re-scan system settings, useful
         # if there are packages that have been
         # live masked, and anyway, better wasting
@@ -1671,13 +1663,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.securityVbox.hide()
         self.ui.prefsVbox.hide()
         self.ui.reposVbox.hide()
-        self.ui.queueVbox.hide()
         self.ui.systemVbox.hide()
         self.ui.packagesVbox.hide()
         self.ui.progressVBox.show()
 
     def show_notebook_tabs_after_install(self):
-        self.ui.queueVbox.show()
         self.ui.systemVbox.show()
         self.ui.packagesVbox.show()
         self.switch_application_mode(SulfurConf.simple_mode)
@@ -1903,7 +1893,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 elif err in (2, 3):
                     # 2: masked package cannot be unmasked
                     # 3: license not accepted, move back to queue page
-                    switch_back_page = 'queue'
+                    switch_back_page = 'packages'
                     state = False
 
                 elif (err == 0) and restart_needed and \
