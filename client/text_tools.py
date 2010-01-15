@@ -15,7 +15,8 @@ import time
 import subprocess
 
 from entropy.const import etpConst
-from entropy.output import print_info, print_generic, darkgreen, writechar
+from entropy.output import print_info, print_generic, darkgreen, writechar, \
+    blue, red, brown, darkblue, purple
 from entropy.i18n import _
 
 # Temporary files cleaner
