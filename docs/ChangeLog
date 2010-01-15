@@ -1,3 +1,63 @@
+commit aafbc0632c6de68867c59982a986a008cb9a7227
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 20:11:04 2010 +0100
+
+    [entropy.tools] fix typo
+
+commit 9b5aa1a2c597deb5e538550b7677659f3c32c146
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 20:08:08 2010 +0100
+
+    [entropy.tools] more entropy.tools module cleanup work
+
+commit bcdac1541b8f8103a1b8bb592e9d4456210915e7
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 16:20:20 2010 +0100
+
+    [entropy.tools] more API refinement work
+
+commit d8c28b84a135970204beefb5d81b289d1f091ccf
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 16:10:35 2010 +0100
+
+    [entropy.tools] move backup_client_repository away from entropy.tools
+
+commit 897776787e44aafa3d455dd45ee3a7a31041b93d
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 13:59:28 2010 +0100
+
+    [equo] add missing imports to text_tools
+
+commit 3da41564264c56c08472c92d07391066ff8b5c30
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 13:56:46 2010 +0100
+
+    [sulfur] kill the "Installation" notebook page, we have the "queue" tab which is much better
+
+commit b317c4629777425fee7f122f289fea9c49e26895
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 10:24:01 2010 +0100
+
+    [sulfur] remove description trimming based on length
+
+commit a6e41cffe5e1b1d4fa0a949ff459b65218ea0a24
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Thu Jan 14 18:34:51 2010 +0100
+
+    [entropy.tools] start module refactoring and API docs merge
+
+commit 5f3a7127f69cb97457f6217d26cd35242edaff7c
+Author: Daniel Halens Rodriguez <dhalens@lappie.(none)>
+Date:   Thu Jan 14 14:04:48 2010 +0000
+
+    [i18n] Update Slovak translation and add Bystrík Pešl as translator
+
+commit d420ea62d241f4645bdd6ca9bef8c7c07c99e44d
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Thu Jan 14 14:48:21 2010 +0100
+
+    Update ChangeLog for version 0.99.24.3
+
 commit 28f64a053cd8951f4d1556e30cfb603cee5f32b7
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Thu Jan 14 14:47:56 2010 +0100
