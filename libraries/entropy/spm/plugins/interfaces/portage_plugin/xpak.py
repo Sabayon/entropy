@@ -30,25 +30,21 @@ else:
     XPAKSTOP = "XPAKSTOP"
     STOP = "STOP"
 
-def addtolist(mylist, curdir):
+def _addtolist(mylist, curdir, _nested = False):
+    if not _nested:
+        curdir = os.path.normpath(curdir)
     """(list, dir) --- Takes an array(list) and appends all files from dir down
     the directory tree. Returns nothing. list is modified."""
-    if sys.hexversion >= 0x3000000:
-        this_dir = b"."
-        slash_dir = b"/"
-        upper_dir = b".."
-    else:
-        this_dir = "."
-        slash_dir = "/"
-        upper_dir = ".."
-    for x in os.listdir(this_dir):
-        if os.path.isdir(x):
-            os.chdir(x)
-            addtolist(mylist, curdir + x + slash_dir)
-            os.chdir(upper_dir)
-        else:
-            if curdir+x not in mylist:
-                mylist.append(curdir+x)
+    for x in os.listdir(curdir):
+        x_path = os.path.join(curdir, x)
+        if os.path.isdir(x_path):
+            _addtolist(mylist, x_path, _nested = True)
+        elif x_path not in mylist:
+                mylist.append(x_path)
+
+    if not _nested:
+        for idx in xrange(len(mylist)):
+            mylist[idx] = mylist[idx][len(curdir)+1:]
 
 def encodeint(myint):
     """Takes a 4 byte integer and converts it into a string of 4 characters.
@@ -78,34 +74,20 @@ def decodeint(mystring):
         myint=myint+(ord(mystring[0]) << 24)
     return myint
 
-def xpak(rootdir,outfile=None):
+def xpak(rootdir, outfile=None):
     """(rootdir,outfile) -- creates an xpak segment of the directory 'rootdir'
     and under the name 'outfile' if it is specified. Otherwise it returns the
     xpak segment."""
-    try:
-        origdir=os.getcwd()
-    except SystemExit:
-        raise
-    except:
-        os.chdir("/")
-        origdir="/"
-    os.chdir(rootdir)
     mylist = []
-
-    if sys.hexversion >= 0x3000000:
-        edir = b""
-    else:
-        edir = ""
-
-    addtolist(mylist, edir)
+    _addtolist(mylist, rootdir)
 
     mylist.sort()
     mydata = {}
     for x in mylist:
-        a = open(x, "rb")
+        x_path = os.path.join(rootdir, x)
+        a = open(x_path, "rb")
         mydata[x] = a.read()
         a.close()
-    os.chdir(origdir)
 
     xpak_segment = xpak_mem(mydata)
     if outfile:
@@ -223,8 +205,8 @@ def searchindex(myindex, myitem):
         if mytestlen==mylen:
             if myitem==myindex[startpos+4:startpos+4+mytestlen]:
                 #found
-                datapos=decodeint(myindex[startpos+4+mytestlen:startpos+8+mytestlen]);
-                datalen=decodeint(myindex[startpos+8+mytestlen:startpos+12+mytestlen]);
+                datapos=decodeint(myindex[startpos+4+mytestlen:startpos+8+mytestlen])
+                datalen=decodeint(myindex[startpos+8+mytestlen:startpos+12+mytestlen])
                 return datapos, datalen
         startpos=startpos+mytestlen+12
 
@@ -237,32 +219,25 @@ def getitem(myid, myitem):
     return mydata[myloc[0]:myloc[0]+myloc[1]]
 
 def xpand(myid, mydest):
-    myindex=myid[0]
-    mydata=myid[1]
-    try:
-        origdir=os.getcwd()
-    except SystemExit:
-        raise
-    except:
-        os.chdir("/")
-        origdir="/"
-    os.chdir(mydest)
-    myindexlen=len(myindex)
-    startpos=0
-    while ((startpos+8)<myindexlen):
-        namelen=decodeint(myindex[startpos:startpos+4])
-        datapos=decodeint(myindex[startpos+4+namelen:startpos+8+namelen]);
-        datalen=decodeint(myindex[startpos+8+namelen:startpos+12+namelen]);
-        myname=myindex[startpos+4:startpos+4+namelen]
-        dirname=os.path.dirname(myname)
-        if dirname:
-            if not os.path.exists(dirname):
-                os.makedirs(dirname)
-        mydat=open(myname, "wb")
-        mydat.write(mydata[datapos:datapos+datalen])
-        mydat.close()
-        startpos=startpos+namelen+12
-    os.chdir(origdir)
+    myindex = myid[0]
+    mydata = myid[1]
+
+    myindexlen = len(myindex)
+    startpos = 0
+    while ((startpos+8) < myindexlen):
+        namelen = decodeint(myindex[startpos:startpos+4])
+        datapos = decodeint(myindex[startpos+4+namelen:startpos+8+namelen])
+        datalen = decodeint(myindex[startpos+8+namelen:startpos+12+namelen])
+        myname = myindex[startpos+4:startpos+4+namelen]
+        myname = os.path.join(mydest, myname)
+        dirname = os.path.dirname(myname)
+        if not os.path.exists(dirname):
+            os.makedirs(dirname)
+        with open(myname, "wb") as mydat:
+            mydat.write(mydata[datapos:datapos+datalen])
+            mydat.flush()
+        startpos = startpos+namelen+12
+
 
 class tbz2:
     def __init__(self, myfile):
@@ -341,7 +316,7 @@ class tbz2:
                 if not changed:
                     return 1
             self.filestat=mystat
-            a=open(self.file, "rb")
+            a = open(self.file, "rb")
             a.seek(-16, os.SEEK_END)
             trailer=a.read()
             self.infosize=0
@@ -384,9 +359,9 @@ class tbz2:
         myresult=searchindex(self.index, myfile)
         if not myresult:
             return mydefault
-        a=open(self.file, "rb")
+        a = open(self.file, "rb")
         a.seek(self.datapos+myresult[0], 0)
-        myreturn=a.read(myresult[1])
+        myreturn = a.read(myresult[1])
         a.close()
         return myreturn
 
@@ -401,34 +376,26 @@ class tbz2:
         """Unpacks all the files from the dataSegment into 'mydest'."""
         if not self.scan():
             return 0
-        try:
-            origdir=os.getcwd()
-        except SystemExit:
-            raise
-        except:
-            os.chdir("/")
-            origdir="/"
-        a=open(self.file, "rb")
-        if not os.path.exists(mydest):
-            os.makedirs(mydest)
-        os.chdir(mydest)
+
+        a = open(self.file, "rb")
         startpos=0
+
         while ((startpos+8)<self.indexsize):
-            namelen=decodeint(self.index[startpos:startpos+4])
-            datapos=decodeint(self.index[startpos+4+namelen:startpos+8+namelen]);
-            datalen=decodeint(self.index[startpos+8+namelen:startpos+12+namelen]);
-            myname=self.index[startpos+4:startpos+4+namelen]
-            dirname=os.path.dirname(myname)
-            if dirname:
-                if not os.path.exists(dirname):
-                    os.makedirs(dirname)
-            mydat=open(myname, "wb")
-            a.seek(self.datapos+datapos)
-            mydat.write(a.read(datalen))
-            mydat.close()
-            startpos=startpos+namelen+12
+            namelen = decodeint(self.index[startpos:startpos+4])
+            datapos = decodeint(self.index[startpos+4+namelen:startpos+8+namelen])
+            datalen = decodeint(self.index[startpos+8+namelen:startpos+12+namelen])
+            myname = self.index[startpos+4:startpos+4+namelen]
+            myname = os.path.join(mydest, myname)
+            dirname = os.path.dirname(myname)
+            if not os.path.exists(dirname):
+                os.makedirs(dirname)
+            a.seek(self.datapos + datapos)
+            with open(myname, "wb") as mydat:
+                mydat.write(a.read(datalen))
+                mydat.flush()
+            startpos = startpos + namelen + 12
+
         a.close()
-        os.chdir(origdir)
         return 1
 
     def get_data(self):
