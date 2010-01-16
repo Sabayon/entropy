@@ -480,6 +480,10 @@ class SulfurApplicationEventsMixin:
 
     def on_pkgFilter_toggled(self, rb, action, on_init = False):
 
+        do_clear_filter_bar = False
+        if action != self.lastPkgPB:
+            do_clear_filter_bar = True
+
         rb.grab_add()
         self.lastPkgPB = action
 
@@ -502,6 +506,10 @@ class SulfurApplicationEventsMixin:
         self.show_packages(on_init = on_init)
         rb.grab_remove()
 
+        if do_clear_filter_bar:
+            # clear filter bar
+            self.ui.pkgFilter.set_text("")
+
     def on_repoRefreshButton_clicked(self, widget):
         self.on_repoRefresh_clicked(widget)
         self.switch_notebook_page('packages')
@@ -515,22 +523,10 @@ class SulfurApplicationEventsMixin:
 
     def do_repo_refresh(self, repos):
         self.switch_notebook_page('output')
-        self.ui.main.queue_draw()
-        self.ui_lock(True)
-        try:
-            self.gtk_loop()
-            self.start_working()
-            status = self.update_repositories(repos)
-            self.end_working()
-            self.progress.reset_progress()
-            self.reset_cache_status()
-            self.setup_repoView()
-            self.setup_application()
-            self.switch_notebook_page('repos')
-            if status:
-                self.show_notice_board()
-        finally:
-            self.ui_lock(False)
+        status = self.update_repositories(repos)
+        self.switch_notebook_page('repos')
+        if status:
+            self.show_notice_board()
 
     def on_cacheButton_clicked(self, widget):
         self.repoView.get_selected()

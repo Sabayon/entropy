@@ -38,7 +38,7 @@ import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants
 from entropy.i18n import _
-from entropy.misc import TimeScheduled, ParallelTask
+from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
 
@@ -195,7 +195,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._filterbar_previous_txt = ''
         self.firstButton = None  # first button
         self.activePage = 'repos'
-        self.pageBootstrap = True
         # Progress bars
         self.progress = BaseProgress(self.ui, self.switch_notebook_page, self)
         # Package Radiobuttons
@@ -338,6 +337,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # make Sulfur label look nicer
         self.ui.rbAllSimpleLabel.set_markup("<small>%s</small>" % (
             _("Applications"),))
+        self.ui.rbSyncSimpleLabel.set_markup("<small>%s</small>" % (
+            _("Sync"),))
 
         small_widgets = [self.ui.rbRefreshLabel, self.ui.rbUpdatesLabel,
             self.ui.rbAvailableLabel, self.ui.rbInstalledLabel,
@@ -353,6 +354,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def file_updates_cache_gen():
             self.Equo.FileUpdates.scanfs(quiet = True)
             self.Cacher.sync()
+            return False
 
         def file_updates_fill_view():
             try:
@@ -360,6 +362,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             except AttributeError: # it is really necessary
                 return
             gobject.idle_add(file_updates_cache_gen)
+            return False
 
         gobject.idle_add(file_updates_fill_view)
 
@@ -421,10 +424,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.rbUpdatesSimpleHbox.reorder_child(adv_content, 0)
 
-        # updates label
+        self.ui.rbSyncSimpleLabel.show()
         self.ui.rbUpdatesSimpleLabel.show()
         self.ui.rbUpdatesLabel.hide()
-        # all label
         self.ui.rbAllSimpleLabel.show()
 
         self.ui.rbRefreshLabel.hide()
@@ -464,10 +466,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.headerHbox.reorder_child(adv_content, 0)
 
-        # updates label
+        self.ui.rbSyncSimpleLabel.hide()
         self.ui.rbUpdatesSimpleLabel.hide()
         self.ui.rbUpdatesLabel.show()
-        # all label
         self.ui.rbAllSimpleLabel.hide()
 
         self.ui.rbRefreshLabel.show()
@@ -1295,9 +1296,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def update_repositories(self, repos):
 
-        self.disable_ugc = True
-        self.hide_notebook_tabs_for_install()
-
         self.progress.set_mainLabel(_('Initializing Repository module...'))
         force = self.ui.forceRepoUpdate.get_active()
 
@@ -1316,6 +1314,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.disable_ugc = False
             self.show_notebook_tabs_after_install()
             return 2
+
+        self.disable_ugc = True
+        self.hide_notebook_tabs_for_install()
+        self.start_working()
+        self.ui_lock(True)
 
         self.__repo_update_rc = -1000
         def run_up():
@@ -1355,8 +1358,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.progress.set_extraLabel(
                     _('sys-apps/entropy needs to be updated as soon as possible.'))
 
+        self.end_working()
+        self.progress.reset_progress()
+        self.reset_cache_status()
+        self.setup_repoView()
+        self.setup_application()
         self.set_package_radio('updates')
         initconfig_entropy_constants(etpSys['rootdir'])
+        self.ui_lock(False)
 
         self.disable_ugc = False
         self.show_notebook_tabs_after_install()
@@ -1476,7 +1485,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def show_packages(self, back_to_page = None, on_init = False):
 
-        self.ui_lock(True)
         action = self.lastPkgPB
         if action == 'all':
             masks = ['installed', 'available', 'masked', 'updates']
@@ -1484,29 +1492,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             masks = [action]
 
         self.disable_ugc = True
+        self.ui_lock(True)
         self.set_busy()
-        bootstrap = False
-        if (self.Equo._get_updates_cache(empty_deps = False) == None):
-            if self.do_debug:
-                print_generic("show_packages: bootstrap True due to empty world cache")
-            bootstrap = True
-            self.switch_notebook_page('output')
-        elif (self.Equo._get_available_packages_cache() is None) and \
-            (('available' in masks) or ('updates' in masks)):
-            if self.do_debug:
-                print_generic("show_packages: bootstrap True due to empty avail cache")
-            bootstrap = True
-            self.switch_notebook_page('output')
-
-        if bootstrap:
-            if self.do_debug:
-                if on_init:
-                    print_generic("show_packages: bootstrap is enabled, clearing ALL cache")
-                else:
-                    print_generic("show_packages: bootstrap is enabled, and cache has been removed. I won't touch anything")
-            if on_init:
-                self.etpbase.clear_cache()
-            self.start_working()
 
         allpkgs = []
         self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
@@ -1532,12 +1519,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.etpbase.get_groups("downgrade")
             gobject.idle_add(do_more_caching)
 
-        if bootstrap:
-            self.end_working()
-
         # set updates label
         if action == 'updates':
-            self._set_updates_label(len(allpkgs))
+            raw_updates = len(self.etpbase.get_raw_groups('updates'))
+            self._set_updates_label(raw_updates)
 
         empty = False
         do_switch_to = None
@@ -1587,8 +1572,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.progress.hide() #Hide Progress
         if back_to_page:
             self.switch_notebook_page(back_to_page)
-        elif bootstrap:
-            self.switch_notebook_page('packages')
 
         self.unset_busy()
         self.ui_lock(False)
@@ -1958,11 +1941,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def switch_notebook_page(self, page):
         self.on_PageButton_changed(None, page)
-
-    def switch_application_tab(self, action, on_init = False):
-        rb = self.packageRB[action]
-        rb.set_active(True)
-        self.on_pkgFilter_toggled(rb, action, on_init = on_init)
 
 ####### events
 
