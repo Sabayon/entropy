@@ -389,6 +389,12 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
     # verify that client database idpackage still exist,
     # validate here before passing removePackage() wrong info
     remove = [x for x in remove if E_CLIENT.clientDbconn.isIdpackageAvailable(x)]
+    # Filter out packages installed from unavailable repositories, this is
+    # mainly required to allow 3rd party packages installation without
+    # erroneously inform user about unavailability.
+    remove = [x for x in remove if \
+        E_CLIENT.clientDbconn.getInstalledPackageRepository(x) in \
+            E_CLIENT.validRepositories]
 
     if remove and E_CLIENT.validRepositories and (not onlyfetch):
         remove = sorted(remove)

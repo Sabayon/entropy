@@ -695,6 +695,12 @@ class EntropyPackages:
     def _pkg_get_orphans(self):
         updates, remove, fine, spm_fine = self.Entropy.calculate_updates(
                 critical_updates = False)
+        # Filter out packages installed from unavailable repositories, this is
+        # mainly required to allow 3rd party packages installation without
+        # erroneously inform user about unavailability.
+        remove = [x for x in remove if \
+            self.Entropy.clientDbconn.getInstalledPackageRepository(x) in \
+                self.Entropy.validRepositories]
         return [x for x in map(self.__inst_pkg_setup, remove) if not \
             isinstance(x, int)]
 
