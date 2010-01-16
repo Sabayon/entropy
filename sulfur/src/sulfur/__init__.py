@@ -791,11 +791,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
             pingus_id = "sulfur_ugc_content_spawn"
             # check if at least 2 hours are passed since last check
-            if not self._mtime_pingus.hours_passed(pingus_id, 2) and \
+            if not self._mtime_pingus.hours_passed(pingus_id, 6) and \
                 cache_available:
 
                 if self.do_debug:
-                    print_generic("UGC not syncing, 2 hours are not passed")
+                    print_generic("UGC not syncing, 6 hours not passed")
                 return
             self._mtime_pingus.ping(pingus_id)
 
@@ -1348,13 +1348,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         t = ParallelTask(run_up)
         t.start()
-        print 4
         while t.isAlive():
             time.sleep(0.2)
             if self.do_debug:
                 print_generic("update_repositories: update thread still alive")
             self.gtk_loop()
-            print 10
         rc = self.__repo_update_rc
 
         for repo in repos:
