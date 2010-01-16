@@ -480,12 +480,14 @@ class SulfurApplicationEventsMixin:
 
     def on_pkgFilter_toggled(self, rb, action, on_init = False):
 
+        if not rb.get_active():
+            # filter out on-release events
+            return
+        rb.grab_add()
+
         do_clear_filter_bar = False
         if action != self.lastPkgPB:
             do_clear_filter_bar = True
-
-        rb.grab_add()
-        self.lastPkgPB = action
 
         if action == "masked":
             self.setup_masked_pkgs_warning_box()
@@ -503,6 +505,14 @@ class SulfurApplicationEventsMixin:
         else:
             self.ui.queueTabBox.hide()
 
+        if action == "search":
+            if do_clear_filter_bar and self.etpbase.get_search():
+                pass # if I moved and there's already a search running
+                # do not run a new search
+            else:
+                gobject.idle_add(self.run_search_package_dialog)
+
+        self.lastPkgPB = action
         self.show_packages(on_init = on_init)
         rb.grab_remove()
 
@@ -712,9 +722,7 @@ class SulfurApplicationEventsMixin:
                 flt.setKeys(txt.split(), self.Equo.get_package_groups())
                 self.pkgView.expand()
 
-            action = self.lastPkgPB
-            rb = self.packageRB[action]
-            self.on_pkgFilter_toggled(rb, action)
+            self.show_packages()
             self._filterbar_previous_txt = txt
             return False
 

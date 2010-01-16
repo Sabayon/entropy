@@ -294,7 +294,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._orphans_message_shown = False
         self.skipMirrorNow = False
         self.abortQueueNow = False
-        self.doProgress = False
         self._is_working = False
         self.lastPkgPB = "updates"
         self.Equo.connect_to_gui(self)
@@ -304,7 +303,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # setup Repositories
         self.setup_repoView()
-        self.firstTime = True
         # setup app
         self.setup_application(on_init = True)
 
@@ -349,11 +347,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             _("Sync"),))
         self.ui.rbQueueSimpleLabel.set_markup("<small>%s</small>" % (
             _("Actions"),))
+        self.ui.repoSearchSimpleLabel.set_markup("<small>%s</small>" % (
+            _("Search"),))
 
-        small_widgets = [self.ui.rbRefreshLabel, self.ui.rbUpdatesLabel,
+        small_widgets = [self.ui.rbRefreshLabel,
             self.ui.rbAvailableLabel, self.ui.rbInstalledLabel,
             self.ui.rbMaskedLabel, self.ui.rbAllLabel,
-            self.ui.rbPkgSetsLabel, self.ui.rbPkgSetsLabel1]
+            self.ui.rbPkgSetsLabel, self.ui.rbPkgSetsLabel1,
+            self.ui.repoSearchLabel]
         for widget in small_widgets:
             txt = widget.get_text()
             widget.set_markup("<small>%s</small>" % (txt,))
@@ -410,7 +411,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def switch_simple_mode(self):
         self.ui.servicesMenuItem.hide()
         self.ui.repoRefreshButton.show()
-        self.ui.vseparator1.hide()
         # self.ui.pkgSorter.hide()
         # self.ui.updateButtonView.hide()
         self.ui.rbAvailable.hide()
@@ -435,29 +435,36 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.rbUpdatesSimpleHbox.reorder_child(adv_content, 0)
 
+        # move sorter
+        sorter = self.ui.pkgSorter
+        if sorter.get_parent() is self.ui.appTopRightVbox:
+            self.ui.appTopRightVbox.remove(sorter)
+            self.ui.rbUpdatesSimpleHbox.pack_start(sorter)
+            self.ui.rbUpdatesSimpleHbox.reorder_child(sorter, -1)
+
         self.ui.rbSyncSimpleLabel.show()
         self.ui.rbQueueSimpleLabel.show()
         self.ui.rbUpdatesSimpleLabel.show()
+        self.ui.repoSearchSimpleLabel.show()
+        self.ui.repoSearchLabel.hide()
         self.ui.rbUpdatesLabel.hide()
         self.ui.rbAllSimpleLabel.show()
 
         self.ui.rbRefreshLabel.hide()
         self.ui.rbAllLabel.hide()
         self.ui.rbPkgSetsLabel1.hide()
-        self.ui.pkgFilter.set_size_request(-1, 40)
+        self.ui.pkgFilter.set_size_request(-1, 32)
 
         # move filterbar
         filter_bar = self.ui.pkgFilter
         if filter_bar.get_parent() is self.ui.appTopRightVbox:
             self.ui.appTopRightVbox.remove(filter_bar)
-            self.ui.rbUpdatesSimpleHbox.pack_start(filter_bar, expand = True,
-                fill = True)
-            self.ui.rbUpdatesSimpleHbox.reorder_child(filter_bar, -1)
+            self.ui.rbUpdatesSimpleFilterBox.pack_start(filter_bar)
+            self.ui.rbUpdatesSimpleFilterBox.reorder_child(filter_bar, 0)
 
     def switch_advanced_mode(self):
         self.ui.servicesMenuItem.show()
         self.ui.repoRefreshButton.hide()
-        self.ui.vseparator1.show()
         # self.ui.pkgSorter.show()
         # self.ui.updateButtonView.show()
         self.ui.rbAvailable.show()
@@ -478,10 +485,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 fill = False)
             self.ui.headerHbox.reorder_child(adv_content, 0)
 
+        sorter = self.ui.pkgSorter
+        if sorter.get_parent() is self.ui.rbUpdatesSimpleHbox:
+            self.ui.rbUpdatesSimpleHbox.remove(sorter)
+            self.ui.appTopRightVbox.pack_start(sorter)
+            self.ui.appTopRightVbox.reorder_child(sorter, 0)
+
         self.ui.rbSyncSimpleLabel.hide()
         self.ui.rbQueueSimpleLabel.hide()
         self.ui.rbUpdatesSimpleLabel.hide()
         self.ui.rbUpdatesLabel.show()
+        self.ui.repoSearchSimpleLabel.hide()
+        self.ui.repoSearchLabel.show()
         self.ui.rbAllSimpleLabel.hide()
 
         self.ui.rbRefreshLabel.show()
@@ -491,8 +506,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # move filterbar
         filter_bar = self.ui.pkgFilter
-        if filter_bar.get_parent() is self.ui.rbUpdatesSimpleHbox:
-            self.ui.rbUpdatesSimpleHbox.remove(filter_bar)
+        if filter_bar.get_parent() is self.ui.rbUpdatesSimpleFilterBox:
+            self.ui.rbUpdatesSimpleFilterBox.remove(filter_bar)
             self.ui.appTopRightVbox.pack_start(filter_bar, expand = True,
                 fill = True)
             self.ui.appTopRightVbox.reorder_child(filter_bar, -1)
@@ -676,9 +691,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_package_radio_buttons(self.ui.rbAll, "all")
         self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets")
         self.setup_package_radio_buttons(self.ui.rbPkgQueued, "queued")
+        self.setup_package_radio_buttons(self.ui.rbPkgSearch, "search")
 
     def setup_package_radio_buttons(self, widget, tag):
-        widget.connect('toggled', self.on_pkgFilter_toggled, tag)
+        widget.connect('clicked', self.on_pkgFilter_toggled, tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
         widget.set_mode( False )
@@ -698,6 +714,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 pix = self.ui.rbQueuedImage
             elif tag == "all":
                 pix = self.ui.rbAllImage
+            elif tag == "search":
+                pix = self.ui.rbSearchImage
             pix.set_from_pixbuf( p )
             pix.show()
         except gobject.GError:
@@ -1501,7 +1519,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _set_updates_label(self, updates_count):
         # set both simple and advanced mode labels
-        txt_simple = "<b>%s</b>" % (updates_count,)
+        txt_simple = "<b><big>%s</big></b>" % (updates_count,)
         txt_adv = txt_simple + " <small>%s</small>" % (_("updates"),)
         self.ui.rbUpdatesSimpleLabel.set_markup(txt_adv)
         self.ui.rbUpdatesLabel.set_markup(txt_adv)
@@ -1591,8 +1609,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
 
-        if self.doProgress:
-            self.progress.hide() #Hide Progress
         if back_to_page:
             self.switch_notebook_page(back_to_page)
 
@@ -1677,6 +1693,60 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.systemVbox.show()
         self.ui.packagesVbox.show()
         self.switch_application_mode(SulfurConf.simple_mode)
+
+    def run_search_package_dialog(self):
+
+        def fake_callback(s):
+            return s
+
+        def do_name_search(keyword):
+            matches = []
+            for repoid in self.Equo.validRepositories:
+                dbconn = self.Equo.open_repository(repoid)
+                results = dbconn.searchPackages(keyword, just_id = True)
+                matches += [(x, repoid) for x in results]
+            # disabled due to duplicated entries annoyance
+            #results = self.Equo.clientDbconn.searchPackages(keyword,
+            #    just_id = True)
+            #matches += [(x, 0) for x in results]
+            return matches
+
+        def do_name_desc_search(keyword):
+            matches = []
+            for repoid in self.Equo.validRepositories:
+                dbconn = self.Equo.open_repository(repoid)
+                results = dbconn.searchPackagesByDescription(keyword)
+                matches += [(x, repoid) for atom, x in results]
+            # disabled due to duplicated entries annoyance
+            #results = self.Equo.clientDbconn.searchPackagesByDescription(
+            #    keyword)
+            #matches += [(x, 0) for atom, x in results]
+            return matches
+
+        search_reference = {
+            0: do_name_search,
+            1: do_name_desc_search,
+        }
+        search_types = [_("Name"), _("Name and description")]
+        input_params = [
+            ('search_string', _('Search string'), fake_callback, False),
+            ('search_type', ('combo', (_('Search type'), search_types),), fake_callback, False)
+        ]
+        data = self.Equo.input_box(
+            _('Entropy Search'),
+            input_params,
+            cancel_button = True
+        )
+        if data is None:
+            return
+
+        # clear filter bar
+        self.ui.pkgFilter.set_text("")
+
+        keyword = data['search_string']
+        fn = search_reference[data['search_type'][0]]
+        self.etpbase.set_search(fn, keyword)
+        self.show_packages()
 
     def check_restart_needed(self, to_be_installed_matches):
 

@@ -86,13 +86,15 @@ class EntropyPackage:
             if not rc:
                 # package set broken
                 self.broken = True
+                self.set_name = matched_atom
             else:
                 (set_from, self.set_name, self.set_matches,) = set_match
                 self.set_from.add(set_from)
-                self.cat = self.set_name
-                self.set_cat_namedesc = self.set_name
-                self.description = self.set_name
-                self.matched_repo = self.set_name
+
+            self.cat = self.set_name
+            self.set_cat_namedesc = self.set_name
+            self.description = self.set_name
+            self.matched_repo = self.set_name
 
             self.matched_id = etpConst['packagesetprefix']
             self.from_installed = False

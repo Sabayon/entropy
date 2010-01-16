@@ -588,14 +588,15 @@ class EntropyPackages:
 
     def __init__(self, EquoInstance):
         self.Entropy = EquoInstance
-        self.filterCallback = None
+        self._filter_callback = None
+        self._search_callback = None
         self._packages = {}
-        self.pkgCache = {}
+        self._pkg_cache = {}
         self.unmaskingPackages = set()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
         self.queue = None
-        self._non_cached_groups = ("queued",)
+        self._non_cached_groups = ("queued", "search",)
 
     def connect_queue(self, queue):
         self.queue = queue
@@ -614,7 +615,7 @@ class EntropyPackages:
         self.unmaskingPackages.clear()
 
     def clear_cache(self):
-        self.pkgCache.clear()
+        self._pkg_cache.clear()
         self._packages.clear()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
@@ -653,12 +654,21 @@ class EntropyPackages:
         #pkgs.extend(self.get_groups('user_unmasked'))
         return pkgs
 
-    def set_filter(self,fn = None):
-        self.filterCallback = fn
+    def set_filter(self, fn = None):
+        self._filter_callback = fn
+
+    def set_search(self, fn, keyword):
+        if fn is None:
+            self._search_callback = None
+        else:
+            self._search_callback = (fn, keyword)
+
+    def get_search(self):
+        return self._search_callback
 
     def do_filtering(self, pkgs):
-        if self.filterCallback:
-            return list(filter(self.filterCallback, pkgs))
+        if self._filter_callback:
+            return list(filter(self._filter_callback, pkgs))
         return pkgs
 
     def get_raw_groups(self, flt):
@@ -672,14 +682,14 @@ class EntropyPackages:
 
     def get_package_item(self, pkgdata):
         new = False
-        yp = self.pkgCache.get(pkgdata)
+        yp = self._pkg_cache.get(pkgdata)
         if yp is None:
             new = True
             pkgset = None
             if isinstance(pkgdata, const_get_stringtype()): # package set
                 pkgset = True
             yp = EntropyPackage(pkgdata, pkgset = pkgset)
-            self.pkgCache[pkgdata] = yp
+            self._pkg_cache[pkgdata] = yp
         return yp, new
 
     def __inst_pkg_setup(self, idpackage):
@@ -989,7 +999,7 @@ class EntropyPackages:
 
     def _pkg_get_empty_search_item(self):
 
-        if self.filterCallback:
+        if self._filter_callback:
             msg2 = _("No packages found means nothing to show!")
 
             msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
@@ -1025,8 +1035,29 @@ class EntropyPackages:
 
         return metadata
 
-    def _get_groups(self, mask):
+    def _pkg_get_search(self):
+        if self._search_callback is None:
+            return []
 
+        func, arg = self._search_callback
+        matches = func(arg)
+        # load pkgs
+        for key in self._get_calls_dict().keys():
+            if key == "search": # myself
+                continue
+            self.get_raw_groups(key)
+        pkgs = []
+        for match in matches:
+            yp, new = self.get_package_item(match)
+            if new: # wtf!
+                sys.stderr.write("WTF! %s is new %s\n" % (match, yp,))
+                sys.stderr.flush()
+                continue
+            pkgs.append(yp)
+        return pkgs
+
+
+    def _get_calls_dict(self):
         calls_dict = {
             "installed": self._pkg_get_installed,
             "queued": self._pkg_get_queued,
@@ -1042,9 +1073,12 @@ class EntropyPackages:
             "fake_updates": self._pkg_get_fake_updates,
             "downgrade": self._pkg_get_downgrade,
             "glsa_metadata": self._pkg_get_glsa_metadata,
+            "search": self._pkg_get_search,
         }
-        return calls_dict.get(mask)()
+        return calls_dict
 
+    def _get_groups(self, mask):
+        return self._get_calls_dict().get(mask)()
 
     def is_reinstallable(self, atom, slot, revision):
         for repoid in self.Entropy.validRepositories:
