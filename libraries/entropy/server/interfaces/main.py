@@ -2194,7 +2194,7 @@ class Server(Singleton, TextInterface):
 
         # open both repos here to make sure it's all fine with them
         dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = repo)
+            no_upload = True, repo = from_repo)
         todbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = to_repo)
 
