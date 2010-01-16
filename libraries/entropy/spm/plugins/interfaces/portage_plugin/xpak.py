@@ -20,6 +20,7 @@
 import sys
 import os, shutil, errno
 from stat import *
+from entropy.const import const_convert_to_rawstring
 
 if sys.hexversion >= 0x3000000:
     XPAKPACK = b"XPAKPACK"
@@ -79,7 +80,7 @@ def xpak(rootdir, outfile=None):
     and under the name 'outfile' if it is specified. Otherwise it returns the
     xpak segment."""
     mylist = []
-    _addtolist(mylist, rootdir)
+    _addtolist(mylist, const_convert_to_rawstring(rootdir))
 
     mylist.sort()
     mydata = {}
