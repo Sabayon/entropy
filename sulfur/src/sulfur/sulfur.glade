@@ -497,10 +497,27 @@
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <property name="orientation">vertical</property>
                                 <child>
-                                  <widget class="GtkImage" id="rbQueuedImage">
+                                  <widget class="GtkHBox" id="hbox6">
                                     <property name="visible">True</property>
-                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="stock">gtk-apply</property>
+                                    <child>
+                                      <widget class="GtkImage" id="rbQueuedImage">
+                                        <property name="visible">True</property>
+                                        <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                        <property name="stock">gtk-apply</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkLabel" id="rbQueueSimpleLabel">
+                                        <property name="visible">True</property>
+                                        <property name="use_markup">True</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
                                   </widget>
                                   <packing>
                                     <property name="position">0</property>
@@ -510,7 +527,7 @@
                                   <widget class="GtkLabel" id="rbPkgSetsLabel1">
                                     <property name="visible">True</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                    <property name="label" translatable="yes">Queue</property>
+                                    <property name="label" translatable="yes">Actions</property>
                                     <property name="use_markup">True</property>
                                   </widget>
                                   <packing>
@@ -5254,15 +5271,6 @@ Relaxed</property>
               <packing>
                 <property name="position">5</property>
                 <property name="tab_fill">False</property>
-                <property name="type">tab</property>
-              </packing>
-            </child>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
-              <placeholder/>
-              <packing>
                 <property name="type">tab</property>
               </packing>
             </child>

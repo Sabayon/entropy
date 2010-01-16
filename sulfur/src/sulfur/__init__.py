@@ -67,11 +67,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.Cacher = EntropyCacher()
 
         self.do_debug = False
+        self._RESOURCES_LOCKED = False
         locked = self.Equo.application_lock_check(silent = True)
         if locked:
+            self._RESOURCES_LOCKED = True
             okDialog( None,
-                _("Entropy resources are locked and not accessible. Another Entropy application is running. Sorry, can't load Sulfur.") )
-            raise SystemExit(1)
+                _("Another Entropy instance is running. You won't be able to install/remove/sync applications.") )
         self.safe_mode_txt = ''
         # check if we'are running in safe mode
         if self.Equo.safe_mode:
@@ -332,6 +333,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # can lead to sqlite3 db corruptions?
         self.setup_background_cache_generators()
 
+    def setup_resources_locked(self):
+        self.ui.repoRefreshButton.set_sensitive(not self._RESOURCES_LOCKED)
+        self.ui.queueTabBox.set_sensitive(not self._RESOURCES_LOCKED)
+        self.ui.reposVbox.set_sensitive(not self._RESOURCES_LOCKED)
+        self.ui.installPackageItem.set_sensitive(not self._RESOURCES_LOCKED)
+        self.ui.systemVbox.set_sensitive(not self._RESOURCES_LOCKED)
+
     def setup_labels(self):
 
         # make Sulfur label look nicer
@@ -339,6 +347,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             _("Applications"),))
         self.ui.rbSyncSimpleLabel.set_markup("<small>%s</small>" % (
             _("Sync"),))
+        self.ui.rbQueueSimpleLabel.set_markup("<small>%s</small>" % (
+            _("Actions"),))
 
         small_widgets = [self.ui.rbRefreshLabel, self.ui.rbUpdatesLabel,
             self.ui.rbAvailableLabel, self.ui.rbInstalledLabel,
@@ -395,6 +405,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.advancedMode.set_active(1)
         SulfurConf.simple_mode = do_simple
         SulfurConf.save()
+        self.setup_resources_locked()
 
     def switch_simple_mode(self):
         self.ui.servicesMenuItem.hide()
@@ -425,6 +436,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.rbUpdatesSimpleHbox.reorder_child(adv_content, 0)
 
         self.ui.rbSyncSimpleLabel.show()
+        self.ui.rbQueueSimpleLabel.show()
         self.ui.rbUpdatesSimpleLabel.show()
         self.ui.rbUpdatesLabel.hide()
         self.ui.rbAllSimpleLabel.show()
@@ -467,6 +479,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.headerHbox.reorder_child(adv_content, 0)
 
         self.ui.rbSyncSimpleLabel.hide()
+        self.ui.rbQueueSimpleLabel.hide()
         self.ui.rbUpdatesSimpleLabel.hide()
         self.ui.rbUpdatesLabel.show()
         self.ui.rbAllSimpleLabel.hide()
@@ -1296,6 +1309,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def update_repositories(self, repos):
 
+        if self._RESOURCES_LOCKED:
+            return False
+
         force = self.ui.forceRepoUpdate.get_active()
 
         try:
@@ -1737,6 +1753,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def _process_queue(self, pkgs, remove_repos = None, fetch_only = False,
             download_sources = False, direct_remove_matches = None,
             direct_install_matches = None):
+
+        if self._RESOURCES_LOCKED:
+            okDialog(self.ui.main,
+                _("Another Entropy instance is running. Cannot process queue."))
+            return False
 
         if remove_repos is None:
             remove_repos = []
