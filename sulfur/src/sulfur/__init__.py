@@ -1296,7 +1296,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def update_repositories(self, repos):
 
-        self.progress.set_mainLabel(_('Initializing Repository module...'))
         force = self.ui.forceRepoUpdate.get_active()
 
         try:
@@ -1305,19 +1304,26 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             msg = "%s: %s" % (_('No repositories specified in'),
                 etpConst['repositoriesconf'],)
             self.progress_log( msg, extra = "repositories")
-            self.disable_ugc = False
-            self.show_notebook_tabs_after_install()
             return 127
         except Exception as e:
             msg = "%s: %s" % (_('Unhandled exception'), e,)
             self.progress_log(msg, extra = "repositories")
-            self.disable_ugc = False
-            self.show_notebook_tabs_after_install()
             return 2
 
         self.disable_ugc = True
+
+        # this is in EXACT order to avoid GTK complaining
+
+        self.show_progress_bars()
+        self.progress.set_mainLabel(_('Updating repositories...'))
+
         self.hide_notebook_tabs_for_install()
-        self.start_working()
+        self.set_status_ticker(_("Running tasks"))
+
+        self.start_working(do_busy = True)
+        normal_cursor(self.ui.main)
+        self.progress.show()
+        self.switch_notebook_page('output')
         self.ui_lock(True)
 
         self.__repo_update_rc = -1000
@@ -1326,11 +1332,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         t = ParallelTask(run_up)
         t.start()
+        print 4
         while t.isAlive():
             time.sleep(0.2)
             if self.do_debug:
                 print_generic("update_repositories: update thread still alive")
             self.gtk_loop()
+            print 10
         rc = self.__repo_update_rc
 
         for repo in repos:
@@ -1359,6 +1367,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     _('sys-apps/entropy needs to be updated as soon as possible.'))
 
         self.end_working()
+
         self.progress.reset_progress()
         self.reset_cache_status()
         self.setup_repoView()
