@@ -67,7 +67,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.Cacher = EntropyCacher()
 
         self.do_debug = False
-        locked = self.Equo.application_lock_check()
+        locked = self.Equo.application_lock_check(silent = True)
         if locked:
             okDialog( None,
                 _("Entropy resources are locked and not accessible. Another Entropy application is running. Sorry, can't load Sulfur.") )
