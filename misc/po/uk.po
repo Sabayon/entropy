@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: entropy_vitovtREV01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-16 16:12+0100\n"
+"POT-Creation-Date: 2010-01-17 00:10+0100\n"
 "PO-Revision-Date: 2010-01-15 21:04+0200\n"
 "Last-Translator: Grusha Linux Team\n"
 "Language-Team:  <contact@lgrusha.org.ua>\n"
@@ -38,9 +38,9 @@ msgstr "Entropy потребує Python, скомпільований з під�
 #: ../../libraries/entropy/client/interfaces/package.py:2188
 #: ../../libraries/entropy/client/interfaces/trigger.py:48
 #: ../../libraries/entropy/security.py:629 ../../server/server_reagent.py:738
-#: ../../sulfur/src/sulfur/events.py:860 ../../sulfur/src/sulfur/events.py:866
-#: ../../sulfur/src/sulfur/events.py:903
-#: ../../sulfur/src/sulfur/sulfur.glade.h:82
+#: ../../sulfur/src/sulfur/events.py:864 ../../sulfur/src/sulfur/events.py:870
+#: ../../sulfur/src/sulfur/events.py:907
+#: ../../sulfur/src/sulfur/sulfur.glade.h:84
 msgid "Error"
 msgstr "Помилка"
 
@@ -106,7 +106,7 @@ msgid "Syncing current database"
 msgstr "Синхронізація поточної бази даних"
 
 #: ../../libraries/entropy/db/__init__.py:6278
-#: ../../libraries/entropy/client/interfaces/repository.py:1803
+#: ../../libraries/entropy/client/interfaces/repository.py:1810
 msgid "please wait"
 msgstr "зачекайте, будь-ласка"
 
@@ -142,9 +142,9 @@ msgstr "Експорт бази даних завершено.  "
 #: ../../libraries/entropy/client/interfaces/client.py:771
 #: ../../client/text_rescue.py:219 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:604 ../../client/text_rescue.py:735
-#: ../../client/text_ui.py:603 ../../client/text_ui.py:1431
-#: ../../client/text_ui.py:1489 ../../client/text_ui.py:1514
-#: ../../client/text_ui.py:1606
+#: ../../client/text_ui.py:609 ../../client/text_ui.py:1437
+#: ../../client/text_ui.py:1495 ../../client/text_ui.py:1520
+#: ../../client/text_ui.py:1612
 msgid "ATTENTION"
 msgstr "УВАГА"
 
@@ -519,12 +519,12 @@ msgstr "Ви бажаєте ініціалізувати Ваш репозито
 #: ../../client/text_rescue.py:610 ../../client/text_rescue.py:613
 #: ../../client/text_rescue.py:617 ../../client/text_smart.py:126
 #: ../../client/text_smart.py:304 ../../client/text_smart.py:452
-#: ../../client/text_ui.py:411 ../../client/text_ui.py:718
-#: ../../client/text_ui.py:1237 ../../client/text_ui.py:1477
-#: ../../client/text_ui.py:1554 ../../client/text_ui.py:1689
-#: ../../client/text_ui.py:1780 ../../client/text_ui.py:1784
-#: ../../client/text_ui.py:1858 ../../client/text_ui.py:1972
-#: ../../client/text_ui.py:2050 ../../server/server_activator.py:120
+#: ../../client/text_ui.py:417 ../../client/text_ui.py:724
+#: ../../client/text_ui.py:1243 ../../client/text_ui.py:1483
+#: ../../client/text_ui.py:1560 ../../client/text_ui.py:1695
+#: ../../client/text_ui.py:1786 ../../client/text_ui.py:1790
+#: ../../client/text_ui.py:1864 ../../client/text_ui.py:1978
+#: ../../client/text_ui.py:2056 ../../server/server_activator.py:120
 #: ../../server/server_reagent.py:502 ../../server/server_reagent.py:610
 #: ../../server/server_reagent.py:665 ../../server/server_reagent.py:709
 #: ../../sulfur/src/sulfur/dialogs.py:1192
@@ -620,12 +620,12 @@ msgid "Running dependencies test"
 msgstr "Виконуємо тест залежностей"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1526
-#: ../../client/text_ui.py:1962
+#: ../../client/text_ui.py:1968
 msgid "These are the dependencies not found"
 msgstr "Є незнайдені залежності"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1533
-#: ../../client/text_ui.py:1966
+#: ../../client/text_ui.py:1972
 msgid "Needed by"
 msgstr "Необхідно для"
 
@@ -647,7 +647,7 @@ msgid "Dumping results into these files"
 msgstr "Запис результатів у ці файли"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1611
-#: ../../client/text_ui.py:2014
+#: ../../client/text_ui.py:2020
 msgid "System is healthy"
 msgstr "З системою все гаразд"
 
@@ -718,7 +718,7 @@ msgstr "ось пакунки, які будуть повернуті"
 #: ../../libraries/entropy/server/interfaces/main.py:3805
 #: ../../libraries/entropy/server/interfaces/main.py:4018
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3419
-#: ../../client/text_ui.py:717 ../../server/server_reagent.py:609
+#: ../../client/text_ui.py:723 ../../server/server_reagent.py:609
 #: ../../server/server_reagent.py:664 ../../server/server_reagent.py:708
 msgid "Would you like to continue ?"
 msgstr "Бажаєте продовжити?"
@@ -784,7 +784,7 @@ msgstr "Підготовка до копіювання обраних пакун
 
 #: ../../libraries/entropy/server/interfaces/main.py:2181
 #: ../../libraries/entropy/client/services/system/methods.py:89
-#: ../../sulfur/src/sulfur/sulfur.glade.h:139
+#: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Note"
 msgstr "Зауваження"
 
@@ -804,7 +804,7 @@ msgstr "новий тег"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2393
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3406
 #: ../../libraries/entropy/client/interfaces/package.py:638
-#: ../../client/text_ui.py:1874
+#: ../../client/text_ui.py:1880
 msgid "remove"
 msgstr "видалити"
 
@@ -972,7 +972,7 @@ msgstr "Бажаєте спершу синхронізувати пакунки 
 #: ../../client/text_rescue.py:499 ../../client/text_rescue.py:526
 #: ../../client/text_ugc.py:231 ../../client/text_ugc.py:412
 #: ../../client/text_ugc.py:488 ../../client/text_ugc.py:507
-#: ../../client/text_ui.py:1782 ../../client/text_ui.py:1787
+#: ../../client/text_ui.py:1788 ../../client/text_ui.py:1793
 #: ../../server/server_activator.py:312 ../../server/server_reagent.py:399
 #: ../../server/server_reagent.py:400 ../../server/server_reagent.py:424
 #: ../../server/server_reagent.py:437 ../../server/server_reagent.py:438
@@ -1000,16 +1000,16 @@ msgid "revision"
 msgstr "перевірка"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3743
-#: ../../libraries/entropy/client/interfaces/repository.py:1649
-#: ../../libraries/entropy/client/interfaces/repository.py:1719
-#: ../../libraries/entropy/client/interfaces/repository.py:1735
-#: ../../libraries/entropy/client/interfaces/repository.py:1748
-#: ../../libraries/entropy/client/interfaces/repository.py:1764
+#: ../../libraries/entropy/client/interfaces/repository.py:1656
+#: ../../libraries/entropy/client/interfaces/repository.py:1726
+#: ../../libraries/entropy/client/interfaces/repository.py:1742
+#: ../../libraries/entropy/client/interfaces/repository.py:1755
+#: ../../libraries/entropy/client/interfaces/repository.py:1771
 #: ../../libraries/entropy/qa.py:618 ../../client/text_rescue.py:284
-#: ../../client/text_rescue.py:297 ../../client/text_ui.py:1229
-#: ../../client/text_ui.py:1230 ../../client/text_ui.py:1232
-#: ../../client/text_ui.py:1233 ../../sulfur/src/sulfur/dialogs.py:2538
-#: ../../sulfur/src/sulfur/__init__.py:1149
+#: ../../client/text_rescue.py:297 ../../client/text_ui.py:1235
+#: ../../client/text_ui.py:1236 ../../client/text_ui.py:1238
+#: ../../client/text_ui.py:1239 ../../sulfur/src/sulfur/dialogs.py:2538
+#: ../../sulfur/src/sulfur/__init__.py:1181
 #: ../../sulfur/src/sulfur/packages.py:97
 #: ../../sulfur/src/sulfur/packages.py:416
 msgid "Attention"
@@ -1121,7 +1121,7 @@ msgstr "Вони не будуть перевірені"
 
 #: ../../libraries/entropy/server/interfaces/main.py:4105
 #: ../../libraries/entropy/server/interfaces/main.py:4268
-#: ../../libraries/entropy/client/interfaces/repository.py:956
+#: ../../libraries/entropy/client/interfaces/repository.py:963
 msgid "local"
 msgstr "локально"
 
@@ -1773,7 +1773,7 @@ msgid "cannot convert stream into object"
 msgstr "неможливо конвертувати потік в об'єкт"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:665
-#: ../../sulfur/src/sulfur/sulfur.glade.h:278
+#: ../../sulfur/src/sulfur/sulfur.glade.h:279
 msgid "User Generated Content"
 msgstr "Контент користувача"
 
@@ -1799,12 +1799,12 @@ msgid "repository does not support EAPI3"
 msgstr "репозиторій не підтримує EAPI3"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:136
-#: ../../sulfur/src/sulfur/sulfur.glade.h:279
+#: ../../sulfur/src/sulfur/sulfur.glade.h:280
 msgid "Username"
 msgstr "Ім'я користувача"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:137
-#: ../../sulfur/src/sulfur/sulfur.glade.h:160
+#: ../../sulfur/src/sulfur/sulfur.glade.h:162
 msgid "Password"
 msgstr "Пароль"
 
@@ -2166,10 +2166,12 @@ msgstr ""
 "взазначеному репозиторії"
 
 #: ../../libraries/entropy/client/services/system/methods.py:306
+#: ../../sulfur/src/sulfur/__init__.py:1733
 msgid "Search type"
 msgstr "Тип пошуку"
 
 #: ../../libraries/entropy/client/services/system/methods.py:307
+#: ../../sulfur/src/sulfur/__init__.py:1732
 msgid "Search string"
 msgstr "Стрічка пошуку"
 
@@ -2281,7 +2283,7 @@ msgstr "Додати запис до дошки повідомлень"
 #: ../../server/server_activator.py:199 ../../server/server_activator.py:231
 #: ../../server/server_activator.py:263 ../../sulfur/src/sulfur/dialogs.py:322
 #: ../../sulfur/src/sulfur/dialogs.py:559
-#: ../../sulfur/src/sulfur/sulfur.glade.h:255
+#: ../../sulfur/src/sulfur/sulfur.glade.h:256
 msgid "Title"
 msgstr "Заголовок"
 
@@ -2438,13 +2440,13 @@ msgstr "перевищено час очікування, здаюсь"
 #: ../../libraries/entropy/client/interfaces/methods.py:70
 #: ../../libraries/entropy/client/interfaces/methods.py:91
 #: ../../server/server_reagent.py:97 ../../server/server_reagent.py:114
-#: ../../sulfur/src/sulfur/__init__.py:917
+#: ../../sulfur/src/sulfur/__init__.py:949
 #: ../../sulfur/src/sulfur/views.py:2318
 msgid "Repository"
 msgstr "Репозиторій"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:71
-#: ../../client/text_ui.py:1433
+#: ../../client/text_ui.py:1439
 msgid "is not available"
 msgstr "недоступний"
 
@@ -2892,7 +2894,7 @@ msgstr "Мульти-завантаження"
 #: ../../libraries/entropy/client/interfaces/package.py:2232
 #: ../../libraries/entropy/client/interfaces/package.py:2251
 #: ../../client/text_query.py:746 ../../client/text_query.py:779
-#: ../../client/text_ui.py:861 ../../server/server_reagent.py:607
+#: ../../client/text_ui.py:867 ../../server/server_reagent.py:607
 msgid "packages"
 msgstr "пакунки"
 
@@ -2968,7 +2970,7 @@ msgid "Cannot open digest"
 msgstr "Неможливо відкрити огляд"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:501
-#: ../../libraries/entropy/client/interfaces/repository.py:1612
+#: ../../libraries/entropy/client/interfaces/repository.py:1619
 msgid "Cannot verify database integrity"
 msgstr "Неможливо перевірити цілісність бази даних"
 
@@ -3006,293 +3008,293 @@ msgstr "Локальний шлях до бази даних"
 msgid "Database EAPI"
 msgstr "EAPI бази даних"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:667
-#: ../../libraries/entropy/client/interfaces/repository.py:805
-#: ../../libraries/entropy/client/interfaces/repository.py:826
-#: ../../libraries/entropy/client/interfaces/repository.py:845
+#: ../../libraries/entropy/client/interfaces/repository.py:674
+#: ../../libraries/entropy/client/interfaces/repository.py:812
+#: ../../libraries/entropy/client/interfaces/repository.py:833
+#: ../../libraries/entropy/client/interfaces/repository.py:852
 msgid "EAPI3 Service status"
 msgstr "Статус служби EAPI3"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:668
+#: ../../libraries/entropy/client/interfaces/repository.py:675
 msgid "remote database suddenly locked"
 msgstr "віддалену базу даних несподівано було заблоковано"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:680
+#: ../../libraries/entropy/client/interfaces/repository.py:687
 msgid "EAPI3 Service"
 msgstr "Служба EAPI3"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:681
+#: ../../libraries/entropy/client/interfaces/repository.py:688
 msgid "skipping differential sync"
 msgstr "пропуск різної синхронізації"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:682
+#: ../../libraries/entropy/client/interfaces/repository.py:689
 msgid "threshold"
 msgstr "поріг"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:716
+#: ../../libraries/entropy/client/interfaces/repository.py:723
 msgid "Fetching segments"
 msgstr "Завантаження сегментів"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:738
+#: ../../libraries/entropy/client/interfaces/repository.py:745
 msgid "Fetch error on segment"
 msgstr "Помилка при завантаженні сегмента"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:747
-#: ../../libraries/entropy/client/interfaces/repository.py:759
+#: ../../libraries/entropy/client/interfaces/repository.py:754
+#: ../../libraries/entropy/client/interfaces/repository.py:766
 msgid "Service status"
 msgstr "Статус служби"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:780
+#: ../../libraries/entropy/client/interfaces/repository.py:787
 msgid "Local status"
 msgstr "Локальний статус"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:806
+#: ../../libraries/entropy/client/interfaces/repository.py:813
 msgid "cannot fetch repository metadata"
 msgstr "неможливо завантажити мета-інформацію репозиторію"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:827
+#: ../../libraries/entropy/client/interfaces/repository.py:834
 msgid "cannot update treeupdates data"
 msgstr "неможливо оновити інформацію дерева оновлень"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:846
+#: ../../libraries/entropy/client/interfaces/repository.py:853
 msgid "cannot update package sets data"
 msgstr "неможливо оновити інформацію щодо розділами пакунків"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:869
+#: ../../libraries/entropy/client/interfaces/repository.py:876
 msgid "Fetch error on segment while adding"
 msgstr "Помилка завантаження під час додавання сегмента"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:880
+#: ../../libraries/entropy/client/interfaces/repository.py:887
 msgid "Injecting package"
 msgstr "Додаємо пакунок"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:897
+#: ../../libraries/entropy/client/interfaces/repository.py:904
 msgid "repository error while adding packages"
 msgstr "Помилка репозиторію при додаванні пакунків"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:906
+#: ../../libraries/entropy/client/interfaces/repository.py:913
 msgid "Packages injection complete"
 msgstr "Додавання пакунків завершене"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:919
+#: ../../libraries/entropy/client/interfaces/repository.py:926
 msgid "Removing package"
 msgstr "Видалення пакунку"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:930
+#: ../../libraries/entropy/client/interfaces/repository.py:937
 msgid "repository error while removing packages"
 msgstr "помилка репозиторію під час видалення пакунків"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:938
+#: ../../libraries/entropy/client/interfaces/repository.py:945
 msgid "Packages removal complete"
 msgstr "Видалення пакунку завершене"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:953
+#: ../../libraries/entropy/client/interfaces/repository.py:960
 msgid "Database checksum doesn't match remote."
 msgstr ""
 "Контрольна сума локальної бази даних не співпадає з сумою віддаленої "
 "базиданих"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:961
+#: ../../libraries/entropy/client/interfaces/repository.py:968
 msgid "remote"
 msgstr "віддалене"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1010
+#: ../../libraries/entropy/client/interfaces/repository.py:1017
 #: ../../libraries/entropy/security.py:269
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1029
+#: ../../libraries/entropy/client/interfaces/repository.py:1036
 #, fuzzy
 msgid "This repository suports GPG-signed packages"
 msgstr "Помилка репозиторію при додаванні пакунків"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1036
+#: ../../libraries/entropy/client/interfaces/repository.py:1043
 msgid "you may want to install GnuPG to take advantage of this feature"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1068
+#: ../../libraries/entropy/client/interfaces/repository.py:1075
 #: ../../libraries/entropy/security.py:305
 msgid "GPG key changed for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1088
+#: ../../libraries/entropy/client/interfaces/repository.py:1095
 #: ../../libraries/entropy/security.py:324
 #, fuzzy
 msgid "GPG key already installed for"
 msgstr "Пакунок встановлений повторно"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1101
+#: ../../libraries/entropy/client/interfaces/repository.py:1108
 msgid "GPG key EXPIRED for repository"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1113
+#: ../../libraries/entropy/client/interfaces/repository.py:1120
 #, fuzzy
 msgid "Installing GPG key for repository"
 msgstr "Хибний репозиторій"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1126
+#: ../../libraries/entropy/client/interfaces/repository.py:1133
 #: ../../libraries/entropy/security.py:362
 #, fuzzy
 msgid "Error during GPG key installation"
 msgstr "Помилка при заповненні списку"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1137
+#: ../../libraries/entropy/client/interfaces/repository.py:1144
 #, fuzzy
 msgid "Successfully installed GPG key for repository"
 msgstr "Успішно від'єднано від хоста"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1146
+#: ../../libraries/entropy/client/interfaces/repository.py:1153
 #: ../../libraries/entropy/security.py:382
 msgid "Fingerprint"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1184
+#: ../../libraries/entropy/client/interfaces/repository.py:1191
 msgid "Verifying GPG signature of"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1198
+#: ../../libraries/entropy/client/interfaces/repository.py:1205
 msgid "Verified GPG signature of"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1208
+#: ../../libraries/entropy/client/interfaces/repository.py:1215
 #: ../../libraries/entropy/security.py:407
 #, fuzzy
 msgid "Error during GPG verification of"
 msgstr "перевірка списків"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1217
+#: ../../libraries/entropy/client/interfaces/repository.py:1224
 #: ../../libraries/entropy/security.py:416
 msgid "It could mean a potential security risk"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1309
+#: ../../libraries/entropy/client/interfaces/repository.py:1316
 msgid "EAPI3 Service error"
 msgstr "Помилка служби EAPI3"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1464
+#: ../../libraries/entropy/client/interfaces/repository.py:1471
 msgid "Configuration files update error, not critical, continuing"
 msgstr "Помилка під час оновлення файлів налаштувань, некритична, продовжую"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1503
+#: ../../libraries/entropy/client/interfaces/repository.py:1510
 msgid "Something bad happened. Please have a look."
 msgstr "Трапилось щось недобре. Будь-ласка, погляньте."
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1529
+#: ../../libraries/entropy/client/interfaces/repository.py:1536
 msgid "a new release is available"
 msgstr "наявна нова версія"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1530
+#: ../../libraries/entropy/client/interfaces/repository.py:1537
 msgid "Mind to install it before any other package"
 msgstr "Не забудьте встановити її раніше за ніж будь-які інші пакунки"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1547
+#: ../../libraries/entropy/client/interfaces/repository.py:1554
 msgid "Unpacking database to"
 msgstr "Розпакування бази даних у"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1564
+#: ../../libraries/entropy/client/interfaces/repository.py:1571
 msgid "Cannot unpack compressed package"
 msgstr "Неможливо розпакувати стислий пакунк"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1565
+#: ../../libraries/entropy/client/interfaces/repository.py:1572
 msgid "Skipping repository"
 msgstr "Пропускаю репозиторій"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1586
+#: ../../libraries/entropy/client/interfaces/repository.py:1593
 msgid "Downloading checksum"
 msgstr "Завантаження контрольної суми"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1611
+#: ../../libraries/entropy/client/interfaces/repository.py:1618
 msgid "Cannot fetch checksum"
 msgstr "Неможливо отримати контрольну суму"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1650
+#: ../../libraries/entropy/client/interfaces/repository.py:1657
 msgid "remote database got suddenly locked"
 msgstr "віддалену базу даних несподівано було заблоковано."
 
 #. starting to download
-#: ../../libraries/entropy/client/interfaces/repository.py:1660
+#: ../../libraries/entropy/client/interfaces/repository.py:1667
 msgid "Downloading repository database"
 msgstr "Завантаження бази даних репозиторію"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1720
+#: ../../libraries/entropy/client/interfaces/repository.py:1727
 msgid "database does not exist online"
 msgstr "база даних відсутня онлайн"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1736
+#: ../../libraries/entropy/client/interfaces/repository.py:1743
 msgid "database is already up to date"
 msgstr "Базу даних вже оновлено до найновішої версії"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1749
+#: ../../libraries/entropy/client/interfaces/repository.py:1756
 msgid "database will be ready soon"
 msgstr "база даних незабаром буде готова"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1765
+#: ../../libraries/entropy/client/interfaces/repository.py:1772
 msgid "Repository is being updated"
 msgstr "Репозиторій оновлюється"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1766
+#: ../../libraries/entropy/client/interfaces/repository.py:1773
 msgid "Try again in a few minutes"
 msgstr "Спробуйте знову через кілька хвилин"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1801
+#: ../../libraries/entropy/client/interfaces/repository.py:1808
 msgid "Injecting downloaded dump"
 msgstr "Додається обсяг завантаженого"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1825
+#: ../../libraries/entropy/client/interfaces/repository.py:1832
 msgid "Advisories fetch error"
 msgstr "Помилка при завантаженні повідомлень"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1850
+#: ../../libraries/entropy/client/interfaces/repository.py:1857
 msgid "Downloading repository metafile"
 msgstr "Завантажую мета-файл репозиторію"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1860
+#: ../../libraries/entropy/client/interfaces/repository.py:1867
 #, fuzzy
 msgid "Downloading GPG signature of repository metafile"
 msgstr "Завантажую мета-файл репозиторію"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1870
+#: ../../libraries/entropy/client/interfaces/repository.py:1877
 msgid "Downloading Notice Board"
 msgstr "Завантажую дошку повідомлень"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1896
+#: ../../libraries/entropy/client/interfaces/repository.py:1903
 msgid "unpacked meta file"
 msgstr "розпакований мета-файл"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1902
+#: ../../libraries/entropy/client/interfaces/repository.py:1909
 #, fuzzy
 msgid "removed meta file"
 msgstr "розпакований мета-файл"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1919
+#: ../../libraries/entropy/client/interfaces/repository.py:1926
 msgid "not available, it's ok"
 msgstr "недоступно, але це нормально"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1923
+#: ../../libraries/entropy/client/interfaces/repository.py:1930
 #, fuzzy
 msgid "not available, not very ok!"
 msgstr "недоступно, і це дуже-дуже погано!"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1936
+#: ../../libraries/entropy/client/interfaces/repository.py:1943
 msgid "available, w00t!"
 msgstr "ура, є!"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:1953
+#: ../../libraries/entropy/client/interfaces/repository.py:1960
 #, fuzzy
 msgid "cannot be unpacked, not very ok!"
 msgstr "неможливо відкрити пакунки, на жаль"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:2001
+#: ../../libraries/entropy/client/interfaces/repository.py:2008
 #: ../../client/text_repositories.py:158
 msgid "Repository revision"
 msgstr "Перевірка репозиторію"
 
-#: ../../libraries/entropy/client/interfaces/repository.py:2017
+#: ../../libraries/entropy/client/interfaces/repository.py:2024
 msgid "Indexing Repository metadata"
 msgstr "Індексування мета-інформації репозиторію"
 
 #. let's dance!
-#: ../../libraries/entropy/client/interfaces/repository.py:2044
+#: ../../libraries/entropy/client/interfaces/repository.py:2051
 msgid "Repositories synchronization"
 msgstr "Синхронізація репозиторію"
 
@@ -3481,7 +3483,7 @@ msgid "Aggregated download"
 msgstr "Сукупне завантаження"
 
 #: ../../libraries/entropy/fetchers.py:570
-#: ../../sulfur/src/sulfur/__init__.py:1557
+#: ../../sulfur/src/sulfur/__init__.py:1583
 msgid "items"
 msgstr "предмети"
 
@@ -3502,7 +3504,7 @@ msgstr "Скасовано"
 msgid "Selected number"
 msgstr "Обраний номер"
 
-#: ../../libraries/entropy/output.py:780 ../../client/text_ui.py:1302
+#: ../../libraries/entropy/output.py:780 ../../client/text_ui.py:1308
 msgid "Please select an option"
 msgstr "Будь-ласка, оберіть опцію"
 
@@ -3614,7 +3616,7 @@ msgid "missing dependencies added"
 msgstr "відсутні залежності додані"
 
 #: ../../libraries/entropy/qa.py:457
-#: ../../sulfur/src/sulfur/sulfur.glade.h:119
+#: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "Libraries test"
 msgstr "Тест бібліотек"
 
@@ -5082,7 +5084,7 @@ msgid "ChangeLog Search"
 msgstr "Пошук логів змін"
 
 #: ../../client/text_query.py:570 ../../client/text_query.py:575
-#: ../../client/text_ui.py:554
+#: ../../client/text_ui.py:560
 msgid "No match for"
 msgstr "Нічого не знайдено для"
 
@@ -5103,12 +5105,12 @@ msgstr ""
 msgid "Inverse Dependencies Search"
 msgstr "Пошук зворотніх залежностей"
 
-#: ../../client/text_query.py:661 ../../client/text_ui.py:2026
+#: ../../client/text_query.py:661 ../../client/text_ui.py:2032
 msgid "Matched"
 msgstr "Співпало"
 
 #: ../../client/text_query.py:670 ../../client/text_query.py:1535
-#: ../../sulfur/src/sulfur/sulfur.glade.h:130
+#: ../../sulfur/src/sulfur/sulfur.glade.h:132
 msgid "Masked"
 msgstr "Замасковано"
 
@@ -5206,10 +5208,10 @@ msgstr "Всього витрачено місця"
 msgid "Removal Search"
 msgstr "Пошук переміщених"
 
-#: ../../client/text_query.py:1024 ../../client/text_ui.py:785
-#: ../../client/text_ui.py:916 ../../client/text_ui.py:1002
-#: ../../client/text_ui.py:1442 ../../client/text_ui.py:1525
-#: ../../client/text_ui.py:1617 ../../server/server_reagent.py:654
+#: ../../client/text_query.py:1024 ../../client/text_ui.py:791
+#: ../../client/text_ui.py:922 ../../client/text_ui.py:1008
+#: ../../client/text_ui.py:1448 ../../client/text_ui.py:1531
+#: ../../client/text_ui.py:1623 ../../server/server_reagent.py:654
 #: ../../server/server_reagent.py:698
 msgid "No packages found"
 msgstr "Пакунків не знайдено"
@@ -5222,20 +5224,20 @@ msgstr "Підрахунок залежностей переміщених фа�
 msgid "These are the packages that would added to the removal queue"
 msgstr "Ось пакунки, котрі будуть поставлені у чергу на переміщення"
 
-#: ../../client/text_query.py:1056 ../../client/text_ui.py:643
-#: ../../client/text_ui.py:653 ../../client/text_ui.py:1081
-#: ../../client/text_ui.py:1099 ../../client/text_ui.py:1159
-#: ../../client/text_ui.py:1541 ../../client/text_ui.py:1657
-#: ../../client/text_ui.py:1718 ../../sulfur/src/sulfur/package.py:284
-#: ../../sulfur/src/sulfur/package.py:291 ../../sulfur/src/sulfur/views.py:322
+#: ../../client/text_query.py:1056 ../../client/text_ui.py:649
+#: ../../client/text_ui.py:659 ../../client/text_ui.py:1087
+#: ../../client/text_ui.py:1105 ../../client/text_ui.py:1165
+#: ../../client/text_ui.py:1547 ../../client/text_ui.py:1663
+#: ../../client/text_ui.py:1724 ../../sulfur/src/sulfur/package.py:286
+#: ../../sulfur/src/sulfur/package.py:293 ../../sulfur/src/sulfur/views.py:322
 #: ../../sulfur/src/sulfur/views.py:357
 msgid "Not available"
 msgstr "Недоступно"
 
 #: ../../client/text_query.py:1057 ../../client/text_smart.py:122
 #: ../../client/text_smart.py:301 ../../client/text_smart.py:447
-#: ../../client/text_ui.py:572 ../../client/text_ui.py:1160
-#: ../../client/text_ui.py:1328 ../../sulfur/src/sulfur/package.py:250
+#: ../../client/text_ui.py:578 ../../client/text_ui.py:1166
+#: ../../client/text_ui.py:1334 ../../sulfur/src/sulfur/package.py:252
 msgid "from"
 msgstr "з"
 
@@ -5279,8 +5281,8 @@ msgid "Description Search"
 msgstr "Пошук опису"
 
 #. client info
-#: ../../client/text_query.py:1494 ../../client/text_ui.py:640
-#: ../../client/text_ui.py:680
+#: ../../client/text_query.py:1494 ../../client/text_ui.py:646
+#: ../../client/text_ui.py:686
 msgid "Not installed"
 msgstr "Не встановлено"
 
@@ -5292,16 +5294,16 @@ msgstr "гілка"
 msgid "Category"
 msgstr "Категорія"
 
-#: ../../client/text_query.py:1519
+#: ../../client/text_query.py:1519 ../../sulfur/src/sulfur/__init__.py:1730
 msgid "Name"
 msgstr "Ім'я"
 
-#: ../../client/text_query.py:1538 ../../sulfur/src/sulfur/sulfur.glade.h:17
+#: ../../client/text_query.py:1538 ../../sulfur/src/sulfur/sulfur.glade.h:18
 msgid "Available"
 msgstr "Доступні"
 
 #: ../../client/text_query.py:1540 ../../client/text_query.py:1546
-#: ../../sulfur/src/sulfur/sulfur.glade.h:112
+#: ../../sulfur/src/sulfur/sulfur.glade.h:114
 msgid "Installed"
 msgstr "Встановлено"
 
@@ -5309,18 +5311,18 @@ msgstr "Встановлено"
 msgid "version"
 msgstr "версія"
 
-#: ../../client/text_query.py:1552 ../../sulfur/src/sulfur/sulfur.glade.h:236
+#: ../../client/text_query.py:1552 ../../sulfur/src/sulfur/sulfur.glade.h:237
 msgid "Slot"
 msgstr "Слот"
 
 #: ../../client/text_query.py:1559 ../../client/text_ugc.py:593
 #: ../../sulfur/src/sulfur/dialogs.py:554
-#: ../../sulfur/src/sulfur/sulfur.glade.h:235
+#: ../../sulfur/src/sulfur/sulfur.glade.h:236
 msgid "Size"
 msgstr "Розмір"
 
 #: ../../client/text_query.py:1563 ../../client/text_ugc.py:600
-#: ../../client/text_ui.py:919
+#: ../../client/text_ui.py:925
 msgid "Download"
 msgstr "Завантаження"
 
@@ -5343,19 +5345,19 @@ msgstr "Домашня сторінка"
 #: ../../client/text_query.py:1598 ../../client/text_security.py:98
 #: ../../client/text_ugc.py:390 ../../sulfur/src/sulfur/dialogs.py:561
 #: ../../sulfur/src/sulfur/views.py:2163 ../../sulfur/src/sulfur/views.py:2389
-#: ../../sulfur/src/sulfur/sulfur.glade.h:62
+#: ../../sulfur/src/sulfur/sulfur.glade.h:64
 msgid "Description"
 msgstr "Опис"
 
-#: ../../client/text_query.py:1611 ../../sulfur/src/sulfur/sulfur.glade.h:26
+#: ../../client/text_query.py:1611 ../../sulfur/src/sulfur/sulfur.glade.h:27
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/text_query.py:1613 ../../sulfur/src/sulfur/sulfur.glade.h:25
+#: ../../client/text_query.py:1613 ../../sulfur/src/sulfur/sulfur.glade.h:26
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/text_query.py:1615 ../../sulfur/src/sulfur/sulfur.glade.h:28
+#: ../../client/text_query.py:1615 ../../sulfur/src/sulfur/sulfur.glade.h:29
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
@@ -5382,7 +5384,7 @@ msgstr "Зкомпільовано з"
 #: ../../client/text_query.py:1639 ../../client/text_ugc.py:395
 #: ../../client/text_ugc.py:588 ../../sulfur/src/sulfur/dialogs.py:563
 #: ../../sulfur/src/sulfur/dialogs.py:944
-#: ../../sulfur/src/sulfur/sulfur.glade.h:117
+#: ../../sulfur/src/sulfur/sulfur.glade.h:119
 msgid "Keywords"
 msgstr "Ключові слова"
 
@@ -5390,7 +5392,7 @@ msgstr "Ключові слова"
 msgid "Created"
 msgstr "Створено"
 
-#: ../../client/text_query.py:1651 ../../client/text_ui.py:1324
+#: ../../client/text_query.py:1651 ../../client/text_ui.py:1330
 #: ../../sulfur/src/sulfur/dialogs.py:2932
 msgid "License"
 msgstr "Ліцензія"
@@ -5445,13 +5447,13 @@ msgstr "Ім'я репозиторію"
 msgid "Repository database path"
 msgstr "Шлях до бази даних репозиторію"
 
-#: ../../client/text_repositories.py:173 ../../client/text_ui.py:464
-#: ../../sulfur/src/sulfur/__init__.py:1307
+#: ../../client/text_repositories.py:173 ../../client/text_ui.py:470
+#: ../../sulfur/src/sulfur/__init__.py:1338
 msgid "No repositories specified in"
 msgstr "Жодного репозиторію не зазначено в"
 
-#: ../../client/text_repositories.py:177 ../../client/text_ui.py:469
-#: ../../sulfur/src/sulfur/__init__.py:1314
+#: ../../client/text_repositories.py:177 ../../client/text_ui.py:475
+#: ../../sulfur/src/sulfur/__init__.py:1343
 msgid "Unhandled exception"
 msgstr "Непередбачений виняток"
 
@@ -5463,12 +5465,12 @@ msgstr "Дошка повідомлень недоступна"
 #: ../../client/text_repositories.py:216 ../../client/text_ugc.py:585
 #: ../../server/server_activator.py:205
 #: ../../sulfur/src/sulfur/dialogs.py:1027
-#: ../../sulfur/src/sulfur/sulfur.glade.h:47
+#: ../../sulfur/src/sulfur/sulfur.glade.h:49
 msgid "Content"
 msgstr "Вміст"
 
 #: ../../client/text_repositories.py:221 ../../server/server_activator.py:210
-#: ../../sulfur/src/sulfur/sulfur.glade.h:121
+#: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Link"
 msgstr "Посилання"
 
@@ -5481,7 +5483,7 @@ msgid "Choose one by typing its identifier"
 msgstr "оберіть один, набравши його назву"
 
 #: ../../client/text_repositories.py:285
-#: ../../sulfur/src/sulfur/sulfur.glade.h:141
+#: ../../sulfur/src/sulfur/sulfur.glade.h:143
 msgid "Notice board"
 msgstr "Дошка повідомлень"
 
@@ -5796,7 +5798,7 @@ msgstr "Повідомлення"
 msgid "GLSA Identifier"
 msgstr "Ідентифікатор GLSA"
 
-#: ../../client/text_security.py:121 ../../sulfur/src/sulfur/sulfur.glade.h:18
+#: ../../client/text_security.py:121 ../../sulfur/src/sulfur/sulfur.glade.h:19
 msgid "Background"
 msgstr "Фон"
 
@@ -5805,7 +5807,7 @@ msgid "Exploitable"
 msgstr "Використовуване"
 
 #: ../../client/text_security.py:134
-#: ../../sulfur/src/sulfur/sulfur.glade.h:104
+#: ../../sulfur/src/sulfur/sulfur.glade.h:106
 msgid "Impact"
 msgstr "Вплив"
 
@@ -5814,21 +5816,21 @@ msgid "Impact type"
 msgstr "Тип впливу"
 
 #: ../../client/text_security.py:146
-#: ../../sulfur/src/sulfur/sulfur.glade.h:211
+#: ../../sulfur/src/sulfur/sulfur.glade.h:212
 msgid "Revised"
 msgstr "Перевірено"
 
-#: ../../client/text_security.py:151 ../../sulfur/src/sulfur/sulfur.glade.h:13
+#: ../../client/text_security.py:151 ../../sulfur/src/sulfur/sulfur.glade.h:14
 msgid "Announced"
 msgstr "Оголошено"
 
 #: ../../client/text_security.py:156
-#: ../../sulfur/src/sulfur/sulfur.glade.h:247
+#: ../../sulfur/src/sulfur/sulfur.glade.h:248
 msgid "Synopsis"
 msgstr "Огляд"
 
 #: ../../client/text_security.py:163
-#: ../../sulfur/src/sulfur/sulfur.glade.h:187
+#: ../../sulfur/src/sulfur/sulfur.glade.h:188
 msgid "References"
 msgstr "Посилання"
 
@@ -5849,12 +5851,12 @@ msgid "unaffected versions"
 msgstr "невразливі версії"
 
 #: ../../client/text_security.py:190
-#: ../../sulfur/src/sulfur/sulfur.glade.h:283
+#: ../../sulfur/src/sulfur/sulfur.glade.h:284
 msgid "Workaround"
 msgstr "Оптимізація"
 
 #: ../../client/text_security.py:195
-#: ../../sulfur/src/sulfur/sulfur.glade.h:208
+#: ../../sulfur/src/sulfur/sulfur.glade.h:209
 msgid "Resolution"
 msgstr "Дозвіл"
 
@@ -5920,7 +5922,7 @@ msgstr "Збережено у"
 msgid "directory does not exist"
 msgstr "директорія не існує"
 
-#: ../../client/text_smart.py:174 ../../client/text_ui.py:599
+#: ../../client/text_smart.py:174 ../../client/text_ui.py:605
 #: ../../sulfur/src/sulfur/events.py:401
 msgid "is not a valid Entropy package"
 msgstr "це не дійсний пакунок Entropy"
@@ -6036,11 +6038,11 @@ msgstr ""
 msgid "Login error. Not logged in."
 msgstr "Помилка входу в систему. Ви не увійшли в систему."
 
-#: ../../client/text_ugc.py:118 ../../sulfur/src/sulfur/__init__.py:893
+#: ../../client/text_ugc.py:118 ../../sulfur/src/sulfur/__init__.py:925
 msgid "Not logged in"
 msgstr "Не увійшов в систему"
 
-#: ../../client/text_ugc.py:126 ../../sulfur/src/sulfur/package.py:274
+#: ../../client/text_ugc.py:126 ../../sulfur/src/sulfur/package.py:276
 msgid "User"
 msgstr "Користувач"
 
@@ -6150,7 +6152,7 @@ msgstr "Введіть шлях до документа"
 msgid "Document path"
 msgstr "Шлях до документа"
 
-#: ../../client/text_ugc.py:406 ../../sulfur/src/sulfur/sulfur.glade.h:68
+#: ../../client/text_ugc.py:406 ../../sulfur/src/sulfur/sulfur.glade.h:70
 msgid "Document type"
 msgstr "Тип документа"
 
@@ -6200,7 +6202,7 @@ msgstr "Поточна оцінка пакунку"
 #: ../../client/text_ui.py:177 ../../client/text_ui.py:199
 #: ../../client/text_ui.py:208 ../../client/text_ui.py:215
 #: ../../client/text_ui.py:222 ../../client/text_ui.py:229
-#: ../../client/text_ui.py:1016 ../../client/text_ui.py:1676
+#: ../../client/text_ui.py:1022 ../../client/text_ui.py:1682
 #: ../../server/server_reagent.py:909
 msgid "Nothing to do"
 msgstr "Більше нічого робити"
@@ -6248,19 +6250,19 @@ msgid "Packages matching already up to date"
 msgstr "порівняння пакунків оновлене"
 
 #. None or {}
-#: ../../client/text_ui.py:328 ../../client/text_ui.py:1265
-#: ../../client/text_ui.py:1816
+#: ../../client/text_ui.py:328 ../../client/text_ui.py:1271
+#: ../../client/text_ui.py:1822
 msgid "Nothing to resume"
 msgstr "Нічого узагальнювати"
 
-#: ../../client/text_ui.py:339 ../../client/text_ui.py:1279
-#: ../../client/text_ui.py:1824
+#: ../../client/text_ui.py:339 ../../client/text_ui.py:1285
+#: ../../client/text_ui.py:1830
 msgid "Resume cache corrupted"
 msgstr "Узагальнення кешу пошкоджене"
 
-#: ../../client/text_ui.py:353 ../../client/text_ui.py:907
-#: ../../client/text_ui.py:965 ../../client/text_ui.py:1422
-#: ../../client/text_ui.py:1503 ../../client/text_ui.py:1583
+#: ../../client/text_ui.py:353 ../../client/text_ui.py:913
+#: ../../client/text_ui.py:971 ../../client/text_ui.py:1428
+#: ../../client/text_ui.py:1509 ../../client/text_ui.py:1589
 msgid "Running with"
 msgstr "Вмикається з"
 
@@ -6272,413 +6274,413 @@ msgstr "Підрахунок системних оновлень"
 msgid "Nothing to update"
 msgstr "Нічого оновлювати"
 
-#: ../../client/text_ui.py:397
+#: ../../client/text_ui.py:403
 #, fuzzy
 msgid ""
 "On the system there are packages that are not available anymore in the "
 "online repositories"
 msgstr "У системі є пакунки, що вже недоступні в онлайн-репозиторіях"
 
-#: ../../client/text_ui.py:402
+#: ../../client/text_ui.py:408
 msgid "Even if they are usually harmless, it is suggested to remove them."
 msgstr "Навіть якщо вони зазвичай нешкідливі, їх необхідно видалити."
 
-#: ../../client/text_ui.py:410
+#: ../../client/text_ui.py:416
 #, fuzzy
 msgid "Would you like to scan them ?"
 msgstr "Бажаєте їх пошукати?"
 
-#: ../../client/text_ui.py:425
+#: ../../client/text_ui.py:431
 msgid "Nothing to remove"
 msgstr "Нічого видаляти"
 
-#: ../../client/text_ui.py:439
+#: ../../client/text_ui.py:445
 msgid "Cannot switch branch as user"
 msgstr "Неможливо перемкнути гілку від імені користувача"
 
-#: ../../client/text_ui.py:446
+#: ../../client/text_ui.py:452
 msgid "Already on branch"
 msgstr "Вже на гілці"
 
-#: ../../client/text_ui.py:489
+#: ../../client/text_ui.py:495
 msgid "Succesfully switched to branch"
 msgstr "Успішно перемкнено на гілку"
 
-#: ../../client/text_ui.py:493
+#: ../../client/text_ui.py:499
 #, fuzzy
 msgid "Now run 'equo upgrade' to upgrade your distribution to"
 msgstr "Тепер виконайте equo world для оновлення вашого дистрибутиву до"
 
-#: ../../client/text_ui.py:500
+#: ../../client/text_ui.py:506
 msgid "Unable to switch to branch"
 msgstr "Неможливо перемкнути гілку"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:513
+#: ../../client/text_ui.py:519
 msgid "Every package matching"
 msgstr "Порівняння кожного пакунку"
 
-#: ../../client/text_ui.py:515
+#: ../../client/text_ui.py:521
 msgid "is masked"
 msgstr "замаскований"
 
-#: ../../client/text_ui.py:538
+#: ../../client/text_ui.py:544
 msgid "matching"
 msgstr "порівнюю"
 
-#: ../../client/text_ui.py:540
+#: ../../client/text_ui.py:546
 msgid "is broken"
 msgstr "зламаний"
 
-#: ../../client/text_ui.py:544
+#: ../../client/text_ui.py:550
 msgid "atom"
 msgstr "атом"
 
-#: ../../client/text_ui.py:546 ../../server/server_reagent.py:152
+#: ../../client/text_ui.py:552 ../../server/server_reagent.py:152
 #: ../../server/server_reagent.py:182 ../../server/server_reagent.py:271
 msgid "in"
 msgstr "в"
 
-#: ../../client/text_ui.py:556
+#: ../../client/text_ui.py:562
 msgid "in repositories"
 msgstr "в репозиторіях"
 
-#: ../../client/text_ui.py:565
+#: ../../client/text_ui.py:571
 msgid "Not found"
 msgstr "Не знайдено"
 
-#: ../../client/text_ui.py:570
+#: ../../client/text_ui.py:576
 msgid "Probably needed by"
 msgstr "Можливо, необхідно для"
 
-#: ../../client/text_ui.py:601 ../../sulfur/src/sulfur/events.py:403
+#: ../../client/text_ui.py:607 ../../sulfur/src/sulfur/events.py:403
 msgid "is not compiled with the same architecture of the system"
 msgstr "не зкомпільовано з тією ж архітектурою системи"
 
-#: ../../client/text_ui.py:606
+#: ../../client/text_ui.py:612
 msgid "Skipped"
 msgstr "Пропущено"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:619 ../../client/text_ui.py:1626
+#: ../../client/text_ui.py:625 ../../client/text_ui.py:1632
 msgid "These are the chosen packages"
 msgstr "Ось обрані пакунки"
 
-#: ../../client/text_ui.py:668
+#: ../../client/text_ui.py:674
 msgid "Versions"
 msgstr "Версії"
 
-#: ../../client/text_ui.py:689
+#: ../../client/text_ui.py:695
 msgid "Switch repo"
 msgstr "Перемкнути репозиторій"
 
-#: ../../client/text_ui.py:690 ../../client/text_ui.py:693
-#: ../../sulfur/src/sulfur/sulfur.glade.h:189
+#: ../../client/text_ui.py:696 ../../client/text_ui.py:699
+#: ../../sulfur/src/sulfur/sulfur.glade.h:190
 msgid "Reinstall"
 msgstr "Перевстаовити"
 
-#: ../../client/text_ui.py:695 ../../sulfur/src/sulfur/sulfur.glade.h:105
+#: ../../client/text_ui.py:701 ../../sulfur/src/sulfur/sulfur.glade.h:107
 msgid "Install"
 msgstr "Інсталювати"
 
-#: ../../client/text_ui.py:697
+#: ../../client/text_ui.py:703
 msgid "Upgrade"
 msgstr "Оновити версію"
 
-#: ../../client/text_ui.py:699
+#: ../../client/text_ui.py:705
 msgid "Downgrade"
 msgstr "Оновити до старішої версії (Зістарити)"
 
-#: ../../client/text_ui.py:705
+#: ../../client/text_ui.py:711
 msgid "Action"
 msgstr "Дія"
 
-#: ../../client/text_ui.py:708 ../../client/text_ui.py:1548
-#: ../../client/text_ui.py:1673
+#: ../../client/text_ui.py:714 ../../client/text_ui.py:1554
+#: ../../client/text_ui.py:1679
 msgid "Packages involved"
 msgstr "Пов'язані пакунки"
 
-#: ../../client/text_ui.py:714
+#: ../../client/text_ui.py:720
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr "Ви бажаєте продовжити підрахунок залежностей?"
 
-#: ../../client/text_ui.py:732
+#: ../../client/text_ui.py:738
 msgid "When you wrote"
 msgstr "Як Ви написали"
 
-#: ../../client/text_ui.py:734
+#: ../../client/text_ui.py:740
 msgid "You Meant(tm)"
 msgstr "А ти думав (TM)"
 
-#: ../../client/text_ui.py:735
+#: ../../client/text_ui.py:741
 msgid "one of these below?"
 msgstr "один з нижчезазначених?"
 
-#: ../../client/text_ui.py:758
+#: ../../client/text_ui.py:764
 msgid "Calculating dependencies"
 msgstr "Підрахунок залежностей"
 
-#: ../../client/text_ui.py:763
+#: ../../client/text_ui.py:769
 msgid "Cannot find needed dependencies"
 msgstr "Неможливо знайти необхідні залежності"
 
-#: ../../client/text_ui.py:788
+#: ../../client/text_ui.py:794
 msgid "Source code download"
 msgstr "Завантажити код"
 
-#: ../../client/text_ui.py:814
+#: ../../client/text_ui.py:820
 msgid "sources fetch"
 msgstr "завантаження джерел"
 
-#: ../../client/text_ui.py:859 ../../client/text_ui.py:885
+#: ../../client/text_ui.py:865 ../../client/text_ui.py:891
 msgid "fetch"
 msgstr "завантажити"
 
-#: ../../client/text_ui.py:981 ../../sulfur/src/sulfur/__init__.py:1714
+#: ../../client/text_ui.py:987 ../../sulfur/src/sulfur/__init__.py:1790
 msgid "Please update the following critical packages"
 msgstr "Будь ласка, оновіть наступні критичні пакунки"
 
-#: ../../client/text_ui.py:987 ../../sulfur/src/sulfur/__init__.py:1715
+#: ../../client/text_ui.py:993 ../../sulfur/src/sulfur/__init__.py:1791
 msgid "You should install them as soon as possible"
 msgstr "Вам слід встановити їх якомога раніше"
 
-#: ../../client/text_ui.py:1032
+#: ../../client/text_ui.py:1038
 msgid "These are the packages that would be installed"
 msgstr "Ось пакунки, що повинні бути встановлені"
 
-#: ../../client/text_ui.py:1147 ../../sulfur/src/sulfur/packages.py:568
+#: ../../client/text_ui.py:1153 ../../sulfur/src/sulfur/packages.py:568
 msgid "These are the packages that would be removed"
 msgstr "Ось пакунки, що мають бути видалені"
 
-#: ../../client/text_ui.py:1148
+#: ../../client/text_ui.py:1154
 msgid "conflicting/substituted"
 msgstr "конфліктують/взаємозамінюють"
 
 #. show download info
-#: ../../client/text_ui.py:1165
+#: ../../client/text_ui.py:1171
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Пакунки для встановлення/оновлення/оновлення до старішої версії"
 
-#: ../../client/text_ui.py:1167 ../../client/text_ui.py:1743
+#: ../../client/text_ui.py:1173 ../../client/text_ui.py:1749
 msgid "Packages needing to be removed"
 msgstr "Пакунки до видалення"
 
-#: ../../client/text_ui.py:1171
+#: ../../client/text_ui.py:1177
 msgid "Packages needing to be installed"
 msgstr "Пакунки до встановлення"
 
-#: ../../client/text_ui.py:1176
+#: ../../client/text_ui.py:1182
 msgid "Packages needing to be reinstalled"
 msgstr "Пакунки до перевстановлення"
 
-#: ../../client/text_ui.py:1181
+#: ../../client/text_ui.py:1187
 msgid "Packages needing to be updated"
 msgstr "Пакунки до оновлення"
 
-#: ../../client/text_ui.py:1186
+#: ../../client/text_ui.py:1192
 msgid "Packages needing to be downgraded"
 msgstr "Пакунки, що необхідно оновити до старішої версії"
 
-#: ../../client/text_ui.py:1196
+#: ../../client/text_ui.py:1202
 msgid "Download size"
 msgstr "Розмір завантаження"
 
-#: ../../client/text_ui.py:1202
+#: ../../client/text_ui.py:1208
 msgid "Used disk space"
 msgstr "Використане місце на диску"
 
-#: ../../client/text_ui.py:1204 ../../client/text_ui.py:1756
+#: ../../client/text_ui.py:1210 ../../client/text_ui.py:1762
 #: ../../sulfur/src/sulfur/packages.py:489
 msgid "Freed disk space"
 msgstr "Вільне місце на диску"
 
-#: ../../client/text_ui.py:1216
+#: ../../client/text_ui.py:1222
 msgid "You need at least"
 msgstr "Вам потрібно зовсім небагато"
 
-#: ../../client/text_ui.py:1218
+#: ../../client/text_ui.py:1224
 msgid "of free space"
 msgstr "вільного місця"
 
-#: ../../client/text_ui.py:1226
+#: ../../client/text_ui.py:1232
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr "У Вас недостатньо місця для встановлення. Звільніть трохи простору."
 
-#: ../../client/text_ui.py:1236
+#: ../../client/text_ui.py:1242
 msgid "Would you like to execute the queue ?"
 msgstr "Бажаєте виконати почергово?"
 
-#: ../../client/text_ui.py:1277 ../../client/text_ui.py:1822
+#: ../../client/text_ui.py:1283 ../../client/text_ui.py:1828
 msgid "Resuming previous operations"
 msgstr "Підтвердження попередніх операцій"
 
-#: ../../client/text_ui.py:1303
+#: ../../client/text_ui.py:1309
 msgid "Read the license"
 msgstr "Читати ліцензію"
 
-#: ../../client/text_ui.py:1304
+#: ../../client/text_ui.py:1310
 msgid "Accept the license (I've read it)"
 msgstr "Погодитися з ліцензією (Я її прочитав (прочитала))"
 
-#: ../../client/text_ui.py:1305
+#: ../../client/text_ui.py:1311
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr ""
 "Погодитися з ліцензією і більше про це не запитувати (Я її прочитав "
 "(прочитала))"
 
-#: ../../client/text_ui.py:1306
+#: ../../client/text_ui.py:1312
 msgid "Quit"
 msgstr "Вийти"
 
 #. wait user interaction
-#: ../../client/text_ui.py:1308
+#: ../../client/text_ui.py:1314
 msgid "Your choice (type a number and press enter)"
 msgstr "Ваш вибір (введіть число і натисніть enter)"
 
-#: ../../client/text_ui.py:1321
+#: ../../client/text_ui.py:1327
 msgid "You need to accept the licenses below"
 msgstr "Вам слід погодитися з зазначених ліцензіями"
 
-#: ../../client/text_ui.py:1324
+#: ../../client/text_ui.py:1330
 msgid "needed by"
 msgstr "необхідно для"
 
-#: ../../client/text_ui.py:1343
+#: ../../client/text_ui.py:1349
 msgid "No file viewer"
 msgstr "Немає переглядача файлу"
 
-#: ../../client/text_ui.py:1343
+#: ../../client/text_ui.py:1349
 msgid "License saved into"
 msgstr "Ліцензія збережена у"
 
-#: ../../client/text_ui.py:1360
+#: ../../client/text_ui.py:1366
 msgid "Download incomplete"
 msgstr "Завантаження не завершене"
 
-#: ../../client/text_ui.py:1365
+#: ../../client/text_ui.py:1371
 msgid "Download complete"
 msgstr "Завантаження завершено"
 
-#: ../../client/text_ui.py:1382
+#: ../../client/text_ui.py:1388
 msgid "install"
 msgstr "встановити"
 
-#: ../../client/text_ui.py:1410
+#: ../../client/text_ui.py:1416
 msgid "Installation complete"
 msgstr "Встановлення завершене"
 
-#: ../../client/text_ui.py:1446
+#: ../../client/text_ui.py:1452
 #, fuzzy
 msgid "These are the packages that would be masked"
 msgstr "Ось пакунки, що будуть позначені"
 
-#: ../../client/text_ui.py:1476
+#: ../../client/text_ui.py:1482
 #, fuzzy
 msgid "Would you like to continue?"
 msgstr "Бажаєте продовжити?"
 
-#: ../../client/text_ui.py:1491
+#: ../../client/text_ui.py:1497
 msgid "action not executed"
 msgstr ""
 
-#: ../../client/text_ui.py:1516 ../../client/text_ui.py:1608
+#: ../../client/text_ui.py:1522 ../../client/text_ui.py:1614
 msgid "is not installed"
 msgstr "не встановлено"
 
-#: ../../client/text_ui.py:1542
+#: ../../client/text_ui.py:1548
 msgid "Installed from"
 msgstr "Встановлено з"
 
-#: ../../client/text_ui.py:1553
+#: ../../client/text_ui.py:1559
 msgid "Would you like to configure them now ?"
 msgstr "Бажаєте налаштувати їх зараз?"
 
-#: ../../client/text_ui.py:1561
+#: ../../client/text_ui.py:1567
 #, fuzzy
 msgid "configure"
 msgstr "Нічого не налаштовано"
 
-#: ../../client/text_ui.py:1646
+#: ../../client/text_ui.py:1652
 msgid "vital package"
 msgstr "життєво важливий пакунок"
 
-#: ../../client/text_ui.py:1647
+#: ../../client/text_ui.py:1653
 msgid "Removal forbidden"
 msgstr "Видалення заборонено"
 
-#: ../../client/text_ui.py:1681
+#: ../../client/text_ui.py:1687
 msgid "Would you like to calculate dependencies ?"
 msgstr "Чи бажаєте підрахувати залежності?"
 
-#: ../../client/text_ui.py:1684 ../../server/server_reagent.py:435
+#: ../../client/text_ui.py:1690 ../../server/server_reagent.py:435
 msgid "Would you like to remove them now ?"
 msgstr "Бажаєте видалити їх зараз ?"
 
-#: ../../client/text_ui.py:1703
+#: ../../client/text_ui.py:1709
 msgid "This is the new removal queue"
 msgstr "Це нова черга вилучень"
 
-#: ../../client/text_ui.py:1763
+#: ../../client/text_ui.py:1769
 #, fuzzy
 msgid "Total bandwidth wasted"
 msgstr "Всього витрачено місця"
 
-#: ../../client/text_ui.py:1775
+#: ../../client/text_ui.py:1781
 #, fuzzy
 msgid "Would you like to proceed ?"
 msgstr "Бажаєте продовжити?"
 
-#: ../../client/text_ui.py:1778
+#: ../../client/text_ui.py:1784
 msgid "Would you like to proceed with a selective removal ?"
 msgstr "Ви бажаєте продовжити з обраним видаленням?"
 
-#: ../../client/text_ui.py:1786
+#: ../../client/text_ui.py:1792
 msgid "Would you like to skip this step then ?"
 msgstr "Бажаєте пропустити цей етап?"
 
-#: ../../client/text_ui.py:1791
+#: ../../client/text_ui.py:1797
 msgid "Starting removal in"
 msgstr "Увімкнути видалення у"
 
-#: ../../client/text_ui.py:1857
+#: ../../client/text_ui.py:1863
 msgid "Remove this one ?"
 msgstr "Видалити це?"
 
-#: ../../client/text_ui.py:1896
+#: ../../client/text_ui.py:1902
 msgid "All done"
 msgstr "Все зроблено"
 
-#: ../../client/text_ui.py:1902
+#: ../../client/text_ui.py:1908
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 "Починаємо тесту невикористовуваних пакунків, зверніть увагу, є "
 "помилковіпозитиви"
 
-#: ../../client/text_ui.py:1923
+#: ../../client/text_ui.py:1929
 msgid "Running dependency test"
 msgstr "Увімкнення тесту залежностей"
 
-#: ../../client/text_ui.py:1971
+#: ../../client/text_ui.py:1977
 msgid "Would you like to install the available packages ?"
 msgstr "Ви бажаєте встановити наявні пакунки ?"
 
-#: ../../client/text_ui.py:1976 ../../client/text_ui.py:2055
+#: ../../client/text_ui.py:1982 ../../client/text_ui.py:2061
 msgid "Installing available packages in"
 msgstr "Встановлення наявних пакунків у"
 
-#: ../../client/text_ui.py:1977 ../../client/text_ui.py:2056
+#: ../../client/text_ui.py:1983 ../../client/text_ui.py:2062
 msgid "10 seconds"
 msgstr "10 секунд"
 
-#: ../../client/text_ui.py:2020
+#: ../../client/text_ui.py:2026
 msgid "Libraries/Executables statistics"
 msgstr "Статистика бібліотек/виконуваних файлів"
 
-#: ../../client/text_ui.py:2022
+#: ../../client/text_ui.py:2028
 msgid "Not matched"
 msgstr "Не співпадає"
 
-#: ../../client/text_ui.py:2049
+#: ../../client/text_ui.py:2055
 msgid "Would you like to install them ?"
 msgstr "Бажаєте їх інсталювати?"
 
@@ -6812,7 +6814,7 @@ msgstr "Синхронізація баз даних"
 msgid "Database sync errors, cannot continue."
 msgstr "Помилки синхронізації бази даних, неможливо продовжити"
 
-#: ../../server/server_query.py:50 ../../sulfur/src/sulfur/packages.py:991
+#: ../../server/server_query.py:50 ../../sulfur/src/sulfur/packages.py:1007
 msgid "Nothing found"
 msgstr "Нічого не знайдено"
 
@@ -7092,7 +7094,7 @@ msgid "Wrong entries, errors"
 msgstr "Невірні записи, помилки"
 
 #: ../../sulfur/src/sulfur/dialogs.py:271
-#: ../../sulfur/src/sulfur/sulfur.glade.h:205
+#: ../../sulfur/src/sulfur/sulfur.glade.h:206
 msgid "Repositories Notice Board"
 msgstr "Дошка повідомлень репозиторіїв"
 
@@ -7116,12 +7118,12 @@ msgid "Expand to browse"
 msgstr "Розширити пошук"
 
 #: ../../sulfur/src/sulfur/dialogs.py:552
-#: ../../sulfur/src/sulfur/sulfur.glade.h:101
+#: ../../sulfur/src/sulfur/sulfur.glade.h:103
 msgid "Identifier"
 msgstr "Назва"
 
 #: ../../sulfur/src/sulfur/dialogs.py:556
-#: ../../sulfur/src/sulfur/sulfur.glade.h:16
+#: ../../sulfur/src/sulfur/sulfur.glade.h:17
 msgid "Author"
 msgstr "Автор"
 
@@ -7152,7 +7154,7 @@ msgid "License name"
 msgstr "Ім'я ліцензії"
 
 #: ../../sulfur/src/sulfur/dialogs.py:936
-#: ../../sulfur/src/sulfur/sulfur.glade.h:134
+#: ../../sulfur/src/sulfur/sulfur.glade.h:136
 msgid "Mirrors"
 msgstr "Дзеркала"
 
@@ -7304,7 +7306,7 @@ msgstr "замаскований пакунок"
 #: ../../sulfur/src/sulfur/dialogs.py:2233
 #: ../../sulfur/src/sulfur/dialogs.py:2244
 #: ../../sulfur/src/sulfur/dialogs.py:2255
-#: ../../sulfur/src/sulfur/package.py:260 ../../sulfur/src/sulfur/views.py:87
+#: ../../sulfur/src/sulfur/package.py:262 ../../sulfur/src/sulfur/views.py:87
 #: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2038
 msgid "No description"
 msgstr "Немає опису"
@@ -7314,9 +7316,9 @@ msgid "Please confirm the actions above"
 msgstr "Будь-ласка, підтвердіть вищевказані дії"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2145
-#: ../../sulfur/src/sulfur/__init__.py:845
-#: ../../sulfur/src/sulfur/__init__.py:855
-#: ../../sulfur/src/sulfur/__init__.py:865
+#: ../../sulfur/src/sulfur/__init__.py:877
+#: ../../sulfur/src/sulfur/__init__.py:887
+#: ../../sulfur/src/sulfur/__init__.py:897
 msgid "Item"
 msgstr "Предмет"
 
@@ -7385,7 +7387,7 @@ msgid "Accepted"
 msgstr "Отримано"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3002
-#: ../../sulfur/src/sulfur/events.py:659
+#: ../../sulfur/src/sulfur/events.py:665
 msgid "license text"
 msgstr "Текст ліцензії"
 
@@ -7458,13 +7460,13 @@ msgid "Error saving parameter"
 msgstr "Помилка при збереженні параметра"
 
 #: ../../sulfur/src/sulfur/events.py:292
-#: ../../sulfur/src/sulfur/__init__.py:993
+#: ../../sulfur/src/sulfur/__init__.py:1025
 msgid "An issue occured while saving a preference"
 msgstr "Виникла проблема при збереженні налаштування"
 
 #: ../../sulfur/src/sulfur/events.py:293
-#: ../../sulfur/src/sulfur/__init__.py:958
-#: ../../sulfur/src/sulfur/__init__.py:994
+#: ../../sulfur/src/sulfur/__init__.py:990
+#: ../../sulfur/src/sulfur/__init__.py:1026
 msgid "Parameter"
 msgstr "Параметр"
 
@@ -7500,242 +7502,257 @@ msgstr "Ви СПРАВДІ впевнені?"
 msgid "Cannot install"
 msgstr "Неможливо інсталювати"
 
-#: ../../sulfur/src/sulfur/events.py:512
+#: ../../sulfur/src/sulfur/events.py:530
 msgid "Please select at least one repository"
 msgstr "Будь-ласка, оберіть бодай один репозиторій"
 
 #. Check there are any packages in the queue
-#: ../../sulfur/src/sulfur/events.py:546
+#: ../../sulfur/src/sulfur/events.py:552
 msgid "No packages in queue"
 msgstr "Немає пакунків у черзі"
 
-#: ../../sulfur/src/sulfur/events.py:586
+#: ../../sulfur/src/sulfur/events.py:592
 msgid "Queue is too old. Cannot load."
 msgstr "Черга занадто стара. Неможливо завантажити."
 
-#: ../../sulfur/src/sulfur/events.py:683
+#: ../../sulfur/src/sulfur/events.py:689
 #, fuzzy
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr "Ви обрали переривання процесу. Ви впевнені у власному рішенні?"
 
-#: ../../sulfur/src/sulfur/events.py:769
+#: ../../sulfur/src/sulfur/events.py:773
 msgid "Cleaning UGC cache of"
 msgstr "Очищення кешу UGC від"
 
-#: ../../sulfur/src/sulfur/events.py:770
+#: ../../sulfur/src/sulfur/events.py:774
 msgid "UGC cache cleared"
 msgstr "Кеш UGC очищено"
 
-#: ../../sulfur/src/sulfur/events.py:783
+#: ../../sulfur/src/sulfur/events.py:787
 msgid "UGC credentials cleared"
 msgstr "Профілі UGC очищені"
 
-#: ../../sulfur/src/sulfur/events.py:822
+#: ../../sulfur/src/sulfur/events.py:826
 msgid "Choose what Package Set you want to add"
 msgstr "оберіть, який набір пакунків Ви бажаєте додати"
 
-#: ../../sulfur/src/sulfur/events.py:824
+#: ../../sulfur/src/sulfur/events.py:828
 msgid "Choose what Package Set you want to edit"
 msgstr "оберіть, який набір пакунків Ви бажаєте змінити"
 
-#: ../../sulfur/src/sulfur/events.py:840 ../../sulfur/src/sulfur/events.py:845
+#: ../../sulfur/src/sulfur/events.py:844 ../../sulfur/src/sulfur/events.py:849
 msgid "Package Set name"
 msgstr "Ім'я набору пакунків"
 
-#: ../../sulfur/src/sulfur/events.py:841 ../../sulfur/src/sulfur/events.py:846
+#: ../../sulfur/src/sulfur/events.py:845 ../../sulfur/src/sulfur/events.py:850
 msgid "Package atoms"
 msgstr "Атоми пакунків"
 
-#: ../../sulfur/src/sulfur/events.py:883
+#: ../../sulfur/src/sulfur/events.py:887
 msgid "No package sets available for removal."
 msgstr "Жодного набору пакунків немає для видалення."
 
-#: ../../sulfur/src/sulfur/events.py:889
+#: ../../sulfur/src/sulfur/events.py:893
 msgid "Removable Package Set"
 msgstr "видаляється, набір пакунків"
 
-#: ../../sulfur/src/sulfur/events.py:894
+#: ../../sulfur/src/sulfur/events.py:898
 msgid "Choose what Package Set you want to remove"
 msgstr "Вкажіть набір пакунків, який Ви бажаєте видалити"
 
-#: ../../sulfur/src/sulfur/events.py:916
+#: ../../sulfur/src/sulfur/events.py:920
 msgid "No missing dependencies found."
 msgstr "Відсутних залежностей не виявлено."
 
-#: ../../sulfur/src/sulfur/events.py:952
+#: ../../sulfur/src/sulfur/events.py:956
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr "Відсутні залежності знайдено, проте деякі з них є у репозиторіях."
 
-#: ../../sulfur/src/sulfur/events.py:961
+#: ../../sulfur/src/sulfur/events.py:965
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
 msgstr "Деякі відсутні залежності не порівняно, інші будутьдодані в чергу"
 
-#: ../../sulfur/src/sulfur/events.py:964
+#: ../../sulfur/src/sulfur/events.py:968
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr "Всі відсутні залежності будуть додані в чергу."
 
-#: ../../sulfur/src/sulfur/events.py:992
-#: ../../sulfur/src/sulfur/__init__.py:2031
+#: ../../sulfur/src/sulfur/events.py:996
+#: ../../sulfur/src/sulfur/__init__.py:2107
 msgid "Aborting queue tasks."
 msgstr "Переривання завдань черги."
 
-#: ../../sulfur/src/sulfur/events.py:1024
+#: ../../sulfur/src/sulfur/events.py:1028
 msgid "Libraries test aborted"
 msgstr "Тест бібліотек скасовано"
 
-#: ../../sulfur/src/sulfur/events.py:1033
+#: ../../sulfur/src/sulfur/events.py:1037
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
 msgstr "Кілька пошкоджених пакунків не підходять, інші будуть доданіу чергу"
 
-#: ../../sulfur/src/sulfur/events.py:1036
+#: ../../sulfur/src/sulfur/events.py:1040
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Всі пошкоджені пакунки будуть додані у чергу"
 
-#: ../../sulfur/src/sulfur/__init__.py:73
+#: ../../sulfur/src/sulfur/__init__.py:75
+#, fuzzy
 msgid ""
-"Entropy resources are locked and not accessible. Another Entropy application "
-"is running. Sorry, can't load Sulfur."
-msgstr ""
-"Ресурси Entropy заблоковані і недоступні. Інший додаток Entropy увімкнено.\n"
-"Даруйте, але неможливо ввімкнути Sulfur."
+"Another Entropy instance is running. You won't be able to install/remove/"
+"sync applications."
+msgstr "Інша сесія Entropy увімкнена. Неможливо обробити чергу."
 
-#: ../../sulfur/src/sulfur/__init__.py:80
+#: ../../sulfur/src/sulfur/__init__.py:81
 msgid "Entropy is running in safe mode"
 msgstr "Entropy увімкнено в безпечному режимі"
 
-#: ../../sulfur/src/sulfur/__init__.py:81
+#: ../../sulfur/src/sulfur/__init__.py:82
 msgid "Please fix as soon as possible"
 msgstr "Будь-ласка, виправте якомога швидше"
 
-#: ../../sulfur/src/sulfur/__init__.py:83
+#: ../../sulfur/src/sulfur/__init__.py:84
 msgid "Safe Mode"
 msgstr "Безпечний режим"
 
-#: ../../sulfur/src/sulfur/__init__.py:103
+#: ../../sulfur/src/sulfur/__init__.py:104
 msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
 msgstr "Перше квітня, уррррррааа!!! Пора форматувати твій жорсткий диск!"
 
-#: ../../sulfur/src/sulfur/__init__.py:105
+#: ../../sulfur/src/sulfur/__init__.py:106
 msgid "Love love love... <3"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/__init__.py:107
+#: ../../sulfur/src/sulfur/__init__.py:108
 msgid "Oh oh ooooh... Merry Xmas!"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/__init__.py:340
+#: ../../sulfur/src/sulfur/__init__.py:345
 #: ../../sulfur/src/sulfur/views.py:1950
-#: ../../sulfur/src/sulfur/sulfur.glade.h:14
+#: ../../sulfur/src/sulfur/sulfur.glade.h:15
 msgid "Applications"
 msgstr "Програми"
 
-#: ../../sulfur/src/sulfur/__init__.py:501
+#: ../../sulfur/src/sulfur/__init__.py:347
+#, fuzzy
+msgid "Sync"
+msgstr "синхронізація"
+
+#: ../../sulfur/src/sulfur/__init__.py:349
+#: ../../sulfur/src/sulfur/sulfur.glade.h:4
+#, fuzzy
+msgid "Actions"
+msgstr "Дія"
+
+#: ../../sulfur/src/sulfur/__init__.py:351
+#: ../../sulfur/src/sulfur/sulfur.glade.h:217
+msgid "Search"
+msgstr "Пошук"
+
+#: ../../sulfur/src/sulfur/__init__.py:530
 msgid "Default packages sorting"
 msgstr "Сортувати пакунків за замовчуванням."
 
-#: ../../sulfur/src/sulfur/__init__.py:502
+#: ../../sulfur/src/sulfur/__init__.py:531
 msgid "Sort by name [A-Z]"
 msgstr "Сортувати за іменем [AZ]"
 
-#: ../../sulfur/src/sulfur/__init__.py:503
+#: ../../sulfur/src/sulfur/__init__.py:532
 msgid "Sort by name [Z-A]"
 msgstr "Сортувати за іменем [ZA]"
 
-#: ../../sulfur/src/sulfur/__init__.py:504
+#: ../../sulfur/src/sulfur/__init__.py:533
 msgid "Sort by downloads"
 msgstr "Сортувати за завантаженнями"
 
-#: ../../sulfur/src/sulfur/__init__.py:505
+#: ../../sulfur/src/sulfur/__init__.py:534
 msgid "Sort by votes"
 msgstr "Сортувати за голосуваннями"
 
-#: ../../sulfur/src/sulfur/__init__.py:506
+#: ../../sulfur/src/sulfur/__init__.py:535
 msgid "Sort by repository"
 msgstr "Сортувати за репозиторієм"
 
-#: ../../sulfur/src/sulfur/__init__.py:507
+#: ../../sulfur/src/sulfur/__init__.py:536
 msgid "Sort by date (simple)"
 msgstr "Сортувати за датою (просто)"
 
-#: ../../sulfur/src/sulfur/__init__.py:508
+#: ../../sulfur/src/sulfur/__init__.py:537
 msgid "Sort by date (grouped)"
 msgstr "Сортувати за датою (групами)"
 
-#: ../../sulfur/src/sulfur/__init__.py:509
+#: ../../sulfur/src/sulfur/__init__.py:538
 msgid "Sort by license (grouped)"
 msgstr "Сортувати за ліцензією (групами)"
 
-#: ../../sulfur/src/sulfur/__init__.py:510
+#: ../../sulfur/src/sulfur/__init__.py:539
 msgid "Sort by Groups"
 msgstr "Сортувати за групами"
 
-#: ../../sulfur/src/sulfur/__init__.py:571
+#: ../../sulfur/src/sulfur/__init__.py:600
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
 msgstr ""
 "Вказані репозиторії налаштовані, проте недоступні. Їх потрібно завантажити"
 
-#: ../../sulfur/src/sulfur/__init__.py:572
+#: ../../sulfur/src/sulfur/__init__.py:601
 msgid "If you don't do this now, you won't be able to use them."
 msgstr ""
 "Якщо ви не зробите цього зараз, то Ви не матимете можливості їх "
 "використовувати."
 
-#: ../../sulfur/src/sulfur/__init__.py:574
+#: ../../sulfur/src/sulfur/__init__.py:603
 msgid "Download now"
 msgstr "Завантажити зараз"
 
-#: ../../sulfur/src/sulfur/__init__.py:575
+#: ../../sulfur/src/sulfur/__init__.py:604
 msgid "Skip"
 msgstr "Пропустити"
 
-#: ../../sulfur/src/sulfur/__init__.py:874
+#: ../../sulfur/src/sulfur/__init__.py:906
 msgid "Database"
 msgstr "База даних"
 
-#: ../../sulfur/src/sulfur/__init__.py:877
-#: ../../sulfur/src/sulfur/sulfur.glade.h:55
+#: ../../sulfur/src/sulfur/__init__.py:909
+#: ../../sulfur/src/sulfur/sulfur.glade.h:57
 msgid "Date"
 msgstr "Дата"
 
-#: ../../sulfur/src/sulfur/__init__.py:925
+#: ../../sulfur/src/sulfur/__init__.py:957
 msgid "Logged in as"
 msgstr "Увійшов як"
 
-#: ../../sulfur/src/sulfur/__init__.py:932
+#: ../../sulfur/src/sulfur/__init__.py:964
 msgid "UGC Status"
 msgstr "Статус UGC"
 
-#: ../../sulfur/src/sulfur/__init__.py:955
-#: ../../sulfur/src/sulfur/__init__.py:991
+#: ../../sulfur/src/sulfur/__init__.py:987
+#: ../../sulfur/src/sulfur/__init__.py:1023
 msgid "Error setting parameter"
 msgstr "Помилка при встановленні параметра"
 
-#: ../../sulfur/src/sulfur/__init__.py:957
+#: ../../sulfur/src/sulfur/__init__.py:989
 msgid "An issue occured while loading a preference"
 msgstr "Виникла проблема при завантаженні налаштування"
 
-#: ../../sulfur/src/sulfur/__init__.py:959
-#: ../../sulfur/src/sulfur/__init__.py:995
+#: ../../sulfur/src/sulfur/__init__.py:991
+#: ../../sulfur/src/sulfur/__init__.py:1027
 msgid "must be of type"
 msgstr "повинен бути типу"
 
-#: ../../sulfur/src/sulfur/__init__.py:959
-#: ../../sulfur/src/sulfur/__init__.py:995
+#: ../../sulfur/src/sulfur/__init__.py:991
+#: ../../sulfur/src/sulfur/__init__.py:1027
 msgid "got"
 msgstr "було"
 
-#: ../../sulfur/src/sulfur/__init__.py:1144
+#: ../../sulfur/src/sulfur/__init__.py:1176
 msgid "Error saving preferences"
 msgstr "Помилка при збереженні налаштувань"
 
-#: ../../sulfur/src/sulfur/__init__.py:1150
+#: ../../sulfur/src/sulfur/__init__.py:1182
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
@@ -7743,68 +7760,74 @@ msgstr ""
 "Ці пакунки замасковані від початку за замовчуванням або за Вашим вибором."
 "Принаймні будьте обережні."
 
-#: ../../sulfur/src/sulfur/__init__.py:1206
+#: ../../sulfur/src/sulfur/__init__.py:1238
 msgid "Generating metadata. Please wait."
 msgstr "Генерація мета-інформації. Будь-ласка, зачекайте."
 
-#: ../../sulfur/src/sulfur/__init__.py:1214
+#: ../../sulfur/src/sulfur/__init__.py:1246
 msgid "Error during list population"
 msgstr "Помилка при заповненні списку"
 
-#: ../../sulfur/src/sulfur/__init__.py:1216
+#: ../../sulfur/src/sulfur/__init__.py:1248
 msgid "Retrying in 1 second."
 msgstr "Наступна спроба через 1секунду"
 
-#: ../../sulfur/src/sulfur/__init__.py:1249
+#: ../../sulfur/src/sulfur/__init__.py:1281
 msgid "Error loading advisories"
 msgstr "Помилка завантаження повідомлень"
 
-#: ../../sulfur/src/sulfur/__init__.py:1301
-msgid "Initializing Repository module..."
-msgstr "Обнулення модуля репозиторію..."
+#: ../../sulfur/src/sulfur/__init__.py:1352
+#, fuzzy
+msgid "Updating repositories..."
+msgstr "Помилки оновлення репозиторіїв"
 
-#: ../../sulfur/src/sulfur/__init__.py:1339
+#: ../../sulfur/src/sulfur/__init__.py:1355
+#: ../../sulfur/src/sulfur/__init__.py:1859
+msgid "Running tasks"
+msgstr "Завдання, що зараз виконуються"
+
+#: ../../sulfur/src/sulfur/__init__.py:1382
 msgid "Errors updating repositories."
 msgstr "Помилки оновлення репозиторіїв"
 
-#: ../../sulfur/src/sulfur/__init__.py:1341
+#: ../../sulfur/src/sulfur/__init__.py:1384
 msgid "Please check logs below for more info"
 msgstr "Будь-ласка, заповніть наступні логи для детальнішої інформації"
 
-#: ../../sulfur/src/sulfur/__init__.py:1345
+#: ../../sulfur/src/sulfur/__init__.py:1388
 msgid "Repositories updated successfully"
 msgstr "Репозиторії вдало оновлено"
 
-#: ../../sulfur/src/sulfur/__init__.py:1349
+#: ../../sulfur/src/sulfur/__init__.py:1392
 msgid "All the repositories were already up to date."
 msgstr "Все репозиторії вже оновлені до останньої версії."
 
-#: ../../sulfur/src/sulfur/__init__.py:1352
+#: ../../sulfur/src/sulfur/__init__.py:1395
 msgid "repositories were already up to date. Others have been updated."
 msgstr "репозиторії вже були оновлені до найновішої версії, інші вже оновлено."
 
-#: ../../sulfur/src/sulfur/__init__.py:1356
+#: ../../sulfur/src/sulfur/__init__.py:1399
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "sys-apps/entropy повинен бути оновлений якомога раніше."
 
-#: ../../sulfur/src/sulfur/__init__.py:1367
+#: ../../sulfur/src/sulfur/__init__.py:1417
 msgid "Nothing to do. I am idle."
 msgstr "Робити більше нічого. Мені нудно."
 
-#: ../../sulfur/src/sulfur/__init__.py:1369
+#: ../../sulfur/src/sulfur/__init__.py:1419
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr "Будь-ласка, не витрачай тут свій час. Тут реально нема чого ловити."
 
-#: ../../sulfur/src/sulfur/__init__.py:1370
+#: ../../sulfur/src/sulfur/__init__.py:1420
 msgid "I am still alive and kickin'"
 msgstr "І ще, - я живий-здоровий."
 
-#: ../../sulfur/src/sulfur/__init__.py:1455
+#: ../../sulfur/src/sulfur/__init__.py:1505
 #, fuzzy
 msgid "These packages are no longer available"
 msgstr "Обраний пакунок не вразливий"
 
-#: ../../sulfur/src/sulfur/__init__.py:1456
+#: ../../sulfur/src/sulfur/__init__.py:1506
 #, fuzzy
 msgid ""
 "These packages should be removed because support has been dropped. Do you "
@@ -7813,50 +7836,60 @@ msgstr ""
 "Ці пакунки повинні буть вилучені з черги до видалення, оскільки вони "
 "залежатьвід Вашого останнього вибору. Ви згодні?"
 
-#: ../../sulfur/src/sulfur/__init__.py:1473
+#: ../../sulfur/src/sulfur/__init__.py:1523
 #, fuzzy
 msgid "updates"
 msgstr "Оновити"
 
-#: ../../sulfur/src/sulfur/__init__.py:1512
+#: ../../sulfur/src/sulfur/__init__.py:1540
 msgid "Generating Metadata, please wait."
 msgstr "Генерація мета-інформації. Будь-ласка, зачекайте."
 
-#: ../../sulfur/src/sulfur/__init__.py:1514
+#: ../../sulfur/src/sulfur/__init__.py:1542
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr "Entropy індексує репозиторії. Це може тривати кілька секунд."
 
-#: ../../sulfur/src/sulfur/__init__.py:1516
+#: ../../sulfur/src/sulfur/__init__.py:1544
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr "Поки ти чекаєш, зроби паузу та роззирнись навколо. Дощ не збирається?"
 
-#: ../../sulfur/src/sulfur/__init__.py:1518
-#: ../../sulfur/src/sulfur/__init__.py:1523
+#: ../../sulfur/src/sulfur/__init__.py:1546
+#: ../../sulfur/src/sulfur/__init__.py:1551
 msgid "Calculating"
 msgstr "Рахую"
 
-#: ../../sulfur/src/sulfur/__init__.py:1557
+#: ../../sulfur/src/sulfur/__init__.py:1583
 msgid "Showing"
 msgstr "Відображаю"
 
-#: ../../sulfur/src/sulfur/__init__.py:1618
+#: ../../sulfur/src/sulfur/__init__.py:1640
 msgid "No packages need or can be queued at the moment."
 msgstr ""
 "Жодного пакунку не потрібно і немає потреби ставити їх учергу в даний момент."
 
-#: ../../sulfur/src/sulfur/__init__.py:1718
+#: ../../sulfur/src/sulfur/__init__.py:1730
+#, fuzzy
+msgid "Name and description"
+msgstr "Опис команди"
+
+#: ../../sulfur/src/sulfur/__init__.py:1736
+msgid "Entropy Search"
+msgstr "Пошук Entropy"
+
+#: ../../sulfur/src/sulfur/__init__.py:1794
 msgid "Abort action"
 msgstr "Скасувати дію"
 
-#: ../../sulfur/src/sulfur/__init__.py:1719
+#: ../../sulfur/src/sulfur/__init__.py:1795
 msgid "Ignore"
 msgstr "Відхилити"
 
-#: ../../sulfur/src/sulfur/__init__.py:1762
+#: ../../sulfur/src/sulfur/__init__.py:1827
+#: ../../sulfur/src/sulfur/__init__.py:1843
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr "Інша сесія Entropy увімкнена. Неможливо обробити чергу."
 
-#: ../../sulfur/src/sulfur/__init__.py:1772
+#: ../../sulfur/src/sulfur/__init__.py:1853
 msgid ""
 "Another Entropy instance is locking this task at the moment. Try in a few "
 "minutes."
@@ -7864,19 +7897,15 @@ msgstr ""
 "Інша сесія Entropy блокує це завдання в даний момент. Спробуйтеза кілька "
 "хвилин."
 
-#: ../../sulfur/src/sulfur/__init__.py:1778
-msgid "Running tasks"
-msgstr "Завдання, що зараз виконуються"
-
-#: ../../sulfur/src/sulfur/__init__.py:1798
+#: ../../sulfur/src/sulfur/__init__.py:1879
 msgid "Processing Packages in queue"
 msgstr "Обробка пакунків у черзі"
 
-#: ../../sulfur/src/sulfur/__init__.py:1887
+#: ../../sulfur/src/sulfur/__init__.py:1968
 msgid "Attention. You chose to abort the processing."
 msgstr "Увага. Ви обрали переривання процесу."
 
-#: ../../sulfur/src/sulfur/__init__.py:1890
+#: ../../sulfur/src/sulfur/__init__.py:1971
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
@@ -7884,7 +7913,7 @@ msgstr ""
 "Увага. Помилка при роботі з чергою.\n"
 "Будь-ласка, перевірте роботу терміналу."
 
-#: ../../sulfur/src/sulfur/__init__.py:1902
+#: ../../sulfur/src/sulfur/__init__.py:1983
 msgid ""
 "Attention. You have updated Entropy.\n"
 "Sulfur will be reloaded."
@@ -7892,15 +7921,15 @@ msgstr ""
 "Увага. Ви оновили Entropy.\n"
 "Sulfur буде перезавантажено."
 
-#: ../../sulfur/src/sulfur/__init__.py:1946
+#: ../../sulfur/src/sulfur/__init__.py:2027
 msgid "No packages selected"
 msgstr "Жодного пакунку не обрано"
 
-#: ../../sulfur/src/sulfur/__init__.py:2038
+#: ../../sulfur/src/sulfur/__init__.py:2114
 msgid "Skipping current mirror."
 msgstr "Пропускаю поточне дзеркало"
 
-#: ../../sulfur/src/sulfur/package.py:226
+#: ../../sulfur/src/sulfur/package.py:228
 msgid "Recursive Package Set"
 msgstr "Рекурсивний набір пакунків"
 
@@ -7960,45 +7989,45 @@ msgstr "Звільнений простір"
 msgid "Needed space"
 msgstr "Необхідний простір"
 
-#: ../../sulfur/src/sulfur/packages.py:902
+#: ../../sulfur/src/sulfur/packages.py:918
 msgid "Set from"
 msgstr "Встановлено з"
 
-#: ../../sulfur/src/sulfur/packages.py:903
+#: ../../sulfur/src/sulfur/packages.py:919
 msgid "Unknown"
 msgstr "Невідомо"
 
-#: ../../sulfur/src/sulfur/packages.py:908
+#: ../../sulfur/src/sulfur/packages.py:924
 msgid "User configuration"
 msgstr "Налаштування користувача"
 
-#: ../../sulfur/src/sulfur/packages.py:973
+#: ../../sulfur/src/sulfur/packages.py:989
 #, fuzzy
 msgid "Try to update your repositories"
 msgstr "Спробуйте оновити репозиторії і повторіть спробу"
 
-#: ../../sulfur/src/sulfur/packages.py:976
+#: ../../sulfur/src/sulfur/packages.py:992
 msgid "No updates available"
 msgstr "Немає наявних оновлень"
 
-#: ../../sulfur/src/sulfur/packages.py:977
+#: ../../sulfur/src/sulfur/packages.py:993
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr "Схоже, що вашу систему вже оновлено до останньої версії. І це чудово."
 
-#: ../../sulfur/src/sulfur/packages.py:987
+#: ../../sulfur/src/sulfur/packages.py:1003
 msgid "No packages found means nothing to show!"
 msgstr "Жодного пакунку не знайдено, і це значить, що нема чого відображати!"
 
-#: ../../sulfur/src/sulfur/packages.py:992
+#: ../../sulfur/src/sulfur/packages.py:1008
 msgid "No packages found using the provided search term"
 msgstr "Жодного пакунку не знайдено за заданими умовами пошуку"
 
-#: ../../sulfur/src/sulfur/packages.py:996
-#: ../../sulfur/src/sulfur/packages.py:999
+#: ../../sulfur/src/sulfur/packages.py:1012
+#: ../../sulfur/src/sulfur/packages.py:1015
 msgid "No packages to show"
 msgstr "Немає пакунків до відображення"
 
-#: ../../sulfur/src/sulfur/packages.py:1000
+#: ../../sulfur/src/sulfur/packages.py:1016
 msgid "There are no packages that can be shown, sorry."
 msgstr "Немає пакунків, які можна було б відобразити, даруйте."
 
@@ -8133,13 +8162,13 @@ msgid "Active"
 msgstr "Активний"
 
 #: ../../sulfur/src/sulfur/views.py:2377
-#: ../../sulfur/src/sulfur/sulfur.glade.h:273
+#: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "Update"
 msgstr "Оновити"
 
 #. Setup revision column
 #: ../../sulfur/src/sulfur/views.py:2385
-#: ../../sulfur/src/sulfur/sulfur.glade.h:212
+#: ../../sulfur/src/sulfur/sulfur.glade.h:213
 msgid "Revision"
 msgstr "Перевірка"
 
@@ -8326,211 +8355,215 @@ msgstr ""
 "резервнукопію та відновити базу даних пакунків Вашої операційної системи. </"
 "small>"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:4
+#: ../../sulfur/src/sulfur/sulfur.glade.h:5
 msgid "Add Document"
 msgstr "Додати документ"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:5
+#: ../../sulfur/src/sulfur/sulfur.glade.h:6
 msgid "Add USE"
 msgstr "Додати USE"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:6
+#: ../../sulfur/src/sulfur/sulfur.glade.h:7
 msgid "Add USE flags on atoms"
 msgstr "Додати USE-прапорці до атомів"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:7
+#: ../../sulfur/src/sulfur/sulfur.glade.h:8
 msgid "Add/Edit Repository"
 msgstr "Додати/редагувати репозиторій"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:8
+#: ../../sulfur/src/sulfur/sulfur.glade.h:9
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
 msgstr ""
 "Додавання <b>нового репозиторію</b> дає вам доступ до <b>додатковихпрограм </"
 "b>"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:9
+#: ../../sulfur/src/sulfur/sulfur.glade.h:10
 msgid "Advanced Mode"
 msgstr "Розширений режим"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:10
+#: ../../sulfur/src/sulfur/sulfur.glade.h:11
 msgid "Advisory information"
 msgstr "Інформація повідомлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:11
+#: ../../sulfur/src/sulfur/sulfur.glade.h:12
 msgid "Affected packages"
 msgstr "Вразливі пакунки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:12
+#: ../../sulfur/src/sulfur/sulfur.glade.h:13
 msgid "All"
 msgstr "Усі"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:15
+#: ../../sulfur/src/sulfur/sulfur.glade.h:16
 msgid ""
 "Applications can alter your system configuration, merge requested changes "
 "manually"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:19
+#: ../../sulfur/src/sulfur/sulfur.glade.h:20
 msgid "Background error message"
 msgstr "Фонове повідомлення про помилку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:20
+#: ../../sulfur/src/sulfur/sulfur.glade.h:21
 msgid "Background succ. message"
 msgstr "Фонове повідомлення про успіх"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:21
+#: ../../sulfur/src/sulfur/sulfur.glade.h:22
 msgid "Backup configuration files"
 msgstr "Файли налаштувань резервної копії"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:22
+#: ../../sulfur/src/sulfur/sulfur.glade.h:23
 msgid "Branch"
 msgstr "Гілка"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:23
+#: ../../sulfur/src/sulfur/sulfur.glade.h:24
 #, fuzzy
 msgid "Browse applications"
 msgstr "Програми"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:24
+#: ../../sulfur/src/sulfur/sulfur.glade.h:25
 msgid "Bugs"
 msgstr "Помилки (баги)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:27
+#: ../../sulfur/src/sulfur/sulfur.glade.h:28
 msgid "CONFIG_PROTECT"
 msgstr "CONFIG_PROTECT"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:29
+#: ../../sulfur/src/sulfur/sulfur.glade.h:30
 msgid "C_hanges"
 msgstr "_Зміни"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:30
+#: ../../sulfur/src/sulfur/sulfur.glade.h:31
 msgid "Call"
 msgstr "Дзвінок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:31
+#: ../../sulfur/src/sulfur/sulfur.glade.h:32
 #, fuzzy
 msgid "Change Sulfur preferences"
 msgstr "Помилка при збереженні налаштувань"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:32
+#: ../../sulfur/src/sulfur/sulfur.glade.h:33
 msgid "ChangeLog"
 msgstr "Лог змін"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:33
+#: ../../sulfur/src/sulfur/sulfur.glade.h:34
 msgid "Checksum test"
 msgstr "Перевірка контрольної суми"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:34
+#: ../../sulfur/src/sulfur/sulfur.glade.h:35
 msgid "Cl_ean"
 msgstr "О_чистити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:35
+#: ../../sulfur/src/sulfur/sulfur.glade.h:36
 #, fuzzy
 msgid "Clear all cache"
 msgstr "_Очистити весь кеш"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:36
+#: ../../sulfur/src/sulfur/sulfur.glade.h:37
 #, fuzzy
 msgid "Clear all credentials"
 msgstr "_Очистити всі облікові записи"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:37
+#: ../../sulfur/src/sulfur/sulfur.glade.h:38
+msgid "Click to start searching"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:39
 msgid "Close notice"
 msgstr "Закрити повідомлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:38
+#: ../../sulfur/src/sulfur/sulfur.glade.h:40
 msgid "Collision protection"
 msgstr "Захист протиріч"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:39
+#: ../../sulfur/src/sulfur/sulfur.glade.h:41
 msgid "Command arguments"
 msgstr "Аргументи команди"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:40
+#: ../../sulfur/src/sulfur/sulfur.glade.h:42
 msgid "Command description"
 msgstr "Опис команди"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:41
+#: ../../sulfur/src/sulfur/sulfur.glade.h:43
 msgid "Command name"
 msgstr "Назва команди"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:42
+#: ../../sulfur/src/sulfur/sulfur.glade.h:44
 msgid "Commands"
 msgstr "Команди"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:43
+#: ../../sulfur/src/sulfur/sulfur.glade.h:45
 msgid "Compile atoms"
 msgstr "компілювати атоми"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:44
+#: ../../sulfur/src/sulfur/sulfur.glade.h:46
 msgid "Compile packages on the remote server"
 msgstr "компілювати пакунки на віддаленому сервері"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:45
+#: ../../sulfur/src/sulfur/sulfur.glade.h:47
 msgid "Completed at"
 msgstr "Готово при"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:46
+#: ../../sulfur/src/sulfur/sulfur.glade.h:48
 msgid "Compression"
 msgstr "Стиснення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:48
+#: ../../sulfur/src/sulfur/sulfur.glade.h:50
 msgid "Creation date"
 msgstr "Дата створення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:49
+#: ../../sulfur/src/sulfur/sulfur.glade.h:51
 msgid "Current repository"
 msgstr "Поточний репозиторій"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:50
+#: ../../sulfur/src/sulfur/sulfur.glade.h:52
 msgid "Custom command"
 msgstr "Команда власноруч"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:51
+#: ../../sulfur/src/sulfur/sulfur.glade.h:53
 msgid "Custom shell command"
 msgstr "Shell-команда власноруч"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:52
+#: ../../sulfur/src/sulfur/sulfur.glade.h:54
 msgid "D_ependencies"
 msgstr "_Залежності"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:53
+#: ../../sulfur/src/sulfur/sulfur.glade.h:55
 msgid "Data View"
 msgstr "Відображення інформації"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:54
+#: ../../sulfur/src/sulfur/sulfur.glade.h:56
 msgid "Database updates"
 msgstr "Оновлення бази даних"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:56
+#: ../../sulfur/src/sulfur/sulfur.glade.h:58
 msgid "Default repository selection"
 msgstr "Вибір репозиторію за замовчуванням"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:57
+#: ../../sulfur/src/sulfur/sulfur.glade.h:59
 msgid "Dele_te all"
 msgstr "Видал_ити усе"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:58
+#: ../../sulfur/src/sulfur/sulfur.glade.h:60
 msgid "Delete selected"
 msgstr "Видалити позначені"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:59
+#: ../../sulfur/src/sulfur/sulfur.glade.h:61
 msgid "Dep. test"
 msgstr "Тест залежностей"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:60
+#: ../../sulfur/src/sulfur/sulfur.glade.h:62
 msgid "Dependencies algorithm"
 msgstr "Алгоритм залежностей"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:61
+#: ../../sulfur/src/sulfur/sulfur.glade.h:63
 msgid "Dependencies test"
 msgstr "Тест залежностей"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:63
+#: ../../sulfur/src/sulfur/sulfur.glade.h:65
 msgid "Disable"
 msgstr "Вимкнути"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:64
+#: ../../sulfur/src/sulfur/sulfur.glade.h:66
 msgid ""
 "Disabled\n"
 "Removal only\n"
@@ -8540,449 +8573,444 @@ msgstr ""
 "Лише до видалення\n"
 "До встановлення+видалення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:67
+#: ../../sulfur/src/sulfur/sulfur.glade.h:69
 #, fuzzy
 msgid "Discard login information"
 msgstr "Інформація пакунків"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:69
+#: ../../sulfur/src/sulfur/sulfur.glade.h:71
 msgid "Done"
 msgstr "Зроблено"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:70
+#: ../../sulfur/src/sulfur/sulfur.glade.h:72
 msgid "Download Path"
 msgstr "Шлях завантаження"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:71
+#: ../../sulfur/src/sulfur/sulfur.glade.h:73
 msgid "Download only"
 msgstr "Тільки завантажити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:72
+#: ../../sulfur/src/sulfur/sulfur.glade.h:74
 msgid "Download source code"
 msgstr "Завантажити вихідний код"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:73
+#: ../../sulfur/src/sulfur/sulfur.glade.h:75
 msgid "Download speed limit"
 msgstr "Ліміт швидкості завантаження"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:74
+#: ../../sulfur/src/sulfur/sulfur.glade.h:76
 #, fuzzy
 msgid "Download updated repositories containing new applications"
 msgstr "функції обробки пакунків репозиторіїв"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:75
+#: ../../sulfur/src/sulfur/sulfur.glade.h:77
 msgid "Enable"
 msgstr "Активувати"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:76
+#: ../../sulfur/src/sulfur/sulfur.glade.h:78
 msgid "Enable _all"
 msgstr "_Активувати усе"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:77
+#: ../../sulfur/src/sulfur/sulfur.glade.h:79
 msgid "Entropy API"
 msgstr "Entropy API"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:78
+#: ../../sulfur/src/sulfur/sulfur.glade.h:80
 msgid "Entropy Package Manager"
 msgstr "Центр керування пакунками Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:79
+#: ../../sulfur/src/sulfur/sulfur.glade.h:81
 msgid "Entropy Repository Manager"
 msgstr "Центр керування репозиторіями Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:80
+#: ../../sulfur/src/sulfur/sulfur.glade.h:82
 msgid "Entropy Service Connection Manager"
 msgstr "Менеджер з'єднання зі службами Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:81
+#: ../../sulfur/src/sulfur/sulfur.glade.h:83
 msgid "Entropy can keep a backup of your updated configuration files"
 msgstr ""
 "Entropy може створити резервну копію Ваших оновлених файлів налаштувань"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:83
+#: ../../sulfur/src/sulfur/sulfur.glade.h:85
 msgid "Error message"
 msgstr "Повідомлення про помилку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:84
+#: ../../sulfur/src/sulfur/sulfur.glade.h:86
 msgid "Errored at"
 msgstr "Виникла помилка на"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:85
+#: ../../sulfur/src/sulfur/sulfur.glade.h:87
 msgid "Example: http://proxy:1234"
 msgstr "Приклад: http://proxy:1234"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:86
+#: ../../sulfur/src/sulfur/sulfur.glade.h:88
 msgid "Extended note"
 msgstr "Розширене зауваження"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:87
+#: ../../sulfur/src/sulfur/sulfur.glade.h:89
 msgid "External Trigger"
 msgstr "Зовнішній тригер"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:88
+#: ../../sulfur/src/sulfur/sulfur.glade.h:90
 msgid "FTP Proxy"
 msgstr "FTP Proxy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:89
+#: ../../sulfur/src/sulfur/sulfur.glade.h:91
 msgid ""
 "Filter currently shown items, or paste entropy::// action strings (for eg. "
 "entropy://amarok, to install Amarok!)"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:90
+#: ../../sulfur/src/sulfur/sulfur.glade.h:92
 msgid "General"
 msgstr "Загальний"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:91
+#: ../../sulfur/src/sulfur/sulfur.glade.h:93
 #, fuzzy
 msgid "Generate login information"
 msgstr "Отримати інформацію щодо пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:92
+#: ../../sulfur/src/sulfur/sulfur.glade.h:94
 msgid "Generic title 1"
 msgstr "Основний заголовок 1"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:93
+#: ../../sulfur/src/sulfur/sulfur.glade.h:95
 msgid "Generic title 2"
 msgstr "Основний заголовок 2"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:94
+#: ../../sulfur/src/sulfur/sulfur.glade.h:96
 msgid "Get Spm environment information"
 msgstr "Отримати інформацію середовища SPM"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:95
+#: ../../sulfur/src/sulfur/sulfur.glade.h:97
 msgid "Get output"
 msgstr "Отримати висновок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:96
+#: ../../sulfur/src/sulfur/sulfur.glade.h:98
 msgid "Get package information"
 msgstr "Отримати інформацію щодо пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:97
+#: ../../sulfur/src/sulfur/sulfur.glade.h:99
 msgid "Get updates related to the chosen categories"
 msgstr "Отримати оновлення, що стосуються обраних категорій"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:98
+#: ../../sulfur/src/sulfur/sulfur.glade.h:100
 msgid "HTTP Proxy"
 msgstr "HTTP Proxy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:99
+#: ../../sulfur/src/sulfur/sulfur.glade.h:101
 msgid "Hide this until something new happens"
 msgstr "Не показувати це вікно, поки не з'явиться щось нове"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:100
+#: ../../sulfur/src/sulfur/sulfur.glade.h:102
 msgid "Hostname"
 msgstr "Назва хоста"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:102
+#: ../../sulfur/src/sulfur/sulfur.glade.h:104
 msgid "If selected, packages will be downloaded only"
 msgstr "Обрані пакунки будуть лише завантажені"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:103
+#: ../../sulfur/src/sulfur/sulfur.glade.h:105
 msgid "Ignored protected files"
 msgstr "Пропущені захищені файли"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:106
+#: ../../sulfur/src/sulfur/sulfur.glade.h:108
 msgid "Install Set"
 msgstr "Встановити набір"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:107
+#: ../../sulfur/src/sulfur/sulfur.glade.h:109
 msgid "Install Size"
 msgstr "Розмір встановлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:108
+#: ../../sulfur/src/sulfur/sulfur.glade.h:110
 msgid "Install a stand-alone package file"
 msgstr "Встановити один-єдиний пакунковий файл"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:109
+#: ../../sulfur/src/sulfur/sulfur.glade.h:111
 msgid "Install from binary package..."
 msgstr "Встановити з двійкового пакунку ..."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:110
+#: ../../sulfur/src/sulfur/sulfur.glade.h:112
 msgid "Install the selected Package Set"
 msgstr "Встановити обраний набір пакунків"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:111
+#: ../../sulfur/src/sulfur/sulfur.glade.h:113
 msgid "Install the selected package"
 msgstr "Встановити обраний пакунок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:113
+#: ../../sulfur/src/sulfur/sulfur.glade.h:115
 msgid "Installed Packages"
 msgstr "Встановлені пакунки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:114
+#: ../../sulfur/src/sulfur/sulfur.glade.h:116
 msgid "Interactivity"
 msgstr "Узгодженість дій"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:115
+#: ../../sulfur/src/sulfur/sulfur.glade.h:117
 msgid "Interface Colors"
 msgstr "Кольори інтерфейсу"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:116
+#: ../../sulfur/src/sulfur/sulfur.glade.h:118
 msgid "Kernel Tag"
 msgstr "Тег ядра"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:118
+#: ../../sulfur/src/sulfur/sulfur.glade.h:120
 msgid "Keywords (space separated)"
 msgstr "Ключові слова (в окреме місце)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:120
+#: ../../sulfur/src/sulfur/sulfur.glade.h:122
 msgid "Library test"
 msgstr "Тест бібліотеки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:122
+#: ../../sulfur/src/sulfur/sulfur.glade.h:124
 msgid "Load User Generated Content"
 msgstr "Завантажити вміст, створений користувачем"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:123
+#: ../../sulfur/src/sulfur/sulfur.glade.h:125
 msgid "Load content"
 msgstr "Завантажити вміст"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:124
+#: ../../sulfur/src/sulfur/sulfur.glade.h:126
 msgid "Location"
 msgstr "Розташування"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:125
+#: ../../sulfur/src/sulfur/sulfur.glade.h:127
 msgid "MD5 Signature"
 msgstr "Підпис MD5"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:126
+#: ../../sulfur/src/sulfur/sulfur.glade.h:128
 msgid "M_erge"
 msgstr "_Об'єднати"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:127
+#: ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "Mark as read"
 msgstr "Позначити як прочитане"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:128
+#: ../../sulfur/src/sulfur/sulfur.glade.h:130
 msgid "Mask the selected packages"
 msgstr "Маскувати обрані пакунки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:129
+#: ../../sulfur/src/sulfur/sulfur.glade.h:131
 msgid "Mask this package"
 msgstr "Маскувати даний пакунок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:131
+#: ../../sulfur/src/sulfur/sulfur.glade.h:133
 msgid "Merge all"
 msgstr "Об'єднати усе"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:132
+#: ../../sulfur/src/sulfur/sulfur.glade.h:134
 msgid "Messages"
 msgstr "Повідомлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:133
+#: ../../sulfur/src/sulfur/sulfur.glade.h:135
 msgid "Mirror updates"
 msgstr "Оновлення дзеркала"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:135
+#: ../../sulfur/src/sulfur/sulfur.glade.h:137
 msgid "Monitor applications install/removal execution process"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:136
+#: ../../sulfur/src/sulfur/sulfur.glade.h:138
 msgid "Networking"
 msgstr "Мережа"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:137
+#: ../../sulfur/src/sulfur/sulfur.glade.h:139
 msgid "New backup"
 msgstr "Нова резервна копія"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:138
+#: ../../sulfur/src/sulfur/sulfur.glade.h:140
 msgid "Not done"
 msgstr "Не зроблено"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:140
+#: ../../sulfur/src/sulfur/sulfur.glade.h:142
 msgid "Notice Board Entry Information"
 msgstr "Інформація запису дошки оновлень"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:142
+#: ../../sulfur/src/sulfur/sulfur.glade.h:144
 msgid "Notice board Id"
 msgstr "Ідентифікатор дошки повідомлень"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:143
+#: ../../sulfur/src/sulfur/sulfur.glade.h:145
 msgid "O_ther"
 msgstr "І_нше"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:144
+#: ../../sulfur/src/sulfur/sulfur.glade.h:146
 msgid "Output View"
 msgstr "Відображення висновку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:145
+#: ../../sulfur/src/sulfur/sulfur.glade.h:147
 msgid "Package (default)"
 msgstr "Пакунок (за замовчуванням)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:146
+#: ../../sulfur/src/sulfur/sulfur.glade.h:148
 msgid "Package Info"
 msgstr "Інформація пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:147
+#: ../../sulfur/src/sulfur/sulfur.glade.h:149
 msgid "Package Information"
 msgstr "Інформація пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:148
+#: ../../sulfur/src/sulfur/sulfur.glade.h:150
 msgid "Package Masking"
 msgstr "Маскування пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:149
+#: ../../sulfur/src/sulfur/sulfur.glade.h:151
 msgid "Package Size"
 msgstr "Розмір пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:150
+#: ../../sulfur/src/sulfur/sulfur.glade.h:152
 msgid "Package category"
 msgstr "Категорія пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:151
+#: ../../sulfur/src/sulfur/sulfur.glade.h:153
 msgid "Package description"
 msgstr "Опис пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:152
+#: ../../sulfur/src/sulfur/sulfur.glade.h:154
 msgid "Package downgrade"
 msgstr "Оновлення пакунку до старішої версії"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:153
+#: ../../sulfur/src/sulfur/sulfur.glade.h:155
 msgid "Package not installed"
 msgstr "Пакунок не встановлений"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:154
+#: ../../sulfur/src/sulfur/sulfur.glade.h:156
 msgid "Package reinstalled"
 msgstr "Пакунок встановлений повторно"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:155
+#: ../../sulfur/src/sulfur/sulfur.glade.h:157
 msgid "Package removed"
 msgstr "Пакунок видалений"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:156
+#: ../../sulfur/src/sulfur/sulfur.glade.h:158
 msgid "Package sub-description"
 msgstr "Суб-опис пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:157
+#: ../../sulfur/src/sulfur/sulfur.glade.h:159
 msgid "Package subtitle"
 msgstr "Заголовок пакунку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:158
+#: ../../sulfur/src/sulfur/sulfur.glade.h:160
 msgid "Package updated"
 msgstr "Пакунок оновлений"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:159
+#: ../../sulfur/src/sulfur/sulfur.glade.h:161
 msgid "Packages"
 msgstr "пакунки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:161
+#: ../../sulfur/src/sulfur/sulfur.glade.h:163
 msgid "Pinboard Id"
 msgstr "Ідентифікатор панелі керування"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:162
+#: ../../sulfur/src/sulfur/sulfur.glade.h:164
 msgid "Pinboard Item Information"
 msgstr "Предметна інформація панелі керування"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:163
+#: ../../sulfur/src/sulfur/sulfur.glade.h:165
 msgid "Pinboard View"
 msgstr "Відображення панелі керування"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:164
+#: ../../sulfur/src/sulfur/sulfur.glade.h:166
 msgid "Please Confirm"
 msgstr "Будь-ласка, підтвердіть"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:165
+#: ../../sulfur/src/sulfur/sulfur.glade.h:167
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 "Будь-ласка, надішліть нам цю помилку, надавши при цьому якомога більше "
 "інформації"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:166
+#: ../../sulfur/src/sulfur/sulfur.glade.h:168
 msgid "Port"
 msgstr "Порт"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:167
+#: ../../sulfur/src/sulfur/sulfur.glade.h:169
 msgid "Preferences"
 msgstr "Налаштування"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:168
+#: ../../sulfur/src/sulfur/sulfur.glade.h:170
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr "Захищає файли пакунку від перезапису іншими особами"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:169
+#: ../../sulfur/src/sulfur/sulfur.glade.h:171
 msgid "Process details"
 msgstr "Деталі процесу"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:170
+#: ../../sulfur/src/sulfur/sulfur.glade.h:172
 msgid "Process priority (nice)"
 msgstr "Пріоритет процесу"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:171
+#: ../../sulfur/src/sulfur/sulfur.glade.h:173
 msgid "Process result"
 msgstr "Результат процесу"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:172
+#: ../../sulfur/src/sulfur/sulfur.glade.h:174
 msgid "Processing at"
 msgstr "Процес на"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:173
+#: ../../sulfur/src/sulfur/sulfur.glade.h:175
 msgid "Progress"
 msgstr "Прогрес"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:174
+#: ../../sulfur/src/sulfur/sulfur.glade.h:176
 msgid "Protected files and directories"
 msgstr "Захищені файли та теки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:175
+#: ../../sulfur/src/sulfur/sulfur.glade.h:177
 msgid "Protected files and directories mask"
 msgstr "Маска захищених файлів і папок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:176
+#: ../../sulfur/src/sulfur/sulfur.glade.h:178
 msgid "Proxy Password"
 msgstr "Пароль проксі"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:177
+#: ../../sulfur/src/sulfur/sulfur.glade.h:179
 msgid "Proxy Username"
 msgstr "Користувач проксі"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:178
+#: ../../sulfur/src/sulfur/sulfur.glade.h:180
 msgid "Purge"
 msgstr "Очистити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:179
+#: ../../sulfur/src/sulfur/sulfur.glade.h:181
 msgid "Q_ueue packages in selected Advisory"
 msgstr "Д_одати в чергу пакунки з обраного повідомлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:180
-#, fuzzy
-msgid "Queue"
-msgstr "Ідентифікатор черги"
-
-#: ../../sulfur/src/sulfur/sulfur.glade.h:181
+#: ../../sulfur/src/sulfur/sulfur.glade.h:182
 msgid "Queue Id"
 msgstr "Ідентифікатор черги"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:182
+#: ../../sulfur/src/sulfur/sulfur.glade.h:183
 msgid "Queue Item Information"
 msgstr "Інформація предмету черги"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:183
+#: ../../sulfur/src/sulfur/sulfur.glade.h:184
 msgid "Queue View"
 msgstr "Відображення черги"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:184
+#: ../../sulfur/src/sulfur/sulfur.glade.h:185
 msgid "Queued at"
 msgstr "Поставлено у чергу на"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:185
+#: ../../sulfur/src/sulfur/sulfur.glade.h:186
 msgid "R_egenerate Cache"
 msgstr "_Відновити кеш"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:186
+#: ../../sulfur/src/sulfur/sulfur.glade.h:187
 msgid "R_epositories Notice Board"
 msgstr "До_шка повідомлень репозиторіїв"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:188
+#: ../../sulfur/src/sulfur/sulfur.glade.h:189
 msgid "Refresh"
 msgstr "Оновити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:190
+#: ../../sulfur/src/sulfur/sulfur.glade.h:191
 msgid "Reinstall the selected package"
 msgstr "Перевстановити обраний пакунок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:191
+#: ../../sulfur/src/sulfur/sulfur.glade.h:192
 msgid ""
 "Reliable\n"
 "Relaxed"
@@ -8990,331 +9018,327 @@ msgstr ""
 "Надійний\n"
 "Ослаблений"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:193
+#: ../../sulfur/src/sulfur/sulfur.glade.h:194
 msgid "Remote stdout file"
 msgstr "Віддалений файл stdout"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:194
+#: ../../sulfur/src/sulfur/sulfur.glade.h:195
 msgid "Remove"
 msgstr "Видалити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:195
+#: ../../sulfur/src/sulfur/sulfur.glade.h:196
 msgid "Remove Selected"
 msgstr "Видалити позначені"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:196
+#: ../../sulfur/src/sulfur/sulfur.glade.h:197
 msgid "Remove Set"
 msgstr "Видалити набір"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:197
+#: ../../sulfur/src/sulfur/sulfur.glade.h:198
 msgid "Remove USE"
 msgstr "Видалити USE"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:198
+#: ../../sulfur/src/sulfur/sulfur.glade.h:199
 msgid "Remove USE flags on atoms"
 msgstr "Видалити USE-прапорці в атомах"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:199
+#: ../../sulfur/src/sulfur/sulfur.glade.h:200
 msgid "Remove atoms"
 msgstr "Видалити атоми"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:200
+#: ../../sulfur/src/sulfur/sulfur.glade.h:201
 msgid "Remove packages on the remote server"
 msgstr "Видалити пакунки на віддаленому сервері"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:201
+#: ../../sulfur/src/sulfur/sulfur.glade.h:202
 msgid "Remove the selected Package Set"
 msgstr "Видалити обраний набір пакунків"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:202
+#: ../../sulfur/src/sulfur/sulfur.glade.h:203
 msgid "Remove the selected package"
 msgstr "Видалити обраний пакунок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:203
+#: ../../sulfur/src/sulfur/sulfur.glade.h:204
 msgid "Remove the selected package and its configuration"
 msgstr "Видалити обраний пакунок і його налаштування"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:204
+#: ../../sulfur/src/sulfur/sulfur.glade.h:205
 msgid "Repositories"
 msgstr "Репозиторії"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:206
+#: ../../sulfur/src/sulfur/sulfur.glade.h:207
 msgid "Repositories options"
 msgstr "Опції репозиторіїв"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:207
+#: ../../sulfur/src/sulfur/sulfur.glade.h:208
 msgid "Repository information"
 msgstr "Інформація репозиторіїв"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:209
+#: ../../sulfur/src/sulfur/sulfur.glade.h:210
 msgid "Restore"
 msgstr "Відновити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:210
+#: ../../sulfur/src/sulfur/sulfur.glade.h:211
 msgid "Restore selected"
 msgstr "Відновити позначені"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:213
+#: ../../sulfur/src/sulfur/sulfur.glade.h:214
 msgid "S_end Error Report"
 msgstr "Н_адіслати звіт про помилку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:214
+#: ../../sulfur/src/sulfur/sulfur.glade.h:215
 msgid "S_ervices"
 msgstr "С_лужби"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:215
+#: ../../sulfur/src/sulfur/sulfur.glade.h:216
 msgid "Save"
 msgstr "Зберегти"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:216
-msgid "Search"
-msgstr "Пошук"
-
-#: ../../sulfur/src/sulfur/sulfur.glade.h:217
+#: ../../sulfur/src/sulfur/sulfur.glade.h:218
 msgid "Secure Services Port"
 msgstr "Порт служб безпеки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:218
+#: ../../sulfur/src/sulfur/sulfur.glade.h:219
 msgid "Security"
 msgstr "Безпека"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:219
+#: ../../sulfur/src/sulfur/sulfur.glade.h:220
 msgid "Security advisories, make sure your 'puter is really secure"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:220
+#: ../../sulfur/src/sulfur/sulfur.glade.h:221
 msgid "Security updates"
 msgstr "Оновлення безпеки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:221
+#: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Services Port"
 msgstr "Порт служб"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:222
+#: ../../sulfur/src/sulfur/sulfur.glade.h:223
 msgid "Sets"
 msgstr "Набори"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:223
+#: ../../sulfur/src/sulfur/sulfur.glade.h:224
 msgid "Show ChangeLog"
 msgstr "Показати лог змін"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:224
+#: ../../sulfur/src/sulfur/sulfur.glade.h:225
 msgid "Show Selected"
 msgstr "Показати позначені"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:225
+#: ../../sulfur/src/sulfur/sulfur.glade.h:226
 msgid "Show all"
 msgstr "Показати всі"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:226
+#: ../../sulfur/src/sulfur/sulfur.glade.h:227
 #, fuzzy
 msgid "Show any existing application"
 msgstr "Стиснення smart-додатку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:227
+#: ../../sulfur/src/sulfur/sulfur.glade.h:228
 msgid "Show applied"
 msgstr "Показати прийняте"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:228
+#: ../../sulfur/src/sulfur/sulfur.glade.h:229
 #, fuzzy
 msgid "Show available applications"
 msgstr "недоступно, але це нормально"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:229
+#: ../../sulfur/src/sulfur/sulfur.glade.h:230
 #, fuzzy
 msgid "Show install queue"
 msgstr "Не встановлено"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:230
+#: ../../sulfur/src/sulfur/sulfur.glade.h:231
 #, fuzzy
 msgid "Show installed applications"
 msgstr "Скасувати дію перевстановлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:231
+#: ../../sulfur/src/sulfur/sulfur.glade.h:232
 #, fuzzy
 msgid "Show masked applications"
 msgstr "Програми"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:232
+#: ../../sulfur/src/sulfur/sulfur.glade.h:233
 #, fuzzy
 msgid "Show package sets (groups)"
 msgstr "Не знайдено жодного набору пакунків"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:233
+#: ../../sulfur/src/sulfur/sulfur.glade.h:234
 msgid "Show unapplied"
 msgstr "Показати неприйняте"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:234
+#: ../../sulfur/src/sulfur/sulfur.glade.h:235
 #, fuzzy
 msgid "Show updates"
 msgstr "Оновлення дзеркала"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:237
+#: ../../sulfur/src/sulfur/sulfur.glade.h:238
 msgid "Socket settings"
 msgstr "Налаштування сокета"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:238
+#: ../../sulfur/src/sulfur/sulfur.glade.h:239
 msgid "Source Package Manager"
 msgstr "Пакунковий менеджер джерел (SPM)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:239
+#: ../../sulfur/src/sulfur/sulfur.glade.h:240
 msgid "Spm Info"
 msgstr "Інформація SPM"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:240
+#: ../../sulfur/src/sulfur/sulfur.glade.h:241
 msgid "Spm Sync"
 msgstr "Синхронізація SPM"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:241
+#: ../../sulfur/src/sulfur/sulfur.glade.h:242
 msgid "Spm tree updates"
 msgstr "Оновлення дерева SPM"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:242
+#: ../../sulfur/src/sulfur/sulfur.glade.h:243
 msgid "Submit a new document"
 msgstr "Прийняти новий документ"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:243
+#: ../../sulfur/src/sulfur/sulfur.glade.h:244
 msgid "Successful mesage"
 msgstr "Повідомлення про успіх"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:244
+#: ../../sulfur/src/sulfur/sulfur.glade.h:245
 msgid "Sulfur"
 msgstr "Sulfur"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:245
+#: ../../sulfur/src/sulfur/sulfur.glade.h:246
 msgid "Switch Sulfur to Advanced Mode"
 msgstr "Перемкнути Sulfur у Розширений режим"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:246
+#: ../../sulfur/src/sulfur/sulfur.glade.h:247
 msgid "Switch to"
 msgstr "Перемкнути на"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:248
+#: ../../sulfur/src/sulfur/sulfur.glade.h:249
 msgid "System"
 msgstr "Система"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:249
+#: ../../sulfur/src/sulfur/sulfur.glade.h:250
 msgid "System Database"
 msgstr "Системна база даних"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:250
+#: ../../sulfur/src/sulfur/sulfur.glade.h:251
 msgid "System files"
 msgstr "Системні файли"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:251
+#: ../../sulfur/src/sulfur/sulfur.glade.h:252
 msgid "Terminal font"
 msgstr "Шрифт терміналу"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:252
+#: ../../sulfur/src/sulfur/sulfur.glade.h:253
 msgid "Text on error message"
 msgstr "Текст повідомлення про помилку"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:253
+#: ../../sulfur/src/sulfur/sulfur.glade.h:254
 msgid "Text on succ. message"
 msgstr "Текст повідомлення про успіх"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:254
+#: ../../sulfur/src/sulfur/sulfur.glade.h:255
 msgid "This is what they call \"nice level\""
 msgstr "Це те, що зазвичай називають \"пристойний рівень\""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:256
+#: ../../sulfur/src/sulfur/sulfur.glade.h:257
 msgid "UGC Entry Information"
 msgstr "Інформація запису UGC"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:257
+#: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "URI"
 msgstr "URI"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:258
+#: ../../sulfur/src/sulfur/sulfur.glade.h:259
 msgid "Undo Install"
 msgstr "Скасувати встановлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:259
+#: ../../sulfur/src/sulfur/sulfur.glade.h:260
 msgid "Undo Install Set"
 msgstr "Скасувати встановлення набору"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:260
+#: ../../sulfur/src/sulfur/sulfur.glade.h:261
 msgid "Undo Install Set action"
 msgstr "Скасувати дію встановлення набору"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:261
+#: ../../sulfur/src/sulfur/sulfur.glade.h:262
 msgid "Undo Install action"
 msgstr "Скасувати дію встановлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:262
+#: ../../sulfur/src/sulfur/sulfur.glade.h:263
 msgid "Undo Purge"
 msgstr "Скасувати очищення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:263
+#: ../../sulfur/src/sulfur/sulfur.glade.h:264
 msgid "Undo Purge action"
 msgstr "Скасувати дію очищення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:264
+#: ../../sulfur/src/sulfur/sulfur.glade.h:265
 msgid "Undo Reinstall"
 msgstr "Скасувати перевстановлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:265
+#: ../../sulfur/src/sulfur/sulfur.glade.h:266
 msgid "Undo Reinstall action"
 msgstr "Скасувати дію перевстановлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:266
+#: ../../sulfur/src/sulfur/sulfur.glade.h:267
 msgid "Undo Remove"
 msgstr "Скасувати видалення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:267
+#: ../../sulfur/src/sulfur/sulfur.glade.h:268
 msgid "Undo Remove Set"
 msgstr "Скасувати видалення набору"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:268
+#: ../../sulfur/src/sulfur/sulfur.glade.h:269
 msgid "Undo Remove Set action"
 msgstr "Скасувати дію видалення набору"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:269
+#: ../../sulfur/src/sulfur/sulfur.glade.h:270
 msgid "Undo Remove action"
 msgstr "Скасувати дію видалення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:270
+#: ../../sulfur/src/sulfur/sulfur.glade.h:271
 msgid "Undo Update"
 msgstr "Скасувати оновлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:271
+#: ../../sulfur/src/sulfur/sulfur.glade.h:272
 msgid "Undo Update action"
 msgstr "Скасувати дію оновлення"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:272
+#: ../../sulfur/src/sulfur/sulfur.glade.h:273
 msgid "Unmask this package"
 msgstr "демаскувати цей пакунок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:274
+#: ../../sulfur/src/sulfur/sulfur.glade.h:275
 msgid "Update the selected package"
 msgstr "Оновити обраний пакунок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:275
+#: ../../sulfur/src/sulfur/sulfur.glade.h:276
 msgid "Update, enable, disable application repositories"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:276
+#: ../../sulfur/src/sulfur/sulfur.glade.h:277
 msgid "Updates"
 msgstr "Оновити"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:277
+#: ../../sulfur/src/sulfur/sulfur.glade.h:278
 #, fuzzy
 msgid "User / Group"
 msgstr "Користувач/Група"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:280
+#: ../../sulfur/src/sulfur/sulfur.glade.h:281
 msgid "Version"
 msgstr "Версія"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:281
+#: ../../sulfur/src/sulfur/sulfur.glade.h:282
 msgid "Website"
 msgstr "Веб-сайт"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:282
+#: ../../sulfur/src/sulfur/sulfur.glade.h:283
 msgid "What you were doing"
 msgstr "Що Ви робили"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:284
+#: ../../sulfur/src/sulfur/sulfur.glade.h:285
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
@@ -9322,147 +9346,147 @@ msgstr ""
 "Ви <b>повинні прийняти</b> зазначені ліцензії. \n"
 "Будь-ласка, прочитайте їх уважно та <b> зробіть свій вибір</b>."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:286
+#: ../../sulfur/src/sulfur/sulfur.glade.h:287
 msgid "Your E-mail"
 msgstr "Ваша електронна пошта"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:287
+#: ../../sulfur/src/sulfur/sulfur.glade.h:288
 msgid "Your Full Name"
 msgstr "Ваше повне ім'я"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:288
+#: ../../sulfur/src/sulfur/sulfur.glade.h:289
 msgid "_Abort"
 msgstr "_Перервати"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:289
+#: ../../sulfur/src/sulfur/sulfur.glade.h:290
 msgid "_Accept License"
 msgstr "_Прийняти ліцензію"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:290
+#: ../../sulfur/src/sulfur/sulfur.glade.h:291
 msgid "_Add All"
 msgstr "_Додати все"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:291
+#: ../../sulfur/src/sulfur/sulfur.glade.h:292
 msgid "_Add Set"
 msgstr "_Додати набір"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:292
+#: ../../sulfur/src/sulfur/sulfur.glade.h:293
 msgid "_Commit Actions"
 msgstr "_Підтвердити дії"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:293
+#: ../../sulfur/src/sulfur/sulfur.glade.h:294
 msgid "_Details"
 msgstr "_Деталі"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:294
+#: ../../sulfur/src/sulfur/sulfur.glade.h:295
 msgid "_Edit Set"
 msgstr "_Редагувати набір"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:295
+#: ../../sulfur/src/sulfur/sulfur.glade.h:296
 msgid "_Enable"
 msgstr "_Активувати"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:296
+#: ../../sulfur/src/sulfur/sulfur.glade.h:297
 msgid "_Force repositories update"
 msgstr "_Автоновлення репозиторіїв"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:297
+#: ../../sulfur/src/sulfur/sulfur.glade.h:298
 msgid "_Help"
 msgstr "_Допомога"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:298
+#: ../../sulfur/src/sulfur/sulfur.glade.h:299
 msgid "_Insert String"
 msgstr "_Додати рядок"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:299
+#: ../../sulfur/src/sulfur/sulfur.glade.h:300
 msgid "_More"
 msgstr "_Більше"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:300
+#: ../../sulfur/src/sulfur/sulfur.glade.h:301
 msgid "_Open Document"
 msgstr "_Відкрити документ"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:301
+#: ../../sulfur/src/sulfur/sulfur.glade.h:302
 msgid "_Overview"
 msgstr "_Огляд"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:302
+#: ../../sulfur/src/sulfur/sulfur.glade.h:303
 msgid "_Properties"
 msgstr "_Параметри"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:303
+#: ../../sulfur/src/sulfur/sulfur.glade.h:304
 msgid "_Queue all vulnerable packages"
 msgstr "_Поставити в чергу усі вразливі пакунки"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:304
+#: ../../sulfur/src/sulfur/sulfur.glade.h:305
 msgid "_Read License"
 msgstr "_Читати ліцензію"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:305
+#: ../../sulfur/src/sulfur/sulfur.glade.h:306
 msgid "_References"
 msgstr "_Посилання"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:306
+#: ../../sulfur/src/sulfur/sulfur.glade.h:307
 msgid "_Remove All"
 msgstr "_Видалити усе"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:307
+#: ../../sulfur/src/sulfur/sulfur.glade.h:308
 msgid "_Remove Set"
 msgstr "_Видалити набір"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:308
+#: ../../sulfur/src/sulfur/sulfur.glade.h:309
 msgid "_SSL Connection"
 msgstr "_З'єднання SSL"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:309
+#: ../../sulfur/src/sulfur/sulfur.glade.h:310
 msgid "_Skip mirror"
 msgstr "_Пропустити дзеркало"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:310
+#: ../../sulfur/src/sulfur/sulfur.glade.h:311
 msgid "_Submit Document"
 msgstr "_Прийняти документ"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:311
+#: ../../sulfur/src/sulfur/sulfur.glade.h:312
 msgid "_Sulfur"
 msgstr "_Sulfur"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:312
+#: ../../sulfur/src/sulfur/sulfur.glade.h:313
 msgid "_Update Repositories"
 msgstr "_Оновити репозиторії"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:313
+#: ../../sulfur/src/sulfur/sulfur.glade.h:314
 msgid "button"
 msgstr "кнопка"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:314
+#: ../../sulfur/src/sulfur/sulfur.glade.h:315
 msgid "emerge --sync"
 msgstr "emerge --sync"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:315
+#: ../../sulfur/src/sulfur/sulfur.glade.h:316
 msgid "emerge --sync ? (o;"
 msgstr "emerge --sync ? (o;"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:316
+#: ../../sulfur/src/sulfur/sulfur.glade.h:317
 msgid "http://www.sabayon.org"
 msgstr "http://www.sabayon.org"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:317
+#: ../../sulfur/src/sulfur/sulfur.glade.h:318
 msgid "kB/sec"
 msgstr "кБ/сек"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:318
+#: ../../sulfur/src/sulfur/sulfur.glade.h:319
 msgid "localhost"
 msgstr "localhost"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:319
+#: ../../sulfur/src/sulfur/sulfur.glade.h:320
 msgid "root"
 msgstr "суперкористувач root"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:320
+#: ../../sulfur/src/sulfur/sulfur.glade.h:321
 msgid "type your password here"
 msgstr "введіть свій пароль осьдечки:"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:321
+#: ../../sulfur/src/sulfur/sulfur.glade.h:322
 msgid "type your username here"
 msgstr "Введіть своє ім'я користувача"
 
@@ -9477,6 +9501,21 @@ msgstr "повідомник про оновлення додатків Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Завантажте пакунковий менеджер"
+
+#~ msgid ""
+#~ "Entropy resources are locked and not accessible. Another Entropy "
+#~ "application is running. Sorry, can't load Sulfur."
+#~ msgstr ""
+#~ "Ресурси Entropy заблоковані і недоступні. Інший додаток Entropy "
+#~ "увімкнено.\n"
+#~ "Даруйте, але неможливо ввімкнути Sulfur."
+
+#~ msgid "Initializing Repository module..."
+#~ msgstr "Обнулення модуля репозиторію..."
+
+#, fuzzy
+#~ msgid "Queue"
+#~ msgstr "Ідентифікатор черги"
 
 #~ msgid "valid database path needed"
 #~ msgstr "потрібен існуючий шлях до бази даних"
@@ -9994,9 +10033,6 @@ msgstr "_Завантажте пакунковий менеджер"
 
 #~ msgid "Eclass"
 #~ msgstr "Eclass"
-
-#~ msgid "Entropy Search"
-#~ msgstr "Пошук Entropy"
 
 #~ msgid "Choose the repository"
 #~ msgstr "Оберіть репозиторій"
