@@ -120,14 +120,14 @@ class RepositoryMixin:
         return dbc
 
     def close_all_repositories(self, mask_clear = True):
-        for item in self.__repodb_cache:
+        for item in sorted(self.__repodb_cache.keys()):
             # in-memory repositories cannot be closed
             # otherwise everything will be lost, to
             # effectively close these repos you
             # must call remove_repository method
             if item in RepositoryMixin._memory_db_instances:
                 continue
-            self.__repodb_cache[item].closeDB()
+            self.__repodb_cache.pop(item).closeDB()
         self.__repodb_cache.clear()
 
         # disable hooks during SystemSettings cleanup

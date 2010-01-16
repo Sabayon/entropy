@@ -642,13 +642,20 @@ class Repository:
 
         session = eapi3_interface.open_session()
 
-        # AttributeError because mydbconn can be is None
         try:
             mydbconn = self.__get_eapi3_local_database(repo)
-            myidpackages = mydbconn.listAllIdpackages()
+            if mydbconn is None:
+                raise AttributeError()
         except (self.__dbapi2.DatabaseError, self.__dbapi2.IntegrityError,
             self.__dbapi2.OperationalError, AttributeError,):
+            prepare_exit(eapi3_interface, session)
+            return False
 
+        try:
+            myidpackages = mydbconn.listAllIdpackages()
+        except (self.__dbapi2.DatabaseError, self.__dbapi2.IntegrityError,
+            self.__dbapi2.OperationalError,):
+            mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             return False
 
