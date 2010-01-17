@@ -1,3 +1,123 @@
+commit 427edde42575740a51e80e0452bf4659ed9ee47e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 12:22:52 2010 +0100
+
+    [po] update translation, preparing for new release
+
+commit f6826592fb403273ff09c2bceca557c87ee377d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 12:19:49 2010 +0100
+
+    [entropy.spm] when get_installed_package_metadata fails, raise KeyError and handle it
+
+commit d5d9672b9b31d1ef2112ad756948a5575baeb489
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 12:16:02 2010 +0100
+
+    [sulfur] fix progress bar handling
+
+commit 1f045b653c9d99a21f3ec45033673d20f952d7b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 08:36:09 2010 +0100
+
+    [sulfur] make sure that pkg vote is valid before converting it to float
+
+commit be196ce98bc6734d087aa78f76c80e61468cb7b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 08:35:38 2010 +0100
+
+    [entropy.spm] PortagePlugin: ensure that EMERGE_FROM is set when calling doebuild()
+
+commit 299a2a4a7e860b0be5de24189649dce27c524e75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 00:14:12 2010 +0100
+
+    [sulfur] add new search icon
+
+commit a705c637934d2a8d5f65f883d6b124c605c98515
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 00:10:18 2010 +0100
+
+    [po] update translations
+
+commit 7424d9f1577dd618d442ade747ec9980cc34e541
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 00:09:23 2010 +0100
+
+    [sulfur] several usability improvements, add simple search function
+
+commit 52c99a4d5c38ef5490b7012f9b72c1433c6d89a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 20:30:29 2010 +0100
+
+    [sulfur] grow UGC update interval to 6 hours
+
+commit 3a12e33e3597a1ea7fff4e94aebef261fabc5871
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 20:24:11 2010 +0100
+
+    [equo/sulfur] do not bug user for orphaned packages not available in repos if latter don't exist
+
+commit f5b77e08b99d0731ed88653599a704318a24d756
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 20:13:14 2010 +0100
+
+    [entropy.server] fix undefined reference
+
+commit d1dfae04457cad11dea1ef6710ef67687ee5f127
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 18:59:38 2010 +0100
+
+    [entropy.spm] PortagePlugin: xpak() must cast rootdir to raw string to avoid encoding issues reading from disk
+
+commit df4fee9af61d26cdbb1452bb45e0ba1ecbee6497
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 18:45:09 2010 +0100
+
+    [sulfur] make possible to load multiple instances showing warnings and disabling widgets
+
+commit 6790480afe68113116f020486d950c5f83135222
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 18:11:52 2010 +0100
+
+    [entropy.client] some atomic updates to repositories cache handling code
+
+commit ea242946ae7b50752c3c96233b92f3b77d50ff0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 18:11:33 2010 +0100
+
+    [sulfur] improve update_repositories to be more GTK friendly
+
+commit 7071faa315dfd589ac762a968eb45dbc3eee87ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 17:59:34 2010 +0100
+
+    [sulfur] several usability improvements and bug fixing
+
+commit 8469c8305df62ade269d5891955ce742bb8a8dfc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 16:12:45 2010 +0100
+
+    [po] update translations, add Ukrainian, thanks to Vitovt
+
+commit a55d0b05483c552fe4f72b51994dcc41159279fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 16 16:02:53 2010 +0100
+
+    [sulfur] properly call application_lock_check
+
+commit 9023a5a49d3af42ba5179781cac396c54013d945
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Sat Jan 16 12:39:15 2010 +0100
+
+    [entropy.spm] PortagePlugin: improve old and dusty xpak module, remove evil os.chdir() calls
+
+commit 06049c2ff7dfa99bfa5c49264a3abfc58f139bef
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 15 20:12:26 2010 +0100
+
+    Update ChangeLog for version 0.99.24.4
+
 commit aafbc0632c6de68867c59982a986a008cb9a7227
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Fri Jan 15 20:11:04 2010 +0100
