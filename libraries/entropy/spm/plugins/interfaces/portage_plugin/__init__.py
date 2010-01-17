@@ -1492,6 +1492,7 @@ class PortagePlugin(SpmPlugin):
                 proc = subprocess.Popen(qfile_args + (filename,),
                     stdout = subprocess.PIPE)
                 rc = proc.wait()
+                proc.stdout.close()
                 if rc != 0:
                     # wtf?, fallback to old way
                     matches.clear()

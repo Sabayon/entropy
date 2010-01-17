@@ -1431,10 +1431,13 @@ class Repository:
         proc_rc = proc.wait()
 
         if proc_rc != 0:
+            self.__default_popen_close(proc)
             raise Repository.GPGError("cannot list keys, exit status %s" % (
                 proc_rc,))
 
         out_data = proc.stdout.readlines()
+        self.__default_popen_close(proc)
+
         valid_keywords = ['pub', 'uid', 'sec', 'fpr']
         result = Repository.ListKeys()
         for line in out_data:
@@ -1542,6 +1545,7 @@ class Repository:
 
         # wait for process to terminate
         proc_rc = proc.wait()
+        self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError(
@@ -1556,7 +1560,6 @@ class Repository:
                     proc_stdout,))
         # cross fingers
         fp = key_data[0].split()[-1]
-        del proc
         return fp
 
     def create_keypair(self, repository_identifier, passphrase = None,
@@ -1633,7 +1636,7 @@ class Repository:
 
         # wait for process to terminate
         proc_rc = proc.wait()
-        del proc
+        self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError(
@@ -1781,12 +1784,13 @@ class Repository:
         proc_rc = proc.wait()
 
         if proc_rc != 0:
+            self.__default_popen_close(proc)
             raise Repository.GPGError(
                 "cannot export key which fingerprint is %s, error: %s" % (
                     fingerprint, proc_rc,))
 
         key_string = proc.stdout.read()
-        del proc
+        self.__default_popen_close(proc)
         return key_string
 
     def get_pubkey(self, repository_identifier):
@@ -1846,6 +1850,7 @@ class Repository:
 
         # wait for process to terminate
         proc_rc = proc.wait()
+        self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError(
@@ -1911,6 +1916,14 @@ class Repository:
             kwargs['stderr'] = subprocess.PIPE
         return kwargs
 
+    def __default_popen_close(self, proc):
+        if proc.stdout is not None:
+            proc.stdout.close()
+        if proc.stderr is not None:
+            proc.stderr.close()
+        if proc.stdin is not None:
+            proc.stdin.close()
+
     def __sign_file(self, file_path, fingerprint):
 
         args = self.__default_gpg_args() + ["-sa", "--detach-sign"]
@@ -1932,7 +1945,7 @@ class Repository:
 
         # wait for process to terminate
         proc_rc = proc.wait()
-        del proc
+        self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError("cannot sign file %s, exit status %s" % (
@@ -1971,8 +1984,8 @@ class Repository:
 
         # wait for process to terminate
         proc_rc = proc.wait()
+        self.__default_popen_close(proc)
 
-        del proc
         if proc_rc != 0:
             raise Repository.GPGError("cannot verify file %s, exit status %s" % (
                 file_path, proc_rc,))
