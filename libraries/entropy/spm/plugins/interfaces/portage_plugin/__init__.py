@@ -396,7 +396,10 @@ class PortagePlugin(SpmPlugin):
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
         vartree = self._get_portage_vartree(root = root)
-        return vartree.dbapi.aux_get(package, [key])[0]
+        try:
+            return vartree.dbapi.aux_get(package, [key])[0]
+        except KeyError: # make clear that we raise KeyError
+            raise
 
     def get_system_packages(self):
         """

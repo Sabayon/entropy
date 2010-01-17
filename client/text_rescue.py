@@ -401,8 +401,11 @@ def _database_spmsync(entropy_client):
     spm_packages = Spm.get_installed_packages()
     installed_packages = []
     for spm_package in spm_packages:
-        pkg_counter = Spm.get_installed_package_metadata(spm_package,
-            "COUNTER")
+        try:
+            pkg_counter = Spm.get_installed_package_metadata(spm_package,
+                "COUNTER")
+        except KeyError:
+            continue
         try:
             pkg_counter = int(pkg_counter)
         except ValueError:

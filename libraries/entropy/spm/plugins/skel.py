@@ -176,6 +176,7 @@ class SpmPlugin(Singleton):
         @type root: string
         @return: package metadata value
         @rtype: string
+        @raise KeyError: if package is not available
         """
         raise NotImplementedError()
 
