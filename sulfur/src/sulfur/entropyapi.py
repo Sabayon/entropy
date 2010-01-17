@@ -33,6 +33,8 @@ from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 
+import entropy.tools
+
 class QueueExecutor:
 
     def __init__(self, SulfurApplication):
@@ -135,21 +137,21 @@ class QueueExecutor:
 
         total_steps = (totalqueue*steps_here)+len(removalQueue)
         steps_counter = total_steps
-        self.Entropy.set_progress_divider(steps_counter)
-        # reset fetcher last average count
-        GuiUrlFetcher.gui_last_avg = 0
-        GuiUrlFetcher.set_divider(steps_counter)
         progress_step_count = 0
 
+        mykeys = {}
+        # manually handle progress
+        old_prog_state = GuiUrlFetcher.get_progress_bar_enable()
+        GuiUrlFetcher.enable_progress_bar(False)
+
         try:
-
-            mykeys = {}
-
             for pkg_info in runQueue:
 
                 self.Sulfur.queue_bombing()
 
                 progress_step_count += 1
+                self.Entropy.set_progress(float(progress_step_count)/total_steps)
+
                 pkg = self.Entropy.Package()
                 metaopts = {}
                 metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
@@ -158,8 +160,8 @@ class QueueExecutor:
                 myrepo = pkg.pkgmeta['repository']
                 if myrepo not in mykeys:
                     mykeys[myrepo] = set()
-                mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
-                    pkg.pkgmeta['atom']))
+                mykeys[myrepo].add(
+                    entropy.tools.dep_getkey(pkg.pkgmeta['atom']))
 
                 self.Entropy.output(
                     fetch_string+pkg.pkgmeta['atom'],
@@ -200,6 +202,7 @@ class QueueExecutor:
 
                 idpackage = rem_data[0]
                 progress_step_count += 1
+                self.Entropy.set_progress(float(progress_step_count)/total_steps)
 
                 metaopts = {}
                 metaopts['removeconfig'] = rem_data[1]
@@ -207,6 +210,15 @@ class QueueExecutor:
                     metaopts['removeconfig'] = True
                 pkg = self.Entropy.Package()
                 pkg.prepare((idpackage,), "remove", metaopts)
+
+                self.Entropy.output(
+                    "%s: %s" % (
+                        _("Removing package"),
+                        pkg.pkgmeta['removeatom'],
+                    ),
+                    importance = 2,
+                    count = (progress_step_count, total_steps)
+                )
 
                 if 'remove_installed_vanished' not in pkg.pkgmeta:
                     self.Entropy.output(
@@ -232,8 +244,9 @@ class QueueExecutor:
             gobject.timeout_add(0, do_skip_one_show)
 
             for pkg_info in runQueue:
-                progress_step_count += 1
 
+                progress_step_count += 1
+                self.Entropy.set_progress(float(progress_step_count)/total_steps)
                 self.Sulfur.queue_bombing()
 
                 metaopts = {}
@@ -241,7 +254,8 @@ class QueueExecutor:
                 metaopts['removeconfig'] = False
 
                 if pkg_info in selected_by_user:
-                    metaopts['install_source'] = etpConst['install_sources']['user']
+                    metaopts['install_source'] = \
+                        etpConst['install_sources']['user']
                 else:
                     metaopts['install_source'] = \
                         etpConst['install_sources']['automatic_dependency']
@@ -250,7 +264,7 @@ class QueueExecutor:
                 pkg.prepare(pkg_info, "install", metaopts)
 
                 self.Entropy.output(
-                    "%s: " % (_("Installing"),) + pkg.pkgmeta['atom'],
+                    "%s: %s" % (_("Installing"), pkg.pkgmeta['atom'],),
                     importance = 2,
                     count = (progress_step_count, total_steps)
                 )
@@ -270,29 +284,10 @@ class QueueExecutor:
             gobject.timeout_add(0, do_skip_hide_again)
 
         finally:
-            self.Entropy.reset_progress_divider()
-            GuiUrlFetcher.reset_divider()
+            GuiUrlFetcher.enable_progress_bar(old_prog_state)
 
         return 0
 
-def _calculate_progress_bar_pos(cur_prog, divider, average):
-    step_len = 1.0/divider
-    scaled_prog = average * step_len
-
-    seek_pos = 0.0
-    while seek_pos <= cur_prog:
-        seek_pos += step_len
-    # we've found the max value in range
-    bar_max = seek_pos
-    bar_min = seek_pos - step_len
-    to_prog = bar_min + scaled_prog
-
-    if etpUi['debug']:
-        print_generic("_calculate_progress_bar_pos: raw => %s, cur => %s"
-        ", step => %s, scaled => %s, bar min => %s, result => %s" % (
-            average, cur_prog, step_len, scaled_prog,
-            bar_min, to_prog,))
-    return to_prog
 
 class Equo(EquoInterface):
 
@@ -319,13 +314,10 @@ class Equo(EquoInterface):
         self.std_output = application.std_output
         self.ui = application.ui
 
-    def set_progress_divider(self, divider):
-        if divider < 1: # avoid growing to infinity
-            divider = 1
-        self._progress_divider = divider
-
-    def reset_progress_divider(self):
-        self._progress_divider = 1
+    def set_progress(self, frac, text = None):
+        if text is None:
+            text = str(int(frac * 100)) + "%"
+        self.progress.set_progress(frac, text = text)
 
     def output(self, text, header = "", footer = "", back = False,
             importance = 0, type = "info", count = [], percent = False):
@@ -335,26 +327,20 @@ class Equo(EquoInterface):
 
             if count:
                 count_str = "(%s/%s) " % (str(count[0]), str(count[1]),)
-
-                cur_prog = _calculate_progress_bar_pos(
-                    self.progress.get_progress(),
-                        self._progress_divider, float(count[0])/count[1])
-
+                cur_prog = float(count[0])/count[1]
                 if importance == 0:
                     progress_text = text
                 else:
-                    progress_text = str(int(cur_prog)) + "%"
-
+                    progress_text = str(int(cur_prog * 100)) + "%"
                 self.progress.set_progress(cur_prog, progress_text)
 
-            if importance == 1:
-                myfunc = self.progress.set_subLabel
-            elif importance == 2:
-                myfunc = self.progress.set_mainLabel
-            elif importance == 3:
+            if importance < 1:
                 myfunc = self.progress.set_extraLabel
-            if importance > 0:
-                myfunc(count_str+text)
+            elif importance == 1:
+                myfunc = self.progress.set_subLabel
+            elif importance > 1:
+                myfunc = self.progress.set_mainLabel
+            myfunc(count_str+text)
 
         if not back and hasattr(self, 'progress_log'):
 
@@ -427,24 +413,15 @@ class GuiUrlFetcher(UrlFetcher):
 
     gui_last_avg = 0
     _default_divider = 1
-    _divider = _default_divider
     _use_progress_bar = True
-
-    @staticmethod
-    def set_divider(divider):
-        GuiUrlFetcher._divider = divider
-
-    @staticmethod
-    def get_divider():
-        return GuiUrlFetcher._divider
-
-    @staticmethod
-    def reset_divider():
-        GuiUrlFetcher._divider = GuiUrlFetcher._default_divider
 
     @staticmethod
     def enable_progress_bar(enable):
         GuiUrlFetcher._use_progress_bar = enable
+
+    @staticmethod
+    def get_progress_bar_enable():
+        return GuiUrlFetcher._use_progress_bar
 
     def connect_to_gui(self, progress):
         self.progress = progress
@@ -473,13 +450,11 @@ class GuiUrlFetcher(UrlFetcher):
         if (myavg > GuiUrlFetcher.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
             if GuiUrlFetcher._use_progress_bar:
-                cur_prog = _calculate_progress_bar_pos(
-                    self.progress.get_progress(),
-                        GuiUrlFetcher._divider, float(self.__average)/100)
-                cur_prog_str = str(int(cur_prog * 100))
+                cur_prog = float(self.__average)/100
+                cur_prog_str = str(int(self.__average))
                 self.progress.set_progress(cur_prog, cur_prog_str+"%")
 
-            human_dt = self.entropyTools.bytes_into_human(self.__datatransfer)
+            human_dt = entropy.tools.bytes_into_human(self.__datatransfer)
             self.progress.set_extraLabel("%s/%s kB @ %s" % (
                     str(round(float(self.__downloadedsize)/1024, 1)),
                     str(round(self.__remotesize, 1)),

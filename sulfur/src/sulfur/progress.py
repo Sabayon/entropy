@@ -68,16 +68,13 @@ class Base:
             return False
         gobject.idle_add(run)
 
-    def get_progress(self):
-        return self.lastFracSync
-
     def set_progress(self, frac, text=None):
         self.lastFracSync = frac
         def run(frac, text):
             if frac == self.lastFrac:
                 return
             self.lastFrac = frac
-            if frac > 1 or frac == 0.0:
+            if frac > 1 or frac < 0.0:
                 return
             if frac >= 0 and frac <= 1:
                 self.ui.progressBar.set_fraction(frac)
