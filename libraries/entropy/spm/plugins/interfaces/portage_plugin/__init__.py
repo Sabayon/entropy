@@ -1580,6 +1580,7 @@ class PortagePlugin(SpmPlugin):
         # find config
         mysettings = self._get_portage_config(os.path.sep, root)
         mysettings['EBUILD_PHASE'] = mydo
+        mysettings['EMERGE_FROM'] = "binary"
 
         # crappy, broken, ebuilds, put accept_license eutils call
         # in pkg_setup, when environment variables are not setup yet
@@ -1603,6 +1604,7 @@ class PortagePlugin(SpmPlugin):
         mysettings.backup_changes("EAPI")
         mysettings.backup_changes("LICENSE")
         mysettings.backup_changes("EBUILD_PHASE")
+        mysettings.backup_changes("EMERGE_FROM")
         mysettings.backup_changes("ROOT")
         mysettings.backup_changes("CD_ROOT")
 
