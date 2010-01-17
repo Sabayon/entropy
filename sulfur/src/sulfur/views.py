@@ -1602,6 +1602,9 @@ class EntropyPackageView:
             mydata = obj.vote
         except:
             return
+        if mydata is None:
+            mydata = 0.0 # wtf!
+
         cell.value = float(mydata)
         cell.value_voted = float(voted)
 
