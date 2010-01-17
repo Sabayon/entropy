@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-17 00:10+0100\n"
+"POT-Creation-Date: 2010-01-17 12:22+0100\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -144,7 +144,7 @@ msgstr "Indlæsning afsluttet"
 #: ../../libraries/entropy/db/__init__.py:7362
 #: ../../libraries/entropy/client/interfaces/client.py:771
 #: ../../client/text_rescue.py:219 ../../client/text_rescue.py:224
-#: ../../client/text_rescue.py:604 ../../client/text_rescue.py:735
+#: ../../client/text_rescue.py:607 ../../client/text_rescue.py:738
 #: ../../client/text_ui.py:609 ../../client/text_ui.py:1437
 #: ../../client/text_ui.py:1495 ../../client/text_ui.py:1520
 #: ../../client/text_ui.py:1612
@@ -543,9 +543,9 @@ msgstr ""
 #: ../../client/equo.py:885 ../../client/text_configuration.py:113
 #: ../../client/text_configuration.py:141 ../../client/text_rescue.py:230
 #: ../../client/text_rescue.py:234 ../../client/text_rescue.py:238
-#: ../../client/text_rescue.py:471 ../../client/text_rescue.py:530
-#: ../../client/text_rescue.py:610 ../../client/text_rescue.py:613
-#: ../../client/text_rescue.py:617 ../../client/text_smart.py:126
+#: ../../client/text_rescue.py:474 ../../client/text_rescue.py:533
+#: ../../client/text_rescue.py:613 ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:620 ../../client/text_smart.py:126
 #: ../../client/text_smart.py:304 ../../client/text_smart.py:452
 #: ../../client/text_ui.py:417 ../../client/text_ui.py:724
 #: ../../client/text_ui.py:1243 ../../client/text_ui.py:1483
@@ -556,7 +556,7 @@ msgstr ""
 #: ../../server/server_reagent.py:502 ../../server/server_reagent.py:610
 #: ../../server/server_reagent.py:665 ../../server/server_reagent.py:709
 #: ../../sulfur/src/sulfur/dialogs.py:1192
-#: ../../sulfur/src/sulfur/entropyapi.py:374
+#: ../../sulfur/src/sulfur/entropyapi.py:360
 msgid "No"
 msgstr ""
 
@@ -1061,8 +1061,8 @@ msgstr "Vis Tilgængelige Pakker"
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:170
 #: ../../libraries/entropy/output.py:679 ../../libraries/entropy/output.py:868
 #: ../../libraries/entropy/qa.py:386 ../../libraries/entropy/qa.py:401
-#: ../../libraries/entropy/qa.py:406 ../../client/text_rescue.py:495
-#: ../../client/text_rescue.py:499 ../../client/text_rescue.py:526
+#: ../../libraries/entropy/qa.py:406 ../../client/text_rescue.py:498
+#: ../../client/text_rescue.py:502 ../../client/text_rescue.py:529
 #: ../../client/text_ugc.py:231 ../../client/text_ugc.py:412
 #: ../../client/text_ugc.py:488 ../../client/text_ugc.py:507
 #: ../../client/text_ui.py:1788 ../../client/text_ui.py:1793
@@ -1071,7 +1071,7 @@ msgstr "Vis Tilgængelige Pakker"
 #: ../../server/server_reagent.py:437 ../../server/server_reagent.py:438
 #: ../../server/server_reagent.py:453 ../../sulfur/src/sulfur/dialogs.py:1195
 #: ../../sulfur/src/sulfur/dialogs.py:1635
-#: ../../sulfur/src/sulfur/entropyapi.py:374
+#: ../../sulfur/src/sulfur/entropyapi.py:360
 msgid "Yes"
 msgstr ""
 
@@ -2372,7 +2372,7 @@ msgstr "Rediger Filkilder"
 #: ../../libraries/entropy/client/services/system/methods.py:387
 #: ../../libraries/entropy/client/services/system/methods.py:394
 #: ../../libraries/entropy/client/services/system/methods.py:403
-#: ../../sulfur/src/sulfur/views.py:2388
+#: ../../sulfur/src/sulfur/views.py:2391
 #, fuzzy
 msgid "Repository Identifier"
 msgstr "Filkilder"
@@ -2721,7 +2721,7 @@ msgstr "Opsætning af Yum Konfiguration"
 #: ../../libraries/entropy/client/interfaces/methods.py:91
 #: ../../server/server_reagent.py:97 ../../server/server_reagent.py:114
 #: ../../sulfur/src/sulfur/__init__.py:949
-#: ../../sulfur/src/sulfur/views.py:2318
+#: ../../sulfur/src/sulfur/views.py:2321
 msgid "Repository"
 msgstr "Kilde"
 
@@ -3215,7 +3215,7 @@ msgid "Fetch not available"
 msgstr "Tilgængelige"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2224
-#: ../../sulfur/src/sulfur/entropyapi.py:126
+#: ../../sulfur/src/sulfur/entropyapi.py:128
 #, fuzzy
 msgid "Fetching"
 msgstr "Opdaterer"
@@ -3259,13 +3259,13 @@ msgid "Merging"
 msgstr "Søgnings Indstiller"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2276
-#: ../../sulfur/src/sulfur/entropyapi.py:253
+#: ../../sulfur/src/sulfur/entropyapi.py:267
 #, fuzzy
 msgid "Installing"
 msgstr "Installeret"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2284
-#: ../../client/text_rescue.py:510 ../../sulfur/src/sulfur/entropyapi.py:213
+#: ../../client/text_rescue.py:513 ../../sulfur/src/sulfur/entropyapi.py:225
 msgid "Removing"
 msgstr "Sletter"
 
@@ -3441,6 +3441,7 @@ msgid "Packages injection complete"
 msgstr "Indlæsning af pakker afsluttet"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:926
+#: ../../sulfur/src/sulfur/entropyapi.py:216
 #, fuzzy
 msgid "Removing package"
 msgstr "Vis Installerede Pakker"
@@ -3898,7 +3899,7 @@ msgid "items"
 msgstr "Fi_ler"
 
 #: ../../libraries/entropy/output.py:558
-#: ../../sulfur/src/sulfur/entropyapi.py:386
+#: ../../sulfur/src/sulfur/entropyapi.py:372
 msgid "Entropy needs your attention"
 msgstr ""
 
@@ -5897,7 +5898,7 @@ msgstr ""
 
 #: ../../client/text_query.py:1598 ../../client/text_security.py:98
 #: ../../client/text_ugc.py:390 ../../sulfur/src/sulfur/dialogs.py:561
-#: ../../sulfur/src/sulfur/views.py:2163 ../../sulfur/src/sulfur/views.py:2389
+#: ../../sulfur/src/sulfur/views.py:2166 ../../sulfur/src/sulfur/views.py:2392
 #: ../../sulfur/src/sulfur/sulfur.glade.h:64
 #, fuzzy
 msgid "Description"
@@ -5989,7 +5990,7 @@ msgstr ""
 
 #: ../../client/text_repositories.py:144
 #: ../../sulfur/src/sulfur/dialogs.py:306
-#: ../../sulfur/src/sulfur/views.py:2140
+#: ../../sulfur/src/sulfur/views.py:2143
 #, fuzzy
 msgid "Status"
 msgstr "Opdateret"
@@ -6144,21 +6145,21 @@ msgstr ""
 
 #. ok, he/she knows it... hopefully
 #. if exist, copy old database
-#: ../../client/text_rescue.py:247 ../../client/text_rescue.py:637
+#: ../../client/text_rescue.py:247 ../../client/text_rescue.py:640
 msgid "Creating backup of the previous database, if exists."
 msgstr ""
 
-#: ../../client/text_rescue.py:251 ../../client/text_rescue.py:641
+#: ../../client/text_rescue.py:251 ../../client/text_rescue.py:644
 #, fuzzy
 msgid "Previous database copied to file"
 msgstr "Filkilder"
 
-#: ../../client/text_rescue.py:255 ../../client/text_rescue.py:646
+#: ../../client/text_rescue.py:255 ../../client/text_rescue.py:649
 #, fuzzy
 msgid "Initializing the new database at"
 msgstr "Oprydning af alt Yum metadat"
 
-#: ../../client/text_rescue.py:268 ../../client/text_rescue.py:658
+#: ../../client/text_rescue.py:268 ../../client/text_rescue.py:661
 msgid "Database reinitialized correctly at"
 msgstr ""
 
@@ -6208,7 +6209,7 @@ msgstr "Fandt %d %s pakker"
 msgid "Filling database"
 msgstr "Kører Transaktion"
 
-#: ../../client/text_rescue.py:361 ../../client/text_rescue.py:544
+#: ../../client/text_rescue.py:361 ../../client/text_rescue.py:547
 msgid "Adding"
 msgstr ""
 
@@ -6217,17 +6218,17 @@ msgstr ""
 msgid "Database resurrected successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_rescue.py:371 ../../client/text_rescue.py:718
+#: ../../client/text_rescue.py:371 ../../client/text_rescue.py:721
 #, fuzzy
 msgid "Now generating reverse dependencies metadata"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_rescue.py:373 ../../client/text_rescue.py:720
+#: ../../client/text_rescue.py:373 ../../client/text_rescue.py:723
 #, fuzzy
 msgid "Now indexing tables"
 msgstr "Kører Transaktion"
 
-#: ../../client/text_rescue.py:376 ../../client/text_rescue.py:723
+#: ../../client/text_rescue.py:376 ../../client/text_rescue.py:726
 #, fuzzy
 msgid "Database reinitialized successfully"
 msgstr "Indlæsning afsluttet"
@@ -6248,121 +6249,121 @@ msgstr "Kører Transaktion"
 msgid "Collecting Source Package Manager metadata"
 msgstr "Pakker"
 
-#: ../../client/text_rescue.py:413
+#: ../../client/text_rescue.py:416
 #, fuzzy
 msgid "Collecting Entropy packages"
 msgstr "Sorterer Pakker"
 
-#: ../../client/text_rescue.py:418
+#: ../../client/text_rescue.py:421
 #, fuzzy
 msgid "Differential Scan"
 msgstr "Installer som afhængighed"
 
-#: ../../client/text_rescue.py:460
+#: ../../client/text_rescue.py:463
 #, fuzzy
 msgid "Databases already synced"
 msgstr "Filkilder"
 
-#: ../../client/text_rescue.py:467
+#: ../../client/text_rescue.py:470
 #, fuzzy
 msgid "Entropy locked, giving up"
 msgstr "Opsætning af Yum Konfiguration"
 
-#: ../../client/text_rescue.py:470
+#: ../../client/text_rescue.py:473
 msgid "Are you ready ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:476
+#: ../../client/text_rescue.py:479
 #, fuzzy
 msgid "Entropy locked during lock acquire"
 msgstr "Opsætning af Yum Konfiguration"
 
-#: ../../client/text_rescue.py:481
+#: ../../client/text_rescue.py:484
 #, fuzzy
 msgid "Someone removed these packages"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../client/text_rescue.py:482
+#: ../../client/text_rescue.py:485
 msgid "They would be removed from the system database"
 msgstr ""
 
-#: ../../client/text_rescue.py:498
+#: ../../client/text_rescue.py:501
 msgid "Continue with removal ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:516
+#: ../../client/text_rescue.py:519
 #, fuzzy
 msgid "Database removal complete"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../client/text_rescue.py:520
+#: ../../client/text_rescue.py:523
 #, fuzzy
 msgid "Someone added these packages"
 msgstr "Fandt %d %s pakker"
 
-#: ../../client/text_rescue.py:521
+#: ../../client/text_rescue.py:524
 msgid "They would be added to the system database"
 msgstr ""
 
-#: ../../client/text_rescue.py:529
+#: ../../client/text_rescue.py:532
 msgid "Continue with adding ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:565 ../../client/text_rescue.py:693
+#: ../../client/text_rescue.py:568 ../../client/text_rescue.py:696
 #, fuzzy
 msgid "An error occured while analyzing"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../client/text_rescue.py:566 ../../client/text_rescue.py:695
+#: ../../client/text_rescue.py:569 ../../client/text_rescue.py:698
 #, fuzzy
 msgid "Exception"
 msgstr "Søgnings Indstiller"
 
-#: ../../client/text_rescue.py:592
+#: ../../client/text_rescue.py:595
 #, fuzzy
 msgid "Database update completed"
 msgstr "Indlæsning afsluttet"
 
-#: ../../client/text_rescue.py:605
+#: ../../client/text_rescue.py:608
 msgid ""
 "The installed package repository will be regenerated using Source Package "
 "Manager"
 msgstr ""
 
-#: ../../client/text_rescue.py:608
+#: ../../client/text_rescue.py:611
 msgid ""
 "If you dont know what you're doing just, don't do this. Really. I'm not "
 "joking."
 msgstr ""
 
-#: ../../client/text_rescue.py:609
+#: ../../client/text_rescue.py:612
 msgid "Understood ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:612
+#: ../../client/text_rescue.py:615
 msgid "Really ?"
 msgstr ""
 
-#: ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:619
 msgid "This is your last chance"
 msgstr ""
 
-#: ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:619
 msgid "Ok?"
 msgstr ""
 
-#: ../../client/text_rescue.py:665
+#: ../../client/text_rescue.py:668
 msgid "Transductingactioningintactering databases"
 msgstr ""
 
-#: ../../client/text_rescue.py:715
+#: ../../client/text_rescue.py:718
 #, fuzzy
 msgid ""
 "All the Source Package Manager packages have been injected into Entropy "
 "database"
 msgstr "Ingen pakker i transaktionen"
 
-#: ../../client/text_rescue.py:736
+#: ../../client/text_rescue.py:739
 msgid "database does not exist or is badly broken"
 msgstr ""
 
@@ -7896,13 +7897,13 @@ msgid "Package ChangeLog"
 msgstr "Pakker"
 
 #: ../../sulfur/src/sulfur/dialogs.py:905
-#: ../../sulfur/src/sulfur/views.py:1631
+#: ../../sulfur/src/sulfur/views.py:1634
 #, fuzzy
 msgid "Vote registered successfully"
 msgstr "Indlæsning afsluttet"
 
 #: ../../sulfur/src/sulfur/dialogs.py:907
-#: ../../sulfur/src/sulfur/views.py:1635
+#: ../../sulfur/src/sulfur/views.py:1638
 #, fuzzy
 msgid "Error registering vote"
 msgstr "Fejl i test af pakke signaturer:\n"
@@ -8081,7 +8082,7 @@ msgstr "Vis Installerede Pakker"
 #: ../../sulfur/src/sulfur/dialogs.py:2244
 #: ../../sulfur/src/sulfur/dialogs.py:2255
 #: ../../sulfur/src/sulfur/package.py:262 ../../sulfur/src/sulfur/views.py:87
-#: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2038
+#: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2041
 #, fuzzy
 msgid "No description"
 msgstr "_Beskrivelse"
@@ -8195,12 +8196,12 @@ msgstr ""
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/entropyapi.py:96
+#: ../../sulfur/src/sulfur/entropyapi.py:98
 #, fuzzy
 msgid "Error enabling masked package"
 msgstr "Sorterer Pakker"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:128
+#: ../../sulfur/src/sulfur/entropyapi.py:130
 #, fuzzy
 msgid "Downloading sources"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
@@ -8444,7 +8445,7 @@ msgid "Oh oh ooooh... Merry Xmas!"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:345
-#: ../../sulfur/src/sulfur/views.py:1950
+#: ../../sulfur/src/sulfur/views.py:1953
 #: ../../sulfur/src/sulfur/sulfur.glade.h:15
 #, fuzzy
 msgid "Applications"
@@ -8928,90 +8929,90 @@ msgstr "Vis Installerede Pakker"
 msgid "Application"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:1988
+#: ../../sulfur/src/sulfur/views.py:1991
 #, fuzzy
 msgid "Applications to remove"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:1993
+#: ../../sulfur/src/sulfur/views.py:1996
 #, fuzzy
 msgid "Applications to downgrade"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../sulfur/src/sulfur/views.py:1998
+#: ../../sulfur/src/sulfur/views.py:2001
 #, fuzzy
 msgid "Applications to install"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:2003
+#: ../../sulfur/src/sulfur/views.py:2006
 #, fuzzy
 msgid "Applications to update"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:2008
+#: ../../sulfur/src/sulfur/views.py:2011
 #, fuzzy
 msgid "Applications to reinstall"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:2077
+#: ../../sulfur/src/sulfur/views.py:2080
 msgid "Proposed"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/views.py:2084
+#: ../../sulfur/src/sulfur/views.py:2087
 #, fuzzy
 msgid "Destination"
 msgstr "_Beskrivelse"
 
-#: ../../sulfur/src/sulfur/views.py:2091
+#: ../../sulfur/src/sulfur/views.py:2094
 #, fuzzy
 msgid "Rev."
 msgstr "Filkilde."
 
-#: ../../sulfur/src/sulfur/views.py:2147
+#: ../../sulfur/src/sulfur/views.py:2150
 #, fuzzy
 msgid "Security id."
 msgstr "Installer som afhængighed"
 
-#: ../../sulfur/src/sulfur/views.py:2155
+#: ../../sulfur/src/sulfur/views.py:2158
 #, fuzzy
 msgid "Application name"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:2233
+#: ../../sulfur/src/sulfur/views.py:2236
 msgid "Please wait, loading..."
 msgstr ""
 
-#: ../../sulfur/src/sulfur/views.py:2234
+#: ../../sulfur/src/sulfur/views.py:2237
 #, fuzzy
 msgid "Advisories are being loaded"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur/views.py:2291
+#: ../../sulfur/src/sulfur/views.py:2294
 #, fuzzy
 msgid "No advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../sulfur/src/sulfur/views.py:2292
+#: ../../sulfur/src/sulfur/views.py:2295
 msgid "There are no items to show"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/views.py:2318
+#: ../../sulfur/src/sulfur/views.py:2321
 msgid "Filename"
 msgstr "Filnavn"
 
-#: ../../sulfur/src/sulfur/views.py:2367
+#: ../../sulfur/src/sulfur/views.py:2370
 #, fuzzy
 msgid "Active"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur/views.py:2377
+#: ../../sulfur/src/sulfur/views.py:2380
 #: ../../sulfur/src/sulfur/sulfur.glade.h:274
 #, fuzzy
 msgid "Update"
 msgstr "Opdateret"
 
 #. Setup revision column
-#: ../../sulfur/src/sulfur/views.py:2385
+#: ../../sulfur/src/sulfur/views.py:2388
 #: ../../sulfur/src/sulfur/sulfur.glade.h:213
 #, fuzzy
 msgid "Revision"

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Spritz 0.14\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-17 00:10+0100\n"
+"POT-Creation-Date: 2010-01-17 12:22+0100\n"
 "PO-Revision-Date: 2010-01-05 22:43+0100\n"
 "Last-Translator: Fabio Erculiani <lxnay@sabayonlinux.org>\n"
 "Language-Team: Fabio Erculiani <lxnay@sabayon.org>\n"
@@ -136,7 +136,7 @@ msgstr "Esportazione database completata."
 #: ../../libraries/entropy/db/__init__.py:7362
 #: ../../libraries/entropy/client/interfaces/client.py:771
 #: ../../client/text_rescue.py:219 ../../client/text_rescue.py:224
-#: ../../client/text_rescue.py:604 ../../client/text_rescue.py:735
+#: ../../client/text_rescue.py:607 ../../client/text_rescue.py:738
 #: ../../client/text_ui.py:609 ../../client/text_ui.py:1437
 #: ../../client/text_ui.py:1495 ../../client/text_ui.py:1520
 #: ../../client/text_ui.py:1612
@@ -503,9 +503,9 @@ msgstr "Vuoi inizializzare la tua repository di default ?"
 #: ../../client/equo.py:885 ../../client/text_configuration.py:113
 #: ../../client/text_configuration.py:141 ../../client/text_rescue.py:230
 #: ../../client/text_rescue.py:234 ../../client/text_rescue.py:238
-#: ../../client/text_rescue.py:471 ../../client/text_rescue.py:530
-#: ../../client/text_rescue.py:610 ../../client/text_rescue.py:613
-#: ../../client/text_rescue.py:617 ../../client/text_smart.py:126
+#: ../../client/text_rescue.py:474 ../../client/text_rescue.py:533
+#: ../../client/text_rescue.py:613 ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:620 ../../client/text_smart.py:126
 #: ../../client/text_smart.py:304 ../../client/text_smart.py:452
 #: ../../client/text_ui.py:417 ../../client/text_ui.py:724
 #: ../../client/text_ui.py:1243 ../../client/text_ui.py:1483
@@ -516,7 +516,7 @@ msgstr "Vuoi inizializzare la tua repository di default ?"
 #: ../../server/server_reagent.py:502 ../../server/server_reagent.py:610
 #: ../../server/server_reagent.py:665 ../../server/server_reagent.py:709
 #: ../../sulfur/src/sulfur/dialogs.py:1192
-#: ../../sulfur/src/sulfur/entropyapi.py:374
+#: ../../sulfur/src/sulfur/entropyapi.py:360
 msgid "No"
 msgstr "No"
 
@@ -953,8 +953,8 @@ msgstr "Vuoi sincronizzare i pacchetti prima (importante!) ?"
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:170
 #: ../../libraries/entropy/output.py:679 ../../libraries/entropy/output.py:868
 #: ../../libraries/entropy/qa.py:386 ../../libraries/entropy/qa.py:401
-#: ../../libraries/entropy/qa.py:406 ../../client/text_rescue.py:495
-#: ../../client/text_rescue.py:499 ../../client/text_rescue.py:526
+#: ../../libraries/entropy/qa.py:406 ../../client/text_rescue.py:498
+#: ../../client/text_rescue.py:502 ../../client/text_rescue.py:529
 #: ../../client/text_ugc.py:231 ../../client/text_ugc.py:412
 #: ../../client/text_ugc.py:488 ../../client/text_ugc.py:507
 #: ../../client/text_ui.py:1788 ../../client/text_ui.py:1793
@@ -963,7 +963,7 @@ msgstr "Vuoi sincronizzare i pacchetti prima (importante!) ?"
 #: ../../server/server_reagent.py:437 ../../server/server_reagent.py:438
 #: ../../server/server_reagent.py:453 ../../sulfur/src/sulfur/dialogs.py:1195
 #: ../../sulfur/src/sulfur/dialogs.py:1635
-#: ../../sulfur/src/sulfur/entropyapi.py:374
+#: ../../sulfur/src/sulfur/entropyapi.py:360
 msgid "Yes"
 msgstr "Si"
 
@@ -2100,7 +2100,7 @@ msgstr "Imposta la repository Entropy Server di default"
 #: ../../libraries/entropy/client/services/system/methods.py:387
 #: ../../libraries/entropy/client/services/system/methods.py:394
 #: ../../libraries/entropy/client/services/system/methods.py:403
-#: ../../sulfur/src/sulfur/views.py:2388
+#: ../../sulfur/src/sulfur/views.py:2391
 msgid "Repository Identifier"
 msgstr "Identificatore Repository"
 
@@ -2409,7 +2409,7 @@ msgstr "timeout, mi arrendo"
 #: ../../libraries/entropy/client/interfaces/methods.py:91
 #: ../../server/server_reagent.py:97 ../../server/server_reagent.py:114
 #: ../../sulfur/src/sulfur/__init__.py:949
-#: ../../sulfur/src/sulfur/views.py:2318
+#: ../../sulfur/src/sulfur/views.py:2321
 msgid "Repository"
 msgstr "Repository"
 
@@ -2849,7 +2849,7 @@ msgid "Fetch not available"
 msgstr "scaricamento non disponibile"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2224
-#: ../../sulfur/src/sulfur/entropyapi.py:126
+#: ../../sulfur/src/sulfur/entropyapi.py:128
 msgid "Fetching"
 msgstr "Scaricamento"
 
@@ -2885,12 +2885,12 @@ msgid "Merging"
 msgstr "Incorporamento"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2276
-#: ../../sulfur/src/sulfur/entropyapi.py:253
+#: ../../sulfur/src/sulfur/entropyapi.py:267
 msgid "Installing"
 msgstr "Installazione"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2284
-#: ../../client/text_rescue.py:510 ../../sulfur/src/sulfur/entropyapi.py:213
+#: ../../client/text_rescue.py:513 ../../sulfur/src/sulfur/entropyapi.py:225
 msgid "Removing"
 msgstr "Rimozione"
 
@@ -3043,6 +3043,7 @@ msgid "Packages injection complete"
 msgstr "Iniezione pacchetti completata"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:926
+#: ../../sulfur/src/sulfur/entropyapi.py:216
 msgid "Removing package"
 msgstr "Rimozione pacchetto"
 
@@ -3444,7 +3445,7 @@ msgid "items"
 msgstr "oggetti"
 
 #: ../../libraries/entropy/output.py:558
-#: ../../sulfur/src/sulfur/entropyapi.py:386
+#: ../../sulfur/src/sulfur/entropyapi.py:372
 msgid "Entropy needs your attention"
 msgstr "Entropy richiede la tua attenzione"
 
@@ -5275,7 +5276,7 @@ msgstr "Homepage"
 
 #: ../../client/text_query.py:1598 ../../client/text_security.py:98
 #: ../../client/text_ugc.py:390 ../../sulfur/src/sulfur/dialogs.py:561
-#: ../../sulfur/src/sulfur/views.py:2163 ../../sulfur/src/sulfur/views.py:2389
+#: ../../sulfur/src/sulfur/views.py:2166 ../../sulfur/src/sulfur/views.py:2392
 #: ../../sulfur/src/sulfur/sulfur.glade.h:64
 msgid "Description"
 msgstr "Descrizione"
@@ -5359,7 +5360,7 @@ msgstr "mai sincronizzato"
 
 #: ../../client/text_repositories.py:144
 #: ../../sulfur/src/sulfur/dialogs.py:306
-#: ../../sulfur/src/sulfur/views.py:2140
+#: ../../sulfur/src/sulfur/views.py:2143
 msgid "Status"
 msgstr "Stato"
 
@@ -5497,19 +5498,19 @@ msgstr "Sai davvero cosa stai facendo ?"
 
 #. ok, he/she knows it... hopefully
 #. if exist, copy old database
-#: ../../client/text_rescue.py:247 ../../client/text_rescue.py:637
+#: ../../client/text_rescue.py:247 ../../client/text_rescue.py:640
 msgid "Creating backup of the previous database, if exists."
 msgstr "Crazione del backup del database precedente, se esiste."
 
-#: ../../client/text_rescue.py:251 ../../client/text_rescue.py:641
+#: ../../client/text_rescue.py:251 ../../client/text_rescue.py:644
 msgid "Previous database copied to file"
 msgstr "Database precedente copiato nel file"
 
-#: ../../client/text_rescue.py:255 ../../client/text_rescue.py:646
+#: ../../client/text_rescue.py:255 ../../client/text_rescue.py:649
 msgid "Initializing the new database at"
 msgstr "Inizializzazione del nuovo database in"
 
-#: ../../client/text_rescue.py:268 ../../client/text_rescue.py:658
+#: ../../client/text_rescue.py:268 ../../client/text_rescue.py:661
 msgid "Database reinitialized correctly at"
 msgstr "Database reinizializzato correttamente in"
 
@@ -5555,7 +5556,7 @@ msgstr "Trovati %s pacchetti"
 msgid "Filling database"
 msgstr "Riempimento database"
 
-#: ../../client/text_rescue.py:361 ../../client/text_rescue.py:544
+#: ../../client/text_rescue.py:361 ../../client/text_rescue.py:547
 msgid "Adding"
 msgstr "Aggiunta di"
 
@@ -5563,15 +5564,15 @@ msgstr "Aggiunta di"
 msgid "Database resurrected successfully"
 msgstr "Database risorto con successo"
 
-#: ../../client/text_rescue.py:371 ../../client/text_rescue.py:718
+#: ../../client/text_rescue.py:371 ../../client/text_rescue.py:721
 msgid "Now generating reverse dependencies metadata"
 msgstr "Generazione metadati dipendenze inverse"
 
-#: ../../client/text_rescue.py:373 ../../client/text_rescue.py:720
+#: ../../client/text_rescue.py:373 ../../client/text_rescue.py:723
 msgid "Now indexing tables"
 msgstr "Indicizzazione delle tabelle"
 
-#: ../../client/text_rescue.py:376 ../../client/text_rescue.py:723
+#: ../../client/text_rescue.py:376 ../../client/text_rescue.py:726
 msgid "Database reinitialized successfully"
 msgstr "Database reinizializzato correttamente"
 
@@ -5591,71 +5592,71 @@ msgstr "Scansione differenziale dei database Source Package Manager ed Entropy"
 msgid "Collecting Source Package Manager metadata"
 msgstr "Collezione metadati Source Package Manager"
 
-#: ../../client/text_rescue.py:413
+#: ../../client/text_rescue.py:416
 msgid "Collecting Entropy packages"
 msgstr "Collezione dei pacchetti Entropy"
 
-#: ../../client/text_rescue.py:418
+#: ../../client/text_rescue.py:421
 msgid "Differential Scan"
 msgstr "Scansione differenziale"
 
-#: ../../client/text_rescue.py:460
+#: ../../client/text_rescue.py:463
 msgid "Databases already synced"
 msgstr "Database già sincronizzati"
 
-#: ../../client/text_rescue.py:467
+#: ../../client/text_rescue.py:470
 msgid "Entropy locked, giving up"
 msgstr "Entropy bloccato (non disponibile), rinuncio"
 
-#: ../../client/text_rescue.py:470
+#: ../../client/text_rescue.py:473
 msgid "Are you ready ?"
 msgstr "Sei pronto ?"
 
-#: ../../client/text_rescue.py:476
+#: ../../client/text_rescue.py:479
 msgid "Entropy locked during lock acquire"
 msgstr "Entropy bloccato durante acquisizione lock"
 
-#: ../../client/text_rescue.py:481
+#: ../../client/text_rescue.py:484
 msgid "Someone removed these packages"
 msgstr "Qualcuno ha rimosso questi pacchetti"
 
-#: ../../client/text_rescue.py:482
+#: ../../client/text_rescue.py:485
 msgid "They would be removed from the system database"
 msgstr "Vorrebbero essere rimossi dal database di sistema"
 
-#: ../../client/text_rescue.py:498
+#: ../../client/text_rescue.py:501
 msgid "Continue with removal ?"
 msgstr "Continuare con la rimozione ?"
 
-#: ../../client/text_rescue.py:516
+#: ../../client/text_rescue.py:519
 msgid "Database removal complete"
 msgstr "Rimozione database completata"
 
-#: ../../client/text_rescue.py:520
+#: ../../client/text_rescue.py:523
 msgid "Someone added these packages"
 msgstr "Qualcuno ha aggiunto questi pacchetti"
 
-#: ../../client/text_rescue.py:521
+#: ../../client/text_rescue.py:524
 msgid "They would be added to the system database"
 msgstr "Vorrebbero essere aggiunti al database di sistema"
 
-#: ../../client/text_rescue.py:529
+#: ../../client/text_rescue.py:532
 msgid "Continue with adding ?"
 msgstr "Continuare con l'aggiunta ?"
 
-#: ../../client/text_rescue.py:565 ../../client/text_rescue.py:693
+#: ../../client/text_rescue.py:568 ../../client/text_rescue.py:696
 msgid "An error occured while analyzing"
 msgstr "Un errore è occorso durante l'analisi"
 
-#: ../../client/text_rescue.py:566 ../../client/text_rescue.py:695
+#: ../../client/text_rescue.py:569 ../../client/text_rescue.py:698
 msgid "Exception"
 msgstr "Eccezione"
 
-#: ../../client/text_rescue.py:592
+#: ../../client/text_rescue.py:595
 msgid "Database update completed"
 msgstr "Aggiornamento database completato"
 
-#: ../../client/text_rescue.py:605
+#: ../../client/text_rescue.py:608
 msgid ""
 "The installed package repository will be regenerated using Source Package "
 "Manager"
@@ -5663,33 +5664,33 @@ msgstr ""
 "Il database dei pacchetti installati sarà generato nuovamente usando il "
 "Source Package Manager"
 
-#: ../../client/text_rescue.py:608
+#: ../../client/text_rescue.py:611
 msgid ""
 "If you dont know what you're doing just, don't do this. Really. I'm not "
 "joking."
 msgstr "Se non sai cosa stai facendo, non farlo. Davvero. Non sto scherzando."
 
-#: ../../client/text_rescue.py:609
+#: ../../client/text_rescue.py:612
 msgid "Understood ?"
 msgstr "Capito ?"
 
-#: ../../client/text_rescue.py:612
+#: ../../client/text_rescue.py:615
 msgid "Really ?"
 msgstr "Davvero ?"
 
-#: ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:619
 msgid "This is your last chance"
 msgstr "Questa è la tua ultima possibilità"
 
-#: ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:619
 msgid "Ok?"
 msgstr "Ok?"
 
-#: ../../client/text_rescue.py:665
+#: ../../client/text_rescue.py:668
 msgid "Transductingactioningintactering databases"
 msgstr "Transduzionalizzazionamento dei database"
 
-#: ../../client/text_rescue.py:715
+#: ../../client/text_rescue.py:718
 msgid ""
 "All the Source Package Manager packages have been injected into Entropy "
 "database"
@@ -5697,7 +5698,7 @@ msgstr ""
 "Tutti i pacchetti Source Package Manager sono stati inseriti nel database "
 "Entropy"
 
-#: ../../client/text_rescue.py:736
+#: ../../client/text_rescue.py:739
 msgid "database does not exist or is badly broken"
 msgstr "il database non esiste od è decisamente corrotto"
 
@@ -7044,12 +7045,12 @@ msgid "Package ChangeLog"
 msgstr "ChangeLog pacchetto"
 
 #: ../../sulfur/src/sulfur/dialogs.py:905
-#: ../../sulfur/src/sulfur/views.py:1631
+#: ../../sulfur/src/sulfur/views.py:1634
 msgid "Vote registered successfully"
 msgstr "Voto registrato con successo"
 
 #: ../../sulfur/src/sulfur/dialogs.py:907
-#: ../../sulfur/src/sulfur/views.py:1635
+#: ../../sulfur/src/sulfur/views.py:1638
 msgid "Error registering vote"
 msgstr "Errore durante la registrazione del voto"
 
@@ -7211,7 +7212,7 @@ msgstr "Pacchetto mascherato"
 #: ../../sulfur/src/sulfur/dialogs.py:2244
 #: ../../sulfur/src/sulfur/dialogs.py:2255
 #: ../../sulfur/src/sulfur/package.py:262 ../../sulfur/src/sulfur/views.py:87
-#: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2038
+#: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2041
 msgid "No description"
 msgstr "Nessuna descrizione"
 
@@ -7311,11 +7312,11 @@ msgstr "Il rapporto è stato inviato correttamente. Grazie mille!"
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "Impossibile inviare il rapporto, sei connesso ad Internet?"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:96
+#: ../../sulfur/src/sulfur/entropyapi.py:98
 msgid "Error enabling masked package"
 msgstr "Errore durante l'abilitazione del pacchetto mascherato"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:128
+#: ../../sulfur/src/sulfur/entropyapi.py:130
 msgid "Downloading sources"
 msgstr "Scaricamento sorgenti"
 
@@ -7538,7 +7539,7 @@ msgid "Oh oh ooooh... Merry Xmas!"
 msgstr "Oh oh ooooh... Buon Natale!"
 
 #: ../../sulfur/src/sulfur/__init__.py:345
-#: ../../sulfur/src/sulfur/views.py:1950
+#: ../../sulfur/src/sulfur/views.py:1953
 #: ../../sulfur/src/sulfur/sulfur.glade.h:15
 msgid "Applications"
 msgstr "Applicazioni"
@@ -7997,79 +7998,79 @@ msgstr "Ci sono package set incompleti, continua a tuo rischio"
 msgid "Application"
 msgstr "Applicazione"
 
-#: ../../sulfur/src/sulfur/views.py:1988
+#: ../../sulfur/src/sulfur/views.py:1991
 msgid "Applications to remove"
 msgstr "Applicazioni da rimuovere"
 
-#: ../../sulfur/src/sulfur/views.py:1993
+#: ../../sulfur/src/sulfur/views.py:1996
 msgid "Applications to downgrade"
 msgstr "Applicazioni da retrocedere"
 
-#: ../../sulfur/src/sulfur/views.py:1998
+#: ../../sulfur/src/sulfur/views.py:2001
 msgid "Applications to install"
 msgstr "Applicazioni da installare"
 
-#: ../../sulfur/src/sulfur/views.py:2003
+#: ../../sulfur/src/sulfur/views.py:2006
 msgid "Applications to update"
 msgstr "Applicazioni da aggiornare"
 
-#: ../../sulfur/src/sulfur/views.py:2008
+#: ../../sulfur/src/sulfur/views.py:2011
 msgid "Applications to reinstall"
 msgstr "Applicazioni da reinstallare"
 
-#: ../../sulfur/src/sulfur/views.py:2077
+#: ../../sulfur/src/sulfur/views.py:2080
 msgid "Proposed"
 msgstr "Proposto"
 
-#: ../../sulfur/src/sulfur/views.py:2084
+#: ../../sulfur/src/sulfur/views.py:2087
 msgid "Destination"
 msgstr "Destinazione"
 
-#: ../../sulfur/src/sulfur/views.py:2091
+#: ../../sulfur/src/sulfur/views.py:2094
 msgid "Rev."
 msgstr "Rev."
 
-#: ../../sulfur/src/sulfur/views.py:2147
+#: ../../sulfur/src/sulfur/views.py:2150
 msgid "Security id."
 msgstr "Id. Sicurezza"
 
-#: ../../sulfur/src/sulfur/views.py:2155
+#: ../../sulfur/src/sulfur/views.py:2158
 msgid "Application name"
 msgstr "Nome applicazione"
 
-#: ../../sulfur/src/sulfur/views.py:2233
+#: ../../sulfur/src/sulfur/views.py:2236
 #, fuzzy
 msgid "Please wait, loading..."
 msgstr "Attendere prego"
 
-#: ../../sulfur/src/sulfur/views.py:2234
+#: ../../sulfur/src/sulfur/views.py:2237
 #, fuzzy
 msgid "Advisories are being loaded"
 msgstr "Repository in fase di aggiornamento"
 
-#: ../../sulfur/src/sulfur/views.py:2291
+#: ../../sulfur/src/sulfur/views.py:2294
 msgid "No advisories"
 msgstr "Nessun avviso"
 
-#: ../../sulfur/src/sulfur/views.py:2292
+#: ../../sulfur/src/sulfur/views.py:2295
 msgid "There are no items to show"
 msgstr "Nessun elemento da visualizzare"
 
-#: ../../sulfur/src/sulfur/views.py:2318
+#: ../../sulfur/src/sulfur/views.py:2321
 msgid "Filename"
 msgstr "Nome file"
 
-#: ../../sulfur/src/sulfur/views.py:2367
+#: ../../sulfur/src/sulfur/views.py:2370
 msgid "Active"
 msgstr "Attivo"
 
-#: ../../sulfur/src/sulfur/views.py:2377
+#: ../../sulfur/src/sulfur/views.py:2380
 #: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "Update"
 msgstr "Aggiorna"
 
 #. Setup revision column
-#: ../../sulfur/src/sulfur/views.py:2385
+#: ../../sulfur/src/sulfur/views.py:2388
 #: ../../sulfur/src/sulfur/sulfur.glade.h:213
 msgid "Revision"
 msgstr "Revisione"

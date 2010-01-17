@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Entropy 0.98.5.3\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-01-17 00:10+0100\n"
+"POT-Creation-Date: 2010-01-17 12:22+0100\n"
 "PO-Revision-Date: 2009-09-21 02:01+0300\n"
 "Last-Translator: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "Language-Team: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
@@ -136,7 +136,7 @@ msgstr "Экспорт базы данных завершён."
 #: ../../libraries/entropy/db/__init__.py:7362
 #: ../../libraries/entropy/client/interfaces/client.py:771
 #: ../../client/text_rescue.py:219 ../../client/text_rescue.py:224
-#: ../../client/text_rescue.py:604 ../../client/text_rescue.py:735
+#: ../../client/text_rescue.py:607 ../../client/text_rescue.py:738
 #: ../../client/text_ui.py:609 ../../client/text_ui.py:1437
 #: ../../client/text_ui.py:1495 ../../client/text_ui.py:1520
 #: ../../client/text_ui.py:1612
@@ -509,9 +509,9 @@ msgstr "Вы желаете инициализировать Ваш репози
 #: ../../client/equo.py:885 ../../client/text_configuration.py:113
 #: ../../client/text_configuration.py:141 ../../client/text_rescue.py:230
 #: ../../client/text_rescue.py:234 ../../client/text_rescue.py:238
-#: ../../client/text_rescue.py:471 ../../client/text_rescue.py:530
-#: ../../client/text_rescue.py:610 ../../client/text_rescue.py:613
-#: ../../client/text_rescue.py:617 ../../client/text_smart.py:126
+#: ../../client/text_rescue.py:474 ../../client/text_rescue.py:533
+#: ../../client/text_rescue.py:613 ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:620 ../../client/text_smart.py:126
 #: ../../client/text_smart.py:304 ../../client/text_smart.py:452
 #: ../../client/text_ui.py:417 ../../client/text_ui.py:724
 #: ../../client/text_ui.py:1243 ../../client/text_ui.py:1483
@@ -522,7 +522,7 @@ msgstr "Вы желаете инициализировать Ваш репози
 #: ../../server/server_reagent.py:502 ../../server/server_reagent.py:610
 #: ../../server/server_reagent.py:665 ../../server/server_reagent.py:709
 #: ../../sulfur/src/sulfur/dialogs.py:1192
-#: ../../sulfur/src/sulfur/entropyapi.py:374
+#: ../../sulfur/src/sulfur/entropyapi.py:360
 msgid "No"
 msgstr "Нет"
 
@@ -962,8 +962,8 @@ msgstr "Желаете ли Вы для начала синхронизиров�
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:170
 #: ../../libraries/entropy/output.py:679 ../../libraries/entropy/output.py:868
 #: ../../libraries/entropy/qa.py:386 ../../libraries/entropy/qa.py:401
-#: ../../libraries/entropy/qa.py:406 ../../client/text_rescue.py:495
-#: ../../client/text_rescue.py:499 ../../client/text_rescue.py:526
+#: ../../libraries/entropy/qa.py:406 ../../client/text_rescue.py:498
+#: ../../client/text_rescue.py:502 ../../client/text_rescue.py:529
 #: ../../client/text_ugc.py:231 ../../client/text_ugc.py:412
 #: ../../client/text_ugc.py:488 ../../client/text_ugc.py:507
 #: ../../client/text_ui.py:1788 ../../client/text_ui.py:1793
@@ -972,7 +972,7 @@ msgstr "Желаете ли Вы для начала синхронизиров�
 #: ../../server/server_reagent.py:437 ../../server/server_reagent.py:438
 #: ../../server/server_reagent.py:453 ../../sulfur/src/sulfur/dialogs.py:1195
 #: ../../sulfur/src/sulfur/dialogs.py:1635
-#: ../../sulfur/src/sulfur/entropyapi.py:374
+#: ../../sulfur/src/sulfur/entropyapi.py:360
 msgid "Yes"
 msgstr "Да"
 
@@ -2125,7 +2125,7 @@ msgstr "Установить репозиторий сервера Entropy по 
 #: ../../libraries/entropy/client/services/system/methods.py:387
 #: ../../libraries/entropy/client/services/system/methods.py:394
 #: ../../libraries/entropy/client/services/system/methods.py:403
-#: ../../sulfur/src/sulfur/views.py:2388
+#: ../../sulfur/src/sulfur/views.py:2391
 msgid "Repository Identifier"
 msgstr "Имя репозитория"
 
@@ -2436,7 +2436,7 @@ msgstr "превышено время ожидания, прекращаю"
 #: ../../libraries/entropy/client/interfaces/methods.py:91
 #: ../../server/server_reagent.py:97 ../../server/server_reagent.py:114
 #: ../../sulfur/src/sulfur/__init__.py:949
-#: ../../sulfur/src/sulfur/views.py:2318
+#: ../../sulfur/src/sulfur/views.py:2321
 msgid "Repository"
 msgstr "Репозиторий"
 
@@ -2880,7 +2880,7 @@ msgid "Fetch not available"
 msgstr "Загрузка недоступна"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2224
-#: ../../sulfur/src/sulfur/entropyapi.py:126
+#: ../../sulfur/src/sulfur/entropyapi.py:128
 msgid "Fetching"
 msgstr "Загрузка"
 
@@ -2916,12 +2916,12 @@ msgid "Merging"
 msgstr "Объединение"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2276
-#: ../../sulfur/src/sulfur/entropyapi.py:253
+#: ../../sulfur/src/sulfur/entropyapi.py:267
 msgid "Installing"
 msgstr "Установка"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2284
-#: ../../client/text_rescue.py:510 ../../sulfur/src/sulfur/entropyapi.py:213
+#: ../../client/text_rescue.py:513 ../../sulfur/src/sulfur/entropyapi.py:225
 msgid "Removing"
 msgstr "Удаление"
 
@@ -3074,6 +3074,7 @@ msgid "Packages injection complete"
 msgstr "Добавление пакета завершено"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:926
+#: ../../sulfur/src/sulfur/entropyapi.py:216
 msgid "Removing package"
 msgstr "Удаление пакета"
 
@@ -3487,7 +3488,7 @@ msgid "items"
 msgstr " "
 
 #: ../../libraries/entropy/output.py:558
-#: ../../sulfur/src/sulfur/entropyapi.py:386
+#: ../../sulfur/src/sulfur/entropyapi.py:372
 msgid "Entropy needs your attention"
 msgstr "Entropy требует Вашего внимания"
 
@@ -5340,7 +5341,7 @@ msgstr "Домашняя страница"
 
 #: ../../client/text_query.py:1598 ../../client/text_security.py:98
 #: ../../client/text_ugc.py:390 ../../sulfur/src/sulfur/dialogs.py:561
-#: ../../sulfur/src/sulfur/views.py:2163 ../../sulfur/src/sulfur/views.py:2389
+#: ../../sulfur/src/sulfur/views.py:2166 ../../sulfur/src/sulfur/views.py:2392
 #: ../../sulfur/src/sulfur/sulfur.glade.h:64
 msgid "Description"
 msgstr "Описание"
@@ -5425,7 +5426,7 @@ msgstr "никогда не синхронизировалось"
 
 #: ../../client/text_repositories.py:144
 #: ../../sulfur/src/sulfur/dialogs.py:306
-#: ../../sulfur/src/sulfur/views.py:2140
+#: ../../sulfur/src/sulfur/views.py:2143
 msgid "Status"
 msgstr "Статус"
 
@@ -5565,20 +5566,20 @@ msgstr "Ты вообще понимаешь, что делаешь ?"
 
 #. ok, he/she knows it... hopefully
 #. if exist, copy old database
-#: ../../client/text_rescue.py:247 ../../client/text_rescue.py:637
+#: ../../client/text_rescue.py:247 ../../client/text_rescue.py:640
 msgid "Creating backup of the previous database, if exists."
 msgstr ""
 "Создание бэкапа предыдущей базы данных, если таковая имеется в наличии."
 
-#: ../../client/text_rescue.py:251 ../../client/text_rescue.py:641
+#: ../../client/text_rescue.py:251 ../../client/text_rescue.py:644
 msgid "Previous database copied to file"
 msgstr "Предыдущая база данных скопирована в файл"
 
-#: ../../client/text_rescue.py:255 ../../client/text_rescue.py:646
+#: ../../client/text_rescue.py:255 ../../client/text_rescue.py:649
 msgid "Initializing the new database at"
 msgstr "Инициализация новой базы данных на"
 
-#: ../../client/text_rescue.py:268 ../../client/text_rescue.py:658
+#: ../../client/text_rescue.py:268 ../../client/text_rescue.py:661
 msgid "Database reinitialized correctly at"
 msgstr "База данных реинициализированна корректно на"
 
@@ -5624,7 +5625,7 @@ msgstr "Найдено %s пакетов"
 msgid "Filling database"
 msgstr "Заполнение базы данных"
 
-#: ../../client/text_rescue.py:361 ../../client/text_rescue.py:544
+#: ../../client/text_rescue.py:361 ../../client/text_rescue.py:547
 msgid "Adding"
 msgstr "Добавление"
 
@@ -5632,16 +5633,16 @@ msgstr "Добавление"
 msgid "Database resurrected successfully"
 msgstr "База данных успешно восстановлена"
 
-#: ../../client/text_rescue.py:371 ../../client/text_rescue.py:718
+#: ../../client/text_rescue.py:371 ../../client/text_rescue.py:721
 #, fuzzy
 msgid "Now generating reverse dependencies metadata"
 msgstr "Теперь генерируется таблица, кэширующая зависимости"
 
-#: ../../client/text_rescue.py:373 ../../client/text_rescue.py:720
+#: ../../client/text_rescue.py:373 ../../client/text_rescue.py:723
 msgid "Now indexing tables"
 msgstr "Сейчас индексируются таблицы"
 
-#: ../../client/text_rescue.py:376 ../../client/text_rescue.py:723
+#: ../../client/text_rescue.py:376 ../../client/text_rescue.py:726
 msgid "Database reinitialized successfully"
 msgstr "База данных реинициализирована успешно"
 
@@ -5664,71 +5665,71 @@ msgstr "Сканирование баз данных портеджа и Entropy
 msgid "Collecting Source Package Manager metadata"
 msgstr "Пакетный менеджер источников (SPM)"
 
-#: ../../client/text_rescue.py:413
+#: ../../client/text_rescue.py:416
 msgid "Collecting Entropy packages"
 msgstr "Сборка пакетов Entropy"
 
-#: ../../client/text_rescue.py:418
+#: ../../client/text_rescue.py:421
 msgid "Differential Scan"
 msgstr "Дифференцированный поиск"
 
-#: ../../client/text_rescue.py:460
+#: ../../client/text_rescue.py:463
 msgid "Databases already synced"
 msgstr "Уже синхронизированные базы данных"
 
-#: ../../client/text_rescue.py:467
+#: ../../client/text_rescue.py:470
 msgid "Entropy locked, giving up"
 msgstr "Entropy заблокирована, прекращаю"
 
-#: ../../client/text_rescue.py:470
+#: ../../client/text_rescue.py:473
 msgid "Are you ready ?"
 msgstr "Вы готовы?"
 
-#: ../../client/text_rescue.py:476
+#: ../../client/text_rescue.py:479
 msgid "Entropy locked during lock acquire"
 msgstr "Entropy заблокирована во время действия блокировки"
 
-#: ../../client/text_rescue.py:481
+#: ../../client/text_rescue.py:484
 msgid "Someone removed these packages"
 msgstr "Кто-то удалил  эти пакеты"
 
-#: ../../client/text_rescue.py:482
+#: ../../client/text_rescue.py:485
 msgid "They would be removed from the system database"
 msgstr "Они будут стёрты из системной базы данных"
 
-#: ../../client/text_rescue.py:498
+#: ../../client/text_rescue.py:501
 msgid "Continue with removal ?"
 msgstr "Продолжить удаление ?"
 
-#: ../../client/text_rescue.py:516
+#: ../../client/text_rescue.py:519
 msgid "Database removal complete"
 msgstr "Удаление базы данных завершено"
 
-#: ../../client/text_rescue.py:520
+#: ../../client/text_rescue.py:523
 msgid "Someone added these packages"
 msgstr "Кто-то добавил эти пакеты"
 
-#: ../../client/text_rescue.py:521
+#: ../../client/text_rescue.py:524
 msgid "They would be added to the system database"
 msgstr "Они будут добавлены в системную базу данных"
 
-#: ../../client/text_rescue.py:529
+#: ../../client/text_rescue.py:532
 msgid "Continue with adding ?"
 msgstr "Продолжить с добавлением ?"
 
-#: ../../client/text_rescue.py:565 ../../client/text_rescue.py:693
+#: ../../client/text_rescue.py:568 ../../client/text_rescue.py:696
 msgid "An error occured while analyzing"
 msgstr "Произошла ошибка при анализе"
 
-#: ../../client/text_rescue.py:566 ../../client/text_rescue.py:695
+#: ../../client/text_rescue.py:569 ../../client/text_rescue.py:698
 msgid "Exception"
 msgstr "Исключение"
 
-#: ../../client/text_rescue.py:592
+#: ../../client/text_rescue.py:595
 msgid "Database update completed"
 msgstr "Обновление базы данных завершено"
 
-#: ../../client/text_rescue.py:605
+#: ../../client/text_rescue.py:608
 #, fuzzy
 msgid ""
 "The installed package repository will be regenerated using Source Package "
@@ -5737,7 +5738,7 @@ msgstr ""
 "База данных установленных пакетов будет сгенерирована снова с использованием "
 "базы данных Gentoo"
 
-#: ../../client/text_rescue.py:608
+#: ../../client/text_rescue.py:611
 msgid ""
 "If you dont know what you're doing just, don't do this. Really. I'm not "
 "joking."
@@ -5745,34 +5746,34 @@ msgstr ""
 "Если ты не знаешь, что ты делаешь - лучше не делай этого. Серьёзно. Я не "
 "шучу."
 
-#: ../../client/text_rescue.py:609
+#: ../../client/text_rescue.py:612
 msgid "Understood ?"
 msgstr "Я ясно излагаю ?"
 
-#: ../../client/text_rescue.py:612
+#: ../../client/text_rescue.py:615
 msgid "Really ?"
 msgstr "Правда ?"
 
-#: ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:619
 msgid "This is your last chance"
 msgstr "Это твой последний шанс"
 
-#: ../../client/text_rescue.py:616
+#: ../../client/text_rescue.py:619
 msgid "Ok?"
 msgstr "Ok?"
 
-#: ../../client/text_rescue.py:665
+#: ../../client/text_rescue.py:668
 msgid "Transductingactioningintactering databases"
 msgstr "Transductingactioningintactering базы данных"
 
-#: ../../client/text_rescue.py:715
+#: ../../client/text_rescue.py:718
 #, fuzzy
 msgid ""
 "All the Source Package Manager packages have been injected into Entropy "
 "database"
 msgstr "Все пакеты Gentoo были введены в базу данных Entropy"
 
-#: ../../client/text_rescue.py:736
+#: ../../client/text_rescue.py:739
 msgid "database does not exist or is badly broken"
 msgstr "База данных не существует или совсем испорчена"
 
@@ -7137,12 +7138,12 @@ msgid "Package ChangeLog"
 msgstr "Лог изменений пакета"
 
 #: ../../sulfur/src/sulfur/dialogs.py:905
-#: ../../sulfur/src/sulfur/views.py:1631
+#: ../../sulfur/src/sulfur/views.py:1634
 msgid "Vote registered successfully"
 msgstr "Голос зарегистрирован успешно"
 
 #: ../../sulfur/src/sulfur/dialogs.py:907
-#: ../../sulfur/src/sulfur/views.py:1635
+#: ../../sulfur/src/sulfur/views.py:1638
 msgid "Error registering vote"
 msgstr "Ошибка при регистрации голоса"
 
@@ -7304,7 +7305,7 @@ msgstr "Маскированный пакет"
 #: ../../sulfur/src/sulfur/dialogs.py:2244
 #: ../../sulfur/src/sulfur/dialogs.py:2255
 #: ../../sulfur/src/sulfur/package.py:262 ../../sulfur/src/sulfur/views.py:87
-#: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2038
+#: ../../sulfur/src/sulfur/views.py:143 ../../sulfur/src/sulfur/views.py:2041
 msgid "No description"
 msgstr "Нет описания"
 
@@ -7404,11 +7405,11 @@ msgstr "Ваш отчёт отправлен успешно! Большое сп
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "Невозможно отправить Ваш отчёт. Нет связи с интернетом?"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:96
+#: ../../sulfur/src/sulfur/entropyapi.py:98
 msgid "Error enabling masked package"
 msgstr "Ошибка при доступе к маскированному пакету"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:128
+#: ../../sulfur/src/sulfur/entropyapi.py:130
 msgid "Downloading sources"
 msgstr "Скачивание исходников"
 
@@ -7631,7 +7632,7 @@ msgid "Oh oh ooooh... Merry Xmas!"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:345
-#: ../../sulfur/src/sulfur/views.py:1950
+#: ../../sulfur/src/sulfur/views.py:1953
 #: ../../sulfur/src/sulfur/sulfur.glade.h:15
 msgid "Applications"
 msgstr "Приложения"
@@ -8095,86 +8096,86 @@ msgstr "Имеются неполные наборы пакетов, продо�
 msgid "Application"
 msgstr "Приложения"
 
-#: ../../sulfur/src/sulfur/views.py:1988
+#: ../../sulfur/src/sulfur/views.py:1991
 #, fuzzy
 msgid "Applications to remove"
 msgstr "Приложения вне групп"
 
-#: ../../sulfur/src/sulfur/views.py:1993
+#: ../../sulfur/src/sulfur/views.py:1996
 #, fuzzy
 msgid "Applications to downgrade"
 msgstr "Пакеты к обновлению до более старой версии"
 
-#: ../../sulfur/src/sulfur/views.py:1998
+#: ../../sulfur/src/sulfur/views.py:2001
 #, fuzzy
 msgid "Applications to install"
 msgstr "Опции приложения"
 
-#: ../../sulfur/src/sulfur/views.py:2003
+#: ../../sulfur/src/sulfur/views.py:2006
 #, fuzzy
 msgid "Applications to update"
 msgstr "Обновления приложений"
 
-#: ../../sulfur/src/sulfur/views.py:2008
+#: ../../sulfur/src/sulfur/views.py:2011
 #, fuzzy
 msgid "Applications to reinstall"
 msgstr "Опции приложения"
 
-#: ../../sulfur/src/sulfur/views.py:2077
+#: ../../sulfur/src/sulfur/views.py:2080
 msgid "Proposed"
 msgstr "Предлагается"
 
-#: ../../sulfur/src/sulfur/views.py:2084
+#: ../../sulfur/src/sulfur/views.py:2087
 msgid "Destination"
 msgstr "Расположение"
 
-#: ../../sulfur/src/sulfur/views.py:2091
+#: ../../sulfur/src/sulfur/views.py:2094
 msgid "Rev."
 msgstr "Версия"
 
-#: ../../sulfur/src/sulfur/views.py:2147
+#: ../../sulfur/src/sulfur/views.py:2150
 #, fuzzy
 msgid "Security id."
 msgstr "Безопасность"
 
-#: ../../sulfur/src/sulfur/views.py:2155
+#: ../../sulfur/src/sulfur/views.py:2158
 #, fuzzy
 msgid "Application name"
 msgstr "Приложения"
 
-#: ../../sulfur/src/sulfur/views.py:2233
+#: ../../sulfur/src/sulfur/views.py:2236
 #, fuzzy
 msgid "Please wait, loading..."
 msgstr "Пожалуйста, подождите"
 
-#: ../../sulfur/src/sulfur/views.py:2234
+#: ../../sulfur/src/sulfur/views.py:2237
 #, fuzzy
 msgid "Advisories are being loaded"
 msgstr "Репозитории обновляются"
 
-#: ../../sulfur/src/sulfur/views.py:2291
+#: ../../sulfur/src/sulfur/views.py:2294
 msgid "No advisories"
 msgstr "Нет уведомлений"
 
-#: ../../sulfur/src/sulfur/views.py:2292
+#: ../../sulfur/src/sulfur/views.py:2295
 msgid "There are no items to show"
 msgstr "Нечего показывать"
 
-#: ../../sulfur/src/sulfur/views.py:2318
+#: ../../sulfur/src/sulfur/views.py:2321
 msgid "Filename"
 msgstr "Имя файла"
 
-#: ../../sulfur/src/sulfur/views.py:2367
+#: ../../sulfur/src/sulfur/views.py:2370
 msgid "Active"
 msgstr "Активный"
 
-#: ../../sulfur/src/sulfur/views.py:2377
+#: ../../sulfur/src/sulfur/views.py:2380
 #: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "Update"
 msgstr "Обновить"
 
 #. Setup revision column
-#: ../../sulfur/src/sulfur/views.py:2385
+#: ../../sulfur/src/sulfur/views.py:2388
 #: ../../sulfur/src/sulfur/sulfur.glade.h:213
 msgid "Revision"
 msgstr "Версия"
