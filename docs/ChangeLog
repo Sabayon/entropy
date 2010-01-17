@@ -1,3 +1,15 @@
+commit 5170740ac3124466ed640afab97e5cae14273e4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 21:48:26 2010 +0100
+
+    [entropy] subprocess.Popen when used with pipes, keeps fdopen objects open, need to close them
+
+commit 9f398a5f44196c139639f4da447360bfba6b4f38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 12:38:16 2010 +0100
+
+    Update ChangeLog for version 0.99.24.5
+
 commit 427edde42575740a51e80e0452bf4659ed9ee47e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 17 12:22:52 2010 +0100
