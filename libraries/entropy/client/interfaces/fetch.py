@@ -14,6 +14,7 @@ from entropy.i18n import _
 from entropy.const import etpConst, etpUi
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     darkblue
+import entropy.tools
 
 class FetchersMixin:
 
@@ -26,7 +27,7 @@ class FetchersMixin:
             if checksum is None:
                 return 0
             # check digest
-            md5res = self.entropyTools.compare_md5(pkg_path, checksum)
+            md5res = entropy.tools.compare_md5(pkg_path, checksum)
             if md5res:
                 return 0
             return -2
@@ -120,7 +121,7 @@ class FetchersMixin:
             mirrorcount = repo_uris[repo].index(best_mirror)+1
             mytxt = "( mirror #%s ) " % (mirrorcount,)
             mytxt += blue(" %s: ") % (_("Mirror"),)
-            mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
+            mytxt += red(entropy.tools.spliturl(best_mirror)[1])
             mytxt += " - %s." % (_("maximum failure threshold reached"),)
             self.output(
                 mytxt,
@@ -147,7 +148,7 @@ class FetchersMixin:
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 basef = os.path.basename(fname)
                 mytxt += "[%s] %s " % (brown(basef), blue("@"),)
-                mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
+                mytxt += red(entropy.tools.spliturl(best_mirror)[1])
                 # now fetch the new one
                 self.output(
                     mytxt,
@@ -163,7 +164,7 @@ class FetchersMixin:
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 basef = os.path.basename(fname)
                 mytxt += "[%s] %s %s " % (brown(basef), darkred(_("success")), blue("@"),)
-                mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
+                mytxt += red(entropy.tools.spliturl(best_mirror)[1])
                 self.output(
                     mytxt,
                     importance = 1,
@@ -172,7 +173,7 @@ class FetchersMixin:
                 )
             mytxt = " %s: %s%s%s" % (
                 blue(_("Aggregated transfer rate")),
-                bold(self.entropyTools.bytes_into_human(data_transfer)),
+                bold(entropy.tools.bytes_into_human(data_transfer)),
                 darkred("/"),
                 darkblue(_("second")),
             )
@@ -190,7 +191,7 @@ class FetchersMixin:
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 mytxt += blue("%s: %s") % (
                     _("Error downloading from"),
-                    red(self.entropyTools.spliturl(best_mirror)[1]),
+                    red(entropy.tools.spliturl(best_mirror)[1]),
                 )
                 if rc == -1:
                     mytxt += " - %s." % (_("data not available on this mirror"),)
@@ -332,7 +333,7 @@ class FetchersMixin:
                     type = "warning",
                     header = red("   ## ")
                 )
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
             if (not existed_before) or (not resume):
                 do_stfu_rm(filepath)
             return -1, data_transfer, resumed
@@ -381,7 +382,7 @@ class FetchersMixin:
                 self.MirrorStatus.set_failing_mirror_status(uri, 30)
                 mytxt = mirror_count_txt
                 mytxt += blue(" %s: ") % (_("Mirror"),)
-                mytxt += red(self.entropyTools.spliturl(uri)[1])
+                mytxt += red(entropy.tools.spliturl(uri)[1])
                 mytxt += " - %s." % (_("maximum failure threshold reached"),)
                 self.output(
                     mytxt,
@@ -411,7 +412,7 @@ class FetchersMixin:
                 try:
                     mytxt = mirror_count_txt
                     mytxt += blue("%s: ") % (_("Downloading from"),)
-                    mytxt += red(self.entropyTools.spliturl(uri)[1])
+                    mytxt += red(entropy.tools.spliturl(uri)[1])
                     # now fetch the new one
                     self.output(
                         mytxt,
@@ -429,8 +430,8 @@ class FetchersMixin:
                     if rc == 0:
                         mytxt = mirror_count_txt
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
-                        mytxt += red(self.entropyTools.spliturl(uri)[1])
-                        human_bytes = self.entropyTools.bytes_into_human(data_transfer)
+                        mytxt += red(entropy.tools.spliturl(uri)[1])
+                        human_bytes = entropy.tools.bytes_into_human(data_transfer)
                         mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
                         self.output(
                             mytxt,
@@ -448,7 +449,7 @@ class FetchersMixin:
                         error_message = mirror_count_txt
                         error_message += blue("%s: %s") % (
                             _("Error downloading from"),
-                            red(self.entropyTools.spliturl(uri)[1]),
+                            red(entropy.tools.spliturl(uri)[1]),
                         )
                         # something bad happened
                         if rc == -1:
