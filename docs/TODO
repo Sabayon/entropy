@@ -19,6 +19,7 @@
 
   1.0_beta1:
 
+    - entropy.exceptions rework
     - entropy.client API rework
         - entropy.client.interfaces.dep:
             - atom_match without serverInstance & bullshit
