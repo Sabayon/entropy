@@ -54,7 +54,7 @@ def is_user_in_entropy_group(uid = None):
     @rtype: bool
     """
 
-    if uid == None:
+    if uid is None:
         uid = os.getuid()
     if uid == 0:
         return True
@@ -391,7 +391,7 @@ def add_proxy_opener(module, data):
         username = data.pop('username')
     if 'password' in data:
         username = data.pop('password')
-    if username == None or password == None:
+    if username is None or password is None:
         username = None
         password = None
     else:
@@ -861,7 +861,7 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
     @type compress_level: int
     """
     f_in = open(file_path, "rb")
-    if compress_level != None:
+    if compress_level is not None:
         f_out = opener(destination_path, "wb", compresslevel = compress_level)
     else:
         f_out = opener(destination_path, "wb")
@@ -2330,13 +2330,13 @@ def spawn_function(f, *args, **kwds):
     """
 
     uid = kwds.get('spf_uid')
-    if uid != None: kwds.pop('spf_uid')
+    if uid is not None: kwds.pop('spf_uid')
 
     gid = kwds.get('spf_gid')
-    if gid != None: kwds.pop('spf_gid')
+    if gid is not None: kwds.pop('spf_gid')
 
     write_pid_func = kwds.get('write_pid_func')
-    if write_pid_func != None:
+    if write_pid_func is not None:
         kwds.pop('write_pid_func')
 
     try:
@@ -2346,7 +2346,7 @@ def spawn_function(f, *args, **kwds):
     pread, pwrite = os.pipe()
     pid = os.fork()
     if pid > 0:
-        if write_pid_func != None:
+        if write_pid_func is not None:
             write_pid_func(pid)
         os.close(pwrite)
         f = os.fdopen(pread, 'rb')
@@ -2358,9 +2358,9 @@ def spawn_function(f, *args, **kwds):
         raise result
     else:
         os.close(pread)
-        if gid != None:
+        if gid is not None:
             os.setgid(gid)
-        if uid != None:
+        if uid is not None:
             os.setuid(uid)
         try:
             result = f(*args, **kwds)
@@ -3114,7 +3114,7 @@ def xml_from_dict_extended(dictionary):
             mytype = "int"
         elif isinstance(value, float):
             mytype = "float"
-        elif value == None:
+        elif value is None:
             mytype = "None"
             value = "None"
         else: TypeError
