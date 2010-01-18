@@ -105,8 +105,12 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
         else:
             if not etpUi['quiet']: print_warning(darkred(" * ") + \
                 red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = entropy.tools.filter_duplicated_entries(packages)
-    if (not packages):
+    pkgs = []
+    for pkg in packages:
+        if pkg not in pkgs:
+            pkgs.append(pkg)
+    packages = pkgs
+    if not packages:
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
 
@@ -286,7 +290,11 @@ def smart_pkg_handler(entropy_client, mypackages):
             packages.append(match)
         else:
             print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = entropy.tools.filter_duplicated_entries(packages)
+    pkgs = []
+    for pkg in packages:
+        if pkg not in pkgs:
+            pkgs.append(pkg)
+    packages = pkgs
     if not packages:
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2

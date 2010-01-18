@@ -2274,22 +2274,6 @@ def istext(mystring):
             return False
         return True
 
-# this functions removes duplicates without breaking the list order
-# nameslist: a list that contains duplicated names
-# @returns filtered list
-def filter_duplicated_entries(alist):
-    """
-    docstring_title
-
-    @param alist: 
-    @type alist: 
-    @return: 
-    @rtype: 
-    """
-    mydata = {}
-    return [mydata.setdefault(e, e) for e in alist if e not in mydata]
-
-
 # Escapeing functions
 mappings = {
 	"'":"''",
@@ -3086,14 +3070,6 @@ def resolve_dynamic_library(library, requiring_executable):
     @rtype: string
     """
     def do_resolve(mypaths):
-        """
-        docstring_title
-
-        @param mypaths: 
-        @type mypaths: 
-        @return: 
-        @rtype: 
-        """
         found_path = None
         for mypath in mypaths:
             mypath = os.path.join(etpConst['systemroot']+mypath, library)
@@ -3426,43 +3402,28 @@ def extract_packages_from_set_file(filepath):
 
 def collect_linker_paths():
     """
-    docstring_title
+    Collect dynamic linker paths set into /etc/ld.so.conf. This function is
+    ROOT safe.
 
-    @return: 
-    @rtype: 
+    @return: list of dynamic linker paths set
+    @rtype: list
     """
 
-    ldpaths = []
-    try:
-        f = open(etpConst['systemroot']+"/etc/ld.so.conf", "r")
-        paths = f.readlines()
-        for path in paths:
-            path = path.strip()
-            if path:
-                if path[0] == "/":
-                    ldpaths.append(os.path.normpath(path))
-        f.close()
-    except (IOError, OSError, TypeError, ValueError, IndexError,):
-        pass
+    ld_conf = etpConst['systemroot']+"/etc/ld.so.conf"
+    if not (os.path.isfile(ld_conf) and os.access(ld_conf, os.R_OK)):
+        return []
 
-    # can happen that /lib /usr/lib are not in LDPATH
-    if "/lib" not in ldpaths:
-        ldpaths.append("/lib")
-    if "/usr/lib" not in ldpaths:
-        ldpaths.append("/usr/lib")
-
-    return ldpaths
+    ld_f = open(ld_conf, "r")
+    paths = [os.path.normpath(x.strip()) for x in ld_f.readlines() \
+        if x.startswith("/")]
+    ld_f.close()
+    return paths
 
 def collect_paths():
     """
-    docstring_title
+    Return env var PATH value split using ":" as separator.
 
-    @return: 
-    @rtype: 
+    @return: list of PATHs
+    @rtype: list
     """
-    path = set()
-    paths = os.getenv("PATH")
-    if paths != None:
-        paths = set(paths.split(":"))
-        path |= paths
-    return path
+    return os.getenv("PATH", "").split(":")

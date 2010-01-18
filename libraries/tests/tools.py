@@ -531,11 +531,6 @@ class ToolsTest(unittest.TestCase):
         os.close(fd)
         os.remove(tmp_path)
 
-    def test_filter_duplicated_entries(self):
-        begin = ["1.0", "2", "1.0", "3"]
-        end = ["1.0", "2", "3"]
-        self.assertEqual(et.filter_duplicated_entries(begin), end)
-
     def test_escape(self):
         begin = "casdasdas\"asdasdasd\" sadasd "
         end = 'casdasdas""asdasdasd""+sadasd+'

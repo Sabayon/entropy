@@ -540,7 +540,7 @@ class QAInterface(EntropyPluginStore):
                 broken_libs_mask_regexp.append(reg_lib)
 
         ldpaths = set(entropy.tools.collect_linker_paths())
-        ldpaths |= entropy.tools.collect_paths()
+        ldpaths.update(entropy.tools.collect_paths())
 
         # some crappy packages put shit here too
         ldpaths.add("/usr/share")
