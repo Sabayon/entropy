@@ -1519,7 +1519,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _set_updates_label(self, updates_count):
         # set both simple and advanced mode labels
-        txt_simple = "<b><big>%s</big></b>" % (updates_count,)
+        txt_simple = "<b>%s</b>" % (updates_count,)
         txt_adv = txt_simple + " <small>%s</small>" % (_("updates"),)
         self.ui.rbUpdatesSimpleLabel.set_markup(txt_adv)
         self.ui.rbUpdatesLabel.set_markup(txt_adv)
