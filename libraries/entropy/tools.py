@@ -2274,98 +2274,15 @@ def istext(mystring):
             return False
         return True
 
-# Escapeing functions
-mappings = {
-	"'":"''",
-	'"':'""',
-	' ':'+'
-}
-
-def escape(*args):
-    """
-    docstring_title
-
-    @param *args: 
-    @type *args: 
-    @return: 
-    @rtype: 
-    """
-    arg_lst = []
-    if len(args)==1:
-        return escape_single(args[0])
-    for x in args:
-        arg_lst.append(escape_single(x))
-    return tuple(arg_lst)
-
-def escape_single(x):
-    """
-    docstring_title
-
-    @param x: 
-    @type x: 
-    @return: 
-    @rtype: 
-    """
-    if isinstance(x, type(())) or isinstance(x, type([])):
-        return escape(x)
-    if isinstance(x, type("")):
-        tmpstr = ''
-        for d in range(len(x)):
-            if x[d] in list(mappings.keys()):
-                if x[d] in ("'", '"'):
-                    if d+1 < len(x):
-                        if x[d+1] != x[d]:
-                            tmpstr += mappings[x[d]]
-                    else:
-                        tmpstr += mappings[x[d]]
-                else:
-                   tmpstr += mappings[x[d]]
-            else:
-                tmpstr += x[d]
-    else:
-        tmpstr = x
-    return tmpstr
-
-def unescape(val):
-    """
-    docstring_title
-
-    @param val: 
-    @type val: 
-    @return: 
-    @rtype: 
-    """
-    if isinstance(val, type("")):
-        tmpstr = ''
-        for key, item in list(mappings.items()):
-            val = val.replace(item, key)
-        tmpstr = val
-    else:
-        tmpstr = val
-    return tmpstr
-
-def unescape_list(*args):
-    """
-    docstring_title
-
-    @param *args: 
-    @type *args: 
-    @return: 
-    @rtype: 
-    """
-    arg_lst = []
-    for x in args:
-        arg_lst.append(unescape(x))
-    return tuple(arg_lst)
-
 def spliturl(url):
     """
-    docstring_title
+    Split any URL (ftp, file, http) into separate entities using urllib Python
+    module. 
 
-    @param url: 
-    @type url: 
-    @return: 
-    @rtype: 
+    @param url: URL sto split
+    @type url: string
+    @return: urllib.parse instance
+    @rtype: urllib.parse
     """
     if sys.hexversion >= 0x3000000:
         import urllib.parse as urlmod
@@ -2373,20 +2290,30 @@ def spliturl(url):
         import urlparse as urlmod
     return urlmod.urlsplit(url)
 
-def compress_tar_bz2(storepath, pathtocompress):
+def compress_tar_bz2(store_path, path_to_compress):
     """
-    docstring_title
+    Compress path_to_compress path into store_path path using tar and bzip2.
 
-    @param storepath: 
-    @type storepath: 
-    @param pathtocompress: 
-    @type pathtocompress: 
-    @return: 
-    @rtype: 
+    @param store_path: file path where to write .tar.bz2
+    @type store_path: string
+    @param path_to_compress: path to compress to .tar.bz2 file
+    @type path_to_compress: string
+    @return: execution return code
+    @rtype: int
     """
-    cmd = "cd \""+pathtocompress+"\" && tar cjf \""+storepath+"\" " + \
-        ". &> /dev/null"
-    return subprocess.call(cmd, shell = True)
+    pid = os.fork()
+    if pid == 0:
+        os.chdir(path_to_compress)
+        proc = subprocess.Popen(("tar", "cjf", store_path),
+            stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        rc = proc.wait()
+        if proc.stdout is not None:
+            proc.stdout.close()
+        if proc.stdout is not None:
+            proc.stderr.close()
+        os._exit(rc)
+    else:
+        return os.waitpid(pid, 0)[1] # return rc
 
 def spawn_function(f, *args, **kwds):
     """

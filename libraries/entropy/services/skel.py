@@ -11,7 +11,6 @@
 """
 import os
 from entropy.const import const_convert_to_unicode
-from entropy.tools import escape
 from entropy.exceptions import *
 from entropy.i18n import _
 
@@ -111,11 +110,14 @@ class SocketAuthenticator:
 
 class RemoteDatabase:
 
+    def escape_fake(mystr):
+        return mystr
+
     def __init__(self):
         self.dbconn = None
         self.cursor = None
         self.plain_cursor = None
-        self.escape_string = escape
+        self.escape_string = self.escape_fake
         self.connection_data = {}
         try:
             import MySQLdb, _mysql_exceptions
@@ -188,7 +190,7 @@ class RemoteDatabase:
 
     def disconnect(self):
         self.check_connection()
-        self.escape_string = escape
+        self.escape_string = self.escape_fake
         if hasattr(self.cursor, 'close'):
             self.cursor.close()
         if hasattr(self.dbconn, 'close'):

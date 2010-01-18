@@ -531,11 +531,6 @@ class ToolsTest(unittest.TestCase):
         os.close(fd)
         os.remove(tmp_path)
 
-    def test_escape(self):
-        begin = "casdasdas\"asdasdasd\" sadasd "
-        end = 'casdasdas""asdasdasd""+sadasd+'
-        self.assertEqual(et.escape(begin), end)
-
     def test_spliturl(self):
         begin = "http://www.sabayon.org/download"
         end = ['http', 'www.sabayon.org', '/download', '', '']
