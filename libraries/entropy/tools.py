@@ -26,6 +26,7 @@ import grp
 import pwd
 import hashlib
 import random
+import traceback
 from entropy.output import TextInterface, print_generic, red, \
     darkgreen, green, blue, purple, teal, brown
 from entropy.const import etpConst, const_kill_threads, const_islive, \
@@ -149,7 +150,6 @@ def print_traceback(f = None):
     @keyword f: write to f (file) object instead of stdout
     @type f: valid file handle
     """
-    import traceback
     traceback.print_exc(file = f)
 
 def get_traceback(tb_obj = None):
@@ -161,7 +161,6 @@ def get_traceback(tb_obj = None):
     @keyword tb_obj: Python traceback object
     @type tb_obj: Python traceback instance
     """
-    import traceback
     if sys.hexversion >= 0x3000000:
         from io import StringIO
     else:
@@ -189,7 +188,6 @@ def print_exception(returndata = False, tb_data = None):
     @return: exception data
     @rtype: string
     """
-    import traceback
     if not returndata:
         traceback.print_last()
     data = []
