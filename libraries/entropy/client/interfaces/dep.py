@@ -1436,6 +1436,10 @@ class CalculatorsMixin:
                 # this is a system package, removal forbidden
                 continue
 
+            # validate package
+            if not self.clientDbconn.isIdpackageAvailable(idpackage):
+                continue
+
             count += 1
             p_atom = self.clientDbconn.retrieveAtom(idpackage)
             self.output(
