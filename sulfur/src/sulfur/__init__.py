@@ -1551,8 +1551,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             msg = "%s: available" % (_('Calculating'),)
             self.set_status_ticker(msg)
             # speed up first queue taint iteration
-            self.etpbase.get_groups("available")
             def do_more_caching():
+                self.etpbase.get_groups("available")
                 self.etpbase.get_groups("installed")
                 self.etpbase.get_groups("reinstallable")
                 self.etpbase.get_groups("masked")
