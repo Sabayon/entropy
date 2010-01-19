@@ -33,7 +33,7 @@ if "/usr/lib/entropy/client" not in sys.path:
 if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
-from entropy.exceptions import OnlineMirrorError, QueueError
+from entropy.exceptions import OnlineMirrorError, QueueError, TimeoutError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants
@@ -1376,7 +1376,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for repo in repos:
             # inform UGC that we are syncing this repo
             if self.Equo.UGC is not None:
-                self.Equo.UGC.add_download_stats(repo, [repo])
+                try:
+                    self.Equo.UGC.add_download_stats(repo, [repo])
+                except TimeoutError:
+                    continue
 
         if repoConn.sync_errors or (rc != 0):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
