@@ -1,3 +1,81 @@
+commit 4f553ad0c8874eac922ca82b0bea7eb56078eaf6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 18:01:47 2010 +0100
+
+    [entropy.const] do not call function recursively, not needed
+
+commit 9f9d81da2889b9364138db83a78c2c575087df35
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 18:01:33 2010 +0100
+
+    [entropy.tools] import traceback module-wide
+
+commit 962b05070234540f72b5129ba83e3b92f1e70144
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 18:00:31 2010 +0100
+
+    [sulfur] slightly improve boot speed
+
+commit 8a21cd6c256b0ae15817384a053251ffca151f97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 17:59:01 2010 +0100
+
+    [sulfur] fix RuntimeError exception issue caused by running gtk_loop() inside GTK main loop
+
+commit 5fbbaaffd8498b3f5de596e05b2ab5ee008458b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 17:49:51 2010 +0100
+
+    [todo] update TODO
+
+commit af7e9165445e25a2dbf8606954a77eaec69d7bc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 17:49:29 2010 +0100
+
+    [sulfur] fix updates count label
+
+commit 4bca3e7273a515100775591d9e11edf6e497d577
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 17:49:00 2010 +0100
+
+    [entropy.tools] code style update
+
+commit 18e91eeee14c3ebd686bbcc8a704446e704faa8a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 17:42:41 2010 +0100
+
+    [entropy.tools] another set of changes to entropy.tools module
+
+commit ff5e0ee7374b2bca9357f57ad39ccebc52f4a99c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 17:30:23 2010 +0100
+
+    [entropy.client] code style update
+
+commit 707ee6008fecd00bafdd1ac5a5ff40b03e61a29b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 17:24:07 2010 +0100
+
+    [entropy.tools] some more module cleanup work
+
+commit dc7770c348becd03418776a850dd5b3a524c442e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 06:07:41 2010 +0100
+
+    [po] update Italian translation
+
+commit 239d77ee90e9eda80200237483b1737625ba339b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 18 05:40:59 2010 +0100
+
+    [magneto] handle DBusException exceptions on close
+
+commit c9388f7e9749373281cd506c793bda21562ea8b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 17 21:49:48 2010 +0100
+
+    Update ChangeLog for version 0.99.24.6
+
 commit 5170740ac3124466ed640afab97e5cae14273e4e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 17 21:48:26 2010 +0100
