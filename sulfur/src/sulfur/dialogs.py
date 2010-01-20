@@ -2542,17 +2542,14 @@ def okDialog(parent, msg, title = None):
 
 class InputDialog:
 
-    parameters = {}
-    button_pressed = False
-    main_window = None
-    parent = None
     def __init__(self, parent, title, input_parameters, cancel = True):
 
+        self.parameters = {}
+        self.button_pressed = False
         mywin = gtk.Window()
+        self.main_window = mywin
+        self.parent = parent
         self.callback_parent_window = mywin
-        # avoids to taint the returning elements
-        # when running nested
-        self.parameters = self.parameters.copy()
 
         mywin.set_title(_("Please fill the following form"))
         myvbox = gtk.VBox()
@@ -2730,8 +2727,6 @@ class InputDialog:
         myhbox.pack_start(myvbox, padding = 10)
         myhbox.show()
         mywin.add(myhbox)
-        self.main_window = mywin
-        self.parent = parent
         mywin.set_keep_above(True)
         mywin.set_urgency_hint(True)
         if parent is None:
@@ -2787,7 +2782,7 @@ class InputDialog:
         self.button_pressed = True
 
     def do_cancel(self, widget):
-        self.parameters = None
+        self.parameters.clear()
         self.button_pressed = True
 
     def run(self):
