@@ -360,13 +360,13 @@ class QAInterface(EntropyPluginStore):
                     self.Output.output(
                         "[repo:%s] %s: %s %s:" % (
                             darkgreen(repo),
-                            blue("package"),
+                            darkred("package"),
                             darkgreen(atom),
-                            blue(_("some dependencies won't be added (blacklisted)")),
+                            darkred(_("blacklisted dependencies !!!")),
                         ),
                         importance = 1,
                         type = "warning",
-                        header = purple(" @@ "),
+                        header = bold(" @@ "),
                         count = (count, maxcount,)
                     )
                 for dep in sorted(old_missing):
@@ -428,11 +428,13 @@ class QAInterface(EntropyPluginStore):
                         rc_ask = self.Output.ask_question(_("Want to add?"))
                         if rc_ask == _("Yes"):
                             newmissing.add(dependency)
-                        else:
-                            rc_ask = self.Output.ask_question(
-                                _("Want to blacklist?"))
-                            if rc_ask == _("Yes"):
-                                new_blacklist.add(dependency)
+                        ### XXX: disabled, devs are not able to use it properly
+                        ### needs usability fixes
+                        #else:
+                            #rc_ask = self.Output.ask_question(
+                            #    _("Want to blacklist?"))
+                            #if rc_ask == _("Yes"):
+                            #    new_blacklist.add(dependency)
                     if new_blacklist and (black_list_adder != None):
                         black_list_adder(new_blacklist, repo = repo)
                     missing = newmissing
@@ -795,7 +797,7 @@ class QAInterface(EntropyPluginStore):
             files_list_f.close()
 
         del executables
-        packagesMatched = {}
+        pkgs_matched = {}
 
         if not etpSys['serverside']:
 
@@ -815,7 +817,7 @@ class QAInterface(EntropyPluginStore):
             )
             matched = set()
             for brokenlib in plain_brokenexecs:
-                idpackages = dbconn.searchBelongs(brokenlib)
+                idpackages = dbconn.searchBelongs(brokenlib) # test with /usr/lib
 
                 for idpackage in idpackages:
 
@@ -828,15 +830,15 @@ class QAInterface(EntropyPluginStore):
                     cmpstat = client.get_package_action(mymatch)
                     if cmpstat == 0:
                         continue
-                    if brokenlib not in packagesMatched:
-                        packagesMatched[brokenlib] = set()
+                    if brokenlib not in pkgs_matched:
+                        pkgs_matched[brokenlib] = set()
 
-                    packagesMatched[brokenlib].add(mymatch)
+                    pkgs_matched[brokenlib].add(mymatch)
                     matched.add(brokenlib)
 
             plain_brokenexecs -= matched
 
-        return packagesMatched, plain_brokenexecs, 0
+        return pkgs_matched, plain_brokenexecs, 0
 
     def _content_test(self, mycontent):
         """
