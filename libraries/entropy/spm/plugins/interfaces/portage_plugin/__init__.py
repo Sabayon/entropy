@@ -1489,12 +1489,13 @@ class PortagePlugin(SpmPlugin):
 
             rc = 0
             for filename in paths:
+
                 proc = subprocess.Popen(qfile_args + (filename,),
                     stdout = subprocess.PIPE)
                 rc = proc.wait()
-                proc.stdout.close()
                 if rc != 0:
                     # wtf?, fallback to old way
+                    proc.stdout.close()
                     matches.clear()
                     break
 
@@ -1503,6 +1504,8 @@ class PortagePlugin(SpmPlugin):
                     slot = self.get_installed_package_metadata(pkg, "SLOT")
                     obj = matches.setdefault((pkg, slot,), set())
                     obj.add(filename)
+
+                proc.stdout.close()
 
             if rc == 0:
                 return matches
