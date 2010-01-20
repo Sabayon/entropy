@@ -362,7 +362,11 @@ def update(options):
         # normal scanning
         print_info(brown(" * ") + \
             red("%s..." % (_("Scanning database for differences"),) ))
-        myadded, to_be_removed, to_be_injected = Entropy.scan_package_changes()
+        try:
+            myadded, to_be_removed, to_be_injected = \
+                Entropy.scan_package_changes()
+        except KeyboardInterrupt:
+            return 1
         to_be_added |= myadded
 
         if only_atoms:
