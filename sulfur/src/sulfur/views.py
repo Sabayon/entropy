@@ -1686,8 +1686,8 @@ class EntropyPackageView:
             if m_tup[0] != -1:
                 ep, new = self.etpbase.get_package_item(m_tup)
                 if new:
-                    raise ValueError("trying to load new package objects when" \
-                        " shouldn't be allowed")
+                    # trying to load new package objects when shouldn't be allowed
+                    return []
                 selected_objs.append(ep)
         return selected_objs
 
