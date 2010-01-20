@@ -2017,7 +2017,8 @@ def libraries_test(listfiles = False, dump = False):
         return 0, 0
 
     if (not brokenlibs) and (not pkgs_matched):
-        if not etpUi['quiet']: print_info(red(" @@ ")+blue("%s." % (_("System is healthy"),) ))
+        if not etpUi['quiet']:
+            print_info(red(" @@ ")+blue("%s." % (_("System is healthy"),) ))
         restore_qstats()
         return 0, 0
 

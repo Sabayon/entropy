@@ -391,10 +391,10 @@ class Package:
                 unpack_tries -= 1
                 try:
                     rc = entropy.tools.spawn_function(
-                        entropy.tools.uncompress_tar_bz2,
+                        entropy.tools.uncompress_tarball,
                         self.pkgmeta['pkgpath'],
-                        extractPath = self.pkgmeta['imagedir'],
-                        catchEmpty = True
+                        extract_path = self.pkgmeta['imagedir'],
+                        catch_empty = True
                     )
                 except EOFError:
                     self.Entropy.clientLog.log(
@@ -411,10 +411,10 @@ class Package:
                         "Raising Unicode/Pickling Error for " + \
                             self.pkgmeta['pkgpath']
                     )
-                    rc = entropy.tools.uncompress_tar_bz2(
+                    rc = entropy.tools.uncompress_tarball(
                         self.pkgmeta['pkgpath'],
-                        self.pkgmeta['imagedir'],
-                        catchEmpty = True
+                        extract_path = self.pkgmeta['imagedir'],
+                        catch_empty = True
                     )
                 if rc == 0:
                     break

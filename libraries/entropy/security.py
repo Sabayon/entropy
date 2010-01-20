@@ -470,10 +470,10 @@ class System:
         """
         Unpack downloaded GLSA package containing GLSA advisories.
         """
-        rc_unpack = entropy.tools.uncompress_tar_bz2(
+        rc_unpack = entropy.tools.uncompress_tarball(
             self.download_package,
-            self.unpacked_package,
-            catchEmpty = True
+            extract_path = self.unpacked_package,
+            catch_empty = True
         )
         const_setup_perms(self.unpacked_package, etpConst['entropygid'])
         return rc_unpack

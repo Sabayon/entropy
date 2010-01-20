@@ -656,14 +656,14 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(et.create_package_atom_string(category, name, version,
             package_tag), result)
 
-    def test_uncompress_tar_bz2(self):
+    def test_uncompress_tarball(self):
 
         pkgs = [_misc.get_test_entropy_package4(),
             ] #_misc.get_footar_package() disabled for now
         for pkg in pkgs:
-            self._do_uncompress_tar_bz2(pkg)
+            self._do_uncompress_tarball(pkg)
 
-    def _do_uncompress_tar_bz2(self, pkg_path):
+    def _do_uncompress_tarball(self, pkg_path):
 
         tmp_dir = tempfile.mkdtemp()
         fd, tmp_file = tempfile.mkstemp()
@@ -691,7 +691,7 @@ class ToolsTest(unittest.TestCase):
         os.makedirs(tmp_dir)
 
         # now try with our function
-        rc = et.uncompress_tar_bz2(pkg_path, tmp_dir)
+        rc = et.uncompress_tarball(pkg_path, extract_path = tmp_dir)
         self.assert_(not rc)
 
         new_path_perms = {}

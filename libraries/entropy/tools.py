@@ -2315,16 +2315,17 @@ def compress_tar_bz2(store_path, path_to_compress):
 
 def spawn_function(f, *args, **kwds):
     """
-    docstring_title
+    Spawn given function with given arguments in a separate process and
+    return back its value (using pipes).
 
-    @param f: 
-    @type f: 
-    @param *args: 
-    @type *args: 
-    @param **kwds: 
-    @type **kwds: 
-    @return: 
-    @rtype: 
+    @param f: function to call
+    @type f: callable
+    @param *args: function arguments
+    @type *args: tuple
+    @param **kwds: function keyword arguments
+    @type **kwds: dict
+    @return: function result
+    @rtype: Python object
     """
 
     uid = kwds.get('spf_uid')
@@ -2374,30 +2375,30 @@ def spawn_function(f, *args, **kwds):
         f.close()
         os._exit(0)
 
-# tar* uncompress function...
-def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
+def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     """
-    docstring_title
-    # FIXME: rename this and make bz2 independent
+    Unpack tarball file (supported compression algorithm is given by tarfile
+    module) respecting directory structure, mtime and permissions.
 
-    @param filepath: 
-    @type filepath: 
-    @keyword extractPath: 
-    @type extractPath: 
-    @keyword catchEmpty: 
-    @type catchEmpty: 
-    @return: 
-    @rtype: 
+    @param filepath: path to tarball file
+    @type filepath: string
+    @keyword extract_path: path where to extract tarball
+    @type extract_path: string
+    @keyword catch_empty: do not raise exceptions when trying to unpack empty
+        file
+    @type catch_empty: bool
+    @return: exit status
+    @rtype: int
     """
-    if extractPath is None:
-        extractPath = os.path.dirname(filepath)
+    if extract_path is None:
+        extract_path = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
         raise FileNotFound('FileNotFound: archive does not exist')
 
     try:
         tar = tarfile.open(filepath, "r")
     except tarfile.ReadError:
-        if catchEmpty:
+        if catch_empty:
             return 0
         raise
     except EOFError:
@@ -2425,7 +2426,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
 
     try:
 
-        encoded_path = extractPath
+        encoded_path = extract_path
         if sys.hexversion < 0x3000000:
             encoded_path = encoded_path.encode('utf-8')
         entries = []
@@ -2466,18 +2467,18 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     finally:
         del tar.members[:]
         tar.close()
-    if os.listdir(extractPath):
+    if os.listdir(extract_path):
         return 0
     return -1
 
 def bytes_into_human(xbytes):
     """
-    docstring_title
+    Convert byte size into human readable format.
 
-    @param xbytes: 
-    @type xbytes: 
-    @return: 
-    @rtype: 
+    @param xbytes: number of bytes
+    @type xbytes: int
+    @return: number of bytes in human readable format
+    @rtype: string
     """
     size = str(round(float(xbytes)/1024, 1))
     if xbytes < 1024:
@@ -2488,17 +2489,6 @@ def bytes_into_human(xbytes):
         size = str(round(float(size)/1024, 1))
         size += "MB"
     return size
-
-def get_file_unix_mtime(path):
-    """
-    docstring_title
-
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
-    """
-    return os.path.getmtime(path)
 
 def get_random_temp_file():
     """
@@ -2612,31 +2602,6 @@ def convert_seconds_to_fancy_output(seconds):
         output.append(str(mydays)+"d")
     output.reverse()
     return ':'.join(output)
-
-def flatten(l, ltypes = (list, tuple)):
-    """
-    docstring_title
-
-    @param l: 
-    @type l: 
-    @keyword ltypes: 
-    @type ltypes: 
-    @param tuple: 
-    @type tuple: 
-    @return: 
-    @rtype: 
-    """
-    i = 0
-    while i < len(l):
-        while isinstance(l[i], ltypes):
-            if not l[i]:
-                l.pop(i)
-                if not len(l):
-                    break
-            else:
-                l[i:i+1] = list(l[i])
-        i += 1
-    return l
 
 def read_repositories_conf():
     """

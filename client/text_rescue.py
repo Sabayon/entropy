@@ -152,7 +152,7 @@ def _database_restore(entropy_client):
     mydblist = []
     db_data = []
     for mydb in dblist:
-        ts = entropy.tools.get_file_unix_mtime(mydb)
+        ts = os.path.getmtime(mydb)
         mytime = entropy.tools.convert_unix_time_to_human_time(ts)
         mydblist.append("[%s] %s" % (mytime, mydb,))
         db_data.append(mydb)

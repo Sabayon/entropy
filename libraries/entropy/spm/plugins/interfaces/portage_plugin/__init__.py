@@ -762,8 +762,7 @@ class PortagePlugin(SpmPlugin):
             'sha512': entropy.tools.sha512(package_file),
             'gpg': None, # GPG signature will be filled later on, if enabled
         }
-        data['datecreation'] = str(entropy.tools.get_file_unix_mtime(
-            package_file))
+        data['datecreation'] = str(os.path.getmtime(package_file))
         data['size'] = str(entropy.tools.get_file_size(package_file))
 
         tmp_dir = tempfile.mkdtemp()
@@ -774,8 +773,8 @@ class PortagePlugin(SpmPlugin):
 
         # extract stuff
         xpaktools.extract_xpak(package_file, meta_dir)
-        entropy.tools.uncompress_tar_bz2(package_file,
-            extractPath = pkg_dir, catchEmpty = True)
+        entropy.tools.uncompress_tarball(package_file,
+            extract_path = pkg_dir, catch_empty = True)
 
         # package injection status always false by default
         # developer can change metadatum after this function
@@ -3877,8 +3876,8 @@ class PortagePlugin(SpmPlugin):
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
 
-            entropy.tools.uncompress_tar_bz2(package_path, extractPath = mytempdir,
-                catchEmpty = True)
+            entropy.tools.uncompress_tarball(package_path,
+                extract_path = mytempdir, catch_empty = True)
             tmpdir_len = len(mytempdir)
             for currentdir, subdirs, files in os.walk(mytempdir):
                 pkg_content[currentdir[tmpdir_len:]] = dir_t
@@ -3974,7 +3973,8 @@ class PortagePlugin(SpmPlugin):
             if len(foundfiles) > 1:
                 # get the latest
                 mtimes = []
-                for item in foundfiles: mtimes.append((entropy.tools.get_file_unix_mtime(os.path.join(log_dir, item)), item))
+                for item in foundfiles: mtimes.append(
+                    (os.path.getmtime(os.path.join(log_dir, item)), item))
                 mtimes = sorted(mtimes)
                 elogfile = mtimes[-1][1]
             messages = self._extract_elog(os.path.join(log_dir, elogfile))

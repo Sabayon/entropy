@@ -854,7 +854,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.dbBackupStore.clear()
         backed_up_dbs = self.Equo.list_backedup_client_databases()
         for mypath in backed_up_dbs:
-            mymtime = entropy.tools.get_file_unix_mtime(mypath)
+            mymtime = os.path.getmtime(mypath)
             mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
             self.dbBackupStore.append(
                 (mypath, os.path.basename(mypath), mytime,) )

@@ -3261,7 +3261,7 @@ class Server:
             return False
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        mtime = entropy.tools.get_file_unix_mtime(pkg_path)
+        mtime = os.path.getmtime(pkg_path)
         days = srv_set['packages_expiration_days']
         delta = int(days)*24*3600
         currmtime = time.time()

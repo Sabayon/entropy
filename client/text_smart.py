@@ -388,7 +388,9 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     # merge packages
     for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("unpacking content"))
-        rc = entropy.tools.uncompress_tar_bz2(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
+        rc = entropy.tools.uncompress_tarball(etpConst['entropyworkdir'] + \
+            os.path.sep+matchedAtoms[x]['download'],
+            extract_path = os.path.join(unpackdir, "content"))
         if rc != 0:
             print_error(darkred(" * ")+red("%s." % (_("Unpack failed due to unknown reasons"),)))
             return rc
@@ -498,7 +500,7 @@ def smartgenerator(entropy_client, matched_atoms):
     print_info(darkgreen(" * ") + \
         red("%s " % (_("Unpacking the main package"),)) + \
         bold(str(pkgfilename)))
-    entropy.tools.uncompress_tar_bz2(main_bin_path, pkg_data_dir) # first unpack
+    entropy.tools.uncompress_tarball(main_bin_path, extract_path = pkg_data_dir)
 
     binary_execs = []
     for item in pkgcontent:
@@ -516,7 +518,8 @@ def smartgenerator(entropy_client, matched_atoms):
         print_info(darkgreen(" * ") + \
             red("%s " % (_("Unpacking dependency package"),)) + bold(depatom))
         deppath = os.path.join(etpConst['packagesbindir'], depbranch, download)
-        entropy.tools.uncompress_tar_bz2(deppath, pkg_data_dir) # first unpack
+        entropy.tools.uncompress_tarball(deppath,
+            extract_path = pkg_data_dir) # first unpack
 
     # now create the bash script for each binary_execs
     os.makedirs(pkg_data_dir+"/wrp")
