@@ -343,15 +343,43 @@ class QAInterface(EntropyPluginStore):
                 back = True,
                 count = (count, maxcount,)
             )
+
             missing_extended, missing = self._get_missing_rdepends(dbconn,
                 idpackage, self_check = self_check)
+            old_missing = missing.copy()
             missing -= black_list
             for item in list(missing_extended.keys()):
                 missing_extended[item] -= black_list
                 if not missing_extended[item]:
                     del missing_extended[item]
+
+            if missing != old_missing:
+                # print big warning to make dev aware at least
+                old_missing -= missing
+                if old_missing:
+                    self.Output.output(
+                        "[repo:%s] %s: %s %s:" % (
+                            darkgreen(repo),
+                            blue("package"),
+                            darkgreen(atom),
+                            blue(_("some dependencies won't be added (blacklisted)")),
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = purple(" @@ "),
+                        count = (count, maxcount,)
+                    )
+                for dep in sorted(old_missing):
+                    self.Output.output(
+                            "%s" % (bold(dep),),
+                            importance = 0,
+                            type = "info",
+                            header = blue("     # ")
+                    )
+
             if (not missing) or (not missing_extended):
                 continue
+
             self.Output.output(
                 "[repo:%s] %s: %s %s:" % (
                             darkgreen(repo),
