@@ -17,6 +17,8 @@ from entropy.cache import EntropyCacher
 from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
 
+import entropy.tools
+
 class CalculatorsMixin:
 
     def dependencies_test(self, dbconn = None):
@@ -103,7 +105,7 @@ class CalculatorsMixin:
                 version_duplicates.add(version)
             versions.add(version)
 
-        newerVersion = self.entropyTools.get_newer_version(list(versions))[0]
+        newerVersion = entropy.tools.get_newer_version(list(versions))[0]
         # if no duplicates are found or newer version is not in duplicates we're done
         if (not version_duplicates) or (newerVersion not in version_duplicates):
             reponame = versionInformation.get(newerVersion)
@@ -207,7 +209,7 @@ class CalculatorsMixin:
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
-        atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
+        atom, repos = entropy.tools.dep_get_match_in_repos(atom)
         if (matchRepo is None) and (repos is not None):
             matchRepo = repos
 
@@ -427,7 +429,7 @@ class CalculatorsMixin:
 
         # support match in repository from shell
         # set@repo1,repo2,repo3
-        package_set, repos = self.entropyTools.dep_get_match_in_repos(
+        package_set, repos = entropy.tools.dep_get_match_in_repos(
             package_set)
         if (matchRepo is None) and (repos is not None):
             matchRepo = repos
@@ -534,8 +536,8 @@ class CalculatorsMixin:
         cdb_getversioning = self.clientDbconn.getVersioningData
         cdb_retrieveBranch = self.clientDbconn.retrieveBranch
         cdb_retrieveDigest = self.clientDbconn.retrieveDigest
-        etp_cmp = self.entropyTools.entropy_compare_versions
-        etp_get_rev = self.entropyTools.dep_get_entropy_revision
+        etp_cmp = entropy.tools.entropy_compare_versions
+        etp_get_rev = entropy.tools.dep_get_entropy_revision
 
         if depcache is None:
             depcache = {}
@@ -595,7 +597,7 @@ class CalculatorsMixin:
             # FIXME: find a better way to deal with this,
             # the problem is about different old-style (portage shit) virtual
             # packages overlapping, so we have to enforce relaxed_deps
-            pkg_key = self.entropyTools.dep_getkey(dependency)
+            pkg_key = entropy.tools.dep_getkey(dependency)
             if pkg_key.startswith("virtual/"):
                 relaxed_deps = True
 
@@ -1042,7 +1044,7 @@ class CalculatorsMixin:
         return mydata
 
     def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
-        if self.entropyTools.isjustname(conflict_atom):
+        if entropy.tools.isjustname(conflict_atom):
             return
 
         conflict_match = self.atom_match(conflict_atom)
@@ -1783,8 +1785,8 @@ class CalculatorsMixin:
         matched = None
         if match[0] != -1:
             myatom = self.clientDbconn.retrieveAtom(match[0])
-            mytag = self.entropyTools.dep_gettag(myatom)
-            myatom = self.entropyTools.remove_tag(myatom)
+            mytag = entropy.tools.dep_gettag(myatom)
+            myatom = entropy.tools.remove_tag(myatom)
             myrev = self.clientDbconn.retrieveRevision(match[0])
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
@@ -1793,7 +1795,7 @@ class CalculatorsMixin:
                 deep_deps = deep)
             if pkg_unsatisfied:
                 # does it really exist on current repos?
-                pkg_key = self.entropyTools.dep_getkey(myatom)
+                pkg_key = entropy.tools.dep_getkey(myatom)
                 pkg_id, pkg_repo = self.atom_match(pkg_key)
                 if pkg_id != -1:
                     found = True
@@ -1808,7 +1810,7 @@ class CalculatorsMixin:
     def validate_package_removal(self, idpackage):
 
         pkgatom = self.clientDbconn.retrieveAtom(idpackage)
-        pkgkey = self.entropyTools.dep_getkey(pkgatom)
+        pkgkey = entropy.tools.dep_getkey(pkgatom)
         client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
         mask_installed_keys = client_settings['system_mask']['repos_installed_keys']
 
