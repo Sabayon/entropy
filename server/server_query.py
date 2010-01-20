@@ -55,15 +55,17 @@ def query(myopts):
         # open read only
         count = 0
         for mykeyword in myopts:
-            for pkg_id, pkg_rc in dbconn.atomMatch(mykeyword):
-                count += 1
-                text_query.print_package_info(
-                    pkg_id,
-                    dbconn,
-                    clientSearch = True,
-                    extended = True,
-                    Equo = Entropy
-                )
+            pkg_id, pkg_rc = dbconn.atomMatch(mykeyword)
+            if pkg_id == -1:
+                continue
+            count += 1
+            text_query.print_package_info(
+                pkg_id,
+                dbconn,
+                clientSearch = True,
+                extended = True,
+                Equo = Entropy
+            )
 
         if not count:
             print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
