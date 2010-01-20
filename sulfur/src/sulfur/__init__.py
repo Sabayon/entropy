@@ -121,11 +121,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 os.kill(pid, signal.SIGTERM)
             except OSError:
                 pass
-        """
+
         if hasattr(self, '_fork_pids'):
             for pid in self._fork_pids:
                 do_kill(pid)
-        """
         if hasattr(self, 'Equo'):
             self.Equo.destroy()
 

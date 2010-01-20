@@ -38,14 +38,12 @@ def kill_pid(pid):
 
 def kill_threads():
     entropy.tools.kill_threads()
-    """
     if MAIN_APP is not None:
         try:
             for pid in MAIN_APP._fork_pids:
                 kill_pid(pid)
         except AttributeError:
             pass
-    """
 
 def handle_exception(exc_class, exc_instance, exc_tb):
 
