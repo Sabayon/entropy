@@ -185,9 +185,9 @@ class QAInterface(EntropyPluginStore):
         scan_msg = blue(_("Now searching for broken reverse dependencies"))
         self.Output.output(
             "[repo:%s] %s..." % (
-                        darkgreen(repo),
-                        scan_msg,
-                    ),
+                darkgreen(repo),
+                scan_msg,
+            ),
             importance = 1,
             type = "info",
             header = red(" @@ ")
