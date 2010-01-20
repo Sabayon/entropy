@@ -3298,15 +3298,21 @@ def collect_linker_paths():
     @return: list of dynamic linker paths set
     @rtype: list
     """
+    builtin_paths = ["/lib", "/usr/lib"]
 
     ld_conf = etpConst['systemroot']+"/etc/ld.so.conf"
     if not (os.path.isfile(ld_conf) and os.access(ld_conf, os.R_OK)):
-        return []
+        return builtin_paths
 
     ld_f = open(ld_conf, "r")
     paths = [os.path.normpath(x.strip()) for x in ld_f.readlines() \
         if x.startswith("/")]
     ld_f.close()
+
+    for b_path in builtin_paths:
+        if b_path not in paths:
+            paths.append(b_path)
+
     return paths
 
 def collect_paths():
