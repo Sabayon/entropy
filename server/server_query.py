@@ -59,7 +59,8 @@ def query(myopts):
     elif cmd == "belongs":
         rc = text_query.search_belongs(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "description":
-        rc = text_query.search_descriptions(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_descriptions(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = 0
     elif cmd == "needed":
         rc = text_query.search_needed_libraries(myopts, dbconn = dbconn,
             Equo = Entropy)
