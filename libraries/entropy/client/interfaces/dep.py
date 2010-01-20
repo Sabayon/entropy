@@ -592,6 +592,13 @@ class CalculatorsMixin:
                 if string_rev == -1:
                     do_rev_deep = True
 
+            # FIXME: find a better way to deal with this,
+            # the problem is about different old-style (portage shit) virtual
+            # packages overlapping, so we have to enforce relaxed_deps
+            pkg_key = self.entropyTools.dep_getkey(dependency)
+            if pkg_key.startswith("virtual/"):
+                relaxed_deps = True
+
             # force_unsatisfied is another way to see "deep_deps".
             # in this case, we are going to consider valid any dep that
             # matches something in installed packages repo.
