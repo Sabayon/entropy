@@ -1406,6 +1406,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.progress.reset_progress()
         self.reset_cache_status()
         self.setup_repoView()
+        self.gtk_loop()
         self.setup_application()
         self.set_package_radio('updates')
         initconfig_entropy_constants(etpSys['rootdir'])
@@ -1554,13 +1555,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             msg = "%s: available" % (_('Calculating'),)
             self.set_status_ticker(msg)
             # speed up first queue taint iteration
+            self.etpbase.get_groups("available")
             def do_more_caching():
-                self.etpbase.get_groups("available")
-                self.etpbase.get_groups("installed")
-                self.etpbase.get_groups("reinstallable")
-                self.etpbase.get_groups("masked")
-                self.etpbase.get_groups("user_unmasked")
-                self.etpbase.get_groups("downgrade")
+                for k in ("installed", "reinstallable", "masked",
+                    "user_unmasked", "downgrade"):
+                    try:
+                        self.etpbase.get_groups(k)
+                    except self.Equo.dbapi2.ProgrammingError:
+                        continue
+                return False
             gobject.idle_add(do_more_caching)
 
         # set updates label
