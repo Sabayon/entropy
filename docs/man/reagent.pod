@@ -85,6 +85,10 @@ do some searches into repository databases
 
 search packages inside the default repository database
 
+=item B<match>
+
+match package dependency inside the default repository database
+
 =item B<needed>
 
 show runtime libraries needed by the provided atoms

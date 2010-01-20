@@ -50,6 +50,25 @@ def query(myopts):
             print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
         rc = 0
 
+    elif cmd == "match":
+
+        # open read only
+        count = 0
+        for mykeyword in myopts:
+            for pkg_id, pkg_rc in dbconn.atomMatch(mykeyword):
+                count += 1
+                text_query.print_package_info(
+                    pkg_id,
+                    dbconn,
+                    clientSearch = True,
+                    extended = True,
+                    Equo = Entropy
+                )
+
+        if not count:
+            print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
+        rc = 0
+
     elif cmd == "tags":
         rc = search_tagged_packages(myopts, dbconn, Entropy)
     elif cmd == "sets":

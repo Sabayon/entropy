@@ -54,6 +54,7 @@ help_opts = [
     None,
     (1, 'query', 3, _('do some searches into repository databases')),
         (2, 'search', 3, _('search packages inside the default repository database')),
+        (2, 'match', 3, _('match package dependency inside the default repository database')),
         (2, 'needed', 3, _('show runtime libraries needed by the provided atoms')),
         (2, 'revdeps', 2, _('show what packages depend on the provided atoms')),
         (2, 'tags', 3, _('show packages owning the specified tags')),
