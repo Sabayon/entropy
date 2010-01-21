@@ -390,7 +390,7 @@ class MagnetoCore(MagnetoCoreUI):
                 self._entropy_dbus_object, dbus_interface="org.entropy.Client")
             try:
                 iface.close_connection()
-             except dbus.exceptions.DBusException:
+            except dbus.exceptions.DBusException:
                 pass
         entropy.tools.kill_threads()
 
