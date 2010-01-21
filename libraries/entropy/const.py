@@ -360,6 +360,7 @@ def const_default_settings(rootdir):
         # File containing user data related to repository notice board
         'rss-notice-board-userdata': "notice.rss.userdata",
 
+        'entropytagprefix': "#",
         'packagesetprefix': "@",
         'userpackagesetsid': "__user__",
         'setsconffilename': "sets.conf",
