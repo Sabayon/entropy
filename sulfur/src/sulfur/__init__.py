@@ -772,7 +772,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_user_generated_content(self):
 
-        if "--nougc" not in sys.argv:
+        self._ugc_status = "--nougc" not in sys.argv
+        if self._ugc_status:
             gobject.timeout_add(20*1000,
                 self.spawn_user_generated_content_first)
             gobject.timeout_add(7200*1000, # 2 hours
@@ -1413,7 +1414,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.disable_ugc = False
         self.show_notebook_tabs_after_install()
-        self.spawn_user_generated_content_first()
+        if self._ugc_status:
+            gobject.timeout_add(20*1000,
+                self.spawn_user_generated_content_first)
+
         return not repoConn.sync_errors
 
     def reset_progress_text(self):
