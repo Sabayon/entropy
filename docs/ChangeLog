@@ -1,3 +1,129 @@
+commit 477284b987b43942b30a3f53edf96d2b83a3f418
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 13:51:07 2010 +0100
+
+    [sulfur] spawn UGC in parallel after repo sync
+
+commit 956ddd082949fb4d92f12bef7bb9540ad38f21a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 13:44:24 2010 +0100
+
+    [magneto] fix indentation error
+
+commit b523e1c6e853a1a37efb0c2709c91c80b05103ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 22:06:29 2010 +0100
+
+    [sulfur] reintroduce child pids kill function, this time should be safe
+
+commit ae66b857f3e1ebd03958e71fa34e806fe9b1d624
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 22:01:34 2010 +0100
+
+    [sulfur] improve InputDialog reliability
+
+commit fc392e471f437418ed2cb90a75fe077eabfb814b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 21:56:01 2010 +0100
+
+    [sulfur] do not raise ValueError but just return empty list when get_installed_pkg_objs_for_selected() is not allowed
+
+commit 3b5079ff21cae7e0f73f0f84a4f3fb87b4ce6cbe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 21:51:01 2010 +0100
+
+    [sulfur] improve reliability of parallel groups metadata generation
+
+commit 3654d25c9567b0f0ab55ac077b5ac399a2a8a9c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 21:50:46 2010 +0100
+
+    [entropy.qa] code style update
+
+commit 2ccf9be83385f1c08a9b70d62d13cf1edf481e9f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 21:24:50 2010 +0100
+
+    [entropy.client.interfaces.dep] code style update
+
+commit 01eec2f43e2e307558cee6f2a5854feeb8b0bbaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 21:22:57 2010 +0100
+
+    [entropy.client.interfaces.dep] temp. workaround virtual pkgs issue causing wrong old-style virtuals to be pulled in
+
+commit d1c76cb77f39da96c9dd8ae371956aecc466b8cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 13:03:34 2010 +0100
+
+    [entropy.tools] collect_linker_paths: consider /lib and /usr/lib builtin linker paths
+
+commit 02837597c634fe273b665facd0188f0c7bd18a0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 12:55:04 2010 +0100
+
+    [entropy.tools] more module API rework work done
+
+commit c7ba30ab1bda5966194b740832a6fed382e8f899
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 12:34:59 2010 +0100
+
+    [entropy.qa] some code style updates and temp. disable blacklist management in test_missing_dependencies
+
+commit 88660a018f4a4de77cbeccb42d21e179cb90d1e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 12:17:42 2010 +0100
+
+    [reagent] actually make "match" query tool working
+
+commit d0dff15b12ade38fda81641624365c9adff16f82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 12:16:05 2010 +0100
+
+    [reagent] add support for "query match" tool
+
+commit 0b02e6c6f730c76f42272b9bf78e1136314a31e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 12:11:14 2010 +0100
+
+    [reagent] fix description query tool
+
+commit 8426ced4cfd9ed9e5a89b734ac19ca48f7bc5e05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 08:47:00 2010 +0100
+
+    [entropy.qa] warn user about blacklisted (thus excluded) missing runtime dependencies
+
+commit 1d661285f484a0135ba57b4aa78429a867813c35
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 08:11:31 2010 +0100
+
+    [reagent] catch CTRL+C on tedious function call
+
+commit 4da0245f7f737fa73472200d14df04ea6c8294fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 20 07:55:01 2010 +0100
+
+    [entropy.spm] fix improperly closed file object
+
+commit 1af910c28941d34b7dc1e4192b4d4b04b77131cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 22:32:31 2010 +0100
+
+    [sulfur] catch TimeoutError exceptions when using UGC
+
+commit 22cf0396a9ff2e0d1571df12414d0d369865f812
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 22:29:29 2010 +0100
+
+    [entropy.client] when calculating revdeps, validate package identifiers
+
+commit dcc07b27c94b8d3785c58f952727e27999a96348
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 19 18:04:00 2010 +0100
+
+    Update ChangeLog for version 0.99.24.7
+
 commit 4f553ad0c8874eac922ca82b0bea7eb56078eaf6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 19 18:01:47 2010 +0100
