@@ -8,6 +8,7 @@
 
   0.99.40:
 
+    - "#" tag mark, move to entropy.const
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
     - sulfur: code refactoring
     - PackageKit integration
