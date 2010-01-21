@@ -71,15 +71,15 @@ class CalculatorsMixin:
                         crying_atoms.add((iatom, repo))
         return crying_atoms
 
-    def __handle_multi_repo_matches(self, results, extended_results, valid_repos, server_inst):
+    def __handle_multi_repo_matches(self, results, extended_results, valid_repos,
+        server_inst):
 
-        packageInformation = {}
-        versionInformation = {}
-        # .tbz2 repos have always the precedence, so if we find them,
-        # we should second what user wants, installing his tbz2
-        tbz2repos = [x for x in results if x.endswith(etpConst['packagesext'])]
-        if tbz2repos:
-            del tbz2repos
+        pkg_info = {}
+        ver_info = {}
+        # package repos have always the precedence, so if we find them,
+        # we should second what user wants, installing his package
+        pkg_repos = [x for x in results if x.endswith(etpConst['packagesext'])]
+        if pkg_repos:
             newrepos = results.copy()
             for x in newrepos:
                 if x.endswith(etpConst['packagesext']):
@@ -89,18 +89,18 @@ class CalculatorsMixin:
         version_duplicates = set()
         versions = set()
         for repo in results:
-            packageInformation[repo] = {}
+            pkg_info[repo] = {}
             if extended_results:
                 version = results[repo][1]
-                packageInformation[repo]['versiontag'] = results[repo][2]
-                packageInformation[repo]['revision'] = results[repo][3]
+                pkg_info[repo]['versiontag'] = results[repo][2]
+                pkg_info[repo]['revision'] = results[repo][3]
             else:
                 dbconn = self.__atom_match_open_db(repo, server_inst)
-                packageInformation[repo]['versiontag'] = dbconn.retrieveVersionTag(results[repo])
-                packageInformation[repo]['revision'] = dbconn.retrieveRevision(results[repo])
+                pkg_info[repo]['versiontag'] = dbconn.retrieveVersionTag(results[repo])
+                pkg_info[repo]['revision'] = dbconn.retrieveRevision(results[repo])
                 version = dbconn.retrieveVersion(results[repo])
-            packageInformation[repo]['version'] = version
-            versionInformation[version] = repo
+            pkg_info[repo]['version'] = version
+            ver_info[version] = repo
             if version in versions:
                 version_duplicates.add(version)
             versions.add(version)
@@ -108,7 +108,7 @@ class CalculatorsMixin:
         newerVersion = entropy.tools.get_newer_version(list(versions))[0]
         # if no duplicates are found or newer version is not in duplicates we're done
         if (not version_duplicates) or (newerVersion not in version_duplicates):
-            reponame = versionInformation.get(newerVersion)
+            reponame = ver_info.get(newerVersion)
             return (results[reponame], reponame)
 
         # we have two repositories with >two packages with the same version
@@ -118,17 +118,17 @@ class CalculatorsMixin:
         tags_duplicates = set()
         tags = set()
         tagsInfo = {}
-        for repo in packageInformation:
-            if packageInformation[repo]['version'] != newerVersion:
+        for repo in pkg_info:
+            if pkg_info[repo]['version'] != newerVersion:
                 continue
             conflictingEntries[repo] = {}
-            versiontag = packageInformation[repo]['versiontag']
+            versiontag = pkg_info[repo]['versiontag']
             if versiontag in tags:
                 tags_duplicates.add(versiontag)
             tags.add(versiontag)
             tagsInfo[versiontag] = repo
             conflictingEntries[repo]['versiontag'] = versiontag
-            conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
+            conflictingEntries[repo]['revision'] = pkg_info[repo]['revision']
 
         # tags will always be != []
         newerTag = entropy.tools.sort_entropy_package_tags(tags)[-1]
