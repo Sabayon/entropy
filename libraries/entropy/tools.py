@@ -31,7 +31,7 @@ from entropy.output import TextInterface, print_generic, red, \
     darkgreen, green, blue, purple, teal, brown
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
-    const_cmp, const_israwstring
+    const_cmp, const_israwstring, const_cmp
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
 
@@ -2100,13 +2100,38 @@ def compare_versions(ver1, ver2):
         r2 = 0
     return r1 - r2
 
+def entropy_compare_package_tags(tag_a, tag_b):
+    """
+    Compare two Entropy package tags using builtin cmp().
+
+    @param tag_a: Entropy package tag
+    @type tag_a: string
+    @param tag_b: Entropy package tag
+    @type tag_b: string
+    return: negative number if tag_a < tag_b, positive number if tag_a > tag_b.
+        zero if tag_a == tag_b.
+    rtype: int
+    """
+    return const_cmp(tag_a, tag_b)
+
+def sort_entropy_package_tags(tags):
+    """
+    Return a sorted list of Entropy package tags.
+
+    @param tags: list of Entropy package tags
+    @type tags: list
+    @return: sorted list of Entropy package tags
+    @rtype: list
+    """
+    return sorted(tags)
+
 def entropy_compare_versions(listA, listB):
     """
     @description: compare two lists composed by
         [version,tag,revision] and [version,tag,revision]
         if listA > listB --> positive number
         if listA == listB --> 0
-        if listA < listB --> negative number	
+        if listA < listB --> negative number
     @input package: listA[version,tag,rev] and listB[version,tag,rev]
     @output: integer number
     """
@@ -2122,10 +2147,11 @@ def entropy_compare_versions(listA, listB):
 
     if rc == 0:
         # check tag
-        if a_tag > b_tag:
-            return 1
-        elif a_tag < b_tag:
+        tag_cmp = entropy_compare_package_tags(a_tag, b_tag)
+        if tag_cmp < 0:
             return -1
+        elif tag_cmp > 0:
+            return 1
         else:
             # check rev
             if a_rev > b_rev:
