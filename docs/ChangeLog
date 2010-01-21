@@ -1,3 +1,52 @@
+commit d2b627f5880e7ce9a668fc01fef3da1537a186ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:25:39 2010 +0100
+
+    [entropy.client.interfaces.dep] code style update
+
+commit 1d8b57195d279f54d4f0984b6b4afb61c8d9e7cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:24:32 2010 +0100
+
+    [entropy.client] remove ugly hack, upstream fixed it and we don't want this crap around
+
+commit d6336a67e354ae57558a40bcc8fbd837bbb3a55f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:09:52 2010 +0100
+
+    [entropy.client.interfaces.dep] restrict tagged packages dependency match inside installed tags
+    
+    This change affects dependency matching in a way that Entropy package tags
+    are used to reduce package matching scope when a tagged package is already
+    installed. For example, in Sabayon, when a new kernel is available, previous
+    Entropy versions used to pull it in. Avoiding to do this automatically and if
+    not required by user, makes possible to not risk to make a system unbootable,
+    especially when using proprietary, external video drivers.
+
+commit e3dec4606aa4ce1725e93bedf2bed48d16d51d4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:06:16 2010 +0100
+
+    [entropy.const] pre-add (not in use yet) default Entropy package tag prefix
+
+commit 469726466bf1d83c3790475bcb30c75879c7890d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:05:49 2010 +0100
+
+    [entropy.tools] add two new functions entropy_compare_package_tags and sort_entropy_package_tags
+
+commit d3e5c9b280c5a8a5cd648ca18888d416f021829b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:05:19 2010 +0100
+
+    [todo] update TODO
+
+commit fd49338ce4a91e118c28ecac51193995b0ff72e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 13:51:31 2010 +0100
+
+    Update ChangeLog for version 0.99.24.8
+
 commit 477284b987b43942b30a3f53edf96d2b83a3f418
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 21 13:51:07 2010 +0100
