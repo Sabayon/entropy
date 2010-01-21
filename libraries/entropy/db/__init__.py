@@ -29,6 +29,7 @@ import sys
 import os
 import shutil
 import hashlib
+import time
 
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
@@ -3467,7 +3468,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type branch: string
         """
 
-        mytime = str(entropy.tools.get_current_unix_time())
+        mytime = str(time.time())
         with self.__write_mutex:
             myupdates = [
                 (repository, x, branch, mytime,) for x in actions \

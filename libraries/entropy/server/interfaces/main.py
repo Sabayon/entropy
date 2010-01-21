@@ -14,6 +14,7 @@ import os
 import shutil
 import copy
 import tempfile
+import time
 
 from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
@@ -3256,7 +3257,6 @@ class Server(Singleton, TextInterface):
 
     def get_current_timestamp(self):
         from datetime import datetime
-        import time
         return "%s" % (datetime.fromtimestamp(time.time()),)
 
     def create_repository_pkglist(self, repo = None, branch = None):
@@ -3456,7 +3456,7 @@ class Server(Singleton, TextInterface):
         # 3600 * 24 = 86400
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
-        cur_unix_time = entropy.tools.get_current_unix_time()
+        cur_unix_time = time.time()
         # if packages removal is triggered by expiration
         # we will have to check if our package is really
         # expired and remove its reverse deps too

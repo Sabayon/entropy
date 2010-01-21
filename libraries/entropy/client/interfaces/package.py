@@ -15,6 +15,7 @@ import errno
 import stat
 import shutil
 import tempfile
+import time
 
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
@@ -1041,7 +1042,7 @@ class Package:
             data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
-        ctime = entropy.tools.get_current_unix_time()
+        ctime = time.time()
         self.Entropy.clientDbconn.setCreationDate(idpackage, str(ctime))
 
         # TODO: remove this in future, drop changelog table

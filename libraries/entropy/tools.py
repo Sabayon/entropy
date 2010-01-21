@@ -2518,87 +2518,45 @@ def bytes_into_human(xbytes):
 
 def get_random_temp_file():
     """
-    docstring_title
+    Return random temporary file path.
 
-    @return: 
-    @rtype: 
+    @return: temporary, random file path
+    @rtype: string
     """
     fd, tmp_path = tempfile.mkstemp()
     os.close(fd)
     return tmp_path
 
-def get_file_timestamp(path):
-    """
-    docstring_title
-
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
-    """
-    from datetime import datetime
-    # used in this way for convenience
-    unixtime = os.path.getmtime(path)
-    humantime = datetime.fromtimestamp(unixtime)
-    # format properly
-    humantime = str(humantime)
-    outputtime = ""
-    for char in humantime:
-        if char != "-" and char != " " and char != ":":
-            outputtime += char
-    return outputtime
-
 def convert_unix_time_to_human_time(unixtime):
     """
-    docstring_title
+    Convert UNIX time (int) into human readable time format.
 
-    @param unixtime: 
-    @type unixtime: 
-    @return: 
-    @rtype: 
+    @param unixtime: UNIX time
+    @type unixtime: int
+    @return: human readable time format
+    @rtype: string
     """
     from datetime import datetime
     humantime = str(datetime.fromtimestamp(unixtime))
     return humantime
 
-def convert_unix_time_to_datetime(unixtime):
-    """
-    docstring_title
-
-    @param unixtime: 
-    @type unixtime: 
-    @return: 
-    @rtype: 
-    """
-    from datetime import datetime
-    return datetime.fromtimestamp(unixtime)
-
-def get_current_unix_time():
-    """
-    docstring_title
-
-    @return: 
-    @rtype: 
-    """
-    return time.time()
-
 def get_year():
     """
-    docstring_title
+    Return current year string.
 
-    @return: 
-    @rtype: 
+    @return: current year (20xx)
+    @rtype: string
     """
     return time.strftime("%Y")
 
 def convert_seconds_to_fancy_output(seconds):
     """
-    docstring_title
+    Convert seconds (int) into a more fancy and human readable output.
 
-    @param seconds: 
-    @type seconds: 
-    @return: 
-    @rtype: 
+    @param seconds: number of seconds
+    @type seconds: int
+    @return: human readable output
+    @rtype: string
     """
 
     mysecs = seconds

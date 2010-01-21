@@ -565,12 +565,6 @@ class ToolsTest(unittest.TestCase):
         self.assertEqual(et.convert_unix_time_to_human_time(unixtime),
             '1970-01-01 01:00:01')
 
-    def test_convert_unix_time_to_datetime(self):
-        unixtime = 1
-        import datetime
-        self.assertEqual(et.convert_unix_time_to_datetime(unixtime),
-            datetime.datetime(1970, 1, 1, 1, 0, 1))
-
     def test_convert_seconds_to_fancy_output(self):
         seconds = 2740
         self.assertEqual(et.convert_seconds_to_fancy_output(seconds),

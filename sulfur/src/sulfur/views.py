@@ -27,8 +27,7 @@ from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
 from entropy.db import dbapi2
-from entropy.tools import convert_unix_time_to_datetime, dep_getkey, \
-    print_traceback
+from entropy.tools import dep_getkey, print_traceback
 from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
@@ -40,7 +39,6 @@ from sulfur.misc import busy_cursor, normal_cursor, STATUS_BAR_CONTEXT_IDS
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
     PkgInfoMenu
 from sulfur.event import SulfurSignals
-
 
 class EntropyPackageViewModelInjector:
 
@@ -303,6 +301,10 @@ class DateGroupedSortPackageViewModelInjector(DefaultPackageViewModelInjector):
     def __init__(self, *args, **kwargs):
         DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
 
+    def convert_unix_time_to_datetime(self, unixtime):
+        from datetime import datetime
+        return datetime.fromtimestamp(unixtime)
+
     def packages_inject(self, packages):
 
         dates = {}
@@ -312,7 +314,7 @@ class DateGroupedSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             except (TypeError, AttributeError, ValueError,):
                 date = None
             if date is not None:
-                dateobj = convert_unix_time_to_datetime(date)
+                dateobj = self.convert_unix_time_to_datetime(date)
                 date = (dateobj.year, dateobj.month, dateobj.day,)
             dates_obj = dates.setdefault(date, [])
             dates_obj.append(po)
