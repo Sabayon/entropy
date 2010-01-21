@@ -131,7 +131,7 @@ class CalculatorsMixin:
             conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
 
         # tags will always be != []
-        newerTag = sorted(tags, reverse = True)[0]
+        newerTag = entropy.tools.sort_entropy_package_tags(tags)[-1]
         if newerTag not in tags_duplicates:
             reponame = tagsInfo.get(newerTag)
             return (results[reponame], reponame)
@@ -216,7 +216,7 @@ class CalculatorsMixin:
         u_hash = ""
         k_ms = "//"
         if isinstance(matchRepo, (list, tuple, set)):
-            u_hash = hash(frozenset(matchRepo))
+            u_hash = hash(tuple(matchRepo))
         if const_isstring(matchSlot):
             k_ms = matchSlot
         repos_ck = self._all_repositories_checksum()
@@ -224,8 +224,8 @@ class CalculatorsMixin:
         c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
             atom, k_ms, packagesFilter,
-            hash(frozenset(self.validRepositories)),
-            hash(frozenset(self.SystemSettings['repositories']['available'])),
+            hash(tuple(self.validRepositories)),
+            hash(tuple(self.SystemSettings['repositories']['available'])),
             multiMatch, multiRepo, extendedResults, u_hash,
         )
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
@@ -498,8 +498,6 @@ class CalculatorsMixin:
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None):
 
-        # NOTE: to avoid user complaints, the magic toy is "relaxed_deps"
-
         if self.xcache:
             c_data = sorted(dependencies)
             client_checksum = self.clientDbconn.checksum()
@@ -531,11 +529,7 @@ class CalculatorsMixin:
             satisfied_data = tmp_satisfied_data
             self.SystemSettings[satisfied_kw] = satisfied_data
 
-        cdb_am = self.clientDbconn.atomMatch
         intf_error = self.dbapi2.InterfaceError
-        cdb_getversioning = self.clientDbconn.getVersioningData
-        cdb_retrieveBranch = self.clientDbconn.retrieveBranch
-        cdb_retrieveDigest = self.clientDbconn.retrieveDigest
         etp_cmp = entropy.tools.entropy_compare_versions
         etp_get_rev = entropy.tools.dep_get_entropy_revision
 
@@ -562,7 +556,7 @@ class CalculatorsMixin:
 
             ### conflict
             if dependency.startswith("!"):
-                idpackage, rc = cdb_am(dependency[1:])
+                idpackage, rc = self.clientDbconn.atomMatch(dependency[1:])
                 if idpackage != -1:
                     const_debug_write(__name__,
                         "_get_unsatisfied_dependencies conflict not found on system for => %s" % (
@@ -576,7 +570,8 @@ class CalculatorsMixin:
                 push_to_cache(dependency, False)
                 continue
 
-            c_ids, c_rc = cdb_am(dependency, multiMatch = True)
+            c_ids, c_rc = self.clientDbconn.atomMatch(dependency,
+                multiMatch = True)
             if c_rc != 0:
                 const_debug_write(__name__,
                     "_get_unsatisfied_dependencies not satisfied on system for => %s" % (
@@ -630,7 +625,8 @@ class CalculatorsMixin:
 
             dbconn = self.open_repository(r_repo)
             try:
-                repo_pkgver, repo_pkgtag, repo_pkgrev = dbconn.getVersioningData(r_id)
+                repo_pkgver, repo_pkgtag, repo_pkgrev = \
+                    dbconn.getVersioningData(r_id)
                 # note: read rationale below
                 repo_digest = dbconn.retrieveDigest(r_id)
             except (intf_error, TypeError,):
@@ -646,29 +642,66 @@ class CalculatorsMixin:
             client_data = set()
             for c_id in c_ids:
                 try:
-                    installedVer, installedTag, installedRev = cdb_getversioning(c_id)
+                    installed_ver, installed_tag, installed_rev = \
+                        self.clientDbconn.getVersioningData(c_id)
                     # note: read rationale below
-                    installedDigest = cdb_retrieveDigest(c_id)
+                    installedDigest = self.clientDbconn.retrieveDigest(c_id)
                 except TypeError: # corrupted entry?
-                    installedVer = "0"
-                    installedTag = ''
-                    installedRev = 0
+                    installed_ver = "0"
+                    installed_tag = ''
+                    installed_rev = 0
                     installedDigest = None
-                client_data.add((installedVer, installedTag, installedRev,
+                client_data.add((installed_ver, installed_tag, installed_rev,
                     installedDigest,))
+
+            # restrict dependency matching scope inside mutually available
+            # package tags. Equals to tags available in both installed and
+            # available repositories.
+            dependency_tag = entropy.tools.dep_gettag(dependency)
+            installed_tags = [x[1] for x in client_data if x[1]]
+            if installed_tags and not dependency_tag:
+
+                installed_tags = set(installed_tags)
+                available_tags = set()
+
+                matches, t_rc = self.atom_match(dependency, multiMatch = True,
+                    multiRepo = True)
+                for pkg_id, repo_id in matches:
+                    dbconn = self.open_repository(repo_id)
+                    t_ver_tag = dbconn.retrieveVersionTag(pkg_id)
+                    if t_ver_tag in installed_tags:
+                        available_tags.add(t_ver_tag)
+
+                if available_tags:
+                    # always take the higher tag.
+                    # NOW, reset variables used here below to make them
+                    # pointing to proper tagged package, keeping scoped
+                    # handling.
+                    best_tag = entropy.tools.sort_entropy_package_tags(
+                        available_tags)[-1]
+
+                    # also change "dependency" to make it pointing to a
+                    # stricter set of possible matches.
+                    dependency = dependency + \
+                        etpConst['entropytagprefix'] + best_tag
+                    pkg_id, repo_id = self.atom_match(dependency)
+                    dbconn = self.open_repository(repo_id)
+                    repo_pkgver, repo_pkgtag, repo_pkgrev = \
+                        dbconn.getVersioningData(pkg_id)
 
             # this is required for multi-slotted packages (like python)
             # and when people mix Entropy and Portage
             do_cont = False
-            for installedVer, installedTag, installedRev, cdigest in client_data:
+            for installed_ver, installed_tag, installed_rev, cdigest in client_data:
 
                 vcmp = etp_cmp((repo_pkgver, repo_pkgtag, repo_pkgrev,),
-                    (installedVer, installedTag, installedRev,))
+                    (installed_ver, installed_tag, installed_rev,))
 
                 # check if both pkgs share the same branch and digest, this must
                 # be done to avoid system inconsistencies across branch upgrades
-                if (vcmp == 0) and (cdigest != repo_digest):
-                    vcmp = 1
+                if vcmp == 0:
+                    if cdigest != repo_digest:
+                        vcmp = 1
 
                 if vcmp == 0:
                     const_debug_write(__name__,
@@ -681,8 +714,8 @@ class CalculatorsMixin:
                     break
 
                 ver_tag_repo = (repo_pkgver, repo_pkgtag,)
-                ver_tag_inst = (installedVer, installedTag,)
-                rev_match = repo_pkgrev != installedRev
+                ver_tag_inst = (installed_ver, installed_tag,)
+                rev_match = repo_pkgrev != installed_rev
 
                 if do_rev_deep and rev_match and (ver_tag_repo == ver_tag_inst):
                     # this is unsatisfied then, need to continue to exit from
