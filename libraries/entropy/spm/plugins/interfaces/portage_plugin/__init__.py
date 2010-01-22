@@ -1345,7 +1345,12 @@ class PortagePlugin(SpmPlugin):
             kwargs['stdout'] = stdout
             kwargs['stderr'] = stderr
         args = (PortagePlugin._cmd_map['env_update_cmd'],)
-        proc = subprocess.Popen(args, **kwargs)
+        try:
+            proc = subprocess.Popen(args, **kwargs)
+        except OSError as err:
+            if err.errno != 2:
+                raise
+            return
         proc.wait()
 
     def print_build_environment_info(self, stdin = None, stdout = None,
