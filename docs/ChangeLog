@@ -1,3 +1,27 @@
+commit dc6b49f8b94521ff58bddede096cdd1c7e50bf3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 22 09:53:35 2010 +0100
+
+    [sulfur] improve treeview usability (showing a loading message)
+
+commit 7a90b2ad5331901a2813430ce2e041209d664115
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 22 09:19:59 2010 +0100
+
+    [sulfur] fix InputDialog return value when cancel button is pressed
+
+commit 5e04299ec85d2713df7015748b0c1a5f5d827b9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:52:19 2010 +0100
+
+    [entropy.tools] more module API cleanup
+
+commit 65af10990b8ab463a1aa0e755fc9483e6a67ee73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 21 20:29:32 2010 +0100
+
+    Update ChangeLog for version 0.99.24.9
+
 commit d2b627f5880e7ce9a668fc01fef3da1537a186ed
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 21 20:25:39 2010 +0100
