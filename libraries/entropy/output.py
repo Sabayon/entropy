@@ -782,8 +782,9 @@ class TextInterface:
                     self.output("  ("+blue("-1")+") "+darkred(_("Discard all")))
                 self.output("  ("+blue("0")+")  "+darkgreen(_("Confirm")))
                 self.output("  ("+blue("1")+")  "+brown(_("Add item")))
-                self.output("  ("+blue("2")+")  "+darkblue(_("Remove item")))
-                self.output("  ("+blue("3")+")  "+darkgreen(_("Show current list")))
+                self.output("  ("+blue("2")+")  "+brown(_("Edit item")))
+                self.output("  ("+blue("3")+")  "+darkblue(_("Remove item")))
+                self.output("  ("+blue("4")+")  "+darkgreen(_("Show current list")))
                 # wait user interaction
                 self.output('')
                 action = readtext(darkgreen(_("Your choice (type a number and press enter):"))+" ")
@@ -791,7 +792,7 @@ class TextInterface:
 
             mydict = {}
             counter = 1
-            valid_actions = [0, 1, 2, 3]
+            valid_actions = [0, 1, 2, 3, 4]
             if can_cancel: valid_actions.insert(0, -1)
             option_text, option_list = option_data
             txt = "%s:" % (blue(option_text),)
@@ -818,15 +819,15 @@ class TextInterface:
                     self.output(_("Invalid action."), type = "warning")
                     continue
                 if action == -1:
-                    raise KeyboardInterrupt
+                    raise KeyboardInterrupt()
                 elif action == 0:
                     break
-                elif action == 1:
+                elif action == 1: # add item
                     while True:
                         try:
                             s_el = readtext(darkred(_("String to add:"))+" ")
                             if not callback(s_el):
-                                raise ValueError
+                                raise ValueError()
                             mydict[counter] = s_el
                             counter += 1
                         except (ValueError,):
@@ -835,12 +836,30 @@ class TextInterface:
                         break
                     show_current_list()
                     continue
-                elif action == 2:
+                elif action == 2: # edit item
+                    while True:
+                        try:
+                            s_el = int(readtext(darkred(_("Element number to edit:"))+" "))
+                            if s_el not in mydict:
+                                raise ValueError()
+                            new_s_val = readtext("[%s] %s " % (
+                                mydict[s_el], _("New value:"),)
+                            )
+                            if not new_s_val:
+                                raise ValueError()
+                            mydict[s_el] = new_s_val[:]
+                        except (ValueError, TypeError,):
+                            self.output(_("Invalid element."), type = "warning")
+                            continue
+                        break
+                    show_current_list()
+                    continue
+                elif action == 3: # remove item
                     while True:
                         try:
                             s_el = int(readtext(darkred(_("Element number to remove:"))+" "))
                             if s_el not in mydict:
-                                raise ValueError
+                                raise ValueError()
                             del mydict[s_el]
                         except (ValueError, TypeError,):
                             self.output(_("Invalid element."), type = "warning")
@@ -848,7 +867,7 @@ class TextInterface:
                         break
                     show_current_list()
                     continue
-                elif action == 3:
+                elif action == 4: # show current list
                     show_current_list()
                     continue
                 break
