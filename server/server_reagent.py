@@ -213,7 +213,7 @@ def repositories(options):
             if not atom_manual_deps:
                 print_info("%s %s" % (brown("    # "), _("No dependencies"),))
 
-            print()
+            print_generic("")
             current_mdeps = sorted([x[0] for x in atom_manual_deps])
             input_params = [
                 ('new_mdeps', ('list', ('Manual dependencies', current_mdeps),),
