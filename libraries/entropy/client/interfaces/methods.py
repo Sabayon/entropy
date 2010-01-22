@@ -729,7 +729,10 @@ class RepositoryMixin:
         comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'], dbname, get_ts(),)
         comp_dbpath = os.path.join(backup_dir, comp_dbname)
         if not silent:
-            mytxt = "%s: %s ..." % (darkgreen(_("Backing up database to")), blue(comp_dbpath),)
+            mytxt = "%s: %s ..." % (
+                darkgreen(_("Backing up database to")),
+                blue(os.path.basename(comp_dbpath)),
+            )
             self.output(
                 mytxt,
                 importance = 1,
@@ -738,20 +741,23 @@ class RepositoryMixin:
                 back = True
             )
         try:
-            entropy.tools.compress_file(dbpath, comp_dbpath, bz2.BZ2File, compress_level)
+            entropy.tools.compress_file(dbpath, comp_dbpath, bz2.BZ2File,
+                compress_level)
         except:
             if not silent:
                 entropy.tools.print_traceback()
             return False, _("Unable to compress")
 
         if not silent:
-            mytxt = "%s: %s" % (darkgreen(_("Database backed up successfully")), blue(comp_dbpath),)
+            mytxt = "%s: %s" % (
+                darkgreen(_("Database backed up successfully")),
+                blue(os.path.basename(comp_dbpath)),
+            )
             self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
-                header = blue(" @@ "),
-                back = True
+                header = blue(" @@ ")
             )
         return True, _("All fine")
 
@@ -764,8 +770,11 @@ class RepositoryMixin:
             entropy.tools.check_required_space(db_dir, bytes_required)):
 
                 if not silent:
-                    mytxt = "%s: %s, %s" % (darkred(_("Cannot restore selected backup")),
-                        blue(backup_path), darkred(_("permission denied")),)
+                    mytxt = "%s: %s, %s" % (
+                        darkred(_("Cannot restore selected backup")),
+                        blue(os.path.basename(backup_path)),
+                        darkred(_("permission denied")),
+                    )
                     self.output(
                         mytxt,
                         importance = 1,
@@ -775,8 +784,11 @@ class RepositoryMixin:
                 return False, mytxt
 
         if not silent:
-            mytxt = "%s: %s => %s ..." % (darkgreen(_("Restoring backed up database")),
-                blue(os.path.basename(backup_path)), blue(db_destination),)
+            mytxt = "%s: %s => %s ..." % (
+                darkgreen(_("Restoring backed up database")),
+                blue(os.path.basename(backup_path)),
+                blue(db_destination),
+            )
             self.output(
                 mytxt,
                 importance = 1,
@@ -787,21 +799,23 @@ class RepositoryMixin:
 
         import bz2
         try:
-            entropy.tools.uncompress_file(backup_path, db_destination, bz2.BZ2File)
+            entropy.tools.uncompress_file(backup_path, db_destination,
+                bz2.BZ2File)
         except:
             if not silent:
                 entropy.tools.print_traceback()
             return False, _("Unable to unpack")
 
         if not silent:
-            mytxt = "%s: %s" % (darkgreen(_("Database restored successfully")),
-                blue(db_destination),)
+            mytxt = "%s: %s" % (
+                darkgreen(_("Database restored successfully")),
+                blue(os.path.basename(backup_path)),
+            )
             self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
-                header = blue(" @@ "),
-                back = True
+                header = blue(" @@ ")
             )
         self.clear_cache()
         return True, _("All fine")
