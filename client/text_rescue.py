@@ -173,10 +173,11 @@ def _database_restore(entropy_client):
             return 1
         myid, dbx = data['db']
         try:
-            dbpath = db_data.pop(myid)
+            dbpath = db_data.pop(myid-1)
         except IndexError:
             continue
-        if not os.path.isfile(dbpath): continue
+        if not os.path.isfile(dbpath):
+            continue
         break
 
     status, err_msg = entropy_client.restore_database(dbpath,
