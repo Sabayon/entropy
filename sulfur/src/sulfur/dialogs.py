@@ -2782,7 +2782,7 @@ class InputDialog:
         self.button_pressed = True
 
     def do_cancel(self, widget):
-        self.parameters.clear()
+        self.parameters = None
         self.button_pressed = True
 
     def run(self):
