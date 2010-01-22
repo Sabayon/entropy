@@ -764,7 +764,7 @@ class TextInterface:
                 self.output(txt)
                 counter += 1
             while True:
-                myresult = readtext("%s:" % (_('Selected number'),)).decode('utf-8')
+                myresult = readtext("%s: " % (_('Selected number'),)).decode('utf-8')
                 try:
                     myresult = int(myresult)
                 except ValueError:
