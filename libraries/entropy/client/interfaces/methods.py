@@ -265,7 +265,7 @@ class RepositoryMixin:
 
         else:
 
-            entropy.tools.save_repository_settings(repodata)
+            self.__save_repository_settings(repodata)
             self.SystemSettings._clear_repository_cache(repoid = repoid)
             self.close_all_repositories()
             self.clear_cache()
@@ -306,9 +306,9 @@ class RepositoryMixin:
             repodata = {}
             repodata['repoid'] = repoid
             if disable:
-                entropy.tools.save_repository_settings(repodata, disable = True)
+                self.__save_repository_settings(repodata, disable = True)
             else:
-                entropy.tools.save_repository_settings(repodata, remove = True)
+                self.__save_repository_settings(repodata, remove = True)
             self.SystemSettings.clear()
 
         repo_mem_key = self.__get_repository_cache_key(repoid)
@@ -320,11 +320,128 @@ class RepositoryMixin:
         self.close_all_repositories()
         self.validate_repositories()
 
+    def __save_repository_settings(self, repodata, remove = False,
+        disable = False, enable = False):
+
+        if repodata['repoid'].endswith(etpConst['packagesext']):
+            return
+
+        content = []
+        if os.path.isfile(etpConst['repositoriesconf']):
+            f = open(etpConst['repositoriesconf'])
+            content = [x.strip() for x in f.readlines()]
+            f.close()
+
+        if not disable and not enable:
+            content = [x for x in content if not \
+                x.startswith("repository|"+repodata['repoid'])]
+            if remove:
+                # also remove possible disable repo
+                content = [x for x in content if not (x.startswith("#") and \
+                    not x.startswith("##") and \
+                        (x.find("repository|"+repodata['repoid']) != -1))]
+        if not remove:
+
+            repolines = [x for x in content if x.startswith("repository|") or \
+                (x.startswith("#") and not x.startswith("##") and \
+                    (x.find("repository|") != -1))]
+            # exclude lines from repolines
+            content = [x for x in content if x not in repolines]
+            # filter sane repolines lines
+            repolines = [x for x in repolines if (len(x.split("|")) == 5)]
+            repolines_data = {}
+            repocount = 0
+            for x in repolines:
+                repolines_data[repocount] = {}
+                repolines_data[repocount]['repoid'] = x.split("|")[1]
+                repolines_data[repocount]['line'] = x
+                if disable and x.split("|")[1] == repodata['repoid']:
+                    if not x.startswith("#"):
+                        x = "#"+x
+                    repolines_data[repocount]['line'] = x
+                elif enable and x.split("|")[1] == repodata['repoid'] \
+                    and x.startswith("#"):
+                    repolines_data[repocount]['line'] = x[1:]
+                repocount += 1
+
+            if not disable and not enable: # so it's a add
+
+                line = "repository|%s|%s|%s|%s#%s#%s,%s" % (
+                    repodata['repoid'],
+                    repodata['description'],
+                    ' '.join(repodata['plain_packages']),
+                    repodata['plain_database'],
+                    repodata['dbcformat'],
+                    repodata['service_port'],
+                    repodata['ssl_service_port'],
+                )
+
+                # seek in repolines_data for a disabled entry and remove
+                to_remove = set()
+                for cc in repolines_data:
+                    cc_line = repolines_data[cc]['line']
+                    if cc_line.startswith("#") and \
+                        (cc_line.find("repository|"+repodata['repoid']) != -1):
+                        # then remove
+                        to_remove.add(cc)
+                for x in to_remove:
+                    del repolines_data[x]
+
+                repolines_data[repocount] = {}
+                repolines_data[repocount]['repoid'] = repodata['repoid']
+                repolines_data[repocount]['line'] = line
+
+            # inject new repodata
+            keys = sorted(repolines_data.keys())
+            for cc in keys:
+                #repoid = repolines_data[cc]['repoid']
+                # write the first
+                line = repolines_data[cc]['line']
+                content.append(line)
+
+        try:
+            repo_conf = etpConst['repositoriesconf']
+            tmp_repo_conf = repo_conf + ".cfg_save_set"
+            with open(tmp_repo_conf, "w") as tmp_f:
+                for line in content:
+                    tmp_f.write(line + "\n")
+                tmp_f.flush()
+            os.rename(tmp_repo_conf, repo_conf)
+        except (OSError, IOError,): # permission denied?
+            return False
+        return True
+
+
+    def __write_ordered_repositories_entries(self, ordered_repository_list):
+        content = []
+        if os.path.isfile(etpConst['repositoriesconf']):
+            f = open(etpConst['repositoriesconf'])
+            content = [x.strip() for x in f.readlines()]
+            f.close()
+
+        repolines = [x for x in content if x.startswith("repository|") and \
+            (len(x.split("|")) == 5)]
+        content = [x for x in content if x not in repolines]
+        for repoid in ordered_repository_list:
+            # get repoid from repolines
+            for x in repolines:
+                repoidline = x.split("|")[1]
+                if repoid == repoidline:
+                    content.append(x)
+
+        repo_conf = etpConst['repositoriesconf']
+        tmp_repo_conf = repo_conf + ".cfg_save"
+        with open(tmp_repo_conf, "w") as tmp_f:
+            for line in content:
+                tmp_f.write(line + "\n")
+            tmp_f.flush()
+        os.rename(tmp_repo_conf, repo_conf)
+
     def shift_repository(self, repoid, toidx):
         # update self.SystemSettings['repositories']['order']
         self.SystemSettings['repositories']['order'].remove(repoid)
         self.SystemSettings['repositories']['order'].insert(toidx, repoid)
-        entropy.tools.write_ordered_repositories_entries(
+        self.__write_ordered_repositories_entries(
             self.SystemSettings['repositories']['order'])
         self.SystemSettings.clear()
         self.close_all_repositories()
@@ -336,7 +453,7 @@ class RepositoryMixin:
         # save new self.SystemSettings['repositories']['available'] to file
         repodata = {}
         repodata['repoid'] = repoid
-        entropy.tools.save_repository_settings(repodata, enable = True)
+        self.__save_repository_settings(repodata, enable = True)
         self.SystemSettings.clear()
         self.close_all_repositories()
         self.validate_repositories()
@@ -362,7 +479,7 @@ class RepositoryMixin:
             # save new self.SystemSettings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
-            entropy.tools.save_repository_settings(repodata, disable = True)
+            self.__save_repository_settings(repodata, disable = True)
             self.SystemSettings.clear()
 
         self.close_all_repositories()

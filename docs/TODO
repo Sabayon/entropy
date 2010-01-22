@@ -5,10 +5,10 @@
     - entropy.server API rework
     - move sensible pkgs to alt dir
     - UGC: pkg icon support
+    - equo repo enable/disable/add/remove
 
   0.99.40:
 
-    - "#" tag mark, move to entropy.const
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
     - sulfur: code refactoring
     - PackageKit integration

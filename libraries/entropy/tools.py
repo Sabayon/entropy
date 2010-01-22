@@ -1869,7 +1869,7 @@ def remove_tag(mydep):
     @return: 
     @rtype: 
     """
-    colon = mydep.rfind("#")
+    colon = mydep.rfind(etpConst['entropytagprefix'])
     if colon == -1:
         return mydep
     return mydep[:colon]
@@ -1960,7 +1960,7 @@ def dep_gettag(mydep):
     """
     dep = mydep[:]
     dep = remove_entropy_revision(dep)
-    colon = dep.rfind("#")
+    colon = dep.rfind(etpConst['entropytagprefix'])
     if colon != -1:
         mydep = dep[colon+1:]
         rslt = remove_slot(mydep)
@@ -2587,147 +2587,6 @@ def convert_seconds_to_fancy_output(seconds):
     output.reverse()
     return ':'.join(output)
 
-def read_repositories_conf():
-    """
-    docstring_title
-
-    @return: 
-    @rtype: 
-    """
-    content = []
-    if os.path.isfile(etpConst['repositoriesconf']):
-        f = open(etpConst['repositoriesconf'])
-        content = f.readlines()
-        f.close()
-    return content
-
-def write_ordered_repositories_entries(ordered_repository_list):
-    """
-    docstring_title
-
-    @param ordered_repository_list: 
-    @type ordered_repository_list: 
-    @return: 
-    @rtype: 
-    """
-    content = read_repositories_conf()
-    content = [x.strip() for x in content]
-    repolines = [x for x in content if x.startswith("repository|") and \
-        (len(x.split("|")) == 5)]
-    content = [x for x in content if x not in repolines]
-    for repoid in ordered_repository_list:
-        # get repoid from repolines
-        for x in repolines:
-            repoidline = x.split("|")[1]
-            if repoid == repoidline:
-                content.append(x)
-    _save_repositories_content(content)
-
-def save_repository_settings(repodata, remove = False, disable = False,
-    enable = False):
-    """
-    docstring_title
-
-    @param repodata: 
-    @type repodata: 
-    @keyword remove: 
-    @type remove: 
-    @keyword disable: 
-    @type disable: 
-    @keyword enable: 
-    @type enable: 
-    @return: 
-    @rtype: 
-    """
-
-    if repodata['repoid'].endswith(etpConst['packagesext']):
-        return
-
-    content = read_repositories_conf()
-    content = [x.strip() for x in content]
-    if not disable and not enable:
-        content = [x for x in content if not x.startswith("repository|"+repodata['repoid'])]
-        if remove:
-            # also remove possible disable repo
-            content = [x for x in content if not (x.startswith("#") and not x.startswith("##") and (x.find("repository|"+repodata['repoid']) != -1))]
-    if not remove:
-
-        repolines = [x for x in content if x.startswith("repository|") or (x.startswith("#") and not x.startswith("##") and (x.find("repository|") != -1))]
-        content = [x for x in content if x not in repolines] # exclude lines from repolines
-        # filter sane repolines lines
-        repolines = [x for x in repolines if (len(x.split("|")) == 5)]
-        repolines_data = {}
-        repocount = 0
-        for x in repolines:
-            repolines_data[repocount] = {}
-            repolines_data[repocount]['repoid'] = x.split("|")[1]
-            repolines_data[repocount]['line'] = x
-            if disable and x.split("|")[1] == repodata['repoid']:
-                if not x.startswith("#"):
-                    x = "#"+x
-                repolines_data[repocount]['line'] = x
-            elif enable and x.split("|")[1] == repodata['repoid'] and x.startswith("#"):
-                repolines_data[repocount]['line'] = x[1:]
-            repocount += 1
-
-        if not disable and not enable: # so it's a add
-
-            line = "repository|%s|%s|%s|%s#%s#%s,%s" % (   repodata['repoid'],
-                repodata['description'],
-                ' '.join(repodata['plain_packages']),
-                repodata['plain_database'],
-                repodata['dbcformat'],
-                repodata['service_port'],
-                repodata['ssl_service_port'],
-            )
-
-            # seek in repolines_data for a disabled entry and remove
-            to_remove = set()
-            for cc in repolines_data:
-                if repolines_data[cc]['line'].startswith("#") and \
-                    (repolines_data[cc]['line'].find("repository|"+repodata['repoid']) != -1):
-                    # then remove
-                    to_remove.add(cc)
-            for x in to_remove:
-                del repolines_data[x]
-
-            repolines_data[repocount] = {}
-            repolines_data[repocount]['repoid'] = repodata['repoid']
-            repolines_data[repocount]['line'] = line
-
-        # inject new repodata
-        keys = sorted(repolines_data.keys())
-        for cc in keys:
-            #repoid = repolines_data[cc]['repoid']
-            # write the first
-            line = repolines_data[cc]['line']
-            content.append(line)
-
-    try:
-        _save_repositories_content(content)
-    except OSError: # permission denied?
-        return False
-    return True
-
-def _save_repositories_content(content):
-    """
-    docstring_title
-
-    @param content: 
-    @type content: 
-    @return: 
-    @rtype: 
-    """
-    if os.path.isfile(etpConst['repositoriesconf']):
-        if os.path.isfile(etpConst['repositoriesconf']+".old"):
-            os.remove(etpConst['repositoriesconf']+".old")
-        shutil.copy2(etpConst['repositoriesconf'], etpConst['repositoriesconf']+".old")
-    f = open(etpConst['repositoriesconf'], "w")
-    for x in content:
-        f.write(x+"\n")
-    f.flush()
-    f.close()
-
 def write_parameter_to_file(config_file, name, data):
     """
     docstring_title
@@ -2856,19 +2715,6 @@ def is_valid_md5(myhash):
     if re.findall(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', myhash):
         return True
     return False
-
-def open_buffer():
-    """
-    docstring_title
-
-    @return: 
-    @rtype: 
-    """
-    try:
-        import io as stringio
-    except ImportError:
-        import io as stringio
-    return stringio.StringIO()
 
 def seek_till_newline(f):
     """
@@ -3219,7 +3065,7 @@ def create_package_filename(category, name, version, package_tag):
     @rtype: 
     """
     if package_tag:
-        package_tag = "#%s" % (package_tag,)
+        package_tag = "%s%s" % (etpConst['entropytagprefix'], package_tag,)
     else:
         package_tag = ''
 
@@ -3244,7 +3090,7 @@ def create_package_atom_string(category, name, version, package_tag):
     @rtype: 
     """
     if package_tag:
-        package_tag = "#%s" % (package_tag,)
+        package_tag = "%s%s" % (etpConst['entropytagprefix'], package_tag,)
     else:
         package_tag = ''
     package_name = "%s/%s-%s" % (category, name, version,)

@@ -1816,7 +1816,7 @@ class CalculatorsMixin:
             myrev = self.clientDbconn.retrieveRevision(match[0])
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
-                pkg_match += "#%s" % (mytag,)
+                pkg_match += "%s%s" % (etpConst['entropytagprefix'], mytag,)
             pkg_unsatisfied = self._get_unsatisfied_dependencies([pkg_match],
                 deep_deps = deep)
             if pkg_unsatisfied:
