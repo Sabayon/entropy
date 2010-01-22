@@ -1542,21 +1542,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = True
         self.ui_lock(True)
         self.set_busy()
+        loading_data = self.etpbase.get_groups('loading')
+        self.pkgView.populate(loading_data, empty = True)
 
         allpkgs = []
-        self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
-        self.progress.set_subLabel(
-            _('Entropy is indexing the repositories. It will take a few seconds'))
-        self.progress.set_extraLabel(
-            _('While you are waiting, take a break and look outside. Is it rainy?'))
         for flt in masks:
-            msg = "%s: %s" % (_('Calculating'), flt,)
-            self.set_status_ticker(msg)
             allpkgs += self.etpbase.get_groups(flt)
 
         if action == "updates":
-            msg = "%s: available" % (_('Calculating'),)
-            self.set_status_ticker(msg)
             # speed up first queue taint iteration
             self.etpbase.get_groups("available")
             def do_more_caching():
@@ -1569,8 +1562,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 return False
             gobject.idle_add(do_more_caching)
 
-        # set updates label
-        if action == 'updates':
+            # set updates label
             raw_updates = len(self.etpbase.get_raw_groups('updates'))
             self._set_updates_label(raw_updates)
 

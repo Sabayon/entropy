@@ -997,6 +997,18 @@ class EntropyPackages:
             dummy_type = SulfurConf.dummy_empty)
         return [myobj]
 
+    def _pkg_get_loading(self):
+
+        msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
+            SulfurConf.color_title,
+            _('Please wait, loading...'),
+            _("The current view is loading."),
+            _("Be patient, sit down and relax."),
+        )
+        myobj = DummyEntropyPackage(namedesc = msg,
+            dummy_type = SulfurConf.dummy_empty)
+        return [myobj]
+
     def _pkg_get_empty_search_item(self):
 
         if self._filter_callback:
@@ -1071,6 +1083,7 @@ class EntropyPackages:
             "user_unmasked": self._pkg_get_user_unmasked,
             "pkgsets": self._pkg_get_pkgsets,
             "fake_updates": self._pkg_get_fake_updates,
+            "loading": self._pkg_get_loading,
             "downgrade": self._pkg_get_downgrade,
             "glsa_metadata": self._pkg_get_glsa_metadata,
             "search": self._pkg_get_search,
