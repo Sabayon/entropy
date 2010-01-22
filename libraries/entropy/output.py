@@ -839,7 +839,10 @@ class TextInterface:
                 elif action == 2: # edit item
                     while True:
                         try:
-                            s_el = int(readtext(darkred(_("Element number to edit:"))+" "))
+                            edit_msg = _("Element number to edit (-1 to go back):")
+                            s_el = int(readtext(darkred(edit_msg)+" "))
+                            if s_el == -1:
+                                break
                             if s_el not in mydict:
                                 raise ValueError()
                             new_s_val = readtext("[%s] %s " % (
