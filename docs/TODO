@@ -4,19 +4,18 @@
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
-    - UGC: pkg icon support
     - equo repo enable/disable/add/remove
 
   0.99.40:
 
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
-    - sulfur: code refactoring
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier
         for 3rd party implementations to define it)
     - add splitdebug support?
     - entropy.security.System unittest
+    - UGC: pkg icon support
 
   1.0_beta1:
 
