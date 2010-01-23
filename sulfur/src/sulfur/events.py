@@ -732,7 +732,7 @@ class SulfurApplicationEventsMixin:
         self.quit()
 
     def on_HelpAbout( self, widget = None ):
-        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',
+        about = AboutDialog(const.PIXMAPS_PATH+'/sulfur-about.png',
             const.CREDITS, SulfurConf.branding_title)
         about.show()
 
