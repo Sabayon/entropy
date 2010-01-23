@@ -268,7 +268,7 @@ def repositories(options):
             ]
             data = Entropy.input_box(_("Dependencies editor"), input_params)
             if data is None:
-                return 4
+                continue
 
             new_deps = data.get('new_deps', [])
             orig_deps = [(x, dep_type_map[x],) for x in new_deps]
