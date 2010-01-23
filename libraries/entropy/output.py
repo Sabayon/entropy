@@ -581,7 +581,8 @@ def _my_raw_input(txt = ''):
     response = ''
     while True:
         y = sys.stdin.read(1)
-        if y in ('\n', '\r',): break
+        if y in ('\n', '\r',):
+            break
         response += y
         _flush_stdouterr()
     return response
@@ -793,7 +794,8 @@ class TextInterface:
             mydict = {}
             counter = 1
             valid_actions = [0, 1, 2, 3, 4]
-            if can_cancel: valid_actions.insert(0, -1)
+            if can_cancel:
+                valid_actions.insert(0, -1)
             option_text, option_list = option_data
             txt = "%s:" % (blue(option_text),)
             self.output(txt)
@@ -811,7 +813,10 @@ class TextInterface:
 
             while True:
                 try:
-                    action = int(selaction())
+                    sel_action = selaction()
+                    if not sel_action:
+                        show_current_list()
+                    action = int(sel_action)
                 except (ValueError, TypeError,):
                     self.output(_("You don't have typed a number."), type = "warning")
                     continue
@@ -825,7 +830,9 @@ class TextInterface:
                 elif action == 1: # add item
                     while True:
                         try:
-                            s_el = readtext(darkred(_("String to add:"))+" ")
+                            s_el = readtext(darkred(_("String to add (-1 to go back):"))+" ")
+                            if s_el == "-1":
+                                break
                             if not callback(s_el):
                                 raise ValueError()
                             mydict[counter] = s_el
@@ -845,10 +852,10 @@ class TextInterface:
                                 break
                             if s_el not in mydict:
                                 raise ValueError()
-                            new_s_val = readtext("[%s] %s " % (
-                                mydict[s_el], _("New value:"),)
+                            new_s_val = readtext("[%s: %s] %s " % (
+                                _("old"), mydict[s_el], _("new value:"),)
                             )
-                            if not new_s_val:
+                            if not callback(new_s_val):
                                 raise ValueError()
                             mydict[s_el] = new_s_val[:]
                         except (ValueError, TypeError,):
@@ -860,7 +867,9 @@ class TextInterface:
                 elif action == 3: # remove item
                     while True:
                         try:
-                            s_el = int(readtext(darkred(_("Element number to remove:"))+" "))
+                            s_el = int(readtext(darkred(_("Element number to remove (-1 to go back):"))+" "))
+                            if s_el == -1:
+                                break
                             if s_el not in mydict:
                                 raise ValueError()
                             del mydict[s_el]
