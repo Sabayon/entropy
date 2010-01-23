@@ -31,11 +31,10 @@ from entropy.tools import dep_getkey, print_traceback
 from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
-from sulfur.core import UI
+from sulfur.core import UI, busy_cursor, normal_cursor, STATUS_BAR_CONTEXT_IDS
 from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
-from sulfur.misc import busy_cursor, normal_cursor, STATUS_BAR_CONTEXT_IDS
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
     PkgInfoMenu
 from sulfur.event import SulfurSignals

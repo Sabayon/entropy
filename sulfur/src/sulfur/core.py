@@ -1,5 +1,3 @@
-#!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -17,8 +15,22 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import os
+import sys
+
+import gtk
 import gtk.glade
 import gobject
+from entropy.const import const_debug_write
+from entropy.misc import ParallelTask
+
+FORK_PIDS = []
+
+CURRENT_CURSOR = None
+
+STATUS_BAR_CONTEXT_IDS = {
+    'UGC': 1001,
+}
 
 class UI(gtk.glade.XML):
     """Base class for UIs loaded from glade."""
@@ -90,3 +102,42 @@ class Controller:
             result.extend(list(currClass.__bases__))
             i = i + 1
         return result
+
+def busy_cursor(mainwin, insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
+    ''' Set busy cursor in mainwin and make it insensitive if selected '''
+    mainwin.window.set_cursor(cur)
+    global CURRENT_CURSOR
+    CURRENT_CURSOR = cur
+    if insensitive:
+        mainwin.set_sensitive(False)
+
+def normal_cursor(mainwin):
+    ''' Set Normal cursor in mainwin and make it sensitive '''
+    if mainwin.window != None:
+        mainwin.window.set_cursor(None)
+        mainwin.set_sensitive(True)
+    global CURRENT_CURSOR
+    CURRENT_CURSOR = None
+
+def fork_function(child_function, parent_function):
+    # Uber suber optimized stuffffz
+
+    def do_wait(pid):
+        os.waitpid(pid, 0)
+        FORK_PIDS.remove(pid)
+        gobject.idle_add(parent_function)
+
+    pid = os.fork()
+    if pid != 0:
+        const_debug_write(__name__, "_fork_function: enter %s" % (
+            child_function,))
+        FORK_PIDS.append(pid)
+        if parent_function is not None:
+            task = ParallelTask(do_wait, pid)
+            task.start()
+        const_debug_write(__name__, "_fork_function: leave %s" % (
+            child_function,))
+    else:
+        sys.excepthook = sys.__excepthook__
+        child_function()
+        os._exit(0)

@@ -17,7 +17,14 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import time, gtk, gobject, pango, sys
+import sys
+import time
+import shutil
+
+import gtk
+import gobject
+import pango
+
 from entropy.i18n import _, _LOCALE
 from entropy.exceptions import *
 from entropy.const import *
@@ -25,8 +32,7 @@ from entropy.misc import ParallelTask
 import entropy.tools
 
 from sulfur.event import SulfurSignals
-from sulfur.core import UI
-from sulfur.misc import busy_cursor, normal_cursor
+from sulfur.core import UI, busy_cursor, normal_cursor, fork_function
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 
 class MenuSkel:

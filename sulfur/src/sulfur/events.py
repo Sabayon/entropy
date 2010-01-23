@@ -39,7 +39,7 @@ from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
 from sulfur.dialogs import okDialog, input_box, TextReadDialog, questionDialog, \
     FileChooser, AboutDialog, errorMessage, AddRepositoryWindow
-from sulfur.misc import busy_cursor, normal_cursor
+from sulfur.core import busy_cursor, normal_cursor
 
 
 class SulfurApplicationEventsMixin:

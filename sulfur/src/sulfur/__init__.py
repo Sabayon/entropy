@@ -49,8 +49,8 @@ from sulfur.entropyapi import Equo, QueueExecutor
 from sulfur.setup import SulfurConf, const, fakeoutfile, fakeinfile, \
     cleanMarkupString
 from sulfur.widgets import SulfurConsole
-from sulfur.core import UI, Controller
-from sulfur.misc import busy_cursor, normal_cursor
+from sulfur.core import UI, Controller, FORK_PIDS, fork_function, \
+    busy_cursor, normal_cursor
 from sulfur.views import *
 from sulfur.filters import Filter
 from sulfur.dialogs import *
@@ -116,15 +116,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.show_notice_board(force = False)
 
     def quit(self, widget = None, event = None, sysexit = True):
+
         def do_kill(pid):
             try:
                 os.kill(pid, signal.SIGTERM)
             except OSError:
                 pass
+        for pid in FORK_PIDS:
+            do_kill(pid)
 
-        if hasattr(self, '_fork_pids'):
-            for pid in self._fork_pids:
-                do_kill(pid)
         if hasattr(self, 'Equo'):
             self.Equo.destroy()
 
@@ -142,29 +142,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def gtk_loop(self):
         while gtk.events_pending():
            gtk.main_iteration()
-
-    def _fork_function(self, child_function, parent_function):
-        # Uber suber optimized stuffffz
-
-        def do_wait(pid):
-            os.waitpid(pid, 0)
-            self._fork_pids.remove(pid)
-            gobject.idle_add(parent_function)
-
-        pid = os.fork()
-        if pid != 0:
-            if self.do_debug:
-                print_generic("_fork_function: enter %s" % (child_function,))
-            self._fork_pids.append(pid)
-            if parent_function is not None:
-                task = ParallelTask(do_wait, pid)
-                task.start()
-            if self.do_debug:
-                print_generic("_fork_function: leave %s" % (child_function,))
-        else:
-            sys.excepthook = sys.__excepthook__
-            child_function()
-            os._exit(0)
 
     def setup_gui(self):
 
@@ -284,8 +261,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # init flags
         self.disable_ugc = False
-        self._fork_pids = []
-        self._ugc_pid = None
 
         self._mtime_pingus = MtimePingus()
         self._spawning_ugc = False
@@ -831,7 +806,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             print_generic("UGC child process done")
 
         self._spawning_ugc = True
-        self._fork_function(do_ugc_sync, emit_ugc_update)
+        fork_function(do_ugc_sync, emit_ugc_update)
 
         if self.do_debug:
             print_generic("quitting UGC")
