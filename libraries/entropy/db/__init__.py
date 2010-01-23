@@ -3830,6 +3830,24 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if name:
             return name[0]
 
+    def retrieveKeySplit(self, idpackage):
+        """
+        Return a tuple composed by package category and package name for
+        given package identifier.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: tuple of length 2 composed by (package_category, package_name,)
+        @rtupe: tuple or None
+        """
+        cur = self.cursor.execute("""
+        SELECT categories.category, baseinfo.name
+        FROM baseinfo, categories
+        WHERE baseinfo.idpackage = (?) AND
+        baseinfo.idcategory = categories.idcategory LIMIT 1
+        """, (idpackage,))
+        return cur.fetchone()
+
     def retrieveKeySlot(self, idpackage):
         """
         Return a tuple composed by package key and slot for given package
