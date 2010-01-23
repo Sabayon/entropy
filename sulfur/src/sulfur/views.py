@@ -31,7 +31,8 @@ from entropy.tools import dep_getkey, print_traceback
 from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
-from sulfur.core import UI, busy_cursor, normal_cursor, STATUS_BAR_CONTEXT_IDS
+from sulfur.core import UI, busy_cursor, normal_cursor, \
+    STATUS_BAR_CONTEXT_IDS, resize_image, fork_function
 from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
@@ -446,7 +447,7 @@ class EntropyPackageView:
 
         self.Equo = Equo()
         self.Sulfur = application
-        self.pkgcolumn_text = _("Selection")
+        self.pkgcolumn_text = _("Sel") # as in Selection
         self.pkgcolumn_text_rating = _("Rating")
         self.stars_col_size = 100
         self.selection_width = 34
@@ -462,6 +463,9 @@ class EntropyPackageView:
         self.main_window = main_window
         self.empty_mode = False
         self.event_click_pos = 0, 0
+        self.ugc_generic_icon = "small-generic.png"
+        self._ugc_pixbuf_map = {}
+        self._ugc_metadata_sync_exec_cache = set()
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
         self.pkg_install_updatable = "package-installed-outdated.png"
@@ -1547,21 +1551,36 @@ class EntropyPackageView:
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         self.view.set_model( store )
-
         myheight = EntropyPackageView.ROW_HEIGHT
+
+        # package UGC icon pixmap
+        cell_icon = gtk.CellRendererPixbuf()
+        cell_icon.set_property('height', myheight)
+        self.set_pixbuf_to_cell(cell_icon, self.ugc_generic_icon,
+            pix_dir = "ugc")
+        column_icon = gtk.TreeViewColumn("", cell_icon)
+        column_icon.set_cell_data_func(cell_icon, self.new_ugc_pixbuf)
+        column_icon.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        column_icon.set_fixed_width(myheight + 40)
+        column_icon.set_sort_column_id(-1)
+        column_icon.set_clickable(True)
+        self.view.append_column(column_icon)
+        column_icon.set_clickable(True)
+
         # selection pixmap
         cell1 = gtk.CellRendererPixbuf()
         cell1.set_property('height', myheight)
-        self.set_pixbuf_to_cell(cell1, self.pkg_install_ok )
-        column1 = gtk.TreeViewColumn( self.pkgcolumn_text, cell1 )
-        column1.set_cell_data_func( cell1, self.new_pixbuf )
-        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( self.selection_width+40 )
-        column1.set_sort_column_id( -1 )
+        self.set_pixbuf_to_cell(cell1, self.pkg_install_ok)
+        column1 = gtk.TreeViewColumn(self.pkgcolumn_text, cell1)
+        column1.set_cell_data_func(cell1, self.new_pixbuf)
+        column1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        column1.set_fixed_width(self.selection_width)
+        column1.set_sort_column_id(-1)
         column1.set_clickable(True)
         column1.connect("clicked", self.on_selection_column_clicked)
-        self.view.append_column( column1 )
-        column1.set_clickable( True )
+        self.view.append_column(column1)
+        column1.set_clickable(True)
+
 
         self.create_text_column( _( "Application" ), 'namedesc', size = 300,
             expand = True, set_height = myheight, clickable = True,
@@ -1625,7 +1644,6 @@ class EntropyPackageView:
 
         t = ParallelTask(self.vote_submit_thread, repository, key, obj)
         t.start()
-
 
     def vote_submit_thread(self, repository, key, obj):
         status, err_msg = self.Equo.UGC.add_vote(repository, key, int(obj.voted))
@@ -1738,6 +1756,7 @@ class EntropyPackageView:
         if hasattr(self.ui, "swPkg"):
             self.ui.swPkg.set_placement(gtk.CORNER_TOP_LEFT)
 
+        self._spawn_ugc_metadata_fetch()
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 0 )
@@ -1748,17 +1767,18 @@ class EntropyPackageView:
                 pass
         return True
 
-    def set_pixbuf_to_cell(self, cell, filename):
+    def set_pixbuf_to_cell(self, cell, filename, pix_dir = "packages"):
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(
-                const.PIXMAPS_PATH+"/packages/"+filename)
-            cell.set_property( 'pixbuf', pixbuf )
+                os.path.join(const.PIXMAPS_PATH, pix_dir, filename))
+            cell.set_property('pixbuf', pixbuf)
         except gobject.GError:
             pass
 
-    def set_pixbuf_to_image(self, img, filename):
+    def set_pixbuf_to_image(self, img, filename, pix_dir = "packages"):
         try:
-            img.set_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+            img.set_from_file(
+                os.path.join(const.PIXMAPS_PATH, pix_dir, filename))
         except gobject.GError:
             pass
 
@@ -1800,7 +1820,115 @@ class EntropyPackageView:
                 self.set_line_status(obj, cell)
                 cell.set_property('foreground', obj.color)
 
-    def new_pixbuf( self, column, cell, model, myiter ):
+    def _spawn_ugc_metadata_fetch(self):
+
+        if self.Equo.UGC is None:
+            return
+
+        model_pkgs = []
+        for parent in self.store:
+            for child in parent.iterchildren():
+                model_pkgs += child
+
+        ugc_sync_data = set()
+        for pkg in model_pkgs:
+            repoid = pkg.repoid_clean
+            if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
+                continue
+            key = pkg.key
+            item = (key, repoid)
+            if item not in self._ugc_metadata_sync_exec_cache:
+                ugc_sync_data.add(item)
+                self._ugc_metadata_sync_exec_cache.add(item)
+
+        def do_ugc_sync():
+            for key, repoid in ugc_sync_data:
+                if self.Equo.UGC.UGCCache.is_alldocs_cached(key, repoid):
+                    continue
+                self.Equo.UGC.get_docs(repoid, key)
+
+        def do_ugc_sync_good():
+            SulfurSignals.emit('ugc_data_update')
+
+        fork_function(do_ugc_sync, do_ugc_sync_good)
+
+    def _spawn_ugc_icon_fetch(self, icon_doc, repoid):
+
+        def do_icon_fetch():
+            self.Equo.UGC.UGCCache.store_document(icon_doc['iddoc'],
+                repoid, icon_doc['store_url'])
+
+        def do_icon_fetch_good():
+            SulfurSignals.emit('ugc_data_update')
+
+        fork_function(do_icon_fetch, do_icon_fetch_good)
+
+    def _get_cached_pkg_ugc_icon(self, pkg):
+
+        repoid = pkg.repoid_clean
+        key = pkg.key
+        icon_doc = self.Equo.UGC.UGCCache.get_icon_cache(key, repoid)
+        if icon_doc is None:
+            # not cached
+            return
+
+        store_path = self.Equo.UGC.UGCCache.get_stored_document(
+            icon_doc['iddoc'], repoid, icon_doc['store_url'])
+
+        if store_path is None:
+            # not cached
+            self._spawn_ugc_icon_fetch(icon_doc, repoid)
+            return
+
+        if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
+            # not cached
+            return
+
+        icon_path = store_path + ".sulfur_icon_small"
+        pixbuf = self._ugc_pixbuf_map.get(icon_path)
+        if pixbuf is None:
+            if not (os.path.isfile(icon_path) and \
+                os.access(icon_path, os.R_OK)):
+                try:
+                    resize_image(EntropyPackageView.ROW_HEIGHT, store_path,
+                        icon_path)
+                except ValueError:
+                    return None
+
+            try:
+                pixbuf = gtk.gdk.pixbuf_new_from_file(icon_path)
+            except gobject.GError:
+                try:
+                    os.remove(icon_path)
+                except OSError:
+                    pass
+                return None
+            self._ugc_pixbuf_map[icon_path] = pixbuf
+
+        return pixbuf
+
+    def new_ugc_pixbuf(self, column, cell, model, myiter):
+
+        pkg = model.get_value(myiter, 0)
+        if not pkg:
+            cell.set_property('visible', False)
+            return
+
+        dummy_types = (SulfurConf.dummy_category, SulfurConf.dummy_empty)
+        if pkg.dummy_type in dummy_types:
+            cell.set_property('visible', False)
+        elif self.Equo.UGC is None:
+            cell.set_property('visible', False)
+        else:
+            cell.set_property('visible', True)
+            pixbuf = self._get_cached_pkg_ugc_icon(pkg)
+            if pixbuf:
+                cell.set_property('pixbuf', pixbuf)
+            else:
+                self.set_pixbuf_to_cell(cell, self.ugc_generic_icon,
+                    pix_dir = "ugc")
+
+    def new_pixbuf(self, column, cell, model, myiter):
         """ 
         Cell Data function for recent Column, shows pixmap
         if recent Value is True.
@@ -1811,11 +1939,11 @@ class EntropyPackageView:
             self.set_line_status(pkg, cell)
 
             if pkg.dummy_type == SulfurConf.dummy_empty:
-                cell.set_property( 'stock-id', 'gtk-apply' )
+                cell.set_property('stock-id', 'gtk-apply')
                 return
 
             if pkg.dummy_type == SulfurConf.dummy_category:
-                cell.set_property( 'icon-name', 'package-x-generic' )
+                cell.set_property('icon-name', 'package-x-generic')
                 return
 
             # check if package is broken

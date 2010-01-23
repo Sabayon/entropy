@@ -468,6 +468,12 @@ class EntropyPackage:
             return self.set_name, "0"
         return self.dbconn.retrieveKeySlot(self.matched_id)
 
+    def get_key(self):
+        if self.pkgset:
+            return self.set_name
+        return self.entropyTools.dep_getkey(
+            self.dbconn.retrieveAtom(self.matched_id))
+
     def get_description_no_markup(self):
         if self.pkgset:
             return self.set_cat_namedesc
@@ -662,6 +668,7 @@ class EntropyPackage:
     lic = property(fget=get_license)
     sources = property(fget=get_sources)
     keyslot = property(fget=get_key_slot)
+    key = property(fget=get_key)
     description =  property(fget=get_description)
     description_nomarkup = property(fget=get_description_no_markup)
     size =  property(fget=get_download_size)

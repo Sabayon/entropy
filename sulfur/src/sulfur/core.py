@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -17,6 +18,7 @@
 
 import os
 import sys
+import shutil
 
 import gtk
 import gtk.glade
@@ -141,3 +143,19 @@ def fork_function(child_function, parent_function):
         sys.excepthook = sys.__excepthook__
         child_function()
         os._exit(0)
+
+def resize_image(max_width, image_path, new_image_path):
+    shutil.copy2(image_path, new_image_path)
+    img = gtk.Image()
+    img.set_from_file(new_image_path)
+    img_buf = img.get_pixbuf()
+    w, h = img_buf.get_width(), img_buf.get_height()
+    if w > max_width:
+        # resize pix
+        new_w = max_width
+        new_h = new_w*h/w
+        img_buf = img_buf.scale_simple(int(new_w),
+            int(new_h), gtk.gdk.INTERP_BILINEAR)
+        img_buf.save(new_image_path, "png")
+        del img_buf
+    del img

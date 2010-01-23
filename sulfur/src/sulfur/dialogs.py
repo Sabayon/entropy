@@ -32,7 +32,8 @@ from entropy.misc import ParallelTask
 import entropy.tools
 
 from sulfur.event import SulfurSignals
-from sulfur.core import UI, busy_cursor, normal_cursor, fork_function
+from sulfur.core import UI, busy_cursor, normal_cursor, fork_function, \
+    resize_image
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 
 class MenuSkel:
@@ -518,22 +519,6 @@ class PkgInfoMenu(MenuSkel):
             SulfurSignals.connect('pkg_properties__ugc_tab_clicked',
                 self._ugc_tab_clicked)
 
-    def _resize_image(self, max_width, image_path, new_image_path):
-        shutil.copy2(image_path, new_image_path)
-        img = gtk.Image()
-        img.set_from_file(new_image_path)
-        img_buf = img.get_pixbuf()
-        w, h = img_buf.get_width(), img_buf.get_height()
-        if w > max_width:
-            # resize pix
-            new_w = max_width
-            new_h = new_w*h/w
-            img_buf = img_buf.scale_simple(int(new_w),
-                int(new_h), gtk.gdk.INTERP_BILINEAR)
-            img_buf.save(new_image_path, "png")
-            del img_buf
-        del img
-
     def _set_pixbuf_to_cell(self, cell, path):
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(path)
@@ -844,7 +829,7 @@ class PkgInfoMenu(MenuSkel):
             # if image has __icon__ as title, use as real icon
             icon_path = store_path + ".sulfur_icon"
             if not (os.path.isfile(icon_path) and os.access(icon_path, os.R_OK)):
-                self._resize_image(48.0, store_path, icon_path)
+                resize_image(48.0, store_path, icon_path)
             self.pkginfo_ui.pkgImage.set_from_file(icon_path)
 
     def spawn_docs_fetch(self):
@@ -877,7 +862,7 @@ class PkgInfoMenu(MenuSkel):
                     try:
                         if not os.path.isfile(preview_path) and \
                             (os.lstat(store_path)[6] < 1024000):
-                            self._resize_image(64.0, store_path, preview_path)
+                            resize_image(64.0, store_path, preview_path)
                             mydoc['preview_path'] = preview_path
                     except:
                         continue
