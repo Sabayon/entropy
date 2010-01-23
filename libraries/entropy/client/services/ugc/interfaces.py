@@ -345,8 +345,7 @@ class Client:
             docs_data, err_msg = data
         else:
             return False, 'wrong server answer'
-        if err_msg == 'ok':
-            self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
+        self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
         return docs_data, err_msg
 
     def get_icon(self, repository, pkgkey):
@@ -532,6 +531,11 @@ class Cache:
             return None
         return self.xcache[repository].get(item)
 
+    def _is_live_cache_item_available(self, repository, item):
+        if repository not in self.xcache:
+            return False
+        return item in self.xcache[repository]
+
     def _set_live_cache_item(self, repository, item, obj):
         if repository not in self.xcache:
             self.xcache[repository] = {}
@@ -708,6 +712,24 @@ class Cache:
                 data = None
         return data
 
+    def is_vote_cached(self, repository):
+
+        cache_key = self._get_vote_cache_key(repository)
+        cached = self._is_live_cache_item_available(repository, cache_key)
+        if cached:
+            return True
+
+        cache_file = self._get_vote_cache_file(repository)
+        avail = os.path.isfile(cache_file) and os.access(cache_file, os.R_OK)
+        if not avail:
+            return False
+
+        try:
+            entropy.dump.loadobj(cache_file, complete_path = True)
+        except (IOError, EOFError, OSError):
+            return False
+        return True
+
     def get_downloads_cache(self, repository):
         cache_key = self._get_downloads_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
@@ -723,11 +745,30 @@ class Cache:
                 data = None
         return data
 
+    def is_downloads_cached(self, repository):
+
+        cache_key = self._get_downloads_cache_key(repository)
+        cached = self._is_live_cache_item_available(repository, cache_key)
+        if cached:
+            return True
+
+        cache_file = self._get_downloads_cache_file(repository)
+        avail = os.path.isfile(cache_file) and os.access(cache_file, os.R_OK)
+        if not avail:
+            return False
+
+        try:
+            entropy.dump.loadobj(cache_file, complete_path = True)
+        except (IOError, EOFError, OSError):
+            return False
+        return True
+
     def get_alldocs_cache(self, pkgkey, repository):
         cache_key = self._get_alldocs_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
         if isinstance(cached, dict):
-            if pkgkey in cached: return cached[pkgkey]
+            if pkgkey in cached:
+                return cached[pkgkey]
         else:
             cached = {}
         with self.CacheLock:
@@ -740,6 +781,24 @@ class Cache:
             except (IOError, EOFError, OSError):
                 data = None
         return data
+
+    def is_alldocs_cached(self, pkgkey, repository):
+
+        cache_key = self._get_alldocs_cache_key(repository)
+        cached = self._is_live_cache_item_available(repository, cache_key)
+        if cached:
+            return True
+
+        cache_file = self._get_alldocs_cache_file(pkgkey, repository)
+        avail = os.path.isfile(cache_file) and os.access(cache_file, os.R_OK)
+        if not avail:
+            return False
+
+        try:
+            entropy.dump.loadobj(cache_file, complete_path = True)
+        except (IOError, EOFError, OSError):
+            return False
+        return True
 
     def get_icon_cache(self, pkgkey, repository):
         docs_cache = self.get_alldocs_cache(pkgkey, repository)
