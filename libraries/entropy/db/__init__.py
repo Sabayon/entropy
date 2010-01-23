@@ -8297,28 +8297,29 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         pkgname = ''
         pkgcat = ''
         pkgversion = ''
-        strippedAtom = ''
+        stripped_atom = ''
         found_ids = []
+        default_idpackage = None
         dbpkginfo = set()
 
         if scan_atom:
 
             while True:
                 # check for direction
-                strippedAtom = entropy.tools.dep_getcpv(scan_atom)
+                stripped_atom = entropy.tools.dep_getcpv(scan_atom)
                 if scan_atom[-1] == "*":
-                    strippedAtom += "*"
-                direction = scan_atom[0:-len(strippedAtom)]
+                    stripped_atom += "*"
+                direction = scan_atom[0:-len(stripped_atom)]
 
-                justname = entropy.tools.isjustname(strippedAtom)
-                pkgkey = strippedAtom
+                justname = entropy.tools.isjustname(stripped_atom)
+                pkgkey = stripped_atom
                 if justname == 0:
                     # get version
-                    data = entropy.tools.catpkgsplit(strippedAtom)
+                    data = entropy.tools.catpkgsplit(stripped_atom)
                     if data is None:
                         break # badly formatted
                     pkgversion = data[2]+"-"+data[3]
-                    pkgkey = entropy.tools.dep_getkey(strippedAtom)
+                    pkgkey = entropy.tools.dep_getkey(stripped_atom)
 
                 splitkey = pkgkey.split("/")
                 if (len(splitkey) == 2):
@@ -8330,8 +8331,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
 
             # IDs found in the database that match our search
-            found_ids = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
-                multiMatch)
+            found_ids, default_idpackages = self.__generate_found_ids_match(
+                pkgkey, pkgname, pkgcat, multiMatch)
 
         ### FILTERING
         # filter slot and tag
@@ -8340,11 +8341,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 matchTag, matchUse, direction)
             if packagesFilter:
                 found_ids = self._packagesFilter(found_ids)
+
         ### END FILTERING
 
         if found_ids:
             dbpkginfo = self.__handle_found_ids_match(found_ids, direction,
-                matchTag, matchRevision, justname, strippedAtom, pkgversion)
+                matchTag, matchRevision, justname, stripped_atom, pkgversion)
 
         if not dbpkginfo:
             if extendedResults:
@@ -8409,7 +8411,21 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 )
                 return x[0], 0
 
+        """
+        # if a default_idpackage is given by __generate_found_ids_match
+        # we need to respect it
+        # NOTE: this is only used by old-style virtual packages
+        if (len(found_ids) > 1) and (default_idpackage is not None):
+            if default_idpackage in found_ids:
+                found_ids = set([default_idpackage])
+        """
         dbpkginfo = list(dbpkginfo)
+        if default_idpackages is not None:
+            # at this point, if default_idpackages is not None (== set())
+            # we must exclude all the idpackages not available in this list
+            # from dbpkginfo
+            dbpkginfo = [x for x in dbpkginfo if x[0] in default_idpackages]
+
         pkgdata = {}
         versions = set()
 
@@ -8446,105 +8462,111 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             results = self.searchPackagesByNameAndCategory(name = pkgname,
                 sensitive = True, category = pkgcat, justid = True)
 
-        mypkgcat = pkgcat
-        mypkgname = pkgname
-        virtual = False
+        old_style_virtuals = None
         # if it's a PROVIDE, search with searchProvide
         # there's no package with that name
-        if (not results) and (mypkgcat == "virtual"):
+        if (not results) and (pkgcat == "virtual"):
 
+            # look for default old-style virtual
             virtuals = self.searchProvide(pkgkey, justid = True,
                 get_extended = True)
             if virtuals:
-                virtual = True
-                flat_virtuals = []
-                default_virtual = virtuals[0][0]
-                # look for default old-style virtual
-                for v_id, v_is_default in virtuals:
-                    if v_is_default == 1:
-                        default_virtual = v_id
-                    flat_virtuals.append(v_id)
-                mypkgname = self.retrieveName(default_virtual)
-                mypkgcat = self.retrieveCategory(default_virtual)
+                old_style_virtuals = set([x[0] for x in virtuals if x[1]])
+                flat_virtuals = [x[0] for x in virtuals]
+                if not old_style_virtuals:
+                    old_style_virtuals = set(flat_virtuals)
                 results = flat_virtuals
 
-
         if not results: # nothing found
-            return set()
+            return set(), old_style_virtuals
 
         if len(results) > 1: # need to choose
 
+            # if we are dealing with old-style virtuals, there is no need
+            # to go further and search stuff using category and name since
+            # we wouldn't find anything new
+            if old_style_virtuals is not None:
+                v_results = set()
+                for idpackage in results:
+                    virtual_cat, virtual_name = self.retrieveKeySplit(idpackage)
+                    v_result = self.searchPackagesByNameAndCategory(
+                        name = virtual_name, category = virtual_cat,
+                        sensitive = True, justid = True
+                    )
+                    v_results.update(v_result)
+                return set(v_results), old_style_virtuals
+
             # if it's because category differs, it's a problem
-            foundCat = None
+            found_cat = None
+            found_id = None
             cats = set()
             for idpackage in results:
                 cat = self.retrieveCategory(idpackage)
                 cats.add(cat)
-                if (cat == mypkgcat) or ((not virtual) and \
-                    (mypkgcat == "virtual") and (cat == mypkgcat)):
+                if (cat == pkgcat) or ((pkgcat == "virtual") and \
+                    (cat == pkgcat)):
                     # in case of virtual packages only
                     # (that they're not stored as provide)
-                    foundCat = cat
+                    found_cat = cat
 
             # if we found something at least...
-            if (not foundCat) and (len(cats) == 1) and \
-                (mypkgcat in ("virtual", "null")):
+            if (not found_cat) and (len(cats) == 1) and \
+                (pkgcat in ("virtual", "null")):
+                found_cat = sorted(cats)[0]
 
-                foundCat = sorted(cats)[0]
-
-            if not foundCat:
+            if not found_cat:
                 # got the issue
-                return set()
+                return set(), old_style_virtuals
 
-            # we can use foundCat
-            mypkgcat = foundCat
+            # we can use found_cat
+            pkgcat = found_cat
 
             # we need to search using the category
-            if (not multiMatch) and (pkgcat == "null" or virtual):
+            if (not multiMatch) and (pkgcat == "null"):
                 # we searched by name, we need to search using category
                 results = self.searchPackagesByNameAndCategory(
-                    name = mypkgname, category = mypkgcat,
+                    name = pkgname, category = pkgcat,
                     sensitive = True, justid = True
                 )
 
             # if we get here, we have found the needed IDs
-            return set(results)
+            return set(results), old_style_virtuals
 
         ###
         ### just found one result
         ###
 
         idpackage = results[0]
-        # if mypkgcat is virtual, it can be forced
-        if (mypkgcat == "virtual") and (not virtual):
+        # if pkgcat is virtual, it can be forced
+        if (pkgcat == "virtual") and (old_style_virtuals is not None):
             # in case of virtual packages only
             # (that they're not stored as provide)
-            mypkgcat = self.retrieveCategory(idpackage)
+            pkgcat, pkgname = self.retrieveKeySplit(idpackage)
 
         # check if category matches
-        if mypkgcat != "null":
-            foundCat = self.retrieveCategory(idpackage)
-            if mypkgcat == foundCat:
-                return set([idpackage])
-            return set() # nope nope
+        if pkgcat != "null":
+            found_cat = self.retrieveCategory(idpackage)
+            if pkgcat == found_cat:
+                return set([idpackage]), old_style_virtuals
+            return set(), old_style_virtuals # nope nope
 
         # very good, here it is
-        return set([idpackage])
+        return set([idpackage]), old_style_virtuals
 
 
     def __handle_found_ids_match(self, found_ids, direction, matchTag,
-            matchRevision, justname, strippedAtom, pkgversion):
+            matchRevision, justname, stripped_atom, pkgversion):
 
         dbpkginfo = set()
         # now we have to handle direction
         if ((direction) or ((not direction) and (not justname)) or \
             ((not direction) and (not justname) \
-                and strippedAtom.endswith("*"))) and found_ids:
+                and stripped_atom.endswith("*"))) and found_ids:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \
                 ((not direction) and (not justname)) or ((not direction) and \
-                    not justname and strippedAtom.endswith("*"))):
+                    not justname and stripped_atom.endswith("*"))):
                 # any revision within the version specified
                 # OR the specified version
 
