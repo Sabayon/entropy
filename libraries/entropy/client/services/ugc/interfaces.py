@@ -341,11 +341,21 @@ class Client:
 
     def get_docs(self, repository, pkgkey):
         data = self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
-        if isinstance(data, tuple): docs_data, err_msg = data
-        else: return False, 'wrong server answer'
+        if isinstance(data, tuple):
+            docs_data, err_msg = data
+        else:
+            return False, 'wrong server answer'
         if err_msg == 'ok':
             self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
         return docs_data, err_msg
+
+    def get_icon(self, repository, pkgkey):
+        docs_data, err_msg = self.get_docs(repository, pkgkey)
+        if not docs_data:
+            return None
+        elif not isinstance(docs_data, (tuple, list,)):
+            return None
+        return self.UGCCache.get_icon_cache(pkgkey, repository)
 
     def send_document_autosense(self, repository, pkgkey, ugc_type, data, title, description, keywords):
         if ugc_type == etpConst['ugc_doctypes']['generic_file']:
@@ -491,6 +501,7 @@ class Cache:
         'ugc_docs': 'ugc_docs',
     }
     CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "ugc_cache")
+    PKG_ICON_IDENTIFIER = "__icon__"
 
     def __init__(self, UGCClientInstance):
 
@@ -597,7 +608,8 @@ class Cache:
                 raise PermissionDenied("PermissionDenied: %s %s" % (
                     _("Cannot remove cache file"), cache_file,))
 
-        fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file, resume = False)
+        fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file,
+            resume = False)
         rc = fetcher.download()
         if rc in ("-1", "-2", "-3", "-4"):
             return None
@@ -715,6 +727,22 @@ class Cache:
             except (IOError, EOFError, OSError):
                 data = None
         return data
+
+    def get_icon_cache(self, pkgkey, repository):
+        docs_cache = self.get_alldocs_cache(pkgkey, repository)
+        if docs_cache is None:
+            return None
+        elif not isinstance(docs_cache, (list, tuple)):
+            return None
+
+        icon_id = Cache.PKG_ICON_IDENTIFIER
+        for doc_data in docs_cache:
+            doc_type = doc_data['iddoctype']
+            if doc_type != etpConst['ugc_doctypes']['image']:
+                continue
+            img_path = doc_data.get('image_path')
+            if doc_data['title'] == icon_id:
+                return doc_data
 
     def save_vote_cache(self, repository, vote_dict):
         with self.CacheLock:
