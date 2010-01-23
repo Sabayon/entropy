@@ -1,3 +1,141 @@
+commit e7d237f8877d28923d825fac88f98a7b24202e6c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 17:41:32 2010 +0100
+
+    [entropy.db] EntropyRepository: several fixes to old-style Portage virtual packages support (this code will be moved to entropy.spm)
+
+commit faef0b84c8454280cc26671664f8ec8cb9044631
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 17:40:56 2010 +0100
+
+    [entropy.db] EntropyRepository: add new method "retrieveKeySplit"
+
+commit dd3e5d1b252ff4c3e1d9ff48de5a8fc27ca9a3cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 17:40:27 2010 +0100
+
+    [equo] fix deptest output if all deps are satisfied
+
+commit 36be7ff9d304cd03b562e8aa483e714ec584bb8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 17:00:42 2010 +0100
+
+    [reagent] fix atom_match call in package-dep tool
+
+commit 388d9597c68cd064f475280d2129d031953868f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 15:25:07 2010 +0100
+
+    [sulfur] implement package icons support in Sulfur package properties menu
+
+commit 1c305df86e35b5e5e33efdc3ff15a738acf88282
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 15:24:41 2010 +0100
+
+    [sulfur] remove sulfur.misc, move everything to sulfur.core
+
+commit 345b847ec35d0c301c436faece0ad679eac7628d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 15:22:39 2010 +0100
+
+    [sulfur] fix some vbox orientations (due to glade bug) in sulfur.glade
+
+commit e3a9b8f32529da6fa4f5f7734f129bfbae03d592
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 15:21:20 2010 +0100
+
+    [entropy.client.services.ugc] only return first (chronologically) package icon if more are available
+
+commit 1d0ec5dd04bd21afa9c0882ed35e6e7fd8f093c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 15:12:09 2010 +0100
+
+    [entropy.client.services.ugc] add support for UGC package icon
+
+commit 0e8800fd7d62f22a710d983fff30ed1ddc054783
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 08:57:55 2010 +0100
+
+    [sulfur] cleanup old spritz stuff
+
+commit 28b86c5c5dfdfb2f9605b969fc3c69e6565afa98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 02:07:30 2010 +0100
+
+    [reagent/equo] implement full repository dependency editor
+
+commit 157cca7157c40d8cb771d06be550e75c9679959d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 02:06:56 2010 +0100
+
+    [entropy.output] TextInterface.input_box() several fixes to combo
+
+commit 7a8b919778c86d35bb3a36cdcaa679d246735fc8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:27:36 2010 +0100
+
+    [entropy.output] TextInterface.input_box: fix list edit option, make possible to go back
+
+commit 89fefc4df083b1f92ddfacaa0c74e531bab40c89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:22:16 2010 +0100
+
+    [reagent] do not directly use print()
+
+commit 2a94d1b88cd39b0313e2682c204f2b545959303f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:20:17 2010 +0100
+
+    [entropy.output] TextInterface.input_box: add edit option to list editor
+
+commit 1a3c456271f3cd737312c3d41c7d38e45b39fa1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:19:50 2010 +0100
+
+    [entropy.client.services.ugc] check if repository supports UGC before trying to connect
+
+commit d99b2cd5de7a977a8adc8f5aa10b5f5fb0308f92
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:19:28 2010 +0100
+
+    [entropy.spm] PortagePlugin: do not crash if env-update is not in PATH
+
+commit 87033a262dabf78390c4642ff881b1d7070e5148
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:07:54 2010 +0100
+
+    [equo] fix "equo database restore" and "equo database backup" tools
+
+commit 10930e409e45f92764387157d112d9ab44539888
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:07:18 2010 +0100
+
+    [entropy.client] improve usability of restore_database and backup_database functions
+
+commit 186cf5b8e0eb0d03e021a47c43a401d7190ac417
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 00:06:35 2010 +0100
+
+    [entropy.output] fix combo box support in input_box, add space between request and input
+
+commit c105c603793acc8c4c70b44c4cbae16d930acf46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 22 14:06:27 2010 +0100
+
+    [todo] update TODO
+
+commit 5eb3142ba41dbe5e14dcadc03b16256e2ab93f24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 22 14:04:52 2010 +0100
+
+    [entropy.tools] another set of module API moves and etpConst['entropytagprefix'] adoption
+
+commit 6e9611b75bd3827725837bf217b42cce350cad20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 22 09:54:28 2010 +0100
+
+    Update ChangeLog for version 0.99.24.10
+
 commit dc6b49f8b94521ff58bddede096cdd1c7e50bf3f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 22 09:53:35 2010 +0100
