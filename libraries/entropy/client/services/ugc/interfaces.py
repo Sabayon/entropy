@@ -735,14 +735,16 @@ class Cache:
         elif not isinstance(docs_cache, (list, tuple)):
             return None
 
+        img_doc_type = etpConst['ugc_doctypes']['image']
         icon_id = Cache.PKG_ICON_IDENTIFIER
-        for doc_data in docs_cache:
-            doc_type = doc_data['iddoctype']
-            if doc_type != etpConst['ugc_doctypes']['image']:
-                continue
-            img_path = doc_data.get('image_path')
-            if doc_data['title'] == icon_id:
-                return doc_data
+
+        icon_elements = [x for x in docs_cache if \
+            x['iddoctype'] == img_doc_type and x['title'] == icon_id]
+        if not icon_elements:
+            return None
+        # get first (chronologically) icon
+        icon_elements = sorted(icon_elements, key = lambda x: x['ts'])
+        return icon_elements[0]
 
     def save_vote_cache(self, repository, vote_dict):
         with self.CacheLock:
