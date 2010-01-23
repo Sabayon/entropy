@@ -492,6 +492,7 @@ class PkgInfoMenu(MenuSkel):
         self.star_selected_pixmap = const.star_selected_pixmap
         self.star_empty_pixmap = const.star_empty_pixmap
 
+        self._ugc_icon_store_path = None
         self.ugc_update_event_handler_id = None
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
         self.ugc_data = None
@@ -517,7 +518,23 @@ class PkgInfoMenu(MenuSkel):
             SulfurSignals.connect('pkg_properties__ugc_tab_clicked',
                 self._ugc_tab_clicked)
 
-    def set_pixbuf_to_cell(self, cell, path):
+    def _resize_image(self, max_width, image_path, new_image_path):
+        shutil.copy2(image_path, new_image_path)
+        img = gtk.Image()
+        img.set_from_file(new_image_path)
+        img_buf = img.get_pixbuf()
+        w, h = img_buf.get_width(), img_buf.get_height()
+        if w > max_width:
+            # resize pix
+            new_w = max_width
+            new_h = new_w*h/w
+            img_buf = img_buf.scale_simple(int(new_w),
+                int(new_h), gtk.gdk.INTERP_BILINEAR)
+            img_buf.save(new_image_path, "png")
+            del img_buf
+        del img
+
+    def _set_pixbuf_to_cell(self, cell, path):
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(path)
             cell.set_property( 'pixbuf', pixbuf )
@@ -527,51 +544,67 @@ class PkgInfoMenu(MenuSkel):
     def ugc_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
         if isinstance(obj, dict):
-            if 'preview_path' in obj:
-                self.set_pixbuf_to_cell(cell, obj['preview_path'])
+            if obj.get('preview_path') is not None:
+                self._set_pixbuf_to_cell(cell, obj['preview_path'])
             else:
-                self.set_pixbuf_to_cell(cell, obj['image_path'])
-            self.set_colors_to_cell(cell, obj)
+                self._set_pixbuf_to_cell(cell, obj['image_path'])
+            self._set_colors_to_cell(cell, obj)
 
     def ugc_content( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
         if isinstance(obj, dict):
-            self.set_colors_to_cell(cell, obj)
+            self._set_colors_to_cell(cell, obj)
 
             if 'is_cat' in obj:
-                cell.set_property('markup', "<b>%s</b>\n<small>%s</small>" % (obj['parent_desc'], _("Expand to browse"),))
+                cell.set_property('markup', "<b>%s</b>\n<small>%s</small>" % (
+                    obj['parent_desc'], _("Expand to browse"),))
             else:
+
                 title = _("N/A")
                 if obj['title']:
                     title = const_convert_to_unicode(obj['title'])
                 description = _("N/A")
+
                 if obj['description']:
                     description = obj['description']
-                if obj['iddoctype'] in (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],):
+
+                if obj['iddoctype'] in (
+                    etpConst['ugc_doctypes']['comments'],
+                    etpConst['ugc_doctypes']['bbcode_doc'],):
+
                     myddata = obj['ddata']
                     if not isinstance(obj['ddata'], const_get_stringtype()):
                         myddata = myddata.tostring()
                     description = const_convert_to_unicode(myddata)
                     if len(description) > 100:
                         description = description[:100].strip()+"..."
-                mytxt = "<small><b>%s</b>: %s, %s: %s\n<b>%s</b>: %s, <i>%s</i>\n<b>%s</b>: %s\n<b>%s</b>: <i>%s</i>\n<b>%s</b>: %s</small>" % (
+
+                first_txt = "<small><b>%s</b>: %s, %s: %s\n" % (
                     _("Identifier"),
                     obj['iddoc'],
                     _("Size"),
                     entropy.tools.bytes_into_human(obj['size']),
+                )
+                second_txt = "<b>%s</b>: %s, <i>%s</i>\n" % (
                     _("Author"),
                     obj['username'],
                     obj['ts'],
+                )
+                third_txt = "<b>%s</b>: %s\n<b>%s</b>: <i>%s</i>\n" % (
                     _("Title"),
                     title,
                     _("Description"),
                     description,
+                )
+                fourth_txt = "<b>%s</b>: %s</small>" % (
                     _("Keywords"),
                     ', '.join(obj['keywords']),
                 )
+
+                mytxt = first_txt + second_txt + third_txt + fourth_txt
                 cell.set_property('markup', mytxt)
 
-    def set_colors_to_cell(self, cell, obj):
+    def _set_colors_to_cell(self, cell, obj):
         odd = 0
         if 'counter' in obj:
             odd = obj['counter']%2
@@ -622,15 +655,21 @@ class PkgInfoMenu(MenuSkel):
         self.spawn_ugc_load(force = force)
 
     def on_ugcRemoveButton_released(self, widget):
-        if self.Entropy.UGC is None: return
-        if self.repository is None: return
+        if self.Entropy.UGC is None:
+            return
+        if self.repository is None:
+            return
         model, myiter = self.ugcView.get_selection().get_selected()
-        if myiter is None: return
+        if myiter is None:
+            return
         obj = model.get_value( myiter, 0 )
-        if not isinstance(obj, dict): return
-        if 'is_cat' in obj: return
+        if not isinstance(obj, dict):
+            return
+        if 'is_cat' in obj:
+            return
         self.show_loading()
-        self.Entropy.UGC.remove_document_autosense(self.repository, int(obj['iddoc']), obj['iddoctype'])
+        self.Entropy.UGC.remove_document_autosense(
+            self.repository, int(obj['iddoc']), obj['iddoctype'])
         self.hide_loading()
         self.reset_ugc_data()
         self.spawn_ugc_load(force = True)
@@ -640,21 +679,28 @@ class PkgInfoMenu(MenuSkel):
         self.on_ugcShowButton_clicked(widget)
 
     def on_ugcShowButton_clicked(self, widget):
-        if self.Entropy.UGC is None: return
-        if self.repository is None: return
+        if self.Entropy.UGC is None:
+            return
+        if self.repository is None:
+            return
         model, myiter = self.ugcView.get_selection().get_selected()
-        if myiter is None: return
+        if myiter is None:
+            return
         obj = model.get_value( myiter, 0 )
-        if not isinstance(obj, dict): return
-        if 'is_cat' in obj: return
-        my = UGCInfoMenu(self.Entropy, obj, self.repository, self.pkginfo_ui.pkgInfo)
+        if not isinstance(obj, dict):
+            return
+        if 'is_cat' in obj:
+            return
+        my = UGCInfoMenu(self.Entropy, obj, self.repository,
+            self.pkginfo_ui.pkgInfo)
         my.load()
 
     def on_ugcAddButton_clicked(self, widget):
         if self.Entropy.UGC is None: return
         if self.repository is None: return
         if self.pkgkey is None: return
-        my = UGCAddMenu(self.Entropy, self.pkgkey, self.repository, self.pkginfo_ui.pkgInfo, self.refresh_view_cb)
+        my = UGCAddMenu(self.Entropy, self.pkgkey, self.repository,
+            self.pkginfo_ui.pkgInfo, self.refresh_view_cb)
         my.load()
 
     def refresh_view_cb(self):
@@ -682,6 +728,19 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.loadUgcButton.set_sensitive(True)
         self.pkginfo_ui.ugcButtonBox.show_all()
 
+    def ugc_metadata_fetch(self, force = False):
+        if self.Entropy.UGC is None:
+            return
+
+        docs_data = None
+        if not force:
+            docs_data = self.Entropy.UGC.UGCCache.get_alldocs_cache(
+                self.pkgkey, self.repository)
+        if docs_data is None:
+            docs_data, err_msg = self.Entropy.UGC.get_docs(
+                self.repository, self.pkgkey)
+        return docs_data
+
     def spawn_ugc_load(self, force = False):
 
         if (self.ugc_data != None) and (not force):
@@ -693,29 +752,21 @@ class PkgInfoMenu(MenuSkel):
 
         self.show_loading()
 
-        docs_cache = None
-        if not force:
-            docs_cache = self.Entropy.UGC.UGCCache.get_alldocs_cache(self.pkgkey, self.repository)
-        if docs_cache is None:
+        try:
+            docs_data = self.ugc_metadata_fetch(force = force)
+        except TimeoutError:
+            dialog_title = _("Timeout Error")
+            err_msg = _("Connection timed out, sorry!")
+            docs_data = None
+            okDialog(self.window, err_msg, title = dialog_title)
 
-            try:
-                docs_data, err_msg = self.Entropy.UGC.get_docs(self.repository,
-                    self.pkgkey)
-            except TimeoutError:
-                dialog_title = _("Timeout Error")
-                err_msg = _("Connection timed out, sorry!")
-                docs_data = None
-                okDialog(self.window, err_msg, title = dialog_title)
-
-            if not isinstance(docs_data, (list, tuple)):
-                self.ugc_data = {}
-            else:
-                self.ugc_data = self.digest_remote_docs_data(docs_data)
-            self.ugc_status_message = err_msg
+        if not isinstance(docs_data, (list, tuple)):
+            self.ugc_data = {}
         else:
-            self.ugc_data = self.digest_remote_docs_data(docs_cache)
+            self.ugc_data = self.digest_remote_docs_data(docs_data)
 
         self.refresh_ugc_view()
+        self.setup_ugc_icon()
         self.hide_loading()
 
     def digest_remote_docs_data(self, data):
@@ -730,13 +781,78 @@ class PkgInfoMenu(MenuSkel):
 
     def refresh_ugc_view(self):
         self.ugcModel.clear()
-        if self.ugc_data is None: return
+        if self.ugc_data is None:
+            return
         self.populate_ugc_view()
         #self.ugcView.expand_all()
 
+    def prefetch_ugc_icon(self):
+        def update_ugc_icon():
+            self.setup_ugc_icon()
+            return False
+        def do_ugc_fetch():
+            try:
+                self.ugc_metadata_fetch()
+            except TimeoutError:
+                return
+        fork_function(do_ugc_fetch, update_ugc_icon)
+
+    def setup_ugc_icon(self):
+        """
+        Setup UGC icon for package if UGC data has been already downloaded
+        and prepared by this class.
+        """
+
+        if self.Entropy.UGC is None:
+            return
+        const_debug_write(__name__, "setup_ugc_icon, UGC available")
+
+        icon_doc = self.Entropy.UGC.UGCCache.get_icon_cache(
+            self.pkgkey, self.repository)
+        if icon_doc is None:
+            return
+        const_debug_write(__name__,
+            "setup_ugc_icon, UGC metadata available in cache for (%s, %s): %s" % (
+                self.pkgkey, self.repository, icon_doc,))
+
+        store_path = self.Entropy.UGC.UGCCache.get_stored_document(
+            icon_doc['iddoc'], self.repository, icon_doc['store_url'])
+        const_debug_write(__name__,
+            "setup_ugc_icon, UGC store path for (%s, %s): %s" % (
+                self.pkgkey, self.repository, store_path,))
+
+        if store_path is None:
+
+            # fetch from WWW if not available
+            self.Entropy.UGC.UGCCache.store_document(icon_doc['iddoc'],
+                self.repository, icon_doc['store_url'])
+            store_path = self.Entropy.UGC.UGCCache.get_stored_document(
+                icon_doc['iddoc'], self.repository, icon_doc['store_url'])
+            const_debug_write(__name__,
+                "setup_ugc_icon, UGC store path fetched for (%s, %s): %s" % (
+                    self.pkgkey, self.repository, store_path,))
+
+        if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
+            return
+
+        const_debug_write(__name__,
+            "setup_ugc_icon, UGC store path available in cache for (%s, %s)" % (
+                self.pkgkey, self.repository,))
+
+        if self._ugc_icon_store_path != store_path:
+            self._ugc_icon_store_path = store_path
+            # if image has __icon__ as title, use as real icon
+            icon_path = store_path + ".sulfur_icon"
+            if not (os.path.isfile(icon_path) and os.access(icon_path, os.R_OK)):
+                self._resize_image(48.0, store_path, icon_path)
+            self.pkginfo_ui.pkgImage.set_from_file(icon_path)
+
     def spawn_docs_fetch(self):
-        if self.ugc_data is None: return
-        if self.repository is None: return
+
+        if self.ugc_data is None:
+            return
+        if self.repository is None:
+            return
 
         for doc_type in self.ugc_data:
             if int(doc_type) not in (etpConst['ugc_doctypes']['image'],):
@@ -746,32 +862,30 @@ class PkgInfoMenu(MenuSkel):
                     continue
                 if not mydoc['store_url']:
                     continue
-                store_path = self.Entropy.UGC.UGCCache.get_stored_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
+
+                store_path = self.Entropy.UGC.UGCCache.get_stored_document(
+                    mydoc['iddoc'], self.repository, mydoc['store_url'])
+
                 if store_path is None:
-                    self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
-                    store_path = self.Entropy.UGC.UGCCache.get_stored_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
+                    self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'],
+                        self.repository, mydoc['store_url'])
+                    store_path = self.Entropy.UGC.UGCCache.get_stored_document(
+                        mydoc['iddoc'], self.repository, mydoc['store_url'])
+
                 if (store_path != None) and os.access(store_path, os.R_OK):
+                    preview_path = store_path+".sulfur_preview"
                     try:
-                        preview_path = store_path+".preview"
-                        if not os.path.isfile(preview_path) and (os.stat(store_path)[6] < 1024000):
-                            # resize pix
-                            img = gtk.Image()
-                            img.set_from_file(store_path)
-                            img_buf = img.get_pixbuf()
-                            w, h = img_buf.get_width(), img_buf.get_height()
-                            new_w = 64.0
-                            new_h = new_w*h/w
-                            img_buf = img_buf.scale_simple(int(new_w), int(new_h), gtk.gdk.INTERP_BILINEAR)
-                            img_buf.save(preview_path, "png")
-                            del img, img_buf
-                        if os.path.isfile(preview_path):
+                        if not os.path.isfile(preview_path) and \
+                            (os.lstat(store_path)[6] < 1024000):
+                            self._resize_image(64.0, store_path, preview_path)
                             mydoc['preview_path'] = preview_path
                     except:
                         continue
 
     def populate_ugc_view(self):
 
-        if self.ugc_data is None: return
+        if self.ugc_data is None:
+            return
 
         spawn_fetch = False
         doc_types = list(self.ugc_data.keys())
@@ -803,7 +917,9 @@ class PkgInfoMenu(MenuSkel):
             cat_dict = {
                 'is_cat': True,
                 'image_path': image_path,
-                'parent_desc': "%s (%s)" % (etpConst['ugc_doctypes_description'].get(int(doc_type)), len(self.ugc_data[doc_type]),),
+                'parent_desc': "%s (%s)" % (
+                    etpConst['ugc_doctypes_description'].get(int(doc_type)),
+                    len(self.ugc_data[doc_type]),),
                 'foreground': doc_type_foreground_map.get(int(doc_type)),
                 'background': doc_type_background_map.get(int(doc_type)),
             }
@@ -827,9 +943,6 @@ class PkgInfoMenu(MenuSkel):
         if spawn_fetch:
             gobject.idle_add(self.spawn_docs_fetch)
 
-        #search_col = 0
-        #self.view.set_search_column( search_col )
-        #self.view.set_search_equal_func(self.atom_search)
         self.ugcView.set_property('headers-visible', True)
         self.ugcView.set_property('enable-search', True)
         self.ugcView.show_all()
@@ -1293,6 +1406,13 @@ class PkgInfoMenu(MenuSkel):
         self.ugc_update_event_handler_id = \
             SulfurSignals.connect('ugc_data_update', self.__update_ugc_event)
 
+        # Prefetch UGC icon by spawning a parallel process
+        # Cannot afford to fail here
+        try:
+            self.prefetch_ugc_icon()
+        except:
+            pass
+
         self.pkginfo_ui.pkgInfo.show()
 
 class SecurityAdvisoryMenu(MenuSkel):
@@ -1504,24 +1624,35 @@ class UGCInfoMenu(MenuSkel):
     def load(self):
 
         pix_path = self.ugc_data['image_path']
-        if 'preview_path' in self.ugc_data:
-            if os.path.isfile(self.ugc_data['preview_path']) and os.access(self.ugc_data['preview_path'], os.R_OK):
+        if self.ugc_data.get('preview_path') is not None:
+            if os.path.isfile(self.ugc_data['preview_path']) and \
+                os.access(self.ugc_data['preview_path'], os.R_OK):
                 pix_path = self.ugc_data['preview_path']
+
         self.ugcinfo_ui.ugcImage.set_from_file(pix_path)
-        self.ugcinfo_ui.labelKey.set_markup("<b>%s</b>" % (self.ugc_data['pkgkey'],))
-        doc_type_desc = etpConst['ugc_doctypes_description_singular'].get(int(self.ugc_data['iddoctype']))
-        self.ugcinfo_ui.labelTypedesc.set_markup("<small>[<b>%s</b>:%d] <i>%s</i></small>" % (
+        self.ugcinfo_ui.labelKey.set_markup("<b>%s</b>" % (
+            self.ugc_data['pkgkey'],))
+        doc_type_desc = etpConst['ugc_doctypes_description_singular'].get(
+            int(self.ugc_data['iddoctype']))
+        self.ugcinfo_ui.labelTypedesc.set_markup(
+            "<small>[<b>%s</b>:%d] <i>%s</i></small>" % (
                 _("Id"),
                 int(self.ugc_data['iddoc']),
                 doc_type_desc,
             )
         )
-        self.ugcinfo_ui.titleContent.set_markup("%s" % (const_convert_to_unicode(self.ugc_data['title']),))
-        self.ugcinfo_ui.descriptionContent.set_markup("%s" % (const_convert_to_unicode(self.ugc_data['description']),))
-        self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (const_convert_to_unicode(self.ugc_data['username']),))
-        self.ugcinfo_ui.dateContent.set_markup("<u>%s</u>" % (self.ugc_data['ts'],))
-        self.ugcinfo_ui.keywordsContent.set_markup("%s" % (const_convert_to_unicode(', '.join(self.ugc_data['keywords'])),))
-        self.ugcinfo_ui.sizeContent.set_markup("%s" % (entropy.tools.bytes_into_human(self.ugc_data['size']),))
+        self.ugcinfo_ui.titleContent.set_markup("%s" % (
+            const_convert_to_unicode(self.ugc_data['title']),))
+        self.ugcinfo_ui.descriptionContent.set_markup("%s" % (
+            const_convert_to_unicode(self.ugc_data['description']),))
+        self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (
+            const_convert_to_unicode(self.ugc_data['username']),))
+        self.ugcinfo_ui.dateContent.set_markup(
+            "<u>%s</u>" % (self.ugc_data['ts'],))
+        self.ugcinfo_ui.keywordsContent.set_markup("%s" % (
+            const_convert_to_unicode(', '.join(self.ugc_data['keywords'])),))
+        self.ugcinfo_ui.sizeContent.set_markup("%s" % (
+            entropy.tools.bytes_into_human(self.ugc_data['size']),))
 
         bold_items = [
             self.ugcinfo_ui.titleLabel,
@@ -1548,7 +1679,10 @@ class UGCInfoMenu(MenuSkel):
             t = item.get_label()
             item.set_markup("<small>%s</small>" % (t,))
 
-        if self.ugc_data['iddoctype'] in (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],):
+        if self.ugc_data['iddoctype'] in (
+            etpConst['ugc_doctypes']['comments'],
+            etpConst['ugc_doctypes']['bbcode_doc'],):
+
             self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descLabel)
             self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descriptionContent)
             self.ugcinfo_ui.buttonBox.hide()
