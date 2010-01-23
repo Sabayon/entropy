@@ -13,7 +13,7 @@ import os
 import subprocess
 from entropy.const import etpConst, etpUi
 from entropy.output import red, bold, brown, purple, darkgreen, darkred, blue, \
-    green, print_info, print_warning, print_error, print_generic
+    green, print_info, print_warning, print_error, print_generic, teal
 from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
 from entropy.i18n import _
@@ -157,7 +157,7 @@ def repositories(options):
         status, data = Entropy.tag_packages(tag_string, idpackages, repo = repo)
         return status
 
-    elif cmd == "manual-deps":
+    elif cmd == "package-dep":
 
         if len(myopts) < 2:
             return 1
@@ -173,7 +173,8 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atom_match(package + '#', matchRepo = [repo])
+            match = Entropy.atom_match(package + etpConst['entropytagprefix'],
+                matchRepo = [repo])
             if match[1] == repo:
                 idpackages.append(match[0])
             else:
@@ -186,65 +187,113 @@ def repositories(options):
             return 2
         dbconn = Entropy.open_server_repository(repo = repo, just_reading = True)
 
-        def dep_check_cb(s):
-            return entropy.tools.isvalidatom(s)
+        def _show_dependencies_legend(indent = ''):
+            for dep_id, dep_val in sorted(etpConst['dependency_type_ids'].items(),
+                key = lambda x: x[0], reverse = True):
+
+                dep_desc = etpConst['dependency_type_ids_desc'].get(dep_id, _("N/A"))
+                txt = '%s%s%s%s %s' % (indent, teal("{"), dep_val+1, teal("}"), dep_desc,)
+                print_info(txt)
+
+        def _print_pkg_deps(atom, orig_deps, partial = False):
+            if not partial:
+                print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),
+                    darkgreen(_("package dependencies")),))
+            else:
+                print_generic("")
+
+            for dep_str, dep_id in orig_deps:
+                print_info("%s [%s: %s] %s" % (
+                    brown("  #"), brown(_("type")),
+                    darkgreen(str(dep_id+1)), purple(dep_str),))
+            if not orig_deps:
+                print_info("%s %s" % (brown("    # "), _("No dependencies"),))
+            else:
+                _show_dependencies_legend("  ")
+
+            if partial:
+                print_generic("")
+
+        avail_dep_type_desc = []
+        d_type_ids = etpConst['dependency_type_ids']
+        d_type_desc = etpConst['dependency_type_ids_desc']
+        for dep_val, dep_id in sorted(d_type_ids.items(), key = lambda x: x[1]):
+            avail_dep_type_desc.append(d_type_desc[dep_val])
+
+        def pkg_dep_types_cb(s):
+            try:
+                avail_dep_type_desc.index(s[1])
+            except IndexError:
+                return False
+            return True
 
         for idpackage in idpackages:
 
             atom = dbconn.retrieveAtom(idpackage)
             orig_deps = dbconn.retrieveDependencies(idpackage, extended = True)
-            atom_deps = [x for x in orig_deps if x[1] != \
-                etpConst['dependency_type_ids']['mdepend_id']]
+            dep_type_map = dict(orig_deps)
 
-            atom_manual_deps = [x for x in orig_deps if x not in atom_deps]
-            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),
-                darkgreen(_("package dependencies")),))
-            for dep_str, dep_id in atom_deps:
-                print_info("%s [type:%s] %s" % (brown("    # "),
-                    darkgreen(str(dep_id)), darkred(dep_str),))
-            if not atom_deps:
-                print_info("%s %s" % (brown("    # "), _("No dependencies"),))
+            def dep_check_cb(s):
 
-            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),
-                darkgreen(_("package manual dependencies")),))
-            for dep_str, dep_id in atom_manual_deps:
-                print_info("%s [type:%s] %s" % (brown("    # "),
-                    darkgreen(str(dep_id)), purple(dep_str),))
-            if not atom_manual_deps:
-                print_info("%s %s" % (brown("    # "), _("No dependencies"),))
+                if not entropy.tools.isvalidatom(s):
+                    return False
+
+                input_params = [
+                    ('dep_type', ('combo', (_("Dependency type"), avail_dep_type_desc),),
+                        pkg_dep_types_cb, False)
+                ]
+                data = Entropy.input_box(
+                    ("%s: %s" % (_('Select a dependency type for'), s,)),
+                    input_params
+                )
+                if data is None:
+                    return False
+
+                rc_dep_type = avail_dep_type_desc.index(data['dep_type'][1])
+                dep_type_map[s] = rc_dep_type
+                changes_made_type_map = {s: rc_dep_type}
+
+                _print_pkg_deps(atom, changes_made_type_map.items(),
+                    partial = True)
+
+                return True
+
+            _print_pkg_deps(atom, orig_deps)
 
             print_generic("")
-            current_mdeps = sorted([x[0] for x in atom_manual_deps])
+            current_deps = [x[0] for x in orig_deps]
+
             input_params = [
-                ('new_mdeps', ('list', ('Manual dependencies', current_mdeps),),
+                ('new_deps', ('list', (_('Dependencies'), current_deps),),
                     dep_check_cb, True)
             ]
-            data = Entropy.input_box(_("Manual dependencies editor"), input_params)
+            data = Entropy.input_box(_("Dependencies editor"), input_params)
             if data is None:
                 return 4
-            new_mdeps = sorted(data.get('new_mdeps', []))
 
-            if current_mdeps == new_mdeps:
-                print_info(brown(" @@ ")+blue("%s: %s" % (atom, _("no changes made"),) ))
+            new_deps = data.get('new_deps', [])
+            orig_deps = [(x, dep_type_map[x],) for x in new_deps]
+            insert_deps = dict(orig_deps)
+
+            _print_pkg_deps(atom, orig_deps)
+            rc_ask = Entropy.ask_question(_("Confirm ?"))
+            if rc_ask == _("No"):
                 continue
 
-            w_dbconn = Entropy.open_server_repository(repo = repo, read_only = False)
-            atom_deps += [(x, etpConst['dependency_type_ids']['mdepend_id'],) \
-                for x in new_mdeps]
-            deps_dict = {}
-            for atom_dep, dep_id in atom_deps:
-                deps_dict[atom_dep] = dep_id
+
+            w_dbconn = Entropy.open_server_repository(repo = repo,
+                read_only = False)
 
             while True:
                 try:
                     w_dbconn.removeDependencies(idpackage)
-                    w_dbconn.insertDependencies(idpackage, deps_dict)
+                    w_dbconn.insertDependencies(idpackage, insert_deps)
                     w_dbconn.commitChanges()
                 except (KeyboardInterrupt, SystemExit,):
                     continue
                 break
             print_info(brown(" @@ ")+"%s: %s" % (blue(atom),
-                darkgreen(_("manual dependencies added successfully")),))
+                darkgreen(_("dependencies updated successfully")),))
 
         Entropy.close_server_databases()
         return 0

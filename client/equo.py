@@ -299,7 +299,7 @@ help_opts_extended = [
             (3, 'enable <repo>', 3, _('enable the specified repository')),
             (3, 'disable <repo>', 3, _('disable the specified repository')),
             (3, 'status <repo>', 3, _('show the current Server Interface status')),
-            (3, 'manual-deps <repo> [atoms]', 1, _('handle packages manual dependencies')),
+            (3, 'package-dep <repo> [atoms]', 1, _('handle packages dependencies')),
             (3, 'package-tag <repo> <tag-string> [atoms]', 1, _('clone a package inside a repository assigning it an arbitrary tag')),
             (3, 'move <from> <to> [atoms]', 1, _('move packages from a repository to another')),
                 (4, '--deps', 3, _('pulls dependencies in')),
