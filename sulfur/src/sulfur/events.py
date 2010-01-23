@@ -505,15 +505,18 @@ class SulfurApplicationEventsMixin:
         else:
             self.ui.queueTabBox.hide()
 
+        do_show = True
         if action == "search":
             if do_clear_filter_bar and self.etpbase.get_search():
                 pass # if I moved and there's already a search running
                 # do not run a new search
             else:
-                gobject.idle_add(self.run_search_package_dialog)
+                gobject.timeout_add(0, self.run_search_package_dialog)
+                do_show = False
 
         self.lastPkgPB = action
-        self.show_packages(on_init = on_init)
+        if do_show:
+            self.show_packages(on_init = on_init)
         rb.grab_remove()
 
         if do_clear_filter_bar:

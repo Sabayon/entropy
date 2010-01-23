@@ -2931,7 +2931,6 @@ class InputDialog:
             time.sleep(0.05)
             while gtk.events_pending():
                 gtk.main_iteration()
-            continue
         self.main_window.destroy()
         return self.parameters
 

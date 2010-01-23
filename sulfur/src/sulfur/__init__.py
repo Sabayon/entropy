@@ -1515,10 +1515,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             masks = [action]
 
         self.disable_ugc = True
-        self.ui_lock(True)
-        self.set_busy()
-        loading_data = self.etpbase.get_groups('loading')
-        self.pkgView.populate(loading_data, empty = True)
+
+        if action == "search":
+            loading_data = self.etpbase.get_groups('loading')
+            self.pkgView.populate(loading_data, empty = True)
+            self.gtk_loop()
 
         allpkgs = []
         for flt in masks:
@@ -1588,8 +1589,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if back_to_page:
             self.switch_notebook_page(back_to_page)
 
-        self.unset_busy()
-        self.ui_lock(False)
         # reset labels
         self.reset_progress_text()
         self.reset_queue_progress_bars()

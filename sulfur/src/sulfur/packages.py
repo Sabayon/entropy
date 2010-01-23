@@ -631,8 +631,9 @@ class EntropyPackages:
             t1 = time.time()
         self._packages[mask] = self._get_groups(mask)
         if const.debug:
-            print_generic("populate_single_group: generated group content for %s in %s" % (
-                mask, time.time() - t1,))
+            const_debug_write(__name__,
+                "populate_single_group: generated group content for %s in %s" % (
+                    mask, time.time() - t1,))
 
     def get_groups(self, flt):
         if flt == 'all':
@@ -676,8 +677,9 @@ class EntropyPackages:
             t1 = time.time()
         self.populate_single_group(flt)
         if const.debug:
-            print_generic("get_raw_groups: generated group content for %s in %s" % (
-                flt, time.time() - t1,))
+            const_debug_write(__name__,
+                "get_raw_groups: generated group content for %s in %s" % (
+                    flt, time.time() - t1,))
         return self._packages[flt]
 
     def get_package_item(self, pkgdata):
@@ -792,8 +794,9 @@ class EntropyPackages:
         already_in |= set((x.matched_atom for x in self.get_raw_groups("user_unmasked")))
 
         if const.debug:
-            print_generic("_pkg_get_downgrade: created already_in in %s" % (
-                time.time() - t1,))
+            const_debug_write(__name__,
+                "_pkg_get_downgrade: created already_in in %s" % (
+                    time.time() - t1,))
             t1 = time.time()
 
         matches = set()
@@ -808,8 +811,9 @@ class EntropyPackages:
                 already_in))
 
         if const.debug:
-            print_generic("_pkg_get_downgrade: first iteration in %s" % (
-                time.time() - t1,))
+            const_debug_write(__name__,
+                "_pkg_get_downgrade: first iteration in %s" % (
+                    time.time() - t1,))
             t1 = time.time()
 
         final_matches = []
@@ -831,8 +835,9 @@ class EntropyPackages:
             final_matches.append(yp)
 
         if const.debug:
-            print_generic("_pkg_get_downgrade: second iteration in %s" % (
-                time.time() - t1,))
+            const_debug_write(__name__,
+                "_pkg_get_downgrade: second iteration in %s" % (
+                    time.time() - t1,))
 
         return final_matches
 
@@ -1052,7 +1057,13 @@ class EntropyPackages:
             return []
 
         func, arg = self._search_callback
+        if const.debug:
+            t1 = time.time()
+            const_debug_write(__name__, "_pkg_get_search: begin")
         matches = func(arg)
+        if const.debug:
+            const_debug_write(__name__, "_pkg_get_search: end in %s" % (
+                time.time() - t1,))
         # load pkgs
         for key in self._get_calls_dict().keys():
             if key == "search": # myself
