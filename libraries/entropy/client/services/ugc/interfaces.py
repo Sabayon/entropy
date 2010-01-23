@@ -13,7 +13,8 @@
 import os
 import shutil
 from entropy.core import Singleton
-from entropy.exceptions import *
+from entropy.exceptions import SSLError, TimeoutError, RepositoryError, \
+    ConnectionError, PermissionDenied
 from entropy.const import etpConst, const_setup_file, const_setup_perms
 from entropy.i18n import _
 
@@ -26,8 +27,8 @@ class Client:
 
         from entropy.client.interfaces import Client as Cl
         if not isinstance(EquoInstance, Cl):
-            mytxt = _("A valid Client based instance is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            mytxt = "A valid Client based instance is needed"
+            raise AttributeError(mytxt)
 
         import socket, threading
         self.socket, self.threading = socket, threading
@@ -47,8 +48,7 @@ class Client:
         if repository not in avail_data:
             avail_data = self.Entropy.SystemSettings['repositories']['excluded']
         if repository not in avail_data:
-            raise RepositoryError("RepositoryError: %s" % (
-                _('repository is not available'),))
+            raise RepositoryError('repository is not available')
 
         # unsupported by repository?
         if 'service_uri' not in avail_data[repository] is None:
@@ -108,7 +108,7 @@ class Client:
                     aware = True
                 else:
                     aware = False
-        except TimeoutError:
+        except (TimeoutError, SSLError,):
             aware = False
 
         self.UGCCache._set_live_cache_item(repository,
@@ -357,15 +357,22 @@ class Client:
             return None
         return self.UGCCache.get_icon_cache(pkgkey, repository)
 
-    def send_document_autosense(self, repository, pkgkey, ugc_type, data, title, description, keywords):
+    def send_document_autosense(self, repository, pkgkey, ugc_type, data,
+        title, description, keywords):
+
         if ugc_type == etpConst['ugc_doctypes']['generic_file']:
-            return self.send_file(repository, pkgkey, data, title, description, keywords)
+            return self.send_file(repository, pkgkey, data, title,
+                description, keywords)
         elif ugc_type == etpConst['ugc_doctypes']['image']:
-            return self.send_image(repository, pkgkey, data, title, description, keywords)
+            return self.send_image(repository, pkgkey, data, title,
+                description, keywords)
         elif ugc_type == etpConst['ugc_doctypes']['youtube_video']:
-            return self.send_youtube_video(repository, pkgkey, data, title, description, keywords)
+            return self.send_youtube_video(repository, pkgkey, data, title,
+                description, keywords)
         elif ugc_type == etpConst['ugc_doctypes']['comments']:
-            return self.add_comment(repository, pkgkey, description, title, keywords)
+            return self.add_comment(repository, pkgkey,
+                description, title, keywords)
+
         return None, 'type not supported locally'
 
     def remove_document_autosense(self, repository, iddoc, ugc_type):
@@ -442,7 +449,8 @@ class AuthStore(Singleton):
         repositories = store.getElementsByTagName("repository")
         for repository in repositories:
             repoid = repository.getAttribute("id")
-            if not repoid: continue
+            if not repoid:
+                continue
             username = repository.getElementsByTagName("username")[0].firstChild.data.strip()
             password = repository.getElementsByTagName("password")[0].firstChild.data.strip()
             self.store[repoid] = {'username': username, 'password': password}
@@ -462,12 +470,14 @@ class AuthStore(Singleton):
             repo.setAttribute('id', repository)
             # username
             username = self.xmldoc.createElement("username")
-            username_value = self.xmldoc.createTextNode(self.store[repository]['username'])
+            username_value = self.xmldoc.createTextNode(
+                self.store[repository]['username'])
             username.appendChild(username_value)
             repo.appendChild(username)
             # password
             password = self.xmldoc.createElement("password")
-            password_value = self.xmldoc.createTextNode(self.store[repository]['password'])
+            password_value = self.xmldoc.createTextNode(
+                self.store[repository]['password'])
             password.appendChild(password_value)
             repo.appendChild(password)
             store.appendChild(repo)
@@ -490,8 +500,11 @@ class AuthStore(Singleton):
                 self.save_store()
 
     def read_login(self, repository):
-        if repository in self.store:
-            return self.store[repository]['username'], self.store[repository]['password']
+        data = self.store.get(repository)
+        if data is None:
+            return None
+        return data['username'], data['password']
+
 
 class Cache:
 
