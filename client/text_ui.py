@@ -1973,7 +1973,7 @@ def dependencies_test():
                 for x in crying_atoms[atom]:
                     print_info(blue("      # ")+darkgreen(x))
 
-        if (etpUi['ask']):
+        if etpUi['ask']:
             rc = E_CLIENT.ask_question("     %s"  % (_("Would you like to install the available packages ?"),) )
             if rc == _("No"):
                 return 0, 0
@@ -1988,6 +1988,9 @@ def dependencies_test():
             time.sleep(10)
 
         install_packages(list(found_deps))
+
+    else:
+        print_generic("") # make sure to get back
 
     return 0, 0
 
