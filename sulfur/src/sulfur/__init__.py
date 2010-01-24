@@ -234,8 +234,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             const.__sulfur_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
 
-        #self.ui.notebook.set_show_tabs( False )
-
         self.ui.main.present()
         self.setup_page_buttons()        # Setup left side toolbar
         self.switch_notebook_page(self.activePage)
@@ -736,7 +734,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_images(self):
         """ setup misc application images """
 
-        # progressImage
         iconpath = os.path.join(const.PIXMAPS_PATH, "sabayon.png")
         if os.path.isfile(iconpath) and os.access(iconpath, os.R_OK):
             try:
