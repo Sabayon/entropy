@@ -2910,7 +2910,10 @@ class InputDialog:
             return self.do_ok(widget)
 
     def do_ok(self, widget):
-        # fill self.parameters
+        # re-allocate parameters if None
+        if self.parameters is None:
+            self.parameters = {}
+
         for input_id in self.identifiers_table:
             mywidget = self.identifiers_table.get(input_id)
             if isinstance(mywidget, gtk.Entry):
@@ -2920,7 +2923,8 @@ class InputDialog:
             elif isinstance(mywidget, gtk.ComboBox):
                 content = mywidget.get_active(), mywidget.get_active_text()
             elif isinstance(mywidget, gtk.TextBuffer):
-                content = mywidget.get_text(mywidget.get_start_iter(), mywidget.get_end_iter(), True)
+                content = mywidget.get_text(mywidget.get_start_iter(),
+                    mywidget.get_end_iter(), True)
             elif isinstance(mywidget, (gtk.ListStore, gtk.TreeStore)):
                 myiter = mywidget.get_iter_first()
                 content = []
