@@ -1478,10 +1478,86 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             okDialog(self.ui.main,
                 _("All the missing dependencies are going to be added to the queue"))
 
-        print "FOUND DEPS", found_deps 
         self.add_atoms_to_queue(found_deps)
         self.switch_notebook_page("preferences")
         deptest_reset_all()
+
+    def libraries_test(self):
+
+        if self._RESOURCES_LOCKED:
+            return False
+
+        self.show_progress_bars()
+        self.progress.set_mainLabel(_('Testing libraries...'))
+
+        self.hide_notebook_tabs_for_install()
+        self.set_status_ticker(_("Running tasks"))
+
+        self.start_working(do_busy = True)
+        normal_cursor(self.ui.main)
+        self.progress.show()
+        self.switch_notebook_page('output')
+        self.ui_lock(True)
+
+        def do_stop():
+            self.end_working()
+            self.progress.reset_progress()
+            self.show_notebook_tabs_after_install()
+            self.ui_lock(False)
+            self.gtk_loop()
+
+        def task_bombing():
+            if self.abortQueueNow:
+                self.abortQueueNow = False
+                mytxt = _("Aborting queue tasks.")
+                raise QueueError('QueueError %s' % (mytxt,))
+
+        packages_matched, broken_execs = {}, set()
+        self.__libtest_abort = False
+        QA = self.Equo.QA()
+
+        def run_up():
+            try:
+                x, y, z = QA.test_shared_objects(self.Equo.clientDbconn,
+                    task_bombing_func = task_bombing)
+                packages_matched.update(x)
+                broken_execs.update(y)
+            except QueueError:
+                self.__libtest_abort = True
+
+        t = ParallelTask(run_up)
+        t.start()
+        while t.isAlive():
+            time.sleep(0.2)
+            if self.do_debug:
+                print_generic("libraries_test: update thread still alive")
+            self.gtk_loop()
+
+        if self.do_debug and self.__libtest_abort:
+            print_generic("libraries_test: scan abort")
+        if self.do_debug:
+            print_generic("libraries_test: done scanning")
+
+        if self.__libtest_abort:
+            okDialog(self.ui.main, _("Libraries test aborted"))
+            do_stop()
+            return
+
+        matches = set()
+        for key in list(packages_matched.keys()):
+            matches |= packages_matched[key]
+
+        if broken_execs:
+            okDialog(self.ui.main,
+                _("Some broken packages have not been matched, others are going to be added to the queue."))
+        else:
+            okDialog(self.ui.main,
+                _("All the broken packages are going to be added to the queue"))
+
+        rc = self.add_atoms_to_queue([], matches = matches)
+        self.switch_notebook_page("preferences")
+
+        do_stop()
 
     def reset_progress_text(self):
         self.progress.set_mainLabel(_('Nothing to do. I am idle.'))

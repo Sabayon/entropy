@@ -918,75 +918,7 @@ class SulfurApplicationEventsMixin:
         self.dependencies_test()
 
     def on_libtestButton_clicked(self, widget):
-
-        def do_start():
-            self.switch_notebook_page("output")
-            self.start_working()
-            self.ui_lock(True)
-            self.ui.abortQueue.show()
-
-        def do_stop():
-            self.end_working()
-            self.ui.abortQueue.hide()
-            self.ui_lock(False)
-            self.progress.reset_progress()
-
-        def task_bombing():
-            if self.abortQueueNow:
-                self.abortQueueNow = False
-                mytxt = _("Aborting queue tasks.")
-                self.ui.abortQueue.hide()
-                raise QueueError('QueueError %s' % (mytxt,))
-
-        do_start()
-
-        packages_matched, broken_execs = {}, set()
-        self.libtest_abort = False
-        QA = self.Equo.QA()
-
-        def exec_task():
-            try:
-                x, y, z = QA.test_shared_objects(self.Equo.clientDbconn,
-                    task_bombing_func = task_bombing)
-                packages_matched.update(x)
-                broken_execs.update(y)
-            except QueueError:
-                self.libtest_abort = True
-
-        t = ParallelTask(exec_task)
-        t.start()
-        while t.isAlive():
-            time.sleep(0.2)
-            self.gtk_loop()
-
-        if self.do_debug and self.libtest_abort:
-            print_generic("on_libtestButton_clicked: scan abort")
-        if self.do_debug:
-            print_generic("on_libtestButton_clicked: done scanning")
-
-        if self.libtest_abort:
-            do_stop()
-            okDialog(self.ui.main, _("Libraries test aborted"))
-            return
-
-        matches = set()
-        for key in list(packages_matched.keys()):
-            matches |= packages_matched[key]
-
-        if broken_execs:
-            okDialog(self.ui.main,
-                _("Some broken packages have not been matched, others are going to be added to the queue."))
-        else:
-            okDialog(self.ui.main,
-                _("All the broken packages are going to be added to the queue"))
-
-        rc = self.add_atoms_to_queue([], matches = matches)
-        if rc:
-            self.switch_notebook_page("packages")
-        else:
-            self.switch_notebook_page("preferences")
-
-        do_stop()
+        self.libraries_test()
 
     def on_color_reset(self, widget):
         # get parent
