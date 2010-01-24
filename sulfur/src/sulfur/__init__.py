@@ -36,7 +36,7 @@ if "/usr/lib/entropy/sulfur" not in sys.path:
 from entropy.exceptions import OnlineMirrorError, QueueError, TimeoutError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
-    initconfig_entropy_constants
+    initconfig_entropy_constants, const_convert_to_unicode
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
@@ -1672,6 +1672,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return s
 
         def do_name_search(keyword):
+            keyword = const_convert_to_unicode(keyword)
             matches = []
             for repoid in self.Equo.validRepositories:
                 dbconn = self.Equo.open_repository(repoid)
@@ -1684,6 +1685,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return matches
 
         def do_name_desc_search(keyword):
+            keyword = const_convert_to_unicode(keyword)
             matches = []
             for repoid in self.Equo.validRepositories:
                 dbconn = self.Equo.open_repository(repoid)
