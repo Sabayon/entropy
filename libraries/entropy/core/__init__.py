@@ -30,6 +30,12 @@ class Singleton(object):
 
     def __new__(cls, *args, **kwds):
 
+        # Support for overridable singleton class used for loading
+        # instance. This is required when your Singleton class is subclassed
+        # and reloaded using different class stack, just push the preferred
+        # singleton class into Class.__singleton_class__
+        cls = getattr(cls, '__singleton_class__', cls)
+
         singleton = getattr(cls, '__singleton__', None)
         if singleton is not None:
             destroyed = getattr(singleton, 'is_destroyed', None)
