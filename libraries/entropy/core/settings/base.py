@@ -28,6 +28,8 @@ from entropy.core import Singleton, EntropyPluginStore
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 
+import entropy.tools
+
 class SystemSettings(Singleton, EntropyPluginStore):
 
     """
@@ -47,7 +49,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
     """
 
-    import entropy.tools as entropyTools
     def init_singleton(self):
 
         """
@@ -657,7 +658,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         data = {}
         for set_name in self.__setting_files['system_package_sets']:
             set_filepath = self.__setting_files['system_package_sets'][set_name]
-            set_elements = self.entropyTools.extract_packages_from_set_file(
+            set_elements = entropy.tools.extract_packages_from_set_file(
                 set_filepath)
             if set_elements:
                 data[set_name] = set_elements.copy()
@@ -1306,7 +1307,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: raw text extracted from file
         @rtype: list
         """
-        return self.entropyTools.generic_file_content_parser(filepath)
+        return entropy.tools.generic_file_content_parser(filepath)
 
     def __remove_repo_cache(self, repoid = None):
         """
