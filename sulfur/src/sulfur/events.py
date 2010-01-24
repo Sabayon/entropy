@@ -902,7 +902,8 @@ class SulfurApplicationEventsMixin:
             input_params,
             cancel_button = True
         )
-        if data == None: return
+        if data == None:
+            return
         x_id, set_name = data.get("pkgset")
 
         rc, msg = self.Equo.remove_user_package_set(set_name)
@@ -914,70 +915,7 @@ class SulfurApplicationEventsMixin:
         self.show_packages()
 
     def on_deptestButton_clicked(self, widget):
-
-        self.switch_notebook_page("output")
-        self.ui_lock(True)
-        self.start_working()
-        deps_not_matched = self.Equo.dependencies_test()
-        if not deps_not_matched:
-            okDialog(self.ui.main, _("No missing dependencies found."))
-            self.switch_notebook_page("preferences")
-            self.ui_lock(False)
-            self.end_working()
-            self.progress.reset_progress()
-            return
-
-        found_deps = set()
-        not_all = False
-        for dep in deps_not_matched:
-            match = self.Equo.atom_match(dep)
-            if match[0] != -1:
-                found_deps.add(dep)
-                continue
-            else:
-                iddep = self.Equo.clientDbconn.searchDependency(dep)
-                if iddep == -1:
-                    continue
-                c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
-                for c_idpackage in c_idpackages:
-                    key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
-                    key_slot = "%s:%s" % (key, slot,)
-                    match = self.Equo.atom_match(key, matchSlot = slot)
-                    cmpstat = 0
-                    if match[0] != -1:
-                        cmpstat = self.Equo.get_package_action(match)
-                    if cmpstat != 0:
-                        found_deps.add(key_slot)
-                        continue
-                    else:
-                        not_all = True
-                continue
-            not_all = True
-
-        if not found_deps:
-            okDialog(self.ui.main,
-                _("Missing dependencies found, but none of them are on the repositories."))
-            self.switch_notebook_page("preferences")
-            self.ui_lock(False)
-            self.end_working()
-            self.progress.reset_progress()
-            return
-
-        if not_all:
-            okDialog(self.ui.main,
-                _("Some missing dependencies have not been matched, others are going to be added to the queue."))
-        else:
-            okDialog(self.ui.main,
-                _("All the missing dependencies are going to be added to the queue"))
-
-        rc = self.add_atoms_to_queue(found_deps)
-        if rc:
-            self.switch_notebook_page("packages")
-        else:
-            self.switch_notebook_page("preferences")
-        self.ui_lock(False)
-        self.end_working()
-        self.progress.reset_progress()
+        self.dependencies_test()
 
     def on_libtestButton_clicked(self, widget):
 

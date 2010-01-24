@@ -1392,6 +1392,97 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         return not repoConn.sync_errors
 
+    def dependencies_test(self):
+
+        if self._RESOURCES_LOCKED:
+            return False
+
+        self.show_progress_bars()
+        self.progress.set_mainLabel(_('Testing dependencies...'))
+
+        self.hide_notebook_tabs_for_install()
+        self.set_status_ticker(_("Running tasks"))
+
+        self.start_working(do_busy = True)
+        normal_cursor(self.ui.main)
+        self.progress.show()
+        self.switch_notebook_page('output')
+        self.ui_lock(True)
+
+        def deptest_reset_all():
+            self.end_working()
+            self.progress.reset_progress()
+            self.show_notebook_tabs_after_install()
+            self.ui_lock(False)
+            self.gtk_loop()
+
+        self.__deptest_deps_not_matched = None
+        def run_up():
+            self.__deptest_deps_not_matched = self.Equo.dependencies_test()
+
+        t = ParallelTask(run_up)
+        t.start()
+        while t.isAlive():
+            time.sleep(0.2)
+            if self.do_debug:
+                print_generic("dependencies_test: update thread still alive")
+            self.gtk_loop()
+        deps_not_matched = self.__deptest_deps_not_matched
+
+        if not deps_not_matched:
+            okDialog(self.ui.main, _("No missing dependencies found."))
+            deptest_reset_all()
+            self.switch_notebook_page('preferences')
+            return
+
+        found_deps = set()
+        not_all = False
+        for dep in deps_not_matched:
+            match = self.Equo.atom_match(dep)
+            if match[0] != -1:
+                found_deps.add(dep)
+                continue
+            else:
+                iddep = self.Equo.clientDbconn.searchDependency(dep)
+                if iddep == -1:
+                    continue
+                c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(
+                    iddep)
+                for c_idpackage in c_idpackages:
+                    key, slot = self.Equo.clientDbconn.retrieveKeySlot(
+                        c_idpackage)
+                    key_slot = "%s:%s" % (key, slot,)
+                    match = self.Equo.atom_match(key, matchSlot = slot)
+                    cmpstat = 0
+                    if match[0] != -1:
+                        cmpstat = self.Equo.get_package_action(match)
+                    if cmpstat != 0:
+                        found_deps.add(key_slot)
+                        continue
+                    else:
+                        not_all = True
+                continue
+            not_all = True
+
+        if not found_deps:
+            okDialog(self.ui.main,
+                _("Missing dependencies found, but none of them are on the repositories."))
+            self.switch_notebook_page('preferences')
+            deptest_reset_all()
+            return
+
+        if not_all:
+            okDialog(self.ui.main,
+                _("Some missing dependencies have not been matched, others are going to be added to the queue."))
+        else:
+            okDialog(self.ui.main,
+                _("All the missing dependencies are going to be added to the queue"))
+
+        print "FOUND DEPS", found_deps 
+        self.add_atoms_to_queue(found_deps)
+        self.switch_notebook_page("preferences")
+        deptest_reset_all()
+
     def reset_progress_text(self):
         self.progress.set_mainLabel(_('Nothing to do. I am idle.'))
         self.progress.set_subLabel(
