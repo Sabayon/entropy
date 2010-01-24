@@ -24,7 +24,7 @@ import os
 
 from entropy.exceptions import RepositoryError, InvalidPackageSet
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants
-from entropy.misc import ParallelTask
+from entropy.misc import ParallelTask, TimeScheduled
 from entropy.i18n import _, _LOCALE
 from entropy.db import dbapi2
 from entropy.tools import dep_getkey, print_traceback
@@ -641,6 +641,18 @@ class EntropyPackageView:
 
         self.ugc_update_event_handler_id = \
             SulfurSignals.connect('ugc_data_update', self.__update_ugc_event)
+
+        try:
+            from Queue import Queue as queue_class, Full, Empty
+        except ImportError:
+            from queue import Queue as queue_class, Full, Empty # future proof
+        self.queue_full_exception = Full
+        self.queue_empty_exception = Empty
+
+        self._ugc_load_queue = queue_class(10) # max 10 items at time
+        self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
+        if self.Equo.UGC is not None:
+            self._ugc_load_thread.start()
 
     def __update_ugc_event(self, event):
         self.view.queue_draw()
@@ -1759,8 +1771,6 @@ class EntropyPackageView:
         if hasattr(self.ui, "swPkg"):
             self.ui.swPkg.set_placement(gtk.CORNER_TOP_LEFT)
 
-        self._spawn_ugc_metadata_fetch()
-
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 0 )
         if obj:
@@ -1826,29 +1836,27 @@ class EntropyPackageView:
                 self.set_line_status(obj, cell)
                 cell.set_property('foreground', obj.color)
 
-    def _spawn_ugc_metadata_fetch(self):
+    def _ugc_queue_run(self):
 
-        if self.Equo.UGC is None:
-            return
+        pkgs = set()
+        queue = self._ugc_load_queue
 
-        model_pkgs = []
-        for parent in self.store:
-            for child in parent.iterchildren():
-                model_pkgs += child
+        while queue.qsize():
+            try:
+                item = queue.get_nowait()
+            except self.queue_empty_exception:
+                break
+            pkgs.add(item)
+            queue.task_done()
 
-        ugc_sync_data = set()
-        for pkg in model_pkgs:
-            repoid = pkg.repoid_clean
-            if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
-                continue
-            key = pkg.key
-            item = (key, repoid)
-            if item not in self._ugc_metadata_sync_exec_cache:
-                ugc_sync_data.add(item)
-                self._ugc_metadata_sync_exec_cache.add(item)
+        if pkgs:
+            self._spawn_ugc_metadata_fetch(pkgs)
+
+
+    def _spawn_ugc_metadata_fetch(self, pkgs):
 
         def do_ugc_sync():
-            for key, repoid in ugc_sync_data:
+            for key, repoid in pkgs:
                 if self.Equo.UGC.UGCCache.is_alldocs_cached(key, repoid):
                     continue
                 self.Equo.UGC.get_docs(repoid, key)
@@ -1913,6 +1921,27 @@ class EntropyPackageView:
 
         return pixbuf
 
+    def __new_ugc_pixbuf_stash_fetch(self, pkg):
+        # stash to queue for loading from WWW if required
+        if self.Equo.UGC is None:
+            return
+
+        repoid = pkg.repoid
+        sync_item = (pkg.key, repoid)
+        if sync_item in self._ugc_metadata_sync_exec_cache:
+            return
+
+        if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
+            self._ugc_metadata_sync_exec_cache.add(sync_item)
+            return
+
+        self._ugc_metadata_sync_exec_cache.add(sync_item)
+        try:
+            self._ugc_load_queue.put_nowait(sync_item)
+        except self.queue_full_exception:
+            # argh! queue full!
+            pass
+
     def new_ugc_pixbuf(self, column, cell, model, myiter):
 
         pkg = model.get_value(myiter, 0)
@@ -1926,6 +1955,8 @@ class EntropyPackageView:
         elif self.Equo.UGC is None:
             cell.set_property('visible', False)
         else:
+
+            self.__new_ugc_pixbuf_stash_fetch(pkg)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
