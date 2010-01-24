@@ -5,6 +5,8 @@
     - entropy.server API rework
     - move sensible pkgs to alt dir
     - equo repo enable/disable/add/remove
+    - sulfur: search sulfur in applications (try it)
+    - sulfur: add pkg icon through dnd
 
   0.99.40:
 
@@ -15,7 +17,6 @@
         for 3rd party implementations to define it)
     - add splitdebug support?
     - entropy.security.System unittest
-    - UGC: pkg icon support
 
   1.0_beta1:
 

@@ -20,6 +20,7 @@
 import time
 import gtk
 import gobject
+import gio
 import os
 
 from entropy.exceptions import RepositoryError, InvalidPackageSet
@@ -1955,15 +1956,31 @@ class EntropyPackageView:
         elif self.Equo.UGC is None:
             cell.set_property('visible', False)
         else:
-
-            self.__new_ugc_pixbuf_stash_fetch(pkg)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
                 cell.set_property('pixbuf', pixbuf)
             else:
-                self.set_pixbuf_to_cell(cell, self.ugc_generic_icon,
-                    pix_dir = "ugc")
+
+                # try to load icon from icon theme
+                icon_theme = gtk.icon_theme_get_default()
+                name = pkg.onlyname
+                icon_theme_loaded = False
+                if icon_theme.has_icon(name):
+                    # use this icon
+                    try:
+                        pixbuf = icon_theme.load_icon(name,
+                            EntropyPackageView.ROW_HEIGHT,
+                            gtk.ICON_LOOKUP_USE_BUILTIN)
+                    except gio.Error: # no such file or directory
+                        pixbuf = None
+                    if pixbuf is not None:
+                        cell.set_property('pixbuf', pixbuf)
+                        icon_theme_loaded = True
+
+                if not icon_theme_loaded:
+                    self.set_pixbuf_to_cell(cell, self.ugc_generic_icon,
+                        pix_dir = "ugc")
 
     def new_pixbuf(self, column, cell, model, myiter):
         """ 
