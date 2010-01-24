@@ -22,6 +22,7 @@ import gtk
 import gobject
 import gio
 import os
+import tempfile
 
 from entropy.exceptions import RepositoryError, InvalidPackageSet
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants
@@ -38,7 +39,7 @@ from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
-    PkgInfoMenu
+    PkgInfoMenu, UGCAddMenu
 from sulfur.event import SulfurSignals
 
 class EntropyPackageViewModelInjector:
@@ -658,6 +659,9 @@ class EntropyPackageView:
     def __update_ugc_event(self, event):
         self.view.queue_draw()
 
+    def _emit_ugc_update(self):
+        SulfurSignals.emit('ugc_data_update')
+
     def change_model_injector(self, injector):
         if not issubclass(injector, EntropyPackageViewModelInjector):
             raise AttributeError("wrong sorter")
@@ -969,7 +973,6 @@ class EntropyPackageView:
 
         if do_show:
             self.pkgset_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
-
 
     def run_installed_menu_stuff(self, objs):
         do_show = True
@@ -1616,16 +1619,112 @@ class EntropyPackageView:
         column2.connect("clicked", self.on_vote_column_clicked)
         self.view.append_column( column2 )
 
-        # This is against Sulfur Love (tm)
-        # self.create_text_column( _( "Repository" ), 'repoid', size = 130,
-        #    set_height = myheight, clickable = True,
-        #    click_cb = self.on_repository_column_clicked)
+        # Enable DnD
+        self._ugc_drag_types_identifiers = {
+            1: self._ugc_drag_store_text_plain,
+            2: self._ugc_drag_store_image,
+            3: self._ugc_drag_store_image,
+            4: self._ugc_drag_store_image,
+            5: self._ugc_drag_store_image,
+        }
+        self._ugc_dnd_cache_taint = set()
+        supported_drags = [('text/plain', 0, 1), ('image/png', 0, 2),
+            ('image/bmp', 0, 3), ('image/gif', 0, 4), ('image/jpeg', 0, 5)]
+        self.view.enable_model_drag_dest(supported_drags,
+            gtk.gdk.ACTION_DEFAULT | gtk.gdk.ACTION_MOVE | gtk.gdk.ACTION_COPY)
+        self.view.connect("drag_data_received", self._ugc_drag_data_received)
 
         return store
 
+    def __ugc_dnd_updates_clear_cache(self):
+
+        while True:
+            try:
+                key, repoid = self._ugc_dnd_cache_taint.pop()
+            except KeyError:
+                break
+            self.Equo.UGC.get_docs(repoid, key)
+
+        self._ugc_pixbuf_map.clear()
+        self._ugc_metadata_sync_exec_cache.clear()
+        self._emit_ugc_update()
+
+    def _ugc_drag_data_received(self, view, context, x, y, selection, drop_id, etime):
+        """
+        Callback function for drag_data_received event used for UGC interaction
+        on Drag and Drop.
+        """
+        if self.Equo.UGC is None:
+            return
+        drop_cb = self._ugc_drag_types_identifiers.get(drop_id)
+        if drop_cb is None:
+            return
+
+        model = view.get_model()
+        drop_info = view.get_dest_row_at_pos(x, y)
+        if drop_info:
+            path, position = drop_info
+            myiter = model.get_iter(path)
+            pkg = model.get_value(myiter, 0)
+            context.finish(True, True, etime)
+            drop_cb(pkg, context, selection)
+
+    def _ugc_drag_store_text_plain(self, pkg, context, selection):
+        text_data = selection.data
+
+        if text_data.startswith("file://"):
+            # what is it all about
+            file_path = text_data[len("file://"):]
+            if not (os.path.isfile(file_path) and \
+                os.access(file_path, os.R_OK)):
+                return # nothing relevant
+
+            # try to understand if given path is an image
+            # that we can handle
+            try:
+                pixbuf = gtk.gdk.pixbuf_new_from_file(file_path)
+            except gobject.GError:
+                pixbuf = None
+
+            pkg_key = pkg.key
+            repoid = pkg.repoid_clean
+            # this is an image!
+            my = UGCAddMenu(self.Equo, pkg_key, repoid, self.ui.main,
+                self.__ugc_dnd_updates_clear_cache)
+            self._ugc_dnd_cache_taint.add((pkg_key, repoid,))
+            my.load()
+
+            if pixbuf is None:
+                # setup for sending file
+                my.prepare_file_insert(pkg_key, file_path)
+            else:
+                # setup for sending image
+                my.prepare_image_insert(pkg_key, file_path, as_icon = True)
+
+    def _ugc_drag_store_image(self, pkg, context, selection):
+
+        pkg_name = pkg.onlyname
+        pkg_key = pkg.key
+        repoid = pkg.repoid_clean
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix = pkg_name + "_",
+            suffix = "_image.png")
+        os.write(tmp_fd, selection.data)
+        os.fsync(tmp_fd)
+        os.close(tmp_fd)
+
+        my = UGCAddMenu(self.Equo, pkg_key, repoid, self.ui.main,
+            self.__ugc_dnd_updates_clear_cache)
+        self._ugc_dnd_cache_taint.add((pkg_key, repoid,))
+        my.load()
+        # setup for sending image
+        my.prepare_image_insert(pkg_key, tmp_path, as_icon = True)
+
+        # XXX cannot remove tmp_path now
+
     def get_stars_rating( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
-        if not obj: return
+        if not obj:
+            return
 
         if obj.color:
             self.set_line_status(obj, cell)
@@ -1862,10 +1961,7 @@ class EntropyPackageView:
                     continue
                 self.Equo.UGC.get_docs(repoid, key)
 
-        def do_ugc_sync_good():
-            SulfurSignals.emit('ugc_data_update')
-
-        fork_function(do_ugc_sync, do_ugc_sync_good)
+        fork_function(do_ugc_sync, self._emit_ugc_update)
 
     def _spawn_ugc_icon_fetch(self, icon_doc, repoid):
 
@@ -1873,10 +1969,7 @@ class EntropyPackageView:
             self.Equo.UGC.UGCCache.store_document(icon_doc['iddoc'],
                 repoid, icon_doc['store_url'])
 
-        def do_icon_fetch_good():
-            SulfurSignals.emit('ugc_data_update')
-
-        fork_function(do_icon_fetch, do_icon_fetch_good)
+        fork_function(do_icon_fetch, self._emit_ugc_update)
 
     def _get_cached_pkg_ugc_icon(self, pkg):
 
@@ -1956,6 +2049,7 @@ class EntropyPackageView:
         elif self.Equo.UGC is None:
             cell.set_property('visible', False)
         else:
+            self.__new_ugc_pixbuf_stash_fetch(pkg)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:

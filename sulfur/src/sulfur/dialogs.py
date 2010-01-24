@@ -1691,6 +1691,8 @@ class UGCInfoMenu(MenuSkel):
 
 class UGCAddMenu(MenuSkel):
 
+    DOC_TYPES_LIST = sorted(etpConst['ugc_doctypes_description_singular'])
+
     def __init__(self, Entropy, pkgkey, repository, window, refresh_cb):
 
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
@@ -1702,11 +1704,14 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui = UI( const.GLADE_FILE, 'ugcAdd', 'entropy' )
         self.ugcadd_ui.signal_autoconnect(self._getAllMethods())
         self.ugcadd_ui.ugcAdd.set_transient_for(self.window)
+        self.ugcadd_ui.ugcAdd.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
+        self.ugcadd_ui.ugcAdd.move(*self.window.get_position())
         self.ugcadd_ui.ugcAdd.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.store = None
         self.refresh_cb = refresh_cb
         self.text_types = (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],)
         self.file_selected = None
+        self._combo_doc_types = []
 
     def on_closeAdd_clicked(self, widget, path = None):
         self.ugcadd_ui.ugcAdd.hide()
@@ -1857,23 +1862,53 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAddTitleEntry.set_max_length(60)
         self.ugcadd_ui.ugcAddInsertLabel.set_markup(txt)
 
+    def prepare_image_insert(self, pkg_name, image_path, as_icon = False):
+        image_doctype = etpConst['ugc_doctypes']['image']
+        self.ugcadd_ui.ugcAddTypeCombo.set_active(
+            self._combo_doc_types.index(image_doctype))
+        self.ugcadd_ui.ugcAddFileChooser.set_filename(image_path)
+        self.file_selected = image_path
+        if as_icon:
+            self.ugcadd_ui.ugcAddTitleEntry.set_text("__icon__")
+            self.ugcadd_ui.ugcAddDescEntry.set_text("This is the %s icon" % (
+                pkg_name,))
+        else:
+            self.ugcadd_ui.ugcAddTitleEntry.set_text("%s %s" % (
+                pkg_name, "image",))
+            self.ugcadd_ui.ugcAddDescEntry.set_text("This is the %s image" % (
+                pkg_name,))
+
+    def prepare_file_insert(self, pkg_name, file_path):
+        file_doctype = etpConst['ugc_doctypes']['generic_file']
+        self.ugcadd_ui.ugcAddTypeCombo.set_active(
+            self._combo_doc_types.index(file_doctype))
+        self.ugcadd_ui.ugcAddFileChooser.set_filename(file_path)
+        self.file_selected = file_path
+        self.ugcadd_ui.ugcAddTitleEntry.set_text("%s document" % (
+            pkg_name,))
+        self.ugcadd_ui.ugcAddDescEntry.set_text("This is just a %s document" % (
+            pkg_name,))
+
     def load(self):
 
         self.ugcadd_ui.ugcAddImage.set_from_file(self.pix_path)
         self.ugcadd_ui.labelAddKey.set_markup("<b>%s</b>" % (self.pkgkey,))
-        self.ugcadd_ui.labelAddRepo.set_markup("<small>%s: <b>%s</b></small>" % (_("On repository"), self.repository,))
+        self.ugcadd_ui.labelAddRepo.set_markup("<small>%s: <b>%s</b></small>" % (
+            _("On repository"), self.repository,))
 
         # add types to combo
-        doc_types_list = sorted(etpConst['ugc_doctypes_description_singular'].keys())
-        self.store = gtk.ListStore( gobject.TYPE_INT, gobject.TYPE_STRING )
+        doc_types_list = UGCAddMenu.DOC_TYPES_LIST
+        self.store = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING)
         self.ugcadd_ui.ugcAddTypeCombo.set_model(self.store)
         cell = gtk.CellRendererText()
         self.ugcadd_ui.ugcAddTypeCombo.pack_start(cell, True)
         self.ugcadd_ui.ugcAddTypeCombo.add_attribute(cell, 'text', 1)
+        del self._combo_doc_types[:]
         for idx in doc_types_list:
             # disable bbcode for now
             if idx == etpConst['ugc_doctypes']['bbcode_doc']:
                 continue
+            self._combo_doc_types.append(idx)
             self.store.append( (idx, etpConst['ugc_doctypes_description_singular'][idx],) )
         self.ugcadd_ui.ugcAddTypeCombo.set_active(0)
 
