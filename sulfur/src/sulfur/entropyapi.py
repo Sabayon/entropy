@@ -27,7 +27,7 @@ import gobject
 
 # Entropy Imports
 from entropy.const import etpConst, etpUi
-from entropy.output import print_generic, nocolor
+from entropy.output import print_generic, nocolor, decolorize
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
@@ -309,7 +309,8 @@ class Equo(Client):
     def connect_to_gui(self, application):
         self.progress = application.progress
         self.urlFetcher = GuiUrlFetcher
-        nocolor()
+        # EXPERIMENTALLY enable color
+        # nocolor()
         self.progress_log = application.progress_log_write
         self.std_output = application.std_output
         self.ui = application.ui
@@ -329,7 +330,7 @@ class Equo(Client):
                 count_str = "(%s/%s) " % (str(count[0]), str(count[1]),)
                 cur_prog = float(count[0])/count[1]
                 if importance == 0:
-                    progress_text = text
+                    progress_text = decolorize(text)
                 else:
                     progress_text = str(int(cur_prog * 100)) + "%"
                 self.progress.set_progress(cur_prog, progress_text)
@@ -340,7 +341,7 @@ class Equo(Client):
                 myfunc = self.progress.set_subLabel
             elif importance > 1:
                 myfunc = self.progress.set_mainLabel
-            myfunc(count_str+text)
+            myfunc(count_str+decolorize(text))
 
         if not back and hasattr(self, 'progress_log'):
 
@@ -368,7 +369,7 @@ class Equo(Client):
         th_id = thread.get_ident()
 
         def do_ask():
-            choice = choiceDialog(parent, question,
+            choice = choiceDialog(parent, decolorize(question),
                 _("Entropy needs your attention"),
                 [_(x) for x in responses]
             )
@@ -397,7 +398,7 @@ class Equo(Client):
         th_id = thread.get_ident()
 
         def do_ask():
-            result = inputDialog(parent, title, input_parameters,
+            result = inputDialog(parent, decolorize(title), input_parameters,
                 cancel = cancel_button)
             self._mthread_rc['input_box'][th_id] = result
 
