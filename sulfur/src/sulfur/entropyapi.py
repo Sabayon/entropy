@@ -409,6 +409,9 @@ class Equo(Client):
             time.sleep(0.4)
         return self._mthread_rc['input_box'].pop(th_id)
 
+# in this way, any singleton class that tries to directly load Client
+# gets Equo in change
+Client.__singleton_class__ = Equo
 
 class GuiUrlFetcher(UrlFetcher):
 
