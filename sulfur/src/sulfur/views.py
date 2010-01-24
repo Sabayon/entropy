@@ -458,14 +458,13 @@ class EntropyPackageView:
         self.selected_objs = []
         self.last_row = None
         self.loaded_reinstallables = []
+        self._pixbuf_map = {}
         self.loaded_event = None
         self.do_refresh_view = False
         self.main_window = main_window
         self.empty_mode = False
         self.event_click_pos = 0, 0
         self.ugc_generic_icon = "small-generic.png"
-        self._ugc_pixbuf_map = {}
-        self._ugc_metadata_sync_exec_cache = set()
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
         self.pkg_install_updatable = "package-installed-outdated.png"
@@ -620,6 +619,10 @@ class EntropyPackageView:
             property_menu_item.connect("activate", self.run_properties_menu)
             property_menu_item.show()
             menu.append(property_menu_item)
+
+        # UGC stuff
+        self._ugc_pixbuf_map = {}
+        self._ugc_metadata_sync_exec_cache = set()
 
         self.model_injector_rotation = {
             'package': [NameSortPackageViewModelInjector,
@@ -1768,12 +1771,15 @@ class EntropyPackageView:
         return True
 
     def set_pixbuf_to_cell(self, cell, filename, pix_dir = "packages"):
-        try:
-            pixbuf = gtk.gdk.pixbuf_new_from_file(
-                os.path.join(const.PIXMAPS_PATH, pix_dir, filename))
-            cell.set_property('pixbuf', pixbuf)
-        except gobject.GError:
-            pass
+        pixbuf = self._pixbuf_map.get((filename, pix_dir,))
+        if pixbuf is None:
+            try:
+                pixbuf = gtk.gdk.pixbuf_new_from_file(
+                    os.path.join(const.PIXMAPS_PATH, pix_dir, filename))
+            except gobject.GError:
+                return
+            self._pixbuf_map[(filename, pix_dir,)] = pixbuf
+        cell.set_property('pixbuf', pixbuf)
 
     def set_pixbuf_to_image(self, img, filename, pix_dir = "packages"):
         try:
