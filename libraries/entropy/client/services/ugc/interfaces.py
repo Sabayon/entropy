@@ -689,6 +689,9 @@ class Cache:
             self._clear_live_cache_item(repository,
                 self._get_vote_cache_key(repository))
 
+    def clear_live_cache(self):
+        self.xcache.clear()
+
     def clear_cache(self, repository):
         self.clear_alldocs_cache(repository)
         self.clear_downloads_cache(repository)
