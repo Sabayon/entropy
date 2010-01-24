@@ -28,7 +28,7 @@ import gobject
 # Entropy Imports
 from entropy.const import etpConst, etpUi
 from entropy.output import print_generic, nocolor
-from entropy.client.interfaces import Client as EquoInterface
+from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
@@ -289,10 +289,10 @@ class QueueExecutor:
         return 0
 
 
-class Equo(EquoInterface):
+class Equo(Client):
 
     def init_singleton(self, *args, **kwargs):
-        EquoInterface.init_singleton(self, *args, **kwargs)
+        Client.init_singleton(self, *args, **kwargs)
         self.progress_log = None
         self.std_output = None
         self.progress = None
