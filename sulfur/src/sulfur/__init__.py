@@ -2173,6 +2173,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = False
         if switch_back_page is not None:
             self.switch_notebook_page(switch_back_page)
+        else:
+            self.switch_notebook_page('packages')
 
         self.Equo.resources_remove_lock()
         return state
