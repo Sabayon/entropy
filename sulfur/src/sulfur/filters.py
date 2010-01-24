@@ -80,7 +80,9 @@ class KeywordFilter(BaseFilter):
 
         self.groupCats.clear()
         self.pkgGroups.clear()
-        self.keywordList.extend([x.lower() for x in criteria])
+        for crit in criteria:
+            crits = [x.strip() for x in crit.lower().split("&")]
+            self.keywordList.extend(crits)
         self.pkgGroups.update(pkg_groups)
         for crit in self.keywordList:
             if crit in self.pkgGroups:
@@ -105,7 +107,6 @@ class KeywordFilter(BaseFilter):
                 cat = pkg.cat
                 if cat in self.groupCats:
                     return True
-                return False
 
             else:
 
@@ -120,7 +121,6 @@ class KeywordFilter(BaseFilter):
                         continue
                     if value.lower().find(crit) != -1:
                         return True
-                    return False
 
         return False
 
