@@ -72,13 +72,10 @@ help_opts = [
     None,
     (1, 'update', 2, _('update configured repositories')),
     (2, '--force', 2, _('force sync regardless repositories status')),
-    (1, 'repoinfo', 1, _('show repositories information')),
-        (2, 'make.conf [repos]', 2, _('show make.conf for the chosen repositories')),
-        (2, 'package.mask [repos]', 2, _('show package.mask for the chosen repositories')),
-        (2, 'package.unmask [repos]', 2, _('show package.unmask for the chosen repositories')),
-        (2, 'package.keywords [repos]', 1, _('show package.keywords for the chosen repositories')),
-        (2, 'package.use [repos]', 2, _('show package.use for the chosen repositories')),
-        (2, 'profile.link [repos]', 2, _('show make.profile link for the chosen repositories')),
+    None,
+    (1, 'repo', 1, _('manage your repositories')),
+        (2, 'enable', 2, _('enable given repository')),
+        (2, 'disable', 1, _('disable given repository')),
     (1, 'notice [repos]', 1, _('repository notice board reader')),
     (1, 'status', 2, _('show respositories status')),
     None,
@@ -627,6 +624,7 @@ CMDS_MAP = {
     "love_lxnay": do_lxnay,
     "w00t": do_lxnay,
 
+    "repo": _do_text_repos,
     "update": _do_text_repos,
     "repoinfo": _do_text_repos,
     "status": _do_text_repos,
@@ -678,11 +676,25 @@ def _remove_bashcomp(cmdline):
 def _install_bashcomp(cmdline):
     return _search_bashcomp(cmdline, ignore_installed = True)
 
+def _repo_enable_disable_bashcomp(cmdline):
+    try:
+        action = cmdline[1]
+    except IndexError:
+        return []
+    from entropy.core.settings.base import SystemSettings as SysSet
+    sys_settings = SysSet()
+    if action == "enable":
+        return sorted(sys_settings['repositories']['excluded'].keys())
+    elif action == "disable":
+        return sorted(sys_settings['repositories']['available'].keys())
+    return []
+
 BASHCOMP_MAP = {
     'search': _search_bashcomp,
     'match': _match_bashcomp,
     'remove': _remove_bashcomp,
     'install': _install_bashcomp,
+    'repo': _repo_enable_disable_bashcomp,
 }
 
 options = sys.argv[1:]

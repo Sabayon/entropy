@@ -18,7 +18,7 @@ import os
 import sys
 from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
-    print_info, print_warning, print_error
+    print_info, print_warning, print_error, purple, teal
 from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.i18n import _
 import entropy.tools
@@ -59,12 +59,26 @@ def repositories(options):
             for repo in SystemSettings['repositories']['order']:
                 _show_repository_info(entropy_client, repo)
 
-        elif options[0] == "repoinfo":
+        elif options[0] == "repo":
+
+            er_txt = darkred(_("You must be root"))
+            if not entropy.tools.is_root():
+                print_error(er_txt)
+                return 1
+
             myopts = options[1:]
             if not myopts:
                 rc = -10
             else:
-                rc = _show_repository_file(myopts[0], myopts[1:])
+                repo_opt = myopts.pop(0)
+                if not myopts:
+                    rc = -10
+                elif repo_opt == "enable":
+                    rc = _enable_repositories(entropy_client, myopts)
+                elif repo_opt == "disable":
+                    rc = _disable_repositories(entropy_client, myopts)
+                else:
+                    rc = -10
 
         elif options[0] == "notice":
             myopts = options[1:]
@@ -84,46 +98,44 @@ def repositories(options):
     return rc
 
 
-def _show_repository_file(myfile, repos):
-
-    if myfile not in ["make.conf", "profile.link", "package.use", \
-        "package.mask", "package.unmask", "package.keywords"]:
-            return - 10
-
-    if not repos:
-        return -10
-
-    myrepos = []
+def _enable_repositories(entropy_client, repos):
+    excluded_repos = SystemSettings['repositories']['excluded']
+    available_repos = SystemSettings['repositories']['available']
     for repo in repos:
-        if repo in SystemSettings['repositories']['available']:
-            myrepos.append(repo)
-    if not myrepos:
-        if not etpUi['quiet']:
-            print_error(darkred(" * ")+darkred("%s." % (_("No valid repositories"),) ))
-        return 1
+        if repo in available_repos:
+            print_warning("[%s] %s" % (
+                purple(repo), blue(_("repository already enabled")),))
+            continue
+        if repo not in excluded_repos:
+            print_warning("[%s] %s" % (
+                purple(repo), blue(_("repository not available")),))
+            continue
+        entropy_client.enable_repository(repo)
+        print_info("[%s] %s" % (
+            teal(repo), blue(_("repository enabled")),))
+    return 0
 
-    for repo in myrepos:
-        mypath = os.path.join(SystemSettings['repositories']['available'][repo]['dbpath'], myfile)
-        if (not os.path.isfile(mypath)) or (not os.access(mypath, os.R_OK)):
-            if not etpUi['quiet']:
-                mytxt = "%s: %s." % (blue(os.path.basename(mypath)), darkred(_("not available")),)
-                print_error(darkred(" [%s] " % (repo,) )+mytxt)
+def _disable_repositories(entropy_client, repos):
+    excluded_repos = SystemSettings['repositories']['excluded']
+    available_repos = SystemSettings['repositories']['available']
+    default_repo = SystemSettings['repositories']['default_repository']
+    for repo in repos:
+        if repo in excluded_repos:
+            print_warning("[%s] %s" % (
+                purple(repo), blue(_("repository already disabled")),))
             continue
-        f = open(mypath, "r")
-        line = f.readline()
-        if not line:
-            if not etpUi['quiet']:
-                mytxt = "%s: %s." % (blue(os.path.basename(mypath)), darkred(_("is empty")),)
-                print_error(darkred(" [%s] " % (repo,) )+mytxt)
+        if repo not in available_repos:
+            print_warning("[%s] %s" % (
+                purple(repo), blue(_("repository not available")),))
             continue
-        if not etpUi['quiet']:
-            mytxt = "%s: %s." % (darkred(_("showing")), blue(os.path.basename(mypath)),)
-            print_info(darkred(" [%s] " % (repo,) )+mytxt)
-        while line:
-            sys.stdout.write(line)
-            line = f.readline()
-        f.close()
-        sys.stdout.write("\n")
+        if repo == default_repo:
+            print_warning("[%s] %s" % (
+                purple(repo), blue(_("cannot disable default repository")),))
+            continue
+        entropy_client.disable_repository(repo)
+        print_info("[%s] %s" % (
+            teal(repo), blue(_("repository enabled")),))
+    return 0
 
 def _show_repository_info(entropy_client, reponame):
 

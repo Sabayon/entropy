@@ -64,35 +64,19 @@ force sync regardless repositories status
 
 =back
 
-=item B<repoinfo>
+=item B<repo>
 
-show repositories information
+manage your repositories
 
 =over
 
-=item B<make.conf [repos]>
+=item B<enable>
 
-show make.conf for the chosen repositories
+enable given repository
 
-=item B<package.mask [repos]>
+=item B<disable>
 
-show package.mask for the chosen repositories
-
-=item B<package.unmask [repos]>
-
-show package.unmask for the chosen repositories
-
-=item B<package.keywords [repos]>
-
-show package.keywords for the chosen repositories
-
-=item B<package.use [repos]>
-
-show package.use for the chosen repositories
-
-=item B<profile.link [repos]>
-
-show make.profile link for the chosen repositories
+disable given repository
 
 =back
 
