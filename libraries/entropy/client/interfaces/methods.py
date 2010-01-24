@@ -37,13 +37,9 @@ import entropy.tools
 
 class RepositoryMixin:
 
-    __repo_error_messages_cache = set()
-    __repodb_cache = {}
-    _memory_db_instances = {}
-
     def validate_repositories(self, quiet = False):
         self.MirrorStatus.clear()
-        self.__repo_error_messages_cache.clear()
+        self._repo_error_messages_cache.clear()
 
         # clear live masking validation cache, if exists
         cl_id = self.sys_settings_client_plugin_id
@@ -106,7 +102,7 @@ class RepositoryMixin:
     def init_generic_memory_repository(self, repoid, description, package_mirrors = []):
         dbc = self.open_memory_database(dbname = repoid)
         repo_key = self.__get_repository_cache_key(repoid)
-        RepositoryMixin._memory_db_instances[repo_key] = dbc
+        self._memory_db_instances[repo_key] = dbc
 
         # add to self.SystemSettings['repositories']['available']
         repodata = {
@@ -120,15 +116,15 @@ class RepositoryMixin:
         return dbc
 
     def close_all_repositories(self, mask_clear = True):
-        for item in sorted(self.__repodb_cache.keys()):
+        for item in sorted(self._repodb_cache.keys()):
             # in-memory repositories cannot be closed
             # otherwise everything will be lost, to
             # effectively close these repos you
             # must call remove_repository method
-            if item in RepositoryMixin._memory_db_instances:
+            if item in self._memory_db_instances:
                 continue
-            self.__repodb_cache.pop(item).closeDB()
-        self.__repodb_cache.clear()
+            self._repodb_cache.pop(item).closeDB()
+        self._repodb_cache.clear()
 
         # disable hooks during SystemSettings cleanup
         # otherwise it makes entropy.client.interfaces.repository crazy
@@ -140,23 +136,23 @@ class RepositoryMixin:
 
 
     def is_repository_connection_cached(self, repoid):
-        if (repoid, etpConst['systemroot'],) in self.__repodb_cache:
+        if (repoid, etpConst['systemroot'],) in self._repodb_cache:
             return True
         return False
 
     def open_repository(self, repoid):
 
         key = self.__get_repository_cache_key(repoid)
-        if key not in self.__repodb_cache:
+        if key not in self._repodb_cache:
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
             except (self.dbapi2.OperationalError, TypeError,):
                 pass
-            self.__repodb_cache[key] = dbconn
+            self._repodb_cache[key] = dbconn
             return dbconn
-        return self.__repodb_cache.get(key)
+        return self._repodb_cache.get(key)
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):
 
@@ -167,29 +163,29 @@ class RepositoryMixin:
         repo_data = self.SystemSettings['repositories']['available']
         if repoid not in repo_data:
             t = _("bad repository id specified")
-            if repoid not in self.__repo_error_messages_cache:
+            if repoid not in self._repo_error_messages_cache:
                 self.output(
                     darkred(t),
                     importance = 2,
                     type = "warning"
                 )
-                self.__repo_error_messages_cache.add(repoid)
+                self._repo_error_messages_cache.add(repoid)
             raise RepositoryError("RepositoryError: %s" % (t,))
 
         if repo_data[repoid].get('in_memory'):
             repo_key = self.__get_repository_cache_key(repoid)
-            conn = RepositoryMixin._memory_db_instances.get(repo_key)
+            conn = self._memory_db_instances.get(repo_key)
         else:
             dbfile = repo_data[repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
             if not os.path.isfile(dbfile):
                 t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
-                if repoid not in self.__repo_error_messages_cache:
+                if repoid not in self._repo_error_messages_cache:
                     self.output(
                         darkred(t),
                         importance = 2,
                         type = "warning"
                     )
-                    self.__repo_error_messages_cache.add(repoid)
+                    self._repo_error_messages_cache.add(repoid)
                 raise RepositoryError("RepositoryError: %s" % (t,))
 
             conn = EntropyRepository(
@@ -312,7 +308,7 @@ class RepositoryMixin:
             self.SystemSettings.clear()
 
         repo_mem_key = self.__get_repository_cache_key(repoid)
-        mem_inst = RepositoryMixin._memory_db_instances.pop(repo_mem_key, None)
+        mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
         if isinstance(mem_inst, EntropyRepository):
             mem_inst.closeDB()
 

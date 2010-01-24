@@ -572,6 +572,13 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             load_ugc = True, url_fetcher = None,
             multiple_url_fetcher = None):
 
+        self._repo_error_messages_cache = set()
+        self._repodb_cache = {}
+        self._memory_db_instances = {}
+        self._QA_cache = {}
+        self._security_cache = {}
+        self._spm_cache = {}
+
         self._treeupdates_repos = set()
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")

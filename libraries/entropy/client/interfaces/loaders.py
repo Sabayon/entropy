@@ -16,9 +16,6 @@ from entropy.exceptions import *
 
 class LoadersMixin:
 
-    __QA_cache = {}
-    __security_cache = {}
-    __spm_cache = {}
     def __init__(self):
         from entropy.client.interfaces.client import Client
         from entropy.client.interfaces.trigger import Trigger
@@ -31,19 +28,19 @@ class LoadersMixin:
         self.__RepositorySecurityLoader = RepositorySecurity
 
     def closeAllQA(self):
-        self.__QA_cache.clear()
+        self._QA_cache.clear()
 
     def closeAllSecurity(self):
-        self.__security_cache.clear()
+        self._security_cache.clear()
 
     def Security(self):
         chroot = etpConst['systemroot']
-        cached = self.__security_cache.get(chroot)
+        cached = self._security_cache.get(chroot)
         if cached != None:
             return cached
         from entropy.security import System as system_sec
         cached = system_sec(self)
-        self.__security_cache[chroot] = cached
+        self._security_cache[chroot] = cached
         return cached
 
     def RepositorySecurity(self, keystore_dir = None):
@@ -58,12 +55,12 @@ class LoadersMixin:
 
     def QA(self):
         chroot = etpConst['systemroot']
-        cached = self.__QA_cache.get(chroot)
+        cached = self._QA_cache.get(chroot)
         if cached != None:
             return cached
         from entropy.qa import QAInterface
         cached = QAInterface(self)
-        self.__QA_cache[chroot] = cached
+        self._QA_cache[chroot] = cached
         return cached
 
     def Triggers(self, *args, **kwargs):
@@ -77,11 +74,11 @@ class LoadersMixin:
 
     def Spm(self):
         myroot = etpConst['systemroot']
-        cached = self.__spm_cache.get(myroot)
+        cached = self._spm_cache.get(myroot)
         if cached is not None:
             return cached
         spm = get_spm(self)
-        self.__spm_cache[myroot] = spm
+        self._spm_cache[myroot] = spm
         return spm
 
     def Spm_class(self):
