@@ -1495,6 +1495,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.start_working(do_busy = True)
         normal_cursor(self.ui.main)
+        self.ui.abortQueue.show()
         self.progress.show()
         self.switch_notebook_page('output')
         self.ui_lock(True)
@@ -1502,6 +1503,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def do_stop():
             self.end_working()
             self.progress.reset_progress()
+            self.ui.abortQueue.hide()
             self.show_notebook_tabs_after_install()
             self.ui_lock(False)
             self.gtk_loop()
