@@ -251,6 +251,21 @@ def colorize(color_key, text):
         return codes[color_key] + text + codes["reset"]
     return text
 
+def decolorize(text):
+    my_esc_seq = "\x1b"
+    new_text = ''
+    append = True
+    for char in text:
+        if char == my_esc_seq:
+            append = False
+            continue
+        elif char == "m" and not append:
+            append = True
+            continue
+        if append:
+            new_text += char
+    return new_text
+
 def bold(text):
     """
     Make text bold using bash/terminal codes.
