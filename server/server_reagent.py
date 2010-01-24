@@ -285,6 +285,8 @@ def repositories(options):
 
             while True:
                 try:
+                    w_dbconn.setRevision(idpackage,
+                        w_dbconn.retrieveRevision(idpackage) + 1)
                     w_dbconn.removeDependencies(idpackage)
                     w_dbconn.insertDependencies(idpackage, insert_deps)
                     w_dbconn.commitChanges()
