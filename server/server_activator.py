@@ -106,6 +106,7 @@ def sync(options, just_tidy = False):
                                 if line.strip().startswith("#"):
                                     continue
                                 commit_msg += line
+                        print_generic(commit_msg)
                         ServerRssMetadata()['commitmessage'] = commit_msg
 
                 elif etpConst['rss-feed']:
