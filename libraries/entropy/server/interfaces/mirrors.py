@@ -1107,7 +1107,7 @@ class Server:
         dbconn = self.Entropy.open_server_repository(db_path,
             just_reading = True, repo = repo, do_treeupdates = False)
         dbconn.doDatabaseExport(f_out, exclude_tables = exclude_tables)
-        self.Entropy.close_server_database(dbconn)
+        self.Entropy.close_repository(dbconn)
         f_out.close()
 
     def create_file_checksum(self, file_path, checksum_path):
@@ -1667,13 +1667,17 @@ class Server:
         dbconn.vacuum()
         dbconn.vacuum()
         dbconn.commitChanges()
-        self.Entropy.close_server_database(dbconn)
+        self.Entropy.close_repository(dbconn)
+
+    def _get_current_timestamp(self):
+        from datetime import datetime
+        return "%s" % (datetime.fromtimestamp(time.time()),)
 
     def update_repository_timestamp(self, repo = None):
         if repo is None:
             repo = self.Entropy.default_repository
         ts_file = self.Entropy.get_local_database_timestamp_file(repo)
-        current_ts = self.Entropy.get_current_timestamp()
+        current_ts = self._get_current_timestamp()
         ts_f = open(ts_file, "w")
         ts_f.write(current_ts)
         ts_f.flush()
@@ -1724,7 +1728,23 @@ class Server:
             dbconn.bumpTreeUpdatesActions(backed_up_entries)
 
         dbconn.commitChanges()
-        self.Entropy.close_server_database(dbconn)
+        self.Entropy.close_repository(dbconn)
+
+    def create_repository_pkglist(self, repo = None, branch = None):
+        pkglist_file = self.Entropy.get_local_pkglist_file(repo = repo,
+            branch = branch)
+
+        tmp_pkglist_file = pkglist_file + ".tmp"
+        dbconn = self.Entropy.open_server_repository(repo = repo,
+            just_reading = True, do_treeupdates = False)
+        pkglist = dbconn.listAllDownloads(do_sort = True, full_path = True)
+
+        with open(tmp_pkglist_file, "w") as pkg_f:
+            for pkg in pkglist:
+                pkg_f.write(pkg + "\n")
+            pkg_f.flush()
+
+        os.rename(tmp_pkglist_file, pkglist_file)
 
     def upload_database(self, uris, lock_check = False, pretend = False,
             repo = None):
@@ -1772,7 +1792,7 @@ class Server:
             # create/update timestamp file
             self.update_repository_timestamp(repo)
             # create pkglist service file
-            self.Entropy.create_repository_pkglist(repo)
+            self.create_repository_pkglist(repo)
 
             upload_data, critical, text_files, gpg_to_sign_files = \
                 self._get_files_to_sync(cmethod, repo = repo,
@@ -1808,8 +1828,8 @@ class Server:
             repo_dbconn.doCleanups()
 
             self.sync_database_treeupdates(repo)
-            self.Entropy.update_database_package_sets(repo)
-            self.Entropy.close_server_databases()
+            self.Entropy._update_database_package_sets(repo)
+            self.Entropy.close_repositories()
 
             # backup current database to avoid re-indexing
             old_dbpath = self.Entropy.get_local_database_file(repo)
@@ -1870,7 +1890,7 @@ class Server:
                 shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
                 # open and remove content table
                 eapi1_tmp_dbconn = \
-                    self.Entropy.ClientService.open_generic_database(
+                    self.Entropy.Client.open_generic_database(
                         temp_eapi1_dbfile, indexing_override = False,
                         xcache = False)
                 eapi1_tmp_dbconn.dropContent()
@@ -1935,7 +1955,7 @@ class Server:
 
                 # copy db back
                 if copy_back and os.path.isfile(backup_dbpath):
-                    self.Entropy.close_server_databases()
+                    self.Entropy.close_repositories()
                     further_backup_dbpath = old_dbpath+".security_backup"
                     if os.path.isfile(further_backup_dbpath):
                         os.remove(further_backup_dbpath)
@@ -2072,7 +2092,7 @@ class Server:
                     fromfile = os.path.join(mytmpdir, myfile)
                     tofile = os.path.join(database_dir_path, myfile)
                     shutil.move(fromfile, tofile)
-                    self.Entropy.ClientService.setup_default_file_perms(tofile)
+                    self.Entropy.Client.setup_default_file_perms(tofile)
 
             if os.path.isdir(mytmpdir):
                 shutil.rmtree(mytmpdir)
@@ -2216,7 +2236,7 @@ class Server:
                 )
                 return 3, set(), set()
 
-            problems = self.Entropy.check_config_file_updates()
+            problems = self.Entropy._check_config_file_updates()
             if problems:
                 return 4, set(), set()
 

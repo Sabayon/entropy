@@ -177,12 +177,12 @@ main_cmd = options.pop(0)
 if main_cmd == "update":
     import server_reagent
     rc = server_reagent.update(options)
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
 
 elif main_cmd == "inject":
     import server_reagent
     rc = server_reagent.inject(options)
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
 
 # database tool
 elif main_cmd == "database":
@@ -190,7 +190,7 @@ elif main_cmd == "database":
         etpUi['warn'] = False
     import server_reagent
     server_reagent.database(options)
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
     rc = 0
 
 elif main_cmd == "query":
@@ -208,14 +208,14 @@ elif main_cmd == "key":
 elif main_cmd == "deptest":
     import server_reagent
     server_reagent.Entropy.dependencies_test()
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
     rc = 0
 
 elif main_cmd == "pkgtest":
 
     import server_reagent
     server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
     rc = 0
 
 elif main_cmd == "libtest":
@@ -223,12 +223,12 @@ elif main_cmd == "libtest":
     dump = "--dump" in options
     rc, pkgs = server_reagent.Entropy.test_shared_objects(
         dump_results_to_file = dump)
-    x = server_reagent.Entropy.close_server_databases()
+    x = server_reagent.Entropy.close_repositories()
 
 elif main_cmd == "revdeps":
     import server_reagent
     rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
 
 # cleanup
 elif main_cmd == "cleanup":
@@ -239,7 +239,7 @@ elif main_cmd == "cleanup":
 elif main_cmd == "spm":
     import server_reagent
     rc = server_reagent.spm(options)
-    server_reagent.Entropy.close_server_databases()
+    server_reagent.Entropy.close_repositories()
 
 if rc == -10:
     print_menu(help_opts)

@@ -68,7 +68,7 @@ def sync(options, just_tidy = False):
         if not just_tidy:
 
             mirrors_tainted, mirrors_errors, successfull_mirrors, \
-                broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(
+                broken_mirrors, check_data = Entropy.Mirrors.sync_packages(
                     ask = not do_noask, pretend = etpUi['pretend'])
 
             if mirrors_errors and not successfull_mirrors:
@@ -114,7 +114,7 @@ def sync(options, just_tidy = False):
 
             errors, fine, broken = sync_remote_databases()
             if not errors:
-                Entropy.MirrorsService.lock_mirrors(lock = False)
+                Entropy.Mirrors.lock_mirrors(lock = False)
             if not errors and not do_noask:
                 q_rc = Entropy.ask_question(
                     _("Should I continue with the tidy procedure ?"))
@@ -125,7 +125,7 @@ def sync(options, just_tidy = False):
                 continue
 
         if not errors:
-            Entropy.MirrorsService.tidy_mirrors(ask = not do_noask,
+            Entropy.Mirrors.tidy_mirrors(ask = not do_noask,
                 pretend = etpUi['pretend'])
         else:
             rc = 1
@@ -172,7 +172,7 @@ def packages(options):
                 Entropy.switch_default_repository(repo)
 
             mirrors_tainted, mirrors_errors, successfull_mirrors, \
-            broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(
+            broken_mirrors, check_data = Entropy.Mirrors.sync_packages(
                 ask = etpUi['ask'],
                 pretend = etpUi['pretend'],
                 packages_check = do_pkg_check)
@@ -269,14 +269,14 @@ def notice(options):
         data = Entropy.input_box(blue("%s") % (_("Repository notice board, new item insertion"),), input_params, cancel_button = True)
         if data is None:
             return 0
-        status = Entropy.MirrorsService.update_notice_board(title = data['title'], notice_text = data['text'], link = data['url'])
+        status = Entropy.Mirrors.update_notice_board(title = data['title'], notice_text = data['text'], link = data['url'])
         if status:
             return 0
         return 1
 
     elif options[0] == "read":
 
-        data = Entropy.MirrorsService.read_notice_board()
+        data = Entropy.Mirrors.read_notice_board()
         if data is None:
             print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
             return 1
@@ -295,7 +295,7 @@ def notice(options):
 
     elif options[0] == "remove":
 
-        data = Entropy.MirrorsService.read_notice_board()
+        data = Entropy.Mirrors.read_notice_board()
         if data is None:
             print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
             return 1
@@ -312,17 +312,17 @@ def notice(options):
                     _("Are you sure you want to remove this?"))
                 if q_rc == _("Yes"):
                     changed = True
-                    Entropy.MirrorsService.remove_from_notice_board(sel)
-                    data = Entropy.MirrorsService.read_notice_board(do_download = False)
+                    Entropy.Mirrors.remove_from_notice_board(sel)
+                    data = Entropy.Mirrors.read_notice_board(do_download = False)
                     items, counter = data
             elif sel == -1:
                 break
 
         if changed or (counter == 0):
             if counter == 0:
-                status = Entropy.MirrorsService.remove_notice_board()
+                status = Entropy.Mirrors.remove_notice_board()
             else:
-                status = Entropy.MirrorsService.upload_notice_board()
+                status = Entropy.Mirrors.upload_notice_board()
             if not status:
                 return 1
         return 0
@@ -343,7 +343,7 @@ def database(options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to lock mirrors databases"),) ))
-        rc = Entropy.MirrorsService.lock_mirrors(lock = True)
+        rc = Entropy.Mirrors.lock_mirrors(lock = True)
         if rc:
             print_info(green(" * ")+red("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
@@ -355,7 +355,7 @@ def database(options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to unlock mirrors databases"),)))
-        rc = Entropy.MirrorsService.lock_mirrors(lock = False)
+        rc = Entropy.Mirrors.lock_mirrors(lock = False)
         if rc:
             print_info(green(" * ")+green("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
@@ -368,7 +368,7 @@ def database(options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to lock download mirrors databases"),) ))
-        rc = Entropy.MirrorsService.lock_mirrors_for_download(lock = True)
+        rc = Entropy.Mirrors.lock_mirrors_for_download(lock = True)
         if rc:
             print_info(green(" * ")+green("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
@@ -380,7 +380,7 @@ def database(options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to unlock download mirrors databases"),) ))
-        rc = Entropy.MirrorsService.lock_mirrors_for_download(lock = False)
+        rc = Entropy.Mirrors.lock_mirrors_for_download(lock = False)
         if rc:
             print_info(green(" * ")+green("%s ..." % (
                 _("A problem occured on at least one mirror"),) ))
@@ -391,7 +391,7 @@ def database(options):
     elif cmd == "lock-status":
 
         print_info(brown(" * ")+green("%s:" % (_("Mirrors status table"),) ))
-        dbstatus = Entropy.MirrorsService.get_mirrors_lock()
+        dbstatus = Entropy.Mirrors.get_mirrors_lock()
         for db in dbstatus:
             if (db[1]):
                 db[1] = red(_("Locked"))
@@ -444,7 +444,7 @@ def database(options):
 
 def sync_remote_databases():
 
-    remote_db_status = Entropy.MirrorsService.get_remote_databases_status()
+    remote_db_status = Entropy.Mirrors.get_remote_databases_status()
     print_info(green(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
 
@@ -460,8 +460,8 @@ def sync_remote_databases():
             blue(str(local_revision)))
 
     # do the rest
-    errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases()
-    remote_status = Entropy.MirrorsService.get_remote_databases_status()
+    errors, fine_uris, broken_uris = Entropy.Mirrors.sync_databases()
+    remote_status = Entropy.Mirrors.get_remote_databases_status()
     print_info(darkgreen(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
     for dbstat in remote_status:

@@ -542,7 +542,8 @@ class Base:
                 # run inject
                 for idpackage, repoid in to_inject:
                     matches_injected.add((idpackage, repoid,))
-                    Entropy.transform_package_into_injected(idpackage, repo = repoid)
+                    Entropy._transform_package_into_injected(idpackage,
+                        repo = repoid)
 
                 if to_remove: Entropy.output(_("Running package removal"))
 
@@ -805,7 +806,7 @@ class Base:
 
                         try:
                             upload_queue, download_queue, removal_queue, \
-                                fine_queue, remote_packages_data = Entropy.MirrorsService.calculate_packages_to_sync(
+                                fine_queue, remote_packages_data = Entropy.Mirrors.calculate_packages_to_sync(
                                     uri, Entropy.SystemSettings['repositories']['branch'],
                                     repoid)
                         except socket.error:
@@ -814,7 +815,7 @@ class Base:
                             continue
 
                         if (upload_queue or download_queue or removal_queue):
-                            upload, download, removal, copy, metainfo = Entropy.MirrorsService.expand_queues(
+                            upload, download, removal, copy, metainfo = Entropy.Mirrors.expand_queues(
                                 upload_queue,
                                 download_queue,
                                 removal_queue,
@@ -833,7 +834,7 @@ class Base:
                         # now the db
                         current_revision = Entropy.get_local_database_revision(repoid)
                         remote_revision = Entropy.get_remote_database_revision(repoid)
-                        download_latest, upload_queue = Entropy.MirrorsService.calculate_database_sync_queues(repoid)
+                        download_latest, upload_queue = Entropy.Mirrors.calculate_database_sync_queues(repoid)
 
                         repo_data[repoid][crippled_uri]['database'] = {
                             'current_revision': current_revision,
@@ -873,7 +874,7 @@ class Base:
 
         def sync_remote_databases(repoid, pretend):
 
-            rdb_status = Entropy.MirrorsService.get_remote_databases_status()
+            rdb_status = Entropy.Mirrors.get_remote_databases_status()
             Entropy.output(
                 "%s:" % (_("Remote Entropy Database Repository Status"),),
                 header = " * "
@@ -886,8 +887,8 @@ class Base:
             if pretend:
                 return 0, set(), set()
 
-            errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases(no_upload = False)
-            remote_status = Entropy.MirrorsService.get_remote_databases_status(repoid)
+            errors, fine_uris, broken_uris = Entropy.Mirrors.sync_databases(no_upload = False)
+            remote_status = Entropy.Mirrors.get_remote_databases_status(repoid)
             Entropy.output(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:
                 Entropy.output("\t %s:\t%s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
@@ -933,7 +934,7 @@ class Base:
 
                         mirrors_tainted, mirrors_errors, \
                         successfull_mirrors, broken_mirrors, \
-                        check_data = Entropy.MirrorsService.sync_packages(
+                        check_data = Entropy.Mirrors.sync_packages(
                             ask = False, pretend = repository_data[repoid]['pretend'],
                             packages_check = repository_data[repoid]['pkg_check'], repo = repoid)
 
@@ -959,8 +960,8 @@ class Base:
                         repo_data[repoid]['db_broken'] = broken.copy()
                         if errors:
                             continue
-                        Entropy.MirrorsService.lock_mirrors(lock = False, repo = repoid)
-                        Entropy.MirrorsService.tidy_mirrors(
+                        Entropy.Mirrors.lock_mirrors(lock = False, repo = repoid)
+                        Entropy.Mirrors.tidy_mirrors(
                             repo = repoid, ask = False,
                             pretend = repository_data[repoid]['pretend']
                         )
@@ -1015,7 +1016,7 @@ class Base:
             mystdin = self._get_stdin(queue_id)
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.read_notice_board(repo = repoid)
+                data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.read_notice_board(repo = repoid)
                 if data == None:
                     return False, None
                 return True, data
@@ -1052,8 +1053,8 @@ class Base:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 for entry_id in entry_ids:
-                    data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.remove_from_notice_board(entry_id, repo = repoid)
-                self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.upload_notice_board(repo = repoid)
+                    data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.remove_from_notice_board(entry_id, repo = repoid)
+                self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.upload_notice_board(repo = repoid)
                 return True, data
             except Exception as e:
                 entropy.tools.print_traceback()
@@ -1087,7 +1088,7 @@ class Base:
             mystdin = self._get_stdin(queue_id)
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.update_notice_board(title, notice_text, link = link, repo = repoid)
+                data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.update_notice_board(title, notice_text, link = link, repo = repoid)
                 return True, data
             except Exception as e:
                 entropy.tools.print_traceback()

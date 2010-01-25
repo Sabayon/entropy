@@ -39,7 +39,7 @@ def inject(options):
     if idpackages:
         # checking dependencies and print issues
         Entropy.dependencies_test()
-    Entropy.close_server_databases()
+    Entropy.close_repositories()
 
 def repositories(options):
 
@@ -296,7 +296,7 @@ def repositories(options):
             print_info(brown(" @@ ")+"%s: %s" % (blue(atom),
                 darkgreen(_("dependencies updated successfully")),))
 
-        Entropy.close_server_databases()
+        Entropy.close_repositories()
         return 0
 
     elif cmd in ["move", "copy"]:
@@ -456,7 +456,8 @@ def update(options):
                     dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                     atom = dbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("%s: " % (_("Transforming from database"),) )+red(atom))
-                    Entropy.transform_package_into_injected(idpackage, repo = repoid)
+                    Entropy._transform_package_into_injected(idpackage,
+                        repo = repoid)
                 print_info(brown(" @@ ")+blue("%s." % (_("Database transform complete"),) ))
 
         def show_rm(idpackage, repoid):
@@ -464,7 +465,7 @@ def update(options):
                 no_upload = True, repo = repoid)
             atom = dbconn.retrieveAtom(idpackage)
             exp_string = ''
-            pkg_expired = Entropy.is_match_expired((idpackage, repoid,))
+            pkg_expired = Entropy._is_match_expired((idpackage, repoid,))
             if pkg_expired:
                 exp_string = "|%s" % (purple(_("expired")),)
             print_info(brown("    # ")+"["+blue(repoid)+exp_string+"] "+red(atom))
@@ -556,7 +557,7 @@ def update(options):
                 if rc == _("No"):
                     return 0
 
-            problems = Entropy.check_config_file_updates()
+            problems = Entropy._check_config_file_updates()
             if problems:
                 return 1
 
@@ -584,7 +585,7 @@ def update(options):
     if idpackages:
         # checking dependencies and print issues
         Entropy.dependencies_test()
-    Entropy.close_server_databases()
+    Entropy.close_repositories()
     print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
     return 0
 
@@ -616,7 +617,8 @@ def database(options):
 
     if (options[0] == "--initialize"):
 
-        rc = Entropy.initialize_server_database(empty = d_request_empty, repo = repo)
+        rc = Entropy.initialize_server_repository(empty = d_request_empty,
+            repo = repo)
         if rc == 0:
             print_info(darkgreen(" * ")+red(_("Entropy database has been reinitialized using binary packages available")))
 
@@ -630,7 +632,7 @@ def database(options):
         if os.path.isfile(dbpath):
             print_error(darkgreen(" * ")+red("%s: " % (_("Cannot overwrite already existing file"),) )+dbpath)
             return 1
-        Entropy.create_empty_database(dbpath)
+        Entropy.setup_empty_repository(dbpath)
         return 0
 
     elif (options[0] == "switchbranch"):
@@ -766,7 +768,7 @@ def database(options):
         print_info(green(" * ")+red("%s ..." % (_("Removing selected packages"),) ))
         Entropy.remove_packages(idpackages)
 
-        Entropy.close_server_database(dbconn)
+        Entropy.close_repository(dbconn)
         print_info(darkgreen(" * ")+red(_("Packages removed. To remove binary packages, run activator.")))
         return 0
 
@@ -780,14 +782,14 @@ def database(options):
     elif (options[0] == "bump"):
 
         print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
-        Entropy.bump_database()
+        Entropy._bump_database()
         if d_request_sync:
-            errors, fine, broken = Entropy.MirrorsService.sync_databases()
+            errors, fine, broken = Entropy.Mirrors.sync_databases()
 
     elif (options[0] == "backup"):
 
         db_path = Entropy.get_local_database_file()
-        rc, err_msg = Entropy.ClientService.backup_database(db_path, backup_dir = os.path.dirname(db_path))
+        rc, err_msg = Entropy.Client.backup_database(db_path, backup_dir = os.path.dirname(db_path))
         if not rc:
             print_info(darkred(" ** ")+red("%s: %s" % (_("Error"), err_msg,) ))
             return 1
@@ -798,7 +800,7 @@ def database(options):
 
         db_file = Entropy.get_local_database_file()
         db_dir = os.path.dirname(db_file)
-        dblist = Entropy.ClientService.list_backedup_client_databases(client_dbdir = db_dir)
+        dblist = Entropy.Client.list_backedup_client_databases(client_dbdir = db_dir)
         if not dblist:
             print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
             return 1
@@ -831,7 +833,7 @@ def database(options):
             if not os.path.isfile(dbpath): continue
             break
 
-        status, err_msg = Entropy.ClientService.restore_database(dbpath, db_file)
+        status, err_msg = Entropy.Client.restore_database(dbpath, db_file)
         if status:
             return 0
         return 1
@@ -974,7 +976,7 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
         dbopts.append("--atoms")
         dbopts.extend(sorted(done_atoms))
         rc = update(dbopts)
-        Entropy.close_server_databases()
+        Entropy.close_repositories()
         if rc != 0:
             return rc
 

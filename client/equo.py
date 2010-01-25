@@ -444,10 +444,10 @@ def _do_text_community(main_cmd, options):
             if options:
                 if options[0] == "update":
                     rc = server_reagent.update(options[1:])
-                    server_reagent.Entropy.close_server_databases()
+                    server_reagent.Entropy.close_repositories()
                 elif options[0] == "inject":
                     rc = server_reagent.inject(options[1:])
-                    server_reagent.Entropy.close_server_databases()
+                    server_reagent.Entropy.close_repositories()
     elif sub_cmd == "mirrors":
         try:
             import server_activator
@@ -486,7 +486,7 @@ def _do_text_community(main_cmd, options):
                 rc = 1
             else:
                 rc = server_reagent.database(options)
-                server_reagent.Entropy.close_server_databases()
+                server_reagent.Entropy.close_repositories()
 
     elif sub_cmd == "repo":
         try:
@@ -534,7 +534,7 @@ def _do_text_community(main_cmd, options):
                 rc = 1
             else:
                 rc = server_reagent.spm(options)
-                server_reagent.Entropy.close_server_databases()
+                server_reagent.Entropy.close_repositories()
 
     elif sub_cmd == "deptest":
         try:
@@ -544,7 +544,7 @@ def _do_text_community(main_cmd, options):
             rc = 1
         else:
             server_reagent.Entropy.dependencies_test()
-            server_reagent.Entropy.close_server_databases()
+            server_reagent.Entropy.close_repositories()
             rc = 0
 
     elif sub_cmd == "pkgtest":
@@ -555,7 +555,7 @@ def _do_text_community(main_cmd, options):
             rc = 1
         else:
             server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
-            server_reagent.Entropy.close_server_databases()
+            server_reagent.Entropy.close_repositories()
             rc = 0
 
     elif sub_cmd == "revdeps":
@@ -566,7 +566,7 @@ def _do_text_community(main_cmd, options):
             rc = 1
         else:
             rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
-            server_reagent.Entropy.close_server_databases()
+            server_reagent.Entropy.close_repositories()
 
     return rc
 
