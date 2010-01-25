@@ -4246,12 +4246,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: dependencies of given package
         @rtype: list or set
         """
-        searchdata = [idpackage]
+        searchdata = (idpackage,)
 
         depstring = ''
         if deptype is not None:
-            depstring = ' and dependencies.type = (?)'
-            searchdata.append(deptype)
+            depstring = 'and dependencies.type = (?)'
+            searchdata += (deptype,)
 
         excluded_deptypes_query = ""
         if exclude_deptypes is not None:
