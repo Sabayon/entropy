@@ -1,12 +1,8 @@
 
   0.99.30:
 
-    - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
-    - equo repo enable/disable/add/remove
-    - sulfur: search sulfur in applications (try it)
-    - sulfur: add pkg icon through dnd
 
   0.99.40:
 
