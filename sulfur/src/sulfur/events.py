@@ -38,7 +38,7 @@ from entropy.misc import TimeScheduled, ParallelTask
 from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
 from sulfur.dialogs import okDialog, input_box, TextReadDialog, questionDialog, \
-    FileChooser, AboutDialog, errorMessage, AddRepositoryWindow
+    FileChooser, AboutDialog, errorMessage, AddRepositoryWindow, TipsWindow
 from sulfur.core import busy_cursor, normal_cursor
 
 
@@ -738,6 +738,10 @@ class SulfurApplicationEventsMixin:
         about = AboutDialog(const.PIXMAPS_PATH+'/sulfur-about.png',
             const.CREDITS, SulfurConf.branding_title)
         about.show()
+
+    def on_HelpTips(self, widget = None):
+        win = TipsWindow(self.ui.main)
+        win.show()
 
     def on_notebook1_switch_page(self, widget, page, page_num):
         if page_num == const.PREF_PAGES['ugc']:

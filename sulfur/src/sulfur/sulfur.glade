@@ -84,6 +84,21 @@
                 <child>
                   <widget class="GtkMenu" id="help1_menu">
                     <child>
+                      <widget class="GtkImageMenuItem" id="helpTips">
+                        <property name="label" translatable="yes">Tips 'n tricks</property>
+                        <property name="visible">True</property>
+                        <property name="tooltip" translatable="yes">Show Sulfur tips and tricks</property>
+                        <property name="use_stock">False</property>
+                        <signal name="activate" handler="on_HelpTips"/>
+                        <child internal-child="image">
+                          <widget class="GtkImage" id="image4">
+                            <property name="visible">True</property>
+                            <property name="icon_name">dialog-information</property>
+                          </widget>
+                        </child>
+                      </widget>
+                    </child>
+                    <child>
                       <widget class="GtkImageMenuItem" id="helpAbout">
                         <property name="label">gtk-about</property>
                         <property name="visible">True</property>
@@ -9740,7 +9755,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
   <widget class="GtkWindow" id="ugcAdd">
     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
     <property name="title" translatable="yes">UGC Entry Information</property>
-    <property name="window_position">center-always</property>
+    <property name="window_position">center-on-parent</property>
     <property name="default_width">500</property>
     <child>
       <widget class="GtkFrame" id="frame7">
@@ -13326,6 +13341,168 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
         <signal name="activate" handler="on_pkgsetUndoremove_activate"/>
+      </widget>
+    </child>
+  </widget>
+  <widget class="GtkWindow" id="sulfurTips">
+    <property name="height_request">280</property>
+    <property name="tooltip" translatable="yes">Sulfur tips and tricks</property>
+    <property name="title" translatable="yes">Tips 'n tricks</property>
+    <property name="window_position">center-on-parent</property>
+    <property name="icon_name">dialog-information</property>
+    <signal name="delete_event" handler="on_sulfurTips_delete_event"/>
+    <child>
+      <widget class="GtkAlignment" id="alignment1">
+        <property name="visible">True</property>
+        <property name="bottom_padding">5</property>
+        <property name="left_padding">5</property>
+        <property name="right_padding">5</property>
+        <child>
+          <widget class="GtkVBox" id="vbox1">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <widget class="GtkHBox" id="hbox1">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkVBox" id="vbox2">
+                    <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <widget class="GtkImage" id="image1">
+                        <property name="visible">True</property>
+                        <property name="yalign">1</property>
+                        <property name="pixel_size">128</property>
+                        <property name="icon_name">dialog-information</property>
+                        <property name="icon-size">6</property>
+                      </widget>
+                      <packing>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkLabel" id="label1">
+                        <property name="visible">True</property>
+                        <property name="yalign">0</property>
+                        <property name="use_markup">True</property>
+                        <property name="justify">center</property>
+                      </widget>
+                      <packing>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">False</property>
+                    <property name="padding">14</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkAlignment" id="alignment2">
+                    <property name="visible">True</property>
+                    <child>
+                      <widget class="GtkLabel" id="sulfurTipsLabel">
+                        <property name="visible">True</property>
+                        <property name="xalign">0.10000000149011612</property>
+                        <property name="label" translatable="yes">tooltip text</property>
+                        <property name="use_markup">True</property>
+                        <property name="wrap">True</property>
+                      </widget>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <widget class="GtkHBox" id="hbox2">
+                <property name="visible">True</property>
+                <child>
+                  <widget class="GtkCheckButton" id="sulfurTipShowStartup">
+                    <property name="label" translatable="yes">Show tips on startup</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_sulfurTipShowStartup_toggled"/>
+                  </widget>
+                  <packing>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <widget class="GtkHButtonBox" id="hbuttonbox1">
+                    <property name="visible">True</property>
+                    <property name="spacing">5</property>
+                    <property name="layout_style">end</property>
+                    <child>
+                      <widget class="GtkButton" id="sulfurTipsPrevButton">
+                        <property name="label">gtk-go-back</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="clicked" handler="on_sulfurTipsPrevButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="sulfurTipsNextButton">
+                        <property name="label">gtk-go-forward</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="clicked" handler="on_sulfurTipsNextButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <widget class="GtkButton" id="sulfurTipsCloseButton">
+                        <property name="label">gtk-close</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <property name="use_stock">True</property>
+                        <signal name="clicked" handler="on_sulfurTipsCloseButton_clicked"/>
+                      </widget>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                  </widget>
+                  <packing>
+                    <property name="padding">5</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </widget>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </widget>
+        </child>
       </widget>
     </child>
   </widget>

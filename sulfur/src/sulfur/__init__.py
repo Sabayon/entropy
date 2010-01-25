@@ -114,6 +114,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if "--nonoticeboard" not in sys.argv:
                 if not self.Equo.are_noticeboards_marked_as_read():
                     self.show_notice_board(force = False)
+                else:
+                    self.show_sulfur_tips()
 
     def quit(self, widget = None, event = None, sysexit = True):
 
@@ -1277,6 +1279,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if cached:
             self.filesView.populate(cached)
 
+    def show_sulfur_tips(self):
+        if SulfurConf.show_startup_tips:
+            win = TipsWindow(self.ui.main)
+            win.show()
+
     def show_notice_board(self, force = True):
         repoids = {}
         for repoid in self.Equo.validRepositories:
@@ -1292,6 +1299,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             repoids[repoid] = board_file
         if repoids:
             self.load_notice_board(repoids)
+        else:
+            self.show_sulfur_tips()
 
     def load_notice_board(self, repoids):
         my = NoticeBoardWindow(self.ui.main, self.Equo)

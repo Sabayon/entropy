@@ -182,6 +182,7 @@ class SulfurConf:
     color_error_on_color_background = '#FFFFFF'
     color_package_category = '#9C7234' # brown
     simple_mode = 1
+    show_startup_tips = 1
 
     filelist = True
     changelog = False
@@ -226,6 +227,7 @@ class SulfurConf:
             "color_package_category": validate_color_conf,
             "simple_mode": foo_validator,
             "relaxed_deps": foo_validator,
+            "show_startup_tips": foo_validator,
         }
         return config_data
 
@@ -254,6 +256,7 @@ class SulfurConf:
             "color_package_category": SulfurConf.color_package_category,
             "simple_mode": SulfurConf.simple_mode,
             "relaxed_deps": SulfurConf.relaxed_deps,
+            "show_startup_tips": SulfurConf.show_startup_tips,
         }
         return config_data
 

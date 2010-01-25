@@ -63,6 +63,54 @@ class MenuSkel:
             i = i + 1
         return result
 
+class TipsWindow(MenuSkel):
+
+    TIPS = [
+        _("Did you know that you can comment, vote and add documents to applications like in a wiki?"),
+        _("Did you know that you can add icons or files to applications by simply dropping images from your Desktop onto them?"),
+        _("Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced mode?"),
+        _("Did you know that the guy who wrote this tip was really asleep at the time?"),
+        _("Did you know that you can backup your installed application repository by enabling Advanced mode and going to Preferences tab?"),
+        _("Did you know that you can customize interface colors by enabling Advanced mode and going to Preferences tab?"),
+    ]
+
+    def __init__(self, parent):
+        self._tips_index = 0
+        self.tips_ui = UI( const.GLADE_FILE, 'sulfurTips', 'entropy' )
+        self.tips_ui.signal_autoconnect(self._getAllMethods())
+        self.tips_ui.sulfurTips.set_transient_for(parent)
+        self.window = self.tips_ui.sulfurTips
+        self.label = self.tips_ui.sulfurTipsLabel
+        self.label.set_markup(TipsWindow.TIPS[self._tips_index])
+        self.tips_ui.sulfurTipShowStartup.set_active(
+            SulfurConf.show_startup_tips)
+
+    def show(self):
+        self.window.present()
+
+    def on_sulfurTipShowStartup_toggled(self, widget):
+        if SulfurConf.show_startup_tips == 0:
+            SulfurConf.show_startup_tips = 1
+        else:
+            SulfurConf.show_startup_tips = 0
+        SulfurConf.save()
+
+    def on_sulfurTipsPrevButton_clicked(self, widget):
+        self._tips_index = (self._tips_index - 1) % len(TipsWindow.TIPS)
+        self.label.set_markup(TipsWindow.TIPS[self._tips_index])
+
+    def on_sulfurTipsNextButton_clicked(self, widget):
+        self._tips_index = (self._tips_index + 1) % len(TipsWindow.TIPS)
+        self.label.set_markup(TipsWindow.TIPS[self._tips_index])
+
+    def on_sulfurTipsCloseButton_clicked(self, widget):
+        self.window.hide()
+        return True
+
+    def on_sulfurTips_delete_event(self, *args):
+        self.window.hide()
+        return True
+
 class AddRepositoryWindow(MenuSkel):
 
     def __init__(self, application, window, entropy):
@@ -418,6 +466,7 @@ class NoticeBoardWindow(MenuSkel):
                 mydict['repoid'] = repoid
                 self.model.append( parent, (mydict,) )
 
+
 class RmNoticeBoardMenu(MenuSkel):
 
     def __init__(self, window):
@@ -480,6 +529,7 @@ class RmNoticeBoardMenu(MenuSkel):
         self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_subdesc, t,))
         self.rm_ui.rmNoticeBoardInfo.show_all()
         self.item = item
+
 
 class PkgInfoMenu(MenuSkel):
 
@@ -604,7 +654,6 @@ class PkgInfoMenu(MenuSkel):
                 cell.set_property('foreground', None)
         except TypeError:
             pass
-
 
     def on_button_press(self, widget, event):
         self.pkginfo_ui.pkgInfo.begin_move_drag(
@@ -1399,6 +1448,7 @@ class PkgInfoMenu(MenuSkel):
             pass
 
         self.pkginfo_ui.pkgInfo.show()
+
 
 class SecurityAdvisoryMenu(MenuSkel):
 
