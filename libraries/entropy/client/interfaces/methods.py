@@ -1421,7 +1421,8 @@ class MiscMixin:
         # etpConst should be readonly but we override the rule here
         # this is also useful when no config file or parameter into it exists
         etpConst['branch'] = branch
-        entropy.tools.write_new_branch(branch)
+        entropy.tools.write_parameter_to_file(etpConst['repositoriesconf'],
+            "branch", branch)
         # there are no valid repos atm
         del self.validRepositories[:]
         self.SystemSettings.clear()

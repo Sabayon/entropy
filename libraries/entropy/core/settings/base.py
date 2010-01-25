@@ -647,6 +647,29 @@ class SystemSettings(Singleton, EntropyPluginStore):
             self.__mtime_files['license_accept_mtime'])
         return self.__generic_parser(self.__setting_files['license_accept'])
 
+    def _extract_packages_from_set_file(self, filepath):
+        """
+        docstring_title
+
+        @param filepath: 
+        @type filepath: 
+        @return: 
+        @rtype: 
+        """
+        if sys.hexversion >= 0x3000000:
+            f = open(filepath, "r", encoding = 'raw_unicode_escape')
+        else:
+            f = open(filepath, "r")
+        items = set()
+        line = f.readline()
+        while line:
+            x = line.strip().rsplit("#", 1)[0]
+            if x and (not x.startswith('#')):
+                items.add(x)
+            line = f.readline()
+        f.close()
+        return items
+
     def _system_package_sets_parser(self):
         """
         Parser returning system defined package sets read from
@@ -658,8 +681,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         data = {}
         for set_name in self.__setting_files['system_package_sets']:
             set_filepath = self.__setting_files['system_package_sets'][set_name]
-            set_elements = entropy.tools.extract_packages_from_set_file(
-                set_filepath)
+            set_elements = self._extract_packages_from_set_file(set_filepath)
             if set_elements:
                 data[set_name] = set_elements.copy()
         return data

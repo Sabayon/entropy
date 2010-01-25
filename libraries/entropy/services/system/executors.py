@@ -19,9 +19,24 @@ from entropy.i18n import _
 from entropy.transceivers import EntropyTransceiver
 from entropy.server.interfaces.rss import ServerRssMetadata
 
+import entropy.tools
+
+def seek_till_newline(f):
+    count = 0
+    f.seek(count, os.SEEK_END)
+    size = f.tell()
+    while count > (size*-1):
+        count -= 1
+        f.seek(count, os.SEEK_END)
+        myc = f.read(1)
+        if myc == "\n":
+            break
+    f.seek(count+1, os.SEEK_END)
+    pos = f.tell()
+    f.truncate(pos)
+
 class Base:
 
-    import entropy.tools as entropyTools
     def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
 
         try:
@@ -285,7 +300,7 @@ class Base:
         for atom in atoms:
 
             try:
-                key = self.entropyTools.dep_getkey(atom)
+                key = entropy.tools.dep_getkey(atom)
                 category = key.split("/")[0]
             except:
                 continue
@@ -314,7 +329,7 @@ class Base:
         package_data = {}
         for package in packages:
             try:
-                key = self.entropyTools.dep_getkey(package)
+                key = entropy.tools.dep_getkey(package)
                 category = key.split("/")[0]
             except:
                 continue
@@ -335,7 +350,7 @@ class Base:
         package_data = {}
         for package in packages:
             try:
-                key = self.entropyTools.dep_getkey(package)
+                key = entropy.tools.dep_getkey(package)
                 category = key.split("/")[0]
             except:
                 continue
@@ -435,7 +450,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        switched = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        switched = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
 
@@ -498,7 +513,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        data = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -607,7 +622,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        data = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -629,7 +644,7 @@ class Base:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
                 return True, deps_not_matched
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -641,7 +656,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        data = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -662,7 +677,7 @@ class Base:
             try:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -674,7 +689,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        status, result = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        status, result = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
 
@@ -703,7 +718,7 @@ class Base:
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_remote_packages([], ask = False, repo = repoid)
                 return True, data
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -715,7 +730,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        mydata = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -741,7 +756,7 @@ class Base:
                 )
                 dbconn.closeDB()
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -753,7 +768,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return True, 0
@@ -794,7 +809,7 @@ class Base:
                                     uri, Entropy.SystemSettings['repositories']['branch'],
                                     repoid)
                         except socket.error:
-                            self.entropyTools.print_traceback(f = stdout_err)
+                            entropy.tools.print_traceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")
                             continue
 
@@ -830,7 +845,7 @@ class Base:
                 return True, repo_data
 
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -842,7 +857,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        data = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -953,7 +968,7 @@ class Base:
                 return True, repo_data
 
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -965,7 +980,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        data = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        data = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return data
@@ -1005,7 +1020,7 @@ class Base:
                     return False, None
                 return True, data
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -1017,7 +1032,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        mydata = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -1041,7 +1056,7 @@ class Base:
                 self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.upload_notice_board(repo = repoid)
                 return True, data
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -1053,7 +1068,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        mydata = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -1075,7 +1090,7 @@ class Base:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.update_notice_board(title, notice_text, link = link, repo = repoid)
                 return True, data
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -1087,7 +1102,7 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        mydata = self.entropyTools.spawn_function(myfunc, write_pid_func = write_pid)
+        mydata = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
         return mydata
@@ -1127,7 +1142,7 @@ class Base:
             return False
 
         if back:
-            self.entropyTools.seek_till_newline(f)
+            seek_till_newline(f)
             txt = header+count_str+text
         else:
             if not is_last_newline(f): f.write("\n")
@@ -1156,7 +1171,7 @@ class Base:
     def _get_spm_pkginfo(self, matched_atom, from_installed = False):
         data = {}
         data['atom'] = matched_atom
-        data['key'] = self.entropyTools.dep_getkey(matched_atom)
+        data['key'] = entropy.tools.dep_getkey(matched_atom)
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         try:
             if from_installed:

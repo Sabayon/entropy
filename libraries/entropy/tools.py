@@ -2589,16 +2589,18 @@ def convert_seconds_to_fancy_output(seconds):
 
 def write_parameter_to_file(config_file, name, data):
     """
-    docstring_title
+    Write configuration file parameter to file. name is used as key and data
+    as value. Any older setting will be replaced. Disabled parameters won't
+    be enabled (lines starting with "#").
 
-    @param config_file: 
-    @type config_file: 
-    @param name: 
-    @type name: 
-    @param data: 
-    @type data: 
-    @return: 
-    @rtype: 
+    @param config_file: path to configuration file
+    @type config_file: string
+    @param name: configuration parameter name
+    @type name: string
+    @param data: configuration parameter value
+    @type data: string
+    @return: True, if executed properly
+    @rtype: bool
     """
 
     # check write perms
@@ -2641,48 +2643,35 @@ def write_parameter_to_file(config_file, name, data):
     shutil.move(config_file_tmp, config_file)
     return True
 
-def write_new_branch(branch):
+def is_entropy_package_file(entropy_package_path):
     """
-    docstring_title
+    Determine whether given package path is a valid Entropy package file.
 
-    @param branch: 
-    @type branch: 
-    @return: 
-    @rtype: 
+    @param entropy_package_path: path to Entropy package file
+    @type entropy_package_path: string
+    @return: True, if valid
+    @rtype: bool
     """
-    return write_parameter_to_file(etpConst['repositoriesconf'], "branch",
-        branch)
-
-def is_entropy_package_file(tbz2file):
-    """
-    docstring_title
-
-    @param tbz2file: 
-    @type tbz2file: 
-    @return: 
-    @rtype: 
-    """
-    if not os.path.exists(tbz2file):
+    if not os.path.exists(entropy_package_path):
         return False
     try:
-        obj = open(tbz2file, "rb")
-        entry_point = _locate_edb(obj)
-        if entry_point is None:
-            obj.close()
-            return False
-        obj.close()
-        return True
+        with open(entropy_package_path, "rb") as obj:
+            entry_point = _locate_edb(obj)
+            if entry_point is None:
+                return False
+            return True
     except (IOError, OSError,):
         return False
 
 def is_valid_string(string):
     """
-    docstring_title
+    Return whether given string only contains ASCII printable chars (from
+    0x20 to 0xFF).
 
-    @param string: 
-    @type string: 
-    @return: 
-    @rtype: 
+    @param string: string to test
+    @type string: string
+    @return: True, if valid
+    @rtype: bool
     """
     invalid = [ord(x) for x in string if ord(x) not in list(range(32, 127))]
     if invalid: return False
@@ -2690,12 +2679,13 @@ def is_valid_string(string):
 
 def is_valid_path(path):
     """
-    docstring_title
+    Return whether given path is valid (it uses os.stat()). Broken symlinks
+    will return False.
 
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
+    @param path: path to test
+    @type path: string
+    @return: True, if valid
+    @rtype: bool
     """
     try:
         os.stat(path)
@@ -2703,49 +2693,27 @@ def is_valid_path(path):
         return False
     return True
 
-def is_valid_md5(myhash):
+def is_valid_md5(string):
     """
-    docstring_title
+    Return whether given string is a valid md5 hex digest.
 
-    @param myhash: 
-    @type myhash: 
-    @return: 
-    @rtype: 
+    @param string: string to test
+    @type string: string
+    @return: True, if valid
+    @rtype: bool
     """
-    if re.findall(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', myhash):
+    if re.findall(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', string):
         return True
     return False
 
-def seek_till_newline(f):
-    """
-    docstring_title
-
-    @param f: 
-    @type f: 
-    @return: 
-    @rtype: 
-    """
-    count = 0
-    f.seek(count, os.SEEK_END)
-    size = f.tell()
-    while count > (size*-1):
-        count -= 1
-        f.seek(count, os.SEEK_END)
-        myc = f.read(1)
-        if myc == "\n":
-            break
-    f.seek(count+1, os.SEEK_END)
-    pos = f.tell()
-    f.truncate(pos)
-
 def read_elf_class(elf_file):
     """
-    docstring_title
+    Read ELF class metadatum from ELF file.
 
-    @param elf_file: 
-    @type elf_file: 
-    @return: 
-    @rtype: 
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: ELF class metadatum value
+    @rtype: int
     """
     import struct
     f = open(elf_file, "rb")
@@ -2757,12 +2725,12 @@ def read_elf_class(elf_file):
 
 def is_elf_file(elf_file):
     """
-    docstring_title
+    Determine whether given file path points to an ELF file object.
 
-    @param elf_file: 
-    @type elf_file: 
-    @return: 
-    @rtype: 
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: True, if file at path is ELF file
+    @rtype: bool
     """
     import struct
     f = open(elf_file, "rb")
@@ -2816,12 +2784,12 @@ readelf_avail_check = False
 ldd_avail_check = False
 def read_elf_dynamic_libraries(elf_file):
     """
-    docstring_title
+    Extract NEEDED metadatum from ELF file at path.
 
-    @param elf_file: 
-    @type elf_file: 
-    @return: 
-    @rtype: 
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: list (set) of strings in NEEDED metadatum
+    @rtype: set
     """
     global readelf_avail_check
     if not readelf_avail_check:
@@ -2834,12 +2802,12 @@ def read_elf_dynamic_libraries(elf_file):
 
 def read_elf_broken_symbols(elf_file):
     """
-    docstring_title
+    Extract broken symbols from ELF file.
 
-    @param elf_file: 
-    @type elf_file: 
-    @return: 
-    @rtype: 
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: list of broken symbols in ELF file.
+    @rtype: set
     """
     global ldd_avail_check
     if not ldd_avail_check:
@@ -2852,12 +2820,12 @@ def read_elf_broken_symbols(elf_file):
 
 def read_elf_linker_paths(elf_file):
     """
-    docstring_title
+    Extract built-in linker paths (RUNPATH and RPATH) from ELF file.
 
-    @param elf_file: 
-    @type elf_file: 
-    @return: 
-    @rtype: 
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: list of extracted built-in linker paths.
+    @rtype: list
     """
     global readelf_avail_check
     if not readelf_avail_check:
@@ -2876,12 +2844,12 @@ def read_elf_linker_paths(elf_file):
 
 def xml_from_dict_extended(dictionary):
     """
-    docstring_title
+    Serialize a simple dict object into an XML string.
 
-    @param dictionary: 
-    @type dictionary: 
-    @return: 
-    @rtype: 
+    @param dictionary: dict object
+    @type dictionary: dict
+    @return: XML string representing the dict object
+    @rtype: string
     """
     from xml.dom import minidom
     doc = minidom.Document()
@@ -2920,12 +2888,14 @@ def xml_from_dict_extended(dictionary):
 
 def dict_from_xml_extended(xml_string):
     """
-    docstring_title
+    Deserialize an XML string representing a dict object back into a dict
+    object.
+    WARNING: eval() is used for non-string, non-bool types.
 
-    @param xml_string: 
-    @type xml_string: 
-    @return: 
-    @rtype: 
+    @param xml_string: string to deserialize
+    @type xml_string: string
+    @return: reconstructed dict object
+    @rtype: dict
     """
     if const_isunicode(xml_string):
         xml_string = const_convert_to_rawstring(xml_string, 'utf-8')
@@ -3000,12 +2970,14 @@ def dict_from_xml_extended(xml_string):
 
 def xml_from_dict(dictionary):
     """
-    docstring_title
+    Serialize a dict object into a "simple" XML string. This method is faster
+    and safer than xml_from_dict_extended but it doesn't support dict values
+    and keys different from strings.
 
-    @param dictionary: 
-    @type dictionary: 
-    @return: 
-    @rtype: 
+    @param dictionary: dictionary object
+    @type dictionary: dict
+    @return: serialized XML string
+    @rtype: string
     """
     from xml.dom import minidom
     doc = minidom.Document()
@@ -3021,12 +2993,15 @@ def xml_from_dict(dictionary):
 
 def dict_from_xml(xml_string):
     """
-    docstring_title
+    Deserialize an XML string representing a dict (created by xml_from_dict)
+    back into a dict object. This method is faster and safer than
+    dict_from_xml_extended but it doesn't support dict values and keys different
+    from strings.
 
-    @param xml_string: 
-    @type xml_string: 
-    @return: 
-    @rtype: 
+    @param xml_string: XML string to deserialize
+    @type xml_string: string
+    @return: deserialized dict object
+    @rtype: dict
     """
     if const_isunicode(xml_string):
         xml_string = const_convert_to_rawstring(xml_string, 'utf-8')
@@ -3096,29 +3071,6 @@ def create_package_atom_string(category, name, version, package_tag):
     package_name = "%s/%s-%s" % (category, name, version,)
     package_name += package_tag
     return package_name
-
-def extract_packages_from_set_file(filepath):
-    """
-    docstring_title
-
-    @param filepath: 
-    @type filepath: 
-    @return: 
-    @rtype: 
-    """
-    if sys.hexversion >= 0x3000000:
-        f = open(filepath, "r", encoding = 'raw_unicode_escape')
-    else:
-        f = open(filepath, "r")
-    items = set()
-    line = f.readline()
-    while line:
-        x = line.strip().rsplit("#", 1)[0]
-        if x and (not x.startswith('#')):
-            items.add(x)
-        line = f.readline()
-    f.close()
-    return items
 
 def collect_linker_paths():
     """

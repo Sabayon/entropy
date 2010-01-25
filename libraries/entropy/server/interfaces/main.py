@@ -4593,7 +4593,7 @@ class Server(Singleton, TextInterface):
             if not (os.path.isfile(item_path) and \
                 os.access(item_path, os.R_OK)):
                 continue
-            item_elements = entropy.tools.extract_packages_from_set_file(
+            item_elements = self.SystemSettings._extract_packages_from_set_file(
                 item_path)
             if item_elements:
                 mydata[item_clean] = item_elements.copy()
