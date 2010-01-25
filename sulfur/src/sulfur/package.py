@@ -214,8 +214,8 @@ class EntropyPackage:
             # there are no updates
             return ver_str
 
-        from_ver = EquoIntf.clientDbconn.retrieveVersion(idpackage)
-        from_tag = EquoIntf.clientDbconn.retrieveVersionTag(idpackage)
+        from_ver = EquoIntf.clientDbconn.retrieveVersion(idpackage) or ""
+        from_tag = EquoIntf.clientDbconn.retrieveVersionTag(idpackage) or ""
         if from_tag:
             from_tag = '#%s' % (from_tag,)
 
