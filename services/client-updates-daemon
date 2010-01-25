@@ -119,7 +119,7 @@ class Entropy(Client):
 
     def output(self, *args, **kwargs):
         return write_output(*args, **kwargs)
-
+Client.__singleton_class__ = Entropy
 
 class UpdatesDaemon(dbus.service.Object):
 

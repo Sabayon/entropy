@@ -431,3 +431,4 @@ class Entropy(Client):
         self.applet_last_message = message
         self.__magneto.show_alert(self.progress_tooltip_message_title,
             message)
+Client.__singleton_class__ = Entropy
