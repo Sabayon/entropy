@@ -1,3 +1,193 @@
+commit bf1451bb9a1f242c52e4a86f98f64ab46cd07d2c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 01:20:03 2010 +0100
+
+    [sulfur] implement tips and tricks window
+
+commit 403f59e9ec5fd42a55dfadfdf681fe6c5085d9e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 00:31:19 2010 +0100
+
+    [reagent] when editing package dependencies, automatically bump package revision
+
+commit a98b9e1d11bfae5f57c641b3a3d0c5807c040cc6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 00:27:22 2010 +0100
+
+    [sulfur] set our Entropy Client subclass as singleton class token
+
+commit 141da9b980ab33730cf16aca01b716e2510afae7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 00:26:56 2010 +0100
+
+    [sulfur] experimentally enable colored output in terminal
+
+commit b7245d0d85ee07b4b44ca4b2107a8a2e321950c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 00:26:05 2010 +0100
+
+    [entropy.output] provide function that removes bash color codes from string
+
+commit d39d5dfcdbc012855d4b0579588c2fece7e6f30c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 23:45:41 2010 +0100
+
+    [sulfur] code style update
+
+commit 16be74ad636a3dfe7508ff0c0743eb4cae84cb6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 23:45:08 2010 +0100
+
+    [entropy.core] make possible to override Singleton class used for loading singleton instances
+
+commit 3f71db060ac5e707340eafe2e0cc81b50c294052
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 23:44:54 2010 +0100
+
+    [entropy.core.settings] code style update
+
+commit ab37c3377c170831281b8136fedea5d5ddb486a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 23:37:16 2010 +0100
+
+    [entropy.client] using static variable as caching dicts causes issues to Singleton Client subclasses, so drop them
+
+commit 743bcceda42e525632dc506d6364683f0efb6f91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 23:03:14 2010 +0100
+
+    [sulfur] switch back to packages page when queue is complete
+
+commit ca25e03936a7cc0483c9aff5b0a5266d7ee45967
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 19:01:08 2010 +0100
+
+    [equo] add new repo tool "equo repo", making possible to enable/disable repositories via cmdline
+
+commit 885148aaaefa6be0752bff00a7801f36eda99b77
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 18:22:35 2010 +0100
+
+    [sulfur] show abort queue button when running libtest
+
+commit 297af8014cbe81a43f128d55999cd7239e2d6ffc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 18:15:28 2010 +0100
+
+    [sulfur] fix libraries test button and user interaction
+
+commit bc4b846d48639527567962d2501eb1fcba9c8ccf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 18:08:13 2010 +0100
+
+    [sulfur] fix dependencies test button and user interaction
+
+commit a16ed40998212aa7bafc85c76a43c9e676f00a54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 17:48:14 2010 +0100
+
+    [sulfur] always convert package search string to unicode
+
+commit 8441b5094f00c93823d1b8bdca0eea5c0a7b5495
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 17:45:27 2010 +0100
+
+    [activator] print commit message to stdout when done writing it
+
+commit d13d97c81f54f9a4d10754b1000f49b0e5944322
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 17:42:40 2010 +0100
+
+    [sulfur.dialogs] InputDialog: if self.parameters is set to None, reset to dict if required
+
+commit 034cfd5741f056e2364069014c3b7ba92e939e24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 15:28:43 2010 +0100
+
+    [sulfur] add the ability to add UGC data to packages (images, icons, documents) by dropping to rows in treeview
+
+commit 64dd02697a0e212fe3303463266b50968fd18e59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 15:28:05 2010 +0100
+
+    [entropy.client.services.ugc] add handly method to clear UGC live (RAM) cache
+
+commit b995f67b50ffe0c3f3674a06bba0f6e81594b537
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 13:13:36 2010 +0100
+
+    [sulfur] when UGC package icon is not available, search into system
+
+commit 5dc38ce66c0f30142e7ec497e5726762188a9284
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 13:07:41 2010 +0100
+
+    [sulfur] remove some dead code
+
+commit a700348fc449a4355905fce936c627c09af3a28f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 10:21:56 2010 +0100
+
+    [sulfur] parallel UGC icon fetch only for currently shown packages
+
+commit 087c3f23ebfd07b600416adda8fd24c0135bb7a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 09:30:45 2010 +0100
+
+    [sulfur] cache pixbuf objects in packages view
+
+commit 2425a639dfda7b09dabcfd2cd7262f5eafd0f2a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 09:33:26 2010 +0100
+
+    [sulfur] add missing ugc icon
+
+commit d9cbb6e6820724e2b4847774bfe604247c6d7d1c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 01:18:04 2010 +0100
+
+    [sulfur.filters] make possible to use & to concatenate search terms in filter bar
+
+commit d5ef9a42d051a641305474e55d6c09268b5227b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 00:58:22 2010 +0100
+
+    [sulfur] add package icon support to main packages view (including autoloading)
+    
+    PLEASE NOTE:
+    package icons autoloading is not perfect yet, Sulfur should rather try to
+    get icons of visible elements (will be so by next commits)
+
+commit 1a79ced3f4da6f26deefda0b4bb0428ceab9b70b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 24 00:55:36 2010 +0100
+
+    [entropy.client.services.ugc.interfaces] improve Entropy Client UGC interface to cache, expose some handy methods
+
+commit d4bca3b96cfb9de695de8c69fd327af310bac5f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 22:20:17 2010 +0100
+
+    [sulfur] show loading message while executing package search
+
+commit 09fcac18a70ed49dac362f8ee829f5adee0eb15f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 21:52:24 2010 +0100
+
+    [entropy.client.services.ugc] code style update
+
+commit a0cfc6e8df8a21cdf09c7b9c354c744df436cd76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 18:21:35 2010 +0100
+
+    [reagent] when editing deps and user hit cancel, go to the next package
+
+commit cd9c11c0d3138d22dc59fef124972ed9543c16c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 23 17:44:03 2010 +0100
+
+    Update ChangeLog for version 0.99.24.11
+
 commit e7d237f8877d28923d825fac88f98a7b24202e6c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 23 17:41:32 2010 +0100
