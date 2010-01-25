@@ -57,50 +57,44 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropyRepository</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__26" name="uml_class_diagram_for_entropy__26">
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#SETTING_KEYS" title="entropy.db.EntropyRepository.SETTING_KEYS" alt="" coords="17,335,1269,353"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository.Schema-class.html" title="entropy.db.EntropyRepository.Schema" alt="" coords="17,353,1269,372"/>
-<area shape="rect" id="node77" href="entropy.tools-module.html" title="entropy.db.EntropyRepository.entropyTools" alt="" coords="17,372,1269,391"/>
-<area shape="rect" id="node77" href="entropy.dump-module.html" title="entropy.db.EntropyRepository.dumpTools" alt="" coords="17,391,1269,409"/>
-<area shape="rect" id="node77" href="javascript:void(0);" title="entropy.db.EntropyRepository.threading" alt="" coords="17,409,1269,428"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#__init__" title="EntropyRepository constructor." alt="" coords="17,431,1269,449"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#setCacheSize" title="Change low&#45;level, storage engine based cache size." alt="" coords="17,449,1269,468"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#setDefaultCacheSize" title="Change default low&#45;level, storage engine based cache size." alt="" coords="17,468,1269,487"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#__del__" title="entropy.db.EntropyRepository.__del__" alt="" coords="17,487,1269,505"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#closeDB" title="Close repository storage communication." alt="" coords="17,505,1269,524"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#vacuum" title="Repository storage cleanup and optimization function." alt="" coords="17,524,1269,543"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#commitChanges" title="Commit actual changes and make them permanently stored." alt="" coords="17,543,1269,561"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#initializeDatabase" title="WARNING: it will erase your database." alt="" coords="17,561,1269,580"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#filterTreeUpdatesActions" title="This method should be considered internal and not suited for general &#160;audience." alt="" coords="17,580,1269,599"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesActions" title="Method not suited for general purpose usage." alt="" coords="17,599,1269,617"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesMoveAction" title="Method not suited for general purpose usage." alt="" coords="17,617,1269,636"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesSlotmoveAction" title="Method not suited for general purpose usage." alt="" coords="17,636,1269,655"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#doTreeupdatesSpmCleanup" title="Erase dead Source Package Manager db entries." alt="" coords="17,655,1269,673"/>
-<area shape="rect" id="node77" href="entropy.db.EntropyRepository-class.html#atomMatch" title="Match given atom (or dependency) in repository and return its package &#160;identifer and execution status." alt="" coords="17,692,1269,711"/>
-<area shape="rect" id="node1" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="5,310,1280,717"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="193,116,519,135"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="193,135,519,153"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="193,153,519,172"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" title="Remove EntropyRepository permanent plugin." alt="" coords="193,172,519,191"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" title="Return EntropyRepositoryStore installed permanent plugins." alt="" coords="193,191,519,209"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins" title="Overloaded from EntropyPluginStore, adds support for permanent plugins." alt="" coords="193,209,519,228"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="193,228,519,247"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="193,247,519,265"/>
-<area shape="rect" id="node78" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="193,265,519,284"/>
-<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="181,83,531,290"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="572,125,1293,144"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="572,144,1293,163"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="572,163,1293,181"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="572,181,1293,200"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="572,200,1293,219"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="572,219,1293,237"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="572,237,1293,256"/>
-<area shape="rect" id="node80" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="572,256,1293,275"/>
-<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="560,93,1304,281"/>
-<area shape="rect" id="node79" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="279,39,432,57"/>
-<area shape="rect" id="node4" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="267,6,443,63"/>
+<center>  <map id="uml_class_diagram_for_entropy__27" name="uml_class_diagram_for_entropy__27">
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#SETTING_KEYS" title="entropy.db.EntropyRepository.SETTING_KEYS" alt="" coords="65,335,841,353"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository.Schema-class.html" title="entropy.db.EntropyRepository.Schema" alt="" coords="65,353,841,372"/>
+<area shape="rect" id="node78" href="javascript:void(0);" title="entropy.db.EntropyRepository.threading" alt="" coords="65,372,841,391"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#__init__" title="EntropyRepository constructor." alt="" coords="65,393,841,412"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#__repr__" title="entropy.db.EntropyRepository.__repr__" alt="" coords="65,412,841,431"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#__str__" title="entropy.db.EntropyRepository.__str__" alt="" coords="65,431,841,449"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#__unicode__" title="entropy.db.EntropyRepository.__unicode__" alt="" coords="65,449,841,468"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#setCacheSize" title="Change low&#45;level, storage engine based cache size." alt="" coords="65,468,841,487"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#setDefaultCacheSize" title="Change default low&#45;level, storage engine based cache size." alt="" coords="65,487,841,505"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#__del__" title="entropy.db.EntropyRepository.__del__" alt="" coords="65,505,841,524"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#closeDB" title="Close repository storage communication." alt="" coords="65,524,841,543"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#vacuum" title="Repository storage cleanup and optimization function." alt="" coords="65,543,841,561"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#commitChanges" title="Commit actual changes and make them permanently stored." alt="" coords="65,561,841,580"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#initializeDatabase" title="WARNING: it will erase your database." alt="" coords="65,580,841,599"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#filterTreeUpdatesActions" title="This method should be considered internal and not suited for general &#160;audience." alt="" coords="65,599,841,617"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesActions" title="Method not suited for general purpose usage." alt="" coords="65,617,841,636"/>
+<area shape="rect" id="node78" href="entropy.db.EntropyRepository-class.html#atomMatch" title="Match given atom (or dependency) in repository and return its package &#160;identifer and execution status." alt="" coords="65,655,841,673"/>
+<area shape="rect" id="node1" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="53,310,853,679"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="17,116,343,135"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="17,135,343,153"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="17,153,343,172"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" title="Remove EntropyRepository permanent plugin." alt="" coords="17,172,343,191"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" title="Return EntropyRepositoryStore installed permanent plugins." alt="" coords="17,191,343,209"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins" title="Overloaded from EntropyPluginStore, adds support for permanent plugins." alt="" coords="17,209,343,228"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="17,228,343,247"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="17,247,343,265"/>
+<area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="17,265,343,284"/>
+<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,83,355,290"/>
+<area shape="rect" id="node80" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="103,39,256,57"/>
+<area shape="rect" id="node3" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="91,6,267,63"/>
+<area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#output" title="Text output print function." alt="" coords="396,163,1056,181"/>
+<area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#ask_question" title="Questions asking function." alt="" coords="396,181,1056,200"/>
+<area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#input_box" title="Generic input box (form) creator and data collector." alt="" coords="396,200,1056,219"/>
+<area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#set_title" title="Set application title." alt="" coords="396,219,1056,237"/>
+<area shape="rect" id="node4" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="384,130,1067,243"/>
 </map>
-  <img src="uml_class_diagram_for_entropy__26.gif" alt='' usemap="#uml_class_diagram_for_entropy__26" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_entropy__27.gif" alt='' usemap="#uml_class_diagram_for_entropy__27" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -155,6 +149,54 @@
       EntropyRepository constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__repr__"></a><span class="summary-sig-name">__repr__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.__repr__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__str__"></a><span class="summary-sig-name">__str__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.__str__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__unicode__"></a><span class="summary-sig-name">__unicode__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.__unicode__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -2458,6 +2500,25 @@ audience.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveKeySplit" class="summary-sig-name">retrieveKeySplit</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Return a tuple composed by package category and package name for 
+      given package identifier.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveKeySplit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveKeySlot" class="summary-sig-name">retrieveKeySlot</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>)</span><br />
       Return a tuple composed by package key and slot for given package 
@@ -3724,7 +3785,7 @@ audience.</td>
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchLicenses" class="summary-sig-name">searchLicenses</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">mylicense</span>,
-        <span class="summary-sig-arg">caseSensitive</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">sensitive</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
       Search packages using given license (mylicense).</td>
           <td align="right" valign="top">
@@ -4838,13 +4899,9 @@ audience.</td>
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#atomMatch" class="summary-sig-name">atomMatch</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">atom</span>,
-        <span class="summary-sig-arg">caseSensitive</span>=<span class="summary-sig-default">True</span>,
         <span class="summary-sig-arg">matchSlot</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">multiMatch</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">matchTag</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">matchUse</span>=<span class="summary-sig-default"><code class="variable-group">(</code><code class="variable-group">)</code></span>,
         <span class="summary-sig-arg">packagesFilter</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">matchRevision</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">extendedResults</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">useCache</span>=<span class="summary-sig-default">True</span>)</span><br />
       Match given atom (or dependency) in repository and return its package
@@ -4872,14 +4929,10 @@ audience.</td>
       <code><a href="entropy.core.EntropyPluginStore-class.html#drop_plugins">drop_plugins</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
-      <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#cycleDone">cycleDone</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#inputBox">inputBox</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#nocolor">nocolor</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#notitles">notitles</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#setTitle">setTitle</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#setTotalCycles">setTotalCycles</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#updateProgress">updateProgress</a></code>
+      <code><a href="entropy.output.TextInterface-class.html#ask_question">ask_question</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#input_box">input_box</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#output">output</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#set_title">set_title</a></code>
       </p>
     </td>
   </tr>
@@ -8183,6 +8236,33 @@ Return all the available &quot;treeupdates (package names/slots changes
   </dl>
 </td></tr></table>
 </div>
+<a name="retrieveKeySplit"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">retrieveKeySplit</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveKeySplit">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a tuple composed by package category and package name for given
+  package identifier.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>tuple of length 2 composed by (package_category, package_name,)</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="retrieveKeySlot"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -10079,7 +10159,7 @@ Return Compiler flags during building of package.
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">searchLicenses</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">mylicense</span>,
-        <span class="sig-arg">caseSensitive</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">sensitive</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">atoms</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -10092,7 +10172,7 @@ Return Compiler flags during building of package.
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>mylicense</code></strong> (string) - license name to search</li>
-        <li><strong class="pname"><code>caseSensitive</code></strong> (bool) - search in case sensitive mode (default off)</li>
+        <li><strong class="pname"><code>sensitive</code></strong> (bool) - search in case sensitive mode (default off)</li>
         <li><strong class="pname"><code>atoms</code></strong> (bool) - return list of atoms instead of package identifiers</li>
     </ul></dd>
     <dt>Returns: set or list</dt>
@@ -11520,13 +11600,9 @@ Return Compiler flags during building of package.
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">atomMatch</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">atom</span>,
-        <span class="sig-arg">caseSensitive</span>=<span class="sig-default">True</span>,
         <span class="sig-arg">matchSlot</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">multiMatch</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">matchTag</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">matchUse</span>=<span class="sig-default"><code class="variable-group">(</code><code class="variable-group">)</code></span>,
         <span class="sig-arg">packagesFilter</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">matchRevision</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">extendedResults</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">useCache</span>=<span class="sig-default">True</span>)</span>
   </h3>
@@ -11541,13 +11617,9 @@ Return Compiler flags during building of package.
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>atom</code></strong> (unicode string) - atom or dependency to match in repository</li>
-        <li><strong class="pname"><code>caseSensitive</code></strong> (bool) - match in case sensitive mode</li>
         <li><strong class="pname"><code>matchSlot</code></strong> (string) - match packages with given slot</li>
         <li><strong class="pname"><code>multiMatch</code></strong> (bool) - match all the available packages, not just the best one</li>
-        <li><strong class="pname"><code>matchTag</code></strong> (string) - match packages with given tag</li>
-        <li><strong class="pname"><code>matchUse</code></strong> (list or tuple or set) - match packages with given use flags</li>
         <li><strong class="pname"><code>packagesFilter</code></strong> (bool) - enable package masking filter</li>
-        <li><strong class="pname"><code>matchRevision</code></strong> (int) - match packages with given entropy revision</li>
         <li><strong class="pname"><code>extendedResults</code></strong> (bool) - return extended results</li>
         <li><strong class="pname"><code>useCache</code></strong> (bool) - use on-disk cache</li>
     </ul></dd>
@@ -11558,10 +11630,7 @@ Return Compiler flags during building of package.
           tuple composed by a set (containing package identifiers) and 
           command status is returned.</dd>
   </dl>
-<div class="fields">      <p><strong>To Do:</strong>
-        improve documentation here
-      </p>
-</div></td></tr></table>
+</td></tr></table>
 </div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
@@ -11595,7 +11664,7 @@ Return Compiler flags during building of package.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:22 2010
+    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:53 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

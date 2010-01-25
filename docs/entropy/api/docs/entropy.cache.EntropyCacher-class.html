@@ -58,7 +58,7 @@
 <h1 class="epydoc">Class EntropyCacher</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy_" name="uml_class_diagram_for_entropy_">
-<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#CACHE_IDS" title="Entropy asynchronous and synchronous cache writer and reader." alt="" coords="17,127,363,145"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#CACHE_IDS" title="entropy.cache.EntropyCacher.CACHE_IDS" alt="" coords="17,127,363,145"/>
 <area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#__singleton__" title="entropy.cache.EntropyCacher.__singleton__" alt="" coords="17,145,363,164"/>
 <area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#init_singleton" title="Singleton overloaded method." alt="" coords="17,167,363,185"/>
 <area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#__del__" title="entropy.cache.EntropyCacher.__del__" alt="" coords="17,185,363,204"/>
@@ -176,12 +176,11 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">None</span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#sync" class="summary-sig-name">sync</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">wait</span>=<span class="summary-sig-default">False</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#sync" class="summary-sig-name">sync</a>(<span class="summary-sig-arg">self</span>)</span><br />
       This method can be called anytime and forces the instance to flush 
       all the cache writes queued to disk.</td>
           <td align="right" valign="top">
@@ -346,15 +345,14 @@
  'depends_tree': 'depends/depends_tree_',
  'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
  'library_breakage': 'libs_break/library_breakage_',
-..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">atom_match</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">atom_match/atom_match_</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">check_pa</code><code class="variable-ellipsis">...</code></code><br />
-      Entropy asynchronous and synchronous cache writer and reader.
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">atom_match</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">atom_match/atom_match_</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">check_pa</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="__singleton__"></a><span class="summary-name">__singleton__</span> = <code title="&lt;entropy.cache.EntropyCacher object at 0x1207090&gt;">&lt;entropy.cache.EntropyCacher object at 0x1207090&gt;</code>
+        <a name="__singleton__"></a><span class="summary-name">__singleton__</span> = <code title="&lt;entropy.cache.EntropyCacher object at 0x10b1890&gt;">&lt;entropy.cache.EntropyCacher object at 0x10b1890&gt;</code>
     </td>
   </tr>
 </table>
@@ -480,8 +478,7 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">sync</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">wait</span>=<span class="sig-default">False</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sync</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.sync">source&nbsp;code</a></span>&nbsp;
@@ -492,12 +489,6 @@
   the cache writes queued to disk. If wait == False a watchdog prevents 
   this call to get stuck in case of write buffer overloads.</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>wait</code></strong> (bool) - indicates if waiting until done (synchronous mode) or not</li>
-    </ul></dd>
-    <dt>Returns: None</dt>
-        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -654,37 +645,7 @@
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <h3 class="epydoc">CACHE_IDS</h3>
-  <p>Entropy asynchronous and synchronous cache writer and reader. This 
-  class is a Singleton and contains a thread doing the cache writes 
-  asynchronously, thus it must be stopped before your application is 
-  terminated calling the stop() method.</p>
-  <p>Sample code:</p>
-<pre class="py-doctest">
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># import module</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.cache <span class="py-keyword">import</span> EntropyCacher
-<span class="py-more">...</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># first EntropyCacher load, start it</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher = EntropyCacher()
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher.start()
-<span class="py-more">...</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># now store something into its cache</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher.push(<span class="py-string">'my_identifier1'</span>, [1, 2, 3])
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># now store something synchronously</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher.push(<span class="py-string">'my_identifier2'</span>, [1, 2, 3], async = False)
-<span class="py-more">...</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># now flush all the caches to disk, and make sure all</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># is written</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher.sync(wait = True)
-<span class="py-more">...</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># now fetch something from the cache</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>data = cacher.pop(<span class="py-string">'my_identifier1'</span>)
-<span class="py-output">[1, 2, 3]</span>
-<span class="py-output">...</span>
-<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># now discard all the cached (async) writes</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher.discard()
-<span class="py-more">...</span>
-<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># and stop EntropyCacher</span>
-<span class="py-prompt">&gt;&gt;&gt; </span>cacher.stop()</pre>
+  
   <dl class="fields">
   </dl>
   <dl class="fields">
@@ -736,7 +697,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:18 2010
+    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:50 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

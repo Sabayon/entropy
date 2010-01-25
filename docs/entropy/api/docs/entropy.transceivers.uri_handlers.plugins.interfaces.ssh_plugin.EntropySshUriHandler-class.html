@@ -61,43 +61,39 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropySshUriHandler</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__118" name="uml_class_diagram_for_entropy__118">
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#PLUGIN_API_VERSION" title="EntropyUriHandler based SSH (with pubkey) transceiver plugin." alt="" coords="217,441,539,460"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#approve_uri" title="Approve given URI by returning True or False depending if this class is &#160;able to handle it." alt="" coords="217,463,539,481"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_uri_name" title="Given a valid URI (meaning that implementation can handle the provided &#160;URI), it extracts and returns the URI name (hostname)." alt="" coords="217,481,539,500"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#hide_sensible_data" title="Given an URI, hide sensible data from string and return it back." alt="" coords="217,500,539,519"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__init__" title="EntropyUriHandler constructor." alt="" coords="217,519,539,537"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__enter__" title="Support for &quot;with&quot; statement, this will trigger UriHandler connection &#160;setup." alt="" coords="217,537,539,556"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__exit__" title="Support for &quot;with&quot; statement, this will trigger UriHandler connection hang &#160;up." alt="" coords="217,556,539,575"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#download" title="Download URI and save it to save_path." alt="" coords="217,575,539,593"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#upload" title="Upload URI from load_path location to uri." alt="" coords="217,593,539,612"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#rename" title="Rename URI old to URI new." alt="" coords="217,612,539,631"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#delete" title="Remove the remote path (must be a file)." alt="" coords="217,631,539,649"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_md5" title="Return MD5 checksum of file at URI." alt="" coords="217,649,539,668"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content" title="List content of directory referenced at URI." alt="" coords="217,668,539,687"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content_metadata" title="List content of directory referenced at URI with metadata in this form: &#160;[(name, size, owner, group, permissions&lt;drwxr&#45;xr&#45;x&gt;,), ...] permissions, &#160;owner, group, size, name." alt="" coords="217,687,539,705"/>
-<area shape="rect" id="node434" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#close" title="Called when requesting to close connection completely." alt="" coords="217,724,539,743"/>
-<area shape="rect" id="node1" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html" title="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler" alt="" coords="205,417,549,749"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#BASE_PLUGIN_API_VERSION" title="Base class for EntropyTransceiver URI handler interfaces." alt="" coords="241,239,516,257"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#TMP_TXC_FILE_EXT" title="Base class for EntropyTransceiver URI handler interfaces." alt="" coords="241,257,516,276"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#get_uri" title="Return copy of previously stored URI." alt="" coords="241,279,516,297"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_output_interface" title="Provide alternative Entropy output interface (must be based on &#160;entropy.output.TextInterface)" alt="" coords="241,297,516,316"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_speed_limit" title="Set download/upload speed limit in kb/sec form." alt="" coords="241,316,516,335"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_timeout" title="Set transceiver tx/rx timeout value in seconds." alt="" coords="241,335,516,353"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_silent" title="Disable transceiver verbosity." alt="" coords="241,353,516,372"/>
-<area shape="rect" id="node435" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_verbosity" title="Set transceiver verbosity." alt="" coords="241,372,516,391"/>
-<area shape="rect" id="node2" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html" title="entropy.transceivers.uri_handlers.skel.EntropyUriHandler" alt="" coords="229,214,528,397"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="17,39,739,57"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="17,57,739,76"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="17,76,739,95"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="17,95,739,113"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="17,113,739,132"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="17,132,739,151"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="17,151,739,169"/>
-<area shape="rect" id="node436" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="17,169,739,188"/>
-<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="5,6,749,194"/>
+<center>  <map id="uml_class_diagram_for_entropy__123" name="uml_class_diagram_for_entropy__123">
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#PLUGIN_API_VERSION" title="EntropyUriHandler based SSH (with pubkey) transceiver plugin." alt="" coords="187,367,508,385"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#approve_uri" title="Approve given URI by returning True or False depending if this class is &#160;able to handle it." alt="" coords="187,388,508,407"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_uri_name" title="Given a valid URI (meaning that implementation can handle the provided &#160;URI), it extracts and returns the URI name (hostname)." alt="" coords="187,407,508,425"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#hide_sensible_data" title="Given an URI, hide sensible data from string and return it back." alt="" coords="187,425,508,444"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__init__" title="EntropyUriHandler constructor." alt="" coords="187,444,508,463"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__enter__" title="Support for &quot;with&quot; statement, this will trigger UriHandler connection &#160;setup." alt="" coords="187,463,508,481"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__exit__" title="Support for &quot;with&quot; statement, this will trigger UriHandler connection hang &#160;up." alt="" coords="187,481,508,500"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#download" title="Download URI and save it to save_path." alt="" coords="187,500,508,519"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#upload" title="Upload URI from load_path location to uri." alt="" coords="187,519,508,537"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#rename" title="Rename URI old to URI new." alt="" coords="187,537,508,556"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#delete" title="Remove the remote path (must be a file)." alt="" coords="187,556,508,575"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_md5" title="Return MD5 checksum of file at URI." alt="" coords="187,575,508,593"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content" title="List content of directory referenced at URI." alt="" coords="187,593,508,612"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content_metadata" title="List content of directory referenced at URI with metadata in this form: &#160;[(name, size, owner, group, permissions&lt;drwxr&#45;xr&#45;x&gt;,), ...] permissions, &#160;owner, group, size, name." alt="" coords="187,612,508,631"/>
+<area shape="rect" id="node447" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#close" title="Called when requesting to close connection completely." alt="" coords="187,649,508,668"/>
+<area shape="rect" id="node1" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html" title="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler" alt="" coords="175,342,519,674"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#BASE_PLUGIN_API_VERSION" title="entropy.transceivers.uri_handlers.skel.EntropyUriHandler.BASE_PLUGIN_API_VERSION" alt="" coords="211,164,485,183"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#TMP_TXC_FILE_EXT" title="Base class for EntropyTransceiver URI handler interfaces." alt="" coords="211,183,485,201"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#get_uri" title="Return copy of previously stored URI." alt="" coords="211,204,485,223"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_output_interface" title="Provide alternative Entropy output interface (must be based on &#160;entropy.output.TextInterface)" alt="" coords="211,223,485,241"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_speed_limit" title="Set download/upload speed limit in kb/sec form." alt="" coords="211,241,485,260"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_timeout" title="Set transceiver tx/rx timeout value in seconds." alt="" coords="211,260,485,279"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_silent" title="Disable transceiver verbosity." alt="" coords="211,279,485,297"/>
+<area shape="rect" id="node448" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_verbosity" title="Set transceiver verbosity." alt="" coords="211,297,485,316"/>
+<area shape="rect" id="node2" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html" title="entropy.transceivers.uri_handlers.skel.EntropyUriHandler" alt="" coords="199,139,497,322"/>
+<area shape="rect" id="node449" href="entropy.output.TextInterface-class.html#output" title="Text output print function." alt="" coords="17,39,677,57"/>
+<area shape="rect" id="node449" href="entropy.output.TextInterface-class.html#ask_question" title="Questions asking function." alt="" coords="17,57,677,76"/>
+<area shape="rect" id="node449" href="entropy.output.TextInterface-class.html#input_box" title="Generic input box (form) creator and data collector." alt="" coords="17,76,677,95"/>
+<area shape="rect" id="node449" href="entropy.output.TextInterface-class.html#set_title" title="Set application title." alt="" coords="17,95,677,113"/>
+<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="5,6,688,119"/>
 </map>
-  <img src="uml_class_diagram_for_entropy__118.gif" alt='' usemap="#uml_class_diagram_for_entropy__118" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_entropy__123.gif" alt='' usemap="#uml_class_diagram_for_entropy__123" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -431,14 +427,10 @@
       <code>__subclasshook__</code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
-      <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#cycleDone">cycleDone</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#inputBox">inputBox</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#nocolor">nocolor</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#notitles">notitles</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#setTitle">setTitle</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#setTotalCycles">setTotalCycles</a></code>,
-      <code><a href="entropy.output.TextInterface-class.html#updateProgress">updateProgress</a></code>
+      <code><a href="entropy.output.TextInterface-class.html#ask_question">ask_question</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#input_box">input_box</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#output">output</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#set_title">set_title</a></code>
       </p>
     </td>
   </tr>
@@ -1177,7 +1169,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:31 2010
+    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:58 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -59,26 +59,15 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class CacheMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__2" name="uml_class_diagram_for_entropy__2">
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#REPO_LIST_CACHE_ID" title="entropy.client.interfaces.cache.CacheMixin.REPO_LIST_CACHE_ID" alt="" coords="17,31,636,49"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_cache" title="entropy.client.interfaces.cache.CacheMixin.clear_cache" alt="" coords="17,52,636,71"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#update_ugc_cache" title="entropy.client.interfaces.cache.CacheMixin.update_ugc_cache" alt="" coords="17,71,636,89"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#all_repositories_checksum" title="entropy.client.interfaces.cache.CacheMixin.all_repositories_checksum" alt="" coords="17,89,636,108"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_dump_cache" title="entropy.client.interfaces.cache.CacheMixin.clear_dump_cache" alt="" coords="17,108,636,127"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#do_configcache" title="entropy.client.interfaces.cache.CacheMixin.do_configcache" alt="" coords="17,127,636,145"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#do_depcache" title="entropy.client.interfaces.cache.CacheMixin.do_depcache" alt="" coords="17,145,636,164"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#generate_cache" title="entropy.client.interfaces.cache.CacheMixin.generate_cache" alt="" coords="17,164,636,183"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_cache" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_cache" alt="" coords="17,183,636,201"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_chash" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_chash" alt="" coords="17,201,636,220"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_critical_update_cache_hash" alt="" coords="17,220,636,239"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_updates_cache" title="entropy.client.interfaces.cache.CacheMixin.get_critical_updates_cache" alt="" coords="17,239,636,257"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache" alt="" coords="17,257,636,276"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache_hash" alt="" coords="17,276,636,295"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.cache.CacheMixin-class.html#validate_repositories_cache" title="entropy.client.interfaces.cache.CacheMixin.validate_repositories_cache" alt="" coords="17,313,636,332"/>
-<area shape="rect" id="node1" href="entropy.client.interfaces.cache.CacheMixin-class.html" title="entropy.client.interfaces.cache.CacheMixin" alt="" coords="5,6,648,338"/>
-<area shape="rect" id="node2" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="273,358,380,397"/>
+<center>  <map id="uml_class_diagram_for_entropy__3" name="uml_class_diagram_for_entropy__3">
+<area shape="rect" id="node3" href="entropy.client.interfaces.cache.CacheMixin-class.html#REPO_LIST_CACHE_ID" title="entropy.client.interfaces.cache.CacheMixin.REPO_LIST_CACHE_ID" alt="" coords="17,31,245,49"/>
+<area shape="rect" id="node3" href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_cache" title="entropy.client.interfaces.cache.CacheMixin.clear_cache" alt="" coords="17,52,245,71"/>
+<area shape="rect" id="node3" href="entropy.client.interfaces.cache.CacheMixin-class.html#update_ugc_cache" title="entropy.client.interfaces.cache.CacheMixin.update_ugc_cache" alt="" coords="17,71,245,89"/>
+<area shape="rect" id="node3" href="entropy.client.interfaces.cache.CacheMixin-class.html#is_ugc_cached" title="Determine whether User Generated Content cache is available for given &#160;repository." alt="" coords="17,89,245,108"/>
+<area shape="rect" id="node1" href="entropy.client.interfaces.cache.CacheMixin-class.html" title="entropy.client.interfaces.cache.CacheMixin" alt="" coords="5,6,256,114"/>
+<area shape="rect" id="node2" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="79,134,185,173"/>
 </map>
-  <img src="uml_class_diagram_for_entropy__2.gif" alt='' usemap="#uml_class_diagram_for_entropy__2" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_entropy__3.gif" alt='' usemap="#uml_class_diagram_for_entropy__3" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -125,255 +114,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="all_repositories_checksum"></a><span class="summary-sig-name">all_repositories_checksum</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.cache.CacheMixin-class.html#is_ugc_cached" class="summary-sig-name">is_ugc_cached</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repository</span>)</span><br />
+      Determine whether User Generated Content cache is available for given
+      repository.</td>
           <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="clear_dump_cache"></a><span class="summary-sig-name">clear_dump_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">dump_name</span>,
-        <span class="summary-sig-arg">skip</span>=<span class="summary-sig-default">[]</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="do_configcache"></a><span class="summary-sig-name">do_configcache</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="do_depcache"></a><span class="summary-sig-name">do_depcache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">do_install_queue</span>=<span class="summary-sig-default">True</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="generate_cache"></a><span class="summary-sig-name">generate_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">depcache</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">configcache</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">client_purge</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">install_queue</span>=<span class="summary-sig-default">True</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_available_packages_cache"></a><span class="summary-sig-name">get_available_packages_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">myhash</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_available_packages_chash"></a><span class="summary-sig-name">get_available_packages_chash</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_critical_update_cache_hash"></a><span class="summary-sig-name">get_critical_update_cache_hash</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">db_digest</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_critical_updates_cache"></a><span class="summary-sig-name">get_critical_updates_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">db_digest</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_world_update_cache"></a><span class="summary-sig-name">get_world_update_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">empty_deps</span>,
-        <span class="summary-sig-arg">db_digest</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_world_update_cache_hash"></a><span class="summary-sig-name">get_world_update_cache_hash</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">db_digest</span>,
-        <span class="summary-sig-arg">empty_deps</span>,
-        <span class="summary-sig-arg">ignore_spm_downgrades</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="purge_cache"></a><span class="summary-sig-name">purge_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">showProgress</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">client_purge</span>=<span class="summary-sig-default">True</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="repository_move_clear_cache"></a><span class="summary-sig-name">repository_move_clear_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="store_repository_list_cache"></a><span class="summary-sig-name">store_repository_list_cache</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="validate_repositories_cache"></a><span class="summary-sig-name">validate_repositories_cache</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.is_ugc_cached">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -398,6 +148,43 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="is_ugc_cached"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_ugc_cached</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repository</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.is_ugc_cached">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Determine whether User Generated Content cache is available for given 
+  repository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repository</code></strong> (string) - Entropy repository identifier</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if available</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -429,7 +216,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:19 2010
+    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:50 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

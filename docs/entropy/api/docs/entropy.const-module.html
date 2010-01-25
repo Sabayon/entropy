@@ -620,6 +620,40 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.const-module.html#const_get_caller" class="summary-sig-name">const_get_caller</a>()</span><br />
+      When called inside a function, return the caller function name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.const-pysrc.html#const_get_caller">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.const-module.html#const_get_stack" class="summary-sig-name">const_get_stack</a>()</span><br />
+      Return current function stack in form of list of tuples</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.const-pysrc.html#const_get_stack">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
@@ -687,7 +721,7 @@
  'clientconf': '/etc/entropy/client.conf',
  'clientdbid': 'client',
  'clientserverrepoid': '__system__',
- 'cmdline': ['root=/dev/ram0', 'ramdisk=8192', 'real_root=UUID=19da6ea\
+ 'cmdline': ['root=/dev/md0', 'ramdisk=8192', 'real_root=/dev/md0', 'd\
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">applicationlock</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">branch</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -1343,6 +1377,48 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="const_get_caller"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_get_caller</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.const-pysrc.html#const_get_caller">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>When called inside a function, return the caller function name.</p>
+  <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>caller function name</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="const_get_stack"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_get_stack</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.const-pysrc.html#const_get_stack">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return current function stack in form of list of tuples</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>current function stack</dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
@@ -1445,7 +1521,7 @@
  <code class="variable-quote">'</code><code class="variable-string">clientconf</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">/etc/entropy/client.conf</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">clientdbid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">client</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">clientserverrepoid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">__system__</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">cmdline</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">root=/dev/ram0</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ramdisk=8192</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">real_root=UUID=19da6ea</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+ <code class="variable-quote">'</code><code class="variable-string">cmdline</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">root=/dev/md0</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ramdisk=8192</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">real_root=/dev/md0</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">d</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -1484,7 +1560,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:17 2010
+    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:50 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

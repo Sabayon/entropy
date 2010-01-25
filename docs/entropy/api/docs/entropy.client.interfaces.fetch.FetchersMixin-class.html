@@ -59,16 +59,16 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class FetchersMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.fetch-pysrc.html#FetchersMixin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__7" name="uml_class_diagram_for_entropy__7">
-<area shape="rect" id="node21" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#check_needed_package_download" title="entropy.client.interfaces.fetch.FetchersMixin.check_needed_package_download" alt="" coords="17,39,664,57"/>
-<area shape="rect" id="node21" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files" title="Fetch multiple files simultaneously on URLs." alt="" coords="17,57,664,76"/>
-<area shape="rect" id="node21" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files_on_mirrors" title="@param download_map list [(repository,branch,filename,checksum &#160;(digest),signatures,),..] @param checksum bool verify checksum? @param &#160;fetch_abort_function callable method that could raise exceptions" alt="" coords="17,76,664,95"/>
-<area shape="rect" id="node21" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_file" alt="" coords="17,95,664,113"/>
-<area shape="rect" id="node21" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file_on_mirrors" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_file_on_mirrors" alt="" coords="17,113,664,132"/>
+<center>  <map id="uml_class_diagram_for_entropy__8" name="uml_class_diagram_for_entropy__8">
+<area shape="rect" id="node22" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#check_needed_package_download" title="entropy.client.interfaces.fetch.FetchersMixin.check_needed_package_download" alt="" coords="17,39,664,57"/>
+<area shape="rect" id="node22" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_files" alt="" coords="17,57,664,76"/>
+<area shape="rect" id="node22" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files_on_mirrors" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_files_on_mirrors" alt="" coords="17,76,664,95"/>
+<area shape="rect" id="node22" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_file" alt="" coords="17,95,664,113"/>
+<area shape="rect" id="node22" href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_file_on_mirrors" title="entropy.client.interfaces.fetch.FetchersMixin.fetch_file_on_mirrors" alt="" coords="17,113,664,132"/>
 <area shape="rect" id="node1" href="entropy.client.interfaces.fetch.FetchersMixin-class.html" title="entropy.client.interfaces.fetch.FetchersMixin" alt="" coords="5,6,675,138"/>
 <area shape="rect" id="node2" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="288,158,395,197"/>
 </map>
-  <img src="uml_class_diagram_for_entropy__7.gif" alt='' usemap="#uml_class_diagram_for_entropy__7" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_entropy__8.gif" alt='' usemap="#uml_class_diagram_for_entropy__8" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -104,12 +104,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html#fetch_files" class="summary-sig-name">fetch_files</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="fetch_files"></a><span class="summary-sig-name">fetch_files</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">url_data_list</span>,
         <span class="summary-sig-arg">checksum</span>=<span class="summary-sig-default">True</span>,
         <span class="summary-sig-arg">resume</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">fetch_file_abort_function</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Fetch multiple files simultaneously on URLs.</td>
+        <span class="summary-sig-arg">fetch_file_abort_function</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.fetch-pysrc.html#FetchersMixin.fetch_files">source&nbsp;code</a></span>
             
@@ -128,11 +127,7 @@
           <td><span class="summary-sig"><a name="fetch_files_on_mirrors"></a><span class="summary-sig-name">fetch_files_on_mirrors</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">download_list</span>,
         <span class="summary-sig-arg">checksum</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">fetch_abort_function</span>=<span class="summary-sig-default">None</span>)</span><br />
-      @param download_map list [(repository,branch,filename,checksum 
-      (digest),signatures,),..] @param checksum bool verify checksum? 
-      @param fetch_abort_function callable method that could raise 
-      exceptions</td>
+        <span class="summary-sig-arg">fetch_abort_function</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.fetch-pysrc.html#FetchersMixin.fetch_files_on_mirrors">source&nbsp;code</a></span>
             
@@ -186,50 +181,6 @@
     </td>
   </tr>
 </table>
-<!-- ==================== METHOD DETAILS ==================== -->
-<a name="section-MethodDetails"></a>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Method Details</span></td>
-</tr>
-</table>
-<a name="fetch_files"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">fetch_files</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">url_data_list</span>,
-        <span class="sig-arg">checksum</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">resume</span>=<span class="sig-default">True</span>,
-        <span class="sig-arg">fetch_file_abort_function</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.fetch-pysrc.html#FetchersMixin.fetch_files">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <pre class="literalblock">
-
-Fetch multiple files simultaneously on URLs.
-
-@param url_data_list list
-    [(url,dest_path [or None],checksum ['ab86fff46f6ec0f4b1e0a2a4a82bf323' or None],branch,),..]
-@param digest bool, digest check (checksum)
-@param resume bool enable resume support
-@param fetch_file_abort_function callable method that could raise exceptions
-@return general_status_code, {'url': (status_code,checksum,resumed,)}, data_transfer
-
-</pre>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -261,7 +212,7 @@ Fetch multiple files simultaneously on URLs.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan  4 22:00:19 2010
+    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:51 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
