@@ -6,13 +6,13 @@
 
   0.99.40:
 
-    - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier
         for 3rd party implementations to define it)
     - add splitdebug support?
     - entropy.security.System unittest
+    - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
 
   1.0_beta1:
 
