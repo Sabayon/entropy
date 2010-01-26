@@ -194,7 +194,8 @@ def print_exception(returndata = False, tb_data = None):
     if tb_data is not None:
         tb = tb_data
     else:
-        tb = sys.last_traceback
+        last_type, last_value, last_traceback = sys.exc_info()
+        tb = last_traceback
     while True:
         if not tb.tb_next:
             break
