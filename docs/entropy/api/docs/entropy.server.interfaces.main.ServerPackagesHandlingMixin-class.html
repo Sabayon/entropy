@@ -59,19 +59,20 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class ServerPackagesHandlingMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#ServerPackagesHandlingMixin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__90" name="uml_class_diagram_for_entropy__90">
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#tag_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.tag_packages" alt="" coords="17,39,775,57"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#flushback_packages" title="When creating a new branch, for space reasons, packages are not moved to a &#160;new location." alt="" coords="17,57,775,76"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#move_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.move_packages" alt="" coords="17,76,775,95"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#remove_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.remove_packages" alt="" coords="17,95,775,113"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#verify_remote_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.verify_remote_packages" alt="" coords="17,113,775,132"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#verify_local_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.verify_local_packages" alt="" coords="17,132,775,151"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#sign_local_packages" title="Sign local packages in given repository using GPG key hopefully set for it." alt="" coords="17,151,775,169"/>
-<area shape="rect" id="node358" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#switch_packages_branch" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.switch_packages_branch" alt="" coords="17,169,775,188"/>
-<area shape="rect" id="node1" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin" alt="" coords="5,6,787,194"/>
-<area shape="rect" id="node2" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="357,214,435,253"/>
+<center>  <map id="uml_class_diagram_for_entropy__91" name="uml_class_diagram_for_entropy__91">
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#initialize_server_repository" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.initialize_server_repository" alt="" coords="17,39,775,57"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#tag_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.tag_packages" alt="" coords="17,57,775,76"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#flushback_packages" title="When creating a new branch, for space reasons, packages are not moved to a &#160;new location." alt="" coords="17,76,775,95"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#move_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.move_packages" alt="" coords="17,95,775,113"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#remove_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.remove_packages" alt="" coords="17,113,775,132"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#verify_remote_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.verify_remote_packages" alt="" coords="17,132,775,151"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#verify_local_packages" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.verify_local_packages" alt="" coords="17,151,775,169"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#sign_local_packages" title="Sign local packages in given repository using GPG key hopefully set for it." alt="" coords="17,169,775,188"/>
+<area shape="rect" id="node363" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html#switch_packages_branch" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin.switch_packages_branch" alt="" coords="17,188,775,207"/>
+<area shape="rect" id="node1" href="entropy.server.interfaces.main.ServerPackagesHandlingMixin-class.html" title="entropy.server.interfaces.main.ServerPackagesHandlingMixin" alt="" coords="5,6,787,213"/>
+<area shape="rect" id="node2" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="357,233,435,271"/>
 </map>
-  <img src="uml_class_diagram_for_entropy__90.gif" alt='' usemap="#uml_class_diagram_for_entropy__90" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_entropy__91.gif" alt='' usemap="#uml_class_diagram_for_entropy__91" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -83,6 +84,25 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Instance Methods</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="initialize_server_repository"></a><span class="summary-sig-name">initialize_server_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">empty</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">warnings</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#ServerPackagesHandlingMixin.initialize_server_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -340,7 +360,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jan 25 19:49:56 2010
+    Generated by Epydoc 3.0.1 on Tue Jan 26 22:53:35 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
