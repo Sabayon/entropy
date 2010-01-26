@@ -76,7 +76,7 @@ class TransceiverServerHandler:
         if not local_basedir:
             # default to database directory
             self.local_basedir = os.path.dirname(
-                self.Entropy.get_local_database_file(self.repo))
+                self.Entropy._get_local_database_file(self.repo))
         else:
             self.local_basedir = local_basedir
 
