@@ -3286,7 +3286,7 @@ msgstr "Per favore notificalo"
 
 #: ../../libraries/entropy/client/interfaces/trigger.py:428
 msgid "post-install phase"
-msgstr "fare post-install"
+msgstr "fase post-install"
 
 #: ../../libraries/entropy/client/interfaces/trigger.py:437
 msgid "pre-install phase"
