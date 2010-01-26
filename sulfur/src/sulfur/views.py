@@ -2020,8 +2020,11 @@ class EntropyPackageView:
         if self.Equo.UGC is None:
             return
 
-        repoid = pkg.repoid
-        sync_item = (pkg.key, repoid)
+        try:
+            repoid = pkg.repoid
+            sync_item = (pkg.key, repoid)
+        except self.Equo.dbapi2.ProgrammingError:
+            return
         if sync_item in self._ugc_metadata_sync_exec_cache:
             return
 
@@ -2058,7 +2061,10 @@ class EntropyPackageView:
 
                 # try to load icon from icon theme
                 icon_theme = gtk.icon_theme_get_default()
-                name = pkg.onlyname
+                try:
+                    name = pkg.onlyname
+                except self.Equo.dbapi2.ProgrammingError:
+                    name = "N/A"
                 icon_theme_loaded = False
                 if icon_theme.has_icon(name):
                     # use this icon
