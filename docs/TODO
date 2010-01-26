@@ -26,6 +26,7 @@
         - entropy.client, rename clientDbconn into installed_db
         - entropy.client, closeAllSecurity, closeAllQA
         - entropy.db => retrieveVersionTag => retrieveTag
+        - wrap sqlite3 exceptions around EntropyRepositoryExceptions
     - entropy package metadata .dtd specs
     - complete API documentation
     - Transform Sulfur into Entropy Store:
