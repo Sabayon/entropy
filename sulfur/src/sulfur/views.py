@@ -2066,7 +2066,9 @@ class EntropyPackageView:
                         pixbuf = icon_theme.load_icon(name,
                             EntropyPackageView.ROW_HEIGHT,
                             gtk.ICON_LOOKUP_USE_BUILTIN)
-                    except gio.Error: # no such file or directory
+                    except (gio.Error, gobject.GError):
+                        # no such file or directory (gio.Error)
+                        # unrecognized file format (gobject.GError)
                         pixbuf = None
                     if pixbuf is not None:
                         cell.set_property('pixbuf', pixbuf)
