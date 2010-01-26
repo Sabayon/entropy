@@ -878,7 +878,11 @@ class PkgInfoMenu(MenuSkel):
             # if image has __icon__ as title, use as real icon
             icon_path = store_path + ".sulfur_icon"
             if not (os.path.isfile(icon_path) and os.access(icon_path, os.R_OK)):
-                resize_image(48.0, store_path, icon_path)
+                try:
+                    resize_image(48.0, store_path, icon_path)
+                except ValueError:
+                    # image should be a GdkPixbuf or empty
+                    return # wtf!
             self.pkginfo_ui.pkgImage.set_from_file(icon_path)
 
     def spawn_docs_fetch(self):
