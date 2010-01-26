@@ -679,6 +679,7 @@ class EntropyPackageView:
         self.queue_full_exception = Full
         self.queue_empty_exception = Empty
 
+        self.__pkg_ugc_icon_cache = {}
         self._ugc_load_queue = queue_class(10) # max 10 items at time
         self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
         if self._ugc_status:
@@ -1680,6 +1681,7 @@ class EntropyPackageView:
                 break
             self.Equo.UGC.get_docs(repoid, key)
 
+        self.__pkg_ugc_icon_cache.clear()
         self._ugc_pixbuf_map.clear()
         self._ugc_metadata_sync_exec_cache.clear()
         self._emit_ugc_update()
@@ -1720,6 +1722,7 @@ class EntropyPackageView:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(file_path)
             except gobject.GError:
                 pixbuf = None
+                
 
             pkg_key = pkg.key
             repoid = pkg.repoid_clean
@@ -1996,7 +1999,10 @@ class EntropyPackageView:
                     continue
                 self.Equo.UGC.get_docs(repoid, key)
 
-        fork_function(do_ugc_sync, self._emit_ugc_update)
+        def do_fork():
+            fork_function(do_ugc_sync, self._emit_ugc_update)
+
+        gobject.idle_add(do_fork, priority = gobject.PRIORITY_LOW)
 
     def _spawn_ugc_icon_fetch(self, icon_doc, repoid):
 
@@ -2010,6 +2016,12 @@ class EntropyPackageView:
 
         repoid = pkg.repoid_clean
         key = pkg.key
+
+        cache_key = (key, repoid,)
+        cached = self.__pkg_ugc_icon_cache.get(cache_key)
+        if cached is not None:
+            return cached
+
         icon_doc = self.Equo.UGC.UGCCache.get_icon_cache(key, repoid)
         if icon_doc is None:
             # not cached
@@ -2048,6 +2060,7 @@ class EntropyPackageView:
                 return None
             self._ugc_pixbuf_map[icon_path] = pixbuf
 
+        self.__pkg_ugc_icon_cache[cache_key] = pixbuf
         return pixbuf
 
     def __new_ugc_pixbuf_stash_fetch(self, pkg):
@@ -2089,7 +2102,7 @@ class EntropyPackageView:
         elif not self._ugc_status:
             cell.set_property('visible', False)
         else:
-            self.__new_ugc_pixbuf_stash_fetch(pkg)
+            gobject.idle_add(self.__new_ugc_pixbuf_stash_fetch, pkg)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
