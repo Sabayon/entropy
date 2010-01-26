@@ -2184,9 +2184,6 @@ class PortagePlugin(SpmPlugin):
     def package_names_update(self, entropy_repository, entropy_repository_id,
         entropy_server, entropy_branch):
 
-        # TODO: remove this
-        from entropy.server.interfaces.main import ServerEntropyRepositoryPlugin
-
         repo_updates_file = entropy_server._get_local_database_treeupdates_file(
             entropy_repository_id)
         do_rescan = False
@@ -2231,6 +2228,8 @@ class PortagePlugin(SpmPlugin):
             # force parameters
             entropy_repository.readOnly = False
             # disable upload trigger
+            from entropy.server.interfaces.main import \
+                ServerEntropyRepositoryPlugin
             entropy_repository.set_plugin_metadata(
                 ServerEntropyRepositoryPlugin.PLUGIN_ID, "no_upload", True)
 

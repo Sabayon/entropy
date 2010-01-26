@@ -784,7 +784,7 @@ def database(options):
         print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
         Entropy._bump_database()
         if d_request_sync:
-            errors, fine, broken = Entropy.Mirrors.sync_databases()
+            errors, fine, broken = Entropy.Mirrors.sync_repositories()
 
     elif (options[0] == "backup"):
 

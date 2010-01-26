@@ -890,7 +890,8 @@ class Base:
             if pretend:
                 return 0, set(), set()
 
-            errors, fine_uris, broken_uris = Entropy.Mirrors.sync_databases(no_upload = False)
+            errors, fine_uris, broken_uris = Entropy.Mirrors.sync_repositories(
+                no_upload = False)
             remote_status = Entropy.Mirrors.get_remote_repositories_status(repoid)
             Entropy.output(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:

@@ -3508,8 +3508,7 @@ class ServerRepositoryMixin:
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-                given_up = self.Mirrors.mirror_lock_check(uri,
-                    repo = repo)
+                given_up = self.Mirrors._mirror_lock_check(uri, repo = repo)
                 if given_up:
                     mytxt = "%s:" % (_("Mirrors status table"),)
                     self.output(
@@ -3549,7 +3548,7 @@ class ServerRepositoryMixin:
 
             # if we arrive here, it is because all the mirrors are unlocked
             self.Mirrors.lock_mirrors(True, repo = repo)
-            self.Mirrors.sync_databases(no_upload, repo = repo)
+            self.Mirrors.sync_repositories(no_upload, repo = repo)
 
 
     def _init_generic_memory_server_repository(self, repoid, description,
