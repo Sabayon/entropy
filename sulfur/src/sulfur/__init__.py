@@ -1684,11 +1684,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def show_packages(self, back_to_page = None, on_init = False):
 
         action = self.lastPkgPB
-        if action == 'all':
-            masks = ['installed', 'available', 'masked', 'updates']
-        else:
-            masks = [action]
-
         self.disable_ugc = True
 
         if action == "search":
@@ -1696,9 +1691,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.pkgView.populate(loading_data, empty = True)
             self.gtk_loop()
 
-        allpkgs = []
-        for flt in masks:
-            allpkgs += self.etpbase.get_groups(flt)
+        allpkgs = self.etpbase.get_groups(action)
 
         if action == "updates":
             # speed up first queue taint iteration

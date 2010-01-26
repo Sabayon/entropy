@@ -20,6 +20,7 @@ class DummyEntropyPackage:
 
     def __init__(self, namedesc = None, dummy_type = -1, onlyname = ''):
         self.matched_atom = (0, 0)
+        self.installed_match = None
         self.namedesc = namedesc
         self.queued = None
         self.repoid = ''

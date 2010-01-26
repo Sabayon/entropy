@@ -636,24 +636,9 @@ class EntropyPackages:
                     mask, time.time() - t1,))
 
     def get_groups(self, flt):
-        if flt == 'all':
-            return self.get_all_groups()
-        elif flt in ['queued', 'glsa_metadata']:
+        if flt in ['queued', 'glsa_metadata']:
             return self.get_raw_groups(flt)
-        else:
-            return self.do_filtering(self.get_raw_groups(flt))
-
-    def get_all_groups(self):
-        pkgs = []
-        pkgs.extend(self.get_groups('installed')[:])
-        pkgs.extend(self.get_groups('available')[:])
-        pkgs.extend(self.get_groups('reinstallable')[:])
-        pkgs.extend(self.get_groups('updates')[:])
-        #pkgs.extend(self.get_groups('downgrade'))
-        #pkgs.extend(self.get_groups('masked'))
-        #pkgs.extend(self.get_groups('user_masked'))
-        #pkgs.extend(self.get_groups('user_unmasked'))
-        return pkgs
+        return self.do_filtering(self.get_raw_groups(flt))
 
     def set_filter(self, fn = None):
         self._filter_callback = fn
@@ -726,6 +711,27 @@ class EntropyPackages:
         for mylist in list(self.queue.packages.values()):
             data.extend(mylist)
         return data
+
+    def _pkg_get_all(self):
+
+        keys = ['installed', 'available', 'masked', 'updates']
+        allpkgs = []
+        for key in keys:
+            allpkgs += self.get_raw_groups(key)
+
+        # filter duplicates, drop installed pkgs if they are already
+        # provided as updates or available
+        inst_group = [x.matched_atom for x in \
+            self.get_raw_groups('installed')]
+        other_groups = [x.installed_match for x in \
+            self.get_raw_groups('updates') + \
+            self.get_raw_groups('available') + \
+            self.get_raw_groups('masked')]
+
+        allpkgs = [x for x in allpkgs if not (x.matched_atom in inst_group \
+            and x.matched_atom in other_groups)]
+
+        return allpkgs
 
     def _pkg_get_available(self):
         gp_call = self.get_package_item
@@ -1098,6 +1104,7 @@ class EntropyPackages:
             "downgrade": self._pkg_get_downgrade,
             "glsa_metadata": self._pkg_get_glsa_metadata,
             "search": self._pkg_get_search,
+            "all": self._pkg_get_all,
         }
         return calls_dict
 
