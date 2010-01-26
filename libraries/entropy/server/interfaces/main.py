@@ -4635,4 +4635,3 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
 
     def __del__(self):
         self.destroy()
-

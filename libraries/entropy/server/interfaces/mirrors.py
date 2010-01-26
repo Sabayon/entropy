@@ -13,8 +13,9 @@ import os
 import tempfile
 import shutil
 import time
-from entropy.exceptions import OnlineMirrorError, IncorrectParameter, \
-    ConnectionError, InvalidDataType, EntropyPackageException, TransceiverError
+
+from entropy.exceptions import OnlineMirrorError, ConnectionError, \
+    EntropyPackageException, TransceiverError
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple
 from entropy.const import etpConst, etpSys
@@ -38,8 +39,7 @@ class Server:
         from entropy.server.interfaces.main import Server as MainServer
 
         if not isinstance(ServerInstance, MainServer):
-            mytxt = _("entropy.server.interfaces.main.Server needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError("entropy.server.interfaces.main.Server needed")
 
         self.Entropy = ServerInstance
         self.TransceiverServerHandler = TransceiverServerHandler
@@ -682,10 +682,7 @@ class Server:
         db_format = sys_set['database_file_format']
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
-            raise InvalidDataType("InvalidDataType: %s." % (
-                    _("Wrong database compression method passed"),
-                )
-            )
+            raise AttributeError("Wrong database compression method passed")
         remote_dir = os.path.join(
             self.Entropy.get_remote_database_relative_path(repo),
             self.SystemSettings['repositories']['branch'])
@@ -1767,10 +1764,7 @@ class Server:
             db_format = srv_set['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod is None:
-                raise InvalidDataType("InvalidDataType: %s." % (
-                        _("wrong database compression method passed"),
-                    )
-                )
+                raise AttributeError("wrong database compression method passed")
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             database_path = self.Entropy.get_local_database_file(repo)
@@ -1988,10 +1982,7 @@ class Server:
             db_format = srv_set['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod is None:
-                raise InvalidDataType("InvalidDataType: %s." % (
-                        _("wrong database compression method passed"),
-                    )
-                )
+                raise AttributeError("wrong database compression method passed")
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             database_path = self.Entropy.get_local_database_file(repo)
