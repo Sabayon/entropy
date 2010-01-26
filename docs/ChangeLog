@@ -1,3 +1,117 @@
+commit 681881ff832dab61456e73da8951344f86f91430
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 15:53:27 2010 +0100
+
+    [magneto] while trying to load magneto-kde, also catch RuntimeError exceptions
+
+commit 202965c6e684e595198260b49e0027c88dbf5051
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 15:34:40 2010 +0100
+
+    [po] update Italian translation
+
+commit 71fa6cf58dc7541333ad6c04b98448561c9736ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 14:16:50 2010 +0100
+
+    [entropy.dump] dumpobj: also catch ImportError exceptions
+
+commit ae09c684c77df6cddce34c9a753a9f8ce22d1f79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 14:14:16 2010 +0100
+
+    [entropy.tools] print_exception: workaroung Python 2.6.x bug
+
+commit 53271599b1994f719760cf91c321716c74f8f7de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 14:13:01 2010 +0100
+
+    [entropy.server.transceivers] fix API call
+
+commit 66675a6d802485e9cca77f12cf62689cbd6a80d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 10:36:04 2010 +0100
+
+    [entropy.server] second chunk of entropy.server API/module cleanup and polishing
+
+commit 838aaf5d3842a8c896235dcc8d7048f2425b8cd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 09:46:22 2010 +0100
+
+    [entropy.server] remove usage of to-be-removed exceptions
+
+commit 4b201677251feca11d12b149ed0b8ee64c7620f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 09:45:56 2010 +0100
+
+    [todo] update TODO
+
+commit 3401e2a67aa9e84d574a60c39900114c53284c3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 09:43:22 2010 +0100
+
+    [sulfur] catch EntropyRepository exceptions when view is reloading
+
+commit de8c6bc2b801644a43f42c8bd46e0371a102e40b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 08:59:58 2010 +0100
+
+    [sulfur] when trying to load icon from theme, also catch GError exceptions
+
+commit 5419aac89f105cbc017866372a25697f1fd1abf9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 20:09:11 2010 +0100
+
+    [todo] update TODO
+
+commit 81b036f0b03e60279587ace1f8ccacdcd67be2c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 20:08:56 2010 +0100
+
+    [docs] update API documentation
+
+commit 5cdf91a69923589e62ceedc31bbc8639b1952601
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 20:07:55 2010 +0100
+
+    [entropy.server] first chunk of API rework, module code reorganization
+
+commit 4e919d87f3ae3e2239f2c29cbae13d8d796db9dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 18:21:08 2010 +0100
+
+    [todo] update TODO
+
+commit 1fc2602bae09d60298d2d8d1ac74972b7b4dfaaf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 18:20:34 2010 +0100
+
+    [entropy.tools] first run of entropy.tools module/API cleanup done
+
+commit 35151b76c43c2547ab3744109b75dbedfa367f58
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 09:22:06 2010 +0100
+
+    [sulfur] deal with unavailable metadata in package class
+
+commit 3adeb7d8ae2c929c836c8b054313423706ee610d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 09:19:51 2010 +0100
+
+    [entropy.db] EntropyRepository: slightly improve retrieveDependencies()
+
+commit 0453fd8bcde1b79535d98e370269ea185908b693
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 02:09:54 2010 +0100
+
+    [entropy] when subclassing Entropy Client interface, properly set singleton class
+
+commit 2720f83c8e33186e91a9795b30cf88f061b831a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 25 01:24:08 2010 +0100
+
+    Update ChangeLog for version 0.99.25
+
 commit bf1451bb9a1f242c52e4a86f98f64ab46cd07d2c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jan 25 01:20:03 2010 +0100
