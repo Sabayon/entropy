@@ -567,19 +567,19 @@ def update(options):
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
                 Entropy.Spm().generate_package(x[0],
-                    Entropy.get_local_store_directory())
+                    Entropy._get_local_store_directory())
             except OSError:
                 entropy.tools.print_traceback()
                 print_info(brown("    !!! ")+bold("%s..." % (
                     _("Ignoring broken Spm entry, please recompile it"),) ))
 
-    etp_pkg_files = os.listdir(Entropy.get_local_store_directory())
+    etp_pkg_files = os.listdir(Entropy._get_local_store_directory())
     if not etp_pkg_files:
         print_info(brown(" * ")+red(_("Nothing to do, check later.")))
         # then exit gracefully
         return 0
 
-    etp_pkg_files = [(os.path.join(Entropy.get_local_store_directory(), x), False,) for x in etp_pkg_files]
+    etp_pkg_files = [(os.path.join(Entropy._get_local_store_directory(), x), False,) for x in etp_pkg_files]
     idpackages = Entropy.add_packages_to_repository(etp_pkg_files)
 
     if idpackages:
@@ -788,8 +788,9 @@ def database(options):
 
     elif (options[0] == "backup"):
 
-        db_path = Entropy.get_local_database_file()
-        rc, err_msg = Entropy.Client.backup_database(db_path, backup_dir = os.path.dirname(db_path))
+        db_path = Entropy._get_local_database_file()
+        rc, err_msg = Entropy.Client.backup_database(db_path,
+            backup_dir = os.path.dirname(db_path))
         if not rc:
             print_info(darkred(" ** ")+red("%s: %s" % (_("Error"), err_msg,) ))
             return 1
@@ -798,9 +799,10 @@ def database(options):
     elif (options[0] == "restore"):
 
 
-        db_file = Entropy.get_local_database_file()
+        db_file = Entropy._get_local_database_file()
         db_dir = os.path.dirname(db_file)
-        dblist = Entropy.Client.list_backedup_client_databases(client_dbdir = db_dir)
+        dblist = Entropy.Client.list_backedup_client_databases(
+            client_dbdir = db_dir)
         if not dblist:
             print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
             return 1

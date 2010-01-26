@@ -92,7 +92,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         repo = self._metadata['repo_name']
         local_dbfile = self._metadata['local_dbfile']
-        taint_file = self._server.get_local_database_taint_file(repo)
+        taint_file = self._server._get_local_database_taint_file(repo)
         if os.path.isfile(taint_file):
             dbs = ServerRepositoryStatus()
             dbs.set_tainted(local_dbfile)
@@ -170,7 +170,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             return 0
 
         # taint the database status
-        taint_file = self._server.get_local_database_taint_file(repo = repo)
+        taint_file = self._server._get_local_database_taint_file(repo = repo)
         f = open(taint_file, "w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
@@ -186,7 +186,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             Entropy repository revision bumping function. Every time it's called,
             revision is incremented by 1.
             """
-            revision_file = self._server.get_local_database_revision_file(
+            revision_file = self._server._get_local_database_revision_file(
                 repo = repo)
             if not os.path.isfile(revision_file):
                 revision = 1
@@ -699,7 +699,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
                 continue
 
             idpackages = set()
-            exp_fp = self._helper.get_local_exp_based_pkgs_rm_whitelist_file(
+            exp_fp = self._helper._get_local_exp_based_pkgs_rm_whitelist_file(
                 repo = repoid)
             dbconn = self._helper.open_server_repository(
                 just_reading = True, repo = repoid)
@@ -742,201 +742,195 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
 
 class ServerSettingsMixin:
 
-    def get_remote_mirrors(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo is None:
-            repo = self.default_repository
-        return srv_set['repositories'][repo]['mirrors'][:]
-
-    def get_remote_packages_relative_path(self, repo = None):
+    def _get_remote_packages_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['packages_relative_path']
 
-    def get_remote_database_relative_path(self, repo = None):
+    def _get_remote_database_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['database_relative_path']
 
-    def get_local_database_file(self, repo = None, branch = None):
+    def _get_local_database_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasefile'])
 
-    def get_local_store_directory(self, repo = None):
+    def _get_local_store_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['store_dir']
 
-    def get_local_upload_directory(self, repo = None):
+    def _get_local_upload_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['upload_dir']
 
-    def get_local_packages_directory(self, repo = None):
+    def _get_local_packages_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['packages_dir']
 
-    def get_local_database_taint_file(self, repo = None, branch = None):
+    def _get_local_database_taint_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasetaintfile'])
 
-    def get_local_database_revision_file(self, repo = None, branch = None):
+    def _get_local_database_revision_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaserevisionfile'])
 
-    def get_local_database_timestamp_file(self, repo = None, branch = None):
+    def _get_local_database_timestamp_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasetimestampfile'])
 
-    def get_local_database_ca_cert_file(self, repo = None, branch = None):
+    def _get_local_database_ca_cert_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasecacertfile'])
 
-    def get_local_database_server_cert_file(self, repo = None, branch = None):
+    def _get_local_database_server_cert_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaseservercertfile'])
 
-    def get_local_database_mask_file(self, repo = None, branch = None):
+    def _get_local_database_mask_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasemaskfile'])
 
-    def get_local_database_system_mask_file(self, repo = None, branch = None):
+    def _get_local_database_system_mask_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasesytemmaskfile'])
 
-    def get_local_database_confl_tagged_file(self, repo = None, branch = None):
+    def _get_local_database_confl_tagged_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaseconflictingtaggedfile'])
 
-    def get_local_database_licensewhitelist_file(self, repo = None,
+    def _get_local_database_licensewhitelist_file(self, repo = None,
         branch = None):
 
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaselicwhitelistfile'])
 
-    def get_local_database_rss_file(self, repo = None, branch = None):
+    def _get_local_database_rss_file(self, repo = None, branch = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             srv_set['rss']['name'])
 
-    def get_local_database_rsslight_file(self, repo = None, branch = None):
+    def _get_local_database_rsslight_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['rss-light-name'])
 
-    def get_local_database_notice_board_file(self, repo = None, branch = None):
+    def _get_local_database_notice_board_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['rss-notice-board'])
 
-    def get_local_database_treeupdates_file(self, repo = None, branch = None):
+    def _get_local_database_treeupdates_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaseupdatefile'])
 
-    def get_local_database_compressed_metafiles_file(self, repo = None,
+    def _get_local_database_compressed_metafiles_file(self, repo = None,
         branch = None):
 
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasemetafilesfile'])
 
-    def get_local_database_metafiles_not_found_file(self, repo = None,
+    def _get_local_database_metafiles_not_found_file(self, repo = None,
         branch = None):
 
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasemetafilesnotfound'])
 
-    def get_local_database_gpg_signature_file(self, repo = None, branch = None):
+    def _get_local_database_gpg_signature_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasegpgfile'])
 
-    def get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None,
+    def _get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None,
         branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaseexpbasedpkgsrm'])
 
-    def get_local_pkglist_file(self, repo = None, branch = None):
+    def _get_local_pkglist_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasepkglist'])
 
-    def get_local_database_sets_dir(self, repo = None, branch = None):
+    def _get_local_database_sets_dir(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['confsetsdirname'])
 
-    def get_local_post_branch_mig_script(self, repo = None, branch = None):
+    def _get_local_post_branch_mig_script(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etp_post_branch_hop_script'])
 
-    def get_local_post_branch_upg_script(self, repo = None, branch = None):
+    def _get_local_post_branch_upg_script(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etp_post_branch_upgrade_script'])
 
-    def get_local_post_repo_update_script(self, repo = None, branch = None):
+    def _get_local_post_repo_update_script(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etp_post_repo_update_script'])
 
-    def get_local_critical_updates_file(self, repo = None, branch = None):
+    def _get_local_critical_updates_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasecriticalfile'])
 
-    def get_local_database_keywords_file(self, repo = None, branch = None):
+    def _get_local_database_keywords_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),
+        return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasekeywordsfile'])
 
-    def get_local_database_dir(self, repo = None, branch = None):
+    def _get_local_database_dir(self, repo = None, branch = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
@@ -955,41 +949,91 @@ class ServerSettingsMixin:
         return os.path.join(srv_set['repositories'][repo]['database_dir'],
             branch, etpConst['etpdatabasemissingdepsblfile'])
 
-    def get_local_database_revision(self, repo = None):
+    def _get_database_lockfile(self, repo = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self._get_local_database_dir(repo),
+            etpConst['etpdatabaselockfile'])
+
+    def _get_database_download_lockfile(self, repo = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self._get_local_database_dir(repo),
+            etpConst['etpdatabasedownloadlockfile'])
+
+    def _create_local_database_download_lockfile(self, repo = None):
+        if repo is None:
+            repo = self.default_repository
+        lock_file = self._get_database_download_lockfile(repo)
+        f_lock = open(lock_file, "w")
+        f_lock.write("download locked")
+        f_lock.flush()
+        f_lock.close()
+
+    def _create_local_database_lockfile(self, repo = None):
+        if repo is None:
+            repo = self.default_repository
+        lock_file = self._get_database_lockfile(repo)
+        f_lock = open(lock_file, "w")
+        f_lock.write("database locked")
+        f_lock.flush()
+        f_lock.close()
+
+    def _remove_local_database_lockfile(self, repo = None):
+        if repo is None:
+            repo = self.default_repository
+        lock_file = self._get_database_lockfile(repo)
+        if os.path.isfile(lock_file):
+            os.remove(lock_file)
+
+    def _remove_local_database_download_lockfile(self, repo = None):
+        if repo is None:
+            repo = self.default_repository
+        lock_file = self._get_database_download_lockfile(repo)
+        if os.path.isfile(lock_file):
+            os.remove(lock_file)
+
+    def get_remote_mirrors(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if repo is None:
+            repo = self.default_repository
+        return srv_set['repositories'][repo]['mirrors'][:]
+
+    def get_local_repository_revision(self, repo = None):
 
         if repo is None:
             repo = self.default_repository
 
-        dbrev_file = self.get_local_database_revision_file(repo)
-        if os.path.isfile(dbrev_file):
-            f_rev = open(dbrev_file)
-            rev = f_rev.readline().strip()
-            f_rev.close()
-            try:
-                rev = int(rev)
-            except ValueError:
-                self.output(
-                    "[repo:%s] %s: %s - %s" % (
-                            darkgreen(repo),
-                            blue(_("invalid database revision")),
-                            bold(rev),
-                            blue(_("defaulting to 0")),
-                        ),
-                    importance = 2,
-                    type = "error",
-                    header = darkred(" !!! ")
-                )
-                rev = 0
-            return rev
-        else:
+        dbrev_file = self._get_local_database_revision_file(repo)
+        if not os.path.isfile(dbrev_file):
             return 0
 
-    def get_remote_database_revision(self, repo = None):
+        f_rev = open(dbrev_file)
+        rev = f_rev.readline().strip()
+        f_rev.close()
+        try:
+            rev = int(rev)
+        except ValueError:
+            self.output(
+                "[repo:%s] %s: %s - %s" % (
+                        darkgreen(repo),
+                        blue(_("invalid database revision")),
+                        bold(rev),
+                        blue(_("defaulting to 0")),
+                    ),
+                importance = 2,
+                type = "error",
+                header = darkred(" !!! ")
+            )
+            rev = 0
+        return rev
+
+    def get_remote_repository_revision(self, repo = None):
 
         if repo is None:
             repo = self.default_repository
 
-        remote_status =  self.Mirrors.get_remote_databases_status(repo)
+        remote_status =  self.Mirrors.get_remote_repositories_status(repo)
         if not [x for x in remote_status if x[1]]:
             remote_revision = 0
         else:
@@ -1119,7 +1163,7 @@ class ServerPackagesHandlingMixin:
             back = True
         )
 
-        if os.path.isfile(self.get_local_database_file(repo)):
+        if os.path.isfile(self._get_local_database_file(repo)):
 
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo, warnings = warnings)
@@ -1156,7 +1200,7 @@ class ServerPackagesHandlingMixin:
             mytxt = "%s: %s: %s" % (
                 bold(_("WARNING")),
                 red(_("database already exists")),
-                self.get_local_database_file(repo),
+                self._get_local_database_file(repo),
             )
             self.output(
                 mytxt,
@@ -1169,7 +1213,7 @@ class ServerPackagesHandlingMixin:
             if rc_question == _("No"):
                 return
             try:
-                os.remove(self.get_local_database_file(repo))
+                os.remove(self._get_local_database_file(repo))
             except OSError:
                 pass
 
@@ -1226,7 +1270,7 @@ class ServerPackagesHandlingMixin:
 
             # now fill the database
             pkg_branch_dir = os.path.join(
-                self.get_local_packages_directory(repo),
+                self._get_local_packages_directory(repo),
                 self.SystemSettings['repositories']['branch'])
             pkglist = os.listdir(pkg_branch_dir)
             # filter .md5 and .expired packages
@@ -1273,7 +1317,7 @@ class ServerPackagesHandlingMixin:
                 if pkg in injected_packages:
                     doinject = True
 
-                pkg_path = os.path.join(self.get_local_packages_directory(repo),
+                pkg_path = os.path.join(self._get_local_packages_directory(repo),
                     branch, pkg)
                 mydata = self.Spm().extract_package_metadata(pkg_path)
                 self._pump_extracted_package_metadata(mydata, repo,
@@ -1446,7 +1490,7 @@ class ServerPackagesHandlingMixin:
         tmp_down_dir = tempfile.mkdtemp()
 
         download_queue = {}
-        local_up_dir = self.get_local_upload_directory(repo)
+        local_up_dir = self._get_local_upload_directory(repo)
         local_basedir = os.path.join(local_up_dir, branch)
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
@@ -1497,7 +1541,7 @@ class ServerPackagesHandlingMixin:
                 if rc_question == _("No"):
                     continue
 
-            remote_relative_path = self.get_remote_packages_relative_path(repo)
+            remote_relative_path = self._get_remote_packages_relative_path(repo)
 
             for uri in self.get_remote_mirrors(repo):
 
@@ -1854,10 +1898,10 @@ class ServerPackagesHandlingMixin:
                 back = True
             )
             # move binary file
-            from_file = os.path.join(self.get_local_packages_directory(repo),
+            from_file = os.path.join(self._get_local_packages_directory(repo),
                 match_branch, package_filename)
             if not os.path.isfile(from_file):
-                from_file = os.path.join(self.get_local_upload_directory(repo),
+                from_file = os.path.join(self._get_local_upload_directory(repo),
                     match_branch, package_filename)
             if not os.path.isfile(from_file):
                 self.output(
@@ -1882,10 +1926,10 @@ class ServerPackagesHandlingMixin:
                 tagged_package_filename = \
                     entropy.tools.create_package_filename(
                         match_category, match_name, match_version, new_tag)
-                to_file = os.path.join(self.get_local_upload_directory(to_repo),
+                to_file = os.path.join(self._get_local_upload_directory(to_repo),
                     match_branch, tagged_package_filename)
             else:
-                to_file = os.path.join(self.get_local_upload_directory(to_repo),
+                to_file = os.path.join(self._get_local_upload_directory(to_repo),
                     match_branch, package_filename)
             if not os.path.isdir(os.path.dirname(to_file)):
                 os.makedirs(os.path.dirname(to_file))
@@ -2842,15 +2886,15 @@ class ServerPackagesHandlingMixin:
             type = "info",
             header = darkgreen(" @@ ")
         )
-        branch_dbdir = self.get_local_database_dir(repo)
-        old_branch_dbdir = self.get_local_database_dir(repo, from_branch)
+        branch_dbdir = self._get_local_database_dir(repo)
+        old_branch_dbdir = self._get_local_database_dir(repo, from_branch)
 
         # close all our databases
         self.close_repositories()
 
         # if database file did not exist got created as an empty file
         # we can just rm -rf it
-        branch_dbfile = self.get_local_database_file(repo)
+        branch_dbfile = self._get_local_database_file(repo)
         if os.path.isfile(branch_dbfile):
             if entropy.tools.get_file_size(branch_dbfile) == 0:
                 shutil.rmtree(branch_dbdir, True)
@@ -3342,7 +3386,7 @@ class ServerRepositoryMixin:
                 )
             else:
                 # move empty database for security sake
-                dbfile = self.get_local_database_file(repoid)
+                dbfile = self._get_local_database_file(repoid)
                 if os.path.isfile(dbfile):
                     shutil.move(dbfile, dbfile+".backup")
                 self.initialize_server_repository(empty = True,
@@ -3442,7 +3486,7 @@ class ServerRepositoryMixin:
             repo = self.default_repository
 
         # check if the database is locked locally
-        lock_file = self.Mirrors.get_database_lockfile(repo)
+        lock_file = self._get_database_lockfile(repo)
         if os.path.isfile(lock_file):
             self.output(
                 red(_("Entropy database is already locked by you :-)")),
@@ -3616,7 +3660,7 @@ class ServerRepositoryMixin:
             read_only = True
             no_upload = True
 
-        local_dbfile = self.get_local_database_file(repo, use_branch)
+        local_dbfile = self._get_local_database_file(repo, use_branch)
         if do_cache:
             cached = self._server_dbcache.get(
                 (repo, etpConst['systemroot'], local_dbfile, read_only,
@@ -3727,7 +3771,7 @@ class ServerRepositoryMixin:
     def setup_empty_repository(self, dbpath = None, repo = None):
 
         if dbpath is None:
-            dbpath = self.get_local_database_file(repo)
+            dbpath = self._get_local_database_file(repo)
 
         dbdir = os.path.dirname(dbpath)
         if not os.path.isdir(dbdir):
@@ -3762,7 +3806,7 @@ class ServerRepositoryMixin:
         if repo is None:
             repo = self.default_repository
 
-        upload_dir = os.path.join(self.get_local_upload_directory(repo),
+        upload_dir = os.path.join(self._get_local_upload_directory(repo),
             self.SystemSettings['repositories']['branch'])
         if not os.path.isdir(upload_dir):
             os.makedirs(upload_dir)
@@ -4017,8 +4061,8 @@ class ServerRepositoryMixin:
             repo = self.default_repository
 
         # taint the database status
-        db_file = self.get_local_database_file(repo = repo)
-        taint_file = self.get_local_database_taint_file(repo = repo)
+        db_file = self._get_local_database_file(repo = repo)
+        taint_file = self._get_local_database_taint_file(repo = repo)
         f = open(taint_file, "w")
         f.write("database tainted\n")
         f.flush()
@@ -4035,9 +4079,9 @@ class ServerRepositoryMixin:
 class ServerMiscMixin:
 
     def _ensure_paths(self, repo):
-        upload_dir = os.path.join(self.get_local_upload_directory(repo),
+        upload_dir = os.path.join(self._get_local_upload_directory(repo),
             self.SystemSettings['repositories']['branch'])
-        db_dir = self.get_local_database_dir(repo)
+        db_dir = self._get_local_database_dir(repo)
         for mydir in [upload_dir, db_dir]:
             if (not os.path.isdir(mydir)) and (not os.path.lexists(mydir)):
                 os.makedirs(mydir)
@@ -4078,7 +4122,7 @@ class ServerMiscMixin:
         # setup client database
         if not self.community_repo:
             etpConst['etpdatabaseclientfilepath'] = \
-                self.get_local_database_file(repo)
+                self._get_local_database_file(repo)
             etpConst['clientdbid'] = etpConst['serverdbid']
         const_create_working_dirs()
 
@@ -4253,7 +4297,7 @@ class ServerMiscMixin:
         pkg_path = dbconn.retrieveDownloadURL(idpackage)
         pkg_rel_path = self._get_common_pkg_relative_path(pkg_path,
             branch = branch)
-        return os.path.join(self.get_local_packages_directory(repo),
+        return os.path.join(self._get_local_packages_directory(repo),
             pkg_rel_path)
 
     def _get_upload_package_path(self, repo, dbconn, idpackage, branch = None):
@@ -4264,7 +4308,7 @@ class ServerMiscMixin:
         pkg_path = dbconn.retrieveDownloadURL(idpackage)
         pkg_rel_path = self._get_common_pkg_relative_path(pkg_path,
             branch = branch)
-        return os.path.join(self.get_local_upload_directory(repo),
+        return os.path.join(self._get_local_upload_directory(repo),
             pkg_rel_path)
 
     def scan_package_changes(self):
@@ -4468,7 +4512,7 @@ class ServerMiscMixin:
         if repo is None:
             repo = self.default_repository
 
-        sets_dir = self.get_local_database_sets_dir(repo, branch)
+        sets_dir = self._get_local_database_sets_dir(repo, branch)
         if not (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
             return {}
 

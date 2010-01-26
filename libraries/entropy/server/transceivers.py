@@ -68,7 +68,7 @@ class TransceiverServerHandler:
             # default to database directory
             branch = self.SystemSettings['repositories']['branch']
             my_path = os.path.join(
-                self.Entropy.get_remote_database_relative_path(repo), branch)
+                self.Entropy._get_remote_database_relative_path(repo), branch)
             self.txc_basedir = my_path
         else:
             self.txc_basedir = txc_basedir
@@ -344,7 +344,7 @@ class TransceiverServerHandler:
 
             branch = SystemSettings()['repositories']['branch']
             my_path = os.path.join(
-                self.Entropy.get_remote_database_relative_path(self.repo),
+                self.Entropy._get_remote_database_relative_path(self.repo),
                 branch)
 
             self.Entropy.output(

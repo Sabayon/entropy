@@ -14,7 +14,7 @@ import tempfile
 import subprocess
 from entropy.const import etpConst, etpUi
 from entropy.output import red, green, print_info, bold, darkgreen, blue, \
-    darkred, brown, print_error, readtext
+    darkred, brown, print_error, readtext, print_generic
 from entropy.server.interfaces import Server
 from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
@@ -391,7 +391,7 @@ def database(options):
     elif cmd == "lock-status":
 
         print_info(brown(" * ")+green("%s:" % (_("Mirrors status table"),) ))
-        dbstatus = Entropy.Mirrors.get_mirrors_lock()
+        dbstatus = Entropy.Mirrors._get_mirrors_lock()
         for db in dbstatus:
             if (db[1]):
                 db[1] = red(_("Locked"))
@@ -444,7 +444,7 @@ def database(options):
 
 def sync_remote_databases():
 
-    remote_db_status = Entropy.Mirrors.get_remote_databases_status()
+    remote_db_status = Entropy.Mirrors.get_remote_repositories_status()
     print_info(green(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
 
@@ -454,14 +454,14 @@ def sync_remote_databases():
         print_info(red("\t  * %s: " % (_("Database revision"),) ) + \
             blue(str(dbstat[1])))
 
-    local_revision = Entropy.get_local_database_revision()
+    local_revision = Entropy.get_local_repository_revision()
     print_info(red("\t  * %s: " % (
         _("Database local revision currently at"),) ) + \
             blue(str(local_revision)))
 
     # do the rest
     errors, fine_uris, broken_uris = Entropy.Mirrors.sync_databases()
-    remote_status = Entropy.Mirrors.get_remote_databases_status()
+    remote_status = Entropy.Mirrors.get_remote_repositories_status()
     print_info(darkgreen(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
     for dbstat in remote_status:

@@ -9,7 +9,7 @@
     B{Entropy Package Manager Server GPG Keys text interface}.
 
 """
-from entropy.output import blue, purple, darkgreen, bold, brown, teal
+from entropy.output import blue, purple, darkgreen, bold, brown, teal, darkred
 from entropy.const import const_convert_to_rawstring
 from entropy.server.interfaces import Server
 from entropy.security import Repository

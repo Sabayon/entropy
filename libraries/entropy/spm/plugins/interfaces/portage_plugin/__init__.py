@@ -2139,7 +2139,7 @@ class PortagePlugin(SpmPlugin):
                 type = "warning",
                 header = blue("  # ")
             )
-            mydest = entropy_server.get_local_store_directory(repo = repo)
+            mydest = entropy_server._get_local_store_directory(repo = repo)
             try:
                 mypath = self.generate_package(myatom, mydest)
             except:
@@ -2187,7 +2187,7 @@ class PortagePlugin(SpmPlugin):
         # TODO: remove this
         from entropy.server.interfaces.main import ServerEntropyRepositoryPlugin
 
-        repo_updates_file = entropy_server.get_local_database_treeupdates_file(
+        repo_updates_file = entropy_server._get_local_database_treeupdates_file(
             entropy_repository_id)
         do_rescan = False
 

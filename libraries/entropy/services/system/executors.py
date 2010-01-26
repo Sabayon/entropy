@@ -573,7 +573,7 @@ class Base:
 
                 # run quickpkg
                 for repoid in to_add:
-                    store_dir = Entropy.get_local_store_directory(repo = repoid)
+                    store_dir = Entropy._get_local_store_directory(repo = repoid)
                     for atom in to_add[repoid]:
                         Entropy.Spm().generate_package(atom, store_dir)
 
@@ -583,9 +583,10 @@ class Base:
                     avail_repos.pop(etpConst['clientserverrepoid'])
                 matches_added = set()
                 for repoid in avail_repos:
-                    store_dir = Entropy.get_local_store_directory(repo = repoid)
+                    store_dir = Entropy._get_local_store_directory(repo = repoid)
                     package_files = os.listdir(store_dir)
-                    if not package_files: continue
+                    if not package_files:
+                        continue
                     package_files = [(os.path.join(store_dir, x), False) for x in package_files]
 
                     Entropy.output( "[%s|%s] %s" % (
@@ -832,8 +833,10 @@ class Base:
                                 }
 
                         # now the db
-                        current_revision = Entropy.get_local_database_revision(repoid)
-                        remote_revision = Entropy.get_remote_database_revision(repoid)
+                        current_revision = Entropy.get_local_repository_revision(
+                            repoid)
+                        remote_revision = Entropy.get_remote_repository_revision(
+                            repoid)
                         download_latest, upload_queue = Entropy.Mirrors.calculate_database_sync_queues(repoid)
 
                         repo_data[repoid][crippled_uri]['database'] = {
@@ -874,7 +877,7 @@ class Base:
 
         def sync_remote_databases(repoid, pretend):
 
-            rdb_status = Entropy.Mirrors.get_remote_databases_status()
+            rdb_status = Entropy.Mirrors.get_remote_repositories_status()
             Entropy.output(
                 "%s:" % (_("Remote Entropy Database Repository Status"),),
                 header = " * "
@@ -882,13 +885,13 @@ class Base:
             for myuri, myrev in rdb_status:
                 Entropy.output("\t %s:\t %s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
                 Entropy.output("\t  * %s: %s" % (_("Database revision"), myrev,))
-            local_revision = Entropy.get_local_database_revision(repoid)
+            local_revision = Entropy.get_local_repository_revision(repoid)
             Entropy.output("\t  * %s: %s" % (_("Database local revision currently at"), local_revision,))
             if pretend:
                 return 0, set(), set()
 
             errors, fine_uris, broken_uris = Entropy.Mirrors.sync_databases(no_upload = False)
-            remote_status = Entropy.Mirrors.get_remote_databases_status(repoid)
+            remote_status = Entropy.Mirrors.get_remote_repositories_status(repoid)
             Entropy.output(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:
                 Entropy.output("\t %s:\t%s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
