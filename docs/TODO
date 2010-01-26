@@ -1,8 +1,7 @@
 
   0.99.30:
 
-    - entropy.server API rework
-    - move sensible pkgs to alt dir
+    - entropy.server: move sensible pkgs to alt dir
 
   0.99.40:
 
@@ -17,6 +16,7 @@
   1.0_beta1:
 
     - entropy.exceptions rework
+        - ditch exceptions: InvalidData, InvalidDataType, IncorrectParameter
     - entropy.client API rework
         - entropy.client.interfaces.dep:
             - atom_match without serverInstance & bullshit
@@ -25,6 +25,7 @@
         - entropy.client, rename validRepositories into enabled_repositories
         - entropy.client, rename clientDbconn into installed_db
         - entropy.client, closeAllSecurity, closeAllQA
+        - unpack & install should be done in entropy.spm
         - entropy.db => retrieveVersionTag => retrieveTag
         - wrap sqlite3 exceptions around EntropyRepositoryExceptions
     - entropy package metadata .dtd specs
