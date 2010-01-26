@@ -247,7 +247,8 @@ class EntropyPackage:
 
         key = self.entropyTools.dep_getkey(atom)
         downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo_clean, key)
-        ugc_string = "<small>[%s]</small> " % (downloads,)
+        ugc_string = '<small>[%s|<span foreground="%s">%s</span>]</small> ' % (
+            downloads, SulfurConf.color_title2, repo_clean,)
         if ver_str:
             ver_str = ' <small>{%s: <span foreground="%s">%s</span>}</small>' % (
                 _("from"), SulfurConf.color_title2, ver_str,)
