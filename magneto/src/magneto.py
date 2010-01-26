@@ -1,4 +1,5 @@
 #!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayon.org>
@@ -32,7 +33,7 @@ else:
         # this is KDE!
         try:
             from magneto.kde.interfaces import Magneto
-        except ImportError:
+        except (ImportError, RuntimeError,):
             # try GTK
             from magneto.gtk.interfaces import Magneto
     else:
