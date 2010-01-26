@@ -870,15 +870,19 @@ class EntropyPackageView:
         gobject.timeout_add(1000, go, widget, vote)
 
     def reposition_menu(self, menu):
-        # devo tradurre x=0,y=20 in posizioni assolute
+
         abs_x, abs_y = self.loaded_event.get_root_coords()
-        abs_x -= self.loaded_event.x
-        event_y = self.loaded_event.y
-        # FIXME: find a better way to properly position menu
-        while event_y > self.selection_width+5:
-            event_y -= self.selection_width+5
-        abs_y += (self.selection_width-event_y)
-        return int(abs_x), int(abs_y), True
+
+        t_path, tv, tv_x, tv_y, = self.view.get_path_at_pos(
+            int(self.loaded_event.x),
+            int(self.loaded_event.y))
+
+        tv_abs_x = abs_x - tv_x
+        tv_abs_y = abs_y - tv_y
+        tv_abs_x += self.selection_width/2 - self.selection_width/4
+        tv_abs_y += EntropyPackageView.ROW_HEIGHT/2 + 9
+
+        return int(tv_abs_x), int(tv_abs_y), True
 
     def run_properties_menu(self, menu_item):
         objs = self.collect_selected_items()
@@ -908,7 +912,8 @@ class EntropyPackageView:
                 self.install_mask.show()
 
         if do_show:
-            self.install_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
+            self.install_menu.popup(None, None, self.reposition_menu,
+                self.loaded_event.button, self.loaded_event.time)
 
     def run_updates_menu_stuff(self, objs):
         self.reset_updates_menu()
@@ -948,7 +953,8 @@ class EntropyPackageView:
             break
 
         if do_show:
-            self.updates_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
+            self.updates_menu.popup(None, None, self.reposition_menu,
+                self.loaded_event.button, self.loaded_event.time)
 
     def run_set_menu_stuff(self, objs):
         self.reset_set_menu()
@@ -975,7 +981,8 @@ class EntropyPackageView:
             do_show = False
 
         if do_show:
-            self.pkgset_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time)
+            self.pkgset_menu.popup(None, None, self.reposition_menu,
+                self.loaded_event.button, self.loaded_event.time)
 
     def run_installed_menu_stuff(self, objs):
         do_show = True
@@ -1042,8 +1049,8 @@ class EntropyPackageView:
                     self.installed_mask.show()
 
         if do_show:
-            #self.installed_menu.popup( None, None, self.reposition_menu, self.loaded_event.button, self.loaded_event.time )
-            self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
+            self.installed_menu.popup(None, None, self.reposition_menu,
+                self.loaded_event.button, self.loaded_event.time)
 
     def get_reinstallables(self, objs):
         reinstallables = self.etpbase.get_raw_groups("reinstallable")
