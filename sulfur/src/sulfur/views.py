@@ -2049,6 +2049,8 @@ class EntropyPackageView:
             cell.set_property('visible', False)
             return
 
+        self.set_line_status(pkg, cell)
+
         dummy_types = (SulfurConf.dummy_category, SulfurConf.dummy_empty)
         if pkg.dummy_type in dummy_types:
             cell.set_property('visible', False)
