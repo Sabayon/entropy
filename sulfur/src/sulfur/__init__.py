@@ -67,6 +67,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.Cacher = EntropyCacher()
 
         self.do_debug = False
+        self._ugc_status = "--nougc" not in sys.argv
         self._RESOURCES_LOCKED = False
         locked = self.Equo.application_lock_check(silent = True)
         if locked:
@@ -746,7 +747,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_user_generated_content(self):
 
-        self._ugc_status = "--nougc" not in sys.argv
         if self._ugc_status:
             gobject.timeout_add(20*1000,
                 self.spawn_user_generated_content_first)

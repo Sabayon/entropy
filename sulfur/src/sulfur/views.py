@@ -449,6 +449,9 @@ class EntropyPackageView:
 
         self.Equo = Equo()
         self.Sulfur = application
+        self._ugc_status = True
+        if self.Sulfur is not None:
+            self._ugc_status = self.Sulfur._ugc_status
         self.pkgcolumn_text = _("Sel") # as in Selection
         self.pkgcolumn_text_rating = _("Rating")
         self.stars_col_size = 100
@@ -653,7 +656,7 @@ class EntropyPackageView:
 
         self._ugc_load_queue = queue_class(10) # max 10 items at time
         self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
-        if self.Equo.UGC is not None:
+        if self._ugc_status:
             self._ugc_load_thread.start()
 
     def __update_ugc_event(self, event):
@@ -1654,7 +1657,7 @@ class EntropyPackageView:
         Callback function for drag_data_received event used for UGC interaction
         on Drag and Drop.
         """
-        if self.Equo.UGC is None:
+        if not self._ugc_status:
             return
         drop_cb = self._ugc_drag_types_identifiers.get(drop_id)
         if drop_cb is None:
@@ -1745,7 +1748,7 @@ class EntropyPackageView:
 
     def spawn_vote_submit(self, obj):
 
-        if self.Equo.UGC == None:
+        if not self._ugc_status:
             obj.voted = 0.0
             return
         repository = obj.repoid
@@ -2017,7 +2020,7 @@ class EntropyPackageView:
 
     def __new_ugc_pixbuf_stash_fetch(self, pkg):
         # stash to queue for loading from WWW if required
-        if self.Equo.UGC is None:
+        if not self._ugc_status:
             return
 
         try:
@@ -2049,7 +2052,7 @@ class EntropyPackageView:
         dummy_types = (SulfurConf.dummy_category, SulfurConf.dummy_empty)
         if pkg.dummy_type in dummy_types:
             cell.set_property('visible', False)
-        elif self.Equo.UGC is None:
+        elif not self._ugc_status:
             cell.set_property('visible', False)
         else:
             self.__new_ugc_pixbuf_stash_fetch(pkg)
