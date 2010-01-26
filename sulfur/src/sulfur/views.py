@@ -65,7 +65,6 @@ class EntropyPackageViewModelInjector:
             self.packages_inject(packages)
 
 
-
 class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
@@ -77,11 +76,10 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         cat_descs = {}
         for po in packages:
             for set_name in po.set_names:
-                if set_name not in categories:
-                    categories[set_name] = []
                 cat_descs[set_name] = po.set_cat_namedesc
-                if po not in categories[set_name]:
-                    categories[set_name].append(po)
+                objs = categories.setdefault(set_name, [])
+                if po not in objs:
+                    objs.append(po)
 
         cats = sorted(categories)
         orig_cat_desc = _("No description")
@@ -122,6 +120,11 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
             )
             self.dummy_cats[category] = mydummy
             parent = self.model.append( None, (mydummy,) )
+
+            # sometimes, when using multiple repos, pkgs are not provided in
+            # sorted order
+            categories[category].sort(key = lambda x: x.name)
+
             for po in categories[category]:
                 self.model.append( parent, (po,) )
 
@@ -135,9 +138,8 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
                 mycat = po.cat
             except dbapi2.Error:
                 continue
-            if mycat not in categories:
-                categories[mycat] = []
-            categories[mycat].append(po)
+            objs = categories.setdefault(mycat, [])
+            objs.append(po)
 
         cats = sorted(categories)
         orig_cat_desc = _("No description")
@@ -159,6 +161,11 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
             mydummy.color = SulfurConf.color_package_category
             self.dummy_cats[category] = mydummy
             parent = self.model.append( None, (mydummy,) )
+
+            # sometimes, when using multiple repos, pkgs are not provided in
+            # sorted order
+            categories[category].sort(key = lambda x: x.name)
+
             for po in categories[category]:
                 self.model.append( parent, (po,) )
 
@@ -178,12 +185,16 @@ class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
                 myinitial = po.onlyname.lower()[0]
             except dbapi2.Error:
                 continue
-            if myinitial not in categories:
-                categories[myinitial] = []
-            categories[myinitial].append(po)
+            objs = categories.setdefault(myinitial, [])
+            objs.append(po)
 
         letters = sorted(categories, reverse = self.reverse)
         for letter in letters:
+
+            # sometimes, when using multiple repos, pkgs are not provided in
+            # sorted order
+            categories[letter].sort(key = lambda x: x.name)
+
             for po in categories[letter]:
                 self.model.append( None, (po,) )
 
@@ -226,7 +237,6 @@ class VoteSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
     def packages_inject(self, packages):
 
-
         def mycmp(obj_a, obj_b):
             eq = 0
             try:
@@ -242,7 +252,7 @@ class VoteSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
         packages.sort(mycmp, reverse = self.reverse)
         for po in packages:
-                self.model.append( None, (po,) )
+            self.model.append( None, (po,) )
 
 class VoteRevSortPackageViewModelInjector(VoteSortPackageViewModelInjector):
 
@@ -339,6 +349,11 @@ class DateGroupedSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             mydummy.color = SulfurConf.color_package_category
             self.dummy_cats[date] = mydummy
             parent = self.model.append( None, (mydummy,) )
+
+            # sometimes, when using multiple repos, pkgs are not provided in
+            # sorted order
+            dates[date].sort(key = lambda x: x.name)
+
             for po in dates[date]:
                 self.model.append( parent, (po,) )
 
@@ -377,6 +392,11 @@ class LicenseSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             mydummy.color = SulfurConf.color_package_category
             self.dummy_cats[lic] = mydummy
             parent = self.model.append( None, (mydummy,) )
+
+            # sometimes, when using multiple repos, pkgs are not provided in
+            # sorted order
+            licenses[lic].sort(key = lambda x: x.name)
+
             for po in licenses[lic]:
                 self.model.append( parent, (po,) )
 
@@ -437,6 +457,11 @@ class GroupSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             mydummy.color = SulfurConf.color_package_category
             self.dummy_cats[cat] = mydummy
             parent = self.model.append( None, (mydummy,) )
+
+            # sometimes, when using multiple repos, pkgs are not provided in
+            # sorted order
+            metadata[cat].sort(key = lambda x: x.name)
+
             for po in metadata[cat]:
                 self.model.append( parent, (po,) )
 
