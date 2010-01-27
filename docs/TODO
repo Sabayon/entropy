@@ -1,7 +1,7 @@
 
   0.99.30:
 
-    - entropy.server: move sensible pkgs to alt dir
+    - entropy.server: move sensible pkgs to alt dir (only dir switcher missing)
 
   0.99.40:
 
@@ -28,10 +28,12 @@
         - unpack & install should be done in entropy.spm
         - entropy.db => retrieveVersionTag => retrieveTag
         - wrap sqlite3 exceptions around EntropyRepositoryExceptions
+        - move SystemSettings['repositories'] ?
     - entropy package metadata .dtd specs
     - complete API documentation
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
+    - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
 
   1.0 - deprecations:
 
