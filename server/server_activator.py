@@ -47,12 +47,16 @@ def sync(options, just_tidy = False):
         _("Starting to sync data across mirrors (packages/database)"),) ))
 
     old_default = Entropy.default_repository
+
+    sys_settings_plugin_id = \
+        etpConst['system_settings_plugins_ids']['server_plugin']
+    srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+
     repos = [Entropy.default_repository]
     if sync_all:
-        sys_settings_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
-        srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
         repos = sorted(srv_data['repositories'].keys())
+
+    rss_enabled = srv_data['rss']['enabled']
 
     rc = 0
     for repo in repos:
@@ -81,7 +85,7 @@ def sync(options, just_tidy = False):
 
             if mirrors_tainted:
 
-                if (not do_noask) and etpConst['rss-feed']:
+                if (not do_noask) and rss_enabled:
                     tmp_fd, tmp_commit_path = tempfile.mkstemp()
                     os.close(tmp_fd)
                     with open(tmp_commit_path, "w") as tmp_f:
@@ -109,7 +113,7 @@ def sync(options, just_tidy = False):
                         print_generic(commit_msg)
                         ServerRssMetadata()['commitmessage'] = commit_msg
 
-                elif etpConst['rss-feed']:
+                elif rss_enabled:
                     ServerRssMetadata()['commitmessage'] = "Autodriven Update"
 
             errors, fine, broken = sync_remote_databases()
