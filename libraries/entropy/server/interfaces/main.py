@@ -1196,11 +1196,6 @@ class ServerPackagesHandlingMixin:
             repo = self.default_repository
 
         self.close_repositories()
-        revisions_match = {}
-        treeupdates_actions = []
-        injected_packages = set()
-        idpackages = set()
-        idpackages_added = set()
 
         mytxt = red("%s ...") % (_("Initializing Entropy database"),)
         self.output(
@@ -1211,36 +1206,9 @@ class ServerPackagesHandlingMixin:
 
         if os.path.isfile(self._get_local_database_file(repo)):
 
+            # test out
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo, warnings = show_warnings)
-
-            try:
-                dbconn.validateDatabase()
-                idpackages = dbconn.listAllIdpackages()
-            except SystemDatabaseError:
-                pass
-
-            try:
-                treeupdates_actions = dbconn.listAllTreeUpdatesActions()
-            except dbconn.dbapi2.Error:
-                pass
-
-            # save list of injected packages
-            try:
-                injected_packages = dbconn.listAllInjectedPackages(
-                    just_files = True)
-                injected_packages = set([os.path.basename(x) for x \
-                    in injected_packages])
-            except dbconn.dbapi2.Error:
-                pass
-
-            for idpackage in idpackages:
-                url = dbconn.retrieveDownloadURL(idpackage)
-                package = os.path.basename(url)
-                branch = dbconn.retrieveBranch(idpackage)
-                revision = dbconn.retrieveRevision(idpackage)
-                revisions_match[package] = (branch, revision,)
-
             self.close_repository(dbconn)
 
             mytxt = "%s: %s: %s" % (
