@@ -753,7 +753,7 @@ class ServerSettingsMixin:
 
     def _get_basedir_pkg_listing(self, base_dir, repo = None, branch = None):
 
-        pkgs_dir_types = self.Entropy._get_pkg_dir_names()
+        pkgs_dir_types = self._get_pkg_dir_names()
         basedir_raw_content = []
         entropy.tools.recursive_directory_relative_listing(
             basedir_raw_content, base_dir)
@@ -765,7 +765,7 @@ class ServerSettingsMixin:
 
         if branch is not None:
             branch_extractor = \
-                self.Entropy.Client.get_branch_from_download_relative_uri
+                self.Client.get_branch_from_download_relative_uri
             pkg_list = [x for x in pkg_list if branch_extractor(x) == branch]
 
         return pkg_list
