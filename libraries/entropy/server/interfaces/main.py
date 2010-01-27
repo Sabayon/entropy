@@ -3690,10 +3690,34 @@ class ServerRepositoryMixin:
             header = darkgreen(" * ")
         )
 
+    def _get_whitelisted_licenses(self, repo = None):
+
+        if repo is None:
+            repo = self.default_repository
+
+        wl_file = self._get_local_database_licensewhitelist_file(repo = repo)
+        if not os.path.isfile(wl_file):
+            return []
+        return entropy.tools.generic_file_content_parser(wl_file)
+
     def _package_injector(self, package_file, inject = False, repo = None):
 
         if repo is None:
             repo = self.default_repository
+
+        def _package_injector_check_license(licenses):
+
+            wl_licenses = self._get_whitelisted_licenses(repo = repo)
+
+            if not licenses:
+                return True # free if no licenses provided
+            if not wl_licenses:
+                return True # no whitelist !
+
+            for license in licenses:
+                if license not in wl_licenses:
+                    return False
+            return True
 
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
@@ -3709,7 +3733,8 @@ class ServerRepositoryMixin:
             header = brown(" * "),
             back = True
         )
-        mydata = self.Spm().extract_package_metadata(package_file)
+        mydata = self.Spm().extract_package_metadata(package_file,
+            license_callback = _package_injector_check_license)
         self._pump_extracted_package_metadata(mydata, repo,
             {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
