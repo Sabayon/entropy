@@ -2739,7 +2739,7 @@ class Server(ServerNoticeBoardMixin):
             obj.append(hash_file)
             obj.append(upload_path)
 
-        erorrs = False
+        errors = False
         m_fine_uris = set()
         m_broken_uris = set()
         for rel_path, myqueue in queue_map.items():
@@ -2808,7 +2808,7 @@ class Server(ServerNoticeBoardMixin):
             obj.append(hash_file)
             obj.append(download_path)
 
-        erorrs = False
+        errors = False
         m_fine_uris = set()
         m_broken_uris = set()
         for rel_path, myqueue in queue_map.items():
