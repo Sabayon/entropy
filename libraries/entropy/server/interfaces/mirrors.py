@@ -2816,9 +2816,8 @@ class Server(ServerNoticeBoardMixin):
             remote_dir = self.Entropy.complete_remote_package_relative_path(
                 rel_path, repo = repo)
 
-            local_basedir = os.path.dirname(
-                self.Entropy.complete_local_package_path(rel_path,
-                    repo = repo))
+            local_basedir = self.Entropy.complete_local_package_path(rel_path,
+                repo = repo)
 
             downloader = self.TransceiverServerHandler(
                 self.Entropy, [uri], myqueue,
