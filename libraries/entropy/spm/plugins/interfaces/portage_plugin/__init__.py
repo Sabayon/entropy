@@ -220,7 +220,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 3
+    PLUGIN_API_VERSION = 4
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -747,7 +747,7 @@ class PortagePlugin(SpmPlugin):
         if defaults:
             return defaults[0]
 
-    def extract_package_metadata(self, package_file):
+    def extract_package_metadata(self, package_file, license_callback = None):
         """
         Reimplemented from SpmPlugin class.
         """
@@ -864,8 +864,11 @@ class PortagePlugin(SpmPlugin):
             data['versiontag'] = self._extract_pkg_metadata_ebuild_entropy_tag(
                 ebuild_path)
 
+        nonfree = False
+        if license_callback is not None:
+            nonfree = not license_callback(data['license'].split())
         data['download'] = entropy.tools.create_package_dirpath(data['branch'],
-            nonfree = False)
+            nonfree = nonfree)
         data['download'] = os.path.join(data['download'],
             entropy.tools.create_package_filename(
                 data['category'], data['name'], data['version'],
