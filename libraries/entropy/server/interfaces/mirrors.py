@@ -3058,7 +3058,7 @@ class Server(ServerNoticeBoardMixin):
                 if copy_q:
                     self._sync_run_copy_queue(copy_q, repo)
 
-                if upload or download:
+                if upload:
                     mirrors_tainted = True
 
                 if upload:
