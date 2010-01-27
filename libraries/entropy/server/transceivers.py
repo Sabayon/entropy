@@ -342,17 +342,12 @@ class TransceiverServerHandler:
                 header = blue(" @@ ")
             )
 
-            branch = SystemSettings()['repositories']['branch']
-            my_path = os.path.join(
-                self.Entropy._get_remote_database_relative_path(self.repo),
-                branch)
-
             self.Entropy.output(
                 "[%s|%s] %s %s..." % (
                     blue(crippled_uri),
                     brown(action),
                     blue(_("setting directory to")),
-                    darkgreen(my_path),
+                    darkgreen(self.txc_basedir),
                 ),
                 importance = 0,
                 type = "info",

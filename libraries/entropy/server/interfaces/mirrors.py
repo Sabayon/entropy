@@ -2552,7 +2552,7 @@ class Server(ServerNoticeBoardMixin):
             repo = repo)
         db_files = dbconn.listAllDownloads(do_sort = False,
             full_path = True)
-        db_files = set([os.path.basename(x) for x in db_files if \
+        db_files = set([x for x in db_files if \
             (self.Entropy.get_branch_from_download_relative_uri(x) == branch)])
 
         exclude = set()
@@ -2744,9 +2744,8 @@ class Server(ServerNoticeBoardMixin):
         m_broken_uris = set()
         for rel_path, myqueue in queue_map.items():
 
-            remote_dir = os.path.dirname(
-                self.Entropy.complete_remote_package_relative_path(
-                    rel_path, repo = repo))
+            remote_dir = self.Entropy.complete_remote_package_relative_path(
+                rel_path, repo = repo)
 
             uploader = self.TransceiverServerHandler(self.Entropy, [uri],
                 myqueue, critical_files = myqueue,
@@ -2814,9 +2813,8 @@ class Server(ServerNoticeBoardMixin):
         m_broken_uris = set()
         for rel_path, myqueue in queue_map.items():
 
-            remote_dir = os.path.dirname(
-                self.Entropy.complete_remote_package_relative_path(
-                    rel_path, repo = repo))
+            remote_dir = self.Entropy.complete_remote_package_relative_path(
+                rel_path, repo = repo)
 
             local_basedir = os.path.dirname(
                 self.Entropy.complete_local_package_path(rel_path,
