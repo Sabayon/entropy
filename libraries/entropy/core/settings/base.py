@@ -1306,6 +1306,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 self.validate_entropy_cache(repo_db_path, repo_db_path_mtime,
                     repoid = repoid)
 
+        # override parsed branch from env
+        override_branch = os.getenv('ETP_BRANCH')
+        if override_branch is not None:
+            data['branch'] = override_branch
+
         return data
 
     def _clear_repository_cache(self, repoid = None):
