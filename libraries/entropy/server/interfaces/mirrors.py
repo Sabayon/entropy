@@ -3359,7 +3359,7 @@ class Server(ServerNoticeBoardMixin):
         # split queue by remote directories to work on
         removal_map = {}
         for package_rel in removal:
-            rel_path = self.Entropy.complete_remote_package_rel_path(
+            rel_path = self.Entropy.complete_remote_package_relative_path(
                 package_rel, repo = repo)
             rel_dir = os.path.dirname(rel_path)
             obj = removal_map.setdefault(rel_dir, [])
