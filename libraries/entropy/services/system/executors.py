@@ -808,8 +808,7 @@ class Base:
                         try:
                             upload_queue, download_queue, removal_queue, \
                                 fine_queue, remote_packages_data = Entropy.Mirrors.calculate_packages_to_sync(
-                                    uri, Entropy.SystemSettings['repositories']['branch'],
-                                    repoid)
+                                    uri, repoid)
                         except socket.error:
                             entropy.tools.print_traceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")

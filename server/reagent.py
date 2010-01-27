@@ -73,7 +73,6 @@ help_opts = [
     None,
     (1, 'database', 2, _('repository database functions')),
         (2, '--initialize', 3, _('(re)initialize the current repository database')),
-            (3, '--empty', 2, _('do not refill database using packages on mirrors')),
             (3, '--repo=<repo>', 2, _('(re)create the database for the specified repository')),
         (2, 'bump', 4, _('manually force a revision bump for the current repository database')),
             (3, '--sync', 3, _('synchronize the database')),

@@ -594,7 +594,6 @@ def database(options):
 
     d_request_noask = False
     d_request_sync = False
-    d_request_empty = False
     repo = None
     _options = []
     for opt in options:
@@ -602,11 +601,8 @@ def database(options):
             d_request_noask = True
         elif opt.startswith("--sync"):
             d_request_sync = True
-        elif opt.startswith("--empty"):
-            d_request_empty = True
         elif opt.startswith("--repo=") and len(opt.split("=")) == 2:
             repo = opt.split("=")[1]
-            d_request_empty = True
         else:
             _options.append(opt)
     options = _options
@@ -617,8 +613,7 @@ def database(options):
 
     if (options[0] == "--initialize"):
 
-        rc = Entropy.initialize_server_repository(empty = d_request_empty,
-            repo = repo)
+        rc = Entropy.initialize_server_repository(repo = repo)
         if rc == 0:
             print_info(darkgreen(" * ")+red(_("Entropy database has been reinitialized using binary packages available")))
 

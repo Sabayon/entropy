@@ -174,10 +174,6 @@ repository database functions
 =over
 
 
-=item B<--empty>
-
-do not refill database using packages on mirrors
-
 =item B<--repo=<repo>>
 
 (re)create the database for the specified repository

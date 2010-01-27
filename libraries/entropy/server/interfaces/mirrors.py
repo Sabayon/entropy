@@ -18,7 +18,7 @@ from entropy.exceptions import OnlineMirrorError, ConnectionError, \
     EntropyPackageException, TransceiverError
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple
-from entropy.const import etpConst, etpSys
+from entropy.const import etpConst, const_setup_perms
 from entropy.i18n import _
 from entropy.misc import RSS
 from entropy.server.interfaces.rss import ServerRssMetadata
@@ -634,7 +634,6 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self.Entropy.default_repository
 
-        pkg_to_join_path = '/'.join(pkg_relative_path.split('/')[2:])
         pkgfile = os.path.basename(pkg_relative_path)
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -651,7 +650,7 @@ class Server(ServerNoticeBoardMixin):
                         darkgreen(crippled_uri),
                         brown(str(tries)),
                         blue(_("connecting to download package")),
-                        darkgreen(pkg_to_join_path),
+                        darkgreen(pkg_relative_path),
                     ),
                     importance = 1,
                     type = "info",
@@ -659,12 +658,12 @@ class Server(ServerNoticeBoardMixin):
                     back = True
                 )
 
-                remote_path = os.path.join(
-                    self.Entropy._get_remote_packages_relative_path(repo),
-                    pkg_to_join_path)
-                download_path = os.path.join(
-                    self.Entropy._get_local_packages_directory(repo),
-                    pkg_to_join_path)
+                remote_path = \
+                    self.Entropy.complete_remote_package_relative_path(
+                        pkg_relative_path, repo = repo)
+                download_path = self.Entropy.complete_local_package_path(
+                    pkg_relative_path, repo = repo)
+
                 download_dir = os.path.dirname(download_path)
 
                 self.Entropy.output(
@@ -692,7 +691,7 @@ class Server(ServerNoticeBoardMixin):
                             darkgreen(crippled_uri),
                             brown(str(tries)),
                             blue(_("package")),
-                            darkgreen(pkg_to_join_path),
+                            darkgreen(pkg_relative_path),
                             blue(_("does not exist")),
                         ),
                         importance = 1,
@@ -2184,20 +2183,22 @@ class Server(ServerNoticeBoardMixin):
             self.lock_mirrors(False, repo = repo)
         return 0, set(), set()
 
-
-    def _calculate_local_upload_files(self, branch, repo = None):
+    def _calculate_local_upload_files(self, repo = None):
         upload_files = 0
         upload_packages = set()
-        upload_dir = os.path.join(self.Entropy._get_local_upload_directory(repo),
-            branch)
+        upload_dir = self.Entropy._get_local_upload_directory(repo = repo)
 
         # check if it exists
         if not os.path.isdir(upload_dir):
             return upload_files, upload_packages
 
+        branch = self.SystemSettings['repositories']['branch']
+        upload_pkgs = self.Entropy._get_basedir_pkg_listing(upload_dir,
+            repo = repo, branch = branch)
+
         pkg_ext = etpConst['packagesext']
         pkg_md5_ext = etpConst['packagesmd5fileext']
-        for package in os.listdir(upload_dir):
+        for package in upload_pkgs:
             if package.endswith(pkg_ext) or package.endswith(pkg_md5_ext):
                 upload_packages.add(package)
                 if package.endswith(pkg_ext):
@@ -2205,18 +2206,23 @@ class Server(ServerNoticeBoardMixin):
 
         return upload_files, upload_packages
 
-    def _calculate_local_package_files(self, branch, repo = None):
+    def _calculate_local_package_files(self, repo = None):
         local_files = 0
         local_packages = set()
-        packages_dir = os.path.join(
-            self.Entropy._get_local_packages_directory(repo), branch)
+        base_dir = self.Entropy._get_local_repository_base_directory(
+            repo = repo)
 
-        if not os.path.isdir(packages_dir):
-            os.makedirs(packages_dir)
+        # check if it exists
+        if not os.path.isdir(base_dir):
+            return local_files, local_packages
+
+        branch = self.SystemSettings['repositories']['branch']
+        pkg_files = self.Entropy._get_basedir_pkg_listing(base_dir,
+            repo = repo, branch = branch)
 
         pkg_ext = etpConst['packagesext']
         pkg_md5_ext = etpConst['packagesmd5fileext']
-        for package in os.listdir(packages_dir):
+        for package in pkg_files:
             if package.endswith(pkg_ext) or package.endswith(pkg_md5_ext):
                 local_packages.add(package)
                 if package.endswith(pkg_ext):
@@ -2257,12 +2263,13 @@ class Server(ServerNoticeBoardMixin):
             header = red(" @@ ")
         )
 
-    def _show_sync_queues(self, upload, download, removal, copy, metainfo,
-        branch):
+    def _show_sync_queues(self, upload, download, removal, copy, metainfo):
+
+        branch = self.SystemSettings['repositories']['branch']
 
         # show stats
-        for package, size in upload:
-            package = darkgreen(os.path.basename(package))
+        for package, rel_pkg, size in upload:
+            package = darkgreen(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
@@ -2275,8 +2282,8 @@ class Server(ServerNoticeBoardMixin):
                 type = "info",
                 header = red("    # ")
             )
-        for package, size in download:
-            package = darkred(os.path.basename(package))
+        for package, rel_pkg, size in download:
+            package = darkred(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
@@ -2289,8 +2296,8 @@ class Server(ServerNoticeBoardMixin):
                 type = "info",
                 header = red("    # ")
             )
-        for package, size in copy:
-            package = darkblue(os.path.basename(package))
+        for package, rel_pkg, size in copy:
+            package = darkblue(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
@@ -2303,8 +2310,8 @@ class Server(ServerNoticeBoardMixin):
                 type = "info",
                 header = red("    # ")
             )
-        for package, size in removal:
-            package = brown(os.path.basename(package))
+        for package, rel_pkg, size in removal:
+            package = brown(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.output(
                 "[branch:%s|%s] %s [%s]" % (
@@ -2377,40 +2384,50 @@ class Server(ServerNoticeBoardMixin):
             header = blue(" @@ ")
         )
 
-    def _calculate_remote_package_files(self, uri, branch, txc_handler,
-        repo = None):
-
-        remote_dir = os.path.join(
-            self.Entropy._get_remote_packages_relative_path(repo), branch)
-
-        # create path to lock file if it doesn't exist
-        if not txc_handler.is_dir(remote_dir):
-            txc_handler.makedirs(remote_dir)
-
-        remote_packages_info = txc_handler.list_content_metadata(remote_dir)
-        remote_packages = [x[0] for x in remote_packages_info]
+    def _calculate_remote_package_files(self, uri, txc_handler, repo = None):
 
         remote_files = 0
-        for pkg in remote_packages:
-            if pkg.endswith(etpConst['packagesext']):
-                remote_files += 1
-
         remote_packages_data = {}
-        for pkg in remote_packages_info:
-            remote_packages_data[pkg[0]] = int(pkg[1])
+        remote_packages = []
+        branch = self.SystemSettings['repositories']['branch']
+
+        pkgs_dir_types = self.Entropy._get_pkg_dir_names()
+        for pkg_dir_type in pkgs_dir_types:
+
+            remote_dir = self.Entropy.complete_remote_package_relative_path(
+                pkg_dir_type, repo = repo)
+            remote_dir = os.path.join(remote_dir, etpConst['currentarch'],
+                branch)
+            only_dir = self.Entropy.complete_remote_package_relative_path("",
+                repo = repo)
+            db_url_dir = remote_dir[len(only_dir):]
+
+            # create path to lock file if it doesn't exist
+            if not txc_handler.is_dir(remote_dir):
+                txc_handler.makedirs(remote_dir)
+
+            remote_packages_info = txc_handler.list_content_metadata(remote_dir)
+            remote_packages += [os.path.join(db_url_dir, x[0]) for x \
+                in remote_packages_info]
+
+            for pkg in remote_packages:
+                if pkg.endswith(etpConst['packagesext']):
+                    remote_files += 1
+
+            my_remote_pkg_data = dict((os.path.join(db_url_dir, x[0]),
+                int(x[1])) for x in remote_packages_info)
+            remote_packages_data.update(my_remote_pkg_data)
 
         return remote_files, remote_packages, remote_packages_data
 
-    def calculate_packages_to_sync(self, uri, branch, repo = None):
+    def calculate_packages_to_sync(self, uri, repo = None):
 
         if repo is None:
             repo = self.Entropy.default_repository
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
-        upload_files, upload_packages = self._calculate_local_upload_files(
-            branch, repo)
-        local_files, local_packages = self._calculate_local_package_files(
-            branch, repo)
+        upload_files, upload_packages = self._calculate_local_upload_files(repo)
+        local_files, local_packages = self._calculate_local_package_files(repo)
         self._show_local_sync_stats(upload_files, local_files)
 
         self.Entropy.output(
@@ -2423,8 +2440,7 @@ class Server(ServerNoticeBoardMixin):
         txc = self.Entropy.Transceiver(uri)
         with txc as handler:
             remote_files, remote_packages, remote_packages_data = \
-                self._calculate_remote_package_files(uri, branch, handler,
-                    repo = repo)
+                self._calculate_remote_package_files(uri, handler, repo = repo)
 
         self.Entropy.output(
             "%s:\t\t\t%s %s" % (
@@ -2449,35 +2465,37 @@ class Server(ServerNoticeBoardMixin):
 
         upload_queue, download_queue, removal_queue, fine_queue = \
             self._calculate_sync_queues(upload_packages, local_packages,
-                remote_packages, remote_packages_data, branch, repo)
+                remote_packages, remote_packages_data, repo)
         return upload_queue, download_queue, removal_queue, fine_queue, \
             remote_packages_data
 
     def _calculate_sync_queues(self, upload_packages, local_packages,
-        remote_packages, remote_packages_data, branch, repo = None):
+        remote_packages, remote_packages_data, repo = None):
 
         upload_queue = set()
         download_queue = set()
         removal_queue = set()
         fine_queue = set()
+        branch = self.SystemSettings['repositories']['branch']
 
         for local_package in upload_packages:
             if local_package in remote_packages:
 
-                local_filepath = os.path.join(
-                    self.Entropy._get_local_upload_directory(repo), branch,
-                    local_package)
+                local_filepath = \
+                    self.Entropy.complete_local_upload_package_path(
+                        local_package, repo = repo)
 
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size is None:
                     remote_size = 0
-                if (local_size != remote_size):
+                if local_size != remote_size:
                     # size does not match, adding to the upload queue
                     upload_queue.add(local_package)
                 else:
                     # just move from upload to packages
                     fine_queue.add(local_package)
+
             else:
                 # always force upload of packages in uploaddir
                 upload_queue.add(local_package)
@@ -2486,9 +2504,8 @@ class Server(ServerNoticeBoardMixin):
         # we have to upload it we have local_packages and remote_packages
         for local_package in local_packages:
             if local_package in remote_packages:
-                local_filepath = os.path.join(
-                    self.Entropy._get_local_packages_directory(repo), branch,
-                    local_package)
+                local_filepath = self.Entropy.complete_local_package_path(
+                    local_package, repo = repo)
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size is None:
@@ -2505,9 +2522,8 @@ class Server(ServerNoticeBoardMixin):
         # Fill download_queue and removal_queue
         for remote_package in remote_packages:
             if remote_package in local_packages:
-                local_filepath = os.path.join(
-                    self.Entropy._get_local_packages_directory(repo), branch,
-                    remote_package)
+                local_filepath = self.Entropy.complete_local_package_path(
+                    remote_package, repo = repo)
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size is None:
@@ -2561,9 +2577,8 @@ class Server(ServerNoticeBoardMixin):
 
         return upload_queue, download_queue, removal_queue, fine_queue
 
-
     def _expand_queues(self, upload_queue, download_queue, removal_queue,
-        remote_packages_data, branch, repo):
+        remote_packages_data, repo):
 
         metainfo = {
             'removal': 0,
@@ -2578,59 +2593,62 @@ class Server(ServerNoticeBoardMixin):
         for item in removal_queue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(
-                self.Entropy._get_local_packages_directory(repo), branch, item)
+            local_filepath = self.Entropy.complete_local_package_path(
+                item, repo = repo)
             size = entropy.tools.get_file_size(local_filepath)
             metainfo['removal'] += size
-            removal.append((local_filepath, size))
+            removal.append((local_filepath, item, size))
 
         for item in download_queue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(
-                self.Entropy._get_local_upload_directory(repo), branch, item)
+
+            local_filepath = self.Entropy.complete_local_upload_package_path(
+                item, repo = repo)
             if not os.path.isfile(local_filepath):
                 size = remote_packages_data.get(item)
                 if size is None:
                     size = 0
                 size = int(size)
                 metainfo['removal'] += size
-                download.append((local_filepath, size))
+                download.append((local_filepath, item, size))
             else:
                 size = entropy.tools.get_file_size(local_filepath)
-                do_copy.append((local_filepath, size))
+                do_copy.append((local_filepath, item, size))
 
         for item in upload_queue:
             if not item.endswith(etpConst['packagesext']):
                 continue
-            local_filepath = os.path.join(
-                self.Entropy._get_local_upload_directory(repo), branch, item)
-            local_filepath_pkgs = os.path.join(
-                self.Entropy._get_local_packages_directory(repo), branch, item)
+
+            local_filepath = self.Entropy.complete_local_upload_package_path(
+                item, repo = repo)
+
+            local_filepath_pkgs = self.Entropy.complete_local_package_path(
+                item, repo = repo)
             if os.path.isfile(local_filepath):
                 size = entropy.tools.get_file_size(local_filepath)
-                upload.append((local_filepath, size))
+                upload.append((local_filepath, item, size))
             else:
                 size = entropy.tools.get_file_size(local_filepath_pkgs)
-                upload.append((local_filepath_pkgs, size))
+                upload.append((local_filepath_pkgs, item, size))
             metainfo['upload'] += size
 
         return upload, download, removal, do_copy, metainfo
 
-
-    def _sync_run_removal_queue(self, removal_queue, branch, repo = None):
+    def _sync_run_removal_queue(self, removal_queue, repo = None):
 
         if repo is None:
             repo = self.Entropy.default_repository
+        branch = self.SystemSettings['repositories']['branch']
 
-        for itemdata in removal_queue:
+        for remove_filepath, rel_path, size in removal_queue:
 
-            remove_filename = itemdata[0]
-            remove_filepath = os.path.join(
-                self.Entropy._get_local_packages_directory(repo), branch,
-                remove_filename)
+            remove_filename = os.path.basename(remove_filepath)
             remove_filepath_hash = remove_filepath + \
                 etpConst['packagesmd5fileext']
+            remove_filepath_exp = remove_filepath + \
+                etpConst['packagesexpirationfileext']
+
             self.Entropy.output(
                 "[repo:%s|%s|%s] %s: %s [%s]" % (
                     brown(repo),
@@ -2638,7 +2656,7 @@ class Server(ServerNoticeBoardMixin):
                     brown(branch),
                     blue(_("removing package+hash")),
                     darkgreen(remove_filename),
-                    blue(entropy.tools.bytes_into_human(itemdata[1])),
+                    blue(entropy.tools.bytes_into_human(size)),
                 ),
                 importance = 0,
                 type = "info",
@@ -2649,6 +2667,8 @@ class Server(ServerNoticeBoardMixin):
                 os.remove(remove_filepath)
             if os.path.isfile(remove_filepath_hash):
                 os.remove(remove_filepath_hash)
+            if os.path.isfile(remove_filepath_exp):
+                os.remove(remove_filepath_exp)
 
         self.Entropy.output(
             "[repo:%s|%s|%s] %s" % (
@@ -2663,20 +2683,19 @@ class Server(ServerNoticeBoardMixin):
         )
 
 
-    def _sync_run_copy_queue(self, copy_queue, branch, repo = None):
+    def _sync_run_copy_queue(self, copy_queue, repo = None):
 
         if repo is None:
             repo = self.Entropy.default_repository
+        branch = self.SystemSettings['repositories']['branch']
 
-        for itemdata in copy_queue:
-
-            from_file = itemdata[0]
+        for from_file, rel_file, size in copy_queue:
             from_file_hash = from_file + etpConst['packagesmd5fileext']
-            to_file = os.path.join(
-                self.Entropy._get_local_packages_directory(repo), branch,
-                os.path.basename(from_file))
+
+            to_file = self.Entropy.complete_local_package_path(rel_file)
             to_file_hash = to_file+etpConst['packagesmd5fileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
+
             self.Entropy.output(
                 "[repo:%s|%s|%s] %s: %s" % (
                     brown(repo),
@@ -2689,13 +2708,10 @@ class Server(ServerNoticeBoardMixin):
                 type = "info",
                 header = darkred(" * ")
             )
-
-            if not os.path.isdir(os.path.dirname(to_file)):
-                os.makedirs(os.path.dirname(to_file))
+            self.Entropy._ensure_dir_path(os.path.dirname(to_file))
 
             shutil.copy2(from_file, to_file)
-            if not os.path.isfile(from_file_hash):
-                self._create_file_checksum(from_file, from_file_hash)
+            self._create_file_checksum(from_file, from_file_hash)
             shutil.copy2(from_file_hash, to_file_hash)
 
             # clear expiration file
@@ -2703,30 +2719,46 @@ class Server(ServerNoticeBoardMixin):
                 os.remove(expiration_file)
 
 
-    def _sync_run_upload_queue(self, uri, upload_queue, branch, repo = None):
+    def _sync_run_upload_queue(self, uri, upload_queue, repo = None):
 
         if repo is None:
             repo = self.Entropy.default_repository
+        branch = self.SystemSettings['repositories']['branch']
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
-        myqueue = []
-        for itemdata in upload_queue:
-            upload_item = itemdata[0]
-            hash_file = upload_item + etpConst['packagesmd5fileext']
+        queue_map = {}
+
+        for upload_path, rel_path, size in upload_queue:
+
+            hash_file = upload_path + etpConst['packagesmd5fileext']
             if not os.path.isfile(hash_file):
-                entropy.tools.create_md5_file(upload_item)
-            myqueue.append(hash_file)
-            myqueue.append(upload_item)
+                entropy.tools.create_md5_file(upload_path)
 
-        remote_dir = os.path.join(
-            self.Entropy._get_remote_packages_relative_path(repo), branch)
+            rel_dir = os.path.dirname(rel_path)
+            obj = queue_map.setdefault(rel_dir, [])
+            obj.append(hash_file)
+            obj.append(upload_path)
 
-        uploader = self.TransceiverServerHandler(self.Entropy, [uri],
-            myqueue, critical_files = myqueue,
-            txc_basedir = remote_dir,
-            handlers_data = {'branch': branch }, repo = repo)
+        erorrs = False
+        m_fine_uris = set()
+        m_broken_uris = set()
+        for rel_path, myqueue in queue_map.items():
 
-        errors, m_fine_uris, m_broken_uris = uploader.go()
+            remote_dir = os.path.dirname(
+                self.Entropy.complete_remote_package_relative_path(
+                    rel_path, repo = repo))
+
+            uploader = self.TransceiverServerHandler(self.Entropy, [uri],
+                myqueue, critical_files = myqueue,
+                txc_basedir = remote_dir,
+                handlers_data = {'branch': branch }, repo = repo)
+
+            xerrors, xm_fine_uris, xm_broken_uris = uploader.go()
+            if xerrors:
+                errors = True
+            m_fine_uris.update(xm_fine_uris)
+            m_broken_uris.update(xm_broken_uris)
+
         if errors:
             my_broken_uris = [
                 (EntropyTransceiver.get_uri_name(x[0]), x[1]) for \
@@ -2759,30 +2791,50 @@ class Server(ServerNoticeBoardMixin):
         return errors, m_fine_uris, m_broken_uris
 
 
-    def _sync_run_download_queue(self, uri, download_queue, branch,
-            repo = None):
+    def _sync_run_download_queue(self, uri, download_queue, repo = None):
 
         if repo is None:
             repo = self.Entropy.default_repository
+        branch = self.SystemSettings['repositories']['branch']
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
-        myqueue = []
-        for package in download_queue:
-            hash_file = package + etpConst['packagesmd5fileext']
-            myqueue.append(package)
-            myqueue.append(hash_file)
 
-        remote_dir = os.path.join(
-            self.Entropy._get_remote_packages_relative_path(repo), branch)
-        local_basedir = os.path.join(
-            self.Entropy._get_local_packages_directory(repo), branch)
-        downloader = self.TransceiverServerHandler(
-            self.Entropy, [uri], myqueue,
-            critical_files = myqueue,
-            txc_basedir = remote_dir, local_basedir = local_basedir,
-            handlers_data = {'branch': branch }, download = True, repo = repo)
+        queue_map = {}
 
-        errors, m_fine_uris, m_broken_uris = downloader.go()
+        for download_path, rel_path, size in download_queue:
+            hash_file = download_path + etpConst['packagesmd5fileext']
+
+            rel_dir = os.path.dirname(rel_path)
+            obj = queue_map.setdefault(rel_dir, [])
+            obj.append(hash_file)
+            obj.append(download_path)
+
+        erorrs = False
+        m_fine_uris = set()
+        m_broken_uris = set()
+        for rel_path, myqueue in queue_map.items():
+
+            remote_dir = os.path.dirname(
+                self.Entropy.complete_remote_package_relative_path(
+                    rel_path, repo = repo))
+
+            local_basedir = os.path.dirname(
+                self.Entropy.complete_local_package_path(rel_path,
+                    repo = repo))
+
+            downloader = self.TransceiverServerHandler(
+                self.Entropy, [uri], myqueue,
+                critical_files = myqueue,
+                txc_basedir = remote_dir, local_basedir = local_basedir,
+                handlers_data = {'branch': branch }, download = True,
+                repo = repo)
+
+            xerrors, xm_fine_uris, xm_broken_uris = downloader.go()
+            if xerrors:
+                errors = True
+            m_fine_uris.update(xm_fine_uris)
+            m_broken_uris.update(xm_broken_uris)
+
         if errors:
             my_broken_uris = [
                 (EntropyTransceiver.get_uri_name(x), y,) \
@@ -2915,7 +2967,7 @@ class Server(ServerNoticeBoardMixin):
             try:
                 upload_queue, download_queue, removal_queue, fine_queue, \
                     remote_packages_data = self.calculate_packages_to_sync(uri,
-                        self.SystemSettings['repositories']['branch'], repo)
+                        repo)
             except self.socket.error as err:
                 self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
@@ -2957,20 +3009,14 @@ class Server(ServerNoticeBoardMixin):
                 header = red(" ** ")
             )
 
-            upload, download, removal, copy, metainfo = self._expand_queues(
-                        upload_queue,
-                        download_queue,
-                        removal_queue,
-                        remote_packages_data,
-                        self.SystemSettings['repositories']['branch'],
-                        repo
-            )
+            upload, download, removal, copy_q, metainfo = self._expand_queues(
+                upload_queue, download_queue, removal_queue,
+                remote_packages_data, repo)
             del upload_queue, download_queue, removal_queue, \
                 remote_packages_data
-            self._show_sync_queues(upload, download, removal, copy, metainfo,
-                self.SystemSettings['repositories']['branch'])
+            self._show_sync_queues(upload, download, removal, copy_q, metainfo)
 
-            if not len(upload)+len(download)+len(removal)+len(copy):
+            if not len(upload)+len(download)+len(removal)+len(copy_q):
 
                 self.Entropy.output(
                     "[repo:%s|%s|branch:%s] %s %s" % (
@@ -3009,31 +3055,26 @@ class Server(ServerNoticeBoardMixin):
                     repo = repo)
 
                 if removal:
-                    self._sync_run_removal_queue(removal,
-                        self.SystemSettings['repositories']['branch'], repo)
+                    self._sync_run_removal_queue(removal, repo)
 
-                if copy:
-                    self._sync_run_copy_queue(copy,
-                        self.SystemSettings['repositories']['branch'], repo)
+                if copy_q:
+                    self._sync_run_copy_queue(copy_q, repo)
 
                 if upload or download:
                     mirrors_tainted = True
 
                 if upload:
                     d_errors, m_fine_uris, \
-                        m_broken_uris = self._sync_run_upload_queue(
-                            uri, upload,
-                            self.SystemSettings['repositories']['branch'], repo)
+                        m_broken_uris = self._sync_run_upload_queue(uri,
+                            upload, repo)
 
                     if d_errors:
                         mirror_errors = True
 
                 if download:
-                    my_downlist = [x[0] for x in download]
                     d_errors, m_fine_uris, \
-                        m_broken_uris = self._sync_run_download_queue(
-                            uri, my_downlist,
-                            self.SystemSettings['repositories']['branch'], repo)
+                        m_broken_uris = self._sync_run_download_queue(uri,
+                            download, repo)
 
                     if d_errors:
                         mirror_errors = True
@@ -3126,8 +3167,7 @@ class Server(ServerNoticeBoardMixin):
 
         # if at least one server has been synced successfully, move files
         if (len(successfull_mirrors) > 0) and not pretend:
-            self._remove_expiration_files(
-                self.SystemSettings['repositories']['branch'], repo)
+            self._move_files_over_from_upload(repo)
 
         if packages_check:
             check_data = self.Entropy.verify_local_packages([], ask = ask,
@@ -3136,39 +3176,38 @@ class Server(ServerNoticeBoardMixin):
         return mirrors_tainted, mirrors_errors, successfull_mirrors, \
             broken_mirrors, check_data
 
-    def _remove_expiration_files(self, branch, repo = None):
+    def _move_files_over_from_upload(self, repo = None):
 
         if repo is None:
             repo = self.Entropy.default_repository
 
-        branch_dir = os.path.join(
-            self.Entropy._get_local_upload_directory(repo), branch)
+        upload_dir = self.Entropy._get_local_upload_directory(repo = repo)
+        basedir_list = self.Entropy._get_basedir_pkg_listing(upload_dir,
+            repo = repo)
 
-        # check if it exists
-        if not os.path.isdir(branch_dir):
-            return None
+        for pkg_rel in basedir_list:
 
-        branchcontent = os.listdir(branch_dir)
-        for xfile in branchcontent:
-            source = os.path.join(self.Entropy._get_local_upload_directory(repo),
-                branch, xfile)
-            destdir = os.path.join(
-                self.Entropy._get_local_packages_directory(repo), branch)
-            if not os.path.isdir(destdir):
-                os.makedirs(destdir)
-            dest = os.path.join(destdir, xfile)
-            shutil.move(source, dest)
+            source_pkg = self.Entropy.complete_local_upload_package_path(
+                pkg_rel, repo = repo)
+            dest_pkg = self.Entropy.complete_local_package_path(pkg_rel,
+                repo = repo)
+            dest_pkg_dir = os.path.dirname(dest_pkg)
+            self.Entropy._ensure_dir_path(dest_pkg_dir)
+
+            try:
+                os.rename(source_pkg, dest_pkg)
+            except OSError: # on different hard drives?
+                shutil.move(source_pkg, dest_pkg)
+
             # clear expiration file
-            dest_expiration = dest + etpConst['packagesexpirationfileext']
+            dest_expiration = dest_pkg + etpConst['packagesexpirationfileext']
             if os.path.isfile(dest_expiration):
                 os.remove(dest_expiration)
 
+    def _is_package_expired(self, package_rel, repo = None):
 
-    def _is_package_expired(self, package_file, branch, repo = None):
-
-        pkg_path = os.path.join(
-            self.Entropy._get_local_packages_directory(repo), branch,
-            package_file)
+        pkg_path = self.Entropy.complete_local_package_path(package_rel,
+            repo = repo)
         pkg_path += etpConst['packagesexpirationfileext']
         if not os.path.isfile(pkg_path):
             return False
@@ -3184,12 +3223,10 @@ class Server(ServerNoticeBoardMixin):
             return True
         return False
 
-    def _create_expiration_file(self, package_file, branch, repo = None,
-        gentle = False):
+    def _create_expiration_file(self, package_rel, repo = None, gentle = False):
 
-        pkg_path = os.path.join(
-            self.Entropy._get_local_packages_directory(repo), branch,
-            package_file)
+        pkg_path = self.Entropy.complete_local_package_path(package_rel,
+            repo = repo)
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
@@ -3197,25 +3234,24 @@ class Server(ServerNoticeBoardMixin):
         f_exp.flush()
         f_exp.close()
 
-
     def _collect_expiring_packages(self, branch, repo = None):
 
         dbconn = self.Entropy.open_server_repository(just_reading = True,
             repo = repo)
-        database_bins = dbconn.listAllDownloads(do_sort = False,
-            full_path = True)
-        bins_dir = os.path.join(
-            self.Entropy._get_local_packages_directory(repo), branch)
-        repo_bins = set()
 
-        if os.path.isdir(bins_dir):
-            repo_bins = os.listdir(bins_dir)
-            repo_bins = set([
-                os.path.join('packages', etpSys['arch'], branch, x) for x \
-                    in repo_bins if x.endswith(etpConst['packagesext'])])
+        database_bins = set(dbconn.listAllDownloads(do_sort = False,
+            full_path = True))
+
+        repo_basedir = self.Entropy._get_local_repository_base_directory(
+            repo = repo)
+
+        repo_bins = self.Entropy._get_basedir_pkg_listing(repo_basedir,
+            repo = repo, branch = branch)
+
+        # convert to set, so that we can do fast thingszzsd
+        repo_bins = set(repo_bins)
         repo_bins -= database_bins
-
-        return set([os.path.basename(x) for x in repo_bins])
+        return repo_bins
 
 
     def tidy_mirrors(self, ask = True, pretend = False, repo = None):
@@ -3266,29 +3302,17 @@ class Server(ServerNoticeBoardMixin):
             for key, val in branch_pkglist_data.items():
                 branch_pkglist_data[key] = val.split("\n")
 
-
-            rel_path_basedir = etpConst['packagesrelativepath_basedir']
-            rel_path_basename = etpConst['packagesrelativepath_basename']
-            remote_relpath = rel_path_basedir + "/" + rel_path_basename + "/" \
-                + branch
-            my_expiring_pkgs = set([os.path.join(remote_relpath, x) for x in \
-                expiring_packages])
-
             for other_branch in branch_pkglist_data:
                 branch_pkglist = set(branch_pkglist_data[other_branch])
-                my_expiring_pkgs -= branch_pkglist
-
-            # fallback to normality, set new expiring packages var
-            expiring_packages = [os.path.basename(x) for x in my_expiring_pkgs]
+                expiring_packages -= branch_pkglist
 
         removal = []
-        for package in expiring_packages:
-            expired = self._is_package_expired(package, branch, repo)
+        for package_rel in expiring_packages:
+            expired = self._is_package_expired(package_rel, repo)
             if expired:
-                removal.append(package)
+                removal.append(package_rel)
             else:
-                self._create_expiration_file(package, branch, repo,
-                    gentle = True)
+                self._create_expiration_file(package_rel, repo, gentle = True)
 
         # fill returning data
         branch_data['removal'] = removal[:]
@@ -3335,72 +3359,87 @@ class Server(ServerNoticeBoardMixin):
             if rc_question == _("No"):
                 return errors, branch_data
 
-        myqueue = []
-        for package in removal:
-            myqueue.append(package+etpConst['packagesmd5fileext'])
-            myqueue.append(package)
+        # split queue by remote directories to work on
+        removal_map = {}
+        for package_rel in removal:
+            rel_path = self.Entropy.complete_remote_package_rel_path(
+                package_rel, repo = repo)
+            rel_dir = os.path.dirname(rel_path)
+            obj = removal_map.setdefault(rel_dir, [])
+            base_pkg = os.path.basename(package)
+            obj.append(base_pkg)
+            obj.append(base_pkg+etpConst['packagesmd5fileext'])
 
-        remote_dir = os.path.join(
-            self.Entropy._get_remote_packages_relative_path(repo), branch)
         for uri in self.Entropy.get_remote_mirrors(repo):
 
-            self.Entropy.output(
-                "[branch:%s] %s..." % (
-                    brown(branch),
-                    blue(_("removing packages remotely")),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
-            )
+            ##
+            # remove remotely
+            ##
 
-            crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            destroyer = self.TransceiverServerHandler(
-                self.Entropy,
-                [uri],
-                myqueue,
-                critical_files = [],
-                txc_basedir = remote_dir,
-                remove = True,
-                repo = repo
-            )
-            errors, m_fine_uris, m_broken_uris = destroyer.go()
-            if errors:
-                my_broken_uris = [
-                    (EntropyTransceiver.get_uri_name(x[0]), x[1]) \
-                        for x in m_broken_uris]
+            for remote_dir, myqueue in removal_map.items():
 
-                reason = my_broken_uris[0][1]
                 self.Entropy.output(
-                    "[branch:%s] %s: %s, %s: %s" % (
+                    "[branch:%s] %s..." % (
                         brown(branch),
-                        blue(_("remove errors")),
-                        red(crippled_uri),
-                        blue(_("reason")),
-                        reason,
+                        blue(_("removing packages remotely")),
                     ),
                     importance = 1,
-                    type = "warning",
-                    header = brown(" !!! ")
+                    type = "info",
+                    header = blue(" @@ ")
                 )
-                branch_data['errors'] = True
-                errors = True
 
-            self.Entropy.output(
-                "[branch:%s] %s..." % (
-                    brown(branch),
-                    blue(_("removing packages locally")),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
-            )
+                crippled_uri = EntropyTransceiver.get_uri_name(uri)
+                destroyer = self.TransceiverServerHandler(
+                    self.Entropy,
+                    [uri],
+                    myqueue,
+                    critical_files = [],
+                    txc_basedir = remote_dir,
+                    remove = True,
+                    repo = repo
+                )
+                errors, m_fine_uris, m_broken_uris = destroyer.go()
+                if errors:
+                    my_broken_uris = [
+                        (EntropyTransceiver.get_uri_name(x[0]), x[1]) \
+                            for x in m_broken_uris]
+
+                    reason = my_broken_uris[0][1]
+                    self.Entropy.output(
+                        "[branch:%s] %s: %s, %s: %s" % (
+                            brown(branch),
+                            blue(_("remove errors")),
+                            red(crippled_uri),
+                            blue(_("reason")),
+                            reason,
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = brown(" !!! ")
+                    )
+                    branch_data['errors'] = True
+                    errors = True
+
+                self.Entropy.output(
+                    "[branch:%s] %s..." % (
+                        brown(branch),
+                        blue(_("removing packages locally")),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+
+            ##
+            # remove locally
+            ##
 
             branch_data['removed'] = set()
-            for package in removal:
-                package_path = os.path.join(
-                    self.Entropy._get_local_packages_directory(repo),
-                    branch, package)
+            for package_rel in removal:
+
+                package_path = self.Entropy.complete_local_package_path(
+                    package_rel, repo = repo)
+
                 package_path_hash = package_path + \
                     etpConst['packagesmd5fileext']
                 package_path_expired = package_path + \

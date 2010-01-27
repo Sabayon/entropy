@@ -620,59 +620,55 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         # expand paths
         for repoid in data['repositories']:
+            data['repositories'][repoid]['repo_basedir'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid
+                            )
             data['repositories'][repoid]['packages_dir'] = \
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
                                 repoid,
                                 etpConst['packagesrelativepath_basedir'],
-                                etpSys['arch']
+                                etpConst['currentarch']
                             )
             data['repositories'][repoid]['packages_dir_nonfree'] = \
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
                                 repoid,
                                 etpConst['packagesrelativepath_basedir_nonfree'],
-                                etpSys['arch']
+                                etpConst['currentarch']
                             )
             data['repositories'][repoid]['store_dir'] = \
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
                                 repoid,
                                 "store",
-                                etpSys['arch']
+                                etpConst['currentarch']
                             )
-            data['repositories'][repoid]['upload_dir'] = \
+            data['repositories'][repoid]['upload_basedir'] = \
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
                                 repoid,
-                                "upload",
-                                etpSys['arch']
+                                "upload" # consider this a base dir
                             )
             data['repositories'][repoid]['database_dir'] = \
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
                                 repoid,
                                 "database",
-                                etpSys['arch']
+                                etpConst['currentarch']
                             )
-            data['repositories'][repoid]['packages_relative_path'] = \
+            data['repositories'][repoid]['remote_repo_basedir'] = \
                 os.path.join(   sys_set['repositories']['product'],
-                                repoid,
-                                etpConst['packagesrelativepath_basedir'],
-                                etpSys['arch']
-                            )+"/"
-            data['repositories'][repoid]['packages_relative_path_nonfree'] = \
-                os.path.join(   sys_set['repositories']['product'],
-                                repoid,
-                                etpConst['packagesrelativepath_basedir_nonfree'],
-                                etpSys['arch']
-                            )+"/"
+                                repoid
+                            )
             data['repositories'][repoid]['database_relative_path'] = \
                 os.path.join(   sys_set['repositories']['product'],
                                 repoid,
                                 "database",
-                                etpSys['arch']
-                            )+"/"
+                                etpConst['currentarch']
+                            )
 
         # Support for shell variables
         shell_repoid = os.getenv('ETP_REPO')
@@ -755,17 +751,28 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
 
 class ServerSettingsMixin:
 
-    def _get_remote_packages_relative_path(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo is None:
-            repo = self.default_repository
-        return srv_set['repositories'][repo]['packages_relative_path']
+    def _get_basedir_pkg_listing(self, base_dir, repo = None, branch = None):
 
-    def _get_remote_packages_nonfree_relative_path(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo is None:
-            repo = self.default_repository
-        return srv_set['repositories'][repo]['packages_relative_path_nonfree']
+        pkgs_dir_types = self.Entropy._get_pkg_dir_names()
+        basedir_raw_content = []
+        entropy.tools.recursive_directory_relative_listing(
+            basedir_raw_content, base_dir)
+
+        pkg_ext = etpConst['packagesext']
+        pkg_list = [x for x in basedir_raw_content if \
+            x.split(os.path.sep)[0] in pkgs_dir_types and \
+                x.endswith(pkg_ext)]
+
+        if branch is not None:
+            branch_extractor = \
+                self.Entropy.Client.get_branch_from_download_relative_uri
+            pkg_list = [x for x in pkg_list if branch_extractor(x) == branch]
+
+        return pkg_list
+
+    def _get_pkg_dir_names(self):
+        return [etpConst['packagesrelativepath_basedir'],
+            etpConst['packagesrelativepath_basedir_nonfree']]
 
     def _get_remote_database_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -789,19 +796,13 @@ class ServerSettingsMixin:
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
-        return srv_set['repositories'][repo]['upload_dir']
+        return srv_set['repositories'][repo]['upload_basedir']
 
-    def _get_local_packages_directory(self, repo = None):
+    def _get_local_repository_base_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
-        return srv_set['repositories'][repo]['packages_dir']
-
-    def _get_local_packages_nonfree_directory(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo is None:
-            repo = self.default_repository
-        return srv_set['repositories'][repo]['packages_dir_nonfree']
+        return srv_set['repositories'][repo]['repo_basedir']
 
     def _get_local_database_taint_file(self, repo = None, branch = None):
         if repo is None:
@@ -1018,6 +1019,27 @@ class ServerSettingsMixin:
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
+    def complete_remote_package_relative_path(self, pkg_rel_url, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(
+            srv_set['repositories'][repo]['remote_repo_basedir'], pkg_rel_url)
+
+    def complete_local_upload_package_path(self, pkg_rel_url, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(srv_set['repositories'][repo]['upload_basedir'],
+            pkg_rel_url)
+
+    def complete_local_package_path(self, pkg_rel_url, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(srv_set['repositories'][repo]['repo_basedir'],
+            pkg_rel_url)
+
     def get_remote_mirrors(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
@@ -1168,8 +1190,7 @@ class ServerPackageDepsMixin:
 
 class ServerPackagesHandlingMixin:
 
-    def initialize_server_repository(self, empty = True, repo = None,
-        warnings = True):
+    def initialize_server_repository(self, repo = None, show_warnings = True):
 
         if repo is None:
             repo = self.default_repository
@@ -1191,7 +1212,7 @@ class ServerPackagesHandlingMixin:
         if os.path.isfile(self._get_local_database_file(repo)):
 
             dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo, warnings = warnings)
+                no_upload = True, repo = repo, warnings = show_warnings)
 
             try:
                 dbconn.validateDatabase()
@@ -1246,151 +1267,6 @@ class ServerPackagesHandlingMixin:
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo, is_new = True)
         dbconn.initializeDatabase()
-
-        if not empty:
-
-            revisions_file = "/entropy-revisions-dump.txt"
-            # dump revisions - as a backup
-            if revisions_match:
-                self.output(
-                    "%s: %s" % (
-                        red(_("Dumping current revisions to file")),
-                        darkgreen(revisions_file),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = darkgreen(" * ")
-                )
-                f_rev = open(revisions_file, "w")
-                f_rev.write(str(revisions_match))
-                f_rev.flush()
-                f_rev.close()
-
-            # dump treeupdates - as a backup
-            treeupdates_file = "/entropy-treeupdates-dump.txt"
-            if treeupdates_actions:
-                self.output(
-                    "%s: %s" % (
-                        # do not translate treeupdates
-                        red(_("Dumping current 'treeupdates' actions to file")),
-                        bold(treeupdates_file),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = darkgreen(" * ")
-                )
-                f_tree = open(treeupdates_file, "w")
-                f_tree.write(str(treeupdates_actions))
-                f_tree.flush()
-                f_tree.close()
-
-            rc_question = self.ask_question(
-                _("Would you like to sync packages first (important!) ?"))
-            if rc_question == _("Yes"):
-                self.Mirrors.sync_packages(repo = repo)
-
-            # fill tree updates actions
-            if treeupdates_actions:
-                dbconn.bumpTreeUpdatesActions(treeupdates_actions)
-
-            # now fill the database
-            pkg_branch_dir = os.path.join(
-                self._get_local_packages_directory(repo),
-                self.SystemSettings['repositories']['branch'])
-            pkglist = os.listdir(pkg_branch_dir)
-            # filter .md5 and .expired packages
-            pkg_ext_len = len(etpConst['packagesext'])
-            pkglist = [x for x in pkglist if (x[(pkg_ext_len*-1):] == \
-                etpConst['packagesext']) and not \
-                os.path.isfile(os.path.join(pkg_branch_dir,
-                    x + etpConst['packagesexpirationfileext']))]
-
-            if pkglist:
-                self.output(
-                    "%s '%s' %s %s" % (
-                        red(_("Reinitializing Entropy database for branch")),
-                        bold(self.SystemSettings['repositories']['branch']),
-                        red(_("using Packages in the repository")),
-                        red("..."),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = darkgreen(" * ")
-                )
-
-            counter = 0
-            maxcount = len(pkglist)
-            branch = self.SystemSettings['repositories']['branch']
-            for pkg in pkglist:
-                counter += 1
-
-                self.output(
-                    "[repo:%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        brown(branch),
-                        blue(_("analyzing")),
-                        bold(pkg),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = " ",
-                    back = True,
-                    count = (counter, maxcount,)
-                )
-
-                doinject = False
-                if pkg in injected_packages:
-                    doinject = True
-
-                pkg_path = os.path.join(self._get_local_packages_directory(repo),
-                    branch, pkg)
-                mydata = self.Spm().extract_package_metadata(pkg_path)
-                self._pump_extracted_package_metadata(mydata, repo,
-                    {'injected': doinject,})
-
-                # get previous revision
-                revision_avail = revisions_match.get(pkg)
-                add_revision = 0
-                if (revision_avail != None):
-                    if branch == revision_avail[0]:
-                        add_revision = revision_avail[1]
-
-                idpackage, revision, mydata_upd = dbconn.addPackage(mydata,
-                    revision = add_revision)
-                idpackages_added.add(idpackage)
-
-                self.output(
-                    "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
-                            repo,
-                            brown(branch),
-                            darkgreen(str(counter)),
-                            blue(str(maxcount)),
-                            red(_("added package")),
-                            darkgreen(pkg),
-                            red(_("revision")),
-                            brown(str(revision)),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = " ",
-                    back = True
-                )
-
-            self.generate_reverse_dependencies_metadata(repo)
-
-            my_qa = self.QA()
-
-            if idpackages_added:
-                dbconn = self.open_server_repository(read_only = False,
-                    no_upload = True, repo = repo)
-                my_qa.test_missing_dependencies(
-                    idpackages_added, dbconn, ask = True,
-                    repo = repo, self_check = True,
-                    black_list = \
-                        self._get_missing_dependencies_blacklist(repo = repo),
-                    black_list_adder = \
-                        self._add_missing_dependencies_blacklist_items
-                )
 
         dbconn.commitChanges()
         self.close_repositories()
@@ -1515,8 +1391,6 @@ class ServerPackagesHandlingMixin:
         tmp_down_dir = tempfile.mkdtemp()
 
         download_queue = {}
-        local_up_dir = self._get_local_upload_directory(repo)
-        local_basedir = os.path.join(local_up_dir, branch)
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
 
@@ -1566,26 +1440,41 @@ class ServerPackagesHandlingMixin:
                 if rc_question == _("No"):
                     continue
 
-            remote_relative_path = self._get_remote_packages_relative_path(repo)
-
             for uri in self.get_remote_mirrors(repo):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
-                basedir = os.path.join(remote_relative_path, from_branch)
 
-                downloader_queue = [x[0] for x in download_queue[from_branch]]
-                downloader = self.Mirrors.TransceiverServerHandler(
-                    self,
-                    [uri],
-                    downloader_queue,
-                    critical_files = downloader_queue,
-                    txc_basedir = basedir,
-                    local_basedir = tmp_down_dir,
-                    download = True,
-                    repo = repo
-                )
+                queue_map = {}
 
-                errors, m_fine_uris, m_broken_uris = downloader.go()
+                for pkg_fp, idpackage in download_queue[from_branch]:
+                    down_url = dbconn.retrieveDownloadURL(idpackage)
+                    down_rel = self.complete_remote_package_relative_path(
+                        down_url, repo = repo)
+                    down_rel_dir = os.path.dirname(down_rel)
+                    obj = queue_map.setdefault(down_rel_dir, [])
+                    obj.append(pkg_fp)
+
+                errors = False
+                m_fine_uris = set()
+                m_broken_uris = set()
+
+                for down_rel_dir, downloader_queue in queue_map.items():
+
+                    downloader = self.Mirrors.TransceiverServerHandler(
+                        self,
+                        [uri],
+                        downloader_queue,
+                        critical_files = downloader_queue,
+                        txc_basedir = down_rel_dir,
+                        local_basedir = tmp_down_dir,
+                        download = True,
+                        repo = repo
+                    )
+                    xerrors, xm_fine_uris, xm_broken_uris = downloader.go()
+                    if xerrors:
+                        errors = True
+                    m_fine_uris.update(xm_fine_uris)
+                    m_broken_uris.update(xm_broken_uris)
 
                 if not errors:
                     for downloaded_path, idpackage in \
@@ -1710,9 +1599,17 @@ class ServerPackagesHandlingMixin:
                     back = True
                 )
 
+                # build new download url
+                download_url = dbconn.retrieveDownloadURL(idpackage)
+                download_url = \
+                    self.Client.swap_branch_in_download_relative_uri(
+                        branch, download_url)
+
                 # move files to upload
-                package_name = os.path.basename(package_path)
-                new_package_path = os.path.join(local_basedir, package_name)
+                new_package_path = self.complete_local_upload_package_path(
+                    download_url, repo = repo)
+                self._ensure_dir_path(os.path.dirname(new_package_path))
+
                 try:
                     os.rename(package_path, new_package_path)
                 except OSError:
@@ -1722,10 +1619,6 @@ class ServerPackagesHandlingMixin:
                 entropy.tools.create_md5_file(new_package_path)
 
                 # update database
-                download_url = dbconn.retrieveDownloadURL(idpackage)
-                download_url = \
-                    self.Client.swap_branch_in_download_relative_uri(
-                        branch, download_url)
                 dbconn.setDownloadURL(idpackage, download_url)
                 dbconn.switchBranch(idpackage, branch)
                 dbconn.commitChanges()
@@ -1903,19 +1796,20 @@ class ServerPackagesHandlingMixin:
                 return switched
 
         for idpackage, repo in my_matches:
+
             dbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo)
-            match_branch = dbconn.retrieveBranch(idpackage)
+
             match_atom = dbconn.retrieveAtom(idpackage)
-            package_filename = os.path.basename(
-                dbconn.retrieveDownloadURL(idpackage))
+            package_rel_path = dbconn.retrieveDownloadURL(idpackage)
+
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(_("switching")),
-                        darkgreen(match_atom),
+                    darkgreen(repo),
+                    darkred(to_repo),
+                    brown(branch),
+                    blue(_("switching")),
+                    darkgreen(match_atom),
                 ),
                 importance = 0,
                 type = "info",
@@ -1923,11 +1817,11 @@ class ServerPackagesHandlingMixin:
                 back = True
             )
             # move binary file
-            from_file = os.path.join(self._get_local_packages_directory(repo),
-                match_branch, package_filename)
+            from_file = self.complete_local_package_path(package_rel_path,
+                repo = repo)
             if not os.path.isfile(from_file):
-                from_file = os.path.join(self._get_local_upload_directory(repo),
-                    match_branch, package_filename)
+                from_file = self.complete_local_upload_package_path(
+                    package_rel_path, repo = repo)
             if not os.path.isfile(from_file):
                 self.output(
                     "[%s=>%s|%s] %s: %s -> %s" % (
@@ -1944,20 +1838,25 @@ class ServerPackagesHandlingMixin:
                 )
                 continue
 
+            to_file = self.complete_local_upload_package_path(package_rel_path,
+                repo = to_repo)
+
             if new_tag != None:
+
                 match_category = dbconn.retrieveCategory(idpackage)
                 match_name = dbconn.retrieveName(idpackage)
                 match_version = dbconn.retrieveVersion(idpackage)
                 tagged_package_filename = \
                     entropy.tools.create_package_filename(
                         match_category, match_name, match_version, new_tag)
-                to_file = os.path.join(self._get_local_upload_directory(to_repo),
-                    match_branch, tagged_package_filename)
-            else:
-                to_file = os.path.join(self._get_local_upload_directory(to_repo),
-                    match_branch, package_filename)
-            if not os.path.isdir(os.path.dirname(to_file)):
-                os.makedirs(os.path.dirname(to_file))
+
+                to_file = self.complete_local_upload_package_path(
+                    package_rel_path, repo = to_repo)
+                # directly move to correct place, tag changed, so file name
+                to_file = os.path.join(os.path.dirname(to_file),
+                    tagged_package_filename)
+
+            self._ensure_dir_path(os.path.dirname(to_file))
 
             copy_data = [
                 (from_file, to_file,),
@@ -1969,17 +1868,17 @@ class ServerPackagesHandlingMixin:
 
             for from_item, to_item in copy_data:
                 self.output(
-                        "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue(_("moving file")),
-                            darkgreen(os.path.basename(from_item)),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = red(" @@ "),
-                        back = True
+                    "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("moving file")),
+                        darkgreen(os.path.basename(from_item)),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ "),
+                    back = True
                 )
                 if os.path.isfile(from_item):
                     shutil.copy2(from_item, to_item)
@@ -2765,7 +2664,6 @@ class ServerPackagesHandlingMixin:
             uploaddir_path = self._get_upload_package_path(repo, dbconn,
                 idpackage)
             pkg_path = dbconn.retrieveDownloadURL(idpackage)
-            pkg_rel_path = self._get_common_pkg_relative_path(pkg_path)
 
             pkgatom = dbconn.retrieveAtom(idpackage)
             if os.path.isfile(bindir_path):
@@ -2773,7 +2671,7 @@ class ServerPackagesHandlingMixin:
                     "[%s] %s :: %s" % (
                         darkgreen(_("available")),
                         blue(pkgatom),
-                        darkgreen(pkg_rel_path),
+                        darkgreen(pkg_path),
                     ),
                     importance = 0,
                     type = "info",
@@ -2785,7 +2683,7 @@ class ServerPackagesHandlingMixin:
                     "[%s] %s :: %s" % (
                         darkred(_("upload/ignored")),
                         blue(pkgatom),
-                        darkgreen(pkg_rel_path),
+                        darkgreen(pkg_path),
                     ),
                     importance = 0,
                     type = "info",
@@ -2796,7 +2694,7 @@ class ServerPackagesHandlingMixin:
                     "[%s] %s :: %s" % (
                         brown(_("download")),
                         blue(pkgatom),
-                        darkgreen(pkg_rel_path),
+                        darkgreen(pkg_path),
                     ),
                     importance = 0,
                     type = "info",
@@ -3414,8 +3312,8 @@ class ServerRepositoryMixin:
                 dbfile = self._get_local_database_file(repoid)
                 if os.path.isfile(dbfile):
                     shutil.move(dbfile, dbfile+".backup")
-                self.initialize_server_repository(empty = True,
-                    repo = repoid, warnings = False)
+                self.initialize_server_repository(repo = repoid,
+                    show_warnings = False)
 
     def _save_default_repository(self, repoid):
 
@@ -3694,8 +3592,7 @@ class ServerRepositoryMixin:
                 return cached
 
         local_dbfile_dir = os.path.dirname(local_dbfile)
-        if not os.path.isdir(local_dbfile_dir):
-            os.makedirs(local_dbfile_dir)
+        self._ensure_dir_path(local_dbfile_dir)
 
         if (not read_only) and (lock_remote) and \
             (repo not in self._sync_lock_cache):
@@ -3830,11 +3727,6 @@ class ServerRepositoryMixin:
         if repo is None:
             repo = self.default_repository
 
-        upload_dir = os.path.join(self._get_local_upload_directory(repo),
-            self.SystemSettings['repositories']['branch'])
-        if not os.path.isdir(upload_dir):
-            os.makedirs(upload_dir)
-
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
         self.output(
@@ -3943,8 +3835,11 @@ class ServerRepositoryMixin:
 
         download_url = self._setup_repository_package_filename(idpackage,
             repo = repo)
-        downloadfile = os.path.basename(download_url)
-        destination_path = os.path.join(upload_dir, downloadfile)
+        destination_path = self.complete_local_upload_package_path(
+            download_url, repo = repo)
+        destination_dir = os.path.dirname(destination_path)
+        self._ensure_dir_path(destination_dir)
+
         try:
             os.rename(package_file, destination_path)
         except OSError:
@@ -4103,13 +3998,17 @@ class ServerRepositoryMixin:
 class ServerMiscMixin:
 
     def _ensure_paths(self, repo):
-        upload_dir = os.path.join(self._get_local_upload_directory(repo),
-            self.SystemSettings['repositories']['branch'])
+        upload_dir = self._get_local_upload_directory(repo)
         db_dir = self._get_local_database_dir(repo)
         for mydir in [upload_dir, db_dir]:
             if (not os.path.isdir(mydir)) and (not os.path.lexists(mydir)):
-                os.makedirs(mydir)
+                os.makedirs(mydir, 0o775)
                 const_setup_perms(mydir, etpConst['entropygid'])
+
+    def _ensure_dir_path(self, dir_path):
+        if not os.path.isdir(dir_path):
+            os.makedirs(dir_path, 0o775)
+            const_setup_perms(dir_path, etpConst['entropygid'])
 
     def _setup_services(self):
         self._setup_entropy_settings()
@@ -4306,34 +4205,24 @@ class ServerMiscMixin:
     def get_branch_from_download_relative_uri(self, mypath):
         return self.Client.get_branch_from_download_relative_uri(mypath)
 
-    def _get_common_pkg_relative_path(self, pkg_path, branch = None):
-        my_path = '/'.join(pkg_path.split("/")[2:])
-        if branch is None:
-            return my_path
-        head, tail = os.path.split(my_path)
-        return os.path.join(branch, tail)
+    def _get_package_path(self, repo, dbconn, idpackage):
+        """
+        Given EntropyRepository instance and package identifier, return local
+        path of package. This method does not check for path validity though.
+        """
+        pkg_rel_url = dbconn.retrieveDownloadURL(idpackage)
+        complete_path = self.complete_local_package_path(pkg_rel_url,
+            repo = repo)
+        return complete_path
 
-    def _get_package_path(self, repo, dbconn, idpackage, branch = None):
+    def _get_upload_package_path(self, repo, dbconn, idpackage):
         """
         Given EntropyRepository instance and package identifier, return local
         path of package. This method does not check for path validity though.
         """
         pkg_path = dbconn.retrieveDownloadURL(idpackage)
-        pkg_rel_path = self._get_common_pkg_relative_path(pkg_path,
-            branch = branch)
-        return os.path.join(self._get_local_packages_directory(repo),
-            pkg_rel_path)
-
-    def _get_upload_package_path(self, repo, dbconn, idpackage, branch = None):
-        """
-        Given EntropyRepository instance and package identifier, return local
-        path of package. This method does not check for path validity though.
-        """
-        pkg_path = dbconn.retrieveDownloadURL(idpackage)
-        pkg_rel_path = self._get_common_pkg_relative_path(pkg_path,
-            branch = branch)
-        return os.path.join(self._get_local_upload_directory(repo),
-            pkg_rel_path)
+        return os.path.join(self._get_local_upload_directory(repo = repo),
+            pkg_path)
 
     def scan_package_changes(self):
 
