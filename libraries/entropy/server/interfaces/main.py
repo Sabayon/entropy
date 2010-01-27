@@ -624,7 +624,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
                                 repoid,
-                                "packages",
+                                etpConst['packagesrelativepath_basedir'],
+                                etpSys['arch']
+                            )
+            data['repositories'][repoid]['packages_dir_nonfree'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                etpConst['packagesrelativepath_basedir_nonfree'],
                                 etpSys['arch']
                             )
             data['repositories'][repoid]['store_dir'] = \
@@ -651,7 +658,13 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             data['repositories'][repoid]['packages_relative_path'] = \
                 os.path.join(   sys_set['repositories']['product'],
                                 repoid,
-                                "packages",
+                                etpConst['packagesrelativepath_basedir'],
+                                etpSys['arch']
+                            )+"/"
+            data['repositories'][repoid]['packages_relative_path_nonfree'] = \
+                os.path.join(   sys_set['repositories']['product'],
+                                repoid,
+                                etpConst['packagesrelativepath_basedir_nonfree'],
                                 etpSys['arch']
                             )+"/"
             data['repositories'][repoid]['database_relative_path'] = \
@@ -748,6 +761,12 @@ class ServerSettingsMixin:
             repo = self.default_repository
         return srv_set['repositories'][repo]['packages_relative_path']
 
+    def _get_remote_packages_nonfree_relative_path(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if repo is None:
+            repo = self.default_repository
+        return srv_set['repositories'][repo]['packages_relative_path_nonfree']
+
     def _get_remote_database_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo is None:
@@ -777,6 +796,12 @@ class ServerSettingsMixin:
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['packages_dir']
+
+    def _get_local_packages_nonfree_directory(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if repo is None:
+            repo = self.default_repository
+        return srv_set['repositories'][repo]['packages_dir_nonfree']
 
     def _get_local_database_taint_file(self, repo = None, branch = None):
         if repo is None:
