@@ -3263,12 +3263,14 @@ class Server(ServerNoticeBoardMixin):
                 etpConst['etpdatabasepkglist'], repo = repo,
                 excluded_branches = [branch])
             # format data
-            for key, val in list(branch_pkglist_data.items()):
+            for key, val in branch_pkglist_data.items():
                 branch_pkglist_data[key] = val.split("\n")
 
 
-            remote_relpath = os.path.join(etpConst['packagesrelativepath'],
-                branch)
+            rel_path_basedir = etpConst['packagesrelativepath_basedir']
+            rel_path_basename = etpConst['packagesrelativepath_basename']
+            remote_relpath = rel_path_basedir + "/" + rel_path_basename + "/" \
+                + branch
             my_expiring_pkgs = set([os.path.join(remote_relpath, x) for x in \
                 expiring_packages])
 

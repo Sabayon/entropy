@@ -222,8 +222,10 @@ def const_default_settings(rootdir):
         'clientconf': default_etp_confdir+"/client.conf",
         # socket.conf file
         'socketconf': default_etp_confdir+"/socket.conf",
-        # user by client interfaces
-        'packagesrelativepath': "packages/"+ETP_ARCH_CONST+"/",
+        # used by entropy.spm to build pkgs relative URL metadata ("download",
+        # returned by EntropyRepository.retrieveDownloadURL())
+        'packagesrelativepath_basedir': "packages",
+        'packagesrelativepath_basename': ETP_ARCH_CONST,
 
         'entropyworkdir': default_etp_dir, # Entropy workdir
         # Entropy unpack directory

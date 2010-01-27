@@ -864,8 +864,10 @@ class PortagePlugin(SpmPlugin):
             data['versiontag'] = self._extract_pkg_metadata_ebuild_entropy_tag(
                 ebuild_path)
 
-        data['download'] = etpConst['packagesrelativepath'] + data['branch'] \
-            + "/"
+        down_rel_basedir = etpConst['packagesrelativepath_basedir']
+        down_rel_basename = etpConst['packagesrelativepath_basename']
+        data['download'] = down_rel_basedir + "/" + down_rel_basename + "/" + \
+            data['branch'] + "/"
         data['download'] += entropy.tools.create_package_filename(
             data['category'], data['name'], data['version'], data['versiontag'])
 
