@@ -3106,3 +3106,26 @@ def collect_paths():
     @rtype: list
     """
     return os.getenv("PATH", "").split(":")
+
+def create_package_dirpath(branch, nonfree = False):
+    """
+    Create Entropy package relative directory path used for building
+    EntropyRepository "download" metadatum and for handling package file life
+    by Entropy Server.
+
+    @param branch: Entropy branch id
+    @type branch: string
+    @keyword nonfree: if package belongs to free or nonfree dir
+    @type nonfree: bool
+    @return: complete relative path
+    @rtype: string
+    """
+    if nonfree:
+        down_rel_basedir = etpConst['packagesrelativepath_basedir_nonfree']
+    else:
+        down_rel_basedir = etpConst['packagesrelativepath_basedir']
+    down_rel_basename = etpConst['packagesrelativepath_basename']
+    # don't use os.path.join, because it's OS dependent, this is valid as URL
+    # too...
+    dirpath = down_rel_basedir + "/" + down_rel_basename + "/" + branch
+    return dirpath
