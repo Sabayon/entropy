@@ -225,6 +225,7 @@ def const_default_settings(rootdir):
         # used by entropy.spm to build pkgs relative URL metadata ("download",
         # returned by EntropyRepository.retrieveDownloadURL())
         'packagesrelativepath_basedir': "packages",
+        'packagesrelativepath_basedir_nonfree': "packages-nonfree",
         'packagesrelativepath_basename': ETP_ARCH_CONST,
 
         'entropyworkdir': default_etp_dir, # Entropy workdir
