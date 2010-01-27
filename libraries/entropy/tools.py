@@ -3129,3 +3129,23 @@ def create_package_dirpath(branch, nonfree = False):
     # too...
     dirpath = down_rel_basedir + "/" + down_rel_basename + "/" + branch
     return dirpath
+
+def recursive_directory_relative_listing(empty_list, base_directory,
+    _nested = False):
+    """
+    Takes an array(list) and appends all files from dir down
+    the directory tree. Returns nothing. list is modified.
+    """
+    if not _nested:
+        base_directory = os.path.normpath(base_directory)
+    for x in os.listdir(base_directory):
+        x_path = os.path.join(base_directory, x)
+        if os.path.isdir(x_path):
+            recursive_directory_relative_listing(empty_list, x_path,
+                _nested = True)
+        elif x_path not in empty_list:
+                empty_list.append(x_path)
+
+    if not _nested:
+        for idx in xrange(len(empty_list)):
+            empty_list[idx] = empty_list[idx][len(base_directory)+1:]
