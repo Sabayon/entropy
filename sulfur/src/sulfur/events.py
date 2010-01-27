@@ -609,7 +609,7 @@ class SulfurApplicationEventsMixin:
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
             data = model.get_value( iterator, 0 )
-            if data:
+            if data and data != (None, None, None):
                 self.load_advisory_info_menu(data)
 
     def on_pkg_doubleclick( self, widget, iterator, path):
