@@ -2153,7 +2153,9 @@ class ServerPackagesHandlingMixin:
                 for idpackage in idpackages:
 
                     currentcounter += 1
-                    pkgfile = dbconn.retrieveDownloadURL(idpackage) 
+                    pkgfile = dbconn.retrieveDownloadURL(idpackage)
+                    pkgfile = self.complete_remote_package_relative_path(
+                        pkgfile, repo = repo)
                     pkghash = dbconn.retrieveDigest(idpackage)
 
                     self.output(
@@ -2168,8 +2170,6 @@ class ServerPackagesHandlingMixin:
                         back = True,
                         count = (currentcounter, totalcounter,)
                     )
-
-                    pkgfile = self._get_package_path(repo, dbconn, idpackage)
 
                     ck_remote = handler.get_md5(pkgfile)
                     if ck_remote is None:

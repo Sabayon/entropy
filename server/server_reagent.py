@@ -771,7 +771,8 @@ def database(options):
     elif (options[0] == "md5remote"):
 
         mypackages = options[1:]
-        return Entropy.verify_remote_packages(mypackages, ask = not d_request_noask)
+        Entropy.verify_remote_packages(mypackages, ask = not d_request_noask)
+        return 0
 
     # bump tool
     elif (options[0] == "bump"):
