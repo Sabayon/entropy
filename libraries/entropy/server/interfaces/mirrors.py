@@ -2560,13 +2560,6 @@ class Server(ServerNoticeBoardMixin):
             (self.Entropy._get_branch_from_download_relative_uri(x) == branch)])
 
         exclude = set()
-        for myfile in upload_queue:
-            if myfile.endswith(etpConst['packagesext']):
-                if myfile not in db_files:
-                    exclude.add(myfile)
-        upload_queue -= exclude
-
-        exclude = set()
         for myfile in download_queue:
             if myfile in upload_queue:
                 exclude.add(myfile)
