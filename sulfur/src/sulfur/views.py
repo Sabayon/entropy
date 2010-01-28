@@ -1722,7 +1722,6 @@ class EntropyPackageView:
                 pixbuf = gtk.gdk.pixbuf_new_from_file(file_path)
             except gobject.GError:
                 pixbuf = None
-                
 
             pkg_key = pkg.key
             repoid = pkg.repoid_clean
@@ -2014,8 +2013,11 @@ class EntropyPackageView:
 
     def _get_cached_pkg_ugc_icon(self, pkg):
 
-        repoid = pkg.repoid_clean
-        key = pkg.key
+        try:
+            repoid = pkg.repoid_clean
+            key = pkg.key
+        except self.Equo.dbapi2.ProgrammingError:
+            return
 
         cache_key = (key, repoid,)
         cached = self.__pkg_ugc_icon_cache.get(cache_key)
