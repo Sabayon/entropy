@@ -100,7 +100,6 @@
 ../sulfur/src/sulfur/events.py
 ../sulfur/src/sulfur/filters.py
 ../sulfur/src/sulfur/__init__.py
-../sulfur/src/sulfur/misc.py
 ../sulfur/src/sulfur/package.py
 ../sulfur/src/sulfur/packages.py
 ../sulfur/src/sulfur/progress.py
