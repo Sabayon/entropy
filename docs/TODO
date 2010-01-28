@@ -1,8 +1,4 @@
 
-  0.99.30:
-
-    - entropy.server: move sensible pkgs to alt dir (only dir switcher missing)
-
   0.99.40:
 
     - PackageKit integration
@@ -34,6 +30,7 @@
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
+    - enabled nonfree support by default
 
   1.0 - deprecations:
 
