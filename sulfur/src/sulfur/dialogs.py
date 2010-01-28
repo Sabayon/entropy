@@ -3093,6 +3093,7 @@ class LicenseDialog:
 
     def __init__( self, application, entropy, licenses ):
 
+        self.accepted = set()
         self.parent = application.ui.main
         self.Sulfur = application
         self.Entropy = entropy
@@ -3121,7 +3122,6 @@ class LicenseDialog:
         self.show_data( licenses )
         self.view.expand_all()
         self.licenses = licenses
-        self.accepted = set()
 
 
     def close_read_text_window(self, widget, path):
