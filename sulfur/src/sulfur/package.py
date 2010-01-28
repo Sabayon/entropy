@@ -77,7 +77,7 @@ class EntropyPackage:
         self.is_downgrade = False
         self.is_group = False
         # might lead to memleaks
-        self.__namedesc_cache = None
+        self.__cache = {}
 
         if self.pkgset:
 
@@ -231,8 +231,9 @@ class EntropyPackage:
                 SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
             return t
 
-        if self.__namedesc_cache is not None:
-            atom, repo, repo_clean, key, desc, ver_str = self.__namedesc_cache
+        cached = self.__cache.get('get_nameDesc')
+        if cached is not None:
+            atom, repo, repo_clean, key, desc, ver_str = cached
         else:
             atom = self.get_name()
             repo = self.get_repository()
@@ -240,7 +241,8 @@ class EntropyPackage:
             key = self.entropyTools.dep_getkey(atom)
             desc = self.get_description(markup = False)
             ver_str = self._get_nameDesc_get_installed_ver()
-            self.__namedesc_cache = atom, repo, repo_clean, key, desc, ver_str
+            self.__cache['get_nameDesc'] = atom, repo, repo_clean, key, desc, \
+                ver_str
 
         if atom is None: # wtf!
             return 'N/A'
@@ -471,10 +473,17 @@ class EntropyPackage:
         return self.dbconn.retrieveKeySlot(self.matched_id)
 
     def get_key(self):
+        cached = self.__cache.get('get_key')
+        if cached is not None:
+            return cached
+
         if self.pkgset:
             return self.set_name
-        return self.entropyTools.dep_getkey(
+
+        key = self.entropyTools.dep_getkey(
             self.dbconn.retrieveAtom(self.matched_id))
+        self.__cache['get_key'] = key
+        return key
 
     def get_description_no_markup(self):
         if self.pkgset:
@@ -585,6 +594,10 @@ class EntropyPackage:
             self.get_repository_clean(), key)
 
     def get_attribute(self, attr):
+        cached = self.__cache.get(('get_attribute', attr,))
+
+        if cached is not None:
+            return cached
         x = None
         if attr == "description":
             x = cleanMarkupString(self.dbconn.retrieveDescription(self.matched_id))
@@ -610,6 +623,8 @@ class EntropyPackage:
             x = self.get_nameDesc()
         elif attr == "slot":
             x = self.dbconn.retrieveSlot(self.matched_id)
+
+        self.__cache[('get_attribute', attr,)] = x
         return x
 
     def _get_time( self ):
