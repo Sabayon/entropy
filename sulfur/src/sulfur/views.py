@@ -2221,7 +2221,14 @@ class EntropyPackageView:
         elif obj.queued == "rr":
             cell.set_property(stype, '#B7BEFF')
         elif not obj.queued:
-            cell.set_property(stype, None)
+            try:
+                syspkg = obj.syspkg
+            except:
+                syspkg = False
+            if syspkg:
+                cell.set_property(stype, '#FFECEC')
+            else:
+                cell.set_property(stype, None)
 
     def select_all(self):
 

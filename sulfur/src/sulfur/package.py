@@ -325,7 +325,7 @@ class EntropyPackage:
         # check if it's a system package
         s = EquoIntf.validate_package_removal(match[0])
 
-        self.__cache['is_sys_pkg'] = s
+        self.__cache['is_sys_pkg'] = not s
         return not s
 
     def get_install_status(self):
