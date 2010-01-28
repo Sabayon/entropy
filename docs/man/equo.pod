@@ -584,7 +584,11 @@ show packages owning the provided slot
 
 =item B<tags>
 
-show packages owning the provided tags
+show packages owning the specified tags
+
+=item B<revisions>
+
+show packages owning the specified revisions
 
 =item B<graph>
 

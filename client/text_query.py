@@ -111,6 +111,9 @@ def query(options):
     elif myopts[0] == "tags":
         rc_status = search_tagged_packages(myopts[1:])
 
+    elif myopts[0] == "revisions":
+        rc_status = search_rev_packages(myopts[1:])
+
     elif myopts[0] == "sets":
         rc_status = search_package_sets(myopts[1:])
 
@@ -1349,6 +1352,49 @@ def search_tagged_packages(tags, dbconn = None, Equo = None):
             if not etpUi['quiet']:
                 print_info(blue(" %s: " % (_("Keyword"),)) + \
                     bold("\t"+tag))
+                print_info(blue(" %s:   " % (_("Found"),)) + \
+                    bold("\t" + str(len(results))) + \
+                    red(" %s" % (_("entries"),)))
+
+    if not etpUi['quiet'] and not found:
+        print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
+
+    return 0
+
+def search_rev_packages(revisions, dbconn = None, Equo = None):
+
+    if Equo is None:
+        Equo = EquoInterface()
+
+    dbclose = True
+    if dbconn:
+        dbclose = False
+
+    found = False
+    if not etpUi['quiet']:
+        print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Revision Search"),)))
+
+    repo_number = 0
+    for repo in Equo.validRepositories:
+        repo_number += 1
+
+        if not etpUi['quiet']:
+            print_info(blue("  #" + str(repo_number)) + \
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+
+        if dbclose:
+            dbconn = Equo.open_repository(repo)
+
+        for revision in revisions:
+            results = dbconn.searchRevisionedPackages(revision)
+            found = True
+            for idpackage in results:
+                print_package_info(idpackage, dbconn, Equo = Equo,
+                    extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
+
+            if not etpUi['quiet']:
+                print_info(blue(" %s: " % (_("Keyword"),)) + \
+                    bold("\t"+revision))
                 print_info(blue(" %s:   " % (_("Found"),)) + \
                     bold("\t" + str(len(results))) + \
                     red(" %s" % (_("entries"),)))

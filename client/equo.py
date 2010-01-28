@@ -329,6 +329,7 @@ help_opts_extended = [
             (3, 'search', 3, _('search packages inside the default repository database')),
             (3, 'sets', 3, _('search available package sets')),
             (3, 'tags', 3, _('show packages owning the specified tags')),
+            (3, 'revisions', 3, _('show packages owning the specified revisions')),
             (3, '--verbose', 2, _('show more details')),
             (3, '--quiet', 3, _('print results in a scriptable way')),
 
