@@ -2480,6 +2480,10 @@ class Server(ServerNoticeBoardMixin):
         branch = self.SystemSettings['repositories']['branch']
 
         for local_package in upload_packages:
+
+            if not local_package.endswith(etpConst['packagesext']):
+                continue
+
             if local_package in remote_packages:
 
                 local_filepath = \
@@ -2504,6 +2508,10 @@ class Server(ServerNoticeBoardMixin):
         # if a package is in the packages directory but not online,
         # we have to upload it we have local_packages and remote_packages
         for local_package in local_packages:
+
+            if not local_package.endswith(etpConst['packagesext']):
+                continue
+
             if local_package in remote_packages:
                 local_filepath = self.Entropy.complete_local_package_path(
                     local_package, repo = repo)
@@ -2522,6 +2530,10 @@ class Server(ServerNoticeBoardMixin):
 
         # Fill download_queue and removal_queue
         for remote_package in remote_packages:
+
+            if not remote_package.endswith(etpConst['packagesext']):
+                continue
+
             if remote_package in local_packages:
                 local_filepath = self.Entropy.complete_local_package_path(
                     remote_package, repo = repo)
@@ -2569,18 +2581,12 @@ class Server(ServerNoticeBoardMixin):
         download_queue -= exclude
         """
 
-        exclude = set()
-        for myfile in upload_queue:
-            if myfile.endswith(etpConst['packagesext']):
-                if myfile not in db_files:
-                    exclude.add(myfile)
-        upload_queue -= exclude
-
-        exclude = set()
-        for myfile in download_queue:
-            if myfile in upload_queue:
-                exclude.add(myfile)
-        download_queue -= exclude
+        # filter out packages not in our repository
+        upload_queue = set([x for x in upload_queue if x in db_files])
+        # filter out weird moves, packages set for upload should not
+        # be downloaded
+        download_queue = set([x for x in download_queue if x not in \
+            upload_queue])
 
         return upload_queue, download_queue, removal_queue, fine_queue
 
@@ -2598,8 +2604,6 @@ class Server(ServerNoticeBoardMixin):
         upload = []
 
         for item in removal_queue:
-            if not item.endswith(etpConst['packagesext']):
-                continue
             local_filepath = self.Entropy.complete_local_package_path(
                 item, repo = repo)
             size = entropy.tools.get_file_size(local_filepath)
@@ -2607,8 +2611,6 @@ class Server(ServerNoticeBoardMixin):
             removal.append((local_filepath, item, size))
 
         for item in download_queue:
-            if not item.endswith(etpConst['packagesext']):
-                continue
 
             local_filepath = self.Entropy.complete_local_upload_package_path(
                 item, repo = repo)
@@ -2624,8 +2626,6 @@ class Server(ServerNoticeBoardMixin):
                 do_copy.append((local_filepath, item, size))
 
         for item in upload_queue:
-            if not item.endswith(etpConst['packagesext']):
-                continue
 
             local_filepath = self.Entropy.complete_local_upload_package_path(
                 item, repo = repo)
