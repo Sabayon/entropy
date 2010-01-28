@@ -8,6 +8,7 @@
     - add splitdebug support?
     - entropy.security.System unittest
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
+    - entropy.server API docs
 
   1.0_beta1:
 
