@@ -2481,6 +2481,9 @@ class Server(ServerNoticeBoardMixin):
 
         for local_package in upload_packages:
 
+            if local_package.endswith(etpConst['packagesext']):
+                continue
+
             if local_package in remote_packages:
 
                 local_filepath = \
@@ -2505,6 +2508,10 @@ class Server(ServerNoticeBoardMixin):
         # if a package is in the packages directory but not online,
         # we have to upload it we have local_packages and remote_packages
         for local_package in local_packages:
+
+            if local_package.endswith(etpConst['packagesext']):
+                continue
+
             if local_package in remote_packages:
                 local_filepath = self.Entropy.complete_local_package_path(
                     local_package, repo = repo)
