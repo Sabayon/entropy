@@ -60,10 +60,12 @@ def package(options):
     e_req_sort_size = False
     e_req_save_here = False
     e_req_dump = False
+    e_req_bdeps = False
     e_req_multifetch = 1
     rc = 0
     _myopts = []
     my_etp_pkg_paths = []
+    get_pkgs_opts = ("install", "world", "upgrade", "source", "fetch")
     for opt in myopts:
         if not entropy.tools.is_valid_unicode(opt):
             print_error(red(" %s." % (_("Malformed command"),) ))
@@ -75,6 +77,8 @@ def package(options):
             return -10
         if (opt == "--nodeps"):
             e_req_deps = False
+        elif (opt == "--bdeps") and (options[0] in get_pkgs_opts):
+            e_req_bdeps = True
         elif (opt == "--empty"):
             e_req_empty_deps = True
         elif (opt == "--relaxed"):
@@ -145,7 +149,8 @@ def package(options):
                 rc, status = download_sources(myopts, deps = e_req_deps,
                     deepdeps = e_req_deep, pkgs = my_etp_pkg_paths,
                     savecwd = e_req_save_here,
-                    relaxed_deps = e_req_relaxed)
+                    relaxed_deps = e_req_relaxed,
+                    build_deps = e_req_bdeps)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -157,7 +162,8 @@ def package(options):
                     deepdeps = e_req_deep,
                     multifetch = e_req_multifetch,
                     dochecksum = e_req_checksum,
-                    relaxed_deps = e_req_relaxed)
+                    relaxed_deps = e_req_relaxed,
+                    build_deps = e_req_bdeps)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -172,7 +178,8 @@ def package(options):
                     dochecksum = e_req_checksum,
                     multifetch = e_req_multifetch,
                     check_critical_updates = True,
-                    relaxed_deps = e_req_relaxed)
+                    relaxed_deps = e_req_relaxed,
+                    build_deps = e_req_bdeps)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -190,7 +197,8 @@ def package(options):
                 resume = e_req_resume,
                 skipfirst = e_req_skipfirst, human = True,
                 dochecksum = e_req_checksum,
-                multifetch = e_req_multifetch)
+                multifetch = e_req_multifetch,
+                build_deps = e_req_bdeps)
 
         elif options[0] == "hop":
             if myopts:
@@ -346,7 +354,8 @@ def _upgrade_package_handle_calculation(resume, replay, onlyfetch):
     return update, remove, onlyfetch, True
 
 def upgrade_packages(onlyfetch = False, replay = False, resume = False,
-    skipfirst = False, human = False, dochecksum = True, multifetch = 1):
+    skipfirst = False, human = False, dochecksum = True, multifetch = 1,
+    build_deps = False):
 
     # check if I am root
     if not entropy.tools.is_root():
@@ -376,7 +385,8 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
             skipfirst = skipfirst,
             dochecksum = dochecksum,
             deepdeps = True,
-            multifetch = multifetch
+            multifetch = multifetch,
+            build_deps = build_deps
         )
         if rc[1] != 0:
             return rc
@@ -754,7 +764,8 @@ def _show_you_meant(package, from_installed):
                 brown(str(slot))+red(" ?"))
         items_cache.add((key, slot))
 
-def _generate_run_queue(found_pkg_atoms, deps, emptydeps, deepdeps, relaxeddeps):
+def _generate_run_queue(found_pkg_atoms, deps, emptydeps, deepdeps, relaxeddeps,
+    builddeps):
 
     run_queue = []
     removal_queue = []
@@ -763,7 +774,8 @@ def _generate_run_queue(found_pkg_atoms, deps, emptydeps, deepdeps, relaxeddeps)
         print_info(red(" @@ ")+blue("%s ...") % (
             _("Calculating dependencies"),) )
         run_queue, removal_queue, status = E_CLIENT.get_install_queue(
-            found_pkg_atoms, emptydeps, deepdeps, relaxed_deps = relaxeddeps)
+            found_pkg_atoms, emptydeps, deepdeps, relaxed_deps = relaxeddeps,
+            build_deps = builddeps)
         if status == -2:
             print_error(red(" @@ ") + blue("%s: " % (
                 _("Cannot find needed dependencies"),) ))
@@ -778,7 +790,7 @@ def _generate_run_queue(found_pkg_atoms, deps, emptydeps, deepdeps, relaxeddeps)
     return False, run_queue, removal_queue
 
 def download_sources(packages = None, deps = True, deepdeps = False,
-    pkgs = None, savecwd = False, relaxed_deps = False):
+    pkgs = None, savecwd = False, relaxed_deps = False, build_deps = False):
 
     if packages is None:
         packages = []
@@ -797,7 +809,7 @@ def download_sources(packages = None, deps = True, deepdeps = False,
         return myrc
 
     abort, run_queue, removal_queue = _generate_run_queue(found_pkg_atoms, deps,
-        False, deepdeps, relaxed_deps)
+        False, deepdeps, relaxed_deps, build_deps)
     if abort:
         return run_queue
 
@@ -903,7 +915,8 @@ def _fetch_packages(run_queue, downdata, multifetch = 1, dochecksum = True):
 
 
 def download_packages(packages = None, deps = True, deepdeps = False,
-    multifetch = 1, dochecksum = True, relaxed_deps = False):
+    multifetch = 1, dochecksum = True, relaxed_deps = False,
+    build_deps = False):
 
     if packages is None:
         packages = []
@@ -929,7 +942,7 @@ def download_packages(packages = None, deps = True, deepdeps = False,
         return myrc
 
     abort, run_queue, removal_queue = _generate_run_queue(found_pkg_atoms, deps,
-        False, deepdeps, relaxed_deps)
+        False, deepdeps, relaxed_deps, build_deps)
     if abort:
         return run_queue
 
@@ -957,7 +970,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
     emptydeps = False, onlyfetch = False, deepdeps = False,
     config_files = False, pkgs = None, resume = False, skipfirst = False,
     dochecksum = True, multifetch = 1, check_critical_updates = False,
-    relaxed_deps = False):
+    relaxed_deps = False, build_deps = False):
 
     if packages is None:
         packages = []
@@ -1012,8 +1025,8 @@ def install_packages(packages = None, atomsdata = None, deps = True,
         if abort:
             return myrc
 
-        abort, run_queue, removal_queue = _generate_run_queue(found_pkg_atoms, deps,
-            emptydeps, deepdeps, relaxed_deps)
+        abort, run_queue, removal_queue = _generate_run_queue(found_pkg_atoms,
+            deps, emptydeps, deepdeps, relaxed_deps, build_deps)
         if abort:
             return run_queue
 
@@ -1291,7 +1304,8 @@ def install_packages(packages = None, atomsdata = None, deps = True,
 
             if skipfirst and run_queue:
                 run_queue, x, status = E_CLIENT.get_install_queue(run_queue[1:],
-                    emptydeps, deepdeps, relaxed_deps = relaxed_deps)
+                    emptydeps, deepdeps, relaxed_deps = relaxed_deps,
+                    build_deps = build_deps)
                 del x # was removal_queue
                 # save new queues
                 resume_cache['run_queue'] = run_queue

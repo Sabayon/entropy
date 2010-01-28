@@ -250,6 +250,10 @@ just download packages without doing the install
 
 do not pull in any dependency
 
+=item B<--bdeps>
+
+also pull in build-time dependencies
+
 =item B<--resume>
 
 resume previously interrupted operations

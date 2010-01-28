@@ -120,6 +120,7 @@ help_opts = [
     (2, '--pretend', 1, _('just show what would be done')),
     (2, '--fetch', 1, _('just download packages without doing the install')),
     (2, '--nodeps', 1, _('do not pull in any dependency')),
+    (2, '--bdeps', 1, _('also pull in build-time dependencies')),
     (2, '--resume', 1, _('resume previously interrupted operations')),
     (2, '--skipfirst', 1, _('used with --resume, makes the first package in queue to be skipped')),
     (2, '--clean', 1, _('remove downloaded packages after being used')),

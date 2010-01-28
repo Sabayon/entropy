@@ -884,13 +884,16 @@ class CalculatorsMixin:
         conflicts.add(c_idpackage)
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
-        stack, deps_not_found, conflicts, unsat_cache, relaxed_deps, deep_deps,
-        empty_deps):
+        stack, deps_not_found, conflicts, unsat_cache, relaxed_deps, build_deps,
+        deep_deps, empty_deps):
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
+        excluded_deptypes = None
+        if not build_deps:
+            excluded_deptypes = [etpConst['dependency_type_ids']['bdepend_id']]
         myundeps = repo_db.retrieveDependenciesList(pkg_id,
-            exclude_deptypes = [etpConst['dependency_type_ids']['bdepend_id']])
+            exclude_deptypes = excluded_deptypes)
 
         # check conflicts
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
@@ -947,8 +950,9 @@ class CalculatorsMixin:
         return deps, post_deps_matches
 
     def _generate_dependency_tree(self, matched_atom, graph,
-        empty_deps = False, relaxed_deps = False, deep_deps = False,
-        unsatisfied_deps_cache = None, elements_cache = None):
+        empty_deps = False, relaxed_deps = False, build_deps = False,
+        deep_deps = False, unsatisfied_deps_cache = None,
+        elements_cache = None):
 
         # this cache avoids adding the same element to graph
         # several times, when it is supposed to be already handled
@@ -1009,7 +1013,7 @@ class CalculatorsMixin:
                 self.__generate_dependency_tree_analyze_deplist(
                     pkg_match, repo_db, stack, deps_not_found,
                     conflicts, unsatisfied_deps_cache,
-                    relaxed_deps, deep_deps, empty_deps)
+                    relaxed_deps, build_deps, deep_deps, empty_deps)
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
@@ -1308,15 +1312,17 @@ class CalculatorsMixin:
         return client_matches
 
     def get_required_packages(self, matched_atoms, empty_deps = False,
-        deep_deps = False, relaxed_deps = False, quiet = False):
+        deep_deps = False, relaxed_deps = False, build_deps = False,
+        quiet = False):
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['dep_tree'],
-            hash("%s|%s|%s|%s|%s|%s" % (
+            hash("%s|%s|%s|%s|%s|%s|%s" % (
                 hash(frozenset(sorted(matched_atoms))),
                 empty_deps,
                 deep_deps,
                 relaxed_deps,
+                build_deps,
                 self.clientDbconn.checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
@@ -1369,8 +1375,8 @@ class CalculatorsMixin:
                 mygraph, conflicts = self._generate_dependency_tree(
                     matched_atom, graph, empty_deps = empty_deps,
                     deep_deps = deep_deps, relaxed_deps = relaxed_deps,
-                    unsatisfied_deps_cache = unsat_deps_cache,
-                    elements_cache = elements_cache
+                    build_deps = build_deps, elements_cache = elements_cache,
+                    unsatisfied_deps_cache = unsat_deps_cache
                 )
             except DependenciesNotFound as err:
                 error_generated = -2
@@ -1868,13 +1874,14 @@ class CalculatorsMixin:
         return queue
 
     def get_install_queue(self, matched_atoms, empty_deps, deep_deps,
-        relaxed_deps = False, quiet = False):
+        relaxed_deps = False, build_deps = False, quiet = False):
 
         install = []
         removal = []
         treepackages, result = self.get_required_packages(matched_atoms,
             empty_deps = empty_deps, deep_deps = deep_deps,
-            relaxed_deps = relaxed_deps, quiet = quiet)
+            relaxed_deps = relaxed_deps, build_deps = build_deps,
+            quiet = quiet)
 
         if result == -2:
             return treepackages, removal, result
