@@ -25,6 +25,7 @@ from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import dbapi2
 from entropy.security import Repository as RepositorySecurity
+from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 import entropy.tools
 import entropy.dump
@@ -2543,7 +2544,8 @@ class Server(ServerNoticeBoardMixin):
                 # this means that the local package does not exist
                 # so, we need to download it
                  # ignore .tmp files
-                if not remote_package.endswith(".tmp"):
+                if not remote_package.endswith(
+                    EntropyUriHandler.TMP_TXC_FILE_EXT):
                     download_queue.add(remote_package)
 
         # Collect packages that don't exist anymore in the database
