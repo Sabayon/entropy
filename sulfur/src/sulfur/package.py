@@ -312,6 +312,10 @@ class EntropyPackage:
         if self.pkgset:
             return False
 
+        cached = self.__cache.get('is_sys_pkg')
+        if cached is not None:
+            return cached
+
         match = self.matched_atom
         if (not self.from_installed) and (not self.installed_match):
             return False
@@ -320,6 +324,8 @@ class EntropyPackage:
 
         # check if it's a system package
         s = EquoIntf.validate_package_removal(match[0])
+
+        self.__cache['is_sys_pkg'] = s
         return not s
 
     def get_install_status(self):
@@ -330,15 +336,23 @@ class EntropyPackage:
         if self.pkgset:
             return 0
 
+        cached = self.__cache.get('get_install_status')
+        if cached is not None:
+            return cached
+
         key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
         matches = EquoIntf.clientDbconn.searchKeySlot(key, slot)
+
         if not matches: # not installed, new!
-            return 1
+            status = 1
         else:
             rc, matched = EquoIntf.check_package_update(key+":"+slot, deep = True)
             if rc:
-                return 2
-            return 3
+                status = 2
+            else:
+                status = 3
+
+        self.__cache['get_install_status'] = status
 
     def get_version(self):
         if self.pkgset:
