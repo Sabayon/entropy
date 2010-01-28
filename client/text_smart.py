@@ -495,8 +495,7 @@ def smartgenerator(entropy_client, matched_atoms):
     if os.path.isdir(pkg_data_dir):
         shutil.rmtree(pkg_data_dir)
     os.makedirs(pkg_data_dir)
-    main_bin_path = os.path.join(etpConst['packagesbindir'], pkgbranch,
-        pkgfilename)
+    main_bin_path = os.path.join(etpConst['entropyworkdir'], pkgfilepath)
     print_info(darkgreen(" * ") + \
         red("%s " % (_("Unpacking the main package"),)) + \
         bold(str(pkgfilename)))
@@ -512,12 +511,13 @@ def smartgenerator(entropy_client, matched_atoms):
     # now uncompress all the rest
     for dep_idpackage, dep_repo in matched_atoms[1:]:
         mydbconn = entropy_client.open_repository(dep_repo)
-        download = os.path.basename(mydbconn.retrieveDownloadURL(dep_idpackage))
+        download_path = mydbconn.retrieveDownloadURL(dep_idpackage)
+        download = os.path.basename(download_path)
         depbranch = mydbconn.retrieveBranch(dep_idpackage)
         depatom = mydbconn.retrieveAtom(dep_idpackage)
         print_info(darkgreen(" * ") + \
             red("%s " % (_("Unpacking dependency package"),)) + bold(depatom))
-        deppath = os.path.join(etpConst['packagesbindir'], depbranch, download)
+        deppath = os.path.join(etpConst['entropyworkdir'], download_path)
         entropy.tools.uncompress_tarball(deppath,
             extract_path = pkg_data_dir) # first unpack
 

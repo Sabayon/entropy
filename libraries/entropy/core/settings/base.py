@@ -1166,13 +1166,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 branch = split_line[1].strip()
                 data['branch'] = branch
-                branch_dir = os.path.join(etpConst['packagesbindir'], branch)
-                if not os.path.isdir(branch_dir):
-                    try:
-                        os.makedirs(branch_dir, 0o775)
-                        const_setup_perms(branch_dir, etpConst['entropygid'])
-                    except (OSError, IOError,):
-                        continue
 
         repoids = set()
         for line in repositoriesconf:

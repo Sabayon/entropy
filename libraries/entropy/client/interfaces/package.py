@@ -290,11 +290,8 @@ class Package:
                     type = "warning",
                     header = darkred("   ## ")
                 )
-                myrelative_uri = \
-                    self.Entropy.get_branch_from_download_relative_uri(download)
-                fetch = self.Entropy.fetch_file_on_mirrors(
+                fetch = self.Entropy.fetch_file_on_mirrors( 
                     repository,
-                    myrelative_uri,
                     download,
                     checksum,
                     fetch_abort_function = self.fetch_abort_function
@@ -1740,13 +1737,13 @@ class Package:
                 header = red("   ## ")
             )
 
-            rc, data_transfer, resumed = self.Entropy.fetch_file(
+            rc, data_transfer, resumed = self.Entropy._fetch_file(
                 url,
+                dest_file,
                 None,
                 None,
                 False,
-                fetch_file_abort_function = self.fetch_abort_function,
-                filepath = dest_file
+                fetch_file_abort_function = self.fetch_abort_function
             )
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
@@ -1808,11 +1805,8 @@ class Package:
         rc = 0
         if not self.pkgmeta['verified']:
 
-            branch = self.Entropy.get_branch_from_download_relative_uri(
-                self.pkgmeta['download'])
             rc = self.Entropy.fetch_file_on_mirrors(
                 self.pkgmeta['repository'],
-                branch,
                 self.pkgmeta['download'],
                 self.pkgmeta['checksum'],
                 fetch_abort_function = self.fetch_abort_function
@@ -2821,15 +2815,13 @@ class Package:
             }
 
             repo_size = dbconn.retrieveSize(idpackage)
-            orig_branch = self.Entropy.get_branch_from_download_relative_uri(
-                download)
             if self.Entropy.check_needed_package_download(download, None) < 0:
-                obj = (repository, orig_branch, download, digest, signatures,)
+                obj = (repository, download, digest, signatures,)
                 temp_fetch_list.append(obj)
                 continue
 
             elif dochecksum:
-                obj = (repository, orig_branch, download, digest, signatures,)
+                obj = (repository, download, digest, signatures,)
                 temp_checksum_list.append(obj)
 
             down_path = os.path.join(etp_workdir, download)

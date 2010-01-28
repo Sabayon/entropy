@@ -187,12 +187,6 @@ def const_default_settings(rootdir):
         'installdir': '/usr/lib/entropy',
         # etpConst['packagestmpdir'] --> temp directory
         'packagestmpdir': default_etp_dir+default_etp_tmpdir,
-        # etpConst['packagesbindir'] --> repository
-        # where the packages will be stored
-        # by clients: to query if a package has been already downloaded
-        # by servers or rsync mirrors: to store already
-        #   uploaded packages to the main rsync server
-        'packagesbindir': default_etp_dir+default_etp_repodir,
         # etpConst['smartappsdir'] location where smart apps files are places
         'smartappsdir': default_etp_dir+default_etp_smartappsdir,
         # etpConst['smartpackagesdir'] location where
@@ -226,6 +220,7 @@ def const_default_settings(rootdir):
         # returned by EntropyRepository.retrieveDownloadURL())
         'packagesrelativepath_basedir': "packages",
         'packagesrelativepath_basedir_nonfree': "packages-nonfree",
+        'packagesrelativepaths': ("packages", "pacakges-nonfree"),
         'packagesrelativepath_basename': ETP_ARCH_CONST,
 
         'entropyworkdir': default_etp_dir, # Entropy workdir

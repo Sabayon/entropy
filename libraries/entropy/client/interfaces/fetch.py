@@ -11,7 +11,7 @@
 """
 import os
 from entropy.i18n import _
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_setup_perms
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
     darkblue
 import entropy.tools
@@ -34,21 +34,20 @@ class FetchersMixin:
 
         return -1
 
-    def fetch_files(self, url_data_list, checksum = True, resume = True,
+    def _fetch_files(self, url_data_list, checksum = True, resume = True,
         fetch_file_abort_function = None):
-        pkgs_bindir = etpConst['packagesbindir']
+
         url_path_list = []
         checksum_map = {}
         count = 0
-        for url, dest_path, cksum, branch in url_data_list:
+
+        for url, dest_path, cksum in url_data_list:
             count += 1
             filename = os.path.basename(url)
-            if dest_path == None:
-                dest_path = os.path.join(pkgs_bindir, branch, filename,)
-
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
                 os.makedirs(dest_dir, 0o755)
+                const_setup_perms(dest_dir, etpConst['entropygid'])
 
             url_path_list.append((url, dest_path,))
             if cksum != None: checksum_map[count] = cksum
@@ -103,12 +102,12 @@ class FetchersMixin:
 
         def update_download_list(down_list, failed_down):
             newlist = []
-            for repo, branch, fname, cksum, signatures in down_list:
+            for repo, fname, cksum, signatures in down_list:
                 myuri = get_best_mirror(repo)
                 myuri = os.path.join(myuri, fname)
                 if myuri not in failed_down:
                     continue
-                newlist.append((repo, branch, fname, cksum, signatures,))
+                newlist.append((repo, fname, cksum, signatures,))
             return newlist
 
         # return True: for failing, return False: for fine
@@ -141,8 +140,7 @@ class FetchersMixin:
             return True
 
         def show_download_summary(down_list):
-            # fetch_files_list.append((myuri,None,cksum,branch,))
-            for repo, branch, fname, cksum, signatures in down_list:
+            for repo, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -158,7 +156,7 @@ class FetchersMixin:
                 )
 
         def show_successful_download(down_list, data_transfer):
-            for repo, branch, fname, cksum, signatures in down_list:
+            for repo, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -185,7 +183,7 @@ class FetchersMixin:
             )
 
         def show_download_error(down_list, rc):
-            for repo, branch, fname, cksum, signatures in down_list:
+            for repo, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -230,7 +228,7 @@ class FetchersMixin:
             while True:
 
                 fetch_files_list = []
-                for repo, branch, fname, cksum, signatures in my_download_list:
+                for repo, fname, cksum, signatures in my_download_list:
                     best_mirror = get_best_mirror(repo)
                     # set working mirror, dont care if its None
                     self.MirrorStatus.set_working_mirror(best_mirror)
@@ -242,12 +240,14 @@ class FetchersMixin:
                         # properly, give up with everything
                         return 3, my_download_list
                     myuri = os.path.join(best_mirror, fname)
-                    fetch_files_list.append((myuri, None, cksum, branch,))
+                    pkg_path = os.path.join(etpConst['entropyworkdir'],
+                        fname)
+                    fetch_files_list.append((myuri, pkg_path, cksum,))
 
                 try:
 
                     show_download_summary(my_download_list)
-                    rc, failed_downloads, data_transfer = self.fetch_files(
+                    rc, failed_downloads, data_transfer = self._fetch_files(
                         fetch_files_list, checksum = checksum,
                         fetch_file_abort_function = fetch_abort_function,
                         resume = do_resume
@@ -282,8 +282,8 @@ class FetchersMixin:
         return 0, []
 
 
-    def fetch_file(self, url, branch, digest = None, resume = True,
-        fetch_file_abort_function = None, filepath = None):
+    def _fetch_file(self, url, save_path, digest = None, resume = True,
+        fetch_file_abort_function = None):
 
         def do_stfu_rm(xpath):
             try:
@@ -292,10 +292,7 @@ class FetchersMixin:
                 pass
 
         filename = os.path.basename(url)
-        if not filepath:
-            filepath = os.path.join(etpConst['packagesbindir'], branch,
-                filename)
-        filepath_dir = os.path.dirname(filepath)
+        filepath_dir = os.path.dirname(save_path)
         # symlink support
         if not os.path.isdir(os.path.realpath(filepath_dir)):
             try:
@@ -305,11 +302,11 @@ class FetchersMixin:
             os.makedirs(filepath_dir, 0o755)
 
         existed_before = False
-        if os.path.isfile(filepath) and os.path.exists(filepath):
+        if os.path.isfile(save_path) and os.path.exists(save_path):
             existed_before = True
 
         # load class
-        fetch_intf = self.urlFetcher(url, filepath, resume = resume,
+        fetch_intf = self.urlFetcher(url, save_path, resume = resume,
             abort_check_func = fetch_file_abort_function,
             OutputInterface = self)
         fetch_intf.progress = self.progress
@@ -335,7 +332,7 @@ class FetchersMixin:
                 )
                 entropy.tools.print_traceback()
             if (not existed_before) or (not resume):
-                do_stfu_rm(filepath)
+                do_stfu_rm(save_path)
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             # not found
@@ -349,18 +346,19 @@ class FetchersMixin:
         if digest and (fetchChecksum != digest):
             # not properly downloaded
             if (not existed_before) or (not resume):
-                do_stfu_rm(filepath)
+                do_stfu_rm(save_path)
             return -2, data_transfer, resumed
 
         return 0, data_transfer, resumed
 
 
-    def fetch_file_on_mirrors(self, repository, branch, filename,
-            digest = False, fetch_abort_function = None):
+    def fetch_file_on_mirrors(self, repository, filename, digest = False,
+        fetch_abort_function = None):
 
         avail_data = self.SystemSettings['repositories']['available']
         uris = avail_data[repository]['packages'][::-1]
         remaining = set(uris)
+        save_path = os.path.join(etpConst['entropyworkdir'], filename)
 
         mirrorcount = 0
         for uri in uris:
@@ -420,9 +418,9 @@ class FetchersMixin:
                         type = "warning",
                         header = red("   ## ")
                     )
-                    rc, data_transfer, resumed = self.fetch_file(
+                    rc, data_transfer, resumed = self._fetch_file(
                         url,
-                        branch,
+                        save_path,
                         digest,
                         do_resume,
                         fetch_file_abort_function = fetch_abort_function

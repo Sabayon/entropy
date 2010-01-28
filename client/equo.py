@@ -572,9 +572,11 @@ def _do_text_community(main_cmd, options):
 
 def _do_text_cleanup(main_cmd, options):
     import text_tools
-    text_tools.cleanup([etpConst['packagestmpdir'],
-        etpConst['logdir'], etpConst['entropyunpackdir'],
-        etpConst['packagesbindir']])
+    dirs = [etpConst['packagestmpdir'], etpConst['logdir'],
+        etpConst['entropyunpackdir']]
+    for rel in etpConst['packagesrelativepaths']:
+        dirs.append(os.path.join(etpConst['entropyworkdir'], rel))
+    text_tools.cleanup(dirs)
     return 0
 
 def do_moo(*args):

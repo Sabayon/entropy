@@ -764,7 +764,6 @@ def _getinfo(entropy_client):
     info['Entropy configuration directory'] = etpConst['confdir']
     info['Entropy work directory'] = etpConst['entropyworkdir']
     info['Entropy unpack directory'] = etpConst['entropyunpackdir']
-    info['Entropy packages directory'] = etpConst['packagesbindir']
     info['Entropy logging directory'] = etpConst['logdir']
     info['Entropy Official Repository identifier'] = SysSettings['repositories']['default_repository']
     info['Entropy API'] = etpConst['etpapi']

@@ -751,6 +751,16 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
 
 class ServerSettingsMixin:
 
+    def _get_branch_from_download_relative_uri(self, db_download_uri):
+        return db_download_uri.split("/")[2]
+
+    def _swap_branch_in_download_relative_uri(self, new_branch,
+        db_download_uri):
+        cur_branch = self._get_branch_from_download_relative_uri(
+            db_download_uri)
+        return db_download_uri.replace("/%s/" % (cur_branch,),
+            "/%s/" % (new_branch,))
+
     def _get_basedir_pkg_listing(self, base_dir, repo = None, branch = None):
 
         pkgs_dir_types = self._get_pkg_dir_names()
@@ -765,7 +775,7 @@ class ServerSettingsMixin:
 
         if branch is not None:
             branch_extractor = \
-                self.Client.get_branch_from_download_relative_uri
+                self._get_branch_from_download_relative_uri
             pkg_list = [x for x in pkg_list if branch_extractor(x) == branch]
 
         return pkg_list
@@ -1334,7 +1344,7 @@ class ServerPackagesHandlingMixin:
         idpackages = dbconn.listAllIdpackages(order_by = 'atom')
         for idpackage in idpackages:
             download_url = dbconn.retrieveDownloadURL(idpackage)
-            url_br = self.Client.get_branch_from_download_relative_uri(
+            url_br = self._get_branch_from_download_relative_uri(
                 download_url)
             if url_br in from_branches:
                 idpackage_map[url_br].append(idpackage)
@@ -1570,7 +1580,7 @@ class ServerPackagesHandlingMixin:
                 # build new download url
                 download_url = dbconn.retrieveDownloadURL(idpackage)
                 download_url = \
-                    self.Client.swap_branch_in_download_relative_uri(
+                    self._swap_branch_in_download_relative_uri(
                         branch, download_url)
 
                 # move files to upload
@@ -4194,9 +4204,6 @@ class ServerMiscMixin:
         f_wl.write('\n'.join(items)+'\n')
         f_wl.flush()
         f_wl.close()
-
-    def get_branch_from_download_relative_uri(self, mypath):
-        return self.Client.get_branch_from_download_relative_uri(mypath)
 
     def _get_package_path(self, repo, dbconn, idpackage):
         """

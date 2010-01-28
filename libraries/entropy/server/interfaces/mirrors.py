@@ -2553,7 +2553,7 @@ class Server(ServerNoticeBoardMixin):
         db_files = dbconn.listAllDownloads(do_sort = False,
             full_path = True)
         db_files = set([x for x in db_files if \
-            (self.Entropy.get_branch_from_download_relative_uri(x) == branch)])
+            (self.Entropy._get_branch_from_download_relative_uri(x) == branch)])
 
         exclude = set()
         for myfile in download_queue:
