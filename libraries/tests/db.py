@@ -11,6 +11,8 @@ from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 import tests._misc as _misc
 
+import entropy.tools
+
 class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
@@ -327,6 +329,24 @@ class EntropyRepositoryTest(unittest.TestCase):
             f_match_mask)
         masking_validation.clear()
         self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
+
+    def test_db_insert_compare_match_tag(self):
+
+        # insert/compare
+        test_pkg = _misc.get_test_entropy_package_tag()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(new_data, db_data)
+
+        # match
+        f_match = (1, 0)
+        pkg_atom = _misc.get_test_entropy_package_tag_atom()
+        pkg_key = entropy.tools.dep_getkey(pkg_atom)
+
+        self.assertEqual(f_match, self.test_db.atomMatch(pkg_key))
+        self.assertEqual(f_match, self.test_db.atomMatch(pkg_atom))
+        self.assertEqual(f_match, self.test_db.atomMatch("~"+pkg_atom))
 
     def test_db_import_export(self):
 

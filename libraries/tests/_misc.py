@@ -55,6 +55,13 @@ def get_test_entropy_package_provide():
     test_pkg = "mail-mta:ssmtp-2.62-r7~0.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_entropy_package_tag():
+    test_pkg = "app-misc:lirc-0.8.6-r2#2.6.31-sabayon~0.tbz2"
+    return get_test_generic_package(test_pkg)
+
+def get_test_entropy_package_tag_atom():
+    return "app-misc/lirc-0.8.6-r2#2.6.31-sabayon"
+
 def get_test_xpak_empty_package():
     test_pkg = "aspell-es-0.50.2.tbz2"
     return get_test_generic_package(test_pkg)
