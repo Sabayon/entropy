@@ -294,7 +294,7 @@ def repositories(options):
                 break
 
             # now bump, this makes EAPI=3 differential db sync happy
-            old_pkg_data = w_dbconn.getPackageData(idpacakge)
+            old_pkg_data = w_dbconn.getPackageData(idpackage)
             dbconn.handlePackage(old_pkg_data)
 
             print_info(brown(" @@ ")+"%s: %s" % (blue(atom),
