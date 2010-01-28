@@ -1,3 +1,162 @@
+commit 7b854118beb0d1db8ae42536e9d7cd4c6bd2f126
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 21:07:21 2010 +0100
+
+    [entropy.server] fix hopefully last regression in tidy_mirrors()
+
+commit 08c9332a9f53113f44a3e8f9a839acce6e60ad94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 21:00:15 2010 +0100
+
+    [entropy.server] fix a regression in tidy_mirrors
+
+commit 0a39d64b0fc8f7bd1a102d7c1699bd7324e260aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:51:33 2010 +0100
+
+    [entropy.server] several (for real this time) improvements to _expand_queues() and _calculate_sync_queues()
+
+commit 53a7a3edcbee26f53db37c2916dfdb1696af5fee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:43:09 2010 +0100
+
+    [entropy.server] comment out early download queue files exclusion (causes tidy tool to fail under corner case circumstances)
+
+commit 21bfafd7ab61abdb0bba0a279f012094f66672ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:39:35 2010 +0100
+
+    [entropy.server] revert several dumb changes to _calculate_sync_queues() (sorry)
+
+commit d0fec851f421993365b7d82e789e1056cb657900
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:33:07 2010 +0100
+
+    [entropy.server] exclude .md5 files when calculating queues directly in early iterations
+
+commit efdbce9483122b54ca18a80fdcb3dc570019e013
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:28:15 2010 +0100
+
+    [entropy.server] cleanup _calculate_sync_queues() once again
+
+commit 364f1d80f836097de9c3a2cd0590590544004c5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:27:45 2010 +0100
+
+    [entropy.server] cleanup _calculate_sync_queues()
+
+commit 67146dd858c57203233dbfb86c5b0a288452a8e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:18:12 2010 +0100
+
+    [entropy.server] use official EntropyUriHandler temp file extension for validating download queue
+
+commit bfd4882f3b0256583bfb63e81e485547d1cd669d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:10:51 2010 +0100
+
+    [todo] update TODO
+
+commit df211456ecb7a36a52fc8780aa984081b8db5cb8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:10:28 2010 +0100
+
+    [equo] fix "equo query revisions", only search installed packages repo
+
+commit a8014a53e0c41de5836a9070255796bd1758461c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:06:12 2010 +0100
+
+    [equo] fix --help, "equo query revisions" was missing
+
+commit 477dd941e6a3a01d55c1cdb46fa485f3c9e8e2ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 20:00:03 2010 +0100
+
+    [equo] text_query: remove dead code
+
+commit 1703d385c5491130a53d78ff90a524e0dc13bcfc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 19:50:43 2010 +0100
+
+    [entropy.client.interfaces.package] fix regression on unpacking new checksum list object
+
+commit acb4ae3a5de5f39ce30f68e707e5da0a5ec61fe7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 19:17:37 2010 +0100
+
+    [activator] fix undefined reference
+
+commit da34b397c9b4bd34e6f5b6a001fd1bbacb1b663e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 19:09:21 2010 +0100
+
+    [entropy.client/equo] add build_deps argument to deps calculation functions
+    
+    Also add --bdeps switch to "equo install" to make possible to install
+    build-time dependencies.
+
+commit f0d62d784f84fc37039c9a9b244fc23e42c37ba3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 18:58:47 2010 +0100
+
+    [reagent] actually write to right EntropyRepository instance
+
+commit 671ed318d22370698225a6b6880929b3935c0db9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 18:56:44 2010 +0100
+
+    [reagent] fix undefined reference
+
+commit e1dc6c70659848aaf608a7aba8ec18932a4188a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 18:44:10 2010 +0100
+
+    [reagent] when editing dependencies, re-add package to repository to make EAPI=3 repo sync aware of it
+
+commit 0ca3b1bd8f3599d7e4aac8f22e8ebfecbdd67608
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 18:03:55 2010 +0100
+
+    [todo] update TODO
+
+commit 8e64a04f0ee1544c915c26a2b8b04eae1a1defdc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 16:56:40 2010 +0100
+
+    [todo] update TODO
+
+commit e608419183b195eb1d5d6cf504117146b33bb0c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 16:56:22 2010 +0100
+
+    [sulfur] highlight system packages in tree view
+
+commit e761013621fdef4f7b436ea451131261812c0c85
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 16:48:12 2010 +0100
+
+    [sulfur] add more caching to EntropyPackage
+
+commit 9d16d558418190033521560e0c49356cc79eb7b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 16:45:29 2010 +0100
+
+    [sulfur] cache some EntropyPackage metadata requests
+
+commit 6b7b622ac2e06baa769bda86c642045ed1dd867d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 16:38:25 2010 +0100
+
+    [todo] update TODO
+
+commit 60aa36ff2d9043c93f90294d4d1da58f72b71817
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 15:48:05 2010 +0100
+
+    Update ChangeLog for version 0.99.30.1
+
 commit 804a0c1d9cbae0cef9611f22e332cb2cfd6867da
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 28 15:47:53 2010 +0100
