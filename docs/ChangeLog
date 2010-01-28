@@ -1,3 +1,293 @@
+commit b58be877a495aa5cfc3160add50c6284ffcc6dcb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 13:13:00 2010 +0100
+
+    [tests] add tagged packages match test
+
+commit 25a0134db041a1c420513b392712a8e793708952
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 12:45:22 2010 +0100
+
+    [sulfur] EntropyPackageView, deal with closed repo in cell redraw callback
+
+commit 2dba860c0ace4a5319ff0e728033031e2d5c84de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 12:42:42 2010 +0100
+
+    [sulfur] move LicenseDialog.accepted at the top
+
+commit df80cdfede2fb61b550b0d7ec909ac9d35bb4732
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 12:39:59 2010 +0100
+
+    [entropy.db] fix issue causing ~app-foo/foo-1.2.3#tag to not get matched, "~" operator compare check was missing
+
+commit e3c6ce32cb3a5aded254335ce132e2ff05ecd9a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 10:20:39 2010 +0100
+
+    [docs] update API documentation
+
+commit 2442918f935b6dfb882b377443b522cb35298eed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 10:17:51 2010 +0100
+
+    [todo] update TODO
+
+commit 0246f2201a1e80bd530d3650d34521c468c3c046
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:57:40 2010 +0100
+
+    [sulfur] EntropyPackageView._get_cached_pkg_ugc_icon: validate variables
+
+commit ee2814d0c34bd2af51f0dfcb88f0f9eecc90f045
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:55:50 2010 +0100
+
+    [entropy.client] catch closeDB() exceptions and write to stderr
+
+commit adb5eb0787e23ab83dc9f50f5b0775fc1c765052
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:52:15 2010 +0100
+
+    [todo] update TODO
+
+commit 9ea843d36dae9100230065e3730e76b773e1cdcd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:51:33 2010 +0100
+
+    [entropy.server] disable -nonfree directory support by default, via server.conf
+
+commit 5630947ae03d7ae39f986d11518d4206b00510cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:41:31 2010 +0100
+
+    [equo] add "equo query revisions" tool
+
+commit 365b520e701ac8828cdac5032a1c465d6980c5e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:38:54 2010 +0100
+
+    [entropy.db] new method searchRevisionedPackages
+
+commit 488bafa814346378e08d736c4098c6fea08ccc44
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:33:49 2010 +0100
+
+    [po] update translations
+
+commit b0216f343efe228c6aae8fe06904c72300914b4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 09:30:46 2010 +0100
+
+    [entropy.client/entropy.server] cleanup and fixes aimed to make downloads from -nonfree dir working
+    
+    :: removed etpConst['packagesbindir']
+    :: cleaned up entropy.client.interfaces.fetch, branch argument not
+       needed anymore, dropped
+    :: moved some minor functions to entropy.server (not required in
+       entropy.client anymore)
+
+commit beaf6242315bdba1ff0324cdc8d61913893fca3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 23:42:02 2010 +0100
+
+    [entropy.server] make use of the new SpmPlugin.extract_package_metadata, license_callback
+
+commit c303e3af6daf6bbd157c2b9de29b9e6e1cdc779c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 23:40:43 2010 +0100
+
+    [entropy.spm] SpmPlugin: bump PLUGIN_API_VERSION requirement, implement new argument on extract_package_metadata
+    
+    :: license_callback is used to determine if a package is free (as in freedom) or not.
+
+commit 144960531ba4d58900cf37e281d6c892134ba260
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 22:14:09 2010 +0100
+
+    [entropy.server] fix verify_remote_packages()
+
+commit 182d556433a1ab3882458e424899406971e71a14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 21:53:34 2010 +0100
+
+    [entropy.server] fix another function call (fix tidy_mirrors)
+
+commit d23f0bca4ab590412ef8c2f17a9670bef2f78bee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 19:47:22 2010 +0100
+
+    [todo] update TODO
+
+commit 452c95a39e405398ec4637d245a64f0eca914026
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 19:47:00 2010 +0100
+
+    [entropy.server] another regression fix
+
+commit 6ac2a52488d9767ca07cdc0d876530918397c4de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 19:37:10 2010 +0100
+
+    [activator] use rss enable setting from SystemSettings and not etpConst
+
+commit 92d8035ff23696add746cf7ff15125bdf2eb915e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 19:36:43 2010 +0100
+
+    [entropy.server] do not consider a mirror "tainted" when pkgs are just downloaded
+
+commit 05283052cf3cd83fdf0dc0660c711129bd611556
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 19:29:18 2010 +0100
+
+    [entropy.server] fix another undefined reference (blame pylint, it sucks!)
+
+commit 6afdcd2bb2858b5bbbc9d9b40715d52a5635627d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 19:22:46 2010 +0100
+
+    [entropy.server] fix a bunch of regressions caused by previously committed huge code move
+
+commit f1517bd880749df4a0bae5fd9494b2a316cb1fb4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 18:54:10 2010 +0100
+
+    [entropy.server] cleanup initialize_server_repository()
+
+commit 37edb21f50cd81b70d76a0aed8353408313e0640
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 18:40:32 2010 +0100
+
+    [entropy.server] fix undefined reference
+
+commit a0245b84cab7c208d39acad6a783e87c75720c1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 18:37:01 2010 +0100
+
+    [entropy.server] add support for multiple packages directories (to host nonfree pkgs)
+
+commit 6c61cda7a512d7ed8f24efe3e396f7212b34ae7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 17:04:05 2010 +0100
+
+    [entropy.core.settings.base] make possible to override branch from env, using ETP_BRANCH
+
+commit 969d1e1e7a914457e76af8ab992796fe537c391e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 13:42:19 2010 +0100
+
+    [entropy.tools] add function recursive_directory_relative_listing
+
+commit be46cca6885c596ddd7521deaea511d3dac86a6c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 10:10:55 2010 +0100
+
+    [entropy.server] add nonfree repository metadata to repositories dict
+
+commit a78148bfada8e4359a941da7fbfff18a21c9e41c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 10:10:20 2010 +0100
+
+    [entropy.spm] PortagePlugin: use newly created entropy.tools.create_package_dirpath()
+
+commit 7a85585594519031d3d06bffa28579cae4ab8196
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 10:02:29 2010 +0100
+
+    [entropy.const] add nonfree pkgs directory name
+
+commit abf995ae59e3df6807d1f77e3b356d9b4b06c742
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 10:01:12 2010 +0100
+
+    [entropy.tools] factorize pkgs path building into a general purpose function
+
+commit 20223586e95307a0c95449be902eb6471739fe34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 09:03:21 2010 +0100
+
+    [entropy.const] prepare packages relative download URL per license type split
+
+commit 17780018b8a1d1d86dacb89696866076102b7fd1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 08:43:02 2010 +0100
+
+    [sulfur] better check advisory object before loading advisory menu
+
+commit 3583e867c0207a09e90288b860726a1648c1a3a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 00:28:58 2010 +0100
+
+    [sulfur] improve UGC icon cache fetch in treeview under high load
+
+commit b4f3a749b6912f0fee86ccd70f8b599caaeeb564
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 00:12:58 2010 +0100
+
+    [sulfur] show repository identifier on pkg row
+
+commit 6bda803c7b89694566ab49f377ed4efbda2431e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 27 00:04:43 2010 +0100
+
+    [sulfur] fix packages sorting inside pkgs categories in treeview
+
+commit 44d11747e5d8d097c2f7f5f1a066b6cc49bd59c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 23:34:54 2010 +0100
+
+    [sulfur] catch resize_image errors
+
+commit 7adb0c60a15bf53e353d41a9dc9bdc29bff24f21
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 23:01:12 2010 +0100
+
+    [todo] update TODO
+
+commit b0aca3196cd373ac190da253194f6c1833d03adb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 22:54:17 2010 +0100
+
+    [docs] update API documentation
+
+commit 93755cadd87c235b41a3952d31e048a1e2e440e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 22:52:52 2010 +0100
+
+    [entropy.server] complete module API cleanup and polishing
+
+commit ddcef8b64eb7c8174803afa3f7bd3326cb45c412
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 22:33:18 2010 +0100
+
+    [sulfur] eventually fix pkgs popup menu reposition code
+
+commit 48a0e3079ae068aa9744db8adbfcb5a1ecbc9c7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 21:57:01 2010 +0100
+
+    [sulfur] properly set background color of UGC icon cell in treeview
+
+commit a4b7b05498e0ac324e3734fb7f44583c414efa6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 21:45:43 2010 +0100
+
+    [sulfur] add "all" group to EntropyPackages, use this when showing "Applications" tab content. Also filter out dupies.
+
+commit 1ffd734365b5a185570dc9ac509f278cf0b4cefe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 21:44:50 2010 +0100
+
+    [sulfur] make EntropyPackageView respect --nougc option
+
+commit 571c58f23cba455ac115641f178edd14425f1a88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 26 19:10:06 2010 +0100
+
+    Update ChangeLog for version 0.99.26
+
 commit 681881ff832dab61456e73da8951344f86f91430
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 26 15:53:27 2010 +0100
