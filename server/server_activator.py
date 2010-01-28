@@ -158,12 +158,12 @@ def packages(options):
     if options[0] == "sync":
 
         repos = [Entropy.default_repository]
+        old_default = Entropy.default_repository
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
             srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
             repos = sorted(srv_data['repositories'].keys())
-            old_default = Entropy.default_repository
 
         rc = 0
         for repo in repos:
