@@ -283,16 +283,20 @@ def repositories(options):
             w_dbconn = Entropy.open_server_repository(repo = repo,
                 read_only = False)
 
+            # save new dependencies
             while True:
                 try:
-                    w_dbconn.setRevision(idpackage,
-                        w_dbconn.retrieveRevision(idpackage) + 1)
                     w_dbconn.removeDependencies(idpackage)
                     w_dbconn.insertDependencies(idpackage, insert_deps)
                     w_dbconn.commitChanges()
                 except (KeyboardInterrupt, SystemExit,):
                     continue
                 break
+
+            # now bump, this makes EAPI=3 differential db sync happy
+            old_pkg_data = w_dbconn.getPackageData(idpacakge)
+            dbconn.handlePackage(old_pkg_data)
+
             print_info(brown(" @@ ")+"%s: %s" % (blue(atom),
                 darkgreen(_("dependencies updated successfully")),))
 
