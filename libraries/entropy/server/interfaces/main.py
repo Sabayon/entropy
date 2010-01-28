@@ -1826,8 +1826,24 @@ class ServerPackagesHandlingMixin:
                 )
                 continue
 
-            to_file = self.complete_local_upload_package_path(package_rel_path,
-                repo = to_repo)
+            # we need to ask SpmPlugin to re-extract metadata from pkg file
+            # and grab the new "download" metadatum value using our
+            # license check callback. It has to be done here because
+            # we need the new path.
+            updated_package_rel_path = package_rel_path
+            srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+            if srv_set['nonfree_packages_dir_support']:
+                def _package_injector_check_license(licenses):
+                    return self._is_pkg_free(licenses, repo = to_repo)
+
+                tmp_data = self.Spm().extract_package_metadata(from_file,
+                    license_callback = _package_injector_check_license)
+                updated_package_rel_path = tmp_data['download'][:]
+                del tmp_data
+
+
+            to_file = self.complete_local_upload_package_path(
+                updated_package_rel_path, repo = to_repo)
 
             if new_tag != None:
 
@@ -1839,7 +1855,7 @@ class ServerPackagesHandlingMixin:
                         match_category, match_name, match_version, new_tag)
 
                 to_file = self.complete_local_upload_package_path(
-                    package_rel_path, repo = to_repo)
+                    updated_package_rel_path, repo = to_repo)
                 # directly move to correct place, tag changed, so file name
                 to_file = os.path.join(os.path.dirname(to_file),
                     tagged_package_filename)
@@ -1888,6 +1904,10 @@ class ServerPackagesHandlingMixin:
             data = dbconn.getPackageData(idpackage)
             if new_tag != None:
                 data['versiontag'] = new_tag
+
+            # need to set back data['download'], because pkg path might got
+            # changed, due to license re-validation
+            data['download'] = updated_package_rel_path
 
             # GPG
             # before inserting new pkg, drop GPG signature and re-sign
@@ -3720,6 +3740,29 @@ class ServerRepositoryMixin:
             return []
         return entropy.tools.generic_file_content_parser(wl_file)
 
+    def _is_pkg_free(self, pkg_licenses, repo = None):
+
+        if repo is None:
+            repo = self.default_repository
+
+        # check if nonfree directory support is enabled, if not,
+        # always return True.
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if not srv_set['nonfree_packages_dir_support']:
+            return True
+
+        wl_licenses = self._get_whitelisted_licenses(repo = repo)
+
+        if not pkg_licenses:
+            return True # free if no licenses provided
+        if not wl_licenses:
+            return True # no whitelist !
+
+        for license in pkg_licenses:
+            if license not in wl_licenses:
+                return False
+        return True
+
     def _package_injector(self, package_file, inject = False, repo = None):
 
         if repo is None:
@@ -3727,23 +3770,7 @@ class ServerRepositoryMixin:
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
 
         def _package_injector_check_license(licenses):
-
-            # check if nonfree directory support is enabled, if not,
-            # always return True.
-            if not srv_set['nonfree_packages_dir_support']:
-                return True
-
-            wl_licenses = self._get_whitelisted_licenses(repo = repo)
-
-            if not licenses:
-                return True # free if no licenses provided
-            if not wl_licenses:
-                return True # no whitelist !
-
-            for license in licenses:
-                if license not in wl_licenses:
-                    return False
-            return True
+            return self._is_pkg_free(licenses, repo = repo)
 
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
