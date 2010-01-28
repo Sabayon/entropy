@@ -1,3 +1,26 @@
+commit 804a0c1d9cbae0cef9611f22e332cb2cfd6867da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 15:47:53 2010 +0100
+
+    [equo] import os module
+
+commit cccb9239a1c22dc4dc0c1bd9b128e9b29ac74b90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 14:56:20 2010 +0100
+
+    [entropy.server] fix nonfree pkgs dir support across repos (when moving)
+    
+    When moving packages across repos, if nonfree packages dir support is enabled
+    metadata has to be re-extracted from package file and new 'download' metadatum
+    has to replace the old one. This because a free package can be considered as
+    such in repo A but not in repo B.
+
+commit 865113de96ee1549c99cc37a3def0b81d962d11b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 13:31:29 2010 +0100
+
+    Update ChangeLog for version 0.99.30
+
 commit b58be877a495aa5cfc3160add50c6284ffcc6dcb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 28 13:13:00 2010 +0100
