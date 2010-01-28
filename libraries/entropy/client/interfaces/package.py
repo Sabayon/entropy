@@ -325,7 +325,7 @@ class Package:
 
     def multi_match_checksum(self):
         rc = 0
-        for repository, branch, download, digest, signatures in \
+        for repository, download, digest, signatures in \
             self.pkgmeta['multi_checksum_list']:
 
             rc = self._match_checksum(repository, digest, download, signatures)
@@ -1871,10 +1871,9 @@ class Package:
             header = red("   ## ")
         )
 
-        for repo, branch, fname, cksum, signatures in err_list:
+        for repo, fname, cksum, signatures in err_list:
             self.Entropy.output(
-                "[%s:%s|%s] %s" % (blue(repo), brown(branch),
-                    darkgreen(cksum), darkred(fname),),
+                "[%s|%s] %s" % (blue(repo), darkgreen(cksum), darkred(fname),),
                 importance = 1,
                 type = "error",
                 header = darkred("    # ")
