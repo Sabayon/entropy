@@ -8216,6 +8216,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return token
         elif operators == "<=" and compare > -1:
             return token
+        elif operators == "~": # do not filter "any-rev" requests here.
+            return token
 
     def __filterSlotTagUse(self, found_ids, slot, tag, use, operators):
 
