@@ -1,6 +1,7 @@
 
   0.99.40:
 
+    - sulfur: security updates in..red, system pkgs updates in orange
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier
@@ -41,7 +42,6 @@
 
   2.0:
 
-    - Abstract Source Package Manager metaphor
     - PackageKit improved support
     - UGC based on XML requests (all the commands into one string)
 
