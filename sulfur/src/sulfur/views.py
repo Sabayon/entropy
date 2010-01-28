@@ -2022,6 +2022,12 @@ class EntropyPackageView:
         if cached is not None:
             return cached
 
+        # validate variables...
+        if key is None:
+            return
+        if repoid is None:
+            return
+
         icon_doc = self.Equo.UGC.UGCCache.get_icon_cache(key, repoid)
         if icon_doc is None:
             # not cached
