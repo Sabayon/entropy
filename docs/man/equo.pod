@@ -1118,6 +1118,10 @@ search available package sets
 
 show packages owning the specified tags
 
+=item B<revisions>
+
+show packages owning the specified revisions
+
 =item B<--verbose>
 
 show more details
