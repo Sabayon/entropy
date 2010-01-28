@@ -1,7 +1,6 @@
 
   0.99.40:
 
-    - sulfur: security updates in..red, system pkgs updates in orange
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier
