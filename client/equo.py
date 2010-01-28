@@ -10,6 +10,7 @@
     B{Entropy Package Manager Client}.
 
 """
+import os
 import sys
 import re
 sys.path.insert(0, '/usr/lib/entropy/libraries')
