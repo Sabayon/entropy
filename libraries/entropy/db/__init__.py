@@ -5388,6 +5388,20 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """, (tag,))
         return self._cur2set(cur)
 
+    def searchRevisionedPackages(self, revision):
+        """
+        Search packages which "revision" metadatum matches the given one.
+
+        @param revision: Entropy revision to search
+        @type revision: string
+        @return: list of packages using given tag
+        @rtype: set
+        """
+        cur = self.cursor.execute("""
+        SELECT idpackage FROM baseinfo WHERE revision = (?)
+        """, (revision,))
+        return self._cur2set(cur)
+
     def searchLicenses(self, mylicense, sensitive = False, atoms = False):
         """
         Search packages using given license (mylicense).
