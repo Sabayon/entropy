@@ -86,13 +86,13 @@
 <area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="17,247,343,265"/>
 <area shape="rect" id="node79" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="17,265,343,284"/>
 <area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,83,355,290"/>
+<area shape="rect" id="node80" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="103,39,256,57"/>
+<area shape="rect" id="node3" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="91,6,267,63"/>
 <area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#output" title="Text output print function." alt="" coords="396,163,1056,181"/>
 <area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#ask_question" title="Questions asking function." alt="" coords="396,181,1056,200"/>
 <area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#input_box" title="Generic input box (form) creator and data collector." alt="" coords="396,200,1056,219"/>
 <area shape="rect" id="node81" href="entropy.output.TextInterface-class.html#set_title" title="Set application title." alt="" coords="396,219,1056,237"/>
-<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="384,130,1067,243"/>
-<area shape="rect" id="node80" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="103,39,256,57"/>
-<area shape="rect" id="node4" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="91,6,267,63"/>
+<area shape="rect" id="node4" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="384,130,1067,243"/>
 </map>
   <img src="uml_class_diagram_for_entropy__27.gif" alt='' usemap="#uml_class_diagram_for_entropy__27" ismap="ismap" class="graph-without-title" />
 </center>
@@ -3770,6 +3770,25 @@ audience.</td>
       one.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchTaggedPackages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">set</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchRevisionedPackages" class="summary-sig-name">searchRevisionedPackages</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">revision</span>)</span><br />
+      Search packages which &quot;revision&quot; metadatum matches the 
+      given one.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchRevisionedPackages">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -10150,6 +10169,33 @@ Return Compiler flags during building of package.
   </dl>
 </td></tr></table>
 </div>
+<a name="searchRevisionedPackages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchRevisionedPackages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">revision</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchRevisionedPackages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search packages which &quot;revision&quot; metadatum matches the given
+  one.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>revision</code></strong> (string) - Entropy revision to search</li>
+    </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list of packages using given tag</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="searchLicenses"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -11664,7 +11710,7 @@ Return Compiler flags during building of package.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Jan 26 22:53:31 2010
+    Generated by Epydoc 3.0.1 on Thu Jan 28 10:19:46 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
