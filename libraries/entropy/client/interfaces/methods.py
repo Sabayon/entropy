@@ -123,7 +123,11 @@ class RepositoryMixin:
             # must call remove_repository method
             if item in self._memory_db_instances:
                 continue
-            self._repodb_cache.pop(item).closeDB()
+            try:
+                self._repodb_cache.pop(item).closeDB()
+            except self.dbapi2.OperationalError as err: # wtf!
+                sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
+                    err,))
         self._repodb_cache.clear()
 
         # disable hooks during SystemSettings cleanup
