@@ -592,7 +592,7 @@ show packages owning the specified tags
 
 =item B<revisions>
 
-show packages owning the specified revisions
+show installed packages owning the specified revisions
 
 =item B<graph>
 
@@ -1117,10 +1117,6 @@ search available package sets
 =item B<tags>
 
 show packages owning the specified tags
-
-=item B<revisions>
-
-show packages owning the specified revisions
 
 =item B<--verbose>
 

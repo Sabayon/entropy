@@ -205,7 +205,6 @@ help_opts = [
         (2, 'sets', 2, _('search available package sets')),
         (2, 'slot', 2, _('show packages owning the provided slot')),
         (2, 'tags', 2, _('show packages owning the provided tags')),
-        (2, 'revisions', 1, _('show packages owning the specified revisions')),
         (2, 'graph', 2, _('show direct depdendencies tree for provided installable atoms')),
             (3, '--complete', 2, _('include system packages, build deps and circularity information')),
         (2, 'revgraph', 1, _('show reverse depdendencies tree for provided installed atoms')),
@@ -332,7 +331,7 @@ help_opts_extended = [
             (3, 'search', 3, _('search packages inside the default repository database')),
             (3, 'sets', 3, _('search available package sets')),
             (3, 'tags', 3, _('show packages owning the specified tags')),
-            (3, 'revisions', 3, _('show packages owning the specified revisions')),
+            (3, 'revisions', 3, _('show installed packages owning the specified revisions')),
             (3, '--verbose', 2, _('show more details')),
             (3, '--quiet', 3, _('print results in a scriptable way')),
 

@@ -1357,29 +1357,22 @@ def search_rev_packages(revisions, Equo = None):
     found = False
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Revision Search"),)))
+        print_info(bold(_("Installed packages repository")))
 
-    repo_number = 0
-    for repo in Equo.validRepositories:
-        repo_number += 1
+    dbconn = Equo.clientDbconn
+    for revision in revisions:
+        results = dbconn.searchRevisionedPackages(revision)
+        found = True
+        for idpackage in results:
+            print_package_info(idpackage, dbconn, Equo = Equo,
+                extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
         if not etpUi['quiet']:
-            print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
-
-        dbconn = Equo.open_repository(repo)
-        for revision in revisions:
-            results = dbconn.searchRevisionedPackages(revision)
-            found = True
-            for idpackage in results:
-                print_package_info(idpackage, dbconn, Equo = Equo,
-                    extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
-
-            if not etpUi['quiet']:
-                print_info(blue(" %s: " % (_("Keyword"),)) + \
-                    bold("\t"+revision))
-                print_info(blue(" %s:   " % (_("Found"),)) + \
-                    bold("\t" + str(len(results))) + \
-                    red(" %s" % (_("entries"),)))
+            print_info(blue(" %s: " % (_("Keyword"),)) + \
+                bold("\t"+revision))
+            print_info(blue(" %s:   " % (_("Found"),)) + \
+                bold("\t" + str(len(results))) + \
+                red(" %s" % (_("entries"),)))
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
