@@ -2480,10 +2480,6 @@ class Server(ServerNoticeBoardMixin):
         branch = self.SystemSettings['repositories']['branch']
 
         for local_package in upload_packages:
-
-            if local_package.endswith(etpConst['packagesext']):
-                continue
-
             if local_package in remote_packages:
 
                 local_filepath = \
@@ -2508,10 +2504,6 @@ class Server(ServerNoticeBoardMixin):
         # if a package is in the packages directory but not online,
         # we have to upload it we have local_packages and remote_packages
         for local_package in local_packages:
-
-            if local_package.endswith(etpConst['packagesext']):
-                continue
-
             if local_package in remote_packages:
                 local_filepath = self.Entropy.complete_local_package_path(
                     local_package, repo = repo)
@@ -2548,14 +2540,13 @@ class Server(ServerNoticeBoardMixin):
                         removal_queue.add(remote_package)
                         # then add to the download queue
                         download_queue.add(remote_package)
-            elif remote_package.endswith(etpConst['packagesext']):
-                continue
-            elif remote_package.endswith(EntropyUriHandler.TMP_TXC_FILE_EXT):
-                continue
             else:
                 # this means that the local package does not exist
                 # so, we need to download it
-                download_queue.add(remote_package)
+                 # ignore .tmp files
+                if not remote_package.endswith(
+                    EntropyUriHandler.TMP_TXC_FILE_EXT):
+                    download_queue.add(remote_package)
 
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
@@ -2565,6 +2556,20 @@ class Server(ServerNoticeBoardMixin):
             full_path = True)
         db_files = set([x for x in db_files if \
             (self.Entropy._get_branch_from_download_relative_uri(x) == branch)])
+
+        exclude = set()
+        for myfile in download_queue:
+            if myfile.endswith(etpConst['packagesext']):
+                if myfile not in db_files:
+                    exclude.add(myfile)
+        download_queue -= exclude
+
+        exclude = set()
+        for myfile in upload_queue:
+            if myfile.endswith(etpConst['packagesext']):
+                if myfile not in db_files:
+                    exclude.add(myfile)
+        upload_queue -= exclude
 
         exclude = set()
         for myfile in download_queue:
