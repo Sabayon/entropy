@@ -3370,7 +3370,7 @@ class Server(ServerNoticeBoardMixin):
                 package_rel, repo = repo)
             rel_dir = os.path.dirname(rel_path)
             obj = removal_map.setdefault(rel_dir, [])
-            base_pkg = os.path.basename(package)
+            base_pkg = os.path.basename(package_rel)
             obj.append(base_pkg)
             obj.append(base_pkg+etpConst['packagesmd5fileext'])
 
