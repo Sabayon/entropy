@@ -3380,6 +3380,9 @@ class Server(ServerNoticeBoardMixin):
             # remove remotely
             ##
 
+            errors = False
+            m_fine_uris = set()
+            m_broken_uris = set()
             for remote_dir, myqueue in removal_map.items():
 
                 self.Entropy.output(
@@ -3392,7 +3395,6 @@ class Server(ServerNoticeBoardMixin):
                     header = blue(" @@ ")
                 )
 
-                crippled_uri = EntropyTransceiver.get_uri_name(uri)
                 destroyer = self.TransceiverServerHandler(
                     self.Entropy,
                     [uri],
@@ -3402,37 +3404,43 @@ class Server(ServerNoticeBoardMixin):
                     remove = True,
                     repo = repo
                 )
-                errors, m_fine_uris, m_broken_uris = destroyer.go()
-                if errors:
-                    my_broken_uris = [
-                        (EntropyTransceiver.get_uri_name(x[0]), x[1]) \
-                            for x in m_broken_uris]
-
-                    reason = my_broken_uris[0][1]
-                    self.Entropy.output(
-                        "[branch:%s] %s: %s, %s: %s" % (
-                            brown(branch),
-                            blue(_("remove errors")),
-                            red(crippled_uri),
-                            blue(_("reason")),
-                            reason,
-                        ),
-                        importance = 1,
-                        type = "warning",
-                        header = brown(" !!! ")
-                    )
-                    branch_data['errors'] = True
+                xerrors, xm_fine_uris, xm_broken_uris = destroyer.go()
+                if xerrors:
                     errors = True
+                m_fine_uris.update(xm_fine_uris)
+                m_broken_uris.update(xm_broken_uris)
 
+            if errors:
+                my_broken_uris = [
+                    (EntropyTransceiver.get_uri_name(x[0]), x[1]) \
+                        for x in m_broken_uris]
+
+                reason = my_broken_uris[0][1]
+                crippled_uri = EntropyTransceiver.get_uri_name(uri)
                 self.Entropy.output(
-                    "[branch:%s] %s..." % (
+                    "[branch:%s] %s: %s, %s: %s" % (
                         brown(branch),
-                        blue(_("removing packages locally")),
+                        blue(_("remove errors")),
+                        red(crippled_uri),
+                        blue(_("reason")),
+                        reason,
                     ),
                     importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
+                    type = "warning",
+                    header = brown(" !!! ")
                 )
+                branch_data['errors'] = True
+                errors = True
+
+            self.Entropy.output(
+                "[branch:%s] %s..." % (
+                    brown(branch),
+                    blue(_("removing packages locally")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
 
             ##
             # remove locally
