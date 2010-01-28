@@ -1238,14 +1238,10 @@ def match_package(packages, multiMatch = False, multiRepo = False,
         return rc_results
     return 0
 
-def search_slotted_packages(slots, dbconn = None, Equo = None):
+def search_slotted_packages(slots, Equo = None):
 
     if Equo is None:
         Equo = EquoInterface()
-
-    dbclose = True
-    if dbconn:
-        dbclose = False
 
     found = False
     if not etpUi['quiet']:
@@ -1260,9 +1256,7 @@ def search_slotted_packages(slots, dbconn = None, Equo = None):
             print_info(blue("  #"+str(repo_number)) + \
                 bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
-        if dbclose:
-            dbconn = Equo.open_repository(repo)
-
+        dbconn = Equo.open_repository(repo)
         for slot in slots:
 
             results = dbconn.searchSlottedPackages(slot, atoms = True)
@@ -1318,14 +1312,10 @@ def search_package_sets(items, Equo = None):
 
     return 0
 
-def search_tagged_packages(tags, dbconn = None, Equo = None):
+def search_tagged_packages(tags, Equo = None):
 
     if Equo is None:
         Equo = EquoInterface()
-
-    dbclose = True
-    if dbconn:
-        dbclose = False
 
     found = False
     if not etpUi['quiet']:
@@ -1339,9 +1329,7 @@ def search_tagged_packages(tags, dbconn = None, Equo = None):
             print_info(blue("  #" + str(repo_number)) + \
                 bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
-        if dbclose:
-            dbconn = Equo.open_repository(repo)
-
+        dbconn = Equo.open_repository(repo)
         for tag in tags:
             results = dbconn.searchTaggedPackages(tag, atoms = True)
             found = True
@@ -1361,14 +1349,10 @@ def search_tagged_packages(tags, dbconn = None, Equo = None):
 
     return 0
 
-def search_rev_packages(revisions, dbconn = None, Equo = None):
+def search_rev_packages(revisions, Equo = None):
 
     if Equo is None:
         Equo = EquoInterface()
-
-    dbclose = True
-    if dbconn:
-        dbclose = False
 
     found = False
     if not etpUi['quiet']:
@@ -1382,9 +1366,7 @@ def search_rev_packages(revisions, dbconn = None, Equo = None):
             print_info(blue("  #" + str(repo_number)) + \
                 bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
-        if dbclose:
-            dbconn = Equo.open_repository(repo)
-
+        dbconn = Equo.open_repository(repo)
         for revision in revisions:
             results = dbconn.searchRevisionedPackages(revision)
             found = True
@@ -1404,14 +1386,10 @@ def search_rev_packages(revisions, dbconn = None, Equo = None):
 
     return 0
 
-def search_licenses(licenses, dbconn = None, Equo = None):
+def search_licenses(licenses, Equo = None):
 
     if Equo is None:
         Equo = EquoInterface()
-
-    dbclose = True
-    if dbconn:
-        dbclose = False
 
     found = False
     if not etpUi['quiet']:
@@ -1427,8 +1405,7 @@ def search_licenses(licenses, dbconn = None, Equo = None):
             print_info(blue("  #" + str(repo_number)) + \
                 bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
 
-        if dbclose:
-            dbconn = Equo.open_repository(repo)
+        dbconn = Equo.open_repository(repo)
 
         for mylicense in licenses:
 
@@ -1486,7 +1463,8 @@ def search_descriptions(descriptions, dbconn, Equo = None):
     for desc in descriptions:
 
         result = dbconn.searchPackagesByDescription(desc)
-        if not result: continue
+        if not result:
+            continue
 
         mydescdata[desc] = result
         for pkg in mydescdata[desc]:
