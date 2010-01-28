@@ -94,6 +94,15 @@ database-format|bz2
 # YOU are responsible of potential older packages inconsistencies due to this.
 # expiration-based-scope|disable
 
+# WARNING: P L E A S E   R E A D   T H I S   F I R S T
+# Enable support for packages -nonfree directory split. It uses the Entropy
+# Server license whitelist file to determine what licenses are free and what
+# not (so you also need to write one and place into your repository database
+# directory), see packages/packages.db.lic_whitelist.example.
+# It is actually disabled by default because older Entropy client versions
+# have troubles determining the correct storage directory and it's been fixed
+# since Entropy 0.99.30.
+# nonfree-packages-directory-support|disable
 
 # Online RSS support to track changes of the things happened on the database.
 # Here are basic settings, like the ability to enable/disable this feature or

@@ -454,6 +454,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'database_file_format': etpConst['etpdatabasefileformat'],
             'disabled_eapis': set(),
             'exp_based_scope': etpConst['expiration_based_scope'],
+            'nonfree_packages_dir_support': False, # disabled by default for now
             'sync_speed_limit': None,
             'rss': {
                 'enabled': etpConst['rss-feed'],
@@ -516,6 +517,15 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     data['exp_based_scope'] = True
                 else:
                     data['exp_based_scope'] = False
+
+            elif line.startswith("nonfree-packages-directory-support|") and \
+                (split_line_len == 2):
+
+                exp_opt = split_line[1].strip().lower()
+                if exp_opt in ("enable", "enabled", "true", "1", "yes"):
+                    data['nonfree_packages_dir_support'] = True
+                else:
+                    data['nonfree_packages_dir_support'] = False
 
             elif line.startswith("disabled-eapis|") and (split_line_len == 2):
 
@@ -3714,8 +3724,14 @@ class ServerRepositoryMixin:
 
         if repo is None:
             repo = self.default_repository
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
 
         def _package_injector_check_license(licenses):
+
+            # check if nonfree directory support is enabled, if not,
+            # always return True.
+            if not srv_set['nonfree_packages_dir_support']:
+                return True
 
             wl_licenses = self._get_whitelisted_licenses(repo = repo)
 
@@ -3749,7 +3765,6 @@ class ServerRepositoryMixin:
             {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         myserver_repos = list(srv_set['repositories'].keys())
 
         ### since we are handling more repositories, we need to make sure
