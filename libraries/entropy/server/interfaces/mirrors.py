@@ -2557,12 +2557,17 @@ class Server(ServerNoticeBoardMixin):
         db_files = set([x for x in db_files if \
             (self.Entropy._get_branch_from_download_relative_uri(x) == branch)])
 
+        """
+        ### actually do not exclude files not available locally. This makes
+        ### possible to repair broken tidy runs, downloading a pkg again
+        ### makes it get flagged as expired afterwards
         exclude = set()
         for myfile in download_queue:
             if myfile.endswith(etpConst['packagesext']):
                 if myfile not in db_files:
                     exclude.add(myfile)
         download_queue -= exclude
+        """
 
         exclude = set()
         for myfile in upload_queue:
