@@ -903,8 +903,8 @@ def search_orphaned_files(Equo = None):
                 tdbconn.insertContent(None, foundFiles)
 
     tdbconn.commitChanges()
-    tdbconn.cursor.execute('select count(file) from content')
-    totalfiles = tdbconn.cursor.fetchone()[0]
+    tdbconn._cursor().execute('select count(file) from content')
+    totalfiles = tdbconn._cursor().fetchone()[0]
 
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (_("Analyzed directories"),) )+ \
@@ -923,7 +923,7 @@ def search_orphaned_files(Equo = None):
     count = 0
 
     # create index on content
-    tdbconn.cursor.execute(
+    tdbconn._cursor().execute(
         "CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );")
 
     def gen_cont(idpackage):
@@ -948,12 +948,12 @@ def search_orphaned_files(Equo = None):
                 bold(str(atom)), back = True)
 
         # remove from foundFiles
-        tdbconn.cursor.executemany('delete from content where file = (?)',
+        tdbconn._cursor().executemany('delete from content where file = (?)',
             gen_cont(idpackage))
 
     tdbconn.commitChanges()
-    tdbconn.cursor.execute('select count(file) from content')
-    orpanedfiles = tdbconn.cursor.fetchone()[0]
+    tdbconn._cursor().execute('select count(file) from content')
+    orpanedfiles = tdbconn._cursor().fetchone()[0]
 
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (
@@ -966,15 +966,15 @@ def search_orphaned_files(Equo = None):
         print_info(red(" @@ ") + blue("%s: " % (
             _("Number of orphaned files"),) ) + bold(str(orpanedfiles)))
 
-    tdbconn.cursor.execute('select file from content order by file desc')
+    tdbconn._cursor().execute('select file from content order by file desc')
     if not etpUi['quiet']:
         fname = "/tmp/equo-orphans.txt"
         f_out = open(fname, "w")
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 
-    tdbconn.connection.text_factory = lambda x: const_convert_to_unicode(x)
-    myfile = tdbconn.cursor.fetchone()
+    tdbconn._connection().text_factory = lambda x: const_convert_to_unicode(x)
+    myfile = tdbconn._cursor().fetchone()
 
     sizecount = 0
     while myfile:
@@ -992,7 +992,7 @@ def search_orphaned_files(Equo = None):
         else:
             print_generic(myfile)
 
-        myfile = tdbconn.cursor.fetchone()
+        myfile = tdbconn._cursor().fetchone()
 
     humansize = entropy.tools.bytes_into_human(sizecount)
     if not etpUi['quiet']:

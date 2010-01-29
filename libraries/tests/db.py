@@ -8,6 +8,7 @@ from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
     const_convert_to_rawstring
 from entropy.core.settings.base import SystemSettings
+from entropy.misc import ParallelTask
 from entropy.db import EntropyRepository
 import tests._misc as _misc
 
@@ -347,6 +348,38 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.assertEqual(f_match, self.test_db.atomMatch(pkg_key))
             self.assertEqual(f_match, self.test_db.atomMatch(atom))
             self.assertEqual(f_match, self.test_db.atomMatch("~"+atom))
+
+    def test_db_multithread(self):
+
+        # insert/compare
+        test_pkg = _misc.get_test_entropy_package_tag()
+        data = self.Spm.extract_package_metadata(test_pkg)
+
+        def handle_pkg(xdata):
+            idpackage, rev, new_data = self.test_db.handlePackage(xdata)
+            db_data = self.test_db.getPackageData(idpackage)
+            self.assertEqual(new_data, db_data)
+
+        t1 = ParallelTask(handle_pkg, data)
+        t2 = ParallelTask(handle_pkg, data)
+        t3 = ParallelTask(handle_pkg, data)
+        t4 = ParallelTask(handle_pkg, data)
+        t1.start()
+        t2.start()
+        t3.start()
+        t4.start()
+
+        t1.join()
+        t2.join()
+        t3.join()
+        t4.join()
+
+        cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
+        self.assert_(len(cur_cache) > 0)
+        self.test_db._cleanup_stale_cur_conn(kill_all = True)
+        cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
+        self.assertEqual(len(cur_cache), 0)
+
 
     def test_db_import_export(self):
 
