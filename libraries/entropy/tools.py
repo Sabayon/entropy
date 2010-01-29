@@ -176,7 +176,7 @@ def get_traceback(tb_obj = None):
         #traceback.print_last(file = buf)
     return buf.getvalue()
 
-def print_exception(returndata = False, tb_data = None):
+def print_exception(returndata = False, tb_data = None, all_frame_data = False):
     """
     Print last Python exception and frame variables values (if available)
     to stdout.
@@ -185,6 +185,8 @@ def print_exception(returndata = False, tb_data = None):
     @type returndata: bool
     @keyword tb_data: Python traceback object
     @type tb_data: Python traceback instance
+    @keyword all_frame_data: print all variables in every frame
+    @type all_frame_data: bool
     @return: exception data
     @rtype: string
     """
@@ -196,12 +198,17 @@ def print_exception(returndata = False, tb_data = None):
     else:
         last_type, last_value, last_traceback = sys.exc_info()
         tb = last_traceback
+
+    stack = []
     while True:
         if not tb.tb_next:
             break
         tb = tb.tb_next
-    stack = []
+        if all_frame_data:
+            stack.append(tb.tb_frame)
+
     stack.append(tb.tb_frame)
+
     #if not returndata: print
     for frame in stack:
         if not returndata:
