@@ -19,7 +19,7 @@ import subprocess
 import socket
 
 from entropy.i18n import _
-from entropy.db import dbapi2, EntropyRepository
+from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.misc import TimeScheduled
 from entropy.const import etpConst, etpUi, const_setup_perms, \
@@ -29,6 +29,8 @@ from entropy.exceptions import RepositoryError, SystemDatabaseError, \
 from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold
 from entropy.dump import dumpobj
 from entropy.security import Repository as RepositorySecurity
+from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
+    DatabaseError
 
 import entropy.tools
 
@@ -57,7 +59,6 @@ class Repository:
         self.__big_sock_timeout = 10
         self.Entropy = entropy_client_instance
         self.Cacher = EntropyCacher()
-        self.__dbapi2 = dbapi2
         self.repo_ids = repo_identifiers
         self.force = force
         self.sync_errors = False
@@ -590,12 +591,8 @@ class Repository:
             mydbconn = self.Entropy.open_generic_database(dbfile,
                 xcache = False, indexing_override = False)
             mydbconn.validateDatabase()
-        except (
-            self.__dbapi2.OperationalError,
-            self.__dbapi2.IntegrityError,
-            SystemDatabaseError,
-            IOError,
-            OSError,):
+        except (OperationalError, IntegrityError, SystemDatabaseError,
+            IOError, OSError,):
                 mydbconn = None
         return mydbconn
 
@@ -646,15 +643,14 @@ class Repository:
             mydbconn = self.__get_eapi3_local_database(repo)
             if mydbconn is None:
                 raise AttributeError()
-        except (self.__dbapi2.DatabaseError, self.__dbapi2.IntegrityError,
-            self.__dbapi2.OperationalError, AttributeError,):
+        except (DatabaseError, IntegrityError, OperationalError,
+            AttributeError,):
             prepare_exit(eapi3_interface, session)
             return False
 
         try:
             myidpackages = mydbconn.listAllIdpackages()
-        except (self.__dbapi2.DatabaseError, self.__dbapi2.IntegrityError,
-            self.__dbapi2.OperationalError,):
+        except (DatabaseError, IntegrityError, OperationalError,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             return False
@@ -826,7 +822,7 @@ class Repository:
                 repo_metadata['treeupdates_digest'])
             mydbconn.bumpTreeUpdatesActions(
                 repo_metadata['treeupdates_actions'])
-        except (self.__dbapi2.Error,):
+        except (Error,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % (
@@ -845,7 +841,7 @@ class Repository:
         try:
             mydbconn.clearPackageSets()
             mydbconn.insertPackageSets(repo_metadata['sets'])
-        except (self.__dbapi2.Error,):
+        except (Error,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % (
@@ -897,7 +893,7 @@ class Repository:
                     idpackage = idpackage, do_commit = False,
                     formatted_content = True
                 )
-            except (self.__dbapi2.Error,) as err:
+            except (Error,) as err:
                 if etpUi['debug']:
                     entropy.tools.print_traceback()
                 self.Entropy.output("%s: %s" % (
@@ -932,7 +928,7 @@ class Repository:
             try:
                 mydbconn.removePackage(idpackage, do_cleanup = False,
                     do_commit = False)
-            except (self.__dbapi2.Error,):
+            except (Error,):
                 self.Entropy.output(
                     blue(_("repository error while removing packages")),
                     importance = 1, type = "warning",
@@ -1790,8 +1786,7 @@ class Repository:
         upd_rc = 0
         try:
             upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
-        except (self.__dbapi2.OperationalError, self.__dbapi2.IntegrityError,
-            self.__dbapi2.DatabaseError,):
+        except (OperationalError, IntegrityError, DatabaseError,):
             pass
         old_dbconn.closeDB()
         dbconn.closeDB()

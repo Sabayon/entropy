@@ -19,13 +19,12 @@ import time
 
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
-from entropy.exceptions import PermissionDenied, InvalidData, \
-    IncorrectParameter, SPMError
+from entropy.exceptions import PermissionDenied, InvalidData, SPMError
 from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred
 from entropy.misc import TimeScheduled
-from entropy.db import dbapi2, EntropyRepository
+from entropy.db import EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
@@ -39,8 +38,8 @@ class Package:
     def __init__(self, EquoInstance):
 
         if not isinstance(EquoInstance, Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            mytxt = "A valid Client instance or subclass is needed"
+            raise AttributeError(mytxt)
         self.Entropy = EquoInstance
 
         self._system_settings = SystemSettings()
@@ -2763,7 +2762,7 @@ class Package:
         self.pkgmeta.clear()
 
         if not isinstance(self.matched_atom, list):
-            raise IncorrectParameter("IncorrectParameter: "
+            raise AttributeError(
                 "matched_atom must be a list of tuples, not %s" % (
                     type(self.matched_atom,)
                 )

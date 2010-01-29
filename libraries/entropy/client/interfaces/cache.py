@@ -16,6 +16,7 @@ from entropy.exceptions import RepositoryError
 from entropy.output import red, darkred, darkgreen
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
+from entropy.db.exceptions import OperationalError
 
 class CacheMixin:
 
@@ -107,7 +108,7 @@ class CacheMixin:
                 continue # repo not available
             try:
                 sum_hashes += dbconn.checksum()
-            except self.dbapi2.OperationalError:
+            except OperationalError:
                 pass
         return sum_hashes
 

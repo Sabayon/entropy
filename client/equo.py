@@ -34,14 +34,6 @@ except ImportError:
     def _(x):
         return x
 
-
-dbapi2_exceptions = {}
-try:
-    from sqlite3 import dbapi2
-    dbapi2_exceptions['OperationalError'] = dbapi2.OperationalError
-except ImportError:
-    dbapi2_exceptions['OperationalError'] = None
-
 etp_exit_messages = {
     0: _("You should run equo --help"),
     1: _("You didn't run equo --help, did you?"),
@@ -837,12 +829,6 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         print_error("%s %s. %s." % (
             darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
-
-    if exc_class is dbapi2_exceptions['OperationalError']:
-        entropy.tools.print_exception(tb_data = exc_tb)
-        print_error("%s %s. %s." % (darkred(" * "), exc_instance,
-            _("Cannot continue. Your hard disk is probably faulty."),))
-        raise SystemExit(101)
 
     if exc_class is SystemError:
         print_error("%s %s. %s." % (

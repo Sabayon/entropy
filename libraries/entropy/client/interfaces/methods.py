@@ -28,10 +28,13 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_isstring
 from entropy.exceptions import RepositoryError, InvalidData, InvalidPackageSet,\
     IncorrectParameter, SystemDatabaseError
-from entropy.db import dbapi2, EntropyRepository
+from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
+
+from entropy.db.exceptions import IntegrityError, OperationalError, \
+    DatabaseError
 
 import entropy.tools
 
@@ -78,8 +81,7 @@ class RepositoryMixin:
                     type = "warning"
                 )
                 continue # repo not available
-            except (self.dbapi2.OperationalError,
-                self.dbapi2.DatabaseError, SystemDatabaseError,):
+            except (OperationalError, DatabaseError, SystemDatabaseError,):
 
                 if quiet:
                     continue
@@ -125,7 +127,7 @@ class RepositoryMixin:
                 continue
             try:
                 self._repodb_cache.pop(item).closeDB()
-            except self.dbapi2.OperationalError as err: # wtf!
+            except OperationalError as err: # wtf!
                 sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
                     err,))
         self._repodb_cache.clear()
@@ -152,7 +154,7 @@ class RepositoryMixin:
                 indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
-            except (self.dbapi2.OperationalError, TypeError,):
+            except (OperationalError, TypeError,):
                 pass
             self._repodb_cache[key] = dbconn
             return dbconn
@@ -207,7 +209,7 @@ class RepositoryMixin:
                 # only as root due to Portage
                 try:
                     updated = self.repository_packages_spm_sync(repoid, conn)
-                except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
+                except (OperationalError, DatabaseError,):
                     updated = False
                 if updated:
                     self.Cacher.discard()
@@ -517,9 +519,10 @@ class RepositoryMixin:
         try:
             # all branches admitted from external files
             myidpackages = mydbconn.listAllIdpackages()
-        except (AttributeError, self.dbapi2.DatabaseError, \
-            self.dbapi2.IntegrityError, self.dbapi2.OperationalError,):
-                return -2, atoms_contained
+        except (AttributeError, DatabaseError, IntegrityError,
+            OperationalError,):
+            return -2, atoms_contained
+
         if len(myidpackages) > 1:
             repodata[basefile]['smartpackage'] = True
         for myidpackage in myidpackages:
@@ -602,7 +605,7 @@ class RepositoryMixin:
                 self._add_plugin_to_client_repository(conn,
                     etpConst['clientdbid'])
                 # TODO: remove this in future, drop useless data from clientdb
-            except (self.dbapi2.DatabaseError,):
+            except (DatabaseError,):
                 entropy.tools.print_traceback(f = self.clientLog)
                 conn = load_db_from_ram()
             else:
@@ -1526,7 +1529,7 @@ class MiscMixin:
                 continue
             try:
                 data = dbconn.retrieveCategoryDescription(category)
-            except (self.dbapi2.OperationalError, self.dbapi2.IntegrityError,):
+            except (OperationalError, IntegrityError,):
                 continue
             if data:
                 break

@@ -37,6 +37,7 @@ from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class
 from entropy.qa import QAInterfacePlugin
 from entropy.security import Repository as RepositorySecurity
+from entropy.db.exceptions import ProgrammingError
 
 import entropy.tools
 import entropy.dump
@@ -3233,7 +3234,7 @@ class ServerRepositoryMixin:
         for item in self._server_dbcache:
             try:
                 self._server_dbcache[item].closeDB()
-            except self.dbapi2.ProgrammingError: # already closed?
+            except ProgrammingError: # already closed?
                 pass
         self._server_dbcache.clear()
 
@@ -4557,8 +4558,6 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
         self._server_dbcache = {}
         self.SystemSettings = SystemSettings()
         self.community_repo = community_repo
-        from entropy.db import dbapi2
-        self.dbapi2 = dbapi2 # export for third parties
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
         self.indexing = False

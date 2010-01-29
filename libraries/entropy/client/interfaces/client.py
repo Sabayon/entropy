@@ -14,7 +14,6 @@ import os
 import sys
 from entropy.core import Singleton
 from entropy.output import TextInterface, bold, red, darkred, blue
-from entropy.db import dbapi2
 from entropy.client.interfaces.loaders import LoadersMixin
 from entropy.client.interfaces.cache import CacheMixin
 from entropy.client.interfaces.dep import CalculatorsMixin
@@ -585,7 +584,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.__instance_destroyed = False
-        self.dbapi2 = dbapi2 # export for third parties
         self.FileUpdates = None
         self.validRepositories = []
         self.UGC = None

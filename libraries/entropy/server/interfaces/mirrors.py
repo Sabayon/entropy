@@ -23,9 +23,9 @@ from entropy.i18n import _
 from entropy.misc import RSS
 from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
-from entropy.db import dbapi2
 from entropy.security import Repository as RepositorySecurity
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
+from entropy.db.exceptions import Error
 
 import entropy.tools
 import entropy.dump
@@ -1616,7 +1616,7 @@ class Server(ServerNoticeBoardMixin):
             # clear first
             dbconn.removeTreeUpdatesActions(repo)
             dbconn.insertTreeUpdatesActions(all_actions, repo)
-        except dbapi2.Error as err:
+        except Error as err:
             entropy.tools.print_traceback()
             mytxt = "%s, %s: %s. %s" % (
                 _("Troubles with treeupdates"),

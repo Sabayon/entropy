@@ -1090,7 +1090,8 @@ class QAInterface(EntropyPluginStore):
         @return: package validity
         @rtype: bool
         """
-        from entropy.db import EntropyRepository, dbapi2
+        from entropy.db import EntropyRepository
+        from entropy.db.exceptions import Error
         fd, tmp_path = tempfile.mkstemp()
         dump_rc = entropy.tools.dump_entropy_metadata(pkg_path, tmp_path)
         if not dump_rc:
@@ -1113,7 +1114,7 @@ class QAInterface(EntropyPluginStore):
                 metadata = etp_repo_meta)
             dbc.add_plugin(repo_plug)
 
-        except dbapi2.Error:
+        except Error:
             os.remove(tmp_path)
             os.close(fd)
             return False
@@ -1129,7 +1130,7 @@ class QAInterface(EntropyPluginStore):
                 for idpackage in dbc.listAllIdpackages():
                     dbc.retrieveContent(idpackage, extended = True,
                         formatted = True, insert_formatted = True)
-            except dbapi2.Error:
+            except Error:
                 valid = False
 
         dbc.closeDB()

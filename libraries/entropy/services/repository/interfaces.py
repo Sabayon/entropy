@@ -18,6 +18,7 @@ from entropy.const import etpConst
 from entropy.misc import TimeScheduled
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
+from entropy.db.exceptions import ProgrammingError
 
 import entropy.dump
 import entropy.tools
@@ -37,8 +38,6 @@ class Server(SocketHost):
 
         from entropy.services.repository.commands import Repository
         self.RepositoryCommands = Repository
-        from entropy.db import dbapi2
-        self.dbapi2 = dbapi2
         from entropy.client.interfaces import Client
         self.Entropy = Client(noclientdb = 2)
         self.__cacher = EntropyCacher()
@@ -249,7 +248,7 @@ class Server(SocketHost):
             dbc.closeDB()
         except KeyError:
             pass
-        except self.dbapi2.ProgrammingError:
+        except ProgrammingError:
             # they've been opened by the Commands Processor
             self.syscache['db_trashed'].add(dbc)
 

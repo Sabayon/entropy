@@ -52,6 +52,7 @@ from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.plugin_store import EntropyRepositoryPluginStore
+from entropy.db.exceptions import IntegrityError, Error, OperationalError
 
 import entropy.tools
 import entropy.dump
@@ -428,7 +429,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             raise AttributeError("valid database path needed")
 
         self.__write_mutex = self.threading.RLock()
-        self.dbapi2 = dbapi2
         # setup service interface
         self.readOnly = readOnly
 
@@ -437,7 +437,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.live_cache = {}
 
         # create connection
-        self.connection = self.dbapi2.connect(dbFile, timeout=300.0,
+        self.connection = dbapi2.connect(dbFile, timeout=300.0,
             check_same_thread = False)
         self.cursor = self.connection.cursor()
 
@@ -466,7 +466,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     else:
                         structure_update = True
 
-            except self.dbapi2.Error:
+            except Error:
                 self.cursor.close()
                 self.connection.close()
                 raise
@@ -562,7 +562,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if force or (not self.readOnly):
             try:
                 self.connection.commit()
-            except self.dbapi2.Error:
+            except Error:
                 pass
 
         if no_plugins:
@@ -585,7 +585,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         for table in self.listAllTables():
             try:
                 self.cursor.execute("DROP TABLE %s" % (table,))
-            except self.dbapi2.OperationalError:
+            except OperationalError:
                 # skip tables that can't be dropped
                 continue
         self.cursor.executescript(my.get_init())
@@ -2533,7 +2533,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             try:
                 self.cursor.execute('INSERT into counters VALUES (?,?,?)',
                     (my_uid, idpackage, branch,))
-            except self.dbapi2.IntegrityError:
+            except IntegrityError:
                 # we have a PRIMARY KEY we need to remove
                 self._migrateCountersTable()
                 self.cursor.execute('INSERT into counters VALUES (?,?,?)',
@@ -2612,7 +2612,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.cursor.execute("""
                 UPDATE counters SET counter = (?) %s
                 WHERE idpackage = (?)""" % (branchstring,), insertdata)
-            except self.dbapi2.Error:
+            except Error:
                 if self.dbname == etpConst['clientdbid']:
                     raise
             self.commitChanges()
@@ -2761,7 +2761,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             else:
                 counter = mycounter-1
 
-        except self.dbapi2.Error:
+        except Error:
             counter = -2 # first available counter
 
         return counter
@@ -3799,7 +3799,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             WHERE idpackage = (?) LIMIT 1
             """, (idpackage,))
             data = cur.fetchone()
-        except self.dbapi2.OperationalError:
+        except OperationalError:
             # FIXME: backward compat
             cur = self.cursor.execute("""
             SELECT sha1, sha256, sha512 FROM packagesignatures
@@ -4495,7 +4495,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 break
 
-            except self.dbapi2.OperationalError:
+            except OperationalError:
 
                 if did_try:
                     raise
@@ -5986,7 +5986,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if order_by:
                 return self._cur2list(cur)
             return self._cur2set(cur)
-        except self.dbapi2.OperationalError:
+        except OperationalError:
             if order_by:
                 return []
             return set()
@@ -6154,7 +6154,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.cursor.execute("""
             SELECT setting_value FROM settings WHERE setting_name = (?)
             """, (setting_name,))
-        except self.dbapi2.Error:
+        except Error:
             raise KeyError
 
         setting = self.cursor.fetchone()
@@ -6687,7 +6687,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 SELECT repositoryname FROM installedtable
                 WHERE idpackage = (?) LIMIT 1""", (idpackage,))
                 return cur.fetchone()[0]
-            except (self.dbapi2.OperationalError, TypeError,):
+            except (OperationalError, TypeError,):
                 return None
 
     def dropInstalledPackageFromStore(self, idpackage):
@@ -6716,7 +6716,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 DELETE FROM dependstable WHERE idpackage = (?)
                 """, (idpackage,))
                 return 0
-            except (self.dbapi2.OperationalError,):
+            except (OperationalError,):
                 return 1 # need reinit
 
     def _createDependsTable(self):
@@ -6746,7 +6746,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             cur = self.cursor.execute("""
             SELECT iddependency FROM dependstable WHERE iddependency = -1
             """)
-        except (self.dbapi2.OperationalError,):
+        except (OperationalError,):
             return False # table does not exist, please regenerate and re-run
 
         status = cur.fetchone()
@@ -6796,7 +6796,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if not mydata:
                 return ""
             return mydata[0]
-        except (self.dbapi2.Error, TypeError, IndexError,):
+        except (Error, TypeError, IndexError,):
             return ""
 
     def retrieveBranchMigration(self, to_branch):
@@ -6859,7 +6859,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             for index in indexes:
                 try:
                     self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
-                except self.dbapi2.Error:
+                except Error:
                     continue
 
     def listAllIndexes(self, only_entropy = True):
@@ -6921,7 +6921,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self.cursor.execute("""
                     CREATE INDEX IF NOT EXISTS packagesetsindex
                     ON packagesets ( setname )""")
-                except self.dbapi2.OperationalError:
+                except OperationalError:
                     pass
 
     def _createProvidedLibsIndex(self):
@@ -6936,7 +6936,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
                         ON provided_libs ( library, elfclass );
                     """)
-                except self.dbapi2.OperationalError:
+                except OperationalError:
                     pass
 
     def _createAutomergefilesIndex(self):
@@ -6949,7 +6949,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
                         ON automergefiles ( configfile, md5 );
                     """)
-                except self.dbapi2.OperationalError:
+                except OperationalError:
                     pass
 
     def _createNeededIndex(self):
@@ -7390,7 +7390,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             try:
                 self._generateProvidedLibsMetadata()
-            except (IOError, OSError, self.dbapi2.Error) as err:
+            except (IOError, OSError, Error) as err:
                 mytxt = "%s: %s: [%s]" % (
                     bold(_("ATTENTION")),
                     red("cannot generate provided_libs metadata"),

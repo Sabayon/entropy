@@ -16,6 +16,8 @@ from entropy.misc import Lifo
 from entropy.cache import EntropyCacher
 from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
+from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
+    DatabaseError
 
 import entropy.tools
 
@@ -282,7 +284,7 @@ class CalculatorsMixin:
                         raise
                     use_cache = False
                     continue
-                except dbconn.dbapi2.OperationalError:
+                except OperationalError:
                     # repository fooked, skip!
                     break
                 break
@@ -536,7 +538,7 @@ class CalculatorsMixin:
             satisfied_data = tmp_satisfied_data
             self.SystemSettings[satisfied_kw] = satisfied_data
 
-        intf_error = self.dbapi2.InterfaceError
+        intf_error = InterfaceError
         etp_cmp = entropy.tools.entropy_compare_versions
         etp_get_rev = entropy.tools.dep_get_entropy_revision
 
@@ -1559,7 +1561,7 @@ class CalculatorsMixin:
                 # db may be corrupted, we cannot deal with it here
                 idpackages = [x for x in dbconn.listAllIdpackages(
                     order_by = 'atom') if dbconn.idpackageValidator(x)[0] != -1]
-            except dbconn.dbapi2.OperationalError:
+            except OperationalError:
                 continue
             count = 0
             maxlen = len(idpackages)
@@ -1584,8 +1586,7 @@ class CalculatorsMixin:
                 try:
                     key, slot = dbconn.retrieveKeySlot(idpackage)
                     matches = self.clientDbconn.searchKeySlot(key, slot)
-                except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError,
-                    self.dbapi2.OperationalError,):
+                except (DatabaseError, IntegrityError, OperationalError,):
 
                     do_break = True
                     continue
@@ -1671,7 +1672,7 @@ class CalculatorsMixin:
         # get all the installed packages
         try:
             idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
-        except self.dbapi2.OperationalError:
+        except OperationalError:
             # client db is broken!
             raise SystemDatabaseError("installed packages database is broken")
 
@@ -1710,7 +1711,7 @@ class CalculatorsMixin:
                         extendedResults = True,
                         useCache = use_match_cache
                     )
-                except self.dbapi2.OperationalError:
+                except OperationalError:
                     # ouch, but don't crash here
                     do_continue = True
                     break

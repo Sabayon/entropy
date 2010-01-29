@@ -42,6 +42,8 @@ from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
 
+from entropy.db.exceptions import ProgrammingError
+
 # Sulfur Imports
 import gtk, gobject
 from sulfur.packages import EntropyPackages, Queue
@@ -1215,7 +1217,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         while count:
             try:
                 self.show_packages(on_init = on_init)
-            except self.Equo.dbapi2.ProgrammingError as e:
+            except ProgrammingError as e:
                 self.set_status_ticker("%s: %s, %s" % (
                         _("Error during list population"),
                         e,
@@ -1702,7 +1704,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     "user_unmasked", "downgrade"):
                     try:
                         self.etpbase.get_groups(k)
-                    except self.Equo.dbapi2.ProgrammingError:
+                    except ProgrammingError:
                         continue
                 return False
             gobject.idle_add(do_more_caching)

@@ -28,7 +28,6 @@ from entropy.exceptions import RepositoryError, InvalidPackageSet
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask, TimeScheduled
 from entropy.i18n import _, _LOCALE
-from entropy.db import dbapi2
 from entropy.tools import dep_getkey, print_traceback
 from entropy.const import const_get_stringtype
 
@@ -41,6 +40,8 @@ from sulfur.entropyapi import Equo
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
     PkgInfoMenu, UGCAddMenu
 from sulfur.event import SulfurSignals
+
+from entropy.db.exceptions import ProgrammingError, Error as DbError
 
 class EntropyPackageViewModelInjector:
 
@@ -136,7 +137,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         for po in packages:
             try:
                 mycat = po.cat
-            except dbapi2.Error:
+            except DbError:
                 continue
             objs = categories.setdefault(mycat, [])
             objs.append(po)
@@ -183,7 +184,7 @@ class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
         for po in packages:
             try:
                 myinitial = po.onlyname.lower()[0]
-            except dbapi2.Error:
+            except DbError:
                 continue
             objs = categories.setdefault(myinitial, [])
             objs.append(po)
@@ -217,7 +218,7 @@ class DownloadSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             try:
                 d1 = obj_a.downloads
                 d2 = obj_b.downloads
-            except dbapi2.Error:
+            except DbError:
                 return 0
             if d1 == d2:
                 return 0
@@ -242,7 +243,7 @@ class VoteSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             try:
                 d1 = obj_a.votefloat
                 d2 = obj_b.votefloat
-            except dbapi2.Error:
+            except DbError:
                 return 0
             if d1 == d2:
                 return 0
@@ -272,7 +273,7 @@ class RepoSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             try:
                 d1 = obj_a.repoid
                 d2 = obj_b.repoid
-            except dbapi2.Error:
+            except DbError:
                 return 0
             if d1 == d2:
                 return 0
@@ -296,7 +297,7 @@ class DateSortPackageViewModelInjector(DefaultPackageViewModelInjector):
             try:
                 d1 = obj_a.epoch
                 d2 = obj_b.epoch
-            except dbapi2.Error:
+            except DbError:
                 return 0
             if d1 == d2:
                 return 0
@@ -424,7 +425,7 @@ class GroupSortPackageViewModelInjector(DefaultPackageViewModelInjector):
         for po in packages:
             try:
                 cat = po.cat
-            except dbapi2.Error:
+            except DbError:
                 continue
             found = False
             for cats in group_data:
@@ -1913,7 +1914,7 @@ class EntropyPackageView:
         if obj:
             try:
                 return not obj.onlyname.startswith(key)
-            except self.Equo.dbapi2.ProgrammingError:
+            except ProgrammingError:
                 pass
         return True
 
@@ -1967,7 +1968,7 @@ class EntropyPackageView:
             try:
                 mydata = getattr( obj, property )
                 cell.set_property('markup', mydata)
-            except self.Equo.dbapi2.ProgrammingError:
+            except ProgrammingError:
                 self.do_refresh_view = True
             if obj.color:
                 self.set_line_status(obj, cell)
@@ -2016,7 +2017,7 @@ class EntropyPackageView:
         try:
             repoid = pkg.repoid_clean
             key = pkg.key
-        except self.Equo.dbapi2.ProgrammingError:
+        except ProgrammingError:
             return
 
         cache_key = (key, repoid,)
@@ -2079,7 +2080,7 @@ class EntropyPackageView:
         try:
             repoid = pkg.repoid
             sync_item = (pkg.key, repoid)
-        except self.Equo.dbapi2.ProgrammingError:
+        except ProgrammingError:
             return
         if sync_item in self._ugc_metadata_sync_exec_cache:
             return
@@ -2121,7 +2122,7 @@ class EntropyPackageView:
                 icon_theme = gtk.icon_theme_get_default()
                 try:
                     name = pkg.onlyname
-                except self.Equo.dbapi2.ProgrammingError:
+                except ProgrammingError:
                     name = "N/A"
                 if name is None:
                     name = "N/A"
@@ -2178,7 +2179,7 @@ class EntropyPackageView:
                     if inst_status is None:
                         try:
                             inst_status = pkg.install_status
-                        except self.Equo.dbapi2.ProgrammingError:
+                        except ProgrammingError:
                             inst_status = 0
                         self.__install_statuses[pkg.matched_atom] = inst_status
 

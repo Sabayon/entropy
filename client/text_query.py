@@ -20,6 +20,7 @@ from entropy.misc import Lifo
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
 import entropy.tools
+from entropy.db.exceptions import DatabaseError
 
 
 def query(options):
@@ -1156,7 +1157,7 @@ def search_package(packages, Equo = None, get_results = False,
                             bold("\t" + str(found_len)) + \
                             red(" %s" % (_("entries"),) ))
 
-            except Equo.dbapi2.DatabaseError:
+            except DatabaseError:
                 continue
 
         return my_found
