@@ -22,14 +22,23 @@
     I{EntropyRepository} is the sqlite3 implementation of the repository
     interface, as written above.
 
-    @todo: migrate to "_" (underscore) convention
-
 """
 import sys
 import os
 import shutil
 import hashlib
 import time
+
+try:
+    from sqlite3 import dbapi2
+except ImportError as err:
+    raise SystemError(
+        "%s. %s: %s" % (
+            _("Entropy needs Python compiled with sqlite3 support"),
+            _("Error"),
+            err,
+        )
+    )
 
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
@@ -43,19 +52,10 @@ from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.plugin_store import EntropyRepositoryPluginStore
+
 import entropy.tools
 import entropy.dump
 
-try:
-    from sqlite3 import dbapi2
-except ImportError as err:
-    raise SystemError(
-        "%s. %s: %s" % (
-            _("Entropy needs Python compiled with sqlite3 support"),
-            _("Error"),
-            err,
-        )
-    )
 
 class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
