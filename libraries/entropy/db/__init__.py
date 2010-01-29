@@ -390,7 +390,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     import threading
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
-        dbname = 'etpdb:', indexing = True, skipChecks = False):
+        dbname = etpConst['serverdbid'], indexing = True, skipChecks = False):
 
         """
         EntropyRepository constructor.
