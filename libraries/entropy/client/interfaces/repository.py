@@ -1996,7 +1996,7 @@ class Repository:
                             shutil.copy2(from_mypath, to_mypath)
                             my_show_file_unpack(myfile)
                             os.remove(from_mypath)
-                        except (shutil.Error, IOError,):
+                        except (shutil.Error, IOError, OSError,):
                             continue
                         continue
 
