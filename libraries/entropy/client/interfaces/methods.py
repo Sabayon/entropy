@@ -199,7 +199,7 @@ class RepositoryMixin:
                 xcache = xcache,
                 indexing = indexing
             )
-            self._add_plugin_to_client_repository(conn)
+            self._add_plugin_to_client_repository(conn, repoid)
 
         if (repoid not in self._treeupdates_repos) and \
             (entropy.tools.is_root()) and \
@@ -543,9 +543,11 @@ class RepositoryMixin:
         # make sure settings are in sync
         self.SystemSettings.clear()
 
-    def _add_plugin_to_client_repository(self, entropy_client_repository):
+    def _add_plugin_to_client_repository(self, entropy_client_repository,
+        repo_id):
         etp_db_meta = {
             'output_interface': self,
+            'repo_name': repo_id,
         }
         repo_plugin = ClientEntropyRepositoryPlugin(self,
             metadata = etp_db_meta)
@@ -573,7 +575,8 @@ class RepositoryMixin:
                 header = bold("!!!"),
             )
             m_conn = self.open_memory_database(dbname = etpConst['clientdbid'])
-            self._add_plugin_to_client_repository(m_conn)
+            self._add_plugin_to_client_repository(m_conn,
+                etpConst['clientdbid'])
             return m_conn
 
         # if we are in unit testing mode (triggered by unit testing
@@ -596,7 +599,8 @@ class RepositoryMixin:
                     dbname = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing
                 )
-                self._add_plugin_to_client_repository(conn)
+                self._add_plugin_to_client_repository(conn,
+                    etpConst['clientdbid'])
                 # TODO: remove this in future, drop useless data from clientdb
             except (self.dbapi2.DatabaseError,):
                 entropy.tools.print_traceback(f = self.clientLog)
@@ -684,7 +688,7 @@ class RepositoryMixin:
             indexing = indexing,
             skipChecks = skipChecks
         )
-        self._add_plugin_to_client_repository(conn)
+        self._add_plugin_to_client_repository(conn, dbname)
         return conn
 
     def open_memory_database(self, dbname = None):
@@ -698,7 +702,7 @@ class RepositoryMixin:
             indexing = False,
             skipChecks = True
         )
-        self._add_plugin_to_client_repository(dbc)
+        self._add_plugin_to_client_repository(dbc, dbname)
         dbc.initializeDatabase()
         return dbc
 
