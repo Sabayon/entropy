@@ -2595,7 +2595,8 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if 'key' in obj and 'slot' in obj:
-                    atom_string = "%s:%s" % (obj['key'], obj['slot'],)
+                    atom_string = "%s%s%s" % (obj['key'],
+                        etpConst['entropyslotprefix'], obj['slot'],)
                     atoms.append(atom_string)
             if atoms:
                 status = self.on_addUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
@@ -2608,7 +2609,8 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if 'key' in obj and 'slot' in obj:
-                    atom_string = "%s:%s" % (obj['key'], obj['slot'],)
+                    atom_string = "%s%s%s" % (obj['key'],
+                        etpConst['entropyslotprefix'], obj['slot'],)
                     atoms.append(atom_string)
             if atoms:
                 status = self.on_removeUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)

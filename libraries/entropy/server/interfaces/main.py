@@ -2959,7 +2959,7 @@ class ServerQAMixin:
             key, slot = (entropy.tools.dep_getkey(installed_package),
                 self.Spm().get_installed_package_metadata(installed_package,
                     "SLOT"),)
-            pkg_atom = "%s:%s" % (key, slot,)
+            pkg_atom = "%s%s%s" % (key, etpConst['entropyslotprefix'], slot,)
             tree_atom = self.Spm().match_package(pkg_atom)
             if not tree_atom:
                 not_found[installed_package] = pkg_atom
@@ -3201,9 +3201,9 @@ class ServerQAMixin:
                         header = brown("       => ")
                     )
 
-            pkgstring_list = sorted(["%s:%s" % (
-                entropy.tools.dep_getkey(x[0]), x[1],) for x \
-                    in sorted(packages)])
+            pkgstring_list = sorted(["%s%s%s" % (
+                entropy.tools.dep_getkey(x[0]), etpConst['entropyslotprefix'],
+                    x[1],) for x in sorted(packages)])
             if pkg_list_path is not None:
                 with open(pkg_list_path, "w") as pkg_f:
                     for pkgstr in pkgstring_list:

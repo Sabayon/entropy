@@ -974,7 +974,8 @@ class QAInterface(EntropyPluginStore):
                                 rdepends[(needed, elfclass)] = set()
                             if (needed, elfclass) not in idpackage_map:
                                 idpackage_map[(needed, elfclass)] = set()
-                            keyslot = "%s:%s" % (key, slot,)
+                            keyslot = "%s%s%s" % (key,
+                                etpConst['entropyslotprefix'], slot,)
                             obj = idpackage_map_reverse.setdefault(
                                 keyslot, set())
                             obj.add((needed, elfclass,))

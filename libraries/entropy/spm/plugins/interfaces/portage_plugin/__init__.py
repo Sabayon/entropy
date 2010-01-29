@@ -1086,8 +1086,9 @@ class PortagePlugin(SpmPlugin):
 
         matched_slot = self.get_package_metadata(matched_atom, "SLOT")
         try:
-            inst_key = "%s:%s" % (
+            inst_key = "%s%s%s" % (
                 entropy.tools.dep_getkey(package),
+                etpConst['entropyslotprefix'],
                 matched_slot,
             )
             installed_atom = self.match_installed_package(inst_key)

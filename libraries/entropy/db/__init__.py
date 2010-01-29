@@ -3878,11 +3878,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT categories.category || "/" || baseinfo.name || ":" ||
+        SELECT categories.category || "/" || baseinfo.name || "%s" ||
         baseinfo.slot FROM baseinfo,categories
         WHERE baseinfo.idpackage = (?) AND
         baseinfo.idcategory = categories.idcategory LIMIT 1
-        """, (idpackage,))
+        """ % (etpConst['entropyslotprefix'],), (idpackage,))
         data = cur.fetchone()
         if data:
             return data[0]

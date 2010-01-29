@@ -1460,7 +1460,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 for c_idpackage in c_idpackages:
                     key, slot = self.Equo.clientDbconn.retrieveKeySlot(
                         c_idpackage)
-                    key_slot = "%s:%s" % (key, slot,)
+                    key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
+                        slot,)
                     match = self.Equo.atom_match(key, matchSlot = slot)
                     cmpstat = 0
                     if match[0] != -1:

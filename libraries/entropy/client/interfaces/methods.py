@@ -1850,7 +1850,8 @@ class MatchMixin:
     def unmask_match_by_keyslot(self, match, dry_run = False):
         m_id, m_repo = match
         dbconn = self.open_repository(m_repo)
-        keyslot = "%s:%s" % dbconn.retrieveKeySlot(m_id)
+        key, slot = dbconn.retrieveKeySlot(m_id)
+        keyslot = "%s%s%s" % (key, etpConst['entropyslotprefix'], slot,)
         return self.unmask_match_generic(match, keyslot, dry_run = dry_run)
 
     def mask_match_by_atom(self, match, dry_run = False):
@@ -1862,7 +1863,8 @@ class MatchMixin:
     def mask_match_by_keyslot(self, match, dry_run = False):
         m_id, m_repo = match
         dbconn = self.open_repository(m_repo)
-        keyslot = "%s:%s" % dbconn.retrieveKeySlot(m_id)
+        key, slot = dbconn.retrieveKeySlot(m_id)
+        keyslot = "%s%s%s" % (key, etpConst['entropyslotprefix'], slot)
         return self.mask_match_generic(match, keyslot, dry_run = dry_run)
 
     def unmask_match_generic(self, match, keyword, dry_run = False):

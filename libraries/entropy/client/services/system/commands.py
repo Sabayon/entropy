@@ -10,6 +10,7 @@
 
 """
 
+from entropy.const import etpConst
 from entropy.client.services.ugc.commands import Base
 
 
@@ -369,7 +370,8 @@ class Repository(Client):
         cmd = "%s %s %s" % (
             session_id,
             'srvrepo:remove_entropy_packages',
-            ','.join(["%s:%s" % (str(x[0]), str(x[1]),) for x in matched_atoms]), # 1:repoid,2:repoid
+            ','.join(["%s%s%s" % (str(x[0]), etpConst['entropyslotprefix'],
+                str(x[1]),) for x in matched_atoms]), # 1:repoid,2:repoid
         )
         return self.do_generic_handler(cmd, session_id)
 

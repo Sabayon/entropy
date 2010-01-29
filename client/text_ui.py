@@ -1969,7 +1969,8 @@ def dependencies_test():
                 c_idpackages = E_CLIENT.clientDbconn.searchIdpackageFromIddependency(iddep)
                 for c_idpackage in c_idpackages:
                     key, slot = E_CLIENT.clientDbconn.retrieveKeySlot(c_idpackage)
-                    key_slot = "%s:%s" % (key, slot,)
+                    key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
+                        slot,)
                     match = E_CLIENT.atom_match(key, matchSlot = slot)
 
                     cmpstat = 0
