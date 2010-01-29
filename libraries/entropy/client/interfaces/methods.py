@@ -499,7 +499,7 @@ class RepositoryMixin:
         atoms_contained = []
         basefile = os.path.basename(pkg_file)
         db_dir = tempfile.mkdtemp()
-        dbfile = os.path.join(db_dir, "packages.db")
+        dbfile = os.path.join(db_dir, etpConst['etpdatabasefile'])
         dump_rc = entropy.tools.dump_entropy_metadata(pkg_file, dbfile)
         if not dump_rc:
             return -1, atoms_contained
@@ -524,7 +524,7 @@ class RepositoryMixin:
             repodata[basefile]['smartpackage'] = True
         for myidpackage in myidpackages:
             compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
-            if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
+            if compiled_arch.find("/"+etpConst['currentarch']+"/") == -1:
                 return -3, atoms_contained
             atoms_contained.append((int(myidpackage), basefile))
 
