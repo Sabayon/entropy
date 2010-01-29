@@ -1,3 +1,15 @@
+commit 4fc5c3c90d28128a438f7c3c8832f8cf29771142
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 21:31:48 2010 +0100
+
+    [entropy.client] fix undefined reference
+
+commit 804be5e793698390d66db50b353a3310cd921487
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 21:22:07 2010 +0100
+
+    Update ChangeLog for version 0.99.31
+
 commit 9dca344ebb80929fc8b530ae7ba64011af38dd89
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 29 20:47:26 2010 +0100
