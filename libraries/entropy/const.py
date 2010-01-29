@@ -538,9 +538,9 @@ def const_default_settings(rootdir):
         },
 
         'clientserverrepoid': "__system__",
-        'clientdbid': "client",
-        'serverdbid': "etpdb:",
-        'genericdbid': "generic",
+        'clientdbid': "__client__",
+        'serverdbid': "__etpdb:",
+        'genericdbid': "__generic__",
         'systemreleasefile': "/etc/sabayon-release",
 
         # these are constants, for real settings
