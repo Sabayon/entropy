@@ -1,3 +1,186 @@
+commit 9dca344ebb80929fc8b530ae7ba64011af38dd89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 20:47:26 2010 +0100
+
+    [todo] update TODO
+
+commit 200a9e6efb14d7f66d251bfaff1eb49353a33866
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 20:46:17 2010 +0100
+
+    [entropy] make use of entropy.db.exceptions classes
+
+commit 988788cc7a2f325e76e812d3d05b9473628ae7e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 16:26:14 2010 +0100
+
+    [entropy.db] module imports reordering
+
+commit fc88cea45d5435b2710dfb70e381fb2d50e4dfda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 16:25:27 2010 +0100
+
+    [entropy.db.exceptions] introduce wrapped EntropyRepository exception classes
+
+commit 99b532b8d47dee9336037ce9f21ecbc7bc9464a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 16:23:39 2010 +0100
+
+    [todo] update TODO
+
+commit 6cccfa353d41a5fbc18fb716b7c2f2398cbf2837
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 16:22:40 2010 +0100
+
+    [todo] update TODO
+
+commit ac113e682380c6ec60d06960cb5da8c078a469bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 14:58:18 2010 +0100
+
+    [entropy.client.interfaces.dep] disable previously added workaround, we now have full stack frame data
+
+commit 2fc1c3db17222fed92cd6b1d879ed4a679e7b99c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 14:30:16 2010 +0100
+
+    [tests] fix test_db_insert_compare_match_tag test
+
+commit 5f18d8fb0f75605edc67883eafdf3c013b3f4ca8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 14:05:09 2010 +0100
+
+    [entropy.const] make use of etpConst['entropyslotprefix']
+
+commit 632450fe79195880ecd2bb319b771810705ba3a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 14:00:56 2010 +0100
+
+    [po] update translations template
+
+commit 94bad28f78cb01a01b693a6ca1ff9372cb8994fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 13:41:50 2010 +0100
+
+    [equo] when grabbing exception info, grab variables information in every frame
+
+commit 8f6337f29776181aaad817f9a5ca7c89f6c1cfd7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 13:41:23 2010 +0100
+
+    [entropy.tools] improve print_exception, make possible to print variables in every frame
+
+commit f234af9428b3f1b48ef0642408d39335346dcdbf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 13:40:35 2010 +0100
+
+    [sulfur] when grabbing exception info, grab variables information in every frame
+
+commit 4ca2bcdf1ee906a34cf5cb58928579edce4befc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 12:27:36 2010 +0100
+
+    [sulfur] add missing variable reference
+
+commit 5b1241717ecd3af9d0bbc1ce2baddb867ec23e71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 12:11:32 2010 +0100
+
+    [sulfur] fix exception data file creation when ExceptionDialog is called
+
+commit 944c47dbc88f188976cffe01e1fcb705a87d1ce0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 11:55:53 2010 +0100
+
+    [entropy.client.interfaces.dep] code style update
+
+commit c2ad1c8cb581bbb0427072831b2b267f4d4975c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 11:52:33 2010 +0100
+
+    [entropy.client] also catch OSError exception
+
+commit 07d3456e985b741dd27dc756dddbb30e8d94962d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 11:26:33 2010 +0100
+
+    [sulfur] ignore invalid icon name in new_ugc_pixbuf
+
+commit 266dbe335f2a2e1dde22d057617a34ecd5bd2191
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 11:24:12 2010 +0100
+
+    [entropy.db] make reverse dependencies metadata generation a bit more bulletproof
+
+commit b240848b77a90b30721dc91c1b81490707f2f285
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 10:55:29 2010 +0100
+
+    [entropy.client] workaround a caching check bug, will be fixed when error reporter will provide full stack
+
+commit ddedd2e704b967c3265575f1caca41ac57f2aab3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 09:12:37 2010 +0100
+
+    [entropy.const] add package slot prefix string
+
+commit 41dd399b378296e7c59c31ba92014257d20b4dba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 09:06:30 2010 +0100
+
+    [entropy.client] rename client_repository() to installed_repository()
+
+commit 503b8f83a0ff9e0f4b6edcfffcf0bfc3b1bd4495
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 08:53:34 2010 +0100
+
+    [entropy.client] unbundle hardcoded strings in add_package_to_repos, do not use etpSys
+
+commit d328b589334a68fddc2190460b1ee851a7d6de63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 08:52:41 2010 +0100
+
+    [entropy.client] update signature of _add_plugin_to_client_repository()
+    
+    Add repo_id argument, which value will be added to EntropyRepositoryPlugin
+    metadata under "repo_name" key
+
+commit 2f3046eaaf8bcaa02faede7f0244fed6ec64b767
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 08:52:00 2010 +0100
+
+    [entropy.db] EntropyRepository: use builtin repo id as default
+
+commit f6ecfe693d80e5a257f6cf32aed7d92d2e9a577a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 08:51:34 2010 +0100
+
+    [entropy.spm] PortagePlugin: add accessibility package group
+
+commit cd3ccffb8a91945927db6a7299ef92d4ad29b643
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 08:51:18 2010 +0100
+
+    [entropy.tools] add dep_getcat function
+
+commit b5a4d3f6971deea315de50d9193cfca9cfdbbabe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 08:50:56 2010 +0100
+
+    [entropy.const] update built-in repository identifier strings
+
+commit c658b5288f0eeb3181bb083b794e7706f5cd8d1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 06:55:29 2010 +0100
+
+    [entropy.client] add client_repository() method, will replace .clientDbconn
+
+commit 73ce7bd5d1f7684a1dff0544812be43ff0acdedd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 28 21:14:18 2010 +0100
+
+    Update ChangeLog for version 0.99.30.2
+
 commit 7b854118beb0d1db8ae42536e9d7cd4c6bd2f126
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 28 21:07:21 2010 +0100
