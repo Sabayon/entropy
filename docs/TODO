@@ -1,7 +1,6 @@
 
   0.99.40:
 
-    - entropy.db: use entropy.db.exceptions
     - entropy.security.System unittest
     - PackageKit integration
     - entropy.server API docs
