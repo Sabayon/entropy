@@ -551,6 +551,15 @@ class RepositoryMixin:
             metadata = etp_db_meta)
         entropy_client_repository.add_plugin(repo_plugin)
 
+    def client_repository(self):
+        """
+        Return Entropy Client installed packages repository.
+
+        @return: Entropy Client installed packages repository
+        @rtype: entropy.db.EntropyRepository
+        """
+        return self.clientDbconn
+
     def open_client_repository(self):
 
         def load_db_from_ram():
