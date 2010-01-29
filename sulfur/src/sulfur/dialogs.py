@@ -3246,7 +3246,7 @@ class ExceptionDialog:
     def __init__(self):
         pass
 
-    def show(self, errmsg = None):
+    def show(self, errmsg = None, exc_data = None):
 
         if errmsg is None:
             errmsg = entropy.tools.get_traceback()
@@ -3267,8 +3267,12 @@ class ExceptionDialog:
                 error = None
 
             result = None
+            if exc_data is None:
+                exc_data = []
             if error is not None:
-                error.prepare(errmsg, name, mail, description = description)
+                error.prepare(errmsg, name, mail,
+                    '\n'.join([x for x in exc_data]),
+                    description = description)
                 result = error.submit()
             if result:
                 okDialog(None, _("Your report has been submitted successfully! Thanks a lot."))

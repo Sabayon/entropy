@@ -71,8 +71,11 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         import pdb
         pdb.set_trace()
 
+    exc_data = entropy.tools.print_exception(returndata = True,
+        tb_data = exc_tb)
+
     my = ExceptionDialog()
-    my.show(errmsg = t_back) 
+    my.show(errmsg = t_back, exc_data = exc_data) 
     kill_threads()
     if MAIN_APP is not None:
         MAIN_APP.quit(sysexit = False)
