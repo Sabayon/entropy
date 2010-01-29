@@ -37,6 +37,12 @@ class PortagePackageGroups(dict):
         dict.__init__(self)
 
         data = {
+            'accessibility': {
+                'name': _("Accessibility"),
+                'description': \
+                    _("Accessibility applications"),
+                'categories': ['app-accessibility'],
+            },
             'office': {
                 'name': _("Office"),
                 'description': _("Applications used in office environments"),
