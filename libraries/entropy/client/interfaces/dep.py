@@ -17,7 +17,7 @@ from entropy.cache import EntropyCacher
 from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
-    DatabaseError
+    DatabaseError, InterfaceError
 
 import entropy.tools
 
