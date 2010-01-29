@@ -29,10 +29,7 @@
         - move SystemSettings['repositories'] ?
     - entropy package metadata .dtd specs
     - complete API documentation
-    - Transform Sulfur into Entropy Store:
-        - UGC for more coolness
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
-    - enabled nonfree support by default
 
   1.0 - deprecations:
 
