@@ -6450,17 +6450,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 header = "   "
             )
 
-            if name == "sqlite_sequence":
-                dumpfile.write(toraw("DELETE FROM sqlite_sequence;\n"))
-            elif name == "sqlite_stat1":
-                dumpfile.write(toraw("ANALYZE sqlite_master;\n"))
-            elif name.startswith("sqlite_"):
+            if name.startswith("sqlite_"):
                 continue
-            else:
-                t_cmd = "CREATE TABLE"
-                if sql.startswith(t_cmd) and gentle_with_tables:
-                    sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
-                dumpfile.write(toraw("%s;\n" % sql))
+
+            t_cmd = "CREATE TABLE"
+            if sql.startswith(t_cmd) and gentle_with_tables:
+                sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
+            dumpfile.write(toraw("%s;\n" % sql))
 
             if name in exclude_tables:
                 continue
