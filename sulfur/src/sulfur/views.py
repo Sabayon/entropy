@@ -2123,7 +2123,9 @@ class EntropyPackageView:
                     name = pkg.onlyname
                 except self.Equo.dbapi2.ProgrammingError:
                     name = "N/A"
-                icon_theme_loaded = False
+                if name is None:
+                    name = "N/A"
+
                 if icon_theme.has_icon(name):
                     # use this icon
                     try:
