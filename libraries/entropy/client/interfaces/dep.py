@@ -330,9 +330,11 @@ class CalculatorsMixin:
                         )
                         if extendedResults:
                             for item in query_data:
-                                data.add(((item[0], item[2], item[3], item[4]), q_repo))
+                                _item_d = (item[0], item[2], item[3], item[4])
+                                data.add((_item_d, q_repo))
                         else:
-                            for x in query_data: data.add((x, q_repo))
+                            for x in query_data:
+                                data.add((x, q_repo))
                     dbpkginfo = (data, 0)
                 else:
                     dbconn = self.__atom_match_open_db(dbpkginfo[1], serverInstance)
