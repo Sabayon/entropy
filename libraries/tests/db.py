@@ -341,12 +341,12 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # match
         f_match = (1, 0)
-        pkg_atom = _misc.get_test_entropy_package_tag_atom()
-        pkg_key = entropy.tools.dep_getkey(pkg_atom)
 
-        self.assertEqual(f_match, self.test_db.atomMatch(pkg_key))
-        self.assertEqual(f_match, self.test_db.atomMatch(pkg_atom))
-        self.assertEqual(f_match, self.test_db.atomMatch("~"+pkg_atom))
+        for atom, pkg_id, branch in self.test_db.listAllPackages():
+            pkg_key = entropy.tools.dep_getkey(atom)
+            self.assertEqual(f_match, self.test_db.atomMatch(pkg_key))
+            self.assertEqual(f_match, self.test_db.atomMatch(atom))
+            self.assertEqual(f_match, self.test_db.atomMatch("~"+atom))
 
     def test_db_import_export(self):
 
