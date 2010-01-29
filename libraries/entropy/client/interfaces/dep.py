@@ -179,6 +179,11 @@ class CalculatorsMixin:
                 # set([((14789, '3.3.8b', '', 0), 'sabayonlinux.org')])
                 matches = [(x[0][0], x[1],) for x in data]
             for m_id, m_repo in matches:
+                # FIXME: there is a bug up the queue somewhere
+                # but current error report tool didn't provide full
+                # stack variables (only for the innermost frame)
+                if isinstance(m_id, tuple):
+                    m_id = m_id[0]
                 m_db = self.__atom_match_open_db(m_repo, server_inst)
                 if not m_db.isIdpackageAvailable(m_id):
                     return None
