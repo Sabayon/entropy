@@ -7571,8 +7571,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def _addDependsRelationToDependsTable(self, iterable):
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into dependstable VALUES (?,?)',
-                iterable)
+            # since this is not bulletproof (because user can mess with this
+            # stuff via SPM), we need to IGNORE IntegrityError exceptions
+            # caused by foreign constraint violation
+            self.cursor.executemany("""
+                INSERT or IGNORE into dependstable VALUES (?,?)""",
+                    iterable)
 
     def taintReverseDependenciesMetadata(self):
         """
@@ -7598,8 +7602,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         count = 0
         total = len(depends)
         mydata = set()
-        am = self.atomMatch
-        up = self.output
         self.taintReverseDependenciesMetadata()
         self.commitChanges()
         for iddep, atom in depends:
@@ -7607,11 +7609,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             if verbose and ((count == 0) or (count % 150 == 0) or \
                 (count == total)):
-                up( red("Resolving %s") % (atom,), importance = 0,
-                    type = "info", back = True, count = (count, total)
-                )
+                self.output( red("Resolving %s") % (atom,), importance = 0,
+                    type = "info", back = True, count = (count, total))
 
-            idpackage, rc = am(atom)
+            # not safe to use cache here, people messing with multiple
+            # instances can make this crash
+            idpackage, rc = self.atomMatch(atom, useCache = False)
             if idpackage == -1:
                 continue
             if iddep == -1:
@@ -7619,13 +7622,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             mydata.add((iddep, idpackage,))
 
         if mydata:
-            try:
-                self._addDependsRelationToDependsTable(mydata)
-            except self.dbapi2.IntegrityError:
-                # try to cope for the last time
-                self.taintReverseDependenciesMetadata()
-                self.commitChanges()
-                self._addDependsRelationToDependsTable(mydata)
+            self._addDependsRelationToDependsTable(mydata)
 
         # now validate dependstable
         self._sanitizeDependsTable()
