@@ -2126,6 +2126,7 @@ class EntropyPackageView:
                 if name is None:
                     name = "N/A"
 
+                icon_theme_loaded = False
                 if icon_theme.has_icon(name):
                     # use this icon
                     try:
