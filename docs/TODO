@@ -1,7 +1,7 @@
 
   0.99.40:
 
-    - entropy.db: wrap sqlite3 exceptions around EntropyRepositoryExceptions
+    - entropy.db: use entropy.db.exceptions
     - entropy.security.System unittest
     - PackageKit integration
     - entropy.server API docs
@@ -9,6 +9,8 @@
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
     - Spm.extract_package_metadata, define metadata format (to make easier
         for 3rd party implementations to define it)
+    - entropy.db: instead of thread lock, use different connection for different
+        thread+process?
 
   1.0_beta1:
 
