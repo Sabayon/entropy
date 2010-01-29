@@ -66,19 +66,20 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     t_back += "\n"
     t_back += ''.join(entropy.tools.print_exception(True, tb_data = exc_tb))
 
-    if "--debug" in sys.argv:
+    if "--debug-catch" in sys.argv:
         print(t_back)
         import pdb
         pdb.set_trace()
 
     exc_data = entropy.tools.print_exception(returndata = True,
-        tb_data = exc_tb)
+        tb_data = exc_tb, all_frame_data = True)
 
     my = ExceptionDialog()
-    my.show(errmsg = t_back, exc_data = exc_data) 
+    my.show(errmsg = t_back, exc_data = exc_data)
     kill_threads()
     if MAIN_APP is not None:
         MAIN_APP.quit(sysexit = False)
+    raise SystemExit(exit_status)
 
 def install_exception_handler():
     sys.excepthook = handle_exception
