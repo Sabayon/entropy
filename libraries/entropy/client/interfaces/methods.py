@@ -553,7 +553,7 @@ class RepositoryMixin:
             metadata = etp_db_meta)
         entropy_client_repository.add_plugin(repo_plugin)
 
-    def client_repository(self):
+    def installed_repository(self):
         """
         Return Entropy Client installed packages repository.
 
