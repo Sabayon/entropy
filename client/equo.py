@@ -884,7 +884,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(1)
 
     exception_data = entropy.tools.print_exception(returndata = True,
-        tb_data = exc_tb)
+        tb_data = exc_tb, all_frame_data = True)
     exception_stack = t_back
     ferror.write(const_convert_to_rawstring("\nRevision: " + \
         etpConst['entropyversion'] + "\n\n"))
