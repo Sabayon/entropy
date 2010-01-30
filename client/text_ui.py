@@ -829,7 +829,7 @@ def download_sources(packages = None, deps = True, deepdeps = False,
 
         Package.prepare(match, "source", metaopts)
 
-        xterm_header = "E_CLIENT ("+_("sources fetch")+") :: " + \
+        xterm_header = "equo ("+_("sources fetch")+") :: " + \
             str(fetchqueue)+" of "+totalqueue+" ::"
         print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/" + \
             red(totalqueue)+bold(") ")+">>> " + \
