@@ -481,13 +481,13 @@ class Package:
             header = red("   ## ")
         )
         automerge_metadata = \
-            self.Entropy.clientDbconn.retrieveAutomergefiles(
+            self.Entropy.installed_repository().retrieveAutomergefiles(
                 self.pkgmeta['removeidpackage'], get_dict = True
             )
         self.remove_installed_package(self.pkgmeta['removeidpackage'])
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
-        self.Entropy.clientDbconn.commitChanges()
+        self.Entropy.installed_repository().commitChanges()
 
         # if another package with the same atom is installed in
         # Entropy db, do not call SPM at all because it would cause
@@ -497,7 +497,7 @@ class Package:
         # for other pkgs with same atom but different tag (which is an
         # entropy-only metadatum)
         test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
-        others_installed = self.Entropy.clientDbconn.getIDPackages(test_atom)
+        others_installed = self.Entropy.installed_repository().getIDPackages(test_atom)
 
         # It's obvious that clientdb cannot have more than one idpackage
         # featuring the same "atom" value, but still, let's be fault-tolerant.
@@ -528,7 +528,7 @@ class Package:
         @param idpackage: Entropy Repository package identifier
         @type idpackage: int
         """
-        self.Entropy.clientDbconn.removePackage(idpackage, do_commit = False,
+        self.Entropy.installed_repository().removePackage(idpackage, do_commit = False,
             do_cleanup = False)
 
     def remove_content_from_system(self, idpackage, automerge_metadata = None):
@@ -571,7 +571,7 @@ class Package:
             # collision check
             if col_protect > 0:
 
-                if self.Entropy.clientDbconn.isFileAvailable(item) \
+                if self.Entropy.installed_repository().isFileAvailable(item) \
                     and os.path.isfile(sys_root_item):
 
                     # in this way we filter out directories
@@ -791,7 +791,7 @@ class Package:
         already_protected_config_files = {}
         if self.pkgmeta['removeidpackage'] != -1:
             already_protected_config_files = \
-                self.Entropy.clientDbconn.retrieveAutomergefiles(
+                self.Entropy.installed_repository().retrieveAutomergefiles(
                     self.pkgmeta['removeidpackage'], get_dict = True
                 )
 
@@ -871,7 +871,7 @@ class Package:
 
         spm_uid = Spm.add_installed_package(self.pkgmeta)
         if spm_uid != -1:
-            self.Entropy.clientDbconn.insertSpmUid(idpackage, spm_uid)
+            self.Entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
 
         return 0
 
@@ -918,7 +918,7 @@ class Package:
             return 0
 
         if spm_uid != -1:
-            self.Entropy.clientDbconn.insertSpmUid(idpackage, spm_uid)
+            self.Entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
 
         return 0
 
@@ -969,7 +969,7 @@ class Package:
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
-                    self.Entropy.clientDbconn.contentDiff(
+                    self.Entropy.installed_repository().contentDiff(
                         self.pkgmeta['removeidpackage'],
                         dbconn,
                         self.pkgmeta['idpackage']
@@ -1005,7 +1005,7 @@ class Package:
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
-                    self.Entropy.clientDbconn.contentDiff(
+                    self.Entropy.installed_repository().contentDiff(
                         self.pkgmeta['removeidpackage'],
                         pkg_dbconn,
                         pkg_idpackage
@@ -1035,29 +1035,29 @@ class Package:
         if "changelog" in data:
             del data['changelog']
 
-        idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(
+        idpackage, rev, x = self.Entropy.installed_repository().handlePackage(
             data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
         ctime = time.time()
-        self.Entropy.clientDbconn.setCreationDate(idpackage, str(ctime))
+        self.Entropy.installed_repository().setCreationDate(idpackage, str(ctime))
 
         # TODO: remove this in future, drop changelog table
-        self.Entropy.clientDbconn.dropChangelog()
+        self.Entropy.installed_repository().dropChangelog()
 
         # add idpk to the installedtable
-        self.Entropy.clientDbconn.dropInstalledPackageFromStore(idpackage)
-        self.Entropy.clientDbconn.storeInstalledPackage(idpackage,
+        self.Entropy.installed_repository().dropInstalledPackageFromStore(idpackage)
+        self.Entropy.installed_repository().storeInstalledPackage(idpackage,
             self.pkgmeta['repository'], self.pkgmeta['install_source'])
 
         automerge_data = self.pkgmeta.get('configprotect_data')
         if automerge_data:
-            self.Entropy.clientDbconn.insertAutomergefiles(idpackage,
+            self.Entropy.installed_repository().insertAutomergefiles(idpackage,
                 automerge_data)
 
         # clear depends table, this will make clientdb dependstable to be
         # regenerated during the next request (retrieveReverseDependencies)
-        self.Entropy.clientDbconn.taintReverseDependenciesMetadata()
+        self.Entropy.installed_repository().taintReverseDependenciesMetadata()
         return idpackage
 
     def __fill_image_dir(self, mergeFrom, image_dir):
@@ -1661,7 +1661,7 @@ class Package:
 
     def _handle_install_collision_protect(self, tofile, todbfile):
 
-        avail = self.Entropy.clientDbconn.isFileAvailable(todbfile,
+        avail = self.Entropy.installed_repository().isFileAvailable(todbfile,
             get_id = True)
 
         if (self.pkgmeta['removeidpackage'] not in avail) and avail:
@@ -2126,7 +2126,7 @@ class Package:
         self.error_on_not_prepared()
 
         for idpackage in self.pkgmeta['conflicts']:
-            if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
+            if not self.Entropy.installed_repository().isIdpackageAvailable(idpackage):
                 continue
 
             pkg = self.Entropy.Package()
@@ -2435,7 +2435,7 @@ class Package:
         self.pkgmeta.clear()
         idpackage = self.matched_atom[0]
 
-        if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
+        if not self.Entropy.installed_repository().isIdpackageAvailable(idpackage):
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
 
@@ -2444,11 +2444,11 @@ class Package:
         self.pkgmeta['configprotect_data'] = []
         self.pkgmeta['triggers'] = {}
         self.pkgmeta['removeatom'] = \
-            self.Entropy.clientDbconn.retrieveAtom(idpackage)
+            self.Entropy.installed_repository().retrieveAtom(idpackage)
         self.pkgmeta['slot'] = \
-            self.Entropy.clientDbconn.retrieveSlot(idpackage)
+            self.Entropy.installed_repository().retrieveSlot(idpackage)
         self.pkgmeta['versiontag'] = \
-            self.Entropy.clientDbconn.retrieveVersionTag(idpackage)
+            self.Entropy.installed_repository().retrieveVersionTag(idpackage)
         self.pkgmeta['diffremoval'] = False
 
         remove_config = False
@@ -2457,13 +2457,13 @@ class Package:
         self.pkgmeta['removeconfig'] = remove_config
 
         self.pkgmeta['removecontent'] = \
-            self.Entropy.clientDbconn.retrieveContent(idpackage)
+            self.Entropy.installed_repository().retrieveContent(idpackage)
         self.pkgmeta['triggers']['remove'] = \
-            self.Entropy.clientDbconn.getTriggerInfo(idpackage)
+            self.Entropy.installed_repository().getTriggerInfo(idpackage)
         self.pkgmeta['triggers']['remove']['removecontent'] = \
             self.pkgmeta['removecontent']
         self.pkgmeta['triggers']['remove']['accept_license'] = \
-            self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
+            self.Entropy.installed_repository().retrieveLicensedataKeys(idpackage)
 
         self.pkgmeta['steps'] = [
             "preremove", "remove", "postremove"
@@ -2476,17 +2476,17 @@ class Package:
         idpackage = self.matched_atom[0]
 
         self.pkgmeta['atom'] = \
-            self.Entropy.clientDbconn.retrieveAtom(idpackage)
-        key, slot = self.Entropy.clientDbconn.retrieveKeySlot(idpackage)
+            self.Entropy.installed_repository().retrieveAtom(idpackage)
+        key, slot = self.Entropy.installed_repository().retrieveKeySlot(idpackage)
         self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
         self.pkgmeta['version'] = \
-            self.Entropy.clientDbconn.retrieveVersion(idpackage)
+            self.Entropy.installed_repository().retrieveVersion(idpackage)
         self.pkgmeta['category'] = \
-            self.Entropy.clientDbconn.retrieveCategory(idpackage)
+            self.Entropy.installed_repository().retrieveCategory(idpackage)
         self.pkgmeta['name'] = \
-            self.Entropy.clientDbconn.retrieveName(idpackage)
+            self.Entropy.installed_repository().retrieveName(idpackage)
         self.pkgmeta['accept_license'] = \
-            self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
+            self.Entropy.installed_repository().retrieveLicensedataKeys(idpackage)
         self.pkgmeta['steps'] = []
         self.pkgmeta['steps'].append("config")
 
@@ -2566,7 +2566,7 @@ class Package:
         self.pkgmeta['removeconfig'] = removeConfig
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
-        inst_idpackage, inst_rc = self.Entropy.clientDbconn.atomMatch(pkgkey,
+        inst_idpackage, inst_rc = self.Entropy.installed_repository().atomMatch(pkgkey,
             matchSlot = self.pkgmeta['slot'])
 
         # filled later...
@@ -2574,10 +2574,10 @@ class Package:
         self.pkgmeta['removeidpackage'] = inst_idpackage
 
         if self.pkgmeta['removeidpackage'] != -1:
-            avail = self.Entropy.clientDbconn.isIdpackageAvailable(
+            avail = self.Entropy.installed_repository().isIdpackageAvailable(
                 self.pkgmeta['removeidpackage'])
             if avail:
-                inst_atom = self.Entropy.clientDbconn.retrieveAtom(
+                inst_atom = self.Entropy.installed_repository().retrieveAtom(
                     self.pkgmeta['removeidpackage'])
                 self.pkgmeta['removeatom'] = inst_atom
             else:
@@ -2624,17 +2624,17 @@ class Package:
             # differential remove list
             self.pkgmeta['diffremoval'] = True
             self.pkgmeta['removeatom'] = \
-                self.Entropy.clientDbconn.retrieveAtom(
+                self.Entropy.installed_repository().retrieveAtom(
                     self.pkgmeta['removeidpackage'])
 
             self.pkgmeta['triggers']['remove'] = \
-                self.Entropy.clientDbconn.getTriggerInfo(
+                self.Entropy.installed_repository().getTriggerInfo(
                     self.pkgmeta['removeidpackage']
                 )
             self.pkgmeta['triggers']['remove']['removecontent'] = \
                 self.pkgmeta['removecontent'] # pass reference, not copy! nevva!
             self.pkgmeta['triggers']['remove']['accept_license'] = \
-                self.Entropy.clientDbconn.retrieveLicensedataKeys(
+                self.Entropy.installed_repository().retrieveLicensedataKeys(
                     self.pkgmeta['removeidpackage'])
 
         # set steps

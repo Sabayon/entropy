@@ -115,7 +115,7 @@ class QueueExecutor:
             return 3
 
         for lic in licenses:
-            self.Entropy.clientDbconn.acceptLicense(lic)
+            self.Entropy.installed_repository().acceptLicense(lic)
 
         def do_skip_show():
             self.Sulfur.skipMirrorNow = False

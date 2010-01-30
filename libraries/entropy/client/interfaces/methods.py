@@ -540,9 +540,9 @@ class RepositoryMixin:
         del mydbconn
         return 0, atoms_contained
 
-    def reopen_client_repository(self):
-        self.clientDbconn.closeDB()
-        self.open_client_repository()
+    def reopen_installed_repository(self):
+        self._installed_repository.closeDB()
+        self.open_installed_repository()
         # make sure settings are in sync
         self.SystemSettings.clear()
 
@@ -563,9 +563,9 @@ class RepositoryMixin:
         @return: Entropy Client installed packages repository
         @rtype: entropy.db.EntropyRepository
         """
-        return self.clientDbconn
+        return self._installed_repository
 
-    def open_client_repository(self):
+    def open_installed_repository(self):
 
         def load_db_from_ram():
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
@@ -585,8 +585,8 @@ class RepositoryMixin:
         # if we are in unit testing mode (triggered by unit testing
         # code), always use db from ram
         if etpSys['unittest']:
-            self.clientDbconn = load_db_from_ram()
-            return self.clientDbconn
+            self._installed_repository = load_db_from_ram()
+            return self._installed_repository
 
         db_dir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
         if not os.path.isdir(db_dir):
@@ -621,7 +621,7 @@ class RepositoryMixin:
                         entropy.tools.print_traceback(f = self.clientLog)
                         conn = load_db_from_ram()
 
-        self.clientDbconn = conn
+        self._installed_repository = conn
         return conn
 
     def client_repository_sanity_check(self):
@@ -630,7 +630,7 @@ class RepositoryMixin:
             importance = 2,
             type = "warning"
         )
-        idpkgs = self.clientDbconn.listAllIdpackages()
+        idpkgs = self._installed_repository.listAllIdpackages()
         length = len(idpkgs)
         count = 0
         errors = False
@@ -646,7 +646,7 @@ class RepositoryMixin:
                                     percent = True
                                 )
             try:
-                self.clientDbconn.getPackageData(x)
+                self._installed_repository.getPackageData(x)
             except Exception as e:
                 entropy.tools.print_traceback()
                 errors = True
@@ -864,7 +864,7 @@ class RepositoryMixin:
         const_debug_write(__name__,
             "run_repositories_post_branch_switch_hooks: called")
 
-        client_dbconn = self.clientDbconn
+        client_dbconn = self._installed_repository
         hooks_ran = set()
         if client_dbconn is None:
             const_debug_write(__name__,
@@ -981,7 +981,7 @@ class RepositoryMixin:
             "run_repository_post_branch_upgrade_hooks: called"
         )
 
-        client_dbconn = self.clientDbconn
+        client_dbconn = self._installed_repository
         hooks_ran = set()
         if client_dbconn is None:
             return hooks_ran, True
@@ -1288,13 +1288,13 @@ class MiscMixin:
         etpSys['rootdir'] = chroot
         self.reload_constants()
         self.validate_repositories()
-        self.reopen_client_repository()
+        self.reopen_installed_repository()
         # keep them closed, since SystemSettings.clear() is called
-        # above on reopen_client_repository()
+        # above on reopen_installed_repository()
         self.close_all_repositories()
         if chroot:
             try:
-                self.clientDbconn.resetTreeupdatesDigests()
+                self._installed_repository.resetTreeupdatesDigests()
             except:
                 pass
         # I don't think it's safe to keep them open
@@ -1373,7 +1373,7 @@ class MiscMixin:
         return False
 
     def unused_packages_test(self, dbconn = None):
-        if dbconn == None: dbconn = self.clientDbconn
+        if dbconn == None: dbconn = self._installed_repository
         return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]
 
     def get_licenses_to_accept(self, install_queue):
@@ -1394,7 +1394,7 @@ class MiscMixin:
             for key in keys:
                 if key in wl:
                     continue
-                found = self.clientDbconn.isLicenseAccepted(key)
+                found = self._installed_repository.isLicenseAccepted(key)
                 if found:
                     continue
                 obj = licenses.setdefault(key, set())
@@ -1440,8 +1440,8 @@ class MiscMixin:
         self.SystemSettings.clear()
 
         # reset treeupdatesactions
-        self.reopen_client_repository()
-        self.clientDbconn.resetTreeupdatesDigests()
+        self.reopen_installed_repository()
+        self._installed_repository.resetTreeupdatesDigests()
         self.validate_repositories(quiet = True)
         self.close_all_repositories()
         if self.xcache:
@@ -1459,9 +1459,9 @@ class MiscMixin:
             atom_srch = True
 
         if from_installed:
-            if hasattr(self, 'clientDbconn'):
-                if self.clientDbconn is not None:
-                    valid_repos.append(self.clientDbconn)
+            if hasattr(self, '_installed_repository'):
+                if self._installed_repository is not None:
+                    valid_repos.append(self._installed_repository)
 
         elif not valid_repos:
             valid_repos.extend(self.validRepositories[:])
@@ -1537,7 +1537,7 @@ class MiscMixin:
         return data
 
     def list_installed_packages_in_category(self, category):
-        pkg_matches = set([x[1] for x in self.clientDbconn.searchPackagesByCategory(category)])
+        pkg_matches = set([x[1] for x in self._installed_repository.searchPackagesByCategory(category)])
         return pkg_matches
 
     def get_package_match_config_protect(self, match, mask = False):
@@ -1558,16 +1558,16 @@ class MiscMixin:
 
     def get_installed_package_config_protect(self, idpackage, mask = False):
 
-        if self.clientDbconn == None:
+        if self._installed_repository == None:
             return []
         cl_id = self.sys_settings_client_plugin_id
         misc_data = self.SystemSettings[cl_id]['misc']
         if mask:
-            _pmask = self.clientDbconn.retrieveProtectMask(idpackage).split()
+            _pmask = self._installed_repository.retrieveProtectMask(idpackage).split()
             config_protect = set(_pmask)
             config_protect |= set(misc_data['configprotectmask'])
         else:
-            _protect = self.clientDbconn.retrieveProtect(idpackage).split()
+            _protect = self._installed_repository.retrieveProtect(idpackage).split()
             config_protect = set(_protect)
             config_protect |= set(misc_data['configprotect'])
         config_protect = [etpConst['systemroot']+x for x in config_protect]
@@ -1576,7 +1576,7 @@ class MiscMixin:
 
     def get_system_config_protect(self, mask = False):
 
-        if self.clientDbconn == None:
+        if self._installed_repository == None:
             return []
 
         # FIXME: workaround because this method is called
@@ -1584,11 +1584,11 @@ class MiscMixin:
         cl_id = self.sys_settings_client_plugin_id
         misc_data = self.SystemSettings[cl_id]['misc']
         if mask:
-            _pmask = self.clientDbconn.listConfigProtectEntries(mask = True)
+            _pmask = self._installed_repository.listConfigProtectEntries(mask = True)
             config_protect = set(_pmask)
             config_protect |= set(misc_data['configprotectmask'])
         else:
-            _protect = self.clientDbconn.listConfigProtectEntries()
+            _protect = self._installed_repository.listConfigProtectEntries()
             config_protect = set(_protect)
             config_protect |= set(misc_data['configprotect'])
         config_protect = [etpConst['systemroot']+x for x in config_protect]
@@ -1615,11 +1615,11 @@ class MiscMixin:
             if not os.path.isdir(etpConst['packagestmpdir']):
                 os.makedirs(etpConst['packagestmpdir'])
         # match package
-        match = self.clientDbconn.atomMatch(atomstring)
+        match = self._installed_repository.atomMatch(atomstring)
         if match[0] == -1:
             return -1, None, None
-        atom = self.clientDbconn.atomMatch(match[0])
-        pkgdata = self.clientDbconn.getPackageData(match[0])
+        atom = self._installed_repository.atomMatch(match[0])
+        pkgdata = self._installed_repository.getPackageData(match[0])
         resultfile = self.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             return -1, atom, None
@@ -1713,14 +1713,14 @@ class MatchMixin:
         """
         dbconn = self.open_repository(match[1])
         pkgkey, pkgslot = dbconn.retrieveKeySlot(match[0])
-        results = self.clientDbconn.searchKeySlot(pkgkey, pkgslot)
+        results = self._installed_repository.searchKeySlot(pkgkey, pkgslot)
         if not results:
             return 1
 
         installed_idpackage = results[0][0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
         installed_ver, installed_tag, installed_rev = \
-            self.clientDbconn.getVersioningData(installed_idpackage)
+            self._installed_repository.getVersioningData(installed_idpackage)
         pkgcmp = entropy.tools.entropy_compare_versions(
             (pkgver, pkgtag, pkgrev),
             (installed_ver, installed_tag, installed_rev))
@@ -1728,7 +1728,7 @@ class MatchMixin:
             # check digest, if it differs, we should mark pkg as update
             # we don't want users to think that they are "reinstalling" stuff
             # because it will just confuse them
-            inst_digest = self.clientDbconn.retrieveDigest(installed_idpackage)
+            inst_digest = self._installed_repository.retrieveDigest(installed_idpackage)
             repo_digest = dbconn.retrieveDigest(match[0])
             if inst_digest != repo_digest:
                 return 2
@@ -1752,11 +1752,11 @@ class MatchMixin:
         conflicts = dbconn.retrieveConflicts(m_id)
         found_conflicts = set()
         for conflict in conflicts:
-            my_m_id, my_m_rc = self.clientDbconn.atomMatch(conflict)
+            my_m_id, my_m_rc = self._installed_repository.atomMatch(conflict)
             if my_m_id != -1:
                 # check if the package shares the same slot
                 match_data = dbconn.retrieveKeySlot(m_id)
-                installed_match_data = self.clientDbconn.retrieveKeySlot(my_m_id)
+                installed_match_data = self._installed_repository.retrieveKeySlot(my_m_id)
                 if match_data != installed_match_data:
                     found_conflicts.add(my_m_id)
         return found_conflicts

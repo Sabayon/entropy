@@ -233,9 +233,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # match installed packages of system_mask
         mask_installed = []
         mask_installed_keys = {}
-        while (self._helper.clientDbconn != None):
+        while (self._helper.installed_repository() != None):
             try:
-                self._helper.clientDbconn.validateDatabase()
+                self._helper.installed_repository().validateDatabase()
             except SystemDatabaseError:
                 break
             mc_cache = set()
@@ -243,7 +243,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 system_settings_instance)
             m_list = repos_mask_list + system_settings_instance['system_mask']
             for atom in m_list:
-                m_ids, m_r = self._helper.clientDbconn.atomMatch(atom,
+                m_ids, m_r = self._helper.installed_repository().atomMatch(atom,
                     multiMatch = True)
                 if m_r != 0:
                     continue
@@ -590,7 +590,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # supporting external output stuff, you can point self.progress
         # to your progress bar and reimplement output
         self.progress = None
-        self.clientDbconn = None
+        self._installed_repository = None
         self.safe_mode = 0
         self.indexing = indexing
         self.repo_validation = repo_validation
@@ -662,7 +662,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.clear_cache()
 
         if self.openclientdb:
-            self.open_client_repository()
+            self.open_installed_repository()
 
         # create our SystemSettings plugin
         self.sys_settings_client_plugin = ClientSystemSettingsPlugin(
@@ -693,10 +693,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
     def destroy(self):
         self.__instance_destroyed = True
-        if hasattr(self, 'clientDbconn'):
-            if self.clientDbconn != None:
-                self.clientDbconn.closeDB()
-                del self.clientDbconn
+        if hasattr(self, '_installed_repository'):
+            if self._installed_repository != None:
+                self._installed_repository.closeDB()
         if hasattr(self, 'FileUpdates'):
             del self.FileUpdates
         if hasattr(self, 'clientLog'):
@@ -735,7 +734,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         @return: bool stating if changes have been made
         @rtype: bool
         """
-        if not self.clientDbconn:
+        if not self._installed_repository:
             # nothing to do if client db is not availabe
             return False
 
@@ -755,19 +754,19 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # check stored value in client database
         client_digest = "0"
         if not do_rescan:
-            client_digest = self.clientDbconn.retrieveRepositoryUpdatesDigest(
+            client_digest = self._installed_repository.retrieveRepositoryUpdatesDigest(
                 repository_identifier)
 
         if do_rescan or (str(stored_digest) != str(client_digest)) or force:
 
             # reset database tables
-            self.clientDbconn.clearTreeupdatesEntries(repository_identifier)
+            self._installed_repository.clearTreeupdatesEntries(repository_identifier)
 
             # load updates
             update_actions = repo_db.retrieveTreeUpdatesActions(
                 repository_identifier)
             # now filter the required actions
-            update_actions = self.clientDbconn.filterTreeUpdatesActions(
+            update_actions = self._installed_repository.filterTreeUpdatesActions(
                 update_actions)
 
             if update_actions:
@@ -793,17 +792,17 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                     header = darkred(" * ")
                 )
                 # run stuff
-                self.clientDbconn.runTreeUpdatesActions(update_actions)
+                self._installed_repository.runTreeUpdatesActions(update_actions)
 
             # store new digest into database
-            self.clientDbconn.setRepositoryUpdatesDigest(repository_identifier,
+            self._installed_repository.setRepositoryUpdatesDigest(repository_identifier,
                 stored_digest)
             # store new actions
-            self.clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'],
+            self._installed_repository.addRepositoryUpdatesActions(etpConst['clientdbid'],
                 update_actions, self.SystemSettings['repositories']['branch'])
-            self.clientDbconn.commitChanges()
+            self._installed_repository.commitChanges()
             # clear client cache
-            self.clientDbconn.clearCache()
+            self._installed_repository.clearCache()
             return True
 
     def is_destroyed(self):

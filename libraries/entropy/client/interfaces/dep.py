@@ -26,7 +26,7 @@ class CalculatorsMixin:
     def dependencies_test(self, dbconn = None):
 
         if dbconn is None:
-            dbconn = self.clientDbconn
+            dbconn = self._installed_repository
         # get all the installed packages
         installed_packages = dbconn.listAllIdpackages()
 
@@ -509,7 +509,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             c_data = sorted(dependencies)
-            client_checksum = self.clientDbconn.checksum()
+            client_checksum = self._installed_repository.checksum()
             c_hash = hash("%s|%s|%s|%s" % (c_data, deep_deps,
                 client_checksum, relaxed_deps,))
             c_hash = "%s%s" % (
@@ -565,7 +565,7 @@ class CalculatorsMixin:
 
             ### conflict
             if dependency.startswith("!"):
-                idpackage, rc = self.clientDbconn.atomMatch(dependency[1:])
+                idpackage, rc = self._installed_repository.atomMatch(dependency[1:])
                 if idpackage != -1:
                     const_debug_write(__name__,
                         "_get_unsatisfied_dependencies conflict not found on system for => %s" % (
@@ -579,7 +579,7 @@ class CalculatorsMixin:
                 push_to_cache(dependency, False)
                 continue
 
-            c_ids, c_rc = self.clientDbconn.atomMatch(dependency,
+            c_ids, c_rc = self._installed_repository.atomMatch(dependency,
                 multiMatch = True)
             if c_rc != 0:
                 const_debug_write(__name__,
@@ -645,9 +645,9 @@ class CalculatorsMixin:
             for c_id in c_ids:
                 try:
                     installed_ver, installed_tag, installed_rev = \
-                        self.clientDbconn.getVersioningData(c_id)
+                        self._installed_repository.getVersioningData(c_id)
                     # note: read rationale below
-                    installedDigest = self.clientDbconn.retrieveDigest(c_id)
+                    installedDigest = self._installed_repository.retrieveDigest(c_id)
                 except TypeError: # corrupted entry?
                     installed_ver = "0"
                     installed_tag = ''
@@ -874,7 +874,7 @@ class CalculatorsMixin:
         conflicts, stack, deep_deps):
 
         conflict_atom = conflict_str[1:]
-        c_idpackage, xst = self.clientDbconn.atomMatch(conflict_atom)
+        c_idpackage, xst = self._installed_repository.atomMatch(conflict_atom)
         if c_idpackage == -1:
             return # conflicting pkg is not installed
 
@@ -1007,7 +1007,7 @@ class CalculatorsMixin:
             # search inside installed packages repository if there's something
             # in the same slot, if so, do some extra checks first.
             pkg_key, pkg_slot = repo_db.retrieveKeySlot(pkg_id)
-            cm_idpackage, cm_result = self.clientDbconn.atomMatch(pkg_key,
+            cm_idpackage, cm_result = self._installed_repository.atomMatch(pkg_key,
                 matchSlot = pkg_slot)
 
             if cm_idpackage != -1:
@@ -1087,7 +1087,7 @@ class CalculatorsMixin:
             return
 
         conflict_match = self.atom_match(conflict_atom)
-        mykey, myslot = self.clientDbconn.retrieveKeySlot(client_idpackage)
+        mykey, myslot = self._installed_repository.retrieveKeySlot(client_idpackage)
         new_match = self.atom_match(mykey, matchSlot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
             return
@@ -1114,11 +1114,11 @@ class CalculatorsMixin:
         if not include_build_deps:
             excluded_dep_types = None
 
-        cdb_rdeps = self.clientDbconn.retrieveDependencies
-        cdb_rks = self.clientDbconn.retrieveKeySlot
+        cdb_rdeps = self._installed_repository.retrieveDependencies
+        cdb_rks = self._installed_repository.retrieveKeySlot
         gpa = self.get_package_action
         mydepends = \
-            self.clientDbconn.retrieveReverseDependencies(clientmatch[0],
+            self._installed_repository.retrieveReverseDependencies(clientmatch[0],
                 exclude_deptypes = excluded_dep_types)
 
         for idpackage in mydepends:
@@ -1160,18 +1160,18 @@ class CalculatorsMixin:
         match_db = self.open_repository(match_repo)
         repo_libs = match_db.retrieveProvidedLibraries(match_id)
 
-        client_libs = self.clientDbconn.retrieveProvidedLibraries(
+        client_libs = self._installed_repository.retrieveProvidedLibraries(
             client_match[0])
         removed_libs = set([x for x in client_libs if x not in repo_libs])
 
         idpackages = set()
         for lib, path, elf in removed_libs:
-            idpackages |= self.clientDbconn.searchNeeded(lib, elfclass = elf)
+            idpackages |= self._installed_repository.searchNeeded(lib, elfclass = elf)
 
         broken_matches = set()
         for c_idpackage in idpackages:
 
-            keyslot = self.clientDbconn.retrieveKeySlotAggregated(c_idpackage)
+            keyslot = self._installed_repository.retrieveKeySlotAggregated(c_idpackage)
             if keyslot is None:
                 continue
             idpackage, repo = self.atom_match(keyslot)
@@ -1192,7 +1192,7 @@ class CalculatorsMixin:
         soname = ".so"
         repo_needed = match_db.retrieveNeeded(match_idpackage,
             extended = True, format = True)
-        client_needed = self.clientDbconn.retrieveNeeded(client_idpackage,
+        client_needed = self._installed_repository.retrieveNeeded(client_idpackage,
             extended = True, format = True)
 
         repo_split = [x.split(soname)[0] for x in repo_needed]
@@ -1244,13 +1244,13 @@ class CalculatorsMixin:
         # all the packages in client_side should be pulled in and updated
         client_idpackages = set()
         for needed in client_side:
-            client_idpackages |= self.clientDbconn.searchNeeded(needed)
+            client_idpackages |= self._installed_repository.searchNeeded(needed)
 
         client_keyslots = set()
         def mymf(idpackage):
             if idpackage == clientmatch[0]:
                 return 0
-            ks = self.clientDbconn.retrieveKeySlot(idpackage)
+            ks = self._installed_repository.retrieveKeySlot(idpackage)
             if ks is None:
                 return 0
             return ks
@@ -1332,7 +1332,7 @@ class CalculatorsMixin:
                 deep_deps,
                 relaxed_deps,
                 build_deps,
-                self.clientDbconn.checksum(),
+                self._installed_repository.checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
                 self.SystemSettings['repositories']['branch'],
@@ -1424,11 +1424,11 @@ class CalculatorsMixin:
         remove_depends = set()
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         for d_idpackage in depends:
-            mydeps = self.clientDbconn.retrieveDependencies(d_idpackage,
+            mydeps = self._installed_repository.retrieveDependencies(d_idpackage,
                 exclude_deptypes = excluded_dep_types)
             for mydep in mydeps:
 
-                matches, rslt = self.clientDbconn.atomMatch(mydep,
+                matches, rslt = self._installed_repository.atomMatch(mydep,
                     multiMatch = True)
                 if rslt == 1:
                     continue
@@ -1487,11 +1487,11 @@ class CalculatorsMixin:
                 continue
 
             # validate package
-            if not self.clientDbconn.isIdpackageAvailable(idpackage):
+            if not self._installed_repository.isIdpackageAvailable(idpackage):
                 continue
 
             count += 1
-            p_atom = self.clientDbconn.retrieveAtom(idpackage)
+            p_atom = self._installed_repository.retrieveAtom(idpackage)
             self.output(
                 blue(rem_dep_text + " %s" % (purple(p_atom),)),
                 importance = 0,
@@ -1501,7 +1501,7 @@ class CalculatorsMixin:
             )
 
             # obtain its inverse deps
-            reverse_deps = self.clientDbconn.retrieveReverseDependencies(
+            reverse_deps = self._installed_repository.retrieveReverseDependencies(
                 idpackage, exclude_deptypes = (pdepend_id, bdepend_id,))
             if reverse_deps:
                 reverse_deps = self._filter_depends_multimatched_atoms(
@@ -1510,20 +1510,20 @@ class CalculatorsMixin:
             if deep:
 
                 mydeps = set()
-                for d_dep in self.clientDbconn.retrieveDependencies(idpackage,
+                for d_dep in self._installed_repository.retrieveDependencies(idpackage,
                     exclude_deptypes = (bdepend_id,)):
 
-                    match = self.clientDbconn.atomMatch(d_dep)
+                    match = self._installed_repository.atomMatch(d_dep)
                     if match[0] != -1:
                         mydeps.add(match[0])
 
                 # now filter them
                 mydeps = [x for x in mydeps if not \
-                    (self.clientDbconn.isSystemPackage(x) or \
+                    (self._installed_repository.isSystemPackage(x) or \
                         self.is_installed_idpackage_in_system_mask(x) )]
 
                 for d_rev_dep in mydeps:
-                    mydepends = self.clientDbconn.retrieveReverseDependencies(
+                    mydepends = self._installed_repository.retrieveReverseDependencies(
                         d_rev_dep, exclude_deptypes = (pdepend_id, bdepend_id,))
                     if not mydepends:
                         reverse_deps.add(d_rev_dep)
@@ -1585,7 +1585,7 @@ class CalculatorsMixin:
                 # get key + slot
                 try:
                     key, slot = dbconn.retrieveKeySlot(idpackage)
-                    matches = self.clientDbconn.searchKeySlot(key, slot)
+                    matches = self._installed_repository.searchKeySlot(key, slot)
                 except (DatabaseError, IntegrityError, OperationalError,):
 
                     do_break = True
@@ -1671,7 +1671,7 @@ class CalculatorsMixin:
 
         # get all the installed packages
         try:
-            idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
+            idpackages = self._installed_repository.listAllIdpackages(order_by = 'atom')
         except OperationalError:
             # client db is broken!
             raise SystemDatabaseError("installed packages database is broken")
@@ -1697,7 +1697,7 @@ class CalculatorsMixin:
             try:
                 cl_pkgkey, cl_slot, cl_version, \
                     cl_tag, cl_revision, \
-                    cl_atom = self.clientDbconn.getStrictData(idpackage)
+                    cl_atom = self._installed_repository.getStrictData(idpackage)
             except TypeError:
                 # check against broken entries, or removed during iteration
                 continue
@@ -1767,7 +1767,7 @@ class CalculatorsMixin:
                     if idpackage is not None:
 
                         c_repodb = self.open_repository(repoid)
-                        c_digest = self.clientDbconn.retrieveDigest(idpackage)
+                        c_digest = self._installed_repository.retrieveDigest(idpackage)
                         r_digest = c_repodb.retrieveDigest(m_idpackage)
 
                         if (r_digest != c_digest) and (r_digest is not None) \
@@ -1821,13 +1821,13 @@ class CalculatorsMixin:
                 return cached
 
         found = False
-        match = self.clientDbconn.atomMatch(atom)
+        match = self._installed_repository.atomMatch(atom)
         matched = None
         if match[0] != -1:
-            myatom = self.clientDbconn.retrieveAtom(match[0])
+            myatom = self._installed_repository.retrieveAtom(match[0])
             mytag = entropy.tools.dep_gettag(myatom)
             myatom = entropy.tools.remove_tag(myatom)
-            myrev = self.clientDbconn.retrieveRevision(match[0])
+            myrev = self._installed_repository.retrieveRevision(match[0])
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
                 pkg_match += "%s%s" % (etpConst['entropytagprefix'], mytag,)
@@ -1849,7 +1849,7 @@ class CalculatorsMixin:
 
     def validate_package_removal(self, idpackage):
 
-        pkgatom = self.clientDbconn.retrieveAtom(idpackage)
+        pkgatom = self._installed_repository.retrieveAtom(idpackage)
         pkgkey = entropy.tools.dep_getkey(pkgatom)
         client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
         mask_installed_keys = client_settings['system_mask']['repos_installed_keys']
@@ -1862,10 +1862,10 @@ class CalculatorsMixin:
             return False # sorry!
 
         # did we store the bastard in the db?
-        system_pkg = self.clientDbconn.isSystemPackage(idpackage)
+        system_pkg = self._installed_repository.isSystemPackage(idpackage)
         if not system_pkg: return True
         # check if the package is slotted and exist more than one installed first
-        matches, rc = self.clientDbconn.atomMatch(pkgkey, multiMatch = True)
+        matches, rc = self._installed_repository.atomMatch(pkgkey, multiMatch = True)
         if len(matches) < 2:
             return False
         return True
@@ -1903,7 +1903,7 @@ class CalculatorsMixin:
         if install and removal:
             myremmatch = {}
             for rm_idpackage in removal:
-                keyslot = self.clientDbconn.retrieveKeySlot(rm_idpackage)
+                keyslot = self._installed_repository.retrieveKeySlot(rm_idpackage)
                 # check if users removed idpackage while this
                 # whole instance is running
                 if keyslot is None:

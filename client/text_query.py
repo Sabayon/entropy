@@ -159,7 +159,7 @@ def get_installed_packages(packages, dbconn = None, entropy_intf = None):
 
     repo_db = dbconn
     if not dbconn:
-        repo_db = entropy_intf.clientDbconn
+        repo_db = entropy_intf.installed_repository()
 
     pkg_data = {}
     flat_results = set()
@@ -187,7 +187,7 @@ def search_installed_packages(packages, dbconn = None, Equo = None):
         Equo = EquoInterface()
     clientDbconn = dbconn
     if not dbconn:
-        clientDbconn = Equo.clientDbconn
+        clientDbconn = Equo.installed_repository()
 
     if not packages:
         packages = [x[0] for x in \
@@ -215,7 +215,7 @@ def revgraph_packages(packages, dbconn = None, complete = False):
 
     if dbconn is None:
         entropy_intf = EquoInterface()
-        dbconn = entropy_intf.clientDbconn
+        dbconn = entropy_intf.installed_repository()
 
     for package in packages:
         pkg_id, pkg_rc = dbconn.atomMatch(package)
@@ -506,7 +506,7 @@ def search_belongs(files, dbconn = None, Equo = None):
 
     clientDbconn = dbconn
     if not dbconn:
-        clientDbconn = Equo.clientDbconn
+        clientDbconn = Equo.installed_repository()
 
     results = {}
     flatresults = {}
@@ -619,7 +619,7 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
     clientDbconn = dbconn
     if not dbconn:
-        clientDbconn = Equo.clientDbconn
+        clientDbconn = Equo.installed_repository()
 
     include_build_deps = False
     excluded_dep_types = None
@@ -696,7 +696,7 @@ def search_needed_libraries(atoms, dbconn = None, Equo = None):
 
     clientDbconn = dbconn
     if not dbconn:
-        clientDbconn = Equo.clientDbconn
+        clientDbconn = Equo.installed_repository()
 
     for atom in atoms:
         match = clientDbconn.atomMatch(atom)
@@ -729,7 +729,7 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
 
     clientDbconn = dbconn
     if not dbconn:
-        clientDbconn = Equo.clientDbconn
+        clientDbconn = Equo.installed_repository()
 
     for library in libraries:
         search_lib = library.replace("*", "%")
@@ -762,7 +762,7 @@ def search_eclass(eclasses, dbconn = None, Equo = None):
 
     clientDbconn = dbconn
     if not dbconn:
-        clientDbconn = Equo.clientDbconn
+        clientDbconn = Equo.installed_repository()
 
     for eclass in eclasses:
         matches = clientDbconn.searchEclassedPackages(eclass, atoms = True)
@@ -793,7 +793,7 @@ def search_files(atoms, dbconn = None, Equo = None):
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
     if not dbconn:
-        dbconn = Equo.clientDbconn
+        dbconn = Equo.installed_repository()
     dict_results, results = get_installed_packages(atoms, dbconn = dbconn,
         entropy_intf = Equo)
 
@@ -829,7 +829,7 @@ def search_orphaned_files(Equo = None):
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Orphans Search"),)))
 
-    clientDbconn = Equo.clientDbconn
+    clientDbconn = Equo.installed_repository()
 
     # start to list all files on the system:
     dirs = Equo.SystemSettings['system_dirs']
@@ -1015,7 +1015,7 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
     if Equo is None:
         Equo = EquoInterface()
 
-    clientDbconn = Equo.clientDbconn
+    clientDbconn = Equo.installed_repository()
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
@@ -1080,7 +1080,7 @@ def list_installed_packages(Equo = None, dbconn = None):
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Installed Search"),)))
 
-    clientDbconn = Equo.clientDbconn
+    clientDbconn = Equo.installed_repository()
     if dbconn:
         clientDbconn = dbconn
 
@@ -1176,8 +1176,8 @@ def search_package(packages, Equo = None, get_results = False,
                 found = True
 
     # try to actually match something in installed packages db
-    if not found and (Equo.clientDbconn is not None) and not ignore_installed:
-        do_search(Equo.clientDbconn, from_client = True)
+    if not found and (Equo.installed_repository() is not None) and not ignore_installed:
+        do_search(Equo.installed_repository(), from_client = True)
 
     if not etpUi['quiet'] and not found and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1360,7 +1360,7 @@ def search_rev_packages(revisions, Equo = None):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Revision Search"),)))
         print_info(bold(_("Installed packages repository")))
 
-    dbconn = Equo.clientDbconn
+    dbconn = Equo.installed_repository()
     for revision in revisions:
         results = dbconn.searchRevisionedPackages(revision)
         found = True
@@ -1513,16 +1513,16 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         installedTag = _("N/A")
         installedRev = _("N/A")
         try:
-            pkginstalled = Equo.clientDbconn.atomMatch(
+            pkginstalled = Equo.installed_repository().atomMatch(
                 entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
             if pkginstalled[1] == 0:
                 idx = pkginstalled[0]
                 # found
-                installedVer = Equo.clientDbconn.retrieveVersion(idx)
-                installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
+                installedVer = Equo.installed_repository().retrieveVersion(idx)
+                installedTag = Equo.installed_repository().retrieveVersionTag(idx)
                 if not installedTag:
                     installedTag = "NoTag"
-                installedRev = Equo.clientDbconn.retrieveRevision(idx)
+                installedRev = Equo.installed_repository().retrieveRevision(idx)
         except:
             clientSearch = True
 

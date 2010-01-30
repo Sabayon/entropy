@@ -99,7 +99,7 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
 
     packages = []
     for opt in mypackages:
-        match = entropy_client.clientDbconn.atomMatch(opt)
+        match = entropy_client.installed_repository().atomMatch(opt)
         if match[0] != -1:
             packages.append(match)
         else:
@@ -119,7 +119,7 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
     if (not etpUi['quiet']) or (etpUi['ask']): print_info(darkgreen(" * ")+red(mytxt+":"))
     pkgInfo = {}
     for pkg in packages:
-        atom = entropy_client.clientDbconn.retrieveAtom(pkg[0])
+        atom = entropy_client.installed_repository().retrieveAtom(pkg[0])
         pkgInfo[pkg] = {}
         pkgInfo[pkg]['atom'] = atom
         pkgInfo[pkg]['idpackage'] = pkg[0]
@@ -133,7 +133,7 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
     for pkg in packages:
         if not etpUi['quiet']:
             print_info(brown(" * ")+red("%s: " % (_("Compressing"),))+darkgreen(pkgInfo[pkg]['atom']))
-        pkgdata = entropy_client.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
+        pkgdata = entropy_client.installed_repository().getPackageData(pkgInfo[pkg]['idpackage'])
         resultfile = entropy_client.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             if not etpUi['quiet']:

@@ -465,7 +465,7 @@ class QAInterface(EntropyPluginStore):
 
         @param dbconn: entropy.db.EntropyRepository instance which contains
             information on packages installed on the system (for example:
-            entropy.client.interfaces.Client.clientDbconn ).
+            entropy.client.interfaces.Client.installed_repository() ).
         @type dbconn: entropy.db.EntropyRepository instance
         @keyword broken_symbols: enable or disable broken symbols extra check.
             Symbols which are going to be checked have to be listed into:

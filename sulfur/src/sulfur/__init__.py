@@ -1454,13 +1454,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 found_deps.add(dep)
                 continue
             else:
-                iddep = self.Equo.clientDbconn.searchDependency(dep)
+                iddep = self.Equo.installed_repository().searchDependency(dep)
                 if iddep == -1:
                     continue
-                c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(
+                c_idpackages = self.Equo.installed_repository().searchIdpackageFromIddependency(
                     iddep)
                 for c_idpackage in c_idpackages:
-                    key, slot = self.Equo.clientDbconn.retrieveKeySlot(
+                    key, slot = self.Equo.installed_repository().retrieveKeySlot(
                         c_idpackage)
                     key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
                         slot,)
@@ -1532,7 +1532,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         def run_up():
             try:
-                x, y, z = QA.test_shared_objects(self.Equo.clientDbconn,
+                x, y, z = QA.test_shared_objects(self.Equo.installed_repository(),
                     task_bombing_func = task_bombing)
                 packages_matched.update(x)
                 broken_execs.update(y)
@@ -1853,7 +1853,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 results = dbconn.searchPackages(keyword, just_id = True)
                 matches += [(x, repoid) for x in results]
             # disabled due to duplicated entries annoyance
-            #results = self.Equo.clientDbconn.searchPackages(keyword,
+            #results = self.Equo.installed_repository().searchPackages(keyword,
             #    just_id = True)
             #matches += [(x, 0) for x in results]
             return matches
@@ -1866,7 +1866,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 results = dbconn.searchPackagesByDescription(keyword)
                 matches += [(x, repoid) for atom, x in results]
             # disabled due to duplicated entries annoyance
-            #results = self.Equo.clientDbconn.searchPackagesByDescription(
+            #results = self.Equo.installed_repository().searchPackagesByDescription(
             #    keyword)
             #matches += [(x, 0) for atom, x in results]
             return matches
@@ -2155,7 +2155,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.reset_cache_status()
                 if self.do_debug:
                     print_generic("process_queue: closed repo dbs")
-                self.Equo.reopen_client_repository()
+                self.Equo.reopen_installed_repository()
                 if self.do_debug:
                     print_generic("process_queue: cleared caches (again)")
                 # regenerate packages information

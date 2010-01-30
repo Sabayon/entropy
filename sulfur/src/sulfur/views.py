@@ -1297,7 +1297,7 @@ class EntropyPackageView:
         exp_matches = set()
         if remove_action:
             for exp_atom in exp_atoms:
-                exp_match = self.Equo.clientDbconn.atomMatch(exp_atom)
+                exp_match = self.Equo.installed_repository().atomMatch(exp_atom)
                 if exp_match[0] == -1: continue
                 exp_matches.add(exp_match)
         else:
@@ -1397,7 +1397,7 @@ class EntropyPackageView:
 
         repo_objs = []
         for idpackage, rid in exp_matches:
-            key, slot = self.Equo.clientDbconn.retrieveKeySlot(idpackage)
+            key, slot = self.Equo.installed_repository().retrieveKeySlot(idpackage)
             if not self.Equo.validate_package_removal(idpackage):
                 continue
             mymatch = self.Equo.atom_match(key, matchSlot = slot)

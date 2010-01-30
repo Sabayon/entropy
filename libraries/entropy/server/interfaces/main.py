@@ -3581,7 +3581,7 @@ class ServerRepositoryMixin:
             repo = self.default_repository
 
         if repo == etpConst['clientserverrepoid'] and self.community_repo:
-            return self.Client.clientDbconn
+            return self.Client.installed_repository()
 
         # in-memory server repos
         if repo in self._memory_db_instances:

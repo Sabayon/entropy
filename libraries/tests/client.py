@@ -25,7 +25,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         # fake clientDbconn
-        self.Client.clientDbconn = self.Client.open_memory_database(
+        self.Client._installed_repository = self.Client.open_memory_database(
             dbname = etpConst['clientdbid'])
         self.Spm = self.Client.Spm()
         self.SystemSettings = SystemSettings()
@@ -158,7 +158,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.assert_(rc == 0)
 
         # remove pkg
-        idpackages = self.Client.clientDbconn.listAllIdpackages()
+        idpackages = self.Client.installed_repository().listAllIdpackages()
         for idpackage in idpackages:
             my_p = self.Client.Package()
             my_p.prepare((idpackage,), "remove", {})

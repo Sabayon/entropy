@@ -251,11 +251,11 @@ def install_packages(entropy_client, security_intf, fetch = False):
     # match in client database
     valid_matches = set()
     for atom in affected_atoms:
-        match = entropy_client.clientDbconn.atomMatch(atom)
+        match = entropy_client.installed_repository().atomMatch(atom)
         if match[0] == -1:
             continue
         # get key + slot
-        key, slot = entropy_client.clientDbconn.retrieveKeySlot(match[0])
+        key, slot = entropy_client.installed_repository().retrieveKeySlot(match[0])
         # match in repos
         match = entropy_client.atom_match(key, matchSlot = slot)
         if match[0] != -1:

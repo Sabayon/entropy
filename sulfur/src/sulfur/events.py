@@ -70,7 +70,7 @@ class SulfurApplicationEventsMixin:
         status, err_msg = self.Equo.restore_database(dbpath,
             etpConst['etpdatabaseclientfilepath'])
         self.end_working()
-        self.Equo.reopen_client_repository()
+        self.Equo.reopen_installed_repository()
         self.reset_cache_status()
         self.show_packages()
         if not status:
@@ -412,7 +412,7 @@ class SulfurApplicationEventsMixin:
         def clean_n_quit(newrepo):
             self.Equo.remove_repository(newrepo)
             self.reset_cache_status()
-            self.Equo.reopen_client_repository()
+            self.Equo.reopen_installed_repository()
             # regenerate packages information
             self.setup_application()
 
@@ -658,7 +658,7 @@ class SulfurApplicationEventsMixin:
             if license_identifier:
                 repoid = self.pkgProperties_selected.matched_atom[1]
                 if isinstance(repoid, int):
-                    dbconn = self.Equo.clientDbconn
+                    dbconn = self.Equo.installed_repository()
                 else:
                     dbconn = self.Equo.open_repository(repoid)
                 if dbconn.isLicensedataKeyAvailable(license_identifier):
@@ -822,7 +822,7 @@ class SulfurApplicationEventsMixin:
             return False
 
         def lv_callback(atom):
-            c_id, c_rc = self.Equo.clientDbconn.atomMatch(atom)
+            c_id, c_rc = self.Equo.installed_repository().atomMatch(atom)
             if c_id != -1:
                 return True
             c_id, c_rc = self.Equo.atom_match(atom)

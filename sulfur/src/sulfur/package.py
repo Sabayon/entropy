@@ -117,7 +117,7 @@ class EntropyPackage:
         else:
 
             if matched_atom[1] == 0:
-                self.dbconn = EquoIntf.clientDbconn
+                self.dbconn = EquoIntf.installed_repository()
                 self.from_installed = True
             else:
                 self.dbconn = EquoIntf.open_repository(matched_atom[1])
@@ -215,8 +215,8 @@ class EntropyPackage:
             # there are no updates
             return ver_str
 
-        from_ver = EquoIntf.clientDbconn.retrieveVersion(idpackage) or ""
-        from_tag = EquoIntf.clientDbconn.retrieveVersionTag(idpackage) or ""
+        from_ver = EquoIntf.installed_repository().retrieveVersion(idpackage) or ""
+        from_tag = EquoIntf.installed_repository().retrieveVersionTag(idpackage) or ""
         if from_tag:
             from_tag = '#%s' % (from_tag,)
 
@@ -341,7 +341,7 @@ class EntropyPackage:
             return cached
 
         key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-        matches = EquoIntf.clientDbconn.searchKeySlot(key, slot)
+        matches = EquoIntf.installed_repository().searchKeySlot(key, slot)
 
         if not matches: # not installed, new!
             status = 1

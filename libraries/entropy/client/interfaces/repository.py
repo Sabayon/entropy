@@ -1490,7 +1490,7 @@ class Repository:
             if self.fetch_security:
                 self._update_security_advisories()
             # do treeupdates
-            if isinstance(self.Entropy.clientDbconn, EntropyRepository) and \
+            if isinstance(self.Entropy.installed_repository(), EntropyRepository) and \
                 entropy.tools.is_root(): # only as root due to Portage
                 for repo in self.repo_ids:
                     try:
@@ -2028,11 +2028,11 @@ class Repository:
         dbconn.commitChanges(force = True)
         # get list of indexes
         repo_indexes = dbconn.listAllIndexes()
-        if self.Entropy.clientDbconn is not None:
+        if self.Entropy.installed_repository() is not None:
             try: # client db can be absent
-                client_indexes = self.Entropy.clientDbconn.listAllIndexes()
+                client_indexes = self.Entropy.installed_repository().listAllIndexes()
                 if repo_indexes != client_indexes:
-                    self.Entropy.clientDbconn.createAllIndexes()
+                    self.Entropy.installed_repository().createAllIndexes()
             except:
                 pass
         self.Entropy.set_priority(old_prio)

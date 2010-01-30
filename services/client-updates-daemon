@@ -362,7 +362,7 @@ class UpdatesDaemon(dbus.service.Object):
                     self.__updates_atoms = None
                     return 1
 
-                self.__system_db_hash = entropy.clientDbconn.checksum(
+                self.__system_db_hash = entropy.installed_repository().checksum(
                     do_order = True, strict = False)
                 self.__updates = update[:]
                 self.__updates_atoms = None
@@ -453,7 +453,7 @@ class UpdatesDaemon(dbus.service.Object):
         entropy = Entropy()
         try:
 
-            curr_hash = entropy.clientDbconn.checksum(
+            curr_hash = entropy.installed_repository().checksum(
                 do_order = True, strict = False)
             if curr_hash == self.__system_db_hash:
                 return self.__updates
@@ -488,7 +488,7 @@ class UpdatesDaemon(dbus.service.Object):
             try:
 
                 last_mtime = self.__last_system_db_mtime
-                dbfile = entropy.clientDbconn.dbFile
+                dbfile = entropy.installed_repository().dbFile
                 try:
                     cur_mtime = os.path.getmtime(dbfile)
                 except OSError:

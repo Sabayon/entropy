@@ -79,7 +79,7 @@ class Queue:
         for pkg in queue:
             match = pkg.matched_atom
             if isinstance(match[1], int): # installed package
-                dbconn = self.Entropy.clientDbconn
+                dbconn = self.Entropy.installed_repository()
             else:
                 dbconn = self.Entropy.open_repository(match[1])
             keyslot = dbconn.retrieveKeySlot(match[0])
@@ -129,10 +129,10 @@ class Queue:
             if idpackage not in newdepends:
                 mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
                     SulfurConf.color_title,
-                    self.Entropy.clientDbconn.retrieveAtom(idpackage),
+                    self.Entropy.installed_repository().retrieveAtom(idpackage),
                     SulfurConf.color_pkgsubtitle,
                     cleanMarkupString(
-                        self.Entropy.clientDbconn.retrieveDescription(idpackage)),
+                        self.Entropy.installed_repository().retrieveDescription(idpackage)),
                 )
                 atoms.append(mystring)
         atoms = sorted(atoms)
@@ -276,7 +276,7 @@ class Queue:
                 myQA = self.Entropy.QA()
                 for pkg in pkgs:
                     mydeps = myQA.get_deep_dependency_list(
-                        self.Entropy.clientDbconn, pkg.matched_atom[0])
+                        self.Entropy.installed_repository(), pkg.matched_atom[0])
                     mydependencies |= set([x for x in mydeps if x in xlist])
                 # what are in queue?
                 mylist = set(xlist)
@@ -696,14 +696,14 @@ class EntropyPackages:
         # mainly required to allow 3rd party packages installation without
         # erroneously inform user about unavailability.
         remove = [x for x in remove if \
-            self.Entropy.clientDbconn.getInstalledPackageRepository(x) in \
+            self.Entropy.installed_repository().getInstalledPackageRepository(x) in \
                 self.Entropy.validRepositories]
         return [x for x in map(self.__inst_pkg_setup, remove) if not \
             isinstance(x, int)]
 
     def _pkg_get_installed(self):
         return [x for x in map(self.__inst_pkg_setup,
-            self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom')) if \
+            self.Entropy.installed_repository().listAllIdpackages(order_by = 'atom')) if \
                 not isinstance(x, int)]
 
     def _pkg_get_queued(self):
@@ -752,7 +752,7 @@ class EntropyPackages:
     def _pkg_get_updates(self, critical_updates = True, orphans = False):
 
         gp_call = self.get_package_item
-        cdb_atomMatch = self.Entropy.clientDbconn.atomMatch
+        cdb_atomMatch = self.Entropy.installed_repository().atomMatch
 
         def setup_item(match):
             try:
@@ -831,7 +831,7 @@ class EntropyPackages:
             if yp.keyslot is None: # broken entry?
                 continue
             key, slot = yp.keyslot
-            installed_match = self.Entropy.clientDbconn.atomMatch(key,
+            installed_match = self.Entropy.installed_repository().atomMatch(key,
                 matchSlot = slot)
             if installed_match[0] != -1:
                 yp.installed_match = installed_match
@@ -860,7 +860,7 @@ class EntropyPackages:
             yp.color = SulfurConf.color_install
             return yp
         filtered = self.filter_reinstallable(
-            self.Entropy.clientDbconn.listAllPackages(get_scope = True,
+            self.Entropy.installed_repository().listAllPackages(get_scope = True,
             order_by = 'atom'))
         return [x for x in map(fm, filtered) if not isinstance(x, int)]
 
@@ -918,7 +918,7 @@ class EntropyPackages:
                 if set_match[0] != -1:
                     set_matches.append(set_match)
                 else: install_incomplete = True
-                set_installed_match = self.Entropy.clientDbconn.atomMatch(set_dep)
+                set_installed_match = self.Entropy.installed_repository().atomMatch(set_dep)
                 if set_match[0] != -1:
                     set_installed_matches.append(set_installed_match)
                 else: remove_incomplete = True
@@ -1167,7 +1167,7 @@ class EntropyPackages:
         except TypeError:
             return None
         idpackage, idresult = \
-            self.Entropy.clientDbconn.isPackageScopeAvailable(atom, slot,
+            self.Entropy.installed_repository().isPackageScopeAvailable(atom, slot,
                 revision)
         if idpackage == -1:
             return None

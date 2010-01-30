@@ -648,7 +648,7 @@ def _match_bashcomp(cmdline):
     from entropy.client.interfaces import Client
     client = Client(repo_validation = False, load_ugc = False,
         indexing = False, noclientdb = True)
-    if client.clientDbconn is None:
+    if client.installed_repository() is None:
         return []
     import text_query
     return text_query.match_package([cmdline[-1]], Equo = client,
@@ -660,7 +660,7 @@ def _search_bashcomp(cmdline, from_installed = False, ignore_installed = False):
     from entropy.client.interfaces import Client
     client = Client(repo_validation = False, load_ugc = False,
         indexing = False, noclientdb = True)
-    if client.clientDbconn is None:
+    if client.installed_repository() is None:
         return []
     import text_query
     return text_query.search_package([cmdline[-1]], Equo = client,

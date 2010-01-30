@@ -57,7 +57,7 @@ def test_spm(entropy_client):
 
 def test_clientdb(entropy_client):
     try:
-        entropy_client.clientDbconn.validateDatabase()
+        entropy_client.installed_repository().validateDatabase()
     except SystemDatabaseError:
         mytxt = _("Installed packages database not available")
         print_error(darkred(" * ")+red("%s !" % (mytxt,)))
@@ -131,11 +131,11 @@ def database(options):
     return -10
 
 def _database_vacuum(entropy_client):
-    if entropy_client.clientDbconn is not None:
+    if entropy_client.installed_repository() is not None:
         print_info(red(" @@ ")+"%s..." % (blue(_("Vacuum cleaning System Database")),), back = True)
-        entropy_client.clientDbconn.dropAllIndexes()
-        entropy_client.clientDbconn.vacuum()
-        entropy_client.clientDbconn.commitChanges()
+        entropy_client.installed_repository().dropAllIndexes()
+        entropy_client.installed_repository().vacuum()
+        entropy_client.installed_repository().commitChanges()
         print_info(red(" @@ ")+"%s." % (brown(_("Vacuum cleaned System Database")),))
         return 0
     print_warning(darkred(" !!! ")+blue("%s." % (_("No System Databases found"),)))
@@ -197,7 +197,7 @@ def _database_counters(entropy_client):
         return rc
 
     print_info(red("  %s..." % (_("Regenerating counters table"),) ))
-    entropy_client.clientDbconn.regenerateSpmUidTable(verbose = True)
+    entropy_client.installed_repository().regenerateSpmUidTable(verbose = True)
     print_info(red("  %s" % (
         _("Counters table regenerated. Look above for errors."),) ))
     return 0
@@ -209,7 +209,7 @@ def _database_revdeps(entropy_client):
 
     print_info(red("  %s..." % (
         _("Regenerating reverse dependencies metadata"),) ))
-    entropy_client.clientDbconn.generateReverseDependenciesMetadata()
+    entropy_client.installed_repository().generateReverseDependenciesMetadata()
     print_info(red("  %s." % (
         _("Reverse dependencies metadata regenerated successfully"),) ))
     return 0
@@ -264,7 +264,7 @@ def _database_resurrect(entropy_client):
         dbname = etpConst['clientdbid']) # don't do this at home
     dbc.initializeDatabase()
     dbc.commitChanges()
-    entropy_client.clientDbconn = dbc
+    entropy_client.installed_repository() = dbc
     mytxt = "  %s %s" % (
         darkgreen(_("Database reinitialized correctly at")),
         bold(etpConst['etpdatabaseclientfilepath']),
@@ -370,10 +370,10 @@ def _database_resurrect(entropy_client):
     print_info(red("  %s." % (_("Database resurrected successfully"),)))
 
     print_info(red("  %s..." % (_("Now generating reverse dependencies metadata"),)))
-    entropy_client.clientDbconn.generateReverseDependenciesMetadata()
+    entropy_client.installed_repository().generateReverseDependenciesMetadata()
     print_info(red("  %s..." % (_("Now indexing tables"),)))
-    entropy_client.clientDbconn.indexing = True
-    entropy_client.clientDbconn.createAllIndexes()
+    entropy_client.installed_repository().indexing = True
+    entropy_client.installed_repository().createAllIndexes()
     print_info(red("  %s." % (_("Database reinitialized successfully"),)))
 
     print_warning(red("  %s" % (_("Keep in mind that virtual packages couldn't be matched. They don't own any files."),) ))
@@ -394,7 +394,7 @@ def _database_spmsync(entropy_client):
 
     # make it crash
     entropy_client.noclientdb = False
-    entropy_client.reopen_client_repository()
+    entropy_client.reopen_installed_repository()
     entropy_client.close_all_repositories()
 
     print_info(red(" %s..." % (
@@ -423,23 +423,23 @@ def _database_spmsync(entropy_client):
     # packages to be added/updated (handle add/update later)
     for x in installed_packages:
         installed_spm_uids.add(x[1])
-        counter = entropy_client.clientDbconn.isSpmUidAvailable(x[1])
+        counter = entropy_client.installed_repository().isSpmUidAvailable(x[1])
         if (not counter):
             to_be_added.add(tuple(x))
 
     # packages to be removed from the database
-    repo_spm_uids = entropy_client.clientDbconn.listAllSpmUids()
+    repo_spm_uids = entropy_client.installed_repository().listAllSpmUids()
     for x in repo_spm_uids:
         if x[0] < 0: # skip packages without valid counter
             continue
         if x[0] not in installed_spm_uids:
             # check if the package is in to_be_added
             if (to_be_added):
-                atom = entropy_client.clientDbconn.retrieveAtom(x[1])
+                atom = entropy_client.installed_repository().retrieveAtom(x[1])
                 add = True
                 if atom:
                     atomkey = entropy.tools.dep_getkey(atom)
-                    atomslot = entropy_client.clientDbconn.retrieveSlot(x[1])
+                    atomslot = entropy_client.installed_repository().retrieveSlot(x[1])
                     add = True
                     for pkgdata in to_be_added:
                         try:
@@ -489,7 +489,7 @@ def _database_spmsync(entropy_client):
 
         broken = set()
         for x in to_be_removed:
-            atom = entropy_client.clientDbconn.retrieveAtom(x)
+            atom = entropy_client.installed_repository().retrieveAtom(x)
             if not atom:
                 broken.add(x)
                 continue
@@ -505,7 +505,7 @@ def _database_spmsync(entropy_client):
                 totalqueue = str(len(to_be_removed))
                 for x in to_be_removed:
                     queue += 1
-                    atom = entropy_client.clientDbconn.retrieveAtom(x)
+                    atom = entropy_client.installed_repository().retrieveAtom(x)
                     mytxt = " %s (%s/%s) %s %s %s" % (
                         red("--"),
                         blue(str(queue)),
@@ -515,7 +515,7 @@ def _database_spmsync(entropy_client):
                         darkgreen(atom),
                     )
                     print_info(mytxt)
-                    entropy_client.clientDbconn.removePackage(x)
+                    entropy_client.installed_repository().removePackage(x)
                 print_info(brown(" @@ ") + \
                     blue("%s." % (_("Database removal complete"),) ))
 
@@ -575,7 +575,7 @@ def _database_spmsync(entropy_client):
                 mydata['name'], mydata['version'], mydata['versiontag'])
 
             # look for atom in client database
-            idpkgs = entropy_client.clientDbconn.getIDPackages(myatom)
+            idpkgs = entropy_client.installed_repository().getIDPackages(myatom)
             oldidpackages = sorted(idpkgs)
             oldidpackage = None
             if oldidpackages:
@@ -584,12 +584,12 @@ def _database_spmsync(entropy_client):
             mydata['revision'] = 9999 # can't do much more
             if oldidpackage:
                 mydata['revision'] = \
-                    entropy_client.clientDbconn.retrieveRevision(oldidpackage)
+                    entropy_client.installed_repository().retrieveRevision(oldidpackage)
 
-            idpk, rev, xx = entropy_client.clientDbconn.handlePackage(mydata,
+            idpk, rev, xx = entropy_client.installed_repository().handlePackage(mydata,
                 forcedRevision = mydata['revision'])
-            entropy_client.clientDbconn.dropInstalledPackageFromStore(idpk)
-            entropy_client.clientDbconn.storeInstalledPackage(idpk, "spm-db")
+            entropy_client.installed_repository().dropInstalledPackageFromStore(idpk)
+            entropy_client.installed_repository().storeInstalledPackage(idpk, "spm-db")
             os.remove(temp_pkg_path)
 
         print_info(brown(" @@ ") + \
@@ -627,10 +627,10 @@ def _database_generate(entropy_client):
     # try to collect current installed revisions if possible
     revisions_match = {}
     try:
-        myids = entropy_client.clientDbconn.listAllIdpackages()
+        myids = entropy_client.installed_repository().listAllIdpackages()
         for myid in myids:
-            myatom = entropy_client.clientDbconn.retrieveAtom(myid)
-            myrevision = entropy_client.clientDbconn.retrieveRevision(myid)
+            myatom = entropy_client.installed_repository().retrieveAtom(myid)
+            myrevision = entropy_client.installed_repository().retrieveRevision(myid)
             revisions_match[myatom] = myrevision
     except:
         pass
@@ -651,13 +651,13 @@ def _database_generate(entropy_client):
         bold(etpConst['etpdatabaseclientfilepath']),
     )
     print_info(mytxt, back = True)
-    entropy_client.reopen_client_repository()
-    dbfile = entropy_client.clientDbconn.dbFile
-    entropy_client.clientDbconn.closeDB()
+    entropy_client.reopen_installed_repository()
+    dbfile = entropy_client.installed_repository().dbFile
+    entropy_client.installed_repository().closeDB()
     if os.path.isfile(dbfile):
         os.remove(dbfile)
-    entropy_client.open_client_repository()
-    entropy_client.clientDbconn.initializeDatabase()
+    entropy_client.open_installed_repository()
+    entropy_client.installed_repository().initializeDatabase()
     mytxt = darkred("  %s %s") % (
         _("Database reinitialized correctly at"),
         bold(etpConst['etpdatabaseclientfilepath']),
@@ -711,26 +711,26 @@ def _database_generate(entropy_client):
             saved_rev = saved_rev
             mydata['revision'] = saved_rev
 
-        idpk, rev, xx = entropy_client.clientDbconn.addPackage(mydata,
+        idpk, rev, xx = entropy_client.installed_repository().addPackage(mydata,
             revision = mydata['revision'], do_commit = False)
-        entropy_client.clientDbconn.storeInstalledPackage(idpk, "spm-db")
+        entropy_client.installed_repository().storeInstalledPackage(idpk, "spm-db")
         os.remove(temp_pkg_path)
 
     print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))
 
     print_info(red("  %s..." % (
         _("Now generating reverse dependencies metadata"),) ))
-    entropy_client.clientDbconn.generateReverseDependenciesMetadata()
+    entropy_client.installed_repository().generateReverseDependenciesMetadata()
     print_info(red("  %s...") % (_("Now indexing tables"),) )
-    entropy_client.clientDbconn.indexing = True
-    entropy_client.clientDbconn.createAllIndexes()
+    entropy_client.installed_repository().indexing = True
+    entropy_client.installed_repository().createAllIndexes()
     print_info(red("  %s." % (_("Database reinitialized successfully"),) ))
     return 0
 
 def _database_check(entropy_client):
     try:
         valid = True
-        entropy_client.clientDbconn.validateDatabase()
+        entropy_client.installed_repository().validateDatabase()
     except SystemDatabaseError:
         valid = False
     if valid:
@@ -774,7 +774,7 @@ def _getinfo(entropy_client):
     info['UI Config'] = etpUi
 
     # client database info
-    cdbconn = entropy_client.clientDbconn
+    cdbconn = entropy_client.installed_repository()
     info['Installed database'] = cdbconn
     if cdbconn is not None:
         # print db info

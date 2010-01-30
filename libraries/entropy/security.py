@@ -512,7 +512,7 @@ class System:
         """
         Validate cache by looking at some checksum data
         """
-        inst_pkgs_cksum = self.Entropy.clientDbconn.checksum(do_order = True,
+        inst_pkgs_cksum = self.Entropy.installed_repository().checksum(do_order = True,
             strict = False, strings = True)
         repo_cksum = self.Entropy._all_repositories_checksum()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
@@ -722,13 +722,13 @@ class System:
             if not vul_atoms:
                 return False
             for atom in unaff_atoms:
-                matches = self.Entropy.clientDbconn.atomMatch(atom,
+                matches = self.Entropy.installed_repository().atomMatch(atom,
                     multiMatch = True)
                 for idpackage in matches[0]:
                     unaffected_atoms.add((idpackage, 0))
 
             for atom in vul_atoms:
-                match = self.Entropy.clientDbconn.atomMatch(atom)
+                match = self.Entropy.installed_repository().atomMatch(atom)
                 if (match[0] != -1) and (match not in unaffected_atoms):
                     self.affected_atoms.add(atom)
                     return True

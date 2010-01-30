@@ -407,12 +407,12 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
 
     # verify that client database idpackage still exist,
     # validate here before passing removePackage() wrong info
-    remove = [x for x in remove if entropy_client.clientDbconn.isIdpackageAvailable(x)]
+    remove = [x for x in remove if entropy_client.installed_repository().isIdpackageAvailable(x)]
     # Filter out packages installed from unavailable repositories, this is
     # mainly required to allow 3rd party packages installation without
     # erroneously inform user about unavailability.
     remove = [x for x in remove if \
-        entropy_client.clientDbconn.getInstalledPackageRepository(x) in \
+        entropy_client.installed_repository().getInstalledPackageRepository(x) in \
             entropy_client.validRepositories]
 
     if remove and entropy_client.validRepositories and (not onlyfetch):
@@ -502,7 +502,7 @@ def branch_hop(entropy_client, branch):
 
     if status:
 
-        entropy_client.clientDbconn.moveSpmUidsToBranch(branch)
+        entropy_client.installed_repository().moveSpmUidsToBranch(branch)
 
         # remove old repos
         for repo_path in old_repo_paths:
@@ -667,19 +667,19 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
             installedTag = "NoTag"
             installedRev = "NoRev"
             installedRepo = _("Not available")
-            pkginstalled = entropy_client.clientDbconn.atomMatch(
+            pkginstalled = entropy_client.installed_repository().atomMatch(
                 entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):
                 # found
                 idx = pkginstalled[0]
-                installedVer = entropy_client.clientDbconn.retrieveVersion(idx)
-                installedTag = entropy_client.clientDbconn.retrieveVersionTag(idx)
-                installedRepo = entropy_client.clientDbconn.getInstalledPackageRepository(idx)
+                installedVer = entropy_client.installed_repository().retrieveVersion(idx)
+                installedTag = entropy_client.installed_repository().retrieveVersionTag(idx)
+                installedRepo = entropy_client.installed_repository().getInstalledPackageRepository(idx)
                 if installedRepo is None:
                     installedRepo = _("Not available")
                 if not installedTag:
                     installedTag = "NoTag"
-                installedRev = entropy_client.clientDbconn.retrieveRevision(idx)
+                installedRev = entropy_client.installed_repository().retrieveRevision(idx)
 
             mytxt = "   # %s%s/%s%s [%s] %s" % (
                 red("("),
@@ -763,7 +763,7 @@ def _show_you_meant(entropy_client, package, from_installed):
     print_info(mytxt)
     for match in items:
         if from_installed:
-            dbconn = entropy_client.clientDbconn
+            dbconn = entropy_client.installed_repository()
             idpackage = match[0]
         else:
             dbconn = entropy_client.open_repository(match[1])
@@ -1102,18 +1102,18 @@ def install_packages(entropy_client,
                 installedTag = ''
                 installedRev = 0
                 installedRepo = None
-                pkginstalled = entropy_client.clientDbconn.atomMatch(
+                pkginstalled = entropy_client.installed_repository().atomMatch(
                     entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if pkginstalled[1] == 0:
                     # found an installed package
                     idx = pkginstalled[0]
-                    installedVer = entropy_client.clientDbconn.retrieveVersion(idx)
-                    installedTag = entropy_client.clientDbconn.retrieveVersionTag(idx)
-                    installedRev = entropy_client.clientDbconn.retrieveRevision(idx)
-                    installedRepo = entropy_client.clientDbconn.getInstalledPackageRepository(idx)
+                    installedVer = entropy_client.installed_repository().retrieveVersion(idx)
+                    installedTag = entropy_client.installed_repository().retrieveVersionTag(idx)
+                    installedRev = entropy_client.installed_repository().retrieveRevision(idx)
+                    installedRepo = entropy_client.installed_repository().getInstalledPackageRepository(idx)
                     if installedRepo is None:
                         installedRepo = _("Not available")
-                    onDiskFreedSize += entropy_client.clientDbconn.retrieveOnDiskSize(idx)
+                    onDiskFreedSize += entropy_client.installed_repository().retrieveOnDiskSize(idx)
 
                 if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
                     continue
@@ -1184,11 +1184,11 @@ def install_packages(entropy_client,
                 print_info(red(" @@ ")+mytxt)
 
                 for idpackage in removal_queue:
-                    pkgatom = entropy_client.clientDbconn.retrieveAtom(idpackage)
+                    pkgatom = entropy_client.installed_repository().retrieveAtom(idpackage)
                     if not pkgatom:
                         continue
-                    onDiskFreedSize += entropy_client.clientDbconn.retrieveOnDiskSize(idpackage)
-                    installedfrom = entropy_client.clientDbconn.getInstalledPackageRepository(idpackage)
+                    onDiskFreedSize += entropy_client.installed_repository().retrieveOnDiskSize(idpackage)
+                    installedfrom = entropy_client.installed_repository().getInstalledPackageRepository(idpackage)
                     if installedfrom is None:
                         installedfrom = _("Not available")
                     repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
@@ -1383,7 +1383,7 @@ def install_packages(entropy_client,
                 elif choice == 2:
                     break
                 elif choice == 3:
-                    entropy_client.clientDbconn.acceptLicense(key)
+                    entropy_client.installed_repository().acceptLicense(key)
                     break
 
     if not etpUi['clean'] or onlyfetch:
@@ -1545,7 +1545,7 @@ def _configure_packages(entropy_client, packages):
     packages = entropy_client.packages_expand(packages)
 
     for package in packages:
-        idpackage, result = entropy_client.clientDbconn.atomMatch(package)
+        idpackage, result = entropy_client.installed_repository().atomMatch(package)
         if idpackage == -1:
             mytxt = "## %s: %s %s." % (
                 red(_("ATTENTION")),
@@ -1568,11 +1568,11 @@ def _configure_packages(entropy_client, packages):
         atomscounter += 1
 
         # get needed info
-        pkgatom = entropy_client.clientDbconn.retrieveAtom(idpackage)
+        pkgatom = entropy_client.installed_repository().retrieveAtom(idpackage)
         if not pkgatom:
             continue
 
-        installedfrom = entropy_client.clientDbconn.getInstalledPackageRepository(
+        installedfrom = entropy_client.installed_repository().getInstalledPackageRepository(
             idpackage)
         if installedfrom is None:
             installedfrom = _("Not available")
@@ -1628,7 +1628,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         found_pkg_atoms = []
         if atomsdata:
             for idpackage in atomsdata:
-                if not entropy_client.clientDbconn.isIdpackageAvailable(idpackage):
+                if not entropy_client.installed_repository().isIdpackageAvailable(idpackage):
                     continue
                 found_pkg_atoms.append(idpackage)
         else:
@@ -1637,7 +1637,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             packages = entropy_client.packages_expand(packages)
 
             for package in packages:
-                idpackage, result = entropy_client.clientDbconn.atomMatch(package)
+                idpackage, result = entropy_client.installed_repository().atomMatch(package)
                 if idpackage == -1:
                     mytxt = "## %s: %s %s." % (
                         red(_("ATTENTION")),
@@ -1667,7 +1667,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             atomscounter += 1
 
             # get needed info
-            pkgatom = entropy_client.clientDbconn.retrieveAtom(idpackage)
+            pkgatom = entropy_client.installed_repository().retrieveAtom(idpackage)
             if not pkgatom:
                 continue
 
@@ -1688,12 +1688,12 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
             plain_removal_queue.append(idpackage)
 
-            installedfrom = entropy_client.clientDbconn.getInstalledPackageRepository(
+            installedfrom = entropy_client.installed_repository().getInstalledPackageRepository(
                 idpackage)
             if installedfrom is None:
                 installedfrom = _("Not available")
-            on_disk_size = entropy_client.clientDbconn.retrieveOnDiskSize(idpackage)
-            pkg_size = entropy_client.clientDbconn.retrieveSize(idpackage)
+            on_disk_size = entropy_client.installed_repository().retrieveOnDiskSize(idpackage)
+            pkg_size = entropy_client.installed_repository().retrieveSize(idpackage)
             disksize = entropy.tools.bytes_into_human(on_disk_size)
             disksizeinfo = " [%s]" % (bold(str(disksize)),)
 
@@ -1744,19 +1744,19 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                 for idpackage in choosen_removal_queue:
 
                     atomscounter += 1
-                    rematom = entropy_client.clientDbconn.retrieveAtom(idpackage)
+                    rematom = entropy_client.installed_repository().retrieveAtom(idpackage)
                     if not rematom:
                         continue
 
                     installedfrom = \
-                        entropy_client.clientDbconn.getInstalledPackageRepository(
+                        entropy_client.installed_repository().getInstalledPackageRepository(
                             idpackage)
                     if installedfrom is None:
                         installedfrom = _("Not available")
 
-                    on_disk_size = entropy_client.clientDbconn.retrieveOnDiskSize(
+                    on_disk_size = entropy_client.installed_repository().retrieveOnDiskSize(
                         idpackage)
-                    pkg_size = entropy_client.clientDbconn.retrieveSize(idpackage)
+                    pkg_size = entropy_client.installed_repository().retrieveSize(idpackage)
                     disksize = entropy.tools.bytes_into_human(on_disk_size)
                     repositoryInfo = bold("[") + brown(installedfrom) \
                         + bold("]")
@@ -1872,7 +1872,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
     invalid = set()
     for idpackage in removal_queue:
         try:
-            entropy_client.clientDbconn.retrieveAtom(idpackage)
+            entropy_client.installed_repository().retrieveAtom(idpackage)
         except TypeError:
             invalid.add(idpackage)
     removal_queue = [x for x in removal_queue if x not in invalid]
@@ -1885,7 +1885,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         ignored = []
         for idpackage in removal_queue:
             currentqueue += 1
-            atom = entropy_client.clientDbconn.retrieveAtom(idpackage)
+            atom = entropy_client.installed_repository().retrieveAtom(idpackage)
             if not atom:
                 continue
             print_info(red(" -- ")+bold("(")+blue(str(currentqueue)) + "/" + \
@@ -1939,8 +1939,8 @@ def _unused_packages_test(entropy_client, do_size_sort = False):
             _("Running unused packages test, pay attention, there are false positives"),) ))
 
     unused = entropy_client.unused_packages_test()
-    data = [(entropy_client.clientDbconn.retrieveOnDiskSize(x), x, \
-        entropy_client.clientDbconn.retrieveAtom(x),) for x in unused]
+    data = [(entropy_client.installed_repository().retrieveOnDiskSize(x), x, \
+        entropy_client.installed_repository().retrieveAtom(x),) for x in unused]
 
     if do_size_sort:
         data = sorted(data, key = lambda x: x[0])
@@ -1966,11 +1966,11 @@ def _dependencies_test(entropy_client):
         found_deps = set()
         for dep in deps_not_matched:
 
-            riddep = entropy_client.clientDbconn.searchDependency(dep)
+            riddep = entropy_client.installed_repository().searchDependency(dep)
             if riddep != -1:
-                ridpackages = entropy_client.clientDbconn.searchIdpackageFromIddependency(riddep)
+                ridpackages = entropy_client.installed_repository().searchIdpackageFromIddependency(riddep)
                 for i in ridpackages:
-                    iatom = entropy_client.clientDbconn.retrieveAtom(i)
+                    iatom = entropy_client.installed_repository().retrieveAtom(i)
                     if dep not in crying_atoms:
                         crying_atoms[dep] = set()
                     crying_atoms[dep].add(iatom)
@@ -1980,12 +1980,12 @@ def _dependencies_test(entropy_client):
                 found_deps.add(dep)
                 continue
             else:
-                iddep = entropy_client.clientDbconn.searchDependency(dep)
+                iddep = entropy_client.installed_repository().searchDependency(dep)
                 if iddep == -1:
                     continue
-                c_idpackages = entropy_client.clientDbconn.searchIdpackageFromIddependency(iddep)
+                c_idpackages = entropy_client.installed_repository().searchIdpackageFromIddependency(iddep)
                 for c_idpackage in c_idpackages:
-                    key, slot = entropy_client.clientDbconn.retrieveKeySlot(c_idpackage)
+                    key, slot = entropy_client.installed_repository().retrieveKeySlot(c_idpackage)
                     key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
                         slot,)
                     match = entropy_client.atom_match(key, matchSlot = slot)
@@ -2040,7 +2040,7 @@ def _libraries_test(entropy_client, listfiles = False, dump = False):
 
     QA = entropy_client.QA()
     pkgs_matched, brokenlibs, status = QA.test_shared_objects(
-        entropy_client.clientDbconn, dump_results_to_file = dump)
+        entropy_client.installed_repository(), dump_results_to_file = dump)
     if status != 0:
         restore_qstats()
         return -1, 1
