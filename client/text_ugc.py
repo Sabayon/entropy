@@ -62,7 +62,7 @@ def ugc(options):
 
 def _ugc_login(entropy_client, repository, force = False):
 
-    if repository not in entropy_client.validRepositories:
+    if repository not in entropy_client.repositories():
         print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
         entropy_client.UGC.remove_login(repository)
         return 1
@@ -106,7 +106,7 @@ def _ugc_login(entropy_client, repository, force = False):
 
 def _ugc_logout(entropy_client, repository):
 
-    if repository not in entropy_client.validRepositories:
+    if repository not in entropy_client.repositories():
         print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
         return 1
 

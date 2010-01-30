@@ -60,7 +60,7 @@ class CalculatorsMixin:
     def find_belonging_dependency(self, matched_atoms):
         crying_atoms = set()
         for atom in matched_atoms:
-            for repo in self.validRepositories:
+            for repo in self._enabled_repos:
                 rdbconn = self.open_repository(repo)
                 riddep = rdbconn.searchDependency(atom)
                 if riddep != -1:
@@ -231,7 +231,7 @@ class CalculatorsMixin:
         c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
             atom, k_ms, packagesFilter,
-            hash(tuple(self.validRepositories)),
+            hash(tuple(self._enabled_repos)),
             hash(tuple(self.SystemSettings['repositories']['available'])),
             multiMatch, multiRepo, extendedResults, u_hash,
         )
@@ -253,7 +253,7 @@ class CalculatorsMixin:
                 raise AttributeError("entropy.server.interfaces.Server instance required")
             valid_repos = server_repos[:]
         else:
-            valid_repos = self.validRepositories
+            valid_repos = self._enabled_repos
         if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
 
@@ -449,7 +449,7 @@ class CalculatorsMixin:
                 raise IncorrectParameter("IncorrectParameter: %s" % (t,))
             valid_repos = server_repos[:]
         else:
-            valid_repos = self.validRepositories
+            valid_repos = self._enabled_repos
 
         if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
@@ -1551,7 +1551,7 @@ class CalculatorsMixin:
 
         available = []
         avail_dep_text = _("Calculating available packages for")
-        for repo in self.validRepositories:
+        for repo in self._enabled_repos:
             try:
                 dbconn = self.open_repository(repo)
                 dbconn.validateDatabase()

@@ -1250,7 +1250,7 @@ class PkgInfoMenu(MenuSkel):
             return
         from_repo = True
         if isinstance(pkg.matched_atom[1], int): from_repo = False
-        if from_repo and (pkg.matched_atom[1] not in self.Entropy.validRepositories) and (not remote):
+        if from_repo and (pkg.matched_atom[1] not in self.Entropy.repositories()) and (not remote):
             return
 
         # set package image

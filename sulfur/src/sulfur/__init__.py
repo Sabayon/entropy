@@ -568,7 +568,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def warn_repositories(self):
         all_repos = self.Equo.SystemSettings['repositories']['order']
-        valid_repos = self.Equo.validRepositories
+        valid_repos = self.Equo.repositories()
         invalid_repos = [x for x in all_repos if x not in valid_repos]
         invalid_repos = [x for x in invalid_repos if \
             (self.Equo.get_repository_revision(x) == -1)]
@@ -773,7 +773,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not force:
             eapi3_repos = []
-            for repoid in self.Equo.validRepositories:
+            for repoid in self.Equo.repositories():
                 aware = self.Equo.UGC.is_repository_eapi3_aware(repoid)
                 if aware:
                     eapi3_repos.append(repoid)
@@ -816,7 +816,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _ugc_update(self):
 
-        for repo in self.Equo.validRepositories:
+        for repo in self.Equo.repositories():
             if self.do_debug:
                 t1 = time.time()
                 print_generic("working UGC update for", repo)
@@ -1288,7 +1288,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def show_notice_board(self, force = True):
         repoids = {}
-        for repoid in self.Equo.validRepositories:
+        for repoid in self.Equo.repositories():
             if self.Equo.is_noticeboard_marked_as_read(repoid) and not force:
                 continue
             avail_repos = self.Equo.SystemSettings['repositories']['available']
@@ -1848,7 +1848,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def do_name_search(keyword):
             keyword = const_convert_to_unicode(keyword)
             matches = []
-            for repoid in self.Equo.validRepositories:
+            for repoid in self.Equo.repositories():
                 dbconn = self.Equo.open_repository(repoid)
                 results = dbconn.searchPackages(keyword, just_id = True)
                 matches += [(x, repoid) for x in results]
@@ -1861,7 +1861,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def do_name_desc_search(keyword):
             keyword = const_convert_to_unicode(keyword)
             matches = []
-            for repoid in self.Equo.validRepositories:
+            for repoid in self.Equo.repositories():
                 dbconn = self.Equo.open_repository(repoid)
                 results = dbconn.searchPackagesByDescription(keyword)
                 matches += [(x, repoid) for atom, x in results]

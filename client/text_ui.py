@@ -413,9 +413,9 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
     # erroneously inform user about unavailability.
     remove = [x for x in remove if \
         entropy_client.installed_repository().getInstalledPackageRepository(x) in \
-            entropy_client.validRepositories]
+            entropy_client.repositories()]
 
-    if remove and entropy_client.validRepositories and (not onlyfetch):
+    if remove and entropy_client.repositories() and (not onlyfetch):
         remove = sorted(remove)
         print_info(red(" @@ ") + \
             blue("%s." % (

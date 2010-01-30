@@ -197,7 +197,7 @@ class NoticeBoardMixin:
         @return: read status
         @rtype: bool
         """
-        for repoid in self.validRepositories:
+        for repoid in self._enabled_repos:
             if not self.is_noticeboard_marked_as_read(repoid):
                 return False
         return True

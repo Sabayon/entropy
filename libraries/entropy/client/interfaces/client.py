@@ -571,26 +571,27 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             load_ugc = True, url_fetcher = None,
             multiple_url_fetcher = None):
 
+        self.__instance_destroyed = False
         self._repo_error_messages_cache = set()
         self._repodb_cache = {}
         self._memory_db_instances = {}
         self._QA_cache = {}
         self._security_cache = {}
         self._spm_cache = {}
+        self._installed_repository = None
 
         self._treeupdates_repos = set()
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        self.__instance_destroyed = False
         self.FileUpdates = None
-        self.validRepositories = []
+        self._enabled_repos = []
         self.UGC = None
         # supporting external output stuff, you can point self.progress
         # to your progress bar and reimplement output
+        # FIXME: deprecate and remove this
         self.progress = None
-        self._installed_repository = None
         self.safe_mode = 0
         self.indexing = indexing
         self.repo_validation = repo_validation
@@ -679,7 +680,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if self.repo_validation:
             self.validate_repositories()
         else:
-            self.validRepositories.extend(
+            self._enabled_repos.extend(
                 self.SystemSettings['repositories']['order'])
 
         # add our SystemSettings plugin

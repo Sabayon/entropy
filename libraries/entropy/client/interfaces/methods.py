@@ -51,7 +51,7 @@ class RepositoryMixin:
             client_metadata['masking_validation']['cache'].clear()
 
         # valid repositories
-        del self.validRepositories[:]
+        del self._enabled_repos[:]
         for repoid in self.SystemSettings['repositories']['order']:
             # open database
             try:
@@ -59,7 +59,7 @@ class RepositoryMixin:
                 dbc = self.open_repository(repoid)
                 dbc.listConfigProtectEntries()
                 dbc.validateDatabase()
-                self.validRepositories.append(repoid)
+                self._enabled_repos.append(repoid)
 
             except RepositoryError:
 
@@ -292,8 +292,8 @@ class RepositoryMixin:
         # triggers _all_repositories_checksum, which triggers open_repository,
         # which triggers load_repository_database, which triggers an unwanted
         # output message => "bad repository id specified"
-        if repoid in self.validRepositories:
-            self.validRepositories.remove(repoid)
+        if repoid in self._enabled_repos:
+            self._enabled_repos.remove(repoid)
 
         # ensure that all dbs are closed
         self.close_all_repositories()
@@ -533,18 +533,12 @@ class RepositoryMixin:
 
         self.add_repository(repodata)
         self.validate_repositories()
-        if basefile not in self.validRepositories:
+        if basefile not in self._enabled_repos:
             self.remove_repository(basefile)
             return -4, atoms_contained
         mydbconn.closeDB()
         del mydbconn
         return 0, atoms_contained
-
-    def reopen_installed_repository(self):
-        self._installed_repository.closeDB()
-        self.open_installed_repository()
-        # make sure settings are in sync
-        self.SystemSettings.clear()
 
     def _add_plugin_to_client_repository(self, entropy_client_repository,
         repo_id):
@@ -555,6 +549,22 @@ class RepositoryMixin:
         repo_plugin = ClientEntropyRepositoryPlugin(self,
             metadata = etp_db_meta)
         entropy_client_repository.add_plugin(repo_plugin)
+
+    def repositories(self):
+        """
+        Return a list of enabled (and valid) repository identifiers, excluding
+        installed packages repository. You can use the identifiers in this list
+        to open EntropyRepository instances using Client.open_repository()
+        NOTE: this method directly returns a reference to the internal
+        enabled repository list object.
+        NOTE: the returned list is built based on SystemSettings repository
+        metadata but might differ because extra checks are done at runtime.
+        So, if you want to iterate over valid repositories, use this method.
+
+        @return: enabled and valid repository identifiers
+        @rtype list
+        """
+        return self._enabled_repos
 
     def installed_repository(self):
         """
@@ -623,6 +633,12 @@ class RepositoryMixin:
 
         self._installed_repository = conn
         return conn
+
+    def reopen_installed_repository(self):
+        self._installed_repository.closeDB()
+        self.open_installed_repository()
+        # make sure settings are in sync
+        self.SystemSettings.clear()
 
     def client_repository_sanity_check(self):
         self.output(
@@ -990,7 +1006,7 @@ class RepositoryMixin:
         branch = self.SystemSettings['repositories']['branch']
         errors = False
 
-        for repoid in self.validRepositories:
+        for repoid in self._enabled_repos:
 
             const_debug_write(__name__,
                 "run_repository_post_branch_upgrade_hooks: repoid: %s" % (
@@ -1275,7 +1291,7 @@ class MiscMixin:
 
     def reload_repositories_config(self, repositories = None):
         if repositories is None:
-            repositories = self.validRepositories
+            repositories = self._enabled_repos
         for repoid in repositories:
             self.open_repository(repoid)
 
@@ -1436,7 +1452,7 @@ class MiscMixin:
         entropy.tools.write_parameter_to_file(etpConst['repositoriesconf'],
             "branch", branch)
         # there are no valid repos atm
-        del self.validRepositories[:]
+        del self._enabled_repos[:]
         self.SystemSettings.clear()
 
         # reset treeupdatesactions
@@ -1464,7 +1480,7 @@ class MiscMixin:
                     valid_repos.append(self._installed_repository)
 
         elif not valid_repos:
-            valid_repos.extend(self.validRepositories[:])
+            valid_repos.extend(self._enabled_repos[:])
 
         for repo in valid_repos:
             if const_isstring(repo):
@@ -1504,7 +1520,7 @@ class MiscMixin:
 
     def list_repo_categories(self):
         categories = set()
-        for repo in self.validRepositories:
+        for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
             catsdata = dbconn.listAllCategories()
             categories.update(set([x[1] for x in catsdata]))
@@ -1512,7 +1528,7 @@ class MiscMixin:
 
     def list_repo_packages_in_category(self, category):
         pkg_matches = []
-        for repo in self.validRepositories:
+        for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
             branch = self.SystemSettings['repositories']['branch']
             catsdata = dbconn.searchPackagesByCategory(category, branch = branch)
@@ -1522,7 +1538,7 @@ class MiscMixin:
     def get_category_description_data(self, category):
 
         data = {}
-        for repo in self.validRepositories:
+        for repo in self._enabled_repos:
             try:
                 dbconn = self.open_repository(repo)
             except RepositoryError:
@@ -1772,7 +1788,7 @@ class MatchMixin:
     def is_match_masked_by_user(self, match, live_check = True):
         # (query_status,masked?,)
         m_id, m_repo = match
-        if m_repo not in self.validRepositories: return False
+        if m_repo not in self._enabled_repos: return False
         dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1: return False #,False
@@ -1786,7 +1802,7 @@ class MatchMixin:
     def is_match_unmasked_by_user(self, match, live_check = True):
         # (query_status,unmasked?,)
         m_id, m_repo = match
-        if m_repo not in self.validRepositories: return False
+        if m_repo not in self._enabled_repos: return False
         dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage == -1: return False #,False

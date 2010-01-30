@@ -4074,7 +4074,7 @@ class ServerMiscMixin:
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.Client.output = self.output
-        self.validRepositories = self.Client.validRepositories
+        self._enabled_repos = self.Client.repositories()
         self._backup_entropy_settings()
         self.Mirrors = MirrorsServer(self)
 

@@ -92,7 +92,7 @@ class CacheMixin:
         # client digest not needed, cache is kept updated
         return str(hash("%s|%s|%s" % (
             self._all_repositories_checksum(),
-            self.validRepositories,
+            self._enabled_repos,
             # needed when users do bogus things like editing config files
             # manually (branch setting)
             self.SystemSettings['repositories']['branch'],
@@ -101,7 +101,7 @@ class CacheMixin:
 
     def _all_repositories_checksum(self):
         sum_hashes = ''
-        for repo in self.validRepositories:
+        for repo in self._enabled_repos:
             try:
                 dbconn = self.open_repository(repo)
             except (RepositoryError):
@@ -139,7 +139,7 @@ class CacheMixin:
         ignore_spm_downgrades):
 
         c_hash = str(hash("%s|%s|%s|%s|%s|%s" % (
-            db_digest, empty_deps, self.validRepositories,
+            db_digest, empty_deps, self._enabled_repos,
             self.SystemSettings['repositories']['order'],
             ignore_spm_downgrades,
             # needed when users do bogus things like editing config files
@@ -161,7 +161,7 @@ class CacheMixin:
     def _get_critical_update_cache_hash(self, db_digest):
 
         return str(hash("%s|%s|%s|%s" % (
-            db_digest, self.validRepositories,
+            db_digest, self._enabled_repos,
             self.SystemSettings['repositories']['order'],
             # needed when users do bogus things like editing config files
             # manually (branch setting)

@@ -697,7 +697,7 @@ class EntropyPackages:
         # erroneously inform user about unavailability.
         remove = [x for x in remove if \
             self.Entropy.installed_repository().getInstalledPackageRepository(x) in \
-                self.Entropy.validRepositories]
+                self.Entropy.repositories()]
         return [x for x in map(self.__inst_pkg_setup, remove) if not \
             isinstance(x, int)]
 
@@ -806,7 +806,7 @@ class EntropyPackages:
             t1 = time.time()
 
         matches = set()
-        for repo in self.Entropy.validRepositories:
+        for repo in self.Entropy.repositories():
             try:
                 dbconn = self.Entropy.open_repository(repo)
                 dbconn.validateDatabase()
@@ -928,7 +928,7 @@ class EntropyPackages:
     def _pkg_get_pkgset_set_from_desc(self, set_from):
         my_set_from = _('Set from')
         set_from_desc = _('Unknown')
-        if set_from in self.Entropy.validRepositories:
+        if set_from in self.Entropy.repositories():
             avail_repos = self.Entropy.SystemSettings['repositories']['available']
             set_from_desc = avail_repos[set_from]['description']
         elif set_from == etpConst['userpackagesetsid']:
@@ -1112,7 +1112,7 @@ class EntropyPackages:
         return self._get_calls_dict().get(mask)()
 
     def is_reinstallable(self, atom, slot, revision):
-        for repoid in self.Entropy.validRepositories:
+        for repoid in self.Entropy.repositories():
             dbconn = self.Entropy.open_repository(repoid)
             idpackage, idreason = dbconn.isPackageScopeAvailable(atom, slot,
                 revision)
@@ -1127,7 +1127,7 @@ class EntropyPackages:
     def get_masked_packages(self):
         maskdata = []
 
-        for repoid in self.Entropy.validRepositories:
+        for repoid in self.Entropy.repositories():
             dbconn = self.Entropy.open_repository(repoid)
             repodata = dbconn.listAllIdpackages(order_by = 'atom')
             def fm(idpackage):
@@ -1180,7 +1180,7 @@ class EntropyPackages:
         del client_scope_data
 
         matched_data = set()
-        for repoid in self.Entropy.validRepositories:
+        for repoid in self.Entropy.repositories():
             dbconn = self.Entropy.open_repository(repoid)
             repodata = dbconn.listAllPackages(get_scope = True)
             mydata = {}

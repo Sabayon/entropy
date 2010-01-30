@@ -136,7 +136,7 @@ def query(options):
             elif mylistopts[0] == "available" and len(mylistopts) > 1:
                 repoid = mylistopts[1]
                 equo = EquoInterface()
-                if repoid in equo.validRepositories:
+                if repoid in equo.repositories():
                     repo_dbconn = equo.open_repository(repoid)
                     rc_status = list_installed_packages(dbconn = repo_dbconn)
                 else:
@@ -1163,7 +1163,7 @@ def search_package(packages, Equo = None, get_results = False,
         return my_found
 
     if not from_installed:
-        for repo in Equo.validRepositories:
+        for repo in Equo.repositories():
             repo_number += 1
 
             if not etpUi['quiet'] and not get_results:
@@ -1250,7 +1250,7 @@ def search_slotted_packages(slots, Equo = None):
 
     # search inside each available database
     repo_number = 0
-    for repo in Equo.validRepositories:
+    for repo in Equo.repositories():
         repo_number += 1
 
         if not etpUi['quiet']:
@@ -1323,7 +1323,7 @@ def search_tagged_packages(tags, Equo = None):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),)))
 
     repo_number = 0
-    for repo in Equo.validRepositories:
+    for repo in Equo.repositories():
         repo_number += 1
 
         if not etpUi['quiet']:
@@ -1392,7 +1392,7 @@ def search_licenses(licenses, Equo = None):
 
     # search inside each available database
     repo_number = 0
-    for repo in Equo.validRepositories:
+    for repo in Equo.repositories():
         repo_number += 1
 
         if not etpUi['quiet']:
@@ -1434,7 +1434,7 @@ def search_description(descriptions, Equo = None):
             darkgreen("%s..." % (_("Description Search"),) ))
 
     repo_number = 0
-    for repo in Equo.validRepositories:
+    for repo in Equo.repositories():
         repo_number += 1
 
         if not etpUi['quiet']:
