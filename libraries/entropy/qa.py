@@ -1260,6 +1260,7 @@ class ErrorReportInterface:
             f_rel.close()
 
         self.params['processes'] = getstatusoutput('ps auxf')[1]
+        self.params['lsof'] = getstatusoutput('lsof -p %s' % (os.getpid(),))[1]
         self.params['lspci'] = getstatusoutput('/usr/sbin/lspci')[1]
         self.params['dmesg'] = getstatusoutput('dmesg')[1]
         self.params['locale'] = getstatusoutput('locale -v')[1]
