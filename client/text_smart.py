@@ -253,9 +253,9 @@ def deflate_handler(mytbz2s, savedir):
         ext_rc = entropy.tools.remove_entropy_metadata(tbz2, save_path)
         if not ext_rc:
             return 1
-        tbz2name = os.path.basename(mytbz2)[:-len(etpConst['packagesext'])]
+        tbz2name = os.path.basename(tbz2)[:-len(etpConst['packagesext'])]
         tbz2name = entropy.tools.remove_tag(tbz2name)+etpConst['packagesext']
-        newtbz2 = os.path.dirname(mytbz2)+os.path.sep+tbz2name
+        newtbz2 = os.path.dirname(tbz2)+os.path.sep+tbz2name
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflated package"),))+newtbz2)
 
     return 0
@@ -339,8 +339,8 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
     import text_ui
     # run install_packages with onlyfetch
-    rc = text_ui.install_packages(atomsdata = fetchdata, deps = False,
-        onlyfetch = True)
+    rc = text_ui.install_packages(entropy_client, atomsdata = fetchdata,
+        deps = False, onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 
@@ -483,8 +483,8 @@ def smartgenerator(entropy_client, matched_atoms):
     fetchdata = matched_atoms
     # run install_packages with onlyfetch
     import text_ui
-    rc = text_ui.install_packages(atomsdata = fetchdata, deps = False,
-        onlyfetch = True)
+    rc = text_ui.install_packages(entropy_client,
+        atomsdata = fetchdata, deps = False, onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 

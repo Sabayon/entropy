@@ -266,6 +266,6 @@ def install_packages(entropy_client, security_intf, fetch = False):
             _("All the available updates have been already installed"),)))
         return 0
 
-    rc, stat = text_ui.install_packages(atomsdata = valid_matches,
-        onlyfetch = fetch)
+    rc, stat = text_ui.install_packages(entropy_client,
+        atomsdata = valid_matches, onlyfetch = fetch)
     return rc
