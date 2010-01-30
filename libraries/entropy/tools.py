@@ -221,18 +221,18 @@ def print_exception(returndata = False, tb_data = None, all_frame_data = False):
                                              frame.f_code.co_filename,
                                              frame.f_lineno))
         for key, value in list(frame.f_locals.items()):
-            if not returndata:
-                sys.stdout.write("\t%20s = " % key)
-            else:
-                data.append("\t%20s = " % key,)
+            cur_str = ''
+            cur_str = "\t%20s = " % key
             try:
-                if not returndata:
-                    sys.stdout.write(repr(value) + "\n")
-                else:
-                    data.append(repr(value) + "\n")
+                cur_str += repr(value) + "\n"
             except:
-                if not returndata:
-                    sys.stdout.write("<ERROR WHILE PRINTING VALUE>\n")
+                cur_str += "<ERROR WHILE PRINTING VALUE>\n"
+
+            if not returndata:
+                sys.stdout.write(cur_str)
+            else:
+                data.append(cur_str)
+
     if returndata:
         return data
 
