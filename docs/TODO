@@ -18,8 +18,6 @@
             - atom_match without serverInstance & bullshit
                 (add repo_opener argument instead)
             - remove "server_repos", use "matchRepo"
-        - entropy.client, rename validRepositories into enabled_repositories
-        - entropy.client, rename clientDbconn into installed_db
         - entropy.client, closeAllSecurity, closeAllQA
         - unpack & install should be done in entropy.spm
         - entropy.db => retrieveVersionTag => retrieveTag
