@@ -489,6 +489,11 @@ class SulfurApplicationEventsMixin:
         if action != self.lastPkgPB:
             do_clear_filter_bar = True
 
+        if action == "updates":
+            self.ui.updatesButtonbox.show()
+        else:
+            self.ui.updatesButtonbox.hide()
+
         if action == "masked":
             self.setup_masked_pkgs_warning_box()
             self.ui.maskedWarningBox.show()

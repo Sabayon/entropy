@@ -1736,7 +1736,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not allpkgs:
             self.ui.updatesButtonboxAddRemove.hide()
-        elif not SulfurConf.simple_mode:
+        else:
             self.ui.updatesButtonboxAddRemove.show()
 
         if not allpkgs or (self.lastPkgPB == "pkgsets"):

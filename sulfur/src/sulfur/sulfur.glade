@@ -762,6 +762,7 @@
                             <property name="layout_style">end</property>
                             <child>
                               <widget class="GtkButton" id="pkgSelect">
+                                <property name="visible">True</property>
                                 <property name="can_focus">True</property>
                                 <property name="can_default">True</property>
                                 <property name="receives_default">False</property>
@@ -778,7 +779,7 @@
                                         <child>
                                           <widget class="GtkImage" id="image84">
                                             <property name="visible">True</property>
-                                            <property name="stock">gtk-add</property>
+                                            <property name="icon_name">emblem-downloads</property>
                                           </widget>
                                           <packing>
                                             <property name="expand">False</property>
@@ -790,7 +791,7 @@
                                           <widget class="GtkLabel" id="label63">
                                             <property name="visible">True</property>
                                             <property name="yalign">0.49000000953674316</property>
-                                            <property name="label" translatable="yes">_Add All</property>
+                                            <property name="label" translatable="yes">_Update all</property>
                                             <property name="use_underline">True</property>
                                           </widget>
                                           <packing>
