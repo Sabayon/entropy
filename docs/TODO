@@ -1,8 +1,8 @@
 
   0.99.40:
 
-    - entropy.security.System unittest
     - PackageKit integration
+    - entropy.security.System unittest
     - entropy.server API docs
     - add splitdebug support?
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
