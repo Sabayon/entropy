@@ -199,7 +199,7 @@ def package(options):
                 onlyfetch = e_req_only_fetch,
                 replay = (e_req_replay or e_req_empty_deps),
                 resume = e_req_resume,
-                skipfirst = e_req_skipfirst, human = True,
+                skipfirst = e_req_skipfirst,
                 dochecksum = e_req_checksum,
                 multifetch = e_req_multifetch,
                 build_deps = e_req_bdeps)
@@ -362,8 +362,8 @@ def _upgrade_package_handle_calculation(entropy_client, resume, replay, onlyfetc
     return update, remove, onlyfetch, True
 
 def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
-    resume = False, skipfirst = False, human = False, dochecksum = True,
-    multifetch = 1, build_deps = False):
+    resume = False, skipfirst = False, dochecksum = True, multifetch = 1,
+    build_deps = False):
 
     # check if I am root
     if not entropy.tools.is_root():
@@ -426,25 +426,47 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         print_info(red(" @@ ")+blue(
             _("Even if they are usually harmless, it is suggested to remove them.")))
 
+        _show_package_removal_info(entropy_client, remove)
+
         do_run = True
         if not etpUi['pretend']:
-            do_run = False
-            if human:
-                do_run = True
-                rc = entropy_client.ask_question("     %s" % (
-                    _("Would you like to scan them ?"),) )
-                if rc == _("No"):
-                    do_run = False
 
-        if do_run:
+            rm_options = [_("Yes"), _("No"), _("Selective")]
+            def fake_callback(s):
+                return s
+
+            input_params = [('answer', ('combo', (_('Repository'), rm_options),),
+                fake_callback, False)]
+            data = entropy_client.input_box(
+                _('Would you like to remove them?'),
+                input_params
+            )
+            rc = data.get('answer', 2)[0]
+
+            if rc == 2: # no
+                do_run = False
+            elif rc == 3: # selective
+                new_remove = []
+                c_repo = entropy_client.installed_repository()
+                for idpackage in remove:
+                    c_atom = c_repo.retrieveAtom(idpackage)
+                    if c_atom is None:
+                        continue
+                    c_atom = purple(c_atom)
+                    r_rc = entropy_client.ask_question("[%s] %s" % (
+                        c_atom, _("Remove this?"),))
+                    if r_rc == _("Yes"):
+                        new_remove.append(idpackage)
+                remove = new_remove
+
+        if do_run and remove:
             remove_packages(
                 entropy_client,
                 atomsdata = remove,
                 deps = False,
                 system_packages_check = False,
                 remove_config_files = True,
-                resume = resume,
-                human = human
+                resume = resume
             )
 
     else:
@@ -637,6 +659,40 @@ def _scan_packages(entropy_client, packages, etp_pkg_files):
                 raise AttributeError("invalid package %s" % (pkg,))
 
     return found_pkg_atoms
+
+def _show_package_removal_info(entropy_client, package_identifiers):
+
+    print_info(red(" @@ ") + \
+        blue("%s:" % (_("These are the packages that would be removed"),) ))
+    totalatoms = str(len(package_identifiers))
+
+    atomscounter = 0
+    for idpackage in package_identifiers:
+
+        atomscounter += 1
+        rematom = entropy_client.installed_repository().retrieveAtom(idpackage)
+        if not rematom:
+            continue
+
+        installedfrom = \
+            entropy_client.installed_repository().getInstalledPackageRepository(
+                idpackage)
+        if installedfrom is None:
+            installedfrom = _("Not available")
+
+        on_disk_size = entropy_client.installed_repository().retrieveOnDiskSize(
+            idpackage)
+        pkg_size = entropy_client.installed_repository().retrieveSize(idpackage)
+        disksize = entropy.tools.bytes_into_human(on_disk_size)
+        repositoryInfo = bold("[") + brown(installedfrom) \
+            + bold("]")
+        stratomscounter = str(atomscounter)
+
+        while len(stratomscounter) < len(totalatoms):
+            stratomscounter = " "+stratomscounter
+        disksizeinfo = bold(" [")+brown(str(disksize))+bold("]")
+        print_info(darkred(" ## ")+repositoryInfo+" " + \
+            enlightenatom(rematom)+disksizeinfo)
 
 def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None):
 
@@ -1608,7 +1664,7 @@ def _configure_packages(entropy_client, packages):
 
 def remove_packages(entropy_client, packages = None, atomsdata = None,
     deps = True, deep = False, system_packages_check = True,
-    remove_config_files = False, resume = False, human = False):
+    remove_config_files = False, resume = False):
 
     if packages is None:
         packages = []
@@ -1620,8 +1676,6 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
-
-    doSelectiveRemoval = False
 
     if not resume:
 
@@ -1655,9 +1709,8 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             return 125, -1
 
         plain_removal_queue = []
-        package_sizes = {}
-
         look_for_orphaned_packages = True
+
         # now print the selected packages
         print_info(red(" @@ ")+blue("%s:" % (
             _("These are the chosen packages"),) ))
@@ -1702,9 +1755,6 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                 " [%s] " % (brown(installedfrom),) + \
                 enlightenatom(pkgatom) + disksizeinfo)
 
-            if idpackage not in package_sizes:
-                package_sizes[idpackage] = on_disk_size, pkg_size
-
         if etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']:
             print_info(red(" @@ ") + \
                 blue("%s: " % (_("Packages involved"),) ) + str(totalatoms))
@@ -1729,52 +1779,15 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                     return 0, 0
 
         removal_queue = []
-        atomscounter = len(plain_removal_queue)
 
         if look_for_orphaned_packages:
-            choosen_removal_queue = entropy_client.get_removal_queue(
+            removal_queue += entropy_client.get_removal_queue(
                 plain_removal_queue, deep = deep)
-            if choosen_removal_queue:
 
-                print_info(red(" @@ ") + \
-                    blue("%s:" % (_("This is the new removal queue"),) ))
-                totalatoms = str(len(choosen_removal_queue))
-
-                atomscounter = 0
-                for idpackage in choosen_removal_queue:
-
-                    atomscounter += 1
-                    rematom = entropy_client.installed_repository().retrieveAtom(idpackage)
-                    if not rematom:
-                        continue
-
-                    installedfrom = \
-                        entropy_client.installed_repository().getInstalledPackageRepository(
-                            idpackage)
-                    if installedfrom is None:
-                        installedfrom = _("Not available")
-
-                    on_disk_size = entropy_client.installed_repository().retrieveOnDiskSize(
-                        idpackage)
-                    pkg_size = entropy_client.installed_repository().retrieveSize(idpackage)
-                    disksize = entropy.tools.bytes_into_human(on_disk_size)
-                    repositoryInfo = bold("[") + brown(installedfrom) \
-                        + bold("]")
-                    stratomscounter = str(atomscounter)
-
-                    while len(stratomscounter) < len(totalatoms):
-                        stratomscounter = " "+stratomscounter
-                    disksizeinfo = bold(" [")+brown(str(disksize))+bold("]")
-                    print_info(darkred(" ## ")+repositoryInfo+" " + \
-                        enlightenatom(rematom)+disksizeinfo)
-
-                    if idpackage not in package_sizes:
-                        package_sizes[idpackage] = on_disk_size, pkg_size
-
-                removal_queue = choosen_removal_queue
-
-            else:
-                writechar("\n")
+        removal_queue += [x for x in plain_removal_queue if x \
+            not in removal_queue]
+        atomscounter = len(removal_queue)
+        _show_package_removal_info(entropy_client, removal_queue)
 
         mytxt = "%s: %s" % (
             blue(_("Packages needing to be removed")),
@@ -1784,9 +1797,14 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
         total_removal_size = 0
         total_pkg_size = 0
-        for on_disk_size, pkg_size in package_sizes.values():
+
+        for idpackage in set(removal_queue):
+            c_repo = entropy_client.installed_repository()
+            on_disk_size = c_repo.retrieveOnDiskSize(idpackage)
+            pkg_size = c_repo.retrieveSize(idpackage)
             total_removal_size += on_disk_size
             total_pkg_size += pkg_size
+
         human_removal_size = entropy.tools.bytes_into_human(total_removal_size)
         human_pkg_size = entropy.tools.bytes_into_human(total_pkg_size)
 
@@ -1807,39 +1825,23 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         if etpUi['pretend']:
             return 0, 0
 
-        if etpUi['ask'] or human:
+        if etpUi['ask']:
             question = "     %s" % (
                 _("Would you like to proceed ?"),)
-            if human:
-                question = "     %s" % (
-                    _("Would you like to proceed with a selective removal ?"),)
             rc = entropy_client.ask_question(question)
-            if rc == _("No") and not human:
+            if rc == _("No"):
                 return 0, 0
-            elif rc == _("Yes") and human:
-                doSelectiveRemoval = True
-            elif rc == _("No") and human:
-                rc = entropy_client.ask_question("     %s" % (
-                    _("Would you like to skip this step then ?"),))
-                if rc == _("Yes"):
-                    return 0, 0
         elif deps:
             countdown(
                 what = red(" @@ ")+blue("%s " % (_("Starting removal in"),)),
                 back = True
             )
 
-        # append at the end requested packages if not in queue
-        for idpackage in plain_removal_queue:
-            if idpackage not in removal_queue:
-                removal_queue.append(idpackage)
-
         # clear old resume information
         try:
             entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], {})
             # store resume information
             resume_cache = {}
-            resume_cache['doSelectiveRemoval'] = doSelectiveRemoval
             resume_cache['removal_queue'] = removal_queue
             entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], resume_cache)
         except (OSError, IOError, EOFError):
@@ -1855,7 +1857,6 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         else:
             try:
                 removal_queue = resume_cache['removal_queue'][:]
-                doSelectiveRemoval = resume_cache['doSelectiveRemoval']
                 print_warning(red("%s..." % (_("Resuming previous operations"),) ))
             except:
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
@@ -1879,23 +1880,6 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
     totalqueue = str(len(removal_queue))
     currentqueue = 0
-
-    # ask which ones to remove
-    if human:
-        ignored = []
-        for idpackage in removal_queue:
-            currentqueue += 1
-            atom = entropy_client.installed_repository().retrieveAtom(idpackage)
-            if not atom:
-                continue
-            print_info(red(" -- ")+bold("(")+blue(str(currentqueue)) + "/" + \
-                red(totalqueue)+bold(") ")+">>> "+darkgreen(atom))
-            if doSelectiveRemoval:
-                rc = entropy_client.ask_question("     %s" % (_("Remove this one ?"),) )
-                if rc == _("No"):
-                    # update resume cache
-                    ignored.append(idpackage)
-        removal_queue = [x for x in removal_queue if x not in ignored]
 
     totalqueue = str(len(removal_queue))
     currentqueue = 0
