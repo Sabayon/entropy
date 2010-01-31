@@ -19,6 +19,7 @@ from entropy.exceptions import OnlineMirrorError, ConnectionError, \
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple
 from entropy.const import etpConst, const_setup_perms
+from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS
 from entropy.server.interfaces.rss import ServerRssMetadata
@@ -237,7 +238,6 @@ class Server(ServerNoticeBoardMixin):
     import socket
     def __init__(self, server, repo = None):
 
-        from entropy.cache import EntropyCacher
         from entropy.server.transceivers import TransceiverServerHandler
         from entropy.server.interfaces.main import Server as MainServer
 
@@ -946,7 +946,8 @@ class Server(ServerNoticeBoardMixin):
         rss_main = RSS(rss_path, rss_title, rss_description,
             maxentries = srv_set['rss']['max_entries'])
         # load dump
-        db_actions = self.Cacher.pop(rss_dump_name)
+        db_actions = self.Cacher.pop(rss_dump_name,
+            cache_dir = self.Entropy.CACHE_DIR)
         if db_actions:
             try:
                 f_rev = open(db_revision_path)
@@ -999,7 +1000,8 @@ class Server(ServerNoticeBoardMixin):
 
         rss_main.write_changes()
         ServerRssMetadata().clear()
-        entropy.dump.removeobj(rss_dump_name)
+        EntropyCacher.clear_cache_item(rss_dump_name,
+            cache_dir = self.Entropy.CACHE_DIR)
 
 
     def _dump_database_to_file(self, db_path, destination_path, opener,

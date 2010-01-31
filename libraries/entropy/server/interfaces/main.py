@@ -228,7 +228,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         rss_name = srv_repo + etpConst['rss-dump-name']
 
         # load metadata from on disk cache, if available
-        rss_obj = entropy.dump.loadobj(rss_name)
+        rss_obj = self.Cacher.pop(rss_name, cache_dir = Server.CACHE_DIR)
         if rss_obj:
             srv_updates.update(rss_obj)
 
@@ -260,7 +260,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         srv_updates['removed'][rss_atom] = mydict
 
         # save to disk
-        entropy.dump.dumpobj(rss_name, srv_updates)
+        self.Cacher.push(rss_name, srv_updates, async = False,
+            cache_dir = Server.CACHE_DIR)
 
     def _write_rss_for_added_package(self, repo_db, package_data):
 
@@ -272,7 +273,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         rss_name = srv_repo + etpConst['rss-dump-name']
 
         # load metadata from on disk cache, if available
-        rss_obj = entropy.dump.loadobj(rss_name)
+        rss_obj = self.Cacher.pop(rss_name, cache_dir = Server.CACHE_DIR)
         if rss_obj:
             srv_updates.update(rss_obj)
 
@@ -300,7 +301,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             package_data['description']
 
         # save to disk
-        entropy.dump.dumpobj(rss_name, srv_updates)
+        self.Cacher.push(rss_name, srv_updates, async = False,
+            cache_dir = Server.CACHE_DIR)
 
     def add_package_hook(self, entropy_repository_instance, idpackage,
         package_data):
@@ -4540,6 +4542,9 @@ class ServerMiscMixin:
 class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
     ServerPackageDepsMixin, ServerPackagesHandlingMixin, ServerQAMixin,
     ServerRepositoryMixin, ServerMiscMixin):
+
+    # Entropy Server cache directory, mainly used for storing commit changes
+    CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "server_cache")
 
     def init_singleton(self, default_repository = None, save_repository = False,
             community_repo = False, fake_default_repo = False,
