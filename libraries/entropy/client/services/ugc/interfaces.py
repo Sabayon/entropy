@@ -51,9 +51,9 @@ class Client:
             raise RepositoryError('repository is not available')
 
         # unsupported by repository?
-        if 'service_uri' not in avail_data[repository] is None:
+        if 'service_uri' not in avail_data[repository]:
             return None
-        if 'service_port' not in avail_data[repository] is None:
+        if 'service_port' not in avail_data[repository]:
             return None
 
         url = avail_data[repository]['service_uri']
