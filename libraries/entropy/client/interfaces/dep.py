@@ -685,10 +685,10 @@ class CalculatorsMixin:
                     # stricter set of possible matches.
                     dependency = dependency + \
                         etpConst['entropytagprefix'] + best_tag
-                    pkg_id, repo_id = self.atom_match(dependency)
-                    dbconn = self.open_repository(repo_id)
+                    r_id, r_repo = self.atom_match(dependency)
+                    dbconn = self.open_repository(r_repo)
                     repo_pkgver, repo_pkgtag, repo_pkgrev = \
-                        dbconn.getVersioningData(pkg_id)
+                        dbconn.getVersioningData(r_id)
 
             # this is required for multi-slotted packages (like python)
             # and when people mix Entropy and Portage
@@ -1670,7 +1670,8 @@ class CalculatorsMixin:
 
         # get all the installed packages
         try:
-            idpackages = self._installed_repository.listAllIdpackages(order_by = 'atom')
+            idpackages = self._installed_repository.listAllIdpackages(
+                order_by = 'atom')
         except OperationalError:
             # client db is broken!
             raise SystemDatabaseError("installed packages database is broken")
@@ -1717,7 +1718,8 @@ class CalculatorsMixin:
                 try:
                     m_idpackage = match[0][0]
                 except TypeError:
-                    if not use_match_cache: raise
+                    if not use_match_cache:
+                        raise
                     use_match_cache = False
                     continue
                 break
