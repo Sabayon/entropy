@@ -2240,9 +2240,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @keyword gpg: GPG signature file content
         @type gpg: string
         """
-        self._cursor().execute("""
-        INSERT INTO packagesignatures VALUES (?,?,?,?,?)
-        """, (idpackage, sha1, sha256, sha512, gpg))
+        try:
+            self._cursor().execute("""
+            INSERT INTO packagesignatures VALUES (?,?,?,?,?)
+            """, (idpackage, sha1, sha256, sha512, gpg))
+        except OperationalError: # FIXME: remove this before 2010-12-31
+            self._cursor().execute("""
+            INSERT INTO packagesignatures VALUES (?,?,?,?)
+            """, (idpackage, sha1, sha256, sha512))
 
     def _insertSpmPhases(self, idpackage, phases):
         """
