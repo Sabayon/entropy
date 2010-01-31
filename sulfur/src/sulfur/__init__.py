@@ -2116,13 +2116,21 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         _("Attention. You chose to abort the processing."))
                 elif err == 1: # install failed
                     okDialog(self.ui.main,
-                        _("Attention. An error occured when processing the queue."
-                        "\nPlease have a look in the processing terminal.")
+                        _("Attention. An error occured while processing the queue."
+                        "\nPlease have a look at the terminal.")
                     )
+                    state = False
                 elif err in (2, 3):
                     # 2: masked package cannot be unmasked
                     # 3: license not accepted, move back to queue page
                     switch_back_page = 'packages'
+                    state = False
+                elif err != 0:
+                    # wtf?
+                    okDialog(self.ui.main,
+                        _("Attention. Something really bad happened."
+                        "\nPlease have a look at the terminal.")
+                    )
                     state = False
 
                 elif (err == 0) and restart_needed and \
@@ -2178,7 +2186,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = False
         if switch_back_page is not None:
             self.switch_notebook_page(switch_back_page)
-        else:
+        elif state:
             self.switch_notebook_page('packages')
 
         self.Equo.resources_remove_lock()
