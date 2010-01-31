@@ -151,7 +151,10 @@ class EntropyCacher(Singleton):
         while self.__alive or run_until_empty:
 
             massive_data = []
-            massive_data_count = EntropyCacher._OBJS_WRITTEN_AT_ONCE
+            try:
+                massive_data_count = EntropyCacher._OBJS_WRITTEN_AT_ONCE
+            except AttributeError: # interpreter shutdown
+                break
             while massive_data_count > 0:
                 massive_data_count -= 1
                 try:
