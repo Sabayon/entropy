@@ -8054,7 +8054,7 @@ msgstr "Nome applicazione"
 
 #: ../../sulfur/src/sulfur/views.py:2572
 msgid "Advisories are being loaded"
-msgstr "Gli avvisi sono in fare di caricamenti"
+msgstr "Gli avvisi sono in fase di caricamento"
 
 #: ../../sulfur/src/sulfur/views.py:2629
 msgid "No advisories"
