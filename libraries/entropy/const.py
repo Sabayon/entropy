@@ -350,7 +350,7 @@ def const_default_settings(rootdir):
         'rss-website-url': "http://www.sabayon.org/",
         # xml file where will be dumped ServerInterface.rssMessages dictionary
         'rss-dump-name': "rss_database_actions",
-        'rss-max-entries': 10000, # maximum rss entries
+        'rss-max-entries': 1000, # maximum rss entries
         'rss-light-max-entries': 300, # max entries for the light version
         'rss-managing-editor': "lxnay@sabayon.org", # updates submitter
         # repository RSS-based notice board content
