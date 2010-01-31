@@ -699,9 +699,9 @@ class TextInterface:
         colours_len = len(colours)
 
         try:
-            sys.stdout.write(darkgreen(question) + " ")
+            sys.stdout.write(question + " ")
         except UnicodeEncodeError:
-            sys.stdout.write(darkgreen(question.encode('utf-8')) + " ")
+            sys.stdout.write(question.encode('utf-8') + " ")
         _flush_stdouterr()
 
         try:
