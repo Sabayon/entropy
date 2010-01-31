@@ -538,7 +538,6 @@ class CalculatorsMixin:
             satisfied_data = tmp_satisfied_data
             self.SystemSettings[satisfied_kw] = satisfied_data
 
-        intf_error = InterfaceError
         etp_cmp = entropy.tools.entropy_compare_versions
         etp_get_rev = entropy.tools.dep_get_entropy_revision
 
@@ -631,7 +630,7 @@ class CalculatorsMixin:
                     dbconn.getVersioningData(r_id)
                 # note: read rationale below
                 repo_digest = dbconn.retrieveDigest(r_id)
-            except (intf_error, TypeError,):
+            except (InterfaceError, TypeError,):
                 # package entry is broken
                 const_debug_write(__name__,
                     "_get_unsatisfied_dependencies repository entry broken for match => %s" % (
