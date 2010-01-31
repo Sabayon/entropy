@@ -163,10 +163,3 @@ class SulfurConsole(vte.Terminal):
             raw_txt_len = len(txt.encode('utf-8'))
 
         return vte.Terminal.feed(self, txt, raw_txt_len)
-
-
-
-
-
-
-
