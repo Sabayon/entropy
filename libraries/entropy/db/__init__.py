@@ -8095,11 +8095,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         dbtag = self.retrieveVersionTag(idpackage)
         compare = const_cmp(tag, dbtag)
-        if operators in ("=", "", "~",):
-            if compare == 0:
-                return idpackage
-        else:
-            return self.__do_operator_compare(idpackage, operators, compare)
+        # cannot do operator compare because it breaks the tag concept
+        if compare == 0:
+            return idpackage
 
     def __filterUse(self, idpackage, use):
         if not use:
@@ -8116,18 +8114,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if len(disabled_not_satisfied) != len(disabled):
             return None
         return idpackage
-
-    def __do_operator_compare(self, token, operators, compare):
-        if operators == ">" and compare == -1:
-            return token
-        elif operators == ">=" and compare < 1:
-            return token
-        elif operators == "<" and compare == 1:
-            return token
-        elif operators == "<=" and compare > -1:
-            return token
-        elif operators == "~": # do not filter "any-rev" requests here.
-            return token
 
     def __filterSlotTagUse(self, found_ids, slot, tag, use, operators):
 
