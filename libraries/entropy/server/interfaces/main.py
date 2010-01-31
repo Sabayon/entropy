@@ -24,6 +24,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_setup_file, const_get_stringtype, const_debug_write
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
+from entropy.cache import EntropyCacher
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.i18n import _
@@ -60,6 +61,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         @type metadata: dict
         """
         EntropyRepositoryPlugin.__init__(self)
+        self.Cacher = EntropyCacher()
         self.SystemSettings = SystemSettings()
         self.srv_sys_settings_plugin = \
             etpConst['system_settings_plugins_ids']['server_plugin']
@@ -4073,7 +4075,6 @@ class ServerMiscMixin:
             repo_validation = False,
             noclientdb = 1
         )
-        from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.Client.output = self.output
         self._enabled_repos = self.Client.repositories()
