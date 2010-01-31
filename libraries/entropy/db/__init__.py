@@ -8092,9 +8092,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     def __filterTag(self, idpackage, tag, operators):
         if tag is None:
             return idpackage
+
         dbtag = self.retrieveVersionTag(idpackage)
         compare = const_cmp(tag, dbtag)
-        if not operators or operators == "=":
+        if operators in ("=", "", "~",):
             if compare == 0:
                 return idpackage
         else:
