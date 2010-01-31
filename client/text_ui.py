@@ -1971,9 +1971,9 @@ def _dependencies_test(entropy_client):
                 ridpackages = entropy_client.installed_repository().searchIdpackageFromIddependency(riddep)
                 for i in ridpackages:
                     iatom = entropy_client.installed_repository().retrieveAtom(i)
-                    if dep not in crying_atoms:
-                        crying_atoms[dep] = set()
-                    crying_atoms[dep].add(iatom)
+                    if iatom:
+                        obj = crying_atoms.setdefault(dep, set())
+                        obj.add(iatom)
 
             match = entropy_client.atom_match(dep)
             if match[0] != -1:
