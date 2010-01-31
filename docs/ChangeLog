@@ -1,3 +1,214 @@
+commit 7dcd195f74324915c13af252d33467c6306f891d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 19:22:18 2010 +0100
+
+    [todo] update TODO
+
+commit 60ce094648c1ba3d35afd8c6e313cdf8443a914b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 19:20:38 2010 +0100
+
+    [entropy.server] import EntropyCacher in module scope
+
+commit 4bbe7214b52c6061c4e55e70acb667ca618708fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 19:14:00 2010 +0100
+
+    [activator] fix undefined reference
+
+commit d25066a83b2c03bca46224214ee93f4c25b52986
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 18:54:23 2010 +0100
+
+    [entropy.server] use custom EntropyCacher cache directory, to not overlap Entropy Client metadata
+
+commit 6a46273246f1140d8f4f4fe98cc7a926fd2c0abe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 18:14:20 2010 +0100
+
+    [entropy.client.services.ugc] fix connect_to_service for pkg repos
+
+commit f4193ec8270a43fa98c1af5966689d144ed09f87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 18:02:39 2010 +0100
+
+    [entropy.const] reduce RSS max entries default to sane value
+
+commit 16b129f63687c566a4b59b590cbac6929fcf1c7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 18:06:40 2010 +0100
+
+    [entropy.db] cannot use dep operator comparison for tags, it breaks the tag concept
+
+commit bf1a58216265cbd07606f295ea8f5d44212fd9db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 17:45:48 2010 +0100
+
+    [entropy.client] code style update
+
+commit 7243079ac9ac68989128e33f15f4e5ae2088e291
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 17:44:41 2010 +0100
+
+    [entropy.db] fix ~ operator handling when filtering tag results passed by atomMatch
+
+commit 7acc8d65b4a5049211e5f43d01b2061045410361
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 14:24:59 2010 +0100
+
+    [entropy.client.interfaces.dep] trivial code cleanup
+
+commit d5164e4a2e53d46451b846b477efce9ba4ced75a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:31:16 2010 +0100
+
+    [sulfur] do not switch back to packages tab when unknown error happens
+
+commit 0d1a2f48903aef2f861b56b58cd4d6c23323c2e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:27:49 2010 +0100
+
+    [sulfur] remove empty lines in widgets.py
+
+commit ec48391a52373bb74e5e5aba120f4edeebd2372e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:18:01 2010 +0100
+
+    [po] update Italian translation
+
+commit 52b2dca874c24e57656f405d2619b459259758e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:16:42 2010 +0100
+
+    [sulfur] grow sulfur console maximum chars length to 100000
+
+commit 3fc976718aa556faf1a93ba9c3102326ca8c66b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:14:38 2010 +0100
+
+    [entropy.cache] EntropyCacher: deal with EntropyCacher shutdown
+
+commit 8b6d6d463057dc38585f55a87d47997352f51e7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:14:11 2010 +0100
+
+    [entropy.output] TextInterface: do not colour question text by default
+
+commit 04103d2697515a6dba3d0b9c4282cd1090df89a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 13:13:25 2010 +0100
+
+    [equo] remove dead code, improve orphaned packages question usability on upgrade
+
+commit 96925041a4e51827f05168d27d7a45252021722b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 10:57:42 2010 +0100
+
+    [sulfur] add "Update all" button
+
+commit dd03ff58b43369a246e706b31fd174c2d89003bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 10:27:59 2010 +0100
+
+    [entropy.db] EntropyRepository: make insertSignatures() working with older db schema
+
+commit 3755e24ab80419da322985168e683777f68caa05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 10:24:05 2010 +0100
+
+    [entropy.db] EntropyRepository: store structure update execution status in class scope, and use in repr(), str(), unicode()
+
+commit c0b3efac757e444dcad1ddb5dd37037eef209bfd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 10:09:06 2010 +0100
+
+    [equo] filter out invalid package values in _dependencies_test if broken dep is found
+
+commit f23689aa3c1c7afb4a8d2cca92e7700879a56297
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 18:54:15 2010 +0100
+
+    [todo] update TODO
+
+commit f987640d5a6db1de2c324eb9ce24596dc54a2e44
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 18:49:39 2010 +0100
+
+    [entropy.client] remove Client.validRepositories, provide Client.repositories()
+
+commit 06df34f41d8f357d515673886b75f90fd4f6b242
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 18:37:39 2010 +0100
+
+    [entropy.client] drop .clientDbconn in favour of installed_repository()
+
+commit 545209c97ff1abee286717544ad3b0b08694b049
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 17:57:51 2010 +0100
+
+    [equo] stop using E_CLIENT in module scope
+
+commit 54859f7ff7259917075f278729a9cd46aa549775
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 17:25:59 2010 +0100
+
+    [entropy.client.interfaces.package] add missing os.close()
+
+commit df6a8ef14b64ce4eea1233145c036833cf6b0380
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 17:16:16 2010 +0100
+
+    [entropy.services.ugc.commands] report_error: also save "lsof" metadata to file
+
+commit da36b44adab481a8bb2412e16046d601493fffc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 17:14:22 2010 +0100
+
+    [entropy.qa] ErrorReportInterface, also collect lsof data
+
+commit da2f2f6cc0df1e4b89343b9e23fdc874d51469c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 17:09:12 2010 +0100
+
+    [entropy.tools] fix print_exception frame data collection
+
+commit d89ceeafd92578521b463022bf6637f80aedfbb3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 30 09:59:01 2010 +0100
+
+    [equo] fix xterm title
+
+commit b113695d8af68889ca7e989fdcd799402b541274
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 23:43:55 2010 +0100
+
+    [todo] update TODO
+
+commit f5b016a146c1b6c730430e21c7901e72d1c39f93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 23:39:42 2010 +0100
+
+    [entropy.db] make EntropyRepository process-safe and thread-safe at the same time
+    
+    This is kinda experimental but it seems to work just fine and, at the moment
+    there are no multithreaded accesses to EntropyRepository.
+    This patch makes write mutex in EntropyRepository useless because EntropyRepository
+    will automatically allocate new connections and cursors for every new
+    thread/pid coming in, avoiding to leak open files around.
+    SQLite3 is thread-safe when using one connection per thread, so... here it is!
+
+commit b23b3cd790e5c3ffad7e9bc56c5ca77c033fd4c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 23:12:50 2010 +0100
+
+    [entropy.db] doDatabaseExport: always exclude sqlite tables
+
+commit 719a59ef5c94e00a63e828a9cb64b2d987393aa0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 29 21:32:11 2010 +0100
+
+    Update ChangeLog for version 0.99.31.1
+
 commit 4fc5c3c90d28128a438f7c3c8832f8cf29771142
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 29 21:31:48 2010 +0100
