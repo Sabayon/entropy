@@ -439,7 +439,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.skipChecks = skipChecks
         self.live_cache = {}
 
-        structure_update = False
+        self.__structure_update = False
         if not self.skipChecks:
 
             if not entropy.tools.is_user_in_entropy_group():
@@ -456,15 +456,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                     if entropy.tools.islive(): # this works
                         if etpConst['systemroot']:
-                            structure_update = True
+                            self.__structure_update = True
                     else:
-                        structure_update = True
+                        self.__structure_update = True
 
             except Error:
                 self._cleanup_stale_cur_conn(kill_all = True)
                 raise
 
-        if structure_update:
+        if self.__structure_update:
             self._databaseStructureUpdates()
 
     def _get_cur_th_key(self):
@@ -534,8 +534,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             hex(id(self)), self.dbFile,)
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
             self.readOnly, self.xcache, self.indexing,)
-        third_part = ", name: %s, skip_upd: %s>" % (
-            self.dbname, self.skipChecks,)
+        third_part = ", name: %s, skip_upd: %s, st_upd: %s>" % (
+            self.dbname, self.skipChecks, self.__structure_update,)
 
         return first_part + second_part + third_part
 
