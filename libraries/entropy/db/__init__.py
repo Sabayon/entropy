@@ -5699,8 +5699,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             identifiers
         @type just_id: bool
         @return: list of tuples of length 2 containing atom and idpackage
-            values
-        @rtype: list
+            values. While if just_id is True, return a list (set) of idpackages
+        @rtype: list or set
         """
         if just_id:
             cur = self._cursor().execute("""
