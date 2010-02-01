@@ -5376,43 +5376,35 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """, (revision,))
         return self._cur2set(cur)
 
-    def searchLicenses(self, mylicense, sensitive = False, atoms = False):
+    def searchLicense(self, keyword, just_id = False):
         """
         Search packages using given license (mylicense).
 
-        @param mylicense: license name to search
-        @type mylicense: string
-        @keyword sensitive: search in case sensitive mode (default off)
-        @type sensitive: bool
-        @keyword atoms: return list of atoms instead of package identifiers
-        @type atoms: bool
+        @param keyword: license name to search
+        @type keyword: string
+        @keyword just_id: just return package identifiers (returning set())
+        @type just_id: bool
         @return: list of packages using given license
         @rtype: set or list
         @todo: check if is_valid_string is really required
         """
-        if not entropy.tools.is_valid_string(mylicense):
+        if not entropy.tools.is_valid_string(keyword):
             return []
 
-        request = "baseinfo.idpackage"
-        if atoms:
-            request = "baseinfo.atom,baseinfo.idpackage"
-
-        if sensitive:
+        if just_id:
             cur = self._cursor().execute("""
-            SELECT %s FROM baseinfo,licenses
-            WHERE licenses.license LIKE (?) AND
-            licenses.idlicense = baseinfo.idlicense
-            """ % (request,), ("%"+mylicense+"%",))
-        else:
-            cur = self._cursor().execute("""
-            SELECT %s FROM baseinfo,licenses
+            SELECT baseinfo.idpackage FROM baseinfo,licenses
             WHERE LOWER(licenses.license) LIKE (?) AND
             licenses.idlicense = baseinfo.idlicense
-            """ % (request,), ("%"+mylicense+"%".lower(),))
-
-        if atoms:
+            """, ("%"+keyword+"%".lower(),))
+            return self._cur2set(cur)
+        else:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,licenses
+            WHERE LOWER(licenses.license) LIKE (?) AND
+            licenses.idlicense = baseinfo.idlicense
+            """, ("%"+keyword+"%".lower(),))
             return cur.fetchall()
-        return self._cur2set(cur)
 
     def searchSlottedPackages(self, slot, atoms = False):
         """

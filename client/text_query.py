@@ -1403,12 +1403,12 @@ def search_licenses(licenses, Equo = None):
 
         for mylicense in licenses:
 
-            results = dbconn.searchLicenses(mylicense, atoms = True)
+            results = dbconn.searchLicense(mylicense, just_id = True)
             if not results:
                 continue
             found = True
-            for result in results:
-                print_package_info(result[1], dbconn, Equo = Equo,
+            for idpackage in results:
+                print_package_info(idpackage, dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
