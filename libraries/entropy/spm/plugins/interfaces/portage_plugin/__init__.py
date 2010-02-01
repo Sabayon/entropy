@@ -107,6 +107,12 @@ class PortagePackageGroups(dict):
                     _("Scientific applications and libraries"),
                 'categories': ['sci-'],
             },
+            'security': {
+                'name': _("Security"),
+                'description': \
+                    _("Security orientend applications"),
+                'categories': ['app-antivirus', 'net-analyzer', 'net-firewall'],
+            },
             'x11': {
                 'name': _("X11"),
                 'description': \
