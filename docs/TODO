@@ -22,6 +22,7 @@
         - unpack & install should be done in entropy.spm
         - entropy.db => retrieveVersionTag => retrieveTag
         - move SystemSettings['repositories'] ?
+    - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - complete API documentation
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
