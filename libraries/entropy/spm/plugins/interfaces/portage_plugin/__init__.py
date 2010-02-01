@@ -870,16 +870,6 @@ class PortagePlugin(SpmPlugin):
             data['versiontag'] = self._extract_pkg_metadata_ebuild_entropy_tag(
                 ebuild_path)
 
-        nonfree = False
-        if license_callback is not None:
-            nonfree = not license_callback(data['license'].split())
-        data['download'] = entropy.tools.create_package_dirpath(data['branch'],
-            nonfree = nonfree)
-        data['download'] = os.path.join(data['download'],
-            entropy.tools.create_package_filename(
-                data['category'], data['name'], data['version'],
-                    data['versiontag']))
-
         data['trigger'] = const_convert_to_rawstring("")
         trigger_file = os.path.join(etpConst['triggersdir'], data['category'],
             data['name'], etpConst['triggername'])
@@ -989,6 +979,17 @@ class PortagePlugin(SpmPlugin):
 
         # this actually changes provide format
         data['provide_extended'] = provide_extended
+
+        # prepare download URL string, check licenses
+        nonfree = False
+        if license_callback is not None:
+            nonfree = not license_callback(data['license'].split())
+        data['download'] = entropy.tools.create_package_dirpath(data['branch'],
+            nonfree = nonfree)
+        data['download'] = os.path.join(data['download'],
+            entropy.tools.create_package_filename(
+                data['category'], data['name'], data['version'],
+                    data['versiontag']))
 
         # Get License text if possible
         licenses_dir = os.path.join(self.get_setting('PORTDIR'), 'licenses')
