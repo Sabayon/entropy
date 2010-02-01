@@ -703,7 +703,7 @@ class Server(ServerNoticeBoardMixin):
 
                 dbconn = self.Entropy.open_server_repository(read_only = True,
                     no_upload = True, repo = repo)
-                idpackage = dbconn.getIDPackageFromDownload(pkg_relative_path)
+                idpackage = dbconn.getIdpackageFromDownload(pkg_relative_path)
                 if idpackage == -1:
                     self.Entropy.output(
                         "[repo:%s|%s|#%s] %s: %s %s" % (

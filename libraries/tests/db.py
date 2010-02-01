@@ -122,10 +122,10 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(orig_diff, py_diff)
 
         # test package content match
-        self.assertEqual(self.test_db.getIDPackagesFromFile(orig_diff[3]),
+        self.assertEqual(self.test_db.getIdpackagesFromFile(orig_diff[3]),
             [1])
         category = self.test_db.retrieveCategory(idpackage)
-        idcategory = self.test_db.getIDCategory(category)
+        idcategory = self.test_db.getIdcategory(category)
         self.assertEqual(self.test_db.getCategory(idcategory),
             new_data['category'])
 

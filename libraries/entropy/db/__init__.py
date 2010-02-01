@@ -1165,7 +1165,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return self.addPackage(pkg_data, revision = forcedRevision,
                 formatted_content = formattedContent)
 
-        idpackages = self.getIDPackages(pkgatom)
+        idpackages = self.getIdpackages(pkgatom)
         current_rev = forcedRevision
 
         for idpackage in idpackages:
@@ -2804,7 +2804,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         cur = self._cursor().execute("SELECT idpackage FROM systempackages")
         return self._cur2set(cur)
 
-    def getIDPackages(self, atom):
+    def getIdpackages(self, atom):
         """
         Obtain repository package identifiers from atom string.
 
@@ -2818,7 +2818,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """, (atom,))
         return self._cur2set(cur)
 
-    def getIDPackageFromDownload(self, download_relative_path,
+    def getIdpackageFromDownload(self, download_relative_path,
         endswith = False):
         """
         Obtain repository package identifier from its relative download path
@@ -2853,22 +2853,22 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return idpackage[0]
         return -1
 
-    def getIDPackagesFromFile(self, file):
+    def getIdpackagesFromFile(self, file_path):
         """
         Obtain repository package identifiers for packages owning the provided
         path string (file).
 
-        @param file: path to file (or directory) to match
-        @type file: string
+        @param file_path: path to file (or directory) to match
+        @type file_path: string
         @return: list (set) of idpackages found
         @rtype: set
         """
         cur = self._cursor().execute("""
         SELECT idpackage FROM content WHERE file = (?)
-        """, (file,))
+        """, (file_path,))
         return self._cur2list(cur)
 
-    def getIDCategory(self, category):
+    def getIdcategory(self, category):
         """
         Obtain category identifier from category name.
 
@@ -6063,7 +6063,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype: list
         """
         order_by_string = ''
-        if order_by: order_by_string = ' order by %s' % (order_by,)
+        if order_by:
+            order_by_string = ' order by %s' % (order_by,)
         self._cursor().execute('SELECT idcategory,category FROM categories %s' % (
             order_by_string,))
         return self._cursor().fetchall()

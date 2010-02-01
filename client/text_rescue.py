@@ -575,7 +575,7 @@ def _database_spmsync(entropy_client):
                 mydata['name'], mydata['version'], mydata['versiontag'])
 
             # look for atom in client database
-            idpkgs = entropy_client.installed_repository().getIDPackages(myatom)
+            idpkgs = entropy_client.installed_repository().getIdpackages(myatom)
             oldidpackages = sorted(idpkgs)
             oldidpackage = None
             if oldidpackages:

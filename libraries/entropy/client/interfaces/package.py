@@ -497,7 +497,7 @@ class Package:
         # for other pkgs with same atom but different tag (which is an
         # entropy-only metadatum)
         test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
-        others_installed = self.Entropy.installed_repository().getIDPackages(test_atom)
+        others_installed = self.Entropy.installed_repository().getIdpackages(test_atom)
 
         # It's obvious that clientdb cannot have more than one idpackage
         # featuring the same "atom" value, but still, let's be fault-tolerant.
