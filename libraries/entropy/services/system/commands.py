@@ -1287,7 +1287,7 @@ class Repository(SocketCommands):
 
         elif search_type == "description":
 
-            results = dbconn.searchPackagesByDescription(search_string)
+            results = dbconn.searchDescription(search_string)
             for atom, idpackage in results:
                 search_results['ordered_idpackages'].add(idpackage)
                 search_results['data'][idpackage] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)

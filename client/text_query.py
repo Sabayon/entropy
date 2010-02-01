@@ -1456,7 +1456,7 @@ def search_descriptions(descriptions, dbconn, Equo = None):
     mydescdata = {}
     for desc in descriptions:
 
-        result = dbconn.searchPackagesByDescription(desc)
+        result = dbconn.searchDescription(desc)
         if not result:
             continue
 

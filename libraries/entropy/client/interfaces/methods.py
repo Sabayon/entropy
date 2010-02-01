@@ -1550,9 +1550,9 @@ class MiscMixin:
         pkg_matches = []
         for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
-            branch = self.SystemSettings['repositories']['branch']
-            catsdata = dbconn.searchPackagesByCategory(category, branch = branch)
-            pkg_matches.extend([(x[1], repo,) for x in catsdata if (x[1], repo,) not in pkg_matches])
+            catsdata = dbconn.searchCategory(category)
+            pkg_matches.extend([(x[1], repo,) for x in \
+                catsdata if (x[1], repo,) not in pkg_matches])
         return pkg_matches
 
     def get_category_description_data(self, category):
@@ -1573,7 +1573,8 @@ class MiscMixin:
         return data
 
     def list_installed_packages_in_category(self, category):
-        pkg_matches = set([x[1] for x in self._installed_repository.searchPackagesByCategory(category)])
+        pkg_matches = set([x[1] for x in \
+            self._installed_repository.searchCategory(category)])
         return pkg_matches
 
     def get_package_match_config_protect(self, match, mask = False):

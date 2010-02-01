@@ -1212,7 +1212,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             # usually used server side btw
             return removelist
 
-        searchsimilar = self.searchPackagesByNameAndCategory(
+        searchsimilar = self.searchNameCategory(
             name = name,
             category = category,
             sensitive = True
@@ -5634,7 +5634,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return self._cur2list(cur)
         return cur.fetchall()
 
-    def searchProvide(self, keyword, slot = None, tag = None, justid = False,
+    def searchProvide(self, keyword, slot = None, tag = None, just_id = False,
         get_extended = False):
         """
         Search in old-style Portage PROVIDE metadata.
@@ -5646,8 +5646,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type slot: string
         @keyword tag: match given package tag
         @type tag: string
-        @keyword justid: return list of package identifiers (set())
-        @type justid: bool
+        @keyword just_id: return list of package identifiers (set())
+        @type just_id: bool
         @keyword get_extended: return data in extended format
         @type get_extended: bool
         @return: found PROVIDE metadata
@@ -5666,7 +5666,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             tagstring = ' and baseinfo.versiontag = (?)'
 
         atomstring = ''
-        if not justid:
+        if not just_id:
             atomstring = 'baseinfo.atom,'
 
         get_def_string = ''
@@ -5685,11 +5685,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             searchkeywords
         )
 
-        if justid and not get_extended:
+        if just_id and not get_extended:
             return self._cur2list(cur)
         return cur.fetchall()
 
-    def searchPackagesByDescription(self, keyword, just_id = False):
+    def searchDescription(self, keyword, just_id = False):
         """
         Search packages using given description string as keyword.
 
@@ -5717,7 +5717,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             """, ("%"+keyword.lower()+"%",))
             return cur.fetchall()
 
-    def searchPackagesByHomepage(self, keyword, just_id = False):
+    def searchHomepage(self, keyword, just_id = False):
         """
         Search packages using given homepage string as keyword.
 
@@ -5745,7 +5745,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             """, ("%"+keyword.lower()+"%",))
             return cur.fetchall()
 
-    def searchPackagesByName(self, keyword, sensitive = False, justid = False):
+    def searchName(self, keyword, sensitive = False, just_id = False):
         """
         Search packages by package name.
 
@@ -5753,16 +5753,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type keyword: string
         @keyword sensitive: case sensitive?
         @type sensitive: bool
-        @keyword justid: return list of package identifiers (set()) otherwise
+        @keyword just_id: return list of package identifiers (set()) otherwise
             return a list of tuples of length 2 containing atom and idpackage
             values
-        @type justid: bool
+        @type just_id: bool
         @return: list of packages found
         @rtype: list or set
         """
 
         atomstring = ''
-        if not justid:
+        if not just_id:
             atomstring = 'atom,'
 
         if sensitive:
@@ -5776,12 +5776,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             WHERE LOWER(name) = (?)
             """ % (atomstring,), (keyword.lower(),))
 
-        if justid:
+        if just_id:
             return self._cur2list(cur)
         return cur.fetchall()
 
 
-    def searchPackagesByCategory(self, keyword, like = False, branch = None):
+    def searchCategory(self, keyword, like = False):
         """
         Search packages by category name.
 
@@ -5789,35 +5789,27 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type keyword: string
         @keyword like: do not match exact case
         @type like: bool
-        @keyword branch: search in given package branch
-        @type branch: string
         @return: list of tuples of length 2 containing atom and idpackage
             values
         @rtype: list
         """
-        searchkeywords = [keyword]
-        branchstring = ''
-        if branch:
-            searchkeywords.append(branch)
-            branchstring = 'and branch = (?)'
-
         if like:
             cur = self._cursor().execute("""
             SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
             WHERE categories.category LIKE (?) AND
-            baseinfo.idcategory = categories.idcategory %s
-            """ % (branchstring,), searchkeywords)
+            baseinfo.idcategory = categories.idcategory
+            """, (keyword,))
         else:
             cur = self._cursor().execute("""
             SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
             WHERE categories.category = (?) AND
-            baseinfo.idcategory = categories.idcategory %s
-            """ % (branchstring,), searchkeywords)
+            baseinfo.idcategory = categories.idcategory
+            """, (keyword,))
 
         return cur.fetchall()
 
-    def searchPackagesByNameAndCategory(self, name, category, sensitive = False,
-        justid = False):
+    def searchNameCategory(self, name, category, sensitive = False,
+        just_id = False):
         """
         Search packages matching given name and category strings.
 
@@ -5827,16 +5819,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type category: string
         @keyword sensitive: case sensitive?
         @type sensitive: bool
-        @keyword justid: return list of package identifiers (set()) otherwise
+        @keyword just_id: return list of package identifiers (set()) otherwise
             return a list of tuples of length 2 containing atom and idpackage
             values
-        @type justid: bool
+        @type just_id: bool
         @return: list of packages found
         @rtype: list or set
         """
 
         atomstring = ''
-        if not justid:
+        if not just_id:
             atomstring = 'atom,'
 
         if sensitive:
@@ -5856,7 +5848,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 WHERE LOWER(category) = (?)
             )""" % (atomstring,), (name.lower(), category.lower(),))
 
-        if justid:
+        if just_id:
             return self._cur2list(cur)
         return cur.fetchall()
 
@@ -8400,11 +8392,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     def __generate_found_ids_match(self, pkgkey, pkgname, pkgcat, multiMatch):
 
         if pkgcat == "null":
-            results = self.searchPackagesByName(pkgname, sensitive = True,
-                justid = True)
+            results = self.searchName(pkgname, sensitive = True,
+                just_id = True)
         else:
-            results = self.searchPackagesByNameAndCategory(name = pkgname,
-                sensitive = True, category = pkgcat, justid = True)
+            results = self.searchNameCategory(name = pkgname,
+                sensitive = True, category = pkgcat, just_id = True)
 
         old_style_virtuals = None
         # if it's a PROVIDE, search with searchProvide
@@ -8412,7 +8404,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if (not results) and (pkgcat == "virtual"):
 
             # look for default old-style virtual
-            virtuals = self.searchProvide(pkgkey, justid = True,
+            virtuals = self.searchProvide(pkgkey, just_id = True,
                 get_extended = True)
             if virtuals:
                 old_style_virtuals = set([x[0] for x in virtuals if x[1]])
@@ -8433,9 +8425,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 v_results = set()
                 for idpackage in results:
                     virtual_cat, virtual_name = self.retrieveKeySplit(idpackage)
-                    v_result = self.searchPackagesByNameAndCategory(
+                    v_result = self.searchNameCategory(
                         name = virtual_name, category = virtual_cat,
-                        sensitive = True, justid = True
+                        sensitive = True, just_id = True
                     )
                     v_results.update(v_result)
                 return set(v_results), old_style_virtuals
@@ -8468,9 +8460,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             # we need to search using the category
             if (not multiMatch) and (pkgcat == "null"):
                 # we searched by name, we need to search using category
-                results = self.searchPackagesByNameAndCategory(
+                results = self.searchNameCategory(
                     name = pkgname, category = pkgcat,
-                    sensitive = True, justid = True
+                    sensitive = True, just_id = True
                 )
 
             # if we get here, we have found the needed IDs

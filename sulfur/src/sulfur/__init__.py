@@ -1863,10 +1863,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             matches = []
             for repoid in self.Equo.repositories():
                 dbconn = self.Equo.open_repository(repoid)
-                results = dbconn.searchPackagesByDescription(keyword)
+                results = dbconn.searchDescription(keyword)
                 matches += [(x, repoid) for atom, x in results]
             # disabled due to duplicated entries annoyance
-            #results = self.Equo.installed_repository().searchPackagesByDescription(
+            #results = self.Equo.installed_repository().searchDescription(
             #    keyword)
             #matches += [(x, 0) for atom, x in results]
             return matches
