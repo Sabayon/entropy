@@ -1260,10 +1260,10 @@ def search_slotted_packages(slots, Equo = None):
         dbconn = Equo.open_repository(repo)
         for slot in slots:
 
-            results = dbconn.searchSlottedPackages(slot, atoms = True)
-            for result in results:
+            results = dbconn.searchSlotted(slot, just_id = True)
+            for idpackage in results:
                 found = True
-                print_package_info(result[1], dbconn, Equo = Equo,
+                print_package_info(idpackage, dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:

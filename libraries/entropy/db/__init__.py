@@ -5406,26 +5406,26 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             """, ("%"+keyword+"%".lower(),))
             return cur.fetchall()
 
-    def searchSlottedPackages(self, slot, atoms = False):
+    def searchSlotted(self, keyword, just_id = False):
         """
         Search packages with given slot string.
 
-        @param slot: slot to search
-        @type slot: string
-        @keyword atoms: return list of atoms instead of package identifiers
-        @type atoms: bool
+        @param keyword: slot to search
+        @type keyword: string
+        @keyword just_id: just return package identifiers (returning set())
+        @type just_id: bool
         @return: list of packages using given slot
         @rtype: set or list
         """
-        if atoms:
+        if just_id:
+            cur = self._cursor().execute("""
+            SELECT idpackage FROM baseinfo WHERE slot = (?)""", (keyword,))
+            return self._cur2set(cur)
+        else:
             cur = self._cursor().execute("""
             SELECT atom,idpackage FROM baseinfo WHERE slot = (?)
-            """, (slot,))
+            """, (keyword,))
             return cur.fetchall()
-
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE slot = (?)""", (slot,))
-        return self._cur2set(cur)
 
     def searchKeySlot(self, key, slot):
         """
