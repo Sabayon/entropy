@@ -5725,6 +5725,34 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             """, ("%"+keyword.lower()+"%",))
             return cur.fetchall()
 
+    def searchPackagesByHomepage(self, keyword, just_id = False):
+        """
+        Search packages using given homepage string as keyword.
+
+        @param keyword: description sub-string to search
+        @type keyword: string
+        @keyword just_id: if True, only return a list of Entropy package
+            identifiers
+        @type just_id: bool
+        @return: list of tuples of length 2 containing atom and idpackage
+            values. While if just_id is True, return a list (set) of idpackages
+        @rtype: list or set
+        """
+        if just_id:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage FROM extrainfo, baseinfo
+            WHERE LOWER(extrainfo.homepage) LIKE (?) AND
+            baseinfo.idpackage = extrainfo.idpackage
+            """, ("%"+keyword.lower()+"%",))
+            return self._cur2set(cur)
+        else:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.atom, baseinfo.idpackage FROM extrainfo, baseinfo
+            WHERE LOWER(extrainfo.homepage) LIKE (?) AND
+            baseinfo.idpackage = extrainfo.idpackage
+            """, ("%"+keyword.lower()+"%",))
+            return cur.fetchall()
+
     def searchPackagesByName(self, keyword, sensitive = False, justid = False):
         """
         Search packages by package name.
