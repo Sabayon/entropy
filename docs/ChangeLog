@@ -1,3 +1,33 @@
+commit 23b11cbc89d9af64df7b8aa06c00bb67c4949132
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 12:48:13 2010 +0100
+
+    [entropy.dump] catch SystemError exceptions on loadobj()
+
+commit 1f7a6cc5e280354b38e8d085b31cde4d3d0c208e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 12:47:14 2010 +0100
+
+    [equo] fix regression coming from Client.installed_repository() function introduction
+
+commit 9acf70bfaa7145611b65398eccf2372ba1b1f9e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 09:35:18 2010 +0100
+
+    [entropy.spm] PortagePlugin.extract_package_metadata: move download metadatum setup further
+
+commit 247749de887cc2e7a66ed0d8ddd215141852551f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 19:26:24 2010 +0100
+
+    [po] update translations
+
+commit 3819272506239e6a95db01a2f1564c8f6cb22848
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 31 19:22:49 2010 +0100
+
+    Update ChangeLog for version 0.99.32
+
 commit 7dcd195f74324915c13af252d33467c6306f891d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 31 19:22:18 2010 +0100
