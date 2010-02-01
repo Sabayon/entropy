@@ -175,7 +175,7 @@ def _show_repository_info(entropy_client, reponame):
 def _do_sync(entropy_client, repo_identifiers = None, force = False):
 
     if repo_identifiers is None:
-        repo_identifiers = []
+        repo_identifiers = list(SystemSettings['repositories']['available'])
 
     # load repository class
     try:
