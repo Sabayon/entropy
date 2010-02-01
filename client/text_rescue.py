@@ -264,7 +264,7 @@ def _database_resurrect(entropy_client):
         dbname = etpConst['clientdbid']) # don't do this at home
     dbc.initializeDatabase()
     dbc.commitChanges()
-    entropy_client.installed_repository() = dbc
+    entropy_client._installed_repository = dbc
     mytxt = "  %s %s" % (
         darkgreen(_("Database reinitialized correctly at")),
         bold(etpConst['etpdatabaseclientfilepath']),
