@@ -1392,6 +1392,26 @@ class MiscMixin:
         if dbconn == None: dbconn = self._installed_repository
         return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]
 
+    def is_entropy_package_free(self, pkg_id, repo_id):
+        """
+        Return whether given Entropy package match tuple points to a free
+        (as in freedom) package.
+        """
+        cl_id = self.sys_settings_client_plugin_id
+        repo_sys_data = self.SystemSettings[cl_id]['repositories']
+
+        dbconn = self.open_repository(repo_id)
+
+        wl = repo_sys_data['license_whitelist'].get(repo_id)
+        if not wl: # no whitelist available
+            return True
+
+        keys = dbconn.retrieveLicensedataKeys(pkg_id)
+        keys = [x for x in keys if x not in wl]
+        if keys:
+            return False
+        return True
+
     def get_licenses_to_accept(self, install_queue):
 
         cl_id = self.sys_settings_client_plugin_id
