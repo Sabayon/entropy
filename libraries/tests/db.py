@@ -40,7 +40,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client.destroy()
 
     def __open_test_db(self):
-        return self.Client.open_memory_database(dbname = self.test_db_name)
+        return self.Client.open_temp_repository(dbname = self.test_db_name)
 
     def test_db_clearcache(self):
         self.test_db.clearCache()

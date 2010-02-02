@@ -393,7 +393,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     import threading
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
-        dbname = etpConst['serverdbid'], indexing = True, skipChecks = False):
+        dbname = etpConst['serverdbid'], indexing = True, skipChecks = False,
+        temporary = False):
 
         """
         EntropyRepository constructor.
@@ -410,6 +411,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type indexing: bool
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
+        @keyword temporary: if True, dbFile will be automatically removed
+            on closeDB()
+        @type temporary: bool
         """
         self.__cursor_cache = {}
         self.__connection_cache = {}
@@ -434,9 +438,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # setup service interface
         self.readOnly = readOnly
-
         self.indexing = indexing
         self.skipChecks = skipChecks
+        self.temporary = temporary
         self.live_cache = {}
 
         self.__structure_update = False
@@ -589,6 +593,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         plug_inst.get_id(), exec_rc,))
 
         self._cleanup_stale_cur_conn(kill_all = True)
+        if self.temporary and os.path.isfile(self.dbFile):
+            try:
+                os.remove(self.dbFile)
+            except (OSError, IOError,):
+                pass
 
     def vacuum(self):
         """

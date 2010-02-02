@@ -109,7 +109,7 @@ class EntropyPackage:
 
         elif self.remote:
 
-            self.dbconn = EquoIntf.open_memory_database()
+            self.dbconn = EquoIntf.open_temp_repository()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
             matched_atom = (idpackage, matched_atom[1])
             self.from_installed = False

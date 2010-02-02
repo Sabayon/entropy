@@ -102,7 +102,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             dbs.set_bumped(local_dbfile)
 
 
-        if "in_memory" in self._metadata: # in-memory db?
+        if "__temporary__" in self._metadata: # in-memory db?
             local_dbfile_exists = True
         else:
             local_dbfile_exists = os.path.lexists(local_dbfile)
@@ -3493,7 +3493,7 @@ class ServerRepositoryMixin:
 
         if mirrors is None:
             mirrors = []
-        dbc = self._open_memory_database(repoid)
+        dbc = self._open_temp_repository(repoid)
         self._memory_db_instances[repoid] = dbc
 
         eapi3_port = int(etpConst['socket_service']['port'])
@@ -3508,7 +3508,7 @@ class ServerRepositoryMixin:
             'ssl_service_port': eapi3_ssl_port,
             'service_url': service_url,
             'handler': '', # not supported
-            'in_memory': True,
+            '__temporary__': True,
         }
 
         etpConst['server_repositories'][repoid] = repodata
@@ -3525,15 +3525,15 @@ class ServerRepositoryMixin:
             'read_only': False,
             'repo_name': repoid,
             'local_dbfile': '##this_path_does_not_exist_for_sure#' + repoid,
-            'in_memory': True,
+            '__temporary__': True,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
         dbc.add_plugin(srv_plug)
         return dbc
 
-    def _open_memory_database(self, repo):
+    def _open_temp_repository(self, repo):
         """
-        Open in-memory EntropyRepository interface.
+        Open temporary EntropyRepository interface.
 
         @keyword dbname: database name
         @type dbname: string
@@ -3542,11 +3542,12 @@ class ServerRepositoryMixin:
         """
         conn = EntropyRepository(
             readOnly = False,
-            dbFile = ':memory:',
+            dbFile = entropy.tools.get_random_temp_file(),
             dbname = repo,
             xcache = False,
             indexing = False,
-            skipChecks = True
+            skipChecks = True,
+            temporary = True
         )
         conn.initializeDatabase()
         return conn

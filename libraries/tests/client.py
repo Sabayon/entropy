@@ -25,7 +25,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         # fake clientDbconn
-        self.Client._installed_repository = self.Client.open_memory_database(
+        self.Client._installed_repository = self.Client.open_temp_repository(
             dbname = etpConst['clientdbid'])
         self.Spm = self.Client.Spm()
         self.SystemSettings = SystemSettings()
@@ -94,7 +94,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(False, key2 in self.SystemSettings)
 
     def test_memory_repository(self):
-        dbconn = self.Client.init_generic_memory_repository(
+        dbconn = self.Client._init_generic_temp_repository(
             self.mem_repoid, self.mem_repo_desc)
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)

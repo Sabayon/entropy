@@ -101,18 +101,22 @@ class RepositoryMixin:
     def __get_repository_cache_key(self, repoid):
         return (repoid, etpConst['systemroot'],)
 
-    def init_generic_memory_repository(self, repoid, description, package_mirrors = []):
-        dbc = self.open_memory_database(dbname = repoid)
+    def _init_generic_temp_repository(self, repoid, description,
+        package_mirrors = None):
+        if package_mirrors is None:
+            package_mirrors = []
+
+        dbc = self.open_temp_repository(dbname = repoid)
         repo_key = self.__get_repository_cache_key(repoid)
         self._memory_db_instances[repo_key] = dbc
 
         # add to self.SystemSettings['repositories']['available']
         repodata = {
             'repoid': repoid,
-            'in_memory': True,
+            '__temporary__': True,
             'description': description,
             'packages': package_mirrors,
-            'dbpath': ':memory:',
+            'dbpath': dbc.dbFile,
         }
         self.add_repository(repodata)
         return dbc
@@ -178,7 +182,7 @@ class RepositoryMixin:
                 self._repo_error_messages_cache.add(repoid)
             raise RepositoryError("RepositoryError: %s" % (t,))
 
-        if repo_data[repoid].get('in_memory'):
+        if repo_data[repoid].get('__temporary__'):
             repo_key = self.__get_repository_cache_key(repoid)
             conn = self._memory_db_instances.get(repo_key)
         else:
@@ -249,7 +253,7 @@ class RepositoryMixin:
         avail_data[repoid]['description'] = repodata['description']
 
         if repoid.endswith(etpConst['packagesext']) or \
-            repodata.get('in_memory'):
+            repodata.get('__temporary__'):
             # dynamic repository
 
             # no need # avail_data[repoid]['plain_packages'] = \
@@ -261,7 +265,7 @@ class RepositoryMixin:
 
             avail_data[repoid]['dbpath'] = repodata.get('dbpath')
             avail_data[repoid]['pkgpath'] = repodata.get('pkgpath')
-            avail_data[repoid]['in_memory'] = repodata.get('in_memory')
+            avail_data[repoid]['__temporary__'] = repodata.get('__temporary__')
             # put at top priority, shift others
             self.SystemSettings['repositories']['order'].insert(0, repoid)
 
@@ -587,7 +591,7 @@ class RepositoryMixin:
                 type = "warning",
                 header = bold("!!!"),
             )
-            m_conn = self.open_memory_database(dbname = etpConst['clientdbid'])
+            m_conn = self.open_temp_repository(dbname = etpConst['clientdbid'])
             self._add_plugin_to_client_repository(m_conn,
                 etpConst['clientdbid'])
             return m_conn
@@ -710,16 +714,18 @@ class RepositoryMixin:
         self._add_plugin_to_client_repository(conn, dbname)
         return conn
 
-    def open_memory_database(self, dbname = None):
+    def open_temp_repository(self, dbname = None):
         if dbname == None:
             dbname = etpConst['genericdbid']
+
         dbc = EntropyRepository(
             readOnly = False,
-            dbFile = ':memory:',
+            dbFile = entropy.tools.get_random_temp_file(),
             dbname = dbname,
             xcache = False,
             indexing = False,
-            skipChecks = True
+            skipChecks = True,
+            temporary = True
         )
         self._add_plugin_to_client_repository(dbc, dbname)
         dbc.initializeDatabase()

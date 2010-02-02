@@ -40,7 +40,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_server_repo(self):
         dbconn = self.Server.open_server_repository()
-        self.assertEqual(':memory:', dbconn.dbFile)
+        self.assertEqual(dbconn.temporary, True)
 
     def test_package_injection(self):
         test_pkg = _misc.get_test_entropy_package()
