@@ -1351,6 +1351,7 @@ def install_packages(entropy_client,
                 resume_cache['onlyfetch'] = onlyfetch
                 resume_cache['emptydeps'] = emptydeps
                 resume_cache['deepdeps'] = deepdeps
+                resume_cache['recursive'] = recursive
                 resume_cache['relaxed_deps'] = relaxed_deps
                 entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], resume_cache)
         except (IOError, OSError):
@@ -1373,6 +1374,7 @@ def install_packages(entropy_client,
                 onlyfetch = resume_cache['onlyfetch']
                 emptydeps = resume_cache['emptydeps']
                 deepdeps = resume_cache['deepdeps']
+                recursive = resume_cache['recursive']
                 relaxed_deps = resume_cache['relaxed_deps']
                 print_warning(red("%s..." % (_("Resuming previous operations"),) ))
             except (KeyError, TypeError, AttributeError,):
