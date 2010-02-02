@@ -4794,6 +4794,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.live_cache[c_tup] = True
             if not self._isDependsTableSane(): # is empty, need generation
                 self.generateReverseDependenciesMetadata(verbose = False)
+                # always force commit, if possible, otherwise this, for
+                # read-only repos will be called over and over.
+                self.commitChanges(force = True)
 
         excluded_deptypes_query = ""
         if exclude_deptypes is not None:
