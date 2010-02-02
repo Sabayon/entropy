@@ -1454,6 +1454,7 @@ class Repository:
                     continue
 
             self.Entropy.update_repository_revision(repo)
+            self._database_revdeps_setup(repo)
             if self.Entropy.indexing:
                 self._database_indexing(repo)
 
@@ -2011,6 +2012,11 @@ class Repository:
         )
 
         return downloaded_files
+
+    def _database_revdeps_setup(self, repo):
+        dbconn = self.Entropy.open_repository(repo)
+        dbconn.generateReverseDependenciesMetadata(verbose = False)
+        dbconn.commitChanges(force = True)
 
     def _database_indexing(self, repo):
 
