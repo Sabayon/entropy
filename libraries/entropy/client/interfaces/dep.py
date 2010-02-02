@@ -1424,29 +1424,29 @@ class CalculatorsMixin:
 
         return reverse_tree, 0
 
-    def _filter_depends_multimatched_atoms(self, idpackage, depends,
-        dbconn = None):
-
-        if dbconn is None:
-            dbconn = self._installed_repository
+    def __filter_depends_multimatched_atoms(self, idpackage, repo_id, depends):
 
         remove_depends = set()
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        for d_idpackage in depends:
+        for d_idpackage, d_repo_id in depends:
+
+            dbconn = self.open_repository(d_repo_id)
             mydeps = dbconn.retrieveDependencies(d_idpackage,
                 exclude_deptypes = excluded_dep_types)
+
             for mydep in mydeps:
 
                 matches, rslt = dbconn.atomMatch(mydep,
                     multiMatch = True)
-                if rslt == 1:
+                if rslt != 0:
                     continue
+                matches = set([(x, d_repo_id) for x in matches])
 
-                if idpackage in matches and len(matches) > 1:
+                if (idpackage, repo_id) in matches and len(matches) > 1:
                     # are all in depends?
                     for mymatch in matches:
                         if mymatch not in depends:
-                            remove_depends.add(d_idpackage)
+                            remove_depends.add((d_idpackage, d_repo_id))
                             break
 
         depends -= remove_depends
@@ -1511,12 +1511,12 @@ class CalculatorsMixin:
             )
 
             # obtain its inverse deps
-            reverse_deps = repo_db.retrieveReverseDependencies(
-                idpackage, exclude_deptypes = (pdepend_id, bdepend_id,))
+            reverse_deps = set([(x, repo_id) for x in \
+                repo_db.retrieveReverseDependencies(
+                    idpackage, exclude_deptypes = (pdepend_id, bdepend_id,))])
             if reverse_deps:
-                reverse_deps = set([(x, repo_id) for x in \
-                    self._filter_depends_multimatched_atoms(
-                        idpackage, reverse_deps, dbconn = repo_db)])
+                reverse_deps = self.__filter_depends_multimatched_atoms(
+                    idpackage, repo_id, reverse_deps)
 
             if deep:
 
@@ -1524,26 +1524,32 @@ class CalculatorsMixin:
                 for d_dep in repo_db.retrieveDependencies(idpackage,
                     exclude_deptypes = (bdepend_id,)):
 
-                    m_idpackage, m_rc = repo_db.atomMatch(d_dep)
+                    if repo_db is self._installed_repository:
+                        m_idpackage, m_rc_x = repo_db.atomMatch(d_dep)
+                        m_rc = etpConst['clientdbid']
+                    else:
+                        m_idpackage, m_rc = self.atom_match(d_dep)
                     if m_idpackage != -1:
-                        mydeps.add(m_idpackage)
+                        mydeps.add((m_idpackage, m_rc))
 
                 # now filter them
-                new_mydeps = []
-                for mydep in mydeps:
-                    if repo_db.isSystemPackage(mydep):
+                new_mydeps = set()
+                for mydep, m_repo_id in mydeps:
+                    m_repo_db = self.open_repository(m_repo_id)
+                    if m_repo_db.isSystemPackage(mydep):
                         continue
-                    if repo_db is self._installed_repository:
+                    if m_repo_db is self._installed_repository:
                         if self.is_installed_idpackage_in_system_mask(mydep):
                             continue
-                    new_mydeps.append(mydep)
+                    new_mydeps.add((mydep, m_repo_id,))
                 mydeps = new_mydeps
 
-                for d_rev_dep in mydeps:
-                    mydepends = repo_db.retrieveReverseDependencies(
+                for d_rev_dep, d_repo_id in mydeps:
+                    d_repo_db = self.open_repository(d_repo_id)
+                    mydepends = d_repo_db.retrieveReverseDependencies(
                         d_rev_dep, exclude_deptypes = (pdepend_id, bdepend_id,))
                     if not mydepends:
-                        reverse_deps.add((d_rev_dep, repo_id))
+                        reverse_deps.add((d_rev_dep, d_repo_id))
 
             if recursive:
                 for rev_dep in reverse_deps:
