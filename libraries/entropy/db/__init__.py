@@ -520,7 +520,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.initializeDatabase()
         return cursor
 
-
     def _connection(self):
         self._cleanup_stale_cur_conn()
         c_key = self._get_cur_th_key()
@@ -551,6 +550,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def __unicode__(self):
         return self.__show_info()
+
+    def __hash__(self):
+        return id(self)
 
     def setCacheSize(self, size):
         """
