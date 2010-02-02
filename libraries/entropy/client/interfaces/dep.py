@@ -1424,16 +1424,20 @@ class CalculatorsMixin:
 
         return reverse_tree, 0
 
-    def _filter_depends_multimatched_atoms(self, idpackage, depends):
+    def _filter_depends_multimatched_atoms(self, idpackage, depends,
+        dbconn = None):
+
+        if dbconn is None:
+            dbconn = self._installed_repository
 
         remove_depends = set()
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         for d_idpackage in depends:
-            mydeps = self._installed_repository.retrieveDependencies(d_idpackage,
+            mydeps = dbconn.retrieveDependencies(d_idpackage,
                 exclude_deptypes = excluded_dep_types)
             for mydep in mydeps:
 
-                matches, rslt = self._installed_repository.atomMatch(mydep,
+                matches, rslt = dbconn.atomMatch(mydep,
                     multiMatch = True)
                 if rslt == 1:
                     continue
@@ -1448,14 +1452,13 @@ class CalculatorsMixin:
         depends -= remove_depends
         return depends
 
-    def generate_reverse_dependency_tree(self, idpackages, deep = False):
+    def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
+        recursive = True):
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
-            hash("%s|%s" % (
-                    tuple(sorted(idpackages)),
-                    deep,
-                ),
+                hash("%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
+                    recursive,),
             ),
         )
         if self.xcache:
@@ -1475,28 +1478,30 @@ class CalculatorsMixin:
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
         rem_dep_text = _("Calculating inverse dependencies for")
-        for idpackage in idpackages:
-            stack.push(idpackage)
+        for match in matched_atoms:
+            stack.push(match)
 
         while stack.is_filled():
 
-            idpackage = stack.pop()
-            if idpackage in match_cache:
+            idpackage, repo_id = stack.pop()
+            if (idpackage, repo_id) in match_cache:
                 # already analyzed
                 continue
-            match_cache.add(idpackage)
+            match_cache.add((idpackage, repo_id))
 
-            system_pkg = not self.validate_package_removal(idpackage)
+            repo_db = self.open_repository(repo_id)
+            system_pkg = not self.validate_package_removal(idpackage,
+                dbconn = repo_db)
+
             if system_pkg:
                 # this is a system package, removal forbidden
                 continue
-
             # validate package
-            if not self._installed_repository.isIdpackageAvailable(idpackage):
+            if not repo_db.isIdpackageAvailable(idpackage):
                 continue
 
             count += 1
-            p_atom = self._installed_repository.retrieveAtom(idpackage)
+            p_atom = repo_db.retrieveAtom(idpackage)
             self.output(
                 blue(rem_dep_text + " %s" % (purple(p_atom),)),
                 importance = 0,
@@ -1506,36 +1511,44 @@ class CalculatorsMixin:
             )
 
             # obtain its inverse deps
-            reverse_deps = self._installed_repository.retrieveReverseDependencies(
+            reverse_deps = repo_db.retrieveReverseDependencies(
                 idpackage, exclude_deptypes = (pdepend_id, bdepend_id,))
             if reverse_deps:
-                reverse_deps = self._filter_depends_multimatched_atoms(
-                    idpackage, reverse_deps)
+                reverse_deps = set([(x, repo_id) for x in \
+                    self._filter_depends_multimatched_atoms(
+                        idpackage, reverse_deps, dbconn = repo_db)])
 
             if deep:
 
                 mydeps = set()
-                for d_dep in self._installed_repository.retrieveDependencies(idpackage,
+                for d_dep in repo_db.retrieveDependencies(idpackage,
                     exclude_deptypes = (bdepend_id,)):
 
-                    match = self._installed_repository.atomMatch(d_dep)
-                    if match[0] != -1:
-                        mydeps.add(match[0])
+                    m_idpackage, m_rc = repo_db.atomMatch(d_dep)
+                    if m_idpackage != -1:
+                        mydeps.add(m_idpackage)
 
                 # now filter them
-                mydeps = [x for x in mydeps if not \
-                    (self._installed_repository.isSystemPackage(x) or \
-                        self.is_installed_idpackage_in_system_mask(x) )]
+                new_mydeps = []
+                for mydep in mydeps:
+                    if repo_db.isSystemPackage(mydep):
+                        continue
+                    if repo_db is self._installed_repository:
+                        if self.is_installed_idpackage_in_system_mask(mydep):
+                            continue
+                    new_mydeps.append(mydep)
+                mydeps = new_mydeps
 
                 for d_rev_dep in mydeps:
-                    mydepends = self._installed_repository.retrieveReverseDependencies(
+                    mydepends = repo_db.retrieveReverseDependencies(
                         d_rev_dep, exclude_deptypes = (pdepend_id, bdepend_id,))
                     if not mydepends:
-                        reverse_deps.add(d_rev_dep)
+                        reverse_deps.add((d_rev_dep, repo_id))
 
-            for rev_dep in reverse_deps:
-                stack.push(rev_dep)
-            graph.add(idpackage, reverse_deps)
+            if recursive:
+                for rev_dep in reverse_deps:
+                    stack.push(rev_dep)
+            graph.add((idpackage, repo_id), reverse_deps)
 
 
         del stack
@@ -1855,36 +1868,59 @@ class CalculatorsMixin:
             self.Cacher.push(c_hash, (found, matched))
         return found, matched
 
-    def validate_package_removal(self, idpackage):
+    def validate_package_removal(self, idpackage, dbconn = None):
 
-        pkgatom = self._installed_repository.retrieveAtom(idpackage)
+        if dbconn is None:
+            dbconn = self._installed_repository
+
+        pkgatom = dbconn.retrieveAtom(idpackage)
         pkgkey = entropy.tools.dep_getkey(pkgatom)
-        client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
-        mask_installed_keys = client_settings['system_mask']['repos_installed_keys']
+        cl_set_plg = self.sys_settings_client_plugin_id
+        mask_data = self.SystemSettings[cl_set_plg]['system_mask']
+        mask_installed_keys = mask_data['repos_installed_keys']
 
-        if self.is_installed_idpackage_in_system_mask(idpackage):
-            idpackages = mask_installed_keys.get(pkgkey)
-            if not idpackages: return False
-            if len(idpackages) > 1:
-                return True
-            return False # sorry!
+        # cannot check this for pkgs not coming from installed pkgs repo
+        if dbconn is self._installed_repository:
+            if self.is_installed_idpackage_in_system_mask(idpackage):
+                idpackages = mask_installed_keys.get(pkgkey)
+                if not idpackages:
+                    return False
+                if len(idpackages) > 1:
+                    return True
+                return False # sorry!
 
         # did we store the bastard in the db?
-        system_pkg = self._installed_repository.isSystemPackage(idpackage)
-        if not system_pkg: return True
-        # check if the package is slotted and exist more than one installed first
-        matches, rc = self._installed_repository.atomMatch(pkgkey, multiMatch = True)
+        system_pkg = dbconn.isSystemPackage(idpackage)
+        if not system_pkg:
+            return True
+        # check if the package is slotted and exist more
+        # than one installed first
+        matches, rc = dbconn.atomMatch(pkgkey, multiMatch = True)
         if len(matches) < 2:
             return False
         return True
 
 
-    def get_removal_queue(self, idpackages, deep = False):
+    def get_removal_queue(self, idpackages, deep = False, recursive = True):
+        """
+        Return removal queue (list of idpackages).
+        """
+        _idpackages = [(x, etpConst['clientdbid']) for x in idpackages]
+        treeview = self._generate_reverse_dependency_tree(_idpackages,
+            deep = deep, recursive = recursive)
         queue = []
-        if not idpackages:
-            return queue
-        treeview = self.generate_reverse_dependency_tree(idpackages,
-            deep = deep)
+        for x in sorted(treeview, reverse = True):
+            queue.extend(treeview[x])
+        return [x for x, y in queue]
+
+    def get_reverse_dependencies(self, matched_atoms, deep = False,
+        recursive = True):
+        """
+        Return an ordered reverse dependencies list (list of pkg matches).
+        """
+        treeview = self._generate_reverse_dependency_tree(matched_atoms,
+            deep = deep, recursive = recursive)
+        queue = []
         for x in sorted(treeview, reverse = True):
             queue.extend(treeview[x])
         return queue

@@ -1022,7 +1022,8 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
             darkgreen("%s..." % (_("Removal Search"),) ))
 
     found_atoms = [clientDbconn.atomMatch(x) for x in atoms]
-    found_atoms = [x[0] for x in found_atoms if x[1] == 0]
+    found_atoms = [(x[0], etpConst['clientdbid']) for x \
+        in found_atoms if x[1] == 0]
 
     if not found_atoms:
         print_error(red("%s." % (_("No packages found"),) ))
@@ -1032,7 +1033,7 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s..." % (
             _("Calculating removal dependencies, please wait"),) ), back = True)
-    treeview = Equo.generate_reverse_dependency_tree(found_atoms, deep = deep)
+    treeview = Equo._generate_reverse_dependency_tree(found_atoms, deep = deep)
     for dep_lev in sorted(treeview, reverse = True):
         for dep_sub_el in treeview[dep_lev]:
             removal_queue.append(dep_sub_el)
