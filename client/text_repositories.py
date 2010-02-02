@@ -134,7 +134,7 @@ def _disable_repositories(entropy_client, repos):
             continue
         entropy_client.disable_repository(repo)
         print_info("[%s] %s" % (
-            teal(repo), blue(_("repository enabled")),))
+            teal(repo), blue(_("repository disabled")),))
     return 0
 
 def _show_repository_info(entropy_client, reponame):
