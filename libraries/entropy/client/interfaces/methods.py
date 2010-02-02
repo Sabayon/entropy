@@ -152,16 +152,23 @@ class RepositoryMixin:
 
     def open_repository(self, repoid):
 
+        # support for installed pkgs repository, got by issuing
+        # repoid = etpConst['clientdbid']
+        if repoid == etpConst['clientdbid']:
+            return self._installed_repository
+
         key = self.__get_repository_cache_key(repoid)
         if key not in self._repodb_cache:
-            dbconn = self.load_repository_database(repoid, xcache = self.xcache,
-                indexing = self.indexing)
+            dbconn = self.load_repository_database(repoid,
+                xcache = self.xcache, indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
             except (OperationalError, TypeError,):
                 pass
+
             self._repodb_cache[key] = dbconn
             return dbconn
+
         return self._repodb_cache.get(key)
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):

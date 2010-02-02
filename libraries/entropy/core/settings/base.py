@@ -1187,6 +1187,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 reponame, repodata = self._analyze_client_repo_string(line,
                     data['branch'], data['product'])
+                if reponame == etpConst['clientdbid']:
+                    # not allowed!!!
+                    continue
+
                 repoids.add(reponame)
                 if reponame in my_repodata:
 
