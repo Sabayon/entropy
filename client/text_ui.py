@@ -60,6 +60,7 @@ def package(options):
     e_req_save_here = False
     e_req_dump = False
     e_req_bdeps = False
+    e_req_recursive = True
     e_req_multifetch = 1
     rc = 0
     _myopts = []
@@ -86,6 +87,8 @@ def package(options):
             e_req_only_fetch = True
         elif (opt == "--deep"):
             e_req_deep = True
+        elif (opt == "--no-recursive"):
+            e_req_recursive = False
         elif (opt == "--dump"):
             e_req_dump = True
         elif (opt == "--listfiles"):
@@ -150,7 +153,8 @@ def package(options):
                     deepdeps = e_req_deep, pkgs = my_etp_pkg_paths,
                     savecwd = e_req_save_here,
                     relaxed_deps = e_req_relaxed,
-                    build_deps = e_req_bdeps)
+                    build_deps = e_req_bdeps,
+                    recursive = e_req_recursive)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -165,7 +169,8 @@ def package(options):
                     multifetch = e_req_multifetch,
                     dochecksum = e_req_checksum,
                     relaxed_deps = e_req_relaxed,
-                    build_deps = e_req_bdeps)
+                    build_deps = e_req_bdeps,
+                    recursive = e_req_recursive)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -182,7 +187,8 @@ def package(options):
                     multifetch = e_req_multifetch,
                     check_critical_updates = True,
                     relaxed_deps = e_req_relaxed,
-                    build_deps = e_req_bdeps)
+                    build_deps = e_req_bdeps,
+                    recursive = e_req_recursive)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -831,7 +837,7 @@ def _show_you_meant(entropy_client, package, from_installed):
         items_cache.add((key, slot))
 
 def _generate_run_queue(entropy_client, found_pkg_atoms, deps, emptydeps,
-    deepdeps, relaxeddeps, builddeps):
+    deepdeps, relaxeddeps, builddeps, recursive):
 
     run_queue = []
     removal_queue = []
@@ -841,12 +847,13 @@ def _generate_run_queue(entropy_client, found_pkg_atoms, deps, emptydeps,
             _("Calculating dependencies"),) )
         run_queue, removal_queue, status = entropy_client.get_install_queue(
             found_pkg_atoms, emptydeps, deepdeps, relaxed_deps = relaxeddeps,
-            build_deps = builddeps)
+            build_deps = builddeps, recursive = recursive)
         if status == -2:
             print_error(red(" @@ ") + blue("%s: " % (
                 _("Cannot find needed dependencies"),) ))
             for package in run_queue:
-                _show_masked_pkg_info(entropy_client, package, from_user = False)
+                _show_masked_pkg_info(entropy_client, package,
+                    from_user = False)
             return True, (125, -1), []
 
     else:
@@ -857,7 +864,7 @@ def _generate_run_queue(entropy_client, found_pkg_atoms, deps, emptydeps,
 
 def _download_sources(entropy_client, packages = None, deps = True,
     deepdeps = False, pkgs = None, savecwd = False, relaxed_deps = False,
-    build_deps = False):
+    build_deps = False, recursive = True):
 
     if packages is None:
         packages = []
@@ -877,7 +884,8 @@ def _download_sources(entropy_client, packages = None, deps = True,
         return myrc
 
     abort, run_queue, removal_queue = _generate_run_queue(entropy_client,
-        found_pkg_atoms, deps, False, deepdeps, relaxed_deps, build_deps)
+        found_pkg_atoms, deps, False, deepdeps, relaxed_deps, build_deps,
+        recursive)
     if abort:
         return run_queue
 
@@ -986,7 +994,7 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
 
 def _download_packages(entropy_client, packages = None, deps = True,
     deepdeps = False, multifetch = 1, dochecksum = True, relaxed_deps = False,
-    build_deps = False):
+    build_deps = False, recursive = True):
 
     if packages is None:
         packages = []
@@ -1012,7 +1020,8 @@ def _download_packages(entropy_client, packages = None, deps = True,
         return myrc
 
     abort, run_queue, removal_queue = _generate_run_queue(entropy_client,
-        found_pkg_atoms, deps, False, deepdeps, relaxed_deps, build_deps)
+        found_pkg_atoms, deps, False, deepdeps, relaxed_deps, build_deps,
+        recursive)
     if abort:
         return run_queue
 
@@ -1041,7 +1050,7 @@ def install_packages(entropy_client,
     emptydeps = False, onlyfetch = False, deepdeps = False,
     config_files = False, pkgs = None, resume = False, skipfirst = False,
     dochecksum = True, multifetch = 1, check_critical_updates = False,
-    relaxed_deps = False, build_deps = False):
+    relaxed_deps = False, build_deps = False, recursive = True):
 
     if packages is None:
         packages = []
@@ -1097,7 +1106,8 @@ def install_packages(entropy_client,
             return myrc
 
         abort, run_queue, removal_queue = _generate_run_queue(entropy_client,
-            found_pkg_atoms, deps, emptydeps, deepdeps, relaxed_deps, build_deps)
+            found_pkg_atoms, deps, emptydeps, deepdeps, relaxed_deps,
+            build_deps, recursive)
         if abort:
             return run_queue
 

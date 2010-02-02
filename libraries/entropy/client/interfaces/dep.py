@@ -892,8 +892,8 @@ class CalculatorsMixin:
         conflicts.add(c_idpackage)
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
-        stack, deps_not_found, conflicts, unsat_cache, relaxed_deps, build_deps,
-        deep_deps, empty_deps):
+        stack, deps_not_found, conflicts, unsat_cache, relaxed_deps,
+        build_deps, deep_deps, empty_deps, recursive):
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
@@ -942,8 +942,11 @@ class CalculatorsMixin:
                 # dependency not found !
                 deps_not_found.add(unsat_dep)
                 continue
+
             deps.add((match_pkg_id, match_repo_id))
-            stack.push((match_pkg_id, match_repo_id))
+            if recursive:
+                # push to stack only if recursive
+                stack.push((match_pkg_id, match_repo_id))
 
         post_deps_matches = set()
         for post_dep in post_deps:
@@ -953,14 +956,16 @@ class CalculatorsMixin:
                 # not adding to deps_not_found
                 continue
             post_deps_matches.add((match_pkg_id, match_repo_id))
-            stack.push((match_pkg_id, match_repo_id))
+            if recursive:
+                # push to stack only if recursive
+                stack.push((match_pkg_id, match_repo_id))
 
         return deps, post_deps_matches
 
     def _generate_dependency_tree(self, matched_atom, graph,
         empty_deps = False, relaxed_deps = False, build_deps = False,
         deep_deps = False, unsatisfied_deps_cache = None,
-        elements_cache = None):
+        elements_cache = None, recursive = True):
 
         # this cache avoids adding the same element to graph
         # several times, when it is supposed to be already handled
@@ -974,7 +979,6 @@ class CalculatorsMixin:
 
         stack = Lifo()
         stack.push(matched_atom)
-
 
         while stack.is_filled():
 
@@ -1006,8 +1010,8 @@ class CalculatorsMixin:
             # search inside installed packages repository if there's something
             # in the same slot, if so, do some extra checks first.
             pkg_key, pkg_slot = repo_db.retrieveKeySlot(pkg_id)
-            cm_idpackage, cm_result = self._installed_repository.atomMatch(pkg_key,
-                matchSlot = pkg_slot)
+            cm_idpackage, cm_result = self._installed_repository.atomMatch(
+                pkg_key, matchSlot = pkg_slot)
 
             if cm_idpackage != -1:
                 # this method does:
@@ -1020,8 +1024,8 @@ class CalculatorsMixin:
             dep_matches, post_dep_matches = \
                 self.__generate_dependency_tree_analyze_deplist(
                     pkg_match, repo_db, stack, deps_not_found,
-                    conflicts, unsatisfied_deps_cache,
-                    relaxed_deps, build_deps, deep_deps, empty_deps)
+                    conflicts, unsatisfied_deps_cache, relaxed_deps,
+                    build_deps, deep_deps, empty_deps, recursive)
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
@@ -1321,16 +1325,17 @@ class CalculatorsMixin:
 
     def get_required_packages(self, matched_atoms, empty_deps = False,
         deep_deps = False, relaxed_deps = False, build_deps = False,
-        quiet = False):
+        quiet = False, recursive = True):
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['dep_tree'],
-            hash("%s|%s|%s|%s|%s|%s|%s" % (
+            hash("%s|%s|%s|%s|%s|%s|%s|%s" % (
                 hash(frozenset(sorted(matched_atoms))),
                 empty_deps,
                 deep_deps,
                 relaxed_deps,
                 build_deps,
+                recursive,
                 self._installed_repository.checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
@@ -1384,7 +1389,8 @@ class CalculatorsMixin:
                     matched_atom, graph, empty_deps = empty_deps,
                     deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                     build_deps = build_deps, elements_cache = elements_cache,
-                    unsatisfied_deps_cache = unsat_deps_cache
+                    unsatisfied_deps_cache = unsat_deps_cache,
+                    recursive = recursive
                 )
             except DependenciesNotFound as err:
                 error_generated = -2
@@ -1884,14 +1890,15 @@ class CalculatorsMixin:
         return queue
 
     def get_install_queue(self, matched_atoms, empty_deps, deep_deps,
-        relaxed_deps = False, build_deps = False, quiet = False):
+        relaxed_deps = False, build_deps = False, quiet = False,
+        recursive = True):
 
         install = []
         removal = []
         treepackages, result = self.get_required_packages(matched_atoms,
             empty_deps = empty_deps, deep_deps = deep_deps,
             relaxed_deps = relaxed_deps, build_deps = build_deps,
-            quiet = quiet)
+            quiet = quiet, recursive = recursive)
 
         if result == -2:
             return treepackages, removal, result
