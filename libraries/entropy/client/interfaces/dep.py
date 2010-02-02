@@ -1682,7 +1682,8 @@ class CalculatorsMixin:
         for idpackage in idpackages:
 
             count += 1
-            if (count%10 == 0) or (count == maxlen) or (count == 1):
+            avg = int(float(count)/maxlen*100)
+            if (avg%10 == 9) or (count == maxlen) or (count == 1):
                 self.output(
                     mytxt,
                     importance = 0,
