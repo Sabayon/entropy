@@ -1570,11 +1570,11 @@ class Package:
 
             rc, data_transfer, resumed = self.Entropy.fetch_file(
                 url,
+                dest_file,
                 None,
                 None,
                 False,
-                fetch_file_abort_function = self.fetch_abort_function,
-                filepath = dest_file
+                fetch_file_abort_function = self.fetch_abort_function
             )
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)

@@ -44,19 +44,17 @@ class FetchersMixin:
             @param fetch_file_abort_function callable method that could raise exceptions
             @return general_status_code, {'url': (status_code,checksum,resumed,)}, data_transfer
         """
-        pkgs_bindir = etpConst['packagesbindir']
         url_path_list = []
         checksum_map = {}
         count = 0
         for url, dest_path, cksum, branch in url_data_list:
             count += 1
             filename = os.path.basename(url)
-            if dest_path == None:
-                dest_path = os.path.join(pkgs_bindir,branch,filename,)
 
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
                 os.makedirs(dest_dir,0755)
+                const_setup_perms(dest_dir, etpConst['entropygid'])
 
             url_path_list.append((url,dest_path,))
             if cksum != None: checksum_map[count] = cksum
@@ -250,7 +248,8 @@ class FetchersMixin:
                         # properly, give up with everything
                         return 3, my_download_list
                     myuri = os.path.join(best_mirror,fname)
-                    fetch_files_list.append((myuri,None,cksum,branch,))
+                    pkg_path = os.path.join(etpConst['entropyworkdir'], fname)
+                    fetch_files_list.append((myuri,pkg_path,cksum,branch,))
 
                 try:
 
@@ -290,7 +289,8 @@ class FetchersMixin:
         return 0, []
 
 
-    def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
+    def fetch_file(self, url, save_path, branch, digest = None, resume = True,
+        fetch_file_abort_function = None):
 
         def do_stfu_rm(xpath):
             try:
@@ -299,9 +299,7 @@ class FetchersMixin:
                 pass
 
         filename = os.path.basename(url)
-        if not filepath:
-            filepath = os.path.join(etpConst['packagesbindir'],branch,filename)
-        filepath_dir = os.path.dirname(filepath)
+        filepath_dir = os.path.dirname(save_path)
         # symlink support
         if not os.path.isdir(os.path.realpath(filepath_dir)):
             try:
@@ -311,11 +309,11 @@ class FetchersMixin:
             os.makedirs(filepath_dir, 0755)
 
         existed_before = False
-        if os.path.isfile(filepath) and os.path.exists(filepath):
+        if os.path.isfile(save_path) and os.path.exists(save_path):
             existed_before = True
 
         # load class
-        fetchConn = self.urlFetcher(url, filepath, resume = resume,
+        fetchConn = self.urlFetcher(url, save_path, resume = resume,
             abort_check_func = fetch_file_abort_function, OutputInterface = self)
         fetchConn.progress = self.progress
 
@@ -340,7 +338,7 @@ class FetchersMixin:
                 )
                 self.entropyTools.print_traceback()
             if (not existed_before) or (not resume):
-                do_stfu_rm(filepath)
+                do_stfu_rm(save_path)
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
             # not found
@@ -354,7 +352,7 @@ class FetchersMixin:
         if digest and (fetchChecksum != digest):
             # not properly downloaded
             if (not existed_before) or (not resume):
-                do_stfu_rm(filepath)
+                do_stfu_rm(save_path)
             return -2, data_transfer, resumed
 
         return 0, data_transfer, resumed
@@ -365,6 +363,7 @@ class FetchersMixin:
 
         uris = self.SystemSettings['repositories']['available'][repository]['packages'][::-1]
         remaining = set(uris)
+        save_path = os.path.join(etpConst['entropyworkdir'], filename)
 
         mirrorcount = 0
         for uri in uris:
@@ -426,6 +425,7 @@ class FetchersMixin:
                     )
                     rc, data_transfer, resumed = self.fetch_file(
                         url,
+                        save_path,
                         branch,
                         digest,
                         do_resume,
