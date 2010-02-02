@@ -12,6 +12,8 @@
 
 from entropy.const import *
 from entropy.i18n import _
+import entropy.tools
+
 from sulfur.entropyapi import Equo
 from sulfur.setup import cleanMarkupString, SulfurConf
 EquoIntf = Equo()
@@ -51,7 +53,6 @@ class DummyEntropyPackage:
 
 class EntropyPackage:
 
-    import entropy.tools as entropyTools
     def __init__(self, matched_atom, remote = None, pkgset = None):
 
         self.pkgset = pkgset
@@ -238,7 +239,7 @@ class EntropyPackage:
             atom = self.get_name()
             repo = self.get_repository()
             repo_clean = self.get_repository_clean()
-            key = self.entropyTools.dep_getkey(atom)
+            key = entropy.tools.dep_getkey(atom)
             desc = self.get_description(markup = False)
             ver_str = self._get_nameDesc_get_installed_ver()
             self.__cache['get_nameDesc'] = atom, repo, repo_clean, key, desc, \
@@ -247,7 +248,7 @@ class EntropyPackage:
         if atom is None: # wtf!
             return 'N/A'
 
-        key = self.entropyTools.dep_getkey(atom)
+        key = entropy.tools.dep_getkey(atom)
         downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo_clean, key)
         ugc_string = '<small>[%s|<span foreground="%s">%s</span>]</small> ' % (
             downloads, SulfurConf.color_title2, repo_clean,)
@@ -494,7 +495,7 @@ class EntropyPackage:
         if self.pkgset:
             return self.set_name
 
-        key = self.entropyTools.dep_getkey(
+        key = entropy.tools.dep_getkey(
             self.dbconn.retrieveAtom(self.matched_id))
         self.__cache['get_key'] = key
         return key
@@ -533,13 +534,13 @@ class EntropyPackage:
     def get_download_sizeFmt(self):
         if self.pkgset:
             return 0
-        return EquoIntf.entropyTools.bytes_into_human(
+        return entropy.tools.bytes_into_human(
             self.dbconn.retrieveSize(self.matched_id))
 
     def get_disk_sizeFmt(self):
         if self.pkgset:
             return 0
-        return EquoIntf.entropyTools.bytes_into_human(
+        return entropy.tools.bytes_into_human(
             self.dbconn.retrieveOnDiskSize(self.matched_id))
 
     def get_arch(self):
@@ -553,7 +554,7 @@ class EntropyPackage:
     def get_creation_date_formatted(self):
         if self.pkgset:
             return 0
-        return EquoIntf.entropyTools.convert_unix_time_to_human_time(
+        return entropy.tools.convert_unix_time_to_human_time(
             float(self.dbconn.retrieveCreationDate(self.matched_id)))
 
     def get_release(self):
@@ -568,7 +569,7 @@ class EntropyPackage:
         if not atom:
             return None
         return EquoIntf.UGC.UGCCache.get_package_vote(
-            self.get_repository_clean(), self.entropyTools.dep_getkey(atom))
+            self.get_repository_clean(), entropy.tools.dep_getkey(atom))
 
     def get_ugc_package_vote_int(self):
         if self.pkgset:
@@ -577,7 +578,7 @@ class EntropyPackage:
         if not atom:
             return 0
         vote = EquoIntf.UGC.UGCCache.get_package_vote(
-            self.get_repository_clean(), self.entropyTools.dep_getkey(atom))
+            self.get_repository_clean(), entropy.tools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0
         return int(vote)
@@ -589,7 +590,7 @@ class EntropyPackage:
         if not atom:
             return 0.0
         vote = EquoIntf.UGC.UGCCache.get_package_vote(
-            self.get_repository_clean(), self.entropyTools.dep_getkey(atom))
+            self.get_repository_clean(), entropy.tools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0.0
         return vote
@@ -603,7 +604,7 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return 0
-        key = self.entropyTools.dep_getkey(atom)
+        key = entropy.tools.dep_getkey(atom)
         return EquoIntf.UGC.UGCCache.get_package_downloads(
             self.get_repository_clean(), key)
 
