@@ -361,6 +361,8 @@ def const_default_settings(rootdir):
         'entropyslotprefix': ":",
         'entropytagprefix': "#",
         'packagesetprefix': "@",
+        'entropyrepoprefix': "@",
+        'entropyrevisionprefix': "~",
         'userpackagesetsid': "__user__",
         'setsconffilename': "sets.conf",
         'cachedumpext': ".dmp",
