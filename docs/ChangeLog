@@ -1,3 +1,21 @@
+commit ee6da150aa2e4ab59a4926918ff52a35529a8a59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 00:00:55 2010 +0100
+
+    [entropy.spm] fix function call
+
+commit 9ea5cbb977f76552a1f39c9a09356ee4bd2676ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 22:59:00 2010 +0100
+
+    [todo] update TODO
+
+commit bce434c47ca0495ceb9187ef5f031cff960afc86
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 21:06:18 2010 +0100
+
+    Update ChangeLog for version 0.99.33
+
 commit 8980ce598091d2c86f4b79df1528174dc1ff0968
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 3 21:05:43 2010 +0100
