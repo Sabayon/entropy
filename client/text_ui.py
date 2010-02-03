@@ -447,6 +447,8 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
                 _('Would you like to remove them?'),
                 input_params
             )
+            if data is None:
+                return 0, 0
             rc = data.get('answer', 2)[0]
 
             if rc == 2: # no
