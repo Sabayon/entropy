@@ -87,7 +87,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         for category in cats:
 
             cat_desc = orig_cat_desc
-            cat_desc_data = self.entropy.get_category_description_data(category)
+            cat_desc_data = self.entropy.get_category_description(category)
             if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
             elif 'en' in cat_desc_data:
@@ -147,7 +147,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         for category in cats:
 
             cat_desc = orig_cat_desc
-            cat_desc_data = self.entropy.get_category_description_data(category)
+            cat_desc_data = self.entropy.get_category_description(category)
             if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
             elif 'en' in cat_desc_data:
@@ -2393,7 +2393,7 @@ class EntropyQueueView:
         grandfather = model.append( None, (label,) )
         for category in cats:
             cat_desc = _("No description")
-            cat_desc_data = self.Equo.get_category_description_data(category)
+            cat_desc_data = self.Equo.get_category_description(category)
             if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
             elif 'en' in cat_desc_data:

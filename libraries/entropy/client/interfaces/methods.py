@@ -1541,7 +1541,7 @@ class MiscMixin:
         groups = spm.get_package_groups().copy()
 
         # expand metadata
-        categories = self.list_repo_categories()
+        categories = self.get_package_categories()
         for data in list(groups.values()):
 
             exp_cats = set()
@@ -1551,24 +1551,15 @@ class MiscMixin:
 
         return groups
 
-    def list_repo_categories(self):
+    def get_package_categories(self):
         categories = set()
         for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
             catsdata = dbconn.listAllCategories()
             categories.update(set([x[1] for x in catsdata]))
-        return categories
+        return sorted(categories)
 
-    def list_repo_packages_in_category(self, category):
-        pkg_matches = []
-        for repo in self._enabled_repos:
-            dbconn = self.open_repository(repo)
-            catsdata = dbconn.searchCategory(category)
-            pkg_matches.extend([(x[1], repo,) for x in \
-                catsdata if (x[1], repo,) not in pkg_matches])
-        return pkg_matches
-
-    def get_category_description_data(self, category):
+    def get_category_description(self, category):
 
         data = {}
         for repo in self._enabled_repos:

@@ -2190,7 +2190,7 @@ class MaskedPackagesDialog(MenuSkel):
         cats = sorted(categories.keys())
         for category in cats:
             cat_desc = _("No description")
-            cat_desc_data = self.Entropy.get_category_description_data(category)
+            cat_desc_data = self.Entropy.get_category_description(category)
             if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
             elif 'en' in cat_desc_data:
