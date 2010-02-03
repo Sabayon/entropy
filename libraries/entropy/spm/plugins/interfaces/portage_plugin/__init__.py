@@ -2298,7 +2298,7 @@ class PortagePlugin(SpmPlugin):
                 if entropy_repository.get_plugins_metadata().get("lock_remote"):
                     no_upload = entropy_repository.get_plugins_metadata().get(
                         "no_upload")
-                    entropy_server.do_server_repository_sync_lock(
+                    entropy_server._server_repository_sync_lock(
                         entropy_repository_id, no_upload)
                 # now run queue
                 try:
