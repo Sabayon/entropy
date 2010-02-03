@@ -1816,8 +1816,10 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             c_repo = entropy_client.installed_repository()
             on_disk_size = c_repo.retrieveOnDiskSize(idpackage)
             pkg_size = c_repo.retrieveSize(idpackage)
-            total_removal_size += on_disk_size
-            total_pkg_size += pkg_size
+            if on_disk_size is not None:
+                total_removal_size += on_disk_size
+            if pkg_size is not None:
+                total_pkg_size += pkg_size
 
         human_removal_size = entropy.tools.bytes_into_human(total_removal_size)
         human_pkg_size = entropy.tools.bytes_into_human(total_pkg_size)
