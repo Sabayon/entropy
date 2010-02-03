@@ -1,6 +1,8 @@
 
   0.99.40:
 
+    - provide icons for every pkg category (and group?) in
+        /usr/share/pixmaps/entropy/<cat_name>.png
     - PackageKit integration
     - entropy.security.System unittest
     - entropy.server API docs
