@@ -18,22 +18,6 @@ import entropy.tools
 
 class FetchersMixin:
 
-    def check_needed_package_download(self, filepath, checksum = None):
-        # is the file available
-        pkg_path = os.path.join(etpConst['entropyworkdir'],
-            filepath)
-        if os.path.isfile(pkg_path):
-
-            if checksum is None:
-                return 0
-            # check digest
-            md5res = entropy.tools.compare_md5(pkg_path, checksum)
-            if md5res:
-                return 0
-            return -2
-
-        return -1
-
     def _fetch_files(self, url_data_list, checksum = True, resume = True,
         fetch_file_abort_function = None):
 
@@ -352,13 +336,12 @@ class FetchersMixin:
         return 0, data_transfer, resumed
 
 
-    def fetch_file_on_mirrors(self, repository, filename, digest = False,
-        fetch_abort_function = None):
+    def fetch_file_on_mirrors(self, repository, download, save_path,
+        digest = False, fetch_abort_function = None):
 
         avail_data = self.SystemSettings['repositories']['available']
         uris = avail_data[repository]['packages'][::-1]
         remaining = set(uris)
-        save_path = os.path.join(etpConst['entropyworkdir'], filename)
 
         mirrorcount = 0
         for uri in uris:
@@ -371,7 +354,7 @@ class FetchersMixin:
             self.MirrorStatus.set_working_mirror(uri)
             mirrorcount += 1
             mirror_count_txt = "( mirror #%s ) " % (mirrorcount,)
-            url = uri + "/" + filename
+            url = uri + "/" + download
 
             # check if uri is sane
             if self.MirrorStatus.get_failing_mirror_status(uri) >= 30:

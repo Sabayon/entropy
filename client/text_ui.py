@@ -23,6 +23,7 @@ from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     darkblue, purple, print_error, print_info, print_warning, writechar, \
     readtext, print_generic
 from entropy.client.interfaces import Client
+from entropy.client.interfaces.package import Package as ClientPkg
 from entropy.i18n import _
 from text_tools import countdown, enlightenatom
 
@@ -1149,21 +1150,18 @@ def install_packages(entropy_client,
                 pkgfile = dbconn.retrieveDownloadURL(idpackage)
                 onDiskUsedSize += dbconn.retrieveOnDiskSize(idpackage)
 
-                dl = entropy_client.check_needed_package_download(pkgfile, None) # we'll do a good check during installPackage
                 pkgsize = dbconn.retrieveSize(idpackage)
                 unpackSize += int(pkgsize)*2
-                if dl < 0:
+
+                fetch_path = ClientPkg.get_standard_fetch_disk_path(pkgfile)
+                if not os.path.exists(fetch_path):
                     downloadSize += int(pkgsize)
                 else:
                     try:
-                        f = open(etpConst['entropyworkdir']+"/"+pkgfile, "r")
-                        f.seek(0, 2)
-                        currsize = f.tell()
-                        pkgsize = dbconn.retrieveSize(idpackage)
-                        downloadSize += int(pkgsize)-int(currsize)
-                        f.close()
-                    except:
-                        pass
+                        f_size = entropy.tools.get_file_size(fetch_path)
+                    except OSError:
+                        f_size = 0
+                    downloadSize += pkgsize - f_size
 
                 # get installed package data
                 installedVer = '-1'
@@ -1240,7 +1238,8 @@ def install_packages(entropy_client,
 
         deltaSize = onDiskUsedSize - onDiskFreedSize
         neededSize = deltaSize
-        if unpackSize > 0: neededSize += unpackSize
+        if unpackSize > 0:
+            neededSize += unpackSize
 
         if removal_queue:
 

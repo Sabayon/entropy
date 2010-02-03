@@ -80,16 +80,52 @@ class Package:
                 self.valid_actions,)
             )
 
+    @staticmethod
+    def get_standard_fetch_disk_path(download):
+        """
+        Return standard path where package is going to be downloaded.
+        "download" argument passed must come from
+        EntropyRepository.retrieveDownloadURL()
+        """
+        return os.path.join(etpConst['entropyworkdir'], download)
+
+    def __get_fetch_disk_path(self, download):
+        """
+        Return proper Entropy package store path
+        """
+        if 'fetch_path' in self.pkgmeta:
+            # only supported by fetch action, multifetch also unsupported
+            pkg_disk_path = os.path.join(self.pkgmeta['fetch_path'],
+                os.path.basename(download))
+        else:
+            pkg_disk_path = Package.get_standard_fetch_disk_path(download)
+        return pkg_disk_path
+
+    def __check_pkg_path_download(self, download, checksum = None):
+        # is the file available
+        pkg_path = self.__get_fetch_disk_path(download)
+        if os.path.isfile(pkg_path):
+
+            if checksum is None:
+                return 0
+            # check digest
+            md5res = entropy.tools.compare_md5(pkg_path, checksum)
+            if md5res:
+                return 0
+            return -2
+
+        return -1
+
     def _match_checksum(self, repository, checksum, download, signatures):
 
         self.error_on_not_prepared()
 
         sys_settings = self._system_settings
-
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         enabled_hashes = sys_settings[sys_set_plg_id]['misc']['packagehashes']
-        pkg_disk_path = os.path.join(etpConst['entropyworkdir'], download)
+
+        pkg_disk_path = self.__get_fetch_disk_path(download)
         pkg_disk_path_mtime = pkg_disk_path + ".mtime"
 
         def do_mtime_validation():
@@ -254,7 +290,7 @@ class Package:
                 back = True
             )
 
-            dlcheck = self.Entropy.check_needed_package_download(download,
+            dlcheck = self.__check_pkg_path_download(download,
                 checksum = checksum)
             if dlcheck == 0:
                 basef = os.path.basename(download)
@@ -293,8 +329,9 @@ class Package:
                 fetch = self.Entropy.fetch_file_on_mirrors( 
                     repository,
                     download,
+                    pkg_disk_path,
                     checksum,
-                    fetch_abort_function = self.fetch_abort_function
+                    fetch_abort_function = self.fetch_abort_function,
                 )
                 if fetch != 0:
                     self.Entropy.output(
@@ -1801,6 +1838,7 @@ class Package:
             type = "info",
             header = red("   ## ")
         )
+        pkg_disk_path = self.__get_fetch_disk_path(self.pkgmeta['download'])
 
         rc = 0
         if not self.pkgmeta['verified']:
@@ -1808,6 +1846,7 @@ class Package:
             rc = self.Entropy.fetch_file_on_mirrors(
                 self.pkgmeta['repository'],
                 self.pkgmeta['download'],
+                pkg_disk_path,
                 self.pkgmeta['checksum'],
                 fetch_abort_function = self.fetch_abort_function
             )
@@ -2605,8 +2644,8 @@ class Package:
             self.pkgmeta['pkgpath'] = repo_meta['pkgpath']
 
         else:
-            self.pkgmeta['pkgpath'] = etpConst['entropyworkdir'] + \
-                os.path.sep + self.pkgmeta['download']
+            self.pkgmeta['pkgpath'] = self.__get_fetch_disk_path(
+                self.pkgmeta['download'])
 
         self.pkgmeta['unpackdir'] = etpConst['entropyunpackdir'] + \
             os.path.sep + self.pkgmeta['download']
@@ -2681,8 +2720,10 @@ class Package:
         if 'dochecksum' in self.metaopts:
             dochecksum = self.metaopts.get('dochecksum')
 
+        # NOTE: if you want to implement download-to-dir feature in your
+        # client, you've found what you were looking for.
         # fetch_path is the path where data should be downloaded
-        # at the moment is implemented only for sources = True
+        # it overrides default path
         if 'fetch_path' in self.metaopts:
             fetch_path = self.metaopts.get('fetch_path')
             if entropy.tools.is_valid_path(fetch_path):
@@ -2714,7 +2755,7 @@ class Package:
         self.pkgmeta['verified'] = False
         self.pkgmeta['steps'] = []
         if not repository.endswith(etpConst['packagesext']) and not sources:
-            dl_check = self.Entropy.check_needed_package_download(
+            dl_check = self.__check_pkg_path_download(
                 self.pkgmeta['download'], None)
 
             if dl_check < 0:
@@ -2744,8 +2785,7 @@ class Package:
 
         # downloading binary package
         # if file exists, first checksum then fetch
-        down_path = os.path.join(etpConst['entropyworkdir'],
-            self.pkgmeta['download'])
+        down_path = self.__get_fetch_disk_path(self.pkgmeta['download'])
         if os.access(down_path, os.R_OK) and os.path.isfile(down_path):
 
             # check size first
@@ -2787,7 +2827,6 @@ class Package:
         temp_fetch_list = []
         temp_checksum_list = []
         temp_already_downloaded_count = 0
-        etp_workdir = etpConst['entropyworkdir']
         for idpackage, repository in matches:
 
             if repository.endswith(etpConst['packagesext']):
@@ -2814,7 +2853,7 @@ class Package:
             }
 
             repo_size = dbconn.retrieveSize(idpackage)
-            if self.Entropy.check_needed_package_download(download, None) < 0:
+            if self.__check_pkg_path_download(download, None) < 0:
                 obj = (repository, download, digest, signatures,)
                 temp_fetch_list.append(obj)
                 continue
@@ -2823,7 +2862,7 @@ class Package:
                 obj = (repository, download, digest, signatures,)
                 temp_checksum_list.append(obj)
 
-            down_path = os.path.join(etp_workdir, download)
+            down_path = self.__get_fetch_disk_path(download)
             if os.path.isfile(down_path):
                 with open(down_path, "r") as f:
                     f.seek(0, os.SEEK_END)
