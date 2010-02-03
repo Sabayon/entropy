@@ -2755,8 +2755,8 @@ class Package:
         self.pkgmeta['verified'] = False
         self.pkgmeta['steps'] = []
         if not repository.endswith(etpConst['packagesext']) and not sources:
-            dl_check = self.__check_pkg_path_download(
-                self.pkgmeta['download'], None)
+            dl_check = self.__check_pkg_path_download(self.pkgmeta['download'],
+                None)
 
             if dl_check < 0:
                 self.pkgmeta['steps'].append("fetch")
@@ -2786,6 +2786,8 @@ class Package:
         # downloading binary package
         # if file exists, first checksum then fetch
         down_path = self.__get_fetch_disk_path(self.pkgmeta['download'])
+        self.pkgmeta['pkgpath'] = down_path # provide for convenience
+        # and uniformity with "install" action
         if os.access(down_path, os.R_OK) and os.path.isfile(down_path):
 
             # check size first
