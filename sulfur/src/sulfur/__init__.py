@@ -1684,6 +1684,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbUpdatesSimpleLabel.set_markup(txt_adv)
         self.ui.rbUpdatesLabel.set_markup(txt_adv)
 
+    def _show_packages_group_caching(self):
+        for k in ("installed", "reinstallable", "masked",
+            "user_unmasked", "downgrade"):
+            try:
+                self.etpbase.get_groups(k)
+            except ProgrammingError:
+                continue
+
     def show_packages(self, back_to_page = None, on_init = False):
 
         action = self.lastPkgPB
@@ -1699,15 +1707,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if action == "updates":
             # speed up first queue taint iteration
             self.etpbase.get_groups("available")
-            def do_more_caching():
-                for k in ("installed", "reinstallable", "masked",
-                    "user_unmasked", "downgrade"):
-                    try:
-                        self.etpbase.get_groups(k)
-                    except ProgrammingError:
-                        continue
-                return False
-            gobject.idle_add(do_more_caching)
+            gobject.idle_add(self._show_packages_group_caching)
 
             # set updates label
             raw_updates = len(self.etpbase.get_raw_groups('updates'))

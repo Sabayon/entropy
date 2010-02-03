@@ -156,8 +156,13 @@ class EntropyPackage:
     def __str__(self):
         if self.pkgset:
             return self.matched_atom
-        return str(self.dbconn.retrieveAtom(self.matched_id) + "~" + \
-            str(self.dbconn.retrieveRevision(self.matched_id)))
+        return str(self.dbconn.retrieveAtom(self.matched_id) + \
+            etpConst['entropyrevisionprefix'] + \
+                str(self.dbconn.retrieveRevision(self.matched_id))) + \
+                    etpConst['entropyrepoprefix'] + self.repoid_clean
+
+    def __repr__(self):
+        return "<EntropyPackage at %s @ %s>" % (id(self), str(self),)
 
     def __cmp__(self, pkg):
         if pkg.matched_atom == self.matched_atom:

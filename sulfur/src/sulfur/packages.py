@@ -690,6 +690,11 @@ class EntropyPackages:
         return yp
 
     def _pkg_get_orphans(self):
+
+        # make sure we have these configured
+        self.get_groups("installed")
+        self.get_groups("reinstallable")
+
         updates, remove, fine, spm_fine = self.Entropy.calculate_updates(
                 critical_updates = False)
         # Filter out packages installed from unavailable repositories, this is
