@@ -1,3 +1,207 @@
+commit 8980ce598091d2c86f4b79df1528174dc1ff0968
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 21:05:43 2010 +0100
+
+    [po] update translations
+
+commit 54ffe531b90c5a34a5f8f325d802b0b7821dae49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 21:05:08 2010 +0100
+
+    [po] update Italian translation
+
+commit 23c1de1a55541e7d0beb5d4f056b3b59ef1384b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 20:54:51 2010 +0100
+
+    [entropy.client.interfaces.package] provide pkgpath metadatum in fetch action
+
+commit 9564be413492f83339fcab3499af52a9366ed5db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 12:55:35 2010 +0100
+
+    [todo] update TODO
+
+commit e585ade399ac363320ac5cc64ca67ac9c730f4b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 12:54:51 2010 +0100
+
+    [entropy.client.interfaces.Package] cleanup hardcoded download paths, make possible to fetch a pkg to custom directory
+
+commit 7c7f384d414850c680ffb5bd4bd5c75568365d79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 12:54:14 2010 +0100
+
+    [entropy.client] rename some Client methods, uniform to the rest of API
+
+commit fa0d76d1adf5eaf5fc793ff0eb99b15c135ef1a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 09:00:53 2010 +0100
+
+    [sulfur] improve orphaned packages handling
+
+commit 6c82fa7977463703190978f054c567073b678a0a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 09:00:26 2010 +0100
+
+    [entropy.const] add repo and revision string prefixes
+
+commit eaabcce60ee18d1799f8adcee946aa44937d58fd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 08:45:36 2010 +0100
+
+    [equo] deal with broken repository entries
+
+commit 4492b7ea38d7d68b317395752c4803df60a950aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 3 08:42:52 2010 +0100
+
+    [equo] handle None values of input_box() too
+
+commit 5b6cc47baf036cc1bcaf365d1e10d094539104fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 23:27:59 2010 +0100
+
+    [equo] fix "equo repo disable" output message
+
+commit 6aaf049c2fcb153bd8c3322b7e56c1524b374745
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 21:49:15 2010 +0100
+
+    [entropy.client.interfaces.dep] fix _generate_reverse_dependency_tree
+
+commit d05c7b0f8eeb90ad01202f295be6d0ce1462dee4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 21:48:40 2010 +0100
+
+    [entropy.db] EntropyRepository: when generating reverse deps metadata, always enforce commit
+
+commit c696106d59903ce7826c2c84eda59b1a0cdc065b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 18:29:41 2010 +0100
+
+    [entropy.client.interfaces.repository] when fetching a new repo, regen revdeps metadata
+
+commit a43e8f938d36e2bc80ff047960f97cfd356bdd06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 17:56:55 2010 +0100
+
+    [equo] add recursive metadatum to resume cache (equo install --resume)
+
+commit c001b35a2e174490dbb6d23f811c258c288b9d5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 17:55:41 2010 +0100
+
+    [entropy.client] make possible to generate reverse dependencies for available packages, add recursive argument
+
+commit 4d3a5be4bcdfe0884fe7a8662287005cbab3b267
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 16:50:43 2010 +0100
+
+    [entropy.client] Client.open_repository() make possible to get installed packages repo
+
+commit dfa7b75d4f631b41c86ea8ef8a226f5239d57e7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 16:33:02 2010 +0100
+
+    [entropy.db] EntropyRepository: implement basic __hash__ builtin method
+
+commit 5ede4afc4e204e57686d869ac4c8fde3d19d7794
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 16:32:37 2010 +0100
+
+    [entropy.client] add support for recursive/non-recursive pkgs dep matching
+
+commit 455af9afd7a34b9374e6bd662e94004ebbacd09a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 08:14:07 2010 +0100
+
+    [sulfur] code style update
+
+commit 7a15f7258543ab59e287535d37282ac4450c31a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 18:04:59 2010 +0100
+
+    [equo] when no repositories are provided on "equo update", create list from available repositories metadata
+
+commit a0a157d28def7d35eada10019c179fbb27b5bdd8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 07:31:51 2010 +0100
+
+    [entropy.client.interfaces.dep] don't spam terminal printing progress status when calling calculate_updates()
+
+commit d7f9783ba6090ca7588371eb6a34e98982b343b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 2 07:22:47 2010 +0100
+
+    [entropy.client/entropy.server] ditch any reference to sqlite ":memory:" connections, break API
+
+commit ff0fb23a21b73d3ee931ad6f665ac29667856295
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:36:32 2010 +0100
+
+    [todo] update TODO
+
+commit f34cb0136cdb83f6ddc3af39f66ef3ee4ee99ca6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:36:18 2010 +0100
+
+    [entropy.db] uniform EntropyRepository.search* API
+
+commit 4fb61510e7423a0f09915de9474195875b1e147b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:23:40 2010 +0100
+
+    [entropy.db] trivial docstring update
+
+commit 5b6a67f5b131b22e8507b2f69af06bf5a586d021
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:23:04 2010 +0100
+
+    [entropy.db] remove EntropyRepository.searchSlottedPackages(), uniform search methods, add searchSlotted()
+
+commit 547e3edef1607f1f70c8ab1782c4afd4fadc90c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:19:56 2010 +0100
+
+    [entropy.db] drop searchLicenses(), uniform to other search methods, add searchLicense()
+
+commit 7b5de0a68de623340ad594726e1f85724cdde04a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:19:24 2010 +0100
+
+    [entropy.db] add EntropyRepository.searchPackagesByHomepage()
+
+commit a8abb2ea213a9247c83f63d4522d1786b66f7add
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:08:21 2010 +0100
+
+    [entropy.db] add just_id argument to EntropyRepository.searchPackagesByDescription()
+
+commit 73e54180379dbaaedc636e5e0ff218da568ef896
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 17:07:52 2010 +0100
+
+    [entropy.client] add Client.is_entropy_package_free(), returning if a package is free as in freedom
+
+commit d2b73d39984cf1f1e2cfe7eb76cef187940a6ceb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 15:11:02 2010 +0100
+
+    [entropy.spm] PortagePackageGroups: add "security" group
+
+commit 91e49c96b6b6a252522cc822d8996ec1ed6385ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 14:50:12 2010 +0100
+
+    [entropy.db] API change, methods names polishing
+
+commit eb019891647cd1309d6708f7c69c8dfc1c07fbdc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 1 12:48:38 2010 +0100
+
+    Update ChangeLog for version 0.99.32.1
+
 commit 23b11cbc89d9af64df7b8aa06c00bb67c4949132
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 1 12:48:13 2010 +0100
