@@ -11,8 +11,6 @@
         - entropy.db => retrieveVersionTag => retrieveTag
         - move SystemSettings['repositories'] ?
 
-
-
   0.99.50:
     - entropy.server API docs
     - add splitdebug support?
