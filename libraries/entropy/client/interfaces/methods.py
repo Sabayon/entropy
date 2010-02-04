@@ -26,7 +26,7 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_set_nice_level, const_setup_perms, const_setup_entropy_pid, \
     const_isstring
-from entropy.exceptions import RepositoryError, InvalidData, InvalidPackageSet,\
+from entropy.exceptions import RepositoryError, InvalidPackageSet,\
     IncorrectParameter, SystemDatabaseError
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
@@ -1297,7 +1297,7 @@ class MiscMixin:
             etpConst['backed_up'].update({constant_name: myinst})
         else:
             t = _("Nothing to backup in etpConst with %s key") % (constant_name,)
-            raise InvalidData("InvalidData: %s" % (t,))
+            raise AttributeError(t)
 
     def set_priority(self, low = 0):
         return const_set_nice_level(low)

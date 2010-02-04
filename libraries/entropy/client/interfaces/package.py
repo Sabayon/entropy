@@ -19,7 +19,7 @@ import time
 
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
-from entropy.exceptions import PermissionDenied, InvalidData, SPMError
+from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred
@@ -75,8 +75,7 @@ class Package:
 
     def check_action_validity(self, action):
         if action not in self.valid_actions:
-            mytxt = _("Action must be in")
-            raise InvalidData("InvalidData: %s %s" % (mytxt,
+            raise AttributeError("Action must be in %s" % (mytxt,
                 self.valid_actions,)
             )
 

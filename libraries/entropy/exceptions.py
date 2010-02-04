@@ -62,9 +62,6 @@ class MissingParameter(EntropyException):
 class ParseError(EntropyException):
     """An error was generated while attempting to parse the request"""
 
-class InvalidData(EntropyException):
-    """An incorrect formatting was passed instead of the expected one"""
-
 class RepositoryError(EntropyException):
     """Cannot open repository database"""
 

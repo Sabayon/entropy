@@ -18,7 +18,7 @@ import subprocess
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
-    InvalidData, InvalidAtom
+    InvalidAtom
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
     bold, blue
 from entropy.i18n import _
@@ -3873,12 +3873,12 @@ class PortagePlugin(SpmPlugin):
                         datafile = datafile[:-3]
                         datafile = ' '.join(datafile)
                     else:
-                        myexc = "InvalidData: %s %s. %s." % (
+                        myexc = "%s %s. %s." % (
                             datafile,
                             _("not supported"),
                             _("Probably Portage API has changed"),
                         )
-                        raise InvalidData(myexc)
+                        raise AttributeError(myexc)
                     outcontent.add((datafile, datatype))
                 except:
                     pass
