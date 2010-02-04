@@ -8,10 +8,10 @@
             - remove "server_repos", use "matchRepo"
         - entropy.client, closeAllSecurity, closeAllQA
         - unpack & install should be done in entropy.spm
-        - entropy.db => retrieveVersionTag => retrieveTag
         - move SystemSettings['repositories'] ?
 
   0.99.50:
+    - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
     - entropy.server API docs
     - add splitdebug support?
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
@@ -23,7 +23,6 @@
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - complete API documentation
-    - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
 
   1.0 - deprecations:
 
@@ -33,7 +32,7 @@
 
   2.0:
 
-    - PackageKit improved support
+    - PackageKit replacement
     - UGC based on XML requests (all the commands into one string)
 
   Portage split install project (backward compat):
