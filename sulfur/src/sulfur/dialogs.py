@@ -3263,7 +3263,7 @@ class ExceptionDialog:
             from entropy.client.interfaces.qa import UGCErrorReportInterface
             try:
                 error = UGCErrorReportInterface()
-            except (IncorrectParameter, OnlineMirrorError,):
+            except (AttributeError, OnlineMirrorError,):
                 error = None
 
             result = None

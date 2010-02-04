@@ -1815,9 +1815,9 @@ class SocketHost:
                 if len(authIntf) == 3:
                     auth_inst = authIntf[:]
                 else:
-                    raise IncorrectParameter("IncorrectParameter: wront authentication interface specified")
+                    raise AttributeError("wrong authentication interface specified")
             else:
-                raise IncorrectParameter("IncorrectParameter: wront authentication interface specified")
+                raise AttributeError("wrong authentication interface specified")
             # initialize authenticator
         self.AuthenticatorInst = (auth_inst[0], [self]+auth_inst[1], auth_inst[2],)
 

@@ -27,8 +27,8 @@ class FileUpdates:
 
     def __init__(self, EquoInstance):
         if not isinstance(EquoInstance, Client):
-            mytxt = _("A valid Client instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            mytxt = "A valid Client instance or subclass is needed"
+            raise AttributeError(mytxt)
         self.Entropy = EquoInstance
         from entropy.cache import EntropyCacher
         from entropy.core.settings.base import SystemSettings

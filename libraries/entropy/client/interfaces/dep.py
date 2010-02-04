@@ -445,8 +445,8 @@ class CalculatorsMixin:
 
         if server_repos is not None:
             if not serverInstance:
-                t = _("server_repos needs serverInstance")
-                raise IncorrectParameter("IncorrectParameter: %s" % (t,))
+                t = "server_repos needs serverInstance"
+                raise AttributeError(t)
             valid_repos = server_repos[:]
         else:
             valid_repos = self._enabled_repos

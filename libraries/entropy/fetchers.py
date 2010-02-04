@@ -463,11 +463,11 @@ class MultipleUrlFetcher:
         if self.__Output == None:
             self.__Output = TextInterface()
         elif not hasattr(self.__Output, 'output'):
-            mytxt = _("Output interface passed doesn't have the output method")
-            raise AttributeError("IncorrectParameter: %s" % (mytxt,))
+            mytxt = "Output interface passed doesn't have the output method"
+            raise AttributeError(mytxt)
         elif not hasattr(self.__Output.output, '__call__'):
-            mytxt = _("Output interface passed doesn't have the output method")
-            raise AttributeError("IncorrectParameter: %s" % (mytxt,))
+            mytxt = "Output interface passed doesn't have the output method"
+            raise AttributeError(mytxt)
 
         self.__url_fetcher = UrlFetcherClass
         if self.__url_fetcher == None:

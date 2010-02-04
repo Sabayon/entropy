@@ -27,7 +27,7 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_set_nice_level, const_setup_perms, const_setup_entropy_pid, \
     const_isstring
 from entropy.exceptions import RepositoryError, InvalidPackageSet,\
-    IncorrectParameter, SystemDatabaseError
+    SystemDatabaseError
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
@@ -1872,7 +1872,7 @@ class MatchMixin:
 
         f = methods_reference.get(method)
         if not hasattr(f, '__call__'):
-            raise IncorrectParameter('IncorrectParameter: %s: %s' % (
+            raise AttributeError('%s: %s' % (
                 _("not a valid method"), method,) )
 
         self.Cacher.discard()

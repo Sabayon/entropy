@@ -25,8 +25,7 @@ import tempfile
 
 from entropy.const import etpConst, etpSys, const_debug_write, const_debug_write
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
-from entropy.exceptions import IncorrectParameter, PermissionDenied, \
-    SystemDatabaseError
+from entropy.exceptions import PermissionDenied, SystemDatabaseError
 from entropy.i18n import _
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings

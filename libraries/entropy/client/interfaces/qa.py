@@ -13,8 +13,7 @@ from entropy.qa import ErrorReportInterface
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
-from entropy.exceptions import IncorrectParameter, OnlineMirrorError, \
-    PermissionDenied
+from entropy.exceptions import OnlineMirrorError, PermissionDenied
 from entropy.i18n import _
 
 class UGCErrorReportInterface(ErrorReportInterface):
@@ -60,9 +59,9 @@ class UGCErrorReportInterface(ErrorReportInterface):
             self.entropy.UGC = ugc(self.entropy)
 
         if repository_id not in self.__system_settings['repositories']['order']:
-            raise IncorrectParameter('invalid repository_id provided')
+            raise AttributeError('invalid repository_id provided')
         if not self.entropy.UGC.is_repository_eapi3_aware(repository_id):
-            raise OnlineMirrorError('UGC not supported by the provided repo')
+            raise AttributeError('UGC not supported by the provided repo')
 
     def submit(self):
         """

@@ -1718,20 +1718,22 @@ class Client:
     import entropy.dump as dumpTools
     import entropy.tools as entropyTools
     import zlib
-    def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25.0):
+    def __init__(self, OutputInterface, ClientCommandsClass, quiet = False,
+        show_progress = True, output_header = '', ssl = False,
+        socket_timeout = 25.0):
         #, server_ca_cert = None, server_cert = None):
 
         if not hasattr(OutputInterface, 'output'):
             mytxt = _("OutputInterface does not have an output method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise AttributeError("%s, (! %s !)" % (OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.output, '__call__'):
             mytxt = _("OutputInterface does not have an output method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise AttributeError("%s, (! %s !)" % (OutputInterface, mytxt,))
 
         from entropy.client.services.ugc.commands import Base
         if not issubclass(ClientCommandsClass, (Base,)):
             mytxt = _("A valid entropy.client.services.ugc.commands.Base interface is needed")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass, mytxt,))
+            raise AttributeError("%s, (! %s !)" % (ClientCommandsClass, mytxt,))
 
         self.ssl_mod = None
         self.setup_ssl(ssl) #, server_ca_cert, server_cert)

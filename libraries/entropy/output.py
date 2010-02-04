@@ -14,7 +14,6 @@
 import sys, os
 import curses
 from entropy.const import etpUi, const_convert_to_rawstring, const_isstring
-from entropy.exceptions import IncorrectParameter
 from entropy.i18n import _
 stuff = {}
 stuff['cols'] = 30

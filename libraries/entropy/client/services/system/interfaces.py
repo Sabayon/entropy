@@ -26,22 +26,22 @@ class Client:
 
         if not hasattr(OutputInterface, 'output'):
             mytxt = _("OutputInterface does not have an output method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (
+            raise AttributeError("%s, (! %s !)" % (
                 OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.output, '__call__'):
             mytxt = _("OutputInterface does not have an output method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (
+            raise AttributeError("%s, (! %s !)" % (
                 OutputInterface, mytxt,))
 
         from entropy.client.services.system.commands import Client as ClientCommands
         if not issubclass(ClientCommandsInterface, ClientCommands):
             mytxt = _("A valid entropy.client.services.system.commands.Client class/subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError(mytxt)
 
         from entropy.client.services.system.methods import BaseMixin
         if not issubclass(MethodsInterface, BaseMixin):
             mytxt = _("A valid entropy.client.services.system.methods.BaseMixin class/subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError(mytxt)
 
         self.ClientCommandsInterface = ClientCommandsInterface
         import socket, struct
@@ -91,19 +91,19 @@ class Client:
 
     def _validate_credentials(self):
         if not const_isstring(self.hostname):
-            raise IncorrectParameter("IncorrectParameter: hostname: %s. %s" % (
+            raise AttributeError("hostname: %s. %s" % (
                 _('not a string'), _('Please use setup_connection() properly'),))
         if not const_isstring(self.username):
-            raise IncorrectParameter("IncorrectParameter: username: %s. %s" % (
+            raise AttributeError("username: %s. %s" % (
                 _('not a string'), _('Please use setup_connection() properly'),))
         if not const_isstring(self.password):
-            raise IncorrectParameter("IncorrectParameter: password: %s. %s" % (
+            raise AttributeError("password: %s. %s" % (
                 _('not a string'), _('Please use setup_connection() properly'),))
         if not isinstance(self.hostport, int):
-            raise IncorrectParameter("IncorrectParameter: port: %s. %s" % (
+            raise AttributeError("port: %s. %s" % (
                 _('not an int'), _('Please use setup_connection() properly'),))
         if not isinstance(self.ssl_connection, bool):
-            raise IncorrectParameter("IncorrectParameter: ssl_connection: %s. %s" % (
+            raise AttributeError("ssl_connection: %s. %s" % (
                 _('not a bool'), _('Please use setup_connection() properly'),))
 
     def get_session_cache(self, cmd_tuple):
