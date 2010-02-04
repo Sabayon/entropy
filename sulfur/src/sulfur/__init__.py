@@ -367,10 +367,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if not length and self.lastPkgPB == "queued":
                 self.set_package_radio("updates")
 
+        def updates_available(event, amount):
+            if amount:
+                self.ui.updatesButtonbox.show()
+            else:
+                self.ui.updatesButtonbox.hide()
+
         # setup queued/installation button events
         SulfurSignals.connect("install_queue_empty", hide_queue)
         SulfurSignals.connect("install_queue_filled", show_queue)
         SulfurSignals.connect("install_queue_changed", queue_changed)
+        SulfurSignals.connect("updates_available", updates_available)
 
     def switch_application_mode(self, do_simple):
         self.ui.UGCMessageLabel.hide()

@@ -681,8 +681,13 @@ class SulfurApplicationEventsMixin:
         self.end_working()
         self.unset_busy()
         normal_cursor(self.ui.main)
+        # now start updating the system
+        rc = self.Equo.ask_question(_("Update your system now ?"))
+        if rc == _("Yes"):
+            self.install_queue(fetch = True)
 
     def on_deselect_clicked(self, widget):
+        # @deprecated
         self.ui.pkgFilter.set_text("")
         self.on_clear_clicked(widget)
         self.set_busy()

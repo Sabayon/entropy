@@ -790,6 +790,9 @@ class EntropyPackages:
                 continue
             pkg_updates.append(pkg)
 
+        # emit signal about updates available
+        SulfurSignals.emit("updates_available", len(pkg_updates))
+
         return pkg_updates
 
     def _pkg_get_downgrade(self):

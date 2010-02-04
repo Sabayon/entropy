@@ -33,5 +33,7 @@ gobject.signal_new("install_queue_changed", _SulfurSignals,
     gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (int,))
 gobject.signal_new("pkg_properties__ugc_tab_clicked", _SulfurSignals,
     gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
+gobject.signal_new("updates_available", _SulfurSignals,
+    gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (int,))
 
 SulfurSignals = _SulfurSignals()
