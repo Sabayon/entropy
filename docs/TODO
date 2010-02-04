@@ -1,10 +1,6 @@
 
   0.99.40:
 
-    - provide icons for every pkg category (and group?) in
-        /usr/share/pixmaps/entropy/<cat_name>.png
-    - entropy.security.System unittest
-
     - entropy.exceptions rework
         - ditch exceptions: InvalidData, InvalidDataType, IncorrectParameter
     - entropy.client API rework
