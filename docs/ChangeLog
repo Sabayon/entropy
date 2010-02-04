@@ -1,3 +1,15 @@
+commit db42276a070c2888d95cf1409a5da601caa5b4a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:14:02 2010 +0100
+
+    [scripts] fix version tagging script
+
+commit d2ecf6072af3d9306564fd309b6b4ce9630f94a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:12:59 2010 +0100
+
+    Tagging Entropy version 0.99.33.2
+
 commit 9093dd9a21afd04194b2a86e53d13f79ac2be558
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 4 19:12:29 2010 +0100
