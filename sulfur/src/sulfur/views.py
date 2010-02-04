@@ -2266,6 +2266,7 @@ class EntropyPackageView:
             for obj in mylist:
                 obj.queued = None
         self.view.queue_draw()
+        return status
 
     def clear_updates(self):
         self.updates = {}

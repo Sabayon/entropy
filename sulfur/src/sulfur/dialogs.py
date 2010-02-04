@@ -26,6 +26,7 @@ import gobject
 import pango
 
 from entropy.i18n import _, _LOCALE
+from entropy.output import decolorize
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import ParallelTask
@@ -1865,9 +1866,8 @@ class UGCAddMenu(MenuSkel):
                     count_str = " (%s/%s) " % (str(count[0]), str(count[1]),)
 
         txt = count_str+text
-        gtk.gdk.threads_enter()
+        txt = decolorize(txt)
         self.ugcadd_ui.ugcAddStatusLabel.set_markup(cleanMarkupString(txt))
-        gtk.gdk.threads_leave()
 
     def do_send_document_autosense(self, doc_type, doc_path, title, description, keywords_text):
         try:
