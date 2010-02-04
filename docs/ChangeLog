@@ -1,3 +1,99 @@
+commit 9093dd9a21afd04194b2a86e53d13f79ac2be558
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:12:29 2010 +0100
+
+    [po] update translations
+
+commit 311f443a5e5a97b633de494dea91198c5544d27d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:12:08 2010 +0100
+
+    [git] update .gitignore
+
+commit 7ad35bfd0093c0a1df0e58b9461fa84740e23289
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:11:49 2010 +0100
+
+    [scripts] update version tagging script
+
+commit 2692a9d435867a21fa63b712de207a7aae7903e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:08:37 2010 +0100
+
+    [build_system] install sulfur/equo revision files
+
+commit 56e3633361cb45eed0ebf15da841f47ed1db2257
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:04:06 2010 +0100
+
+    [entropy.const] move entropy revision to entropy module package
+
+commit 24c8d500a953fec74408f9a0525b59efd572634c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:02:25 2010 +0100
+
+    [entropy] add empty revision files to entropy-server, equo and sulfur
+
+commit 62a5fb9a06426016cbddf42672c7b3abf19cc7dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 18:12:05 2010 +0100
+
+    [tests] improve entropy.system ut: test_security_fetch_advisories
+
+commit 0688093deeb813919c4f2ae631deedcdd9d1b4e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 17:50:29 2010 +0100
+
+    [todo] update TODO
+
+commit ef09136af72725660d242936fbdda9801078d8be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 17:46:12 2010 +0100
+
+    [entropy.security] System: some cleanup aimed to ease unit tests implementation
+
+commit 93b052d096287275c37c52f6b80d1a7f9e5c53c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 17:44:41 2010 +0100
+
+    [tests] kill running threads before quitting
+
+commit 773f93ee537bef1b807f51754fd96eaaee0f894b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 10:01:47 2010 +0100
+
+    [sulfur] misc, minor bugfixes
+
+commit 8a38701c7fcf24406ca1662840a91b50e912c9f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 01:49:21 2010 +0100
+
+    [sulfur] actually disable fetch, was put there for debugging purposes
+
+commit 815e119b752c127aade88f2100c5315f69147dae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 01:44:10 2010 +0100
+
+    [sulfur] make "Update all" button executing pkgs install, add updates signal handling
+
+commit 36b66e3ebb034dc77fb9de67e2618752398a1d04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 01:43:35 2010 +0100
+
+    [sulfur] also print header and footer of messages to terminal
+
+commit 95c82ba889cbec764eb2079392d4f01ace03a7a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 01:18:43 2010 +0100
+
+    [sulfur] fix bug causing "Actions" button to not show up when adding orphaned pkgs to queue
+
+commit 542adc5cade1985d260139ead2ba42f7884de600
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 00:01:36 2010 +0100
+
+    Update ChangeLog for version 0.99.33.1
+
 commit ee6da150aa2e4ab59a4926918ff52a35529a8a59
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 4 00:00:55 2010 +0100
