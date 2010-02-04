@@ -357,7 +357,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_events_handling(self):
 
         def hide_queue(event):
-            self.ui.rbPkgQueued.hide()
+            if self.queue.total() == 0:
+                self.ui.rbPkgQueued.hide()
 
         def show_queue(event):
             self.ui.rbPkgQueued.show()
@@ -1643,14 +1644,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.skipMirror.hide()
         self.skipMirror = False
 
-    def add_to_queue(self, pkgs, action, always_ask):
+    def add_to_queue(self, pkgs, action, always_ask, accept = False):
 
         q_cache = {}
         for obj in pkgs:
             q_cache[obj.matched_atom] = obj.queued
             obj.queued = action
 
-        status, myaction = self.queue.add(pkgs, always_ask = always_ask)
+        status, myaction = self.queue.add(pkgs, always_ask = always_ask,
+            accept = accept)
         if status != 0:
             for obj in pkgs:
                 obj.queued = q_cache.get(obj.matched_atom)
@@ -1673,9 +1675,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             ok = True
         confirm.destroy()
 
-        if not ok:
-            return False
-        return self.add_to_queue(orphans, "r", False)
+        if ok:
+            self.add_to_queue(orphans, "r", False, accept = True)
+        return False
 
     def _set_updates_label(self, updates_count):
         # set both simple and advanced mode labels
@@ -1744,6 +1746,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         elif allpkgs and (self.lastPkgPB != "pkgsets"):
             self.ui.pkgSorter.set_property('sensitive', True)
 
+        orphans = None
         if not self._orphans_message_shown:
             if action == "updates" and \
                 (not self.etpbase.get_raw_groups('updates')):
@@ -1752,8 +1755,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if self.do_debug:
                     print_generic("show_packages: found orphans %s" % (orphans,))
                 self._orphans_message_shown = True
-                if orphans:
-                    self._show_orphans_message(orphans)
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
 
@@ -1768,6 +1769,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if do_switch_to:
             rb = self.packageRB[do_switch_to]
             gobject.timeout_add(200, rb.clicked)
+
+        if orphans:
+            # enqueue in the main loop, better!
+            # avoid actions button to not show up
+            gobject.timeout_add(2000, self._show_orphans_message, orphans)
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = None):
 
