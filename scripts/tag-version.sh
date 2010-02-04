@@ -20,7 +20,7 @@ for revision in client/revision server/revision sulfur/src/sulfur/revision; do
     echo "$new_tag" > $revision
     git add $revision
 done
-git commit -m "Tagging Entropy version $new_tag"
+git commit -m "Tagging Entropy version $new_tag" docs/ChangeLog client/revision server/revision sulfur/src/sulfur/revision
 
 # tag version
 echo "Tagging version: $new_tag"
