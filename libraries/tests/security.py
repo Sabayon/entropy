@@ -65,6 +65,7 @@ class SecurityTest(unittest.TestCase):
     def test_security_fetch_advisories(self):
         s_rc = self._system.sync()
         self.assertEqual(s_rc, 0)
+        self.assertEqual(self._system.check_advisories_availability(), True)
 
     def test_gpg_handling(self):
 
