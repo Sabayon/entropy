@@ -16,7 +16,11 @@ done
 echo "Updating ChangeLog for $new_tag"
 git log > docs/ChangeLog
 git add docs/ChangeLog
-git commit -m "Update ChangeLog for version $new_tag" docs/ChangeLog
+for revision in "client/revision server/revision sulfur/src/sulfur/revision"; do
+    echo "$new_tag" > $revision
+    git add $revision
+done
+git commit -m "Tagging Entropy version $new_tag" docs/ChangeLog
 
 # tag version
 echo "Tagging version: $new_tag"
