@@ -131,7 +131,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         versioning_data = self.test_db.getVersioningData(idpackage)
         dbverdata = (self.test_db.retrieveVersion(idpackage),
-            self.test_db.retrieveVersionTag(idpackage),
+            self.test_db.retrieveTag(idpackage),
             self.test_db.retrieveRevision(idpackage),)
         self.assertEqual(versioning_data, dbverdata)
 
@@ -148,7 +148,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.test_db.retrieveName(idpackage),
             self.test_db.retrieveVersion(idpackage),
             self.test_db.retrieveSlot(idpackage),
-            self.test_db.retrieveVersionTag(idpackage),
+            self.test_db.retrieveTag(idpackage),
             self.test_db.retrieveRevision(idpackage),
             self.test_db.retrieveBranch(idpackage),
             self.test_db.retrieveApi(idpackage),

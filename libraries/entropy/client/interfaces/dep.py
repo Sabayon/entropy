@@ -98,7 +98,7 @@ class CalculatorsMixin:
                 pkg_info[repo]['revision'] = results[repo][3]
             else:
                 dbconn = self.__atom_match_open_db(repo, server_inst)
-                pkg_info[repo]['versiontag'] = dbconn.retrieveVersionTag(results[repo])
+                pkg_info[repo]['versiontag'] = dbconn.retrieveTag(results[repo])
                 pkg_info[repo]['revision'] = dbconn.retrieveRevision(results[repo])
                 version = dbconn.retrieveVersion(results[repo])
             pkg_info[repo]['version'] = version
@@ -669,7 +669,7 @@ class CalculatorsMixin:
                     multiRepo = True)
                 for pkg_id, repo_id in matches:
                     dbconn = self.open_repository(repo_id)
-                    t_ver_tag = dbconn.retrieveVersionTag(pkg_id)
+                    t_ver_tag = dbconn.retrieveTag(pkg_id)
                     if t_ver_tag in installed_tags:
                         available_tags.add(t_ver_tag)
 

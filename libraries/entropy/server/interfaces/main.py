@@ -1292,7 +1292,7 @@ class ServerPackagesHandlingMixin:
         dbconn = self.open_server_repository(read_only = True,
             no_upload = True, repo = repo)
         for idpackage in idpackages:
-            ver_tag = dbconn.retrieveVersionTag(idpackage)
+            ver_tag = dbconn.retrieveTag(idpackage)
             if ver_tag:
                 invalid_atoms.append(dbconn.retrieveAtom(idpackage))
 
@@ -4378,7 +4378,7 @@ class ServerMiscMixin:
                         trashed = True
                 if not trashed:
 
-                    dbtag = dbconn.retrieveVersionTag(idpackage)
+                    dbtag = dbconn.retrieveTag(idpackage)
                     if dbtag:
                         is_injected = dbconn.isInjected(idpackage)
                         if not is_injected:

@@ -2486,7 +2486,7 @@ class Package:
         self.pkgmeta['slot'] = \
             self.Entropy.installed_repository().retrieveSlot(idpackage)
         self.pkgmeta['versiontag'] = \
-            self.Entropy.installed_repository().retrieveVersionTag(idpackage)
+            self.Entropy.installed_repository().retrieveTag(idpackage)
         self.pkgmeta['diffremoval'] = False
 
         remove_config = False

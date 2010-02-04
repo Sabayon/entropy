@@ -721,7 +721,7 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
                 continue
 
             pkgver = dbconn.retrieveVersion(idpackage)
-            pkgtag = dbconn.retrieveVersionTag(idpackage)
+            pkgtag = dbconn.retrieveTag(idpackage)
             if not pkgtag:
                 pkgtag = "NoTag"
             pkgrev = dbconn.retrieveRevision(idpackage)
@@ -738,7 +738,7 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
                 # found
                 idx = pkginstalled[0]
                 installedVer = entropy_client.installed_repository().retrieveVersion(idx)
-                installedTag = entropy_client.installed_repository().retrieveVersionTag(idx)
+                installedTag = entropy_client.installed_repository().retrieveTag(idx)
                 installedRepo = entropy_client.installed_repository().getInstalledPackageRepository(idx)
                 if installedRepo is None:
                     installedRepo = _("Not available")
@@ -1144,7 +1144,7 @@ def install_packages(entropy_client,
                 if not pkgatom:
                     continue
                 pkgver = dbconn.retrieveVersion(idpackage)
-                pkgtag = dbconn.retrieveVersionTag(idpackage)
+                pkgtag = dbconn.retrieveTag(idpackage)
                 pkgrev = dbconn.retrieveRevision(idpackage)
                 pkgslot = dbconn.retrieveSlot(idpackage)
                 pkgfile = dbconn.retrieveDownloadURL(idpackage)
@@ -1174,7 +1174,7 @@ def install_packages(entropy_client,
                     # found an installed package
                     idx = pkginstalled[0]
                     installedVer = entropy_client.installed_repository().retrieveVersion(idx)
-                    installedTag = entropy_client.installed_repository().retrieveVersionTag(idx)
+                    installedTag = entropy_client.installed_repository().retrieveTag(idx)
                     installedRev = entropy_client.installed_repository().retrieveRevision(idx)
                     installedRepo = entropy_client.installed_repository().getInstalledPackageRepository(idx)
                     if installedRepo is None:

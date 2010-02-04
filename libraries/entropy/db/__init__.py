@@ -4570,6 +4570,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def retrieveVersionTag(self, idpackage):
         """
+        @deprecated
+        """
+        return self.retrieveTag(idpackage)
+
+    def retrieveTag(self, idpackage):
+        """
         Return "tag" metadatum for given package identifier.
         Tagging packages allows, for example, to support multiple
         different, colliding atoms in the same repository and still being
@@ -8131,7 +8137,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if tag is None:
             return idpackage
 
-        dbtag = self.retrieveVersionTag(idpackage)
+        dbtag = self.retrieveTag(idpackage)
         compare = const_cmp(tag, dbtag)
         # cannot do operator compare because it breaks the tag concept
         if compare == 0:
@@ -8324,7 +8330,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if multiMatch:
             if extendedResults:
-                x = set([(x[0], 0, x[1], self.retrieveVersionTag(x[0]), \
+                x = set([(x[0], 0, x[1], self.retrieveTag(x[0]), \
                     self.retrieveRevision(x[0])) for x in dbpkginfo])
                 self.__atomMatchStoreCache(
                     atom, matchSlot,
@@ -8344,7 +8350,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
             if extendedResults:
-                x = (x[0], 0, x[1], self.retrieveVersionTag(x[0]),
+                x = (x[0], 0, x[1], self.retrieveTag(x[0]),
                     self.retrieveRevision(x[0]),)
 
                 self.__atomMatchStoreCache(
@@ -8380,7 +8386,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         versions = set()
 
         for x in dbpkginfo:
-            info_tuple = (x[1], self.retrieveVersionTag(x[0]), \
+            info_tuple = (x[1], self.retrieveTag(x[0]), \
                 self.retrieveRevision(x[0]))
             versions.add(info_tuple)
             pkgdata[info_tuple] = x[0]
@@ -8574,7 +8580,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                             revcmp = const_cmp(matchRevision, dbrev)
 
                         if matchTag is not None:
-                            dbtag = self.retrieveVersionTag(idpackage)
+                            dbtag = self.retrieveTag(idpackage)
                             tagcmp = const_cmp(matchTag, dbtag)
 
                         dbver = self.retrieveVersion(idpackage)

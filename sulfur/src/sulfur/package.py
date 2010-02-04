@@ -176,7 +176,7 @@ class EntropyPackage:
         if self.pkgset:
             return ''
 
-        return self.dbconn.retrieveVersionTag(self.matched_id)
+        return self.dbconn.retrieveTag(self.matched_id)
 
     def get_name(self):
         if self.pkgset:
@@ -222,7 +222,7 @@ class EntropyPackage:
             return ver_str
 
         from_ver = EquoIntf.installed_repository().retrieveVersion(idpackage) or ""
-        from_tag = EquoIntf.installed_repository().retrieveVersionTag(idpackage) or ""
+        from_tag = EquoIntf.installed_repository().retrieveTag(idpackage) or ""
         if from_tag:
             from_tag = '#%s' % (from_tag,)
 
@@ -365,7 +365,7 @@ class EntropyPackage:
             return "0"
 
         tag = ""
-        vtag = self.dbconn.retrieveVersionTag(self.matched_id)
+        vtag = self.dbconn.retrieveTag(self.matched_id)
         if vtag:
             tag = "#"+vtag
         tag += "~"+str(self.dbconn.retrieveRevision(self.matched_id))
@@ -632,7 +632,7 @@ class EntropyPackage:
         elif attr == "revision":
             x = self.dbconn.retrieveRevision(self.matched_id)
         elif attr == "versiontag":
-            x = self.dbconn.retrieveVersionTag(self.matched_id)
+            x = self.dbconn.retrieveTag(self.matched_id)
             if not x:
                 x = "None"
         elif attr == "branch":

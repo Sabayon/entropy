@@ -1500,7 +1500,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
     pkghome = dbconn.retrieveHomepage(idpackage)
     pkgslot = dbconn.retrieveSlot(idpackage)
     pkgver = dbconn.retrieveVersion(idpackage)
-    pkgtag = dbconn.retrieveVersionTag(idpackage)
+    pkgtag = dbconn.retrieveTag(idpackage)
     pkgrev = dbconn.retrieveRevision(idpackage)
     pkgdesc = dbconn.retrieveDescription(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
@@ -1520,7 +1520,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 idx = pkginstalled[0]
                 # found
                 installedVer = Equo.installed_repository().retrieveVersion(idx)
-                installedTag = Equo.installed_repository().retrieveVersionTag(idx)
+                installedTag = Equo.installed_repository().retrieveTag(idx)
                 if not installedTag:
                     installedTag = "NoTag"
                 installedRev = Equo.installed_repository().retrieveRevision(idx)
