@@ -684,7 +684,7 @@ class SulfurApplicationEventsMixin:
         # now start updating the system
         rc = self.Equo.ask_question(_("Update your system now ?"))
         if rc == _("Yes"):
-            self.install_queue(fetch = True)
+            self.install_queue()
 
     def on_deselect_clicked(self, widget):
         # @deprecated
