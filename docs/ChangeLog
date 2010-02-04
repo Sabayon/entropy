@@ -1,3 +1,15 @@
+commit 70862b58a2e6e60769a9eaa10dc915bbda1922e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:25:28 2010 +0100
+
+    [scripts] entropy lib revision bumping was missing
+
+commit b0e68d1960e29c087b0b767663460036e3a52e41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:16:53 2010 +0100
+
+    Tagging Entropy version 0.99.33.5
+
 commit 11cfc4349a57af26fa24502eb8cf450f2e578a3c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 4 19:16:17 2010 +0100
