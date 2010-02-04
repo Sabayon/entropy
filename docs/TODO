@@ -6,7 +6,6 @@
             - atom_match without serverInstance & bullshit
                 (add repo_opener argument instead)
             - remove "server_repos", use "matchRepo"
-        - entropy.client, closeAllSecurity, closeAllQA
         - unpack & install should be done in entropy.spm
         - move SystemSettings['repositories'] ?
 
