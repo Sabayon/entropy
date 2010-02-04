@@ -7,6 +7,7 @@ import unittest
 import tests._misc as _misc
 from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.const import etpUi
+import entropy.tools
 
 class FetchersTest(unittest.TestCase):
 
@@ -61,3 +62,4 @@ if __name__ == '__main__':
         from entropy.const import etpUi
         etpUi['debug'] = True
     unittest.main()
+    entropy.tools.kill_threads()

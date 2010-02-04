@@ -10,6 +10,7 @@ from entropy.const import etpConst
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
+import entropy.tools
 import tests._misc as _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
@@ -61,3 +62,4 @@ if __name__ == '__main__':
         from entropy.const import etpUi
         etpUi['debug'] = True
     unittest.main()
+    entropy.tools.kill_threads()

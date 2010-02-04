@@ -8,7 +8,10 @@ import os
 import unittest
 import tempfile
 import shutil
-from entropy.security import Repository
+from entropy.const import etpConst
+from entropy.client.interfaces import Client
+from entropy.security import Repository, System
+import entropy.tools
 import tests._misc as _misc
 
 class SecurityTest(unittest.TestCase):
@@ -19,6 +22,16 @@ class SecurityTest(unittest.TestCase):
         """
         self._tmp_dir = tempfile.mkdtemp()
         self._repository = Repository(keystore_dir = self._tmp_dir)
+        self._entropy = Client()
+
+        self._security_cache_dir = tempfile.mkdtemp()
+        self._security_dir = tempfile.mkdtemp()
+        System.SECURITY_DIR = self._security_dir
+        System._CACHE_DIR = self._security_cache_dir
+        System.SECURITY_URL = "file://" + _misc.get_security_pkg()
+        self._system = System(self._entropy)
+        # set fake security url
+
         sys.stdout.write("%s called\n" % (self,))
         sys.stdout.flush()
 
@@ -26,10 +39,32 @@ class SecurityTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
+        self._entropy.destroy()
+        del self._entropy
         del self._repository
+        del self._system
         shutil.rmtree(self._tmp_dir, True)
+        shutil.rmtree(self._security_dir, True)
+        shutil.rmtree(self._security_cache_dir, True)
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
+
+    def test_security_get_advisories_cache(self):
+        self.assertEqual(self._system.get_advisories_cache(), None)
+
+    def test_security_set_advisories_cache(self):
+        self.assertEqual(self._system.get_advisories_cache(), None)
+        self._system.set_advisories_cache({'zomg': True})
+        self.assertEqual(self._system.get_advisories_cache(), {'zomg': True})
+
+    def test_security_get_advisories_metadata(self):
+        meta = self._system.get_advisories_metadata()
+        # this should be empty
+        self.assertEqual(meta, {})
+
+    def test_security_fetch_advisories(self):
+        s_rc = self._system.sync()
+        self.assertEqual(s_rc, 0)
 
     def test_gpg_handling(self):
 
@@ -79,3 +114,4 @@ if __name__ == '__main__':
         from entropy.const import etpUi
         etpUi['debug'] = True
     unittest.main()
+    entropy.tools.kill_threads()

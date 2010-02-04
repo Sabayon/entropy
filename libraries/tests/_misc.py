@@ -101,3 +101,9 @@ def get_random_file():
 
 def get_random_file_md5():
     return get_test_generic_package("random_file.md5")
+
+def get_security_pkg():
+    return get_test_generic_package("security-advisories.tar.bz2")
+
+def get_security_pkg_asc():
+    return get_test_generic_package("security-advisories.tar.bz2.asc")

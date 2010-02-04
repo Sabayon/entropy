@@ -5,6 +5,7 @@ sys.path.insert(0, '../')
 import unittest
 import entropy.qa
 from entropy.output import TextInterface
+import entropy.tools
 import tests._misc as _misc
 import tempfile
 
@@ -38,3 +39,4 @@ if __name__ == '__main__':
         from entropy.const import etpUi
         etpUi['debug'] = True
     unittest.main()
+    entropy.tools.kill_threads()

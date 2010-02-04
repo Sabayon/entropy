@@ -13,6 +13,7 @@ sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 # set unit testing mode
 from entropy.const import etpSys, etpUi
+import entropy.tools
 etpSys['unittest'] = True
 if "--debug" in sys.argv:
     sys.argv.remove("--debug")
@@ -33,4 +34,5 @@ for mod in mods:
 result = unittest.TextTestRunner(verbosity = 1).run(unittest.TestSuite(tests))
 if result.errors:
     rc = 1
+entropy.tools.kill_threads()
 raise SystemExit(rc)
