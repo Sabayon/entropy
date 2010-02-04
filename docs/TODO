@@ -1,8 +1,6 @@
 
   0.99.40:
 
-    - entropy.exceptions rework
-        - ditch exceptions: InvalidData, InvalidDataType, IncorrectParameter
     - entropy.client API rework
         - entropy.client.interfaces.dep:
             - atom_match without serverInstance & bullshit
