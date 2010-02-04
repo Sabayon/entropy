@@ -682,10 +682,10 @@ def const_read_entropy_release():
     @return: None
     """
     # handle Entropy Version
-    revision_file = "../libraries/revision"
+    revision_file = "../libraries/entropy/revision"
     if not os.path.isfile(revision_file):
         revision_file = os.path.join(etpConst['installdir'],
-            'libraries/revision')
+            'libraries/entropy/revision')
     if os.path.isfile(revision_file) and \
         os.access(revision_file, os.R_OK):
 
