@@ -32,8 +32,7 @@ from entropy.output import TextInterface, print_generic, red, \
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
     const_cmp, const_israwstring, const_cmp
-from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
-    DirectoryNotFound
+from entropy.exceptions import FileNotFound, InvalidAtom, DirectoryNotFound
 
 def is_root():
     """
@@ -386,7 +385,7 @@ def add_proxy_opener(module, data):
     """
     import types
     if not isinstance(module, types.ModuleType):
-        InvalidDataType("InvalidDataType: not a module")
+        AttributeError("not a module")
     if not data:
         return
 

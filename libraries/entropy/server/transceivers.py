@@ -34,15 +34,10 @@ class TransceiverServerHandler:
 
         self.Entropy = entropy_interface
         if not isinstance(uris, list):
-            raise AttributeError("InvalidDataType: %s" % (
-                    _("uris must be a list instance"),
-                )
-            )
+            raise AttributeError("uris must be a list instance")
         if not isinstance(files_to_upload, (list, dict)):
-            raise AttributeError("InvalidDataType: %s" % (
-                    _("files_to_upload must be a list or dict instance"),
-                )
-            )
+            raise AttributeError(
+                "files_to_upload must be a list or dict instance")
         self.uris = uris
         if isinstance(files_to_upload, list):
             self.myfiles = files_to_upload[:]

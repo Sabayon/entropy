@@ -65,9 +65,6 @@ class ParseError(EntropyException):
 class InvalidData(EntropyException):
     """An incorrect formatting was passed instead of the expected one"""
 
-class InvalidDataType(EntropyException):
-    """An incorrect type was passed instead of the expected one"""
-
 class RepositoryError(EntropyException):
     """Cannot open repository database"""
 

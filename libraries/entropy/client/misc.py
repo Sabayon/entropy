@@ -244,9 +244,8 @@ class FileUpdates:
         number = item[5:9]
         try:
             int(number)
-        except:
-            mytxt = _("Invalid config file number")
-            raise InvalidDataType("InvalidDataType: %s '0000->9999'." % (mytxt,))
+        except ValueError:
+            raise ValueError("invalid config file number '0000->9999'.")
         tofilepath = currentdir+"/"+tofile
         mydict = {}
         mydict['revision'] = number
@@ -270,9 +269,10 @@ class FileUpdates:
             except:
                 pass
             # another test
-            if (not mydict['automerge']):
+            if not mydict['automerge']:
                 try:
-                    if not os.path.lexists(filepath): # if file does not even exist
+                    # if file does not even exist
+                    if not os.path.lexists(filepath):
                         return mydict
                     if os.path.islink(filepath):
                         # if it's broken, skip diff and automerge

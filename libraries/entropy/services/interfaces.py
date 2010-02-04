@@ -1738,7 +1738,7 @@ class SocketHost:
         if 'external_cmd_classes' in self.kwds:
             ext_commands = self.kwds.pop('external_cmd_classes')
             if not isinstance(ext_commands, list):
-                raise InvalidDataType("InvalidDataType: external_cmd_classes must be a list")
+                raise AttributeError("external_cmd_classes must be a list")
             self.command_classes += ext_commands
 
     def setup_commands(self):
