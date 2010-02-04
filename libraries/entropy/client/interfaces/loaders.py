@@ -27,10 +27,10 @@ class LoadersMixin:
         self.__TriggerLoader = Trigger
         self.__RepositorySecurityLoader = RepositorySecurity
 
-    def closeAllQA(self):
+    def _close_qa_interfaces(self):
         self._QA_cache.clear()
 
-    def closeAllSecurity(self):
+    def _close_security_interfaces(self):
         self._security_cache.clear()
 
     def Security(self):

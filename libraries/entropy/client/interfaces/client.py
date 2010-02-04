@@ -712,8 +712,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                     pass
 
         self.close_all_repositories(mask_clear = False)
-        self.closeAllSecurity()
-        self.closeAllQA()
+        self._close_security_interfaces()
+        self._close_qa_interfaces()
 
     def repository_packages_spm_sync(self, repository_identifier, repo_db,
         force = False):

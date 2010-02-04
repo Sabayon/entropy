@@ -1328,8 +1328,8 @@ class MiscMixin:
                 pass
         # I don't think it's safe to keep them open
         # isn't it?
-        self.closeAllSecurity()
-        self.closeAllQA()
+        self._close_security_interfaces()
+        self._close_qa_interfaces()
 
     def add_user_package_set(self, set_name, set_atoms):
 
