@@ -12,6 +12,7 @@ install:
 
 	install -m755 sulfur-client.py $(DESTDIR)/$(PKGDIR)/..
 	install -m644 sulfur/*.py $(DESTDIR)/$(PKGDIR)/.
+	install -m644 sulfur/revision $(DESTDIR)/$(PKGDIR)/.
 	install -m644 sulfur/*.glade $(DESTDIR)/$(PKGDIR)/.
 
 	install -m755 repo-manager-client.py $(DESTDIR)/$(REPOMANDIR)/..

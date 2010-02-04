@@ -80,6 +80,7 @@ equo-install:
 	install -m 644 conf/client.conf $(DESTDIR)/etc/entropy/
 
 	install -m 644 client/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/
+	install -m 644 client/revision $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 644 client/entropy-system-test-client $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 755 client/equo.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 
