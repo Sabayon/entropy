@@ -347,7 +347,7 @@ class Equo(Client):
 
             def update_gui():
                 if hasattr(self.progress_log, '__call__'):
-                    self.progress_log(count_str+text)
+                    self.progress_log(header+count_str+text+footer)
                 return False
             gobject.timeout_add(0, update_gui)
 
