@@ -24,8 +24,8 @@ from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     SPMError, IncorrectParameter
 from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
-    is_stdout_a_tty
-from text_tools import print_menu, print_bascomp
+    is_stdout_a_tty, bold, purple, blue
+from text_tools import print_menu, print_bascomp, read_equo_release
 from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 import entropy.tools
 try:
@@ -762,7 +762,8 @@ if (not options) or ("--help" in options):
 
 # print version
 if options[0] == "--version":
-    print_generic("equo: "+etpConst['entropyversion'])
+    print_generic("entropy: "+etpConst['entropyversion'])
+    print_generic("equo: "+read_equo_release())
     raise SystemExit(0)
 elif options[0] == "--info":
     import text_rescue
@@ -923,9 +924,22 @@ def install_exception_handler():
 def uninstall_exception_handler():
     sys.excepthook = sys.__excepthook__
 
-
+def warn_version_mismatch():
+    equo_ver = read_equo_release()
+    entropy_ver = etpConst['entropyversion']
+    if equo_ver != entropy_ver:
+        print_warning("")
+        print_warning("%s: %s" % (
+            bold(_("Entropy/Equo version mismatch")),
+            purple(_("it could make your system explode!")),))
+        print_warning("(%s [equo] & %s [entropy])" % (
+            blue(equo_ver),
+            blue(entropy_ver),))
+        print_warning("")
 
 def main():
+
+    warn_version_mismatch()
 
     install_exception_handler()
 

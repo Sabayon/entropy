@@ -252,3 +252,24 @@ def enlightenatom(atom):
     return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
         darkgreen(name), purple("-"+pv), purple(rev), brown(entropy_tag),
         teal(entropy_rev),)
+
+def read_equo_release():
+    """
+    Read Equo release.
+
+    @rtype: None
+    @return: None
+    """
+    # handle Entropy Version
+    revision_file = "../client/revision"
+    if not os.path.isfile(revision_file):
+        revision_file = os.path.join(etpConst['installdir'],
+            'client/revision')
+    if os.path.isfile(revision_file) and \
+        os.access(revision_file, os.R_OK):
+
+        with open(revision_file, "r") as rev_f:
+            myrev = rev_f.readline().strip()
+            return myrev
+
+    return "0"
