@@ -71,6 +71,8 @@ class System:
     """
     _CACHE_ID = 'advisories_cache_'
     _CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "security_cache")
+    SECURITY_DIR = etpConst['securitydir']
+    SECURITY_URL = None
 
     class UpdateError(EntropyException):
         """Raised when security advisories couldn't be updated correctly"""
@@ -124,11 +126,14 @@ class System:
             "rlt": "<" # <~
         }
 
-        security_url = \
-            self.SystemSettings['repositories']['security_advisories_url']
+        if System.SECURITY_URL is None:
+            security_url = \
+                self.SystemSettings['repositories']['security_advisories_url']
+        else:
+            security_url = System.SECURITY_URL
         security_file = os.path.basename(security_url)
         md5_ext = etpConst['packagesmd5fileext']
-        sec_dir = etpConst['securitydir']
+        sec_dir = System.SECURITY_DIR
 
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],
             "security-%s" % (entropy.tools.get_random_number(),))
@@ -482,21 +487,21 @@ class System:
         """
         Remove previously installed GLSA advisories.
         """
-        if os.listdir(etpConst['securitydir']):
-            shutil.rmtree(etpConst['securitydir'], True)
-            if not os.path.isdir(etpConst['securitydir']):
-                os.makedirs(etpConst['securitydir'], 0o775)
-                const_setup_perms(etpConst['securitydir'],
+        if os.listdir(System.SECURITY_DIR):
+            shutil.rmtree(System.SECURITY_DIR, True)
+            if not os.path.isdir(System.SECURITY_DIR):
+                os.makedirs(System.SECURITY_DIR, 0o775)
+                const_setup_perms(System.SECURITY_DIR,
                     etpConst['entropygid'])
             const_setup_perms(self.unpackdir, etpConst['entropygid'])
 
     def __put_advisories_in_place(self):
         """
-        Place unpacked advisories in place (into etpConst['securitydir']).
+        Place unpacked advisories in place (into System.SECURITY_DIR).
         """
         for advfile in os.listdir(self.unpacked_package):
             from_file = os.path.join(self.unpacked_package, advfile)
-            to_file = os.path.join(etpConst['securitydir'], advfile)
+            to_file = os.path.join(System.SECURITY_DIR, advfile)
             try:
                 os.rename(from_file, to_file)
             except OSError:
@@ -530,6 +535,9 @@ class System:
         self.__cacher.discard()
         EntropyCacher.clear_cache_item(System._CACHE_ID,
             cache_dir = System._CACHE_DIR)
+        if not os.path.isdir(System._CACHE_DIR):
+            os.makedirs(System._CACHE_DIR, 0o775)
+            const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
 
     def get_advisories_cache(self):
         """
@@ -542,7 +550,7 @@ class System:
 
         if self.Entropy.xcache:
             dir_checksum = entropy.tools.md5sum_directory(
-                etpConst['securitydir'])
+                System.SECURITY_DIR)
             c_hash = "%s%s" % (
                 System._CACHE_ID, hash("%s|%s|%s" % (
                     hash(self.SystemSettings['repositories']['branch']),
@@ -565,7 +573,7 @@ class System:
         """
         if self.Entropy.xcache:
             dir_checksum = entropy.tools.md5sum_directory(
-                etpConst['securitydir'])
+                System.SECURITY_DIR)
             c_hash = "%s%s" % (
                 System._CACHE_ID, hash("%s|%s|%s" % (
                     hash(self.SystemSettings['repositories']['branch']),
@@ -585,7 +593,7 @@ class System:
         """
         if not self.check_advisories_availability():
             return []
-        xmls = os.listdir(etpConst['securitydir'])
+        xmls = os.listdir(System.SECURITY_DIR)
         xmls = sorted([x for x in xmls if x.endswith(".xml") and \
             x.startswith("glsa-")])
         return xmls
@@ -811,7 +819,7 @@ class System:
         @rtype: dict
         """
         xml_data = {}
-        xmlfile = os.path.join(etpConst['securitydir'], xmlfilename)
+        xmlfile = os.path.join(System.SECURITY_DIR, xmlfilename)
         try:
             xmldoc = self.minidom.parse(xmlfile)
         except (IOError, OSError, TypeError, AttributeError,):
@@ -967,7 +975,7 @@ class System:
         @return: availability
         @rtype: bool
         """
-        return os.path.isdir(etpConst['securitydir'])
+        return os.path.isdir(System.SECURITY_DIR)
 
     def sync(self, do_cache = True, force = False):
         """
@@ -1179,13 +1187,13 @@ class System:
                     return 7
 
         # save downloaded md5
-        if os.path.isfile(self.download_package_checksum) and \
-            os.path.isdir(etpConst['dumpstoragedir']):
-
-            if os.path.isfile(self.old_download_package_checksum):
-                os.remove(self.old_download_package_checksum)
-            shutil.copy2(self.download_package_checksum,
-                self.old_download_package_checksum)
+        if os.path.isfile(self.download_package_checksum):
+            try:
+                os.rename(self.download_package_checksum,
+                    self.old_download_package_checksum)
+            except OSError:
+                shutil.copy2(self.download_package_checksum,
+                    self.old_download_package_checksum)
             self.Entropy.setup_default_file_perms(
                 self.old_download_package_checksum)
 
