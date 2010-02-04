@@ -16,7 +16,7 @@ done
 echo "Updating ChangeLog for $new_tag"
 git log > docs/ChangeLog
 git add docs/ChangeLog
-for revision in "client/revision server/revision sulfur/src/sulfur/revision"; do
+for revision in client/revision server/revision sulfur/src/sulfur/revision; do
     echo "$new_tag" > $revision
     git add $revision
 done
