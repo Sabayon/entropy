@@ -56,13 +56,11 @@ class EntropyRepositoryTest(unittest.TestCase):
             'slotmove x11-libs/lesstif 2.1 0'])
 
         self.test_db.insertTreeUpdatesActions(updates, self.test_db_name)
-        db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name,
-            forbranch = '2020')
+        db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name)
         self.assertEqual(actions, db_actions)
 
         self.test_db.removeTreeUpdatesActions(self.test_db_name)
-        db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name,
-            forbranch = '2020')
+        db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name)
         self.assertEqual([], db_actions)
 
     def test_db_creation(self):

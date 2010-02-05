@@ -424,13 +424,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.dbMatchCacheKey = EntropyCacher.CACHE_IDS['db_match']
         self.client_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        self.db_branch = self.SystemSettings['repositories']['branch']
         self.Cacher = EntropyCacher()
 
         self.dbname = dbname
-        if self.dbname == etpConst['clientdbid']:
-            self.db_branch = None
-
         self.dbFile = dbFile
         self.xcache = xcache
         if self.dbFile is None:
@@ -2543,7 +2539,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         return my_uid
 
-    def insertSpmUid(self, idpackage, spm_package_uid, branch = None):
+    def insertSpmUid(self, idpackage, spm_package_uid):
         """
         Insert Source Package Manager unique package identifier and bind it
         to Entropy package identifier given (idpackage). This method is used
@@ -2554,13 +2550,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type idpackage: int
         @param spm_package_uid: Source package Manager unique package identifier
         @type spm_package_uid: int
-        @param branch: current running Entropy branch
-        @type branch: string
         """
-        if not branch:
-            branch = self.db_branch
-        if not branch:
-            branch = self.SystemSettings['repositories']['branch']
+        branch = self.SystemSettings['repositories']['branch']
 
         self._cursor().execute("""
         DELETE FROM counters WHERE (counter = (?) OR
@@ -3345,7 +3336,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self._cursor().execute('SELECT * FROM treeupdatesactions')
         return self._cursor().fetchall()
 
-    def retrieveTreeUpdatesActions(self, repository, forbranch = None):
+    def retrieveTreeUpdatesActions(self, repository):
         """
         This method should be considered internal and not suited for general
         audience.
@@ -3354,26 +3345,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         @param repository: repository identifier
         @type repository: string
-        @keyword forbranch: filter for specific Entropy branch, provide
-            alternative branch string
-        @type forbranch: string
         @return: list of raw-string commands to run
         @rtype: list
         """
-        if forbranch is None:
-            forbranch = self.db_branch
-        if not forbranch:
-            forbranch = self.SystemSettings['repositories']['branch']
-
         params = (repository,)
-        branch_string = ''
-        if forbranch:
-            branch_string = 'and branch = (?)'
-            params = (repository, forbranch,)
 
         self._cursor().execute("""
         SELECT command FROM treeupdatesactions WHERE 
-        repository = (?) %s order by date""" % (branch_string,), params)
+        repository = (?) order by date""", params)
         return self._fetchall2list(self._cursor().fetchall())
 
     def bumpTreeUpdatesActions(self, updates):
@@ -7593,7 +7572,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     "[reverse_dependencies_tree_generation_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
 
-    def moveSpmUidsToBranch(self, to_branch, from_branch = None):
+    def moveSpmUidsToBranch(self, to_branch):
         """
         Note: this is not intended for general audience.
         Move "branch" metadata contained in Source Package Manager package
@@ -7608,14 +7587,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype:
 
         """
-        if from_branch is not None:
-            self._cursor().execute("""
-            UPDATE counters SET branch = (?) WHERE branch = (?)
-            """, (to_branch, from_branch,))
-        else:
-            self._cursor().execute("""
-            UPDATE counters SET branch = (?)
-            """, (to_branch,))
+        self._cursor().execute("""
+        UPDATE counters SET branch = (?)
+        """, (to_branch,))
         self.commitChanges()
         self.clearCache()
 

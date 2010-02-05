@@ -114,10 +114,6 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             entropy_repository_instance.initializeDatabase()
             entropy_repository_instance.commitChanges()
 
-        use_branch = self._metadata.get('use_branch')
-        if use_branch is not None:
-            entropy_repository_instance.db_branch = use_branch
-
         out_intf = self._metadata.get('output_interface')
         if out_intf is not None:
             entropy_repository_instance.output = out_intf.output
@@ -140,7 +136,6 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         repo = self._metadata['repo_name']
         dbfile = self._metadata['local_dbfile']
         read_only = self._metadata['read_only']
-        use_branch = self._metadata.get('use_branch')
         if not read_only:
             sts = ServerRepositoryStatus()
             if sts.is_tainted(dbfile) and not sts.is_unlock_msg(dbfile):
@@ -2941,7 +2936,7 @@ class ServerPackagesHandlingMixin:
         dbconn.commitChanges()
 
         # now migrate counters
-        dbconn.moveSpmUidsToBranch(to_branch, from_branch = from_branch)
+        dbconn.moveSpmUidsToBranch(to_branch)
 
         self.close_repository(dbconn)
         mytxt = blue("%s.") % (_("migration loop completed"),)
@@ -3546,7 +3541,6 @@ class ServerRepositoryMixin:
         etp_repo_meta = {
             'lock_remote': False,
             'no_upload': True,
-            'use_branch': None,
             'output_interface': self,
             'read_only': False,
             'repo_name': repoid,
@@ -3650,7 +3644,6 @@ class ServerRepositoryMixin:
         etp_repo_meta = {
             'lock_remote': lock_remote,
             'no_upload': no_upload,
-            'use_branch': use_branch,
             'output_interface': self,
             'read_only': read_only,
             'repo_name': repo,
