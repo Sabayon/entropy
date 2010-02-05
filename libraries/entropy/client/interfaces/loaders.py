@@ -60,10 +60,10 @@ class LoadersMixin:
         Load Entropy QA interface
         """
         qa_intf = QAInterface()
-        qa_intf.output = entropy_client.output
-        qa_intf.ask_question = entropy_client.ask_question
-        qa_intf.input_box = entropy_client.input_box
-        qa_intf.set_title = entropy_client.set_title
+        qa_intf.output = self.output
+        qa_intf.ask_question = self.ask_question
+        qa_intf.input_box = self.input_box
+        qa_intf.set_title = self.set_title
         return qa_intf
 
     def Triggers(self, *args, **kwargs):
