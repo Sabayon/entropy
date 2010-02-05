@@ -682,7 +682,7 @@ class Server(ServerNoticeBoardMixin):
 
                 if (not os.path.isdir(download_dir)) and \
                     (not os.access(download_dir, os.R_OK)):
-                    os.makedirs(download_dir)
+                    self.Entropy._ensure_dir_path(download_dir)
 
                 rc_download = handler.download(remote_path, download_path)
                 if not rc_download:
@@ -2088,6 +2088,8 @@ class Server(ServerNoticeBoardMixin):
             return 0, set(), set()
 
         if download_latest:
+            # close all the currently open repos
+            self.Entropy.close_server_repositories()
             download_uri = download_latest[0]
             download_errors, fine_uris, broken_uris = self._download_database(
                 [download_uri], repo = repo)
@@ -2827,6 +2829,8 @@ class Server(ServerNoticeBoardMixin):
 
             local_basedir = self.Entropy.complete_local_package_path(rel_path,
                 repo = repo)
+            if not os.path.isdir(local_basedir):
+                self.Entropy._ensure_dir_path(local_basedir)
 
             downloader = self.TransceiverServerHandler(
                 self.Entropy, [uri], myqueue,
