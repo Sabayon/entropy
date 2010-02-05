@@ -11,37 +11,39 @@
 """
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_default_class
-from entropy.const import *
-from entropy.exceptions import *
+
+from entropy.const import etpConst
+from entropy.qa import QAInterface
+from entropy.security import System
 
 class LoadersMixin:
 
     def __init__(self):
+        self._spm_cache = {}
+
         from entropy.client.interfaces.client import Client
         from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
         from entropy.security import Repository as RepositorySecurity
+        from entropy.client.interfaces.sets import Sets
         self.__PackageLoader = Package
         self.__RepositoryLoader = Repository
         self.__TriggerLoader = Trigger
         self.__RepositorySecurityLoader = RepositorySecurity
+        self.__SetsLoader = Sets
 
-    def _close_qa_interfaces(self):
-        self._QA_cache.clear()
-
-    def _close_security_interfaces(self):
-        self._security_cache.clear()
+    def Sets(self):
+        """
+        Load Package Sets interface
+        """
+        return self.__SetsLoader(self)
 
     def Security(self):
-        chroot = etpConst['systemroot']
-        cached = self._security_cache.get(chroot)
-        if cached != None:
-            return cached
-        from entropy.security import System as system_sec
-        cached = system_sec(self)
-        self._security_cache[chroot] = cached
-        return cached
+        """
+        Load Entropy Security Advisories interface
+        """
+        return System(self)
 
     def RepositorySecurity(self, keystore_dir = None):
         """
@@ -54,14 +56,15 @@ class LoadersMixin:
             keystore_dir = keystore_dir)
 
     def QA(self):
-        chroot = etpConst['systemroot']
-        cached = self._QA_cache.get(chroot)
-        if cached != None:
-            return cached
-        from entropy.qa import QAInterface
-        cached = QAInterface(self)
-        self._QA_cache[chroot] = cached
-        return cached
+        """
+        Load Entropy QA interface
+        """
+        qa_intf = QAInterface()
+        qa_intf.output = entropy_client.output
+        qa_intf.ask_question = entropy_client.ask_question
+        qa_intf.input_box = entropy_client.input_box
+        qa_intf.set_title = entropy_client.set_title
+        return qa_intf
 
     def Triggers(self, *args, **kwargs):
         return self.__TriggerLoader(self, *args, **kwargs)

@@ -812,7 +812,8 @@ class SulfurApplicationEventsMixin:
 
     def on_pkgsetAddButton_clicked(self, widget, edit = False):
 
-        current_sets = self.Equo.package_set_list()
+        sets = self.Equo.Sets()
+        current_sets = sets.available()
         def fake_callback(s):
 
             ## check if package set name is sane
@@ -822,7 +823,7 @@ class SulfurApplicationEventsMixin:
             # does it exist?
             if not const_isunicode(s):
                 s = s.decode('utf-8')
-            set_match, rc = self.Equo.package_set_match(s)
+            set_match, rc = sets.match(s)
             if rc:
                 return False
 
@@ -854,7 +855,7 @@ class SulfurApplicationEventsMixin:
             if obj is None:
                 return # sorry
             set_name = obj.onlyname
-            set_match, rc = self.Equo.package_set_match(set_name)
+            set_match, rc = sets.match(set_name)
             if not rc: # set does not exist
                 return
             repoid, set_name, set_pkgs_list = set_match
@@ -877,12 +878,12 @@ class SulfurApplicationEventsMixin:
             return
 
         if edit:
-            rc, msg = self.Equo.remove_user_package_set(const_convert_to_unicode(data.get("name")))
+            rc, msg = sets.remove(const_convert_to_unicode(data.get("name")))
             if rc != 0:
                 okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
                 return
 
-        rc, msg = self.Equo.add_user_package_set(const_convert_to_unicode(data.get("name")),
+        rc, msg = sets.add(const_convert_to_unicode(data.get("name")),
             data.get("atoms"))
         if rc != 0:
             okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
@@ -893,12 +894,13 @@ class SulfurApplicationEventsMixin:
 
     def on_pkgsetRemoveButton_clicked(self, widget):
 
+        sets = self.Equo.Sets()
         def mymf(m):
             set_from, set_name, set_deps = m
             if set_from == etpConst['userpackagesetsid']:
                 return set_name
             return 0
-        avail_pkgsets = [x for x in map(mymf, self.Equo.package_set_list()) if \
+        avail_pkgsets = [x for x in map(mymf, sets.available()) if \
             x != 0]
 
         if not avail_pkgsets:
@@ -921,7 +923,7 @@ class SulfurApplicationEventsMixin:
             return
         x_id, set_name = data.get("pkgset")
 
-        rc, msg = self.Equo.remove_user_package_set(set_name)
+        rc, msg = sets.remove(set_name)
         if rc != 0:
             okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
             return

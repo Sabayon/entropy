@@ -23,6 +23,8 @@ import sys
 import subprocess
 import tempfile
 
+from entropy.output import TextInterface
+from entropy.misc import Lifo
 from entropy.const import etpConst, etpSys, const_debug_write, const_debug_write
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
 from entropy.exceptions import PermissionDenied, SystemDatabaseError
@@ -105,7 +107,7 @@ class QAInterfacePlugin:
         """
         raise NotImplementedError()
 
-class QAInterface(EntropyPluginStore):
+class QAInterface(TextInterface, EntropyPluginStore):
 
     """
     Entropy QA interface. This class contains all the Entropy
@@ -120,28 +122,12 @@ class QAInterface(EntropyPluginStore):
 
     """
 
-    import entropy.tools as entropyTools
-    from entropy.misc import Lifo
-    def __init__(self, OutputInterface):
+    def __init__(self):
         """
         QAInterface constructor.
-
-        @param OutputInterface: class instance used to print output.
-        Even if not enforced at the moment, it should be a subclass of
-        entropy.qa.TextInterface exposing the output() method
-        with proper signature.
-        @type OutputInterface: TextInterface class or subclass instance
         """
         EntropyPluginStore.__init__(self)
-        self.Output = OutputInterface
-        self.SystemSettings = SystemSettings()
-
-        if not hasattr(self.Output, 'output'):
-            mytxt = _("Output interface has no output method")
-            raise AttributeError("AttributeError: %s" % (mytxt,))
-        elif not hasattr(self.Output.output, '__call__'):
-            mytxt = _("Output interface has no output method")
-            raise AttributeError("AttributeError: %s" % (mytxt,))
+        self._settings = SystemSettings()
 
     def add_plugin(self, plugin):
         """
@@ -179,10 +165,10 @@ class QAInterface(EntropyPluginStore):
         @rtype: bool
         """
         if repo is None:
-            repo = self.SystemSettings['repositories']['default_repository']
+            repo = self._settings['repositories']['default_repository']
 
         scan_msg = blue(_("Now searching for broken reverse dependencies"))
-        self.Output.output(
+        self.output(
             "[repo:%s] %s..." % (
                 darkgreen(repo),
                 scan_msg,
@@ -204,7 +190,7 @@ class QAInterface(EntropyPluginStore):
                 blue(_("scanning for broken reverse dependencies")),
                 darkgreen(atom),
             )
-            self.Output.output(
+            self.output(
                 "[repo:%s] %s" % (
                     darkgreen(repo),
                     scan_msg,
@@ -221,7 +207,7 @@ class QAInterface(EntropyPluginStore):
                 continue
             for mydepend in mydepends:
                 myatom = dbconn.retrieveAtom(mydepend)
-                self.Output.output(
+                self.output(
                     "[repo:%s] %s => %s" % (
                         darkgreen(repo),
                         darkgreen(atom),
@@ -238,7 +224,7 @@ class QAInterface(EntropyPluginStore):
                 if not mybreakages:
                     continue
                 broken = True
-                self.Output.output(
+                self.output(
                     "[repo:%s] %s %s => %s" % (
                         darkgreen(repo),
                         darkgreen(atom),
@@ -251,7 +237,7 @@ class QAInterface(EntropyPluginStore):
                     count = (count, maxcount,)
                 )
                 for mylib in mybreakages:
-                    self.Output.output(
+                    self.output(
                         "%s %s:" % (
                             darkgreen(mylib),
                             red(_("needs")),
@@ -261,7 +247,7 @@ class QAInterface(EntropyPluginStore):
                         header = brown("   ## ")
                     )
                     for needed in mybreakages[mylib]:
-                        self.Output.output(
+                        self.output(
                             "%s" % (
                                 red(needed),
                             ),
@@ -306,14 +292,14 @@ class QAInterface(EntropyPluginStore):
         @rtype: bool
         """
         if repo is None:
-            repo = self.SystemSettings['repositories']['default_repository']
+            repo = self._settings['repositories']['default_repository']
 
         if not isinstance(black_list, set):
             black_list = set()
 
         taint = False
         scan_msg = blue(_("Now searching for missing RDEPENDs"))
-        self.Output.output(
+        self.output(
             "[repo:%s] %s..." % (
                         darkgreen(repo),
                         scan_msg,
@@ -330,7 +316,7 @@ class QAInterface(EntropyPluginStore):
             atom = dbconn.retrieveAtom(idpackage)
             if not atom:
                 continue
-            self.Output.output(
+            self.output(
                 "[repo:%s] %s: %s" % (
                             darkgreen(repo),
                             scan_msg,
@@ -356,7 +342,7 @@ class QAInterface(EntropyPluginStore):
                 # print big warning to make dev aware at least
                 old_missing -= missing
                 if old_missing:
-                    self.Output.output(
+                    self.output(
                         "[repo:%s] %s: %s %s:" % (
                             darkgreen(repo),
                             darkred("package"),
@@ -369,7 +355,7 @@ class QAInterface(EntropyPluginStore):
                         count = (count, maxcount,)
                     )
                 for dep in sorted(old_missing):
-                    self.Output.output(
+                    self.output(
                             "%s" % (bold(dep),),
                             importance = 0,
                             type = "info",
@@ -379,7 +365,7 @@ class QAInterface(EntropyPluginStore):
             if (not missing) or (not missing_extended):
                 continue
 
-            self.Output.output(
+            self.output(
                 "[repo:%s] %s: %s %s:" % (
                             darkgreen(repo),
                             blue("package"),
@@ -392,29 +378,29 @@ class QAInterface(EntropyPluginStore):
                 count = (count, maxcount,)
             )
             for missing_data in missing_extended:
-                self.Output.output(
+                self.output(
                         "%s:" % (brown(repr(missing_data)),),
                         importance = 0,
                         type = "info",
                         header = purple("   ## ")
                 )
                 for dependency in missing_extended[missing_data]:
-                    self.Output.output(
+                    self.output(
                             "%s" % (darkred(dependency),),
                             importance = 0,
                             type = "info",
                             header = blue("     # ")
                     )
             if ask:
-                rc_ask = self.Output.ask_question(_("Do you want to add them?"))
+                rc_ask = self.ask_question(_("Do you want to add them?"))
                 if rc_ask == _("No"):
                     continue
-                rc_ask = self.Output.ask_question(_("Selectively?"))
+                rc_ask = self.ask_question(_("Selectively?"))
                 if rc_ask == _("Yes"):
                     newmissing = set()
                     new_blacklist = set()
                     for dependency in missing:
-                        self.Output.output(
+                        self.output(
                             "[repo:%s|%s] %s" % (
                                     darkgreen(repo),
                                     brown(atom),
@@ -424,13 +410,13 @@ class QAInterface(EntropyPluginStore):
                             type = "info",
                             header = blue(" @@ ")
                         )
-                        rc_ask = self.Output.ask_question(_("Want to add?"))
+                        rc_ask = self.ask_question(_("Want to add?"))
                         if rc_ask == _("Yes"):
                             newmissing.add(dependency)
                         ### XXX: disabled, devs are not able to use it properly
                         ### needs usability fixes
                         #else:
-                            #rc_ask = self.Output.ask_question(
+                            #rc_ask = self.ask_question(
                             #    _("Want to blacklist?"))
                             #if rc_ask == _("Yes"):
                             #    new_blacklist.add(dependency)
@@ -441,7 +427,7 @@ class QAInterface(EntropyPluginStore):
                 taint = True
                 dbconn.insertDependencies(idpackage, missing)
                 dbconn.commitChanges()
-                self.Output.output(
+                self.output(
                     "[repo:%s] %s: %s" % (
                         darkgreen(repo),
                         darkgreen(atom),
@@ -482,7 +468,7 @@ class QAInterface(EntropyPluginStore):
         @rtype: tuple
         """
 
-        self.Output.output(
+        self.output(
             blue(_("Libraries test")),
             importance = 2,
             type = "info",
@@ -502,7 +488,7 @@ class QAInterface(EntropyPluginStore):
                 (_("Broken executables list"), files_list_path,),
             ]
             mytxt = "%s:" % (purple(_("Dumping results into these files")),)
-            self.Output.output(
+            self.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -510,7 +496,7 @@ class QAInterface(EntropyPluginStore):
             )
             for txt, path in dmp_data:
                 mytxt = "%s: %s" % (blue(txt), path,)
-                self.Output.output(
+                self.output(
                     mytxt,
                     importance = 0,
                     type = "info",
@@ -527,7 +513,7 @@ class QAInterface(EntropyPluginStore):
         ld_conf = etpConst['systemroot'] + "/etc/ld.so.conf"
 
         if not os.path.isfile(ld_conf):
-            self.Output.output(
+            self.output(
                 blue(_("Cannot find "))+red(ld_conf),
                 importance = 1,
                 type = "error",
@@ -535,9 +521,9 @@ class QAInterface(EntropyPluginStore):
             )
             return {}, set(), -1
 
-        reverse_symlink_map = self.SystemSettings['system_rev_symlinks']
-        broken_syms_list = self.SystemSettings['broken_syms']
-        broken_libs_mask = self.SystemSettings['broken_libs_mask']
+        reverse_symlink_map = self._settings['system_rev_symlinks']
+        broken_syms_list = self._settings['broken_syms']
+        broken_libs_mask = self._settings['broken_libs_mask']
 
         import re
 
@@ -582,7 +568,7 @@ class QAInterface(EntropyPluginStore):
             for sym in syms:
                 if sym in ldpaths:
                     ldpaths.discard(real_dir)
-                    self.Output.output(
+                    self.output(
                         "%s: %s, %s: %s" % (
                             brown(_("discarding directory")),
                             purple(real_dir),
@@ -604,7 +590,7 @@ class QAInterface(EntropyPluginStore):
             if hasattr(task_bombing_func, '__call__'):
                 task_bombing_func()
             count += 1
-            self.Output.output(
+            self.output(
                 blue("Tree: ")+red(etpConst['systemroot'] + ldpath),
                 importance = 0,
                 type = "info",
@@ -638,7 +624,7 @@ class QAInterface(EntropyPluginStore):
             for x in map(mywimf, mywalk_iter):
                 executables |= x
 
-        self.Output.output(
+        self.output(
             blue(_("Collecting broken executables")),
             importance = 2,
             type = "info",
@@ -646,7 +632,7 @@ class QAInterface(EntropyPluginStore):
         )
         t = red(_("Attention")) + ": " + \
             blue(_("don't worry about libraries that are shown here but not later."))
-        self.Output.output(
+        self.output(
             t,
             importance = 1,
             type = "info",
@@ -673,7 +659,7 @@ class QAInterface(EntropyPluginStore):
 
             count += 1
             if (count % 10 == 0) or (count == total) or (count == 1):
-                self.Output.output(
+                self.output(
                     scan_txt,
                     importance = 0,
                     type = "info",
@@ -757,7 +743,7 @@ class QAInterface(EntropyPluginStore):
                     files_list_f.write(executable + "\n")
 
                 alllibs = blue(' :: ').join(sorted(mylibs))
-                self.Output.output(
+                self.output(
                     red(real_exec_path)+" [ "+alllibs+" ]",
                     importance = 1,
                     type = "info",
@@ -776,7 +762,7 @@ class QAInterface(EntropyPluginStore):
                     syms_list_f.write("%s => %s\n" % (real_exec_path,
                         sorted(broken_sym_found),))
 
-                self.Output.output(
+                self.output(
                     red(real_exec_path)+" { "+allsyms+" }",
                     importance = 1,
                     type = "info",
@@ -808,7 +794,7 @@ class QAInterface(EntropyPluginStore):
             from entropy.client.interfaces import Client
             client = Client()
 
-            self.Output.output(
+            self.output(
                 blue(_("Matching broken libraries/executables")),
                 importance = 1,
                 type = "info",
@@ -1036,7 +1022,7 @@ class QAInterface(EntropyPluginStore):
         @rtype: list or set
         """
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        mybuffer = QAInterface.Lifo()
+        mybuffer = Lifo()
         matchcache = set()
         depcache = set()
         mydeps = dbconn.retrieveDependencies(idpackage,
@@ -1107,7 +1093,7 @@ class QAInterface(EntropyPluginStore):
                 skipChecks = False
             )
             etp_repo_meta = {
-                'output_interface': self.Output,
+                'output_interface': self,
             }
             repo_plug = QAEntropyRepositoryPlugin(self,
                 metadata = etp_repo_meta)
@@ -1188,7 +1174,6 @@ class ErrorReportInterface:
 
     """
 
-    import entropy.tools as entropyTools
     def __init__(self, post_url):
         """
         ErrorReportInterface constructor.

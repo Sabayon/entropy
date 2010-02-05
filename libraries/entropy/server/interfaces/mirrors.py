@@ -1277,7 +1277,7 @@ class Server(ServerNoticeBoardMixin):
             type = "info",
             header = darkgreen(" * ")
         )
-        sets_data = self.Entropy.package_set_list(matchRepo = [repo])
+        sets_data = self.Entropy.sets_available(matchRepo = [repo])
         if not sets_data:
             self.Entropy.output(
                 "%s" % (_("None configured"),),

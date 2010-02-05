@@ -1,21 +1,22 @@
 
   0.99.40:
 
-    - bugzilla pkg metadata collection ?
-        - http://www.gentoo.org/proj/en/glep/glep-0046.html
     - entropy.client API rework
         - entropy.client.interfaces.dep:
             - atom_match without serverInstance & bullshit
                 (add repo_opener argument instead)
             - remove "server_repos", use "matchRepo"
-        - unpack & install should be done in entropy.spm
-        - move SystemSettings['repositories'] ?
 
   0.99.50:
+    - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
+        stuff to move:
+            - package sets matching from entropy.client
+            - package matching from entropy.client and entropy.db (remove atomMatch)
+            - move unpack, install phases logic from entropy.client
+
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
     - entropy.server API docs
     - add splitdebug support?
-    - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
     - Spm.extract_package_metadata, define metadata format (to make easier
         for 3rd party implementations to define it)
 

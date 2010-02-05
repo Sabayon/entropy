@@ -1130,7 +1130,8 @@ class EntropyPackages:
         return None
 
     def get_package_sets(self):
-        return self.Entropy.package_set_list()
+        sets = self.Entropy.Sets()
+        return sets.available()
 
     def get_masked_packages(self):
         maskdata = []

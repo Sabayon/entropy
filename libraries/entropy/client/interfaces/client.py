@@ -30,9 +30,10 @@ from entropy.exceptions import SystemDatabaseError, RepositoryError
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 
-class ClientSystemSettingsPlugin(SystemSettingsPlugin):
+import entropy.dump
+import entropy.tools
 
-    import entropy.tools as entropyTools
+class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
     def __init__(self, plugin_id, helper_interface):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
@@ -247,7 +248,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     multiMatch = True)
                 if m_r != 0:
                     continue
-                mykey = self.entropyTools.dep_getkey(atom)
+                mykey = entropy.tools.dep_getkey(atom)
                 if mykey not in mask_installed_keys:
                     mask_installed_keys[mykey] = set()
                 for m_id in m_ids:
@@ -287,7 +288,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'packages_ids': None, # reserved for entropy.db package validation
         }
 
-        entries = self.entropyTools.generic_file_content_parser(
+        entries = entropy.tools.generic_file_content_parser(
             repo_keywords_path)
 
         # iterate over config file data
@@ -325,7 +326,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self.__repos_mtime['repos_system_mask'][repoid],
                 repoid = repoid)
             system_mask += [x for x in \
-                self.entropyTools.generic_file_content_parser(
+                entropy.tools.generic_file_content_parser(
                     self.__repos_files['repos_system_mask'][repoid]) if x \
                         not in system_mask]
         return system_mask
@@ -364,7 +365,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 repoid = repoid)
 
             data['license_whitelist'][repoid] = \
-                self.entropyTools.generic_file_content_parser(
+                entropy.tools.generic_file_content_parser(
                     self.__repos_files['repos_license_whitelist'][repoid])
 
         # package masking
@@ -378,7 +379,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self.__repos_mtime['repos_mask'][repoid], repoid = repoid)
 
             data['mask'][repoid] = \
-                self.entropyTools.generic_file_content_parser(
+                entropy.tools.generic_file_content_parser(
                     self.__repos_files['repos_mask'][repoid])
 
         # keywords masking
@@ -412,7 +413,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 self.__repos_mtime['repos_critical_updates'][repoid],
                 repoid = repoid)
             data['critical_updates'][repoid] = \
-                self.entropyTools.generic_file_content_parser(
+                entropy.tools.generic_file_content_parser(
                     self.__repos_files['repos_critical_updates'][repoid])
 
 
@@ -575,16 +576,13 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self._repo_error_messages_cache = set()
         self._repodb_cache = {}
         self._memory_db_instances = {}
-        self._QA_cache = {}
-        self._security_cache = {}
-        self._spm_cache = {}
         self._installed_repository = None
-
         self._treeupdates_repos = set()
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
+
         self.FileUpdates = None
         self._enabled_repos = []
         self.UGC = None
@@ -602,12 +600,16 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.SystemSettings = SystemSettings()
         const_debug_write(__name__, "SystemSettings loaded")
 
+        # class init
+        LoadersMixin.__init__(self)
+
         # modules import
-        import entropy.dump as dumpTools
-        import entropy.tools as entropyTools
-        self.dumpTools = dumpTools
-        self.entropyTools = entropyTools
-        self.clientLog = LogFile(level = self.SystemSettings['system']['log_level'],
+        # XXX: backward compatibility
+        self.dumpTools = entropy.dump
+        self.entropyTools = entropy.tools
+
+        self.clientLog = LogFile(
+            level = self.SystemSettings['system']['log_level'],
             filename = etpConst['equologfile'], header = "[client]")
 
         self.MultipleUrlFetcher = multiple_url_fetcher
@@ -641,9 +643,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             from entropy.client.services.ugc.interfaces import Client as ugc_cl
             self.UGC = ugc_cl(self)
 
-        # class init
-        LoadersMixin.__init__(self)
-
         self.xcache = xcache
         shell_xcache = os.getenv("ETP_NOCACHE")
         if shell_xcache:
@@ -652,14 +651,14 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         do_validate_repo_cache = False
         # now if we are on live, we should disable it
         # are we running on a livecd? (/proc/cmdline has "cdroot")
-        if self.entropyTools.islive():
+        if entropy.tools.islive():
             self.xcache = False
-        elif (not self.entropyTools.is_user_in_entropy_group()) and not user_xcache:
+        elif (not entropy.tools.is_user_in_entropy_group()) and not user_xcache:
             self.xcache = False
         elif not user_xcache:
             do_validate_repo_cache = True
 
-        if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
+        if not self.xcache and (entropy.tools.is_user_in_entropy_group()):
             self.clear_cache()
 
         if self.openclientdb:
@@ -712,8 +711,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                     pass
 
         self.close_all_repositories(mask_clear = False)
-        self._close_security_interfaces()
-        self._close_qa_interfaces()
 
     def repository_packages_spm_sync(self, repository_identifier, repo_db,
         force = False):

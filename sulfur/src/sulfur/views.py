@@ -73,6 +73,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
 
     def pkgset_inject(self, packages):
 
+        sets = self.entropy.Sets()
         categories = {}
         cat_descs = {}
         for po in packages:
@@ -101,7 +102,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
                 dummy_type = SulfurConf.dummy_category, onlyname = category)
             mydummy.color = SulfurConf.color_package_category
             mydummy.is_pkgset_cat = True
-            set_data = self.entropy.package_set_match(category)[0]
+            set_data = sets.match(category)[0]
             if not set_data:
                 continue
 
@@ -1254,6 +1255,8 @@ class EntropyPackageView:
 
     def _get_pkgset_data(self, items, add = True, remove_action = False):
 
+        sets = self.Equo.Sets()
+
         pkgsets = set()
         realpkgs = set()
         if remove_action:
@@ -1284,7 +1287,7 @@ class EntropyPackageView:
         broken_sets = set()
         for pkgset in pkgsets:
             try:
-                exp_atoms |= self.Equo.package_set_expand(pkgset)
+                exp_atoms |= sets.expand(pkgset)
             except InvalidPackageSet:
                 # this package set is broken or doesn't exist
                 # we can exclude it from our data collection

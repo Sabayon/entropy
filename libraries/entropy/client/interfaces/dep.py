@@ -107,30 +107,30 @@ class CalculatorsMixin:
                 version_duplicates.add(version)
             versions.add(version)
 
-        newerVersion = entropy.tools.get_newer_version(list(versions))[0]
+        newer_ver = entropy.tools.get_newer_version(list(versions))[0]
         # if no duplicates are found or newer version is not in duplicates we're done
-        if (not version_duplicates) or (newerVersion not in version_duplicates):
-            reponame = ver_info.get(newerVersion)
+        if (not version_duplicates) or (newer_ver not in version_duplicates):
+            reponame = ver_info.get(newer_ver)
             return (results[reponame], reponame)
 
         # we have two repositories with >two packages with the same version
         # check package tag
 
-        conflictingEntries = {}
+        conflict_entries = {}
         tags_duplicates = set()
         tags = set()
         tagsInfo = {}
         for repo in pkg_info:
-            if pkg_info[repo]['version'] != newerVersion:
+            if pkg_info[repo]['version'] != newer_ver:
                 continue
-            conflictingEntries[repo] = {}
+            conflict_entries[repo] = {}
             versiontag = pkg_info[repo]['versiontag']
             if versiontag in tags:
                 tags_duplicates.add(versiontag)
             tags.add(versiontag)
             tagsInfo[versiontag] = repo
-            conflictingEntries[repo]['versiontag'] = versiontag
-            conflictingEntries[repo]['revision'] = pkg_info[repo]['revision']
+            conflict_entries[repo]['versiontag'] = versiontag
+            conflict_entries[repo]['revision'] = pkg_info[repo]['revision']
 
         # tags will always be != []
         newerTag = entropy.tools.sort_entropy_package_tags(tags)[-1]
@@ -145,10 +145,10 @@ class CalculatorsMixin:
         revisions = set()
         revisions_duplicates = set()
         revisionInfo = {}
-        for repo in conflictingEntries:
-            if conflictingEntries[repo]['versiontag'] == newerTag:
+        for repo in conflict_entries:
+            if conflict_entries[repo]['versiontag'] == newerTag:
                 conflictingRevisions[repo] = {}
-                versionrev = conflictingEntries[repo]['revision']
+                versionrev = conflict_entries[repo]['revision']
                 if versionrev in revisions:
                     revisions_duplicates.add(versionrev)
                 revisions.add(versionrev)
@@ -357,152 +357,6 @@ class CalculatorsMixin:
             self.Cacher.push(c_hash, dbpkginfo)
 
         return dbpkginfo
-
-    # expands package sets, and in future something more perhaps
-    def packages_expand(self, packages):
-        new_packages = []
-
-        for pkg_id in range(len(packages)):
-            package = packages[pkg_id]
-
-            # expand package sets
-            if package.startswith(etpConst['packagesetprefix']):
-                set_pkgs = sorted(self.package_set_expand(package,
-                    raise_exceptions = False))
-                new_packages.extend([x for x in set_pkgs if x not in packages])
-            else:
-                new_packages.append(package)
-
-        return new_packages
-
-    def package_set_expand(self, package_set, raise_exceptions = True):
-
-        max_recursion_level = 50
-        recursion_level = 0
-
-        def do_expand(myset, recursion_level, max_recursion_level):
-            recursion_level += 1
-            if recursion_level > max_recursion_level:
-                raise InvalidPackageSet('InvalidPackageSet: corrupted, too many recursions: %s' % (myset,))
-            set_data, set_rc = self.package_set_match(myset[len(etpConst['packagesetprefix']):])
-            if not set_rc:
-                raise InvalidPackageSet('InvalidPackageSet: not found: %s' % (myset,))
-            (set_from, package_set, mydata,) = set_data
-
-            mypkgs = set()
-            for fset in mydata: # recursively
-                if fset.startswith(etpConst['packagesetprefix']):
-                    mypkgs |= do_expand(fset, recursion_level, max_recursion_level)
-                else:
-                    mypkgs.add(fset)
-
-            return mypkgs
-
-        if not package_set.startswith(etpConst['packagesetprefix']):
-            package_set = "%s%s" % (etpConst['packagesetprefix'], package_set,)
-
-        try:
-            mylist = do_expand(package_set, recursion_level,
-                max_recursion_level)
-        except InvalidPackageSet:
-            if raise_exceptions:
-                raise
-            mylist = set()
-
-        return mylist
-
-    def package_set_list(self, server_repos = None, serverInstance = None,
-        matchRepo = None):
-        return self.package_set_match('', matchRepo = matchRepo,
-            server_repos = server_repos, serverInstance = serverInstance,
-            search = True)[0]
-
-    def package_set_search(self, package_set, server_repos = None,
-        serverInstance = None, matchRepo = None):
-        # search support
-        if package_set == '*':
-            package_set = ''
-        return self.package_set_match(package_set, matchRepo = matchRepo,
-            server_repos = server_repos, serverInstance = serverInstance,
-            search = True)[0]
-
-    def __package_set_match_open_db(self, repoid, server_inst):
-        if server_inst is not None:
-            return server_inst.open_server_repository(just_reading = True,
-                repo = repoid)
-        return self.open_repository(repoid)
-
-    def package_set_match(self, package_set, multiMatch = False,
-        matchRepo = None, server_repos = None, serverInstance = None,
-        search = False):
-
-        # support match in repository from shell
-        # set@repo1,repo2,repo3
-        package_set, repos = entropy.tools.dep_get_match_in_repos(
-            package_set)
-        if (matchRepo is None) and (repos is not None):
-            matchRepo = repos
-
-        if server_repos is not None:
-            if not serverInstance:
-                t = "server_repos needs serverInstance"
-                raise AttributeError(t)
-            valid_repos = server_repos[:]
-        else:
-            valid_repos = self._enabled_repos
-
-        if matchRepo and (type(matchRepo) in (list, tuple, set)):
-            valid_repos = list(matchRepo)
-
-        # if we search, we return all the matches available
-        if search: multiMatch = True
-
-        set_data = []
-
-        while True:
-
-            # check inside SystemSettings
-            if not server_repos:
-                sys_pkgsets = self.SystemSettings['system_package_sets']
-                if search:
-                    mysets = [x for x in list(sys_pkgsets.keys()) if \
-                        (x.find(package_set) != -1)]
-                    for myset in mysets:
-                        mydata = sys_pkgsets.get(myset)
-                        set_data.append((etpConst['userpackagesetsid'],
-                            const_convert_to_unicode(myset), mydata.copy(),))
-                else:
-                    mydata = sys_pkgsets.get(package_set)
-                    if mydata is not None:
-                        set_data.append((etpConst['userpackagesetsid'],
-                            const_convert_to_unicode(package_set), mydata,))
-                        if not multiMatch:
-                            break
-
-            for repoid in valid_repos:
-                dbconn = self.__package_set_match_open_db(repoid,
-                    serverInstance)
-                if search:
-                    mysets = dbconn.searchSets(package_set)
-                    for myset in mysets:
-                        mydata = dbconn.retrievePackageSet(myset)
-                        set_data.append((repoid, myset, mydata.copy(),))
-                else:
-                    mydata = dbconn.retrievePackageSet(package_set)
-                    if mydata:
-                        set_data.append((repoid, package_set, mydata,))
-                    if not multiMatch:
-                        break
-
-            break
-
-        if not set_data:
-            return (), False
-
-        if multiMatch:
-            return set_data, True
-
-        return set_data.pop(0), True
 
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None):
@@ -753,6 +607,25 @@ class CalculatorsMixin:
             self.Cacher.push(c_hash, unsatisfied)
 
         return unsatisfied
+
+    # expands package sets, and in future something more perhaps
+    def packages_expand(self, packages):
+        new_packages = []
+        sets = self.Sets()
+
+        set_pfx = etpConst['packagesetprefix']
+        for pkg_id in range(len(packages)):
+            package = packages[pkg_id]
+
+            # expand package sets
+            if package.startswith(set_pfx):
+                cur_sets = sets.expand(package, raise_exceptions = False)
+                set_pkgs = sorted(cur_sets)
+                new_packages.extend([x for x in set_pkgs if x not in packages])
+            else:
+                new_packages.append(package)
+
+        return new_packages
 
     def get_masked_packages_tree(self, match, atoms = False, flat = False,
         matchfilter = None):

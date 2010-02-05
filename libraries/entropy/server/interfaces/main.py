@@ -1159,26 +1159,29 @@ class ServerLoadersMixin:
 
 class ServerPackageDepsMixin:
 
-    def package_set_list(self, *args, **kwargs):
+    def sets_available(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.Client.package_set_list(*args, **kwargs)
+        sets = self.Client.Sets()
+        return sets.available(*args, **kwargs)
 
-    def package_set_search(self, *args, **kwargs):
+    def sets_search(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.Client.package_set_search(*args, **kwargs)
+        sets = self.Client.Sets()
+        return sets.search(*args, **kwargs)
 
-    def package_set_match(self, *args, **kwargs):
+    def sets_match(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.Client.package_set_match(*args, **kwargs)
+        sets = self.Client.Sets()
+        return sets.match(*args, **kwargs)
 
     def atom_match(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']

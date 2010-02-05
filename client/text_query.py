@@ -1291,9 +1291,11 @@ def search_package_sets(items, Equo = None):
     if not items:
         items.append('*')
 
+    sets = Equo.Sets()
+
     matchNumber = 0
     for item in items:
-        results = Equo.package_set_search(item)
+        results = sets.search(item)
         for repo, set_name, set_data in results:
             matchNumber += 1
             found = True

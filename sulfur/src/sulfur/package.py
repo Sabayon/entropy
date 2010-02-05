@@ -83,8 +83,7 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_match, rc = EquoIntf.package_set_match(
-                matched_atom[1:])
+            set_match, rc = EquoIntf.Sets().match(matched_atom[1:])
             if not rc:
                 # package set broken
                 self.broken = True
