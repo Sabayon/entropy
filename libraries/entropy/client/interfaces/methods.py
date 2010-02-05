@@ -179,7 +179,7 @@ class RepositoryMixin:
 
         repo_data = self.SystemSettings['repositories']['available']
         if repoid not in repo_data:
-            t = _("bad repository id specified")
+            t = "%s: %s" % (_("bad repository id specified"), repoid,)
             if repoid not in self._repo_error_messages_cache:
                 self.output(
                     darkred(t),
@@ -193,7 +193,8 @@ class RepositoryMixin:
             repo_key = self.__get_repository_cache_key(repoid)
             conn = self._memory_db_instances.get(repo_key)
         else:
-            dbfile = repo_data[repoid]['dbpath']+"/"+etpConst['etpdatabasefile']
+            dbfile = os.path.join(repo_data[repoid]['dbpath'],
+                etpConst['etpdatabasefile'])
             if not os.path.isfile(dbfile):
                 t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
                 if repoid not in self._repo_error_messages_cache:
