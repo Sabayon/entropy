@@ -743,6 +743,45 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
+class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
+
+    def fake_cli_parser(self, sys_set):
+        """
+        This is just fake, doesn't bring any new metadata but just tweak
+        Entropy client ones.
+        """
+        data = {}
+        srv_plug_id = etpConst['system_settings_plugins_ids']['server_plugin']
+        # if support is not enabled, don't waste time scanning files
+        srv_parser_data = sys_set[srv_plug_id]['server']
+
+        # now setup fake Entropy Client repositories, so that Entropy Server
+        # can use Entropy Client interfaces transparently
+        srv_repodata = srv_parser_data['repositories']
+        cli_repodata = sys_set['repositories']
+        # remove unavailable server repos in client metadata first
+        cli_repodata['available'].clear()
+
+        for repoid, repo_data in srv_repodata.items():
+            xxx, my_data = sys_set._analyze_client_repo_string(
+                "repository|%s|%s|http://--fake--|http://--fake--" % (
+                    repoid, repo_data['description'],))
+            my_data['repoid'] = repoid
+            my_data['dbpath'] = self._helper._get_local_database_dir(
+                repo = repoid)
+            my_data['dbrevision'] = self._helper.get_local_repository_revision(
+                repo = repoid)
+            cli_repodata['available'][repoid] = my_data
+
+        cli_repodata['default_repository'] = \
+            srv_parser_data['default_repository_id']
+        del cli_repodata['order'][:]
+        cli_repodata['order'].append(srv_parser_data['base_repository_id'])
+        for repoid in sorted(srv_repodata):
+            if repoid not in cli_repodata['order']:
+                cli_repodata['order'].append(repoid)
+
+        return data
 
 class ServerQAInterfacePlugin(QAInterfacePlugin):
 
@@ -1160,34 +1199,18 @@ class ServerLoadersMixin:
 class ServerPackageDepsMixin:
 
     def sets_available(self, *args, **kwargs):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = list(srv_set['repositories'].keys())
-        kwargs['server_repos'] = repos
-        kwargs['serverInstance'] = self
         sets = self.Client.Sets()
         return sets.available(*args, **kwargs)
 
     def sets_search(self, *args, **kwargs):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = list(srv_set['repositories'].keys())
-        kwargs['server_repos'] = repos
-        kwargs['serverInstance'] = self
         sets = self.Client.Sets()
         return sets.search(*args, **kwargs)
 
     def sets_match(self, *args, **kwargs):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = list(srv_set['repositories'].keys())
-        kwargs['server_repos'] = repos
-        kwargs['serverInstance'] = self
         sets = self.Client.Sets()
         return sets.match(*args, **kwargs)
 
     def atom_match(self, *args, **kwargs):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = list(srv_set['repositories'].keys())
-        kwargs['server_repos'] = repos
-        kwargs['serverInstance'] = self
         return self.Client.atom_match(*args, **kwargs)
 
     def match_packages(self, packages, repo = None):
@@ -4065,6 +4088,7 @@ class ServerMiscMixin:
             const_setup_perms(dir_path, etpConst['entropygid'])
 
     def _setup_services(self):
+
         self._setup_entropy_settings()
         cs_name = 'Client'
         if hasattr(self, cs_name):
@@ -4072,6 +4096,7 @@ class ServerMiscMixin:
             # no need to close, remove, whatever QA plugins, it's automagically
             # arranged
             obj.destroy()
+
         from entropy.client.interfaces import Client
         self.Client = Client(
             indexing = self.indexing,
@@ -4081,6 +4106,10 @@ class ServerMiscMixin:
         )
         self.Cacher = EntropyCacher()
         self.Client.output = self.output
+        self.Client.ask_question = self.ask_question
+        self.Client.input_box = self.input_box
+        self.Client.set_title = self.set_title
+
         self._enabled_repos = self.Client.repositories()
         self._backup_entropy_settings()
         self.Mirrors = MirrorsServer(self)
@@ -4577,6 +4606,8 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
         self._save_repository = save_repository
         self._sync_lock_cache = set()
 
+        self.sys_settings_fake_cli_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin_fake_client']
         self.sys_settings_fatscope_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
         self.sys_settings_plugin_id = \
@@ -4591,6 +4622,11 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
         self.sys_settings_fatscope_plugin = ServerFatscopeSystemSettingsPlugin(
             self.sys_settings_fatscope_plugin_id, self)
         self.SystemSettings.add_plugin(self.sys_settings_fatscope_plugin)
+
+        # Fatscope support SystemSettings plugin
+        self.sys_settings_fake_cli_plugin = ServerFakeClientSystemSettingsPlugin(
+            self.sys_settings_fake_cli_plugin_id, self)
+        self.SystemSettings.add_plugin(self.sys_settings_fake_cli_plugin)
 
         # setup fake repository
         if fake_default_repo:
@@ -4634,6 +4670,12 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
             try:
                 self.SystemSettings.remove_plugin(
                     self.sys_settings_fatscope_plugin)
+            except KeyError:
+                pass
+        if hasattr(self, 'sys_settings_fake_cli_plugin'):
+            try:
+                self.SystemSettings.remove_plugin(
+                    self.sys_settings_fake_cli_plugin)
             except KeyError:
                 pass
         self.close_repositories()
