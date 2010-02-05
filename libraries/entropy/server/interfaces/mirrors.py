@@ -2089,7 +2089,7 @@ class Server(ServerNoticeBoardMixin):
 
         if download_latest:
             # close all the currently open repos
-            self.Entropy.close_server_repositories()
+            self.Entropy.close_repositories()
             download_uri = download_latest[0]
             download_errors, fine_uris, broken_uris = self._download_database(
                 [download_uri], repo = repo)

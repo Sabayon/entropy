@@ -127,7 +127,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 self,)
             )
 
-        # this happens because close_server_repositories() might be called
+        # this happens because close_repositories() might be called
         # before _setup_services() and in general, at any time, so, in this
         # case, there is no need to print bullshit to dev.
         if self._server.Mirrors is None:
