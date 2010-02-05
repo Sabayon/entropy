@@ -73,8 +73,8 @@ class CalculatorsMixin:
                         crying_atoms.add((iatom, repo))
         return crying_atoms
 
-    def __handle_multi_repo_matches(self, results, extended_results, valid_repos,
-        server_inst):
+    def __handle_multi_repo_matches(self, results, extended_results,
+        valid_repos):
 
         pkg_info = {}
         ver_info = {}
@@ -97,7 +97,7 @@ class CalculatorsMixin:
                 pkg_info[repo]['versiontag'] = results[repo][2]
                 pkg_info[repo]['revision'] = results[repo][3]
             else:
-                dbconn = self.__atom_match_open_db(repo, server_inst)
+                dbconn = self.open_repository(repo)
                 pkg_info[repo]['versiontag'] = dbconn.retrieveTag(results[repo])
                 pkg_info[repo]['revision'] = dbconn.retrieveRevision(results[repo])
                 version = dbconn.retrieveVersion(results[repo])
@@ -168,7 +168,7 @@ class CalculatorsMixin:
                 return (results[reponame], reponame)
 
     def __validate_atom_match_cache(self, cached_obj, multiMatch,
-        extendedResults, multiRepo, server_inst):
+        extendedResults, multiRepo):
 
         data, rc = cached_obj
         if rc == 1:
@@ -186,7 +186,7 @@ class CalculatorsMixin:
                 # stack variables (only for the innermost frame)
                 #if isinstance(m_id, tuple):
                 #    m_id = m_id[0]
-                m_db = self.__atom_match_open_db(m_repo, server_inst)
+                m_db = self.open_repository(m_repo)
                 if not m_db.isIdpackageAvailable(m_id):
                     return None
         else:
@@ -195,23 +195,14 @@ class CalculatorsMixin:
             if extendedResults:
                 # ((14479, '4.4.2', '', 0), 'sabayonlinux.org')
                 m_id, m_repo = cached_obj[0][0], cached_obj[1]
-            m_db = self.__atom_match_open_db(m_repo, server_inst)
+            m_db = self.open_repository(m_repo)
             if not m_db.isIdpackageAvailable(m_id):
                 return None
 
         return cached_obj
 
-    def __atom_match_open_db(self, repoid, server_inst):
-        if server_inst is not None:
-            dbconn = server_inst.open_server_repository(just_reading = True,
-                repo = repoid, do_treeupdates = False)
-        else:
-            dbconn = self.open_repository(repoid)
-        return dbconn
-
     def atom_match(self, atom, matchSlot = None, packagesFilter = True,
             multiMatch = False, multiRepo = False, matchRepo = None,
-            server_repos = None, serverInstance = None,
             extendedResults = False, useCache = True):
 
         # support match in repository from shell
@@ -242,18 +233,13 @@ class CalculatorsMixin:
             if cached is not None:
                 try:
                     cached = self.__validate_atom_match_cache(cached,
-                        multiMatch, extendedResults, multiRepo, serverInstance)
+                        multiMatch, extendedResults, multiRepo)
                 except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
             if cached is not None:
                 return cached
 
-        if server_repos is not None:
-            if not serverInstance:
-                raise AttributeError("entropy.server.interfaces.Server instance required")
-            valid_repos = server_repos[:]
-        else:
-            valid_repos = self._enabled_repos
+        valid_repos = self._enabled_repos
         if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
 
@@ -261,7 +247,7 @@ class CalculatorsMixin:
         for repo in valid_repos:
 
             # search
-            dbconn = self.__atom_match_open_db(repo, serverInstance)
+            dbconn = self.open_repository(repo)
             use_cache = useCache
             while True:
                 try:
@@ -309,7 +295,7 @@ class CalculatorsMixin:
 
             # we have to decide which version should be taken
             mypkginfo = self.__handle_multi_repo_matches(repo_results,
-                extendedResults, valid_repos, serverInstance)
+                extendedResults, valid_repos)
             if mypkginfo is not None:
                 dbpkginfo = mypkginfo
 
@@ -322,7 +308,7 @@ class CalculatorsMixin:
                 if multiRepo:
                     data = set()
                     for q_id, q_repo in dbpkginfo[0]:
-                        dbconn = self.__atom_match_open_db(q_repo, serverInstance)
+                        dbconn = self.open_repository(q_repo)
                         query_data, query_rc = dbconn.atomMatch(
                             atom,
                             matchSlot = matchSlot,
@@ -339,7 +325,7 @@ class CalculatorsMixin:
                                 data.add((x, q_repo))
                     dbpkginfo = (data, 0)
                 else:
-                    dbconn = self.__atom_match_open_db(dbpkginfo[1], serverInstance)
+                    dbconn = self.open_repository(dbpkginfo[1])
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
                         matchSlot = matchSlot,
