@@ -21,7 +21,7 @@ sys.path.insert(0, '../server')
 sys.path.insert(0, '../client')
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, TransceiverError, PermissionDenied, FileNotFound, \
-    SPMError
+    SPMError, ConnectionError
 from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
     is_stdout_a_tty, bold, purple, blue
@@ -801,37 +801,10 @@ def handle_exception(exc_class, exc_instance, exc_tb):
             red(_("Installed packages repository corrupted. Please re-generate it")))
         raise SystemExit(101)
 
-    if exc_class is OnlineMirrorError:
-        print_error("%s %s. %s." % (
-            darkred(" * "), exc_instance, _("Cannot continue"),))
-        raise SystemExit(101)
-
-    if exc_class is RepositoryError:
-        print_error("%s %s. %s." % (
-            darkred(" * "), exc_instance, _("Cannot continue"),))
-        raise SystemExit(101)
-
-    if exc_class is TransceiverError:
-        print_error("%s %s. %s." % (
-            darkred(" * "), exc_instance, _("Cannot continue"),))
-        raise SystemExit(101)
-
-    if exc_class is PermissionDenied:
-        print_error("%s %s. %s." % (
-            darkred(" * "), exc_instance, _("Cannot continue"),))
-        raise SystemExit(1)
-
-    if exc_class is FileNotFound:
-        print_error("%s %s. %s." % (
-            darkred(" * "), exc_instance, _("Cannot continue"),))
-        raise SystemExit(1)
-
-    if exc_class is SPMError:
-        print_error("%s %s. %s." % (
-            darkred(" * "), exc_instance, _("Cannot continue"),))
-        raise SystemExit(1)
-
-    if exc_class is SystemError:
+    generic_exc_classes = (OnlineMirrorError, RepositoryError,
+        TransceiverError, PermissionDenied, ConnectionError, FileNotFound,
+        SPMError, SystemError)
+    if exc_class in generic_exc_classes:
         print_error("%s %s. %s." % (
             darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
