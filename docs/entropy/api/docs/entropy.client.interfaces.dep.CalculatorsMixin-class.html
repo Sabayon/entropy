@@ -70,10 +70,10 @@
 <area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_match" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_match" alt="" coords="17,169,1312,188"/>
 <area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_masked_packages_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.get_masked_packages_tree" alt="" coords="17,188,1312,207"/>
 <area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_required_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.get_required_packages" alt="" coords="17,207,1312,225"/>
-<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_reverse_dependency_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.generate_reverse_dependency_tree" alt="" coords="17,225,1312,244"/>
-<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_available_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_available_packages" alt="" coords="17,244,1312,263"/>
-<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_critical_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_critical_updates" alt="" coords="17,263,1312,281"/>
-<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_install_queue" title="entropy.client.interfaces.dep.CalculatorsMixin.get_install_queue" alt="" coords="17,300,1312,319"/>
+<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_available_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_available_packages" alt="" coords="17,225,1312,244"/>
+<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_critical_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_critical_updates" alt="" coords="17,244,1312,263"/>
+<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#calculate_updates" title="entropy.client.interfaces.dep.CalculatorsMixin.calculate_updates" alt="" coords="17,263,1312,281"/>
+<area shape="rect" id="node20" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_reverse_dependency_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.generate_reverse_dependency_tree" alt="" coords="17,300,1312,319"/>
 <area shape="rect" id="node1" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html" title="entropy.client.interfaces.dep.CalculatorsMixin" alt="" coords="5,6,1323,325"/>
 <area shape="rect" id="node2" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="612,345,719,383"/>
 </map>
@@ -276,27 +276,11 @@
         <span class="summary-sig-arg">empty_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">deep_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">build_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">recursive</span>=<span class="summary-sig-default">True</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_required_packages">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="generate_reverse_dependency_tree"></a><span class="summary-sig-name">generate_reverse_dependency_tree</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackages</span>,
-        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.generate_reverse_dependency_tree">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -382,7 +366,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="validate_package_removal"></a><span class="summary-sig-name">validate_package_removal</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span></td>
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">dbconn</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.validate_package_removal">source&nbsp;code</a></span>
             
@@ -400,9 +385,31 @@
         <tr>
           <td><span class="summary-sig"><a name="get_removal_queue"></a><span class="summary-sig-name">get_removal_queue</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackages</span>,
-        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">recursive</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Return removal queue (list of idpackages).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_removal_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_reverse_dependencies"></a><span class="summary-sig-name">get_reverse_dependencies</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matched_atoms</span>,
+        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">recursive</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Return an ordered reverse dependencies list (list of pkg matches).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_reverse_dependencies">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -421,9 +428,29 @@
         <span class="summary-sig-arg">empty_deps</span>,
         <span class="summary-sig-arg">deep_deps</span>,
         <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">build_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">recursive</span>=<span class="summary-sig-default">True</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_install_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="generate_reverse_dependency_tree"></a><span class="summary-sig-name">generate_reverse_dependency_tree</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">deep</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            
             
           </td>
         </tr>
@@ -463,7 +490,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jan 28 10:19:45 2010
+    Generated by Epydoc 3.0.1 on Fri Feb  5 07:33:31 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
