@@ -25,6 +25,7 @@ from entropy.const import etpConst, etpUi, const_setup_perms, \
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
+from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
@@ -94,10 +95,9 @@ class System:
                 "entropy.client.interfaces.Client instance expected")
 
         self.Entropy = entropy_client_instance
-        from entropy.cache import EntropyCacher
+
         self.__cacher = EntropyCacher()
-        from entropy.core.settings.base import SystemSettings
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.lastfetch = None
         self.previous_checksum = "0"
         self.advisories_changed = None
@@ -128,7 +128,7 @@ class System:
 
         if System.SECURITY_URL is None:
             security_url = \
-                self.SystemSettings['repositories']['security_advisories_url']
+                self._settings['repositories']['security_advisories_url']
         else:
             security_url = System.SECURITY_URL
         security_file = os.path.basename(security_url)
@@ -175,9 +175,6 @@ class System:
                         f_down.readline().strip().split()[0]
                 except (IndexError, OSError, IOError,):
                     pass
-
-        # validate cache
-        self.__validate_cache()
 
 
     def __prepare_unpack(self):
@@ -517,8 +514,8 @@ class System:
         """
         Validate cache by looking at some checksum data
         """
-        inst_pkgs_cksum = self.Entropy.installed_repository().checksum(do_order = True,
-            strict = False, strings = True)
+        inst_pkgs_cksum = self.Entropy.installed_repository().checksum(
+            do_order = True, strict = False, strings = True)
         repo_cksum = self.Entropy._all_repositories_checksum()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
@@ -545,22 +542,26 @@ class System:
         them from RAM and, in case of failure, it tries to gather the info
         from disk, using EntropyCacher.
         """
-        if self.adv_metadata != None:
+        if self.adv_metadata is not None:
             return self.adv_metadata
 
         if self.Entropy.xcache:
+
+            # validate cache
+            self.__validate_cache()
+
             dir_checksum = entropy.tools.md5sum_directory(
                 System.SECURITY_DIR)
             c_hash = "%s%s" % (
                 System._CACHE_ID, hash("%s|%s|%s" % (
-                    hash(self.SystemSettings['repositories']['branch']),
+                    hash(self._settings['repositories']['branch']),
                     hash(dir_checksum),
                     hash(etpConst['systemroot']),
                 )),
             )
             adv_metadata = self.__cacher.pop(c_hash,
                 cache_dir = System._CACHE_DIR)
-            if adv_metadata != None:
+            if adv_metadata is not None:
                 self.adv_metadata = adv_metadata.copy()
                 return self.adv_metadata
 
@@ -576,7 +577,7 @@ class System:
                 System.SECURITY_DIR)
             c_hash = "%s%s" % (
                 System._CACHE_ID, hash("%s|%s|%s" % (
-                    hash(self.SystemSettings['repositories']['branch']),
+                    hash(self._settings['repositories']['branch']),
                     hash(dir_checksum),
                     hash(etpConst['systemroot']),
                 )),
@@ -606,7 +607,7 @@ class System:
         @rtype: dict
         """
         cached = self.get_advisories_cache()
-        if cached != None:
+        if cached is not None:
             return cached
 
         adv_metadata = {}
