@@ -698,8 +698,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
 class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
-    import entropy.tools as entropyTools
-
     def repos_parser(self, sys_set):
 
         data = {}
