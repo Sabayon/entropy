@@ -538,10 +538,11 @@ def const_default_settings(rootdir):
             'client_plugin': "client_plugin",
             'server_plugin': "server_plugin",
             'server_plugin_fatscope': "server_plugin_fatscope",
+            'server_plugin_fake_client': "server_plugin_fake_client",
         },
 
-        'clientserverrepoid': "__system__",
-        'clientdbid': "__client__",
+        'clientserverrepoid': "__system__", # these two values have to match!
+        'clientdbid': "__system__", # these two values have to match!
         'serverdbid': "__etpdb:",
         'genericdbid': "__generic__",
         'systemreleasefile': "/etc/sabayon-release",
