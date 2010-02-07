@@ -51,6 +51,8 @@ def smart(options):
             else:
                 newopts.append(opt)
     options = newopts
+    if not options:
+        return -10
 
     rc = 0
 
