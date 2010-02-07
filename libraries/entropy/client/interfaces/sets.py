@@ -17,6 +17,7 @@ import os
 from entropy.i18n import _
 from entropy.const import etpConst, const_setup_perms
 from entropy.exceptions import InvalidPackageSet
+from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
@@ -27,6 +28,7 @@ class Sets:
 
     def __init__(self, entropy_client):
         self._entropy = entropy_client
+        self._settings = SystemSettings()
 
 
     def expand(self, package_set, raise_exceptions = True):
@@ -121,7 +123,7 @@ class Sets:
 
             # check inside SystemSettings
             if not server_repos:
-                sys_pkgsets = self.SystemSettings['system_package_sets']
+                sys_pkgsets = self._settings['system_package_sets']
                 if search:
                     mysets = [x for x in list(sys_pkgsets.keys()) if \
                         (x.find(package_set) != -1)]
@@ -198,7 +200,7 @@ class Sets:
         for x in set_atoms: f.write("%s\n" % (x,))
         f.flush()
         f.close()
-        self.SystemSettings['system_package_sets'][set_name] = set(set_atoms)
+        self._settings['system_package_sets'][set_name] = set(set_atoms)
         return 0, _("All fine")
 
     def remove(self, set_name):
@@ -223,7 +225,7 @@ class Sets:
         set_file = os.path.join(etpConst['confsetsdir'], set_name)
         if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
             os.remove(set_file)
-            if set_name in self.SystemSettings['system_package_sets']:
-                del self.SystemSettings['system_package_sets'][set_name]
+            if set_name in self._settings['system_package_sets']:
+                del self._settings['system_package_sets'][set_name]
             return 0, _("All fine")
         return -3, _("Set not found or unable to remove")
