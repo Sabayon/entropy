@@ -106,7 +106,7 @@ class Sets:
                 raise AttributeError("server_repos needs serverInstance")
             valid_repos = server_repos[:]
         else:
-            valid_repos = self._enabled_repos
+            valid_repos = self._entropy.repositories()
 
         if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
