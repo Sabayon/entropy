@@ -1,0 +1,272 @@
+#!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
+"""
+
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
+
+    B{Entropy Package Manager Client Tracker miner}.
+
+"""
+import os
+import sys
+# this makes the daemon to not write the entropy pid file
+# avoiding to lock other instances
+sys.argv.append('--no-pid-handling')
+import time
+import gobject
+import dbus
+import dbus.service
+import dbus.mainloop.glib
+import signal
+
+DAEMON_DEBUG = False
+if "--debug" in sys.argv:
+    DAEMON_DEBUG = True
+
+# Entropy imports
+sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/server')
+sys.path.insert(0,'/usr/lib/entropy/client')
+sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../server')
+sys.path.insert(0,'../client')
+
+from entropy.cache import EntropyCacher
+from entropy.misc import LogFile
+from entropy.i18n import _
+from entropy.exceptions import PermissionDenied, RepositoryError, \
+    MissingParameter
+import entropy.tools as entropyTools
+from entropy.client.interfaces import Client
+from entropy.fetchers import UrlFetcher
+from entropy.const import etpConst, const_setup_entropy_pid, \
+    const_remove_entropy_pid
+from entropy.core.settings.base import SystemSettings as SysSet
+from entropy.misc import ParallelTask
+from entropy.output import TextInterface, nocolor
+nocolor()
+
+SYS_SETTINGS = SysSet()
+TEXT = TextInterface()
+DAEMON_LOGFILE = os.path.join(etpConst['syslogdir'],"client-tracker-miner.log")
+DAEMON_LOG = LogFile(SYS_SETTINGS['system']['log_level']+1,
+    DAEMON_LOGFILE, header = "[tracker-miner]")
+PREVIOUS_PROGRESS = ''
+
+def write_output(*args, **kwargs):
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
+    global PREVIOUS_PROGRESS
+    if PREVIOUS_PROGRESS == message:
+        return
+    PREVIOUS_PROGRESS = message
+    DAEMON_LOG.write(message)
+    DAEMON_LOG.flush()
+    if DAEMON_DEBUG:
+        TEXT.output(*args, **kwargs)
+
+class DaemonUrlFetcher(UrlFetcher):
+
+    daemon_last_avg = 100
+    __average = 0
+    __downloadedsize = 0
+    __remotesize = 0
+    __datatransfer = 0
+
+    def handle_statistics(self, th_id, downloaded_size, total_size,
+            average, old_average, update_step, show_speed, data_transfer,
+            time_remaining, time_remaining_secs):
+        self.__average = average
+        self.__downloadedsize = downloaded_size
+        self.__remotesize = total_size
+        self.__datatransfer = data_transfer
+
+    def output(self):
+        myavg = abs(int(round(float(self.__average), 1)))
+        if abs((myavg - self.daemon_last_avg)) < 1:
+            return
+        if int(myavg) % 10 == 0:
+            DAEMON_LOG.write("fetch @ %s%s" % (myavg, "%",))
+            self.daemon_last_avg = myavg
+
+
+class Entropy(Client):
+
+    def init_singleton(self):
+        Client.init_singleton(self, load_ugc = False,
+            url_fetcher = DaemonUrlFetcher, repo_validation = False)
+        # validate currently available repos
+        # manually, to not taint logs
+        self.validate_repositories(quiet = True)
+        self.output(
+            "Loading Entropy Client Tracker miner: logfile: %s" % (
+                DAEMON_LOGFILE,)
+            )
+        # reset application lock status
+        self.application_lock_check(silent = True)
+
+    def output(self, *args, **kwargs):
+        return write_output(*args, **kwargs)
+
+Client.__singleton_class__ = Entropy
+
+
+####
+#
+# Code starts from here
+#
+####
+
+class TrackerMiner(dbus.service.Object):
+
+    CACHE_DIR = os.path.join(etpConst['dumpstoragedir'],
+        "client-tracker-miner")
+    CACHE_IDS = {
+        'pkg_ids': 'package_ids',
+    }
+
+    def __init__(self):
+
+        gobject.threads_init()
+        # FIXME: use EntropyCacher to store installed packages <-> tracker
+        #        miner status.
+        self.__cacher = EntropyCacher()
+        self.__alive = False
+        self.__updater = None
+        self.__system_changes_checker = None
+        self.__quit_service_wd = None
+        self.__quit_service_trigger = False
+        self.__last_system_db_mtime = None
+        self.__trigger_system_changed = False
+
+        # start dbus service
+        # FIXME: this has to be tuned
+        object_path = "/entropy-client-tracker-miner"
+        dbus_loop = dbus.mainloop.glib.DBusGMainLoop(set_as_default = True)
+        system_bus = dbus.SystemBus(mainloop = dbus_loop)
+        name = dbus.service.BusName("org.entropy.Client", bus = system_bus)
+        dbus.service.Object.__init__ (self, system_bus, object_path)
+        write_output("__init__: dbus service loaded")
+
+        # this seems to avoid race conditions
+        # with dbus service not being available
+        time.sleep(2)
+
+    def start(self):
+        self.stop()
+        self.__quit_service_wd = gobject.timeout_add(
+            2000, self.quit_service_watchdog)
+        self.__system_changes_checker = gobject.timeout_add(
+            60*1000, self.check_system_changes)
+        self.__alive = True
+
+    def stop(self):
+        if self.__alive:
+            self.__alive = False
+
+            if self.__system_changes_checker != None:
+                gobject.source_remove(self.__system_changes_checker)
+
+            if self.__quit_service_wd != None:
+                gobject.source_remove(self.__quit_service_wd)
+
+    def __is_system_on_batteries(self):
+        """
+        Return whether System is running on batteries.
+
+        @return: True, if running on batteries
+        @rtype: bool
+        """
+        ac_powa_exec = "/usr/bin/on_ac_power"
+        if not os.access(ac_powa_exec, os.X_OK):
+            return False
+        ex_rc = os.system(ac_powa_exec)
+        if ex_rc:
+            return True
+        return False
+
+    def quit_service_watchdog(self):
+        if self.__quit_service_trigger:
+            self.__alive = False
+            raise SystemExit(0)
+        return self.__alive
+
+    def check_system_changes(self):
+        if self.__trigger_system_changed:
+            return self.__alive
+        if self.__is_system_on_batteries():
+            # running on batteries, then skip
+            return self.__alive
+        changed = self.__is_system_changed()
+        if changed:
+            # trigger check and push
+            self.__trigger_system_changed = True
+        # keep alive
+        return self.__alive
+
+    def _get_installed_repository_pkg_ids(self):
+
+        entropy = Entropy()
+        try:
+            return entropy.installed_repository().listAllIdpackages()
+        finally:
+            entropy.destroy()
+
+    def __is_system_changed(self):
+
+        entropy = Entropy()
+        locked = entropy.resources_check_lock()
+        if locked:
+            if DAEMON_DEBUG:
+                write_output("__is_system_changed: resources locked!")
+            entropy.destroy()
+            return False # resources are locked, nothing changed yet :P
+
+        try:
+
+            last_mtime = self.__last_system_db_mtime
+            dbfile = entropy.installed_repository().dbFile
+            try:
+                cur_mtime = os.path.getmtime(dbfile)
+            except OSError:
+                cur_mtime = 0.0
+
+            changed = last_mtime != cur_mtime
+            if DAEMON_DEBUG and changed:
+                write_output("__is_system_changed: system db mtime changed!")
+            self.__last_system_db_mtime = cur_mtime
+            return changed
+
+        finally:
+            # say goodbye
+            entropy.destroy()
+
+    @dbus.service.method ( "org.entropy.Client", in_signature = '',
+        out_signature = '')
+    def close_connection(self):
+        self.__quit_service_trigger = True
+
+    # signal sent when updates are available for retrive
+    @dbus.service.signal(dbus_interface = 'org.entropy.Client',
+        signature = '')
+    def signal_something(self):
+        # FIXME: implement this
+        """ send signal """
+
+
+
+
+if __name__ == "__main__":
+
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    try:
+        miner = TrackerMiner()
+    except dbus.exceptions.DBusException:
+        raise SystemExit(1)
+    miner.start()
+    main_loop = gobject.MainLoop()
+    main_loop.run()
+    miner.stop()
+    raise SystemExit(0)
