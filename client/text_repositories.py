@@ -16,6 +16,7 @@
 #
 import os
 import sys
+from entropy.exceptions import TimeoutError
 from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
     print_info, print_warning, print_error, purple, teal
@@ -194,7 +195,10 @@ def _do_sync(entropy_client, repo_identifiers = None, force = False):
         for reponame in repo_identifiers:
             # inform UGC that we are syncing this repo
             if entropy_client.UGC is not None:
-                entropy_client.UGC.add_download_stats(reponame, [reponame])
+                try:
+                    entropy_client.UGC.add_download_stats(reponame, [reponame])
+                except TimeoutError:
+                    continue
 
         for reponame in repo_identifiers:
             _show_notice_board_summary(entropy_client, reponame)
