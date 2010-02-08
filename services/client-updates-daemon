@@ -24,8 +24,8 @@ import signal
 from threading import Lock
 
 DAEMON_DEBUG = False
-if "--debug" in sys.argv:
-    DAEMON_DEBUG = True
+# if "--debug" in sys.argv:
+#    DAEMON_DEBUG = True
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -34,8 +34,7 @@ sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
-if DAEMON_DEBUG:
-    sys.path.insert(0,'/home/fabio/entropy/libraries')
+
 from entropy.misc import LogFile
 from entropy.i18n import _
 from entropy.exceptions import PermissionDenied, RepositoryError, \
@@ -126,8 +125,6 @@ class UpdatesDaemon(dbus.service.Object):
     def __init__(self):
 
         gobject.threads_init()
-        if not entropyTools.is_user_in_entropy_group():
-            raise PermissionDenied('insufficient permissions')
         self.__alive = False
         self.__is_working_mutex = Lock()
         self.__updater = None
@@ -202,6 +199,8 @@ class UpdatesDaemon(dbus.service.Object):
         return False
 
     def check_system_changes(self):
+        if self.__trigger_oncall_updater:
+            return self.__alive
         if self.is_system_on_batteries():
             # running on batteries, then skip
             return self.__alive
