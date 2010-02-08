@@ -162,7 +162,7 @@ def package(options):
 
         elif options[0] == "fetch":
 
-            if myopts or my_etp_pkg_paths:
+            if myopts:
                 rc, status = _download_packages(entropy_client,
                     packages = myopts,
                     deps = e_req_deps,
