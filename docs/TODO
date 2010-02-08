@@ -1,6 +1,8 @@
 
   0.99.40:
 
+    - entropy.db: extract mimetype metadata
+    - entropy.client: add dep reason metadata to dep list pulled in
     - entropy.client API rework
         - entropy.client.interfaces.dep:
             - atom_match without serverInstance & bullshit
