@@ -1499,7 +1499,11 @@ class Repository:
                     except RepositoryError:
                         # download failed and repo is not available, skip!
                         continue
-                    self.Entropy.repository_packages_spm_sync(repo, dbc)
+                    try:
+                        self.Entropy.repository_packages_spm_sync(repo, dbc)
+                    except Error:
+                        # EntropyRepository error, missing table?
+                        continue
                 self.Entropy.close_all_repositories()
 
         if self.sync_errors:
