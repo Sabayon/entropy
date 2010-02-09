@@ -1454,37 +1454,37 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page('preferences')
             return
 
-        found_deps = set()
+        c_repo = self.Equo.installed_repository()
+        found_matches = set()
         not_all = False
         for dep in deps_not_matched:
             match = self.Equo.atom_match(dep)
             if match[0] != -1:
-                found_deps.add(dep)
+                found_matches.add(match)
                 continue
             else:
-                iddep = self.Equo.installed_repository().searchDependency(dep)
+                iddep = c_repo.searchDependency(dep)
                 if iddep == -1:
                     continue
-                c_idpackages = self.Equo.installed_repository().searchIdpackageFromIddependency(
+                c_idpackages = c_repo.searchIdpackageFromIddependency(
                     iddep)
                 for c_idpackage in c_idpackages:
-                    key, slot = self.Equo.installed_repository().retrieveKeySlot(
+                    key, slot = c_repo.retrieveKeySlot(
                         c_idpackage)
-                    key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
-                        slot,)
                     match = self.Equo.atom_match(key, matchSlot = slot)
                     cmpstat = 0
                     if match[0] != -1:
                         cmpstat = self.Equo.get_package_action(match)
                     if cmpstat != 0:
-                        found_deps.add(key_slot)
+                        found_matches.add(match)
                         continue
                     else:
                         not_all = True
                 continue
+
             not_all = True
 
-        if not found_deps:
+        if not found_matches:
             okDialog(self.ui.main,
                 _("Missing dependencies found, but none of them are on the repositories."))
             self.switch_notebook_page('preferences')
@@ -1498,7 +1498,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             okDialog(self.ui.main,
                 _("All the missing dependencies are going to be added to the queue"))
 
-        self.add_atoms_to_queue(found_deps)
+        self.add_atoms_to_queue([], matches = found_matches)
         self.switch_notebook_page("preferences")
         deptest_reset_all()
 
@@ -1788,44 +1788,45 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             matches = set()
 
         self.set_busy()
-        if not matches:
-            # resolve atoms ?
-            for atom in atoms:
-                match = self.Equo.atom_match(atom)
-                if match[0] != -1:
-                    matches.add(match)
-        if not matches:
-            okDialog( self.ui.main,
-                _("No packages need or can be queued at the moment.") )
+        try:
+
+            if not matches:
+                # resolve atoms ?
+                for atom in atoms:
+                    match = self.Equo.atom_match(atom)
+                    if match[0] != -1:
+                        matches.add(match)
+            if not matches:
+                okDialog( self.ui.main,
+                    _("No packages need or can be queued at the moment.") )
+                return
+
+            resolved = []
+
+            self.etpbase.get_groups('installed')
+            self.etpbase.get_groups('available')
+            self.etpbase.get_groups('reinstallable')
+            self.etpbase.get_groups('updates')
+            self.etpbase.get_groups("downgrade")
+
+            for match in matches:
+                resolved.append(self.etpbase.get_package_item(match)[0])
+
+            found_objs = []
+            master_queue = []
+            for key in self.queue.packages:
+                master_queue += self.queue.packages[key]
+            for obj in resolved:
+                if obj in master_queue:
+                    continue
+                found_objs.append(obj)
+
+            if found_objs:
+                return self.add_to_queue(found_objs, "u", always_ask)
+            return True
+
+        finally:
             self.unset_busy()
-            return
-
-        resolved = []
-
-        self.etpbase.get_groups('installed')
-        self.etpbase.get_groups('available')
-        self.etpbase.get_groups('reinstallable')
-        self.etpbase.get_groups('updates')
-        self.etpbase.get_groups("downgrade")
-
-        for match in matches:
-            resolved.append(self.etpbase.get_package_item(match)[0])
-
-        rc = True
-
-        found_objs = []
-        master_queue = []
-        for key in self.queue.packages:
-            master_queue += self.queue.packages[key]
-        for obj in resolved:
-            if obj in master_queue:
-                continue
-            found_objs.append(obj)
-
-        rc = self.add_to_queue(found_objs, "u", always_ask)
-
-        self.unset_busy()
-        return rc
 
     def reset_cache_status(self):
         self.pkgView.clear()
