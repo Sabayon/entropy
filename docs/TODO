@@ -4,10 +4,8 @@
     - entropy.db: extract mimetype metadata
     - entropy.client: add dep reason metadata to dep list pulled in
     - entropy.client API rework
-        - entropy.client.interfaces.dep:
-            - atom_match without serverInstance & bullshit
-                (add repo_opener argument instead)
-            - remove "server_repos", use "matchRepo"
+        - make methods private
+    - SystemSettings['repositories'] entropy server/client merge? (occhio a metadati non comuni)
 
   0.99.50:
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
