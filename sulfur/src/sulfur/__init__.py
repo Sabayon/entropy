@@ -323,7 +323,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbSyncSimpleLabel.set_markup("<small>%s</small>" % (
             _("Sync"),))
         self.ui.rbQueueSimpleLabel.set_markup("<small>%s</small>" % (
-            _("Actions"),))
+            _("Install"),))
         self.ui.repoSearchSimpleLabel.set_markup("<small>%s</small>" % (
             _("Search"),))
 
@@ -356,13 +356,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_events_handling(self):
 
-        def hide_queue(event):
-            if self.queue.total() == 0:
-                self.ui.rbPkgQueued.hide()
-
-        def show_queue(event):
-            self.ui.rbPkgQueued.show()
-
         def queue_changed(event, length):
             if not length and self.lastPkgPB == "queued":
                 self.set_package_radio("updates")
@@ -374,8 +367,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.ui.updatesButtonbox.hide()
 
         # setup queued/installation button events
-        SulfurSignals.connect("install_queue_empty", hide_queue)
-        SulfurSignals.connect("install_queue_filled", show_queue)
         SulfurSignals.connect("install_queue_changed", queue_changed)
         SulfurSignals.connect("updates_available", updates_available)
 
@@ -402,6 +393,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbInstalled.hide()
         self.ui.rbMasked.hide()
         self.ui.rbPkgSets.hide()
+        self.ui.rbAll.show()
 
         if self.filesView.is_filled():
             self.ui.systemVbox.show()
@@ -456,6 +448,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbInstalled.show()
         self.ui.rbMasked.show()
         self.ui.rbPkgSets.show()
+        self.ui.rbAll.hide()
 
         self.ui.systemVbox.show()
         self.ui.securityVbox.show()
@@ -684,27 +677,30 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         #widget.set_relief( gtk.RELIEF_NONE )
         widget.set_mode( False )
 
-        try:
-            p = gtk.gdk.pixbuf_new_from_file( const.PIXMAPS_PATH+"/"+tag+".png" )
+        pix = None
+        if tag == "updates":
             pix = self.ui.rbUpdatesImage
-            if tag == "available":
-                pix = self.ui.rbAvailableImage
-            elif tag == "installed":
-                pix = self.ui.rbInstalledImage
-            elif tag == "masked":
-                pix = self.ui.rbMaskedImage
-            elif tag == "pkgsets":
-                pix = self.ui.rbPackageSetsImage
-            elif tag == "queued":
-                pix = self.ui.rbQueuedImage
-            elif tag == "all":
-                pix = self.ui.rbAllImage
-            elif tag == "search":
-                pix = self.ui.rbSearchImage
-            pix.set_from_pixbuf( p )
-            pix.show()
-        except gobject.GError:
-            pass
+        elif tag == "available":
+            pix = self.ui.rbAvailableImage
+        elif tag == "installed":
+            pix = self.ui.rbInstalledImage
+        elif tag == "masked":
+            pix = self.ui.rbMaskedImage
+        elif tag == "pkgsets":
+            pix = self.ui.rbPackageSetsImage
+        elif tag == "all":
+            pix = self.ui.rbAllImage
+        elif tag == "search":
+            pix = self.ui.rbSearchImage
+
+        if pix is not None:
+            try:
+                pix_path = os.path.join(const.PIXMAPS_PATH, tag+".png")
+                p = gtk.gdk.pixbuf_new_from_file(pix_path)
+                pix.set_from_pixbuf(p)
+                pix.show()
+            except gobject.GError:
+                pass
 
         self.packageRB[tag] = widget
 

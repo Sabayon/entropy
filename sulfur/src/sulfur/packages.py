@@ -52,7 +52,6 @@ class Queue:
         self.ui = ui
 
     def clear(self):
-        self.Sulfur.ui.rbPkgQueued.hide()
         self.packages.clear()
         self.packages['i'] = []
         self.packages['u'] = []
