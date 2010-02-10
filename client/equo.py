@@ -810,11 +810,11 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(1)
 
     if exc_class is SystemExit:
-        raise
+        raise exc_instance
 
     if exc_class is IOError:
         if exc_instance.errno != 32:
-            raise
+            raise exc_instance
 
     if exc_class is KeyboardInterrupt:
         raise SystemExit(1)
