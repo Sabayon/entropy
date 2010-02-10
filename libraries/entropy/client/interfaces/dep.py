@@ -1543,7 +1543,6 @@ class CalculatorsMixin:
         security_meta = security.get_advisories_metadata(use_cache = use_cache)
         vul_deps = set()
         for key in security_meta:
-            affect_count -= 1
             affected = security.is_affected(key)
             if not affected:
                 continue
