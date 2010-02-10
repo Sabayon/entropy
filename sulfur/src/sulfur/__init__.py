@@ -2198,6 +2198,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page(switch_back_page)
         elif state:
             self.switch_notebook_page('packages')
+            # switch back to updates tab also
+            rb = self.packageRB["updates"]
+            gobject.timeout_add(0, rb.clicked)
 
         self.Equo.resources_remove_lock()
         return state
