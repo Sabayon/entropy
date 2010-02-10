@@ -2,10 +2,8 @@
   0.99.40:
 
     - entropy.db: extract mimetype metadata
-    - entropy.client: add dep reason metadata to dep list pulled in
     - entropy.client API rework
         - make methods private
-    - SystemSettings['repositories'] entropy server/client merge? (occhio a metadati non comuni)
 
   0.99.50:
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
