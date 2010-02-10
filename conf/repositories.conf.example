@@ -10,7 +10,7 @@
 #|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db[,sabayon.org][#bz2][#1026,1027]
 #
 # Sabayon Linux Official Repository
-repository|sabayonlinux.org|Sabayon Linux Official Repository||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy,sabayon.org
+repository|sabayonlinux.org|Sabayon Linux Official Repository||http://pkg.sabayon.org,sabayon.org
 repository|sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy|
 repository|sabayonlinux.org||http://ftp2.cz.freebsd.org/pub/sabayon/entropy|
 repository|sabayonlinux.org||http://debian.mirror.dkm.cz/sabayon/entropy|
@@ -21,6 +21,7 @@ repository|sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
 repository|sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
 repository|sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
 repository|sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy|
+repository|sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
 repository|sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
 
 # syntax for developer-repo
