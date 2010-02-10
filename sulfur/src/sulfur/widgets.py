@@ -139,7 +139,7 @@ class SulfurConsole(vte.Terminal):
             'sabayon-console-background.png')
         if os.path.isfile(imgpath):
             self.set_background_image_file(imgpath)
-        self.set_background_saturation(0.4)
+        self.set_background_saturation(0.0)
         self.set_opacity(65535)
         myfc = gtk.gdk.color_parse(SulfurConf.color_console_font)
         self.set_color_foreground(myfc)
