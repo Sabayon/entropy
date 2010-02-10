@@ -753,7 +753,17 @@ class EntropyPackages:
     def _pkg_get_updates_raw(self):
         return self._pkg_get_updates(critical_updates = False)
 
-    def _pkg_get_updates(self, critical_updates = True, orphans = False):
+    def _pkg_get_security_updates(self):
+        return self._pkg_get_updates(critical_updates = False,
+            security_updates = True)
+
+    def _pkg_get_updates(self, critical_updates = True, orphans = False,
+        security_updates = False):
+
+        if not security_updates:
+            # preload security updates so that .security_update bit is
+            # properly set, of course, don't fuck remove this :-)
+            self.get_raw_groups("security_updates")
 
         gp_call = self.get_package_item
         cdb_atomMatch = self.Entropy.installed_repository().atomMatch
@@ -769,12 +779,20 @@ class EntropyPackages:
                 yp.installed_match = installed_match
             yp.action = 'u'
             yp.color = SulfurConf.color_update
+            if security_updates:
+                yp.security_update = True
             return yp
 
         try:
-            updates, remove, fine, spm_fine = \
-                self.Entropy.calculate_updates(
-                    critical_updates = critical_updates)
+            if security_updates:
+                remove = []
+                fine = []
+                spm_fine = []
+                updates = self.Entropy.calculate_security_updates()
+            else:
+                updates, remove, fine, spm_fine = \
+                    self.Entropy.calculate_updates(
+                        critical_updates = critical_updates)
         except SystemDatabaseError:
             # broken client db
             return []
@@ -790,7 +808,10 @@ class EntropyPackages:
             pkg_updates.append(pkg)
 
         # emit signal about updates available
-        SulfurSignals.emit("updates_available", len(pkg_updates))
+        if security_updates:
+            SulfurSignals.emit("security_updates_available", len(pkg_updates))
+        else:
+            SulfurSignals.emit("updates_available", len(pkg_updates))
 
         return pkg_updates
 
@@ -1110,6 +1131,7 @@ class EntropyPackages:
             "loading": self._pkg_get_loading,
             "downgrade": self._pkg_get_downgrade,
             "glsa_metadata": self._pkg_get_glsa_metadata,
+            "security_updates": self._pkg_get_security_updates,
             "search": self._pkg_get_search,
             "all": self._pkg_get_all,
         }

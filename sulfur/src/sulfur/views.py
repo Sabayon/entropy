@@ -500,6 +500,8 @@ class EntropyPackageView:
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
         self.pkg_install_updatable = "package-installed-outdated.png"
+        self.pkg_install_updatable_security = \
+            "package-installed-outdated-security.png"
         self.pkg_install_new = "package-available.png"
         self.pkg_remove = "package-remove.png"
         self.pkg_purge = "package-purge.png"
@@ -513,6 +515,9 @@ class EntropyPackageView:
         self.set_pixbuf_to_image(self.img_pkg_install_ok, self.pkg_install_ok)
         self.img_pkg_install_updatable = gtk.Image()
         self.set_pixbuf_to_image(self.img_pkg_install_updatable, self.pkg_install_updatable)
+        self.img_pkg_install_updatable_sec = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_install_updatable_sec,
+            self.pkg_install_updatable_security)
         self.img_pkg_update = gtk.Image()
         self.set_pixbuf_to_image(self.img_pkg_update, self.pkg_update)
         self.img_pkg_downgrade = gtk.Image()
@@ -2187,7 +2192,12 @@ class EntropyPackageView:
                         self.__install_statuses[pkg.matched_atom] = inst_status
 
                     if inst_status is 2:
-                        self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
+                        if pkg.security_update:
+                            self.set_pixbuf_to_cell(cell,
+                                self.pkg_install_updatable_security)
+                        else:
+                            self.set_pixbuf_to_cell(cell,
+                                self.pkg_install_updatable)
                     else:
                         self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
 
@@ -2196,7 +2206,12 @@ class EntropyPackageView:
                 elif pkg.action == "d":
                     self.set_pixbuf_to_cell(cell, self.pkg_downgrade)
                 else:
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
+                    if pkg.security_update:
+                        self.set_pixbuf_to_cell(cell,
+                            self.pkg_install_updatable_security)
+                    else:
+                        self.set_pixbuf_to_cell(cell,
+                            self.pkg_install_updatable)
 
             else:
 
@@ -2232,7 +2247,9 @@ class EntropyPackageView:
                 syspkg = obj.syspkg
             except:
                 syspkg = False
-            if syspkg:
+            if obj.security_update:
+                cell.set_property(stype, '#FFEBCA')
+            elif syspkg:
                 cell.set_property(stype, '#FFECEC')
             else:
                 cell.set_property(stype, None)
