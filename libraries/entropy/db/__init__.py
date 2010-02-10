@@ -8032,17 +8032,17 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         try:
             cl_data = self.SystemSettings[self.client_settings_plugin_id]
             validator_cache = cl_data['masking_validation']['cache']
-
-            cached = validator_cache.get((idpackage, reponame, live))
-            if cached is not None:
-                return cached
-
-            # avoid memleaks
-            if len(validator_cache) > 10000:
-                validator_cache.clear()
-
         except KeyError: # plugin does not exist
-            pass
+            validator_cache = {} # fake
+
+
+        cached = validator_cache.get((idpackage, reponame, live))
+        if cached is not None:
+            return cached
+
+        # avoid memleaks
+        if len(validator_cache) > 10000:
+            validator_cache.clear()
 
         if live:
             data = self._idpackageValidator_live(idpackage, reponame)
