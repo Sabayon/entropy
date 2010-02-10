@@ -599,16 +599,17 @@ class System:
             x.startswith("glsa-")])
         return xmls
 
-    def get_advisories_metadata(self):
+    def get_advisories_metadata(self, use_cache = True):
         """
         Get security advisories metadata.
 
         @return: advisories metadata
         @rtype: dict
         """
-        cached = self.get_advisories_cache()
-        if cached is not None:
-            return cached
+        if use_cache:
+            cached = self.get_advisories_cache()
+            if cached is not None:
+                return cached
 
         adv_metadata = {}
         xmls = self._get_advisories_list()
