@@ -53,9 +53,21 @@ class SecurityTest(unittest.TestCase):
         self.assertEqual(self._system.get_advisories_cache(), None)
 
     def test_security_set_advisories_cache(self):
+
+        from entropy.cache import EntropyCacher
+        cacher = EntropyCacher()
+
         self.assertEqual(self._system.get_advisories_cache(), None)
         self._system.set_advisories_cache({'zomg': True})
+
+        cacher.sync()
+
         self.assertEqual(self._system.get_advisories_cache(), {'zomg': True})
+        self._system.set_advisories_cache({})
+
+        cacher.sync()
+
+        self.assertEqual(self._system.get_advisories_cache(), {})
 
     def test_security_get_advisories_metadata(self):
         meta = self._system.get_advisories_metadata()
