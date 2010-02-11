@@ -545,25 +545,23 @@ class System:
         if self.adv_metadata is not None:
             return self.adv_metadata
 
-        if self.Entropy.xcache:
+        # validate cache
+        self.__validate_cache()
 
-            # validate cache
-            self.__validate_cache()
-
-            dir_checksum = entropy.tools.md5sum_directory(
-                System.SECURITY_DIR)
-            c_hash = "%s%s" % (
-                System._CACHE_ID, hash("%s|%s|%s" % (
-                    hash(self._settings['repositories']['branch']),
-                    hash(dir_checksum),
-                    hash(etpConst['systemroot']),
-                )),
-            )
-            adv_metadata = self.__cacher.pop(c_hash,
-                cache_dir = System._CACHE_DIR)
-            if adv_metadata is not None:
-                self.adv_metadata = adv_metadata.copy()
-                return self.adv_metadata
+        dir_checksum = entropy.tools.md5sum_directory(
+            System.SECURITY_DIR)
+        c_hash = "%s%s" % (
+            System._CACHE_ID, hash("%s|%s|%s" % (
+                hash(self._settings['repositories']['branch']),
+                hash(dir_checksum),
+                hash(etpConst['systemroot']),
+            )),
+        )
+        adv_metadata = self.__cacher.pop(c_hash,
+            cache_dir = System._CACHE_DIR)
+        if adv_metadata is not None:
+            self.adv_metadata = adv_metadata.copy()
+            return self.adv_metadata
 
     def set_advisories_cache(self, adv_metadata):
         """
@@ -1037,7 +1035,7 @@ class System:
                 bold(_("Security Advisories")),
                 darkgreen(_("updated successfully")),
             )
-            if do_cache and self.Entropy.xcache:
+            if do_cache:
                 self.get_advisories_metadata()
         else:
             advtext = "%s: %s" % (
