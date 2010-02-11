@@ -769,10 +769,9 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
         cli_repodata['default_repository'] = \
             srv_parser_data['default_repository_id']
         del cli_repodata['order'][:]
-        cli_repodata['order'].append(srv_parser_data['base_repository_id'])
+        if srv_parser_data['base_repository_id'] is not None:
+            cli_repodata['order'].append(srv_parser_data['base_repository_id'])
         for repoid in sorted(srv_repodata):
-            if repoid is None: # happens on unit test
-                continue
             if repoid not in cli_repodata['order']:
                 cli_repodata['order'].append(repoid)
 
