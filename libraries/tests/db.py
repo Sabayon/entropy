@@ -405,7 +405,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         buf.flush()
         buf.close()
 
-        new_db_path = "test_db_import_export.db"
+        fd, new_db_path = os.mkstemp()
+        os.close(fd)
         self.test_db.doDatabaseImport(buf_file, new_db_path)
         new_db = self.Client.open_generic_database(new_db_path)
         new_db_data = new_db.getPackageData(idpackage)
