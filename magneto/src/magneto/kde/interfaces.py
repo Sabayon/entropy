@@ -105,6 +105,13 @@ class Magneto(MagnetoCore):
         if self._dbus_service_available:
             QTimer.singleShot(10000, _do_check)
 
+    def __send_keepalive(self):
+        """
+        As per MagnetoCore specs.
+        """
+        QTimer.singleShot(60*1000, self.__send_keepalive)
+        self.send_keepalive()
+
     def startup(self):
         """
         Start user interface.
@@ -121,6 +128,9 @@ class Magneto(MagnetoCore):
         else:
             QTimer.singleShot(30000, self.show_service_available)
             self.__do_first_check()
+
+        # send Keep Alive signal
+        self.__send_keepalive()
 
         # Notice Window instance
         self._notice_window = AppletNoticeWindow(self)

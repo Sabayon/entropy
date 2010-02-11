@@ -70,7 +70,6 @@ class Magneto(MagnetoCore):
         self.status_icon.connect("popup-menu", self.applet_context_menu)
         self.status_icon.connect("activate", self.applet_doubleclick)
 
-
     def __do_first_check(self):
 
         # if system is running on batteries,
@@ -100,6 +99,9 @@ class Magneto(MagnetoCore):
             gobject.timeout_add(30000, self.show_service_available)
             self.__do_first_check()
 
+        # send Keep Alive signal
+        self.__send_keepalive()
+
         # Notice Window instance
         self._notice_window = AppletNoticeWindow(self)
 
@@ -108,6 +110,14 @@ class Magneto(MagnetoCore):
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
+
+    def __send_keepalive(self):
+        """
+        As per MagnetoCore specs.
+        """
+        gobject.timeout_add(60*1000, self.__send_keepalive)
+        self.send_keepalive()
+        return False
 
     def close_service(self):
         MagnetoCore.close_service(self)

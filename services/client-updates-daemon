@@ -24,8 +24,8 @@ import signal
 from threading import Lock
 
 DAEMON_DEBUG = False
-# if "--debug" in sys.argv:
-#    DAEMON_DEBUG = True
+if "--debug" in sys.argv:
+    DAEMON_DEBUG = True
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -129,6 +129,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__is_working_mutex = Lock()
         self.__updater = None
         self.__system_changes_checker = None
+        self.__client_ping_checker = None
         self.__oncall_updater = None
         self.__quit_service_wd = None
         self.__quit_service_trigger = False
@@ -138,6 +139,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__updates_atoms = None
         self.__system_db_hash = None
         self.__last_system_db_mtime = None
+        self.__got_client_ping = True
 
         # start dbus service
         object_path = "/notifier"
@@ -163,6 +165,9 @@ class UpdatesDaemon(dbus.service.Object):
             2000, self.quit_service_watchdog)
         self.__system_changes_checker = gobject.timeout_add(
             60*1000, self.check_system_changes)
+        if "--disable-timer" not in sys.argv:
+            self.__client_ping_checker = gobject.timeout_add(
+                120*1000, self.check_client_ping)
 
     def stop(self):
         if self.__alive:
@@ -179,6 +184,9 @@ class UpdatesDaemon(dbus.service.Object):
 
             if self.__quit_service_wd != None:
                 gobject.source_remove(self.__quit_service_wd)
+
+            if self.__client_ping_checker != None:
+                gobject.source_remove(self.__client_ping_checker)
 
     def do_alert(self, string, msg, urgency = "critical"):
         write_output('alert: %s, %s, urgency: %s' % (string, msg, urgency,))
@@ -197,6 +205,15 @@ class UpdatesDaemon(dbus.service.Object):
         if ex_rc:
             return True
         return False
+
+    def check_client_ping(self):
+        if self.__got_client_ping:
+            self.__got_client_ping = False
+        else: # timeout!
+            if DAEMON_DEBUG:
+                write_output("check_client_ping: NO client ping, quitting")
+            self.__quit_service_trigger = True
+        return self.__alive
 
     def check_system_changes(self):
         if self.__trigger_oncall_updater:
@@ -446,6 +463,11 @@ class UpdatesDaemon(dbus.service.Object):
         self.__trigger_oncall_updater = True
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
+        out_signature = '')
+    def trigger_check(self):
+        self.__trigger_oncall_updater = True
+
+    @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'av')
     def get_updates(self):
 
@@ -535,8 +557,10 @@ class UpdatesDaemon(dbus.service.Object):
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = '')
-    def close_connection(self):
-        self.__quit_service_trigger = True
+    def client_ping(self):
+        self.__got_client_ping = True
+        if DAEMON_DEBUG:
+            write_output("client_ping: got client ping")
 
     # signal sent when updates are available for retrive
     @dbus.service.signal(dbus_interface = 'org.entropy.Client',

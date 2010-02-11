@@ -283,6 +283,16 @@ class MagnetoCore(MagnetoCoreUI):
             self._entropy_dbus_object, dbus_interface="org.entropy.Client")
         return iface.is_system_changed()
 
+    def send_keepalive(self):
+        """
+        MagnetoCore users must spawn this function every 60 seconds (with a
+        timer).
+        """
+        if self._dbus_service_available:
+            iface = dbus.Interface(
+                self._entropy_dbus_object, dbus_interface="org.entropy.Client")
+            iface.client_ping()
+
     def send_check_updates_signal(self, widget=None):
 
         # enable applet if disabled
@@ -393,7 +403,6 @@ class MagnetoCore(MagnetoCoreUI):
             except dbus.exceptions.DBusException:
                 pass
         entropy.tools.kill_threads()
-
 
 class Entropy(Client):
 
