@@ -25,7 +25,7 @@ from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_set_nice_level, const_setup_perms, const_setup_entropy_pid, \
-    const_isstring
+    const_isstring, const_convert_to_unicode
 from entropy.exceptions import RepositoryError, InvalidPackageSet,\
     SystemDatabaseError
 from entropy.db import EntropyRepository
@@ -52,6 +52,7 @@ class RepositoryMixin:
 
         # valid repositories
         del self._enabled_repos[:]
+        print self.SystemSettings['repositories']['order'] 
         for repoid in self.SystemSettings['repositories']['order']:
             # open database
             try:
@@ -66,8 +67,8 @@ class RepositoryMixin:
                 if quiet:
                     continue
 
-                t = _("Repository") + " " + repoid + " " + \
-                    _("is not available") + ". " + _("Cannot validate")
+                t = _("Repository") + " " + const_convert_to_unicode(repoid) \
+                    + " " + _("is not available") + ". " + _("Cannot validate")
                 t2 = _("Please update your repositories now in order to remove this message!")
                 self.output(
                     darkred(t),
@@ -593,12 +594,13 @@ class RepositoryMixin:
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
             mytxt = "%s, %s" % (_("System database not found or corrupted"),
                 _("running in safe mode using empty database from RAM"),)
-            self.output(
-                darkred(mytxt),
-                importance = 1,
-                type = "warning",
-                header = bold("!!!"),
-            )
+            if not etpSys['unittest']:
+                self.output(
+                    darkred(mytxt),
+                    importance = 1,
+                    type = "warning",
+                    header = bold(" !!! "),
+                )
             m_conn = self.open_temp_repository(dbname = etpConst['clientdbid'])
             self._add_plugin_to_client_repository(m_conn,
                 etpConst['clientdbid'])
