@@ -1146,6 +1146,16 @@ class ServerSettingsMixin:
 
         return remote_revision
 
+    def repositories(self):
+        """
+        Return a list of available Entropy Server repositories.
+
+        @return: list of available Entropy Server repositories
+        @rtype: list
+        """
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        return sorted(srv_set['repositories'])
+
 
 class ServerLoadersMixin:
 
