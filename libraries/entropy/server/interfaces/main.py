@@ -4654,10 +4654,11 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
         if hasattr(self, 'Client'):
             self.Client.destroy()
 
-        plug_id = getattr(self, 'sys_settings_plugin_id', None)
-        plug_id1 = getattr(self, 'sys_settings_fatscope_plugin_id', None)
-        plug_id2 = getattr(self, 'sys_settings_fake_cli_plugin_id', None)
-        plugs = [plug_id, plug_id1, plug_id2]
+        plug_id2 = self.sys_settings_fake_cli_plugin_id
+        plug_id1 = self.sys_settings_fatscope_plugin_id
+        plug_id = self.sys_settings_plugin_id
+        # reverse insert order
+        plugs = [plug_id2, plug_id1, plug_id]
         for plug in plugs:
             if plug is None:
                 continue
