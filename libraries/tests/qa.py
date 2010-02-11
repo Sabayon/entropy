@@ -15,7 +15,7 @@ class QATest(unittest.TestCase):
         sys.stdout.write("%s called\n" % (self,))
         sys.stdout.flush()
         text = TextInterface()
-        self.QA = entropy.qa.QAInterface(text)
+        self.QA = entropy.qa.QAInterface()
 
     def tearDown(self):
         """
