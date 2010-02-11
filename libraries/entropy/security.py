@@ -536,6 +536,17 @@ class System:
             os.makedirs(System._CACHE_DIR, 0o775)
             const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
 
+    def _get_advisories_cache_hash(self):
+        dir_checksum = entropy.tools.md5sum_directory(
+            System.SECURITY_DIR)
+        c_hash = "%s%s" % (
+            System._CACHE_ID, hash("%s|%s|%s" % (
+                hash(self._settings['repositories']['branch']),
+                hash(dir_checksum),
+                hash(etpConst['systemroot']),
+            ),))
+        return c_hash
+
     def get_advisories_cache(self):
         """
         Return cached advisories information metadata. It first tries to load
@@ -548,15 +559,7 @@ class System:
         # validate cache
         self.__validate_cache()
 
-        dir_checksum = entropy.tools.md5sum_directory(
-            System.SECURITY_DIR)
-        c_hash = "%s%s" % (
-            System._CACHE_ID, hash("%s|%s|%s" % (
-                hash(self._settings['repositories']['branch']),
-                hash(dir_checksum),
-                hash(etpConst['systemroot']),
-            )),
-        )
+        c_hash = self._get_advisories_cache_hash()
         adv_metadata = self.__cacher.pop(c_hash,
             cache_dir = System._CACHE_DIR)
         if adv_metadata is not None:
@@ -570,15 +573,8 @@ class System:
         @param adv_metadata: advisories metadata to store
         @type adv_metadata: dict
         """
-        dir_checksum = entropy.tools.md5sum_directory(
-            System.SECURITY_DIR)
-        c_hash = "%s%s" % (
-            System._CACHE_ID, hash("%s|%s|%s" % (
-                hash(self._settings['repositories']['branch']),
-                hash(dir_checksum),
-                hash(etpConst['systemroot']),
-            )),
-        )
+        self.adv_metadata = None
+        c_hash = self._get_advisories_cache_hash()
         # async false to allow 3rd-party applications to not wait
         # before getting cached results. A straight example: sulfur
         # and its security cache generation separate thread.
