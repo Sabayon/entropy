@@ -108,6 +108,12 @@ class EntropyPluginStore:
         """
         del self.__plugins[plugin_id]
 
+    def has_plugin(self, plugin_id):
+        """
+        Return whether EntropyPluginStore instance contains the given
+        plugin id.
+        """
+        return plugin_id in self.__plugins
 
 class EntropyPluginFactory:
 
