@@ -15,7 +15,7 @@
 import os
 
 from entropy.i18n import _
-from entropy.const import etpConst, const_setup_perms
+from entropy.const import etpConst, const_setup_perms, const_convert_to_unicode
 from entropy.exceptions import InvalidPackageSet
 from entropy.core.settings.base import SystemSettings
 
