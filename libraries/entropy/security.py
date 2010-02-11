@@ -572,21 +572,20 @@ class System:
         @param adv_metadata: advisories metadata to store
         @type adv_metadata: dict
         """
-        if self.Entropy.xcache:
-            dir_checksum = entropy.tools.md5sum_directory(
-                System.SECURITY_DIR)
-            c_hash = "%s%s" % (
-                System._CACHE_ID, hash("%s|%s|%s" % (
-                    hash(self._settings['repositories']['branch']),
-                    hash(dir_checksum),
-                    hash(etpConst['systemroot']),
-                )),
-            )
-            # async false to allow 3rd-party applications to not wait
-            # before getting cached results. A straight example: sulfur
-            # and its security cache generation separate thread.
-            self.__cacher.push(c_hash, adv_metadata,
-                cache_dir = System._CACHE_DIR, async = False)
+        dir_checksum = entropy.tools.md5sum_directory(
+            System.SECURITY_DIR)
+        c_hash = "%s%s" % (
+            System._CACHE_ID, hash("%s|%s|%s" % (
+                hash(self._settings['repositories']['branch']),
+                hash(dir_checksum),
+                hash(etpConst['systemroot']),
+            )),
+        )
+        # async false to allow 3rd-party applications to not wait
+        # before getting cached results. A straight example: sulfur
+        # and its security cache generation separate thread.
+        self.__cacher.push(c_hash, adv_metadata,
+            cache_dir = System._CACHE_DIR, async = False)
 
     def _get_advisories_list(self):
         """
