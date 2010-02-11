@@ -1,3 +1,117 @@
+commit 9da7ad8cdde9bab02e050885b4045bf5821d3cda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:30:04 2010 +0100
+
+    [tests] db: use mkstemp instead of trying to write to $PWD
+
+commit 7859f459c1e897651f6097422398a02e4a5931bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:17:52 2010 +0100
+
+    [entropy.server] when removing SystemSettings plugins, respect insertion order
+
+commit 3cd03a3cce4921b2e168b5a3927af7bb0a04851b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:14:21 2010 +0100
+
+    [entropy.debug] add new module (useful for debugging) with list() implementation
+
+commit d901eaa5b267b995e0583def0f27071e28970525
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:12:35 2010 +0100
+
+    [entropy.server] rewrite destroy(), fix plugins removal code
+
+commit 14b959a4c6f5cbb9a909d67db84ece1478b6d5b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:11:39 2010 +0100
+
+    [entropy.core] EntropyPluginStore: add has_plugin method
+
+commit c12c72b7ab8408f9e5932348996b84f1b39da7b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:00:32 2010 +0100
+
+    [entropy.server] when writing fake Entropy Client repo metadata, do not add invalid values
+
+commit f294c5a16ed3af44a0da11a53b47618c0a0d2fa3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 17:50:58 2010 +0100
+
+    [entropy.core.settings.base] SystemSettings: improve dict() transparency
+
+commit 365ee420e7c83f6113e8acb1f2c3eee265957c5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 16:04:53 2010 +0100
+
+    [tests] improve test_security_set_advisories_cache() test
+
+commit f9b45e3d4dcd4b45c4205707c2fe4dc4ebe21478
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 16:04:32 2010 +0100
+
+    [entropy.security] improve System class advisories cache handling
+
+commit 8ef7ec69ecb1db5612359d811287617f2423ed6c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 15:22:44 2010 +0100
+
+    [entropy.security] System: do not use Entropy Client cache bool for determining if using cache
+
+commit ef28aab38018bc5fa1a0e1c13f48a8e5bf96bf6c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 15:21:16 2010 +0100
+
+    [entropy.security] fix System.set_advisories_cache()
+
+commit 52143db75db85cf6478b07df3460b32d91b32138
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 15:13:58 2010 +0100
+
+    [entropy.server] filter out mem repos when generating Entropy Client repo order metadata
+
+commit dc005197114134c7ae986482cba68b94ecb38d4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 15:13:08 2010 +0100
+
+    [entropy.client] remove debugging output
+
+commit 11539a75f00760b2744a2978a2d1ec9899af87a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 15:11:59 2010 +0100
+
+    [entropy.client] some trivial fixes for unit testing module
+
+commit 438a4968de7aacd670c5b292cb10dd11bbe599a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 15:05:07 2010 +0100
+
+    [magneto] implement keepalive ping/pong between dbus service and client to improve service reliability
+
+commit b189f219a26fc9c0fcb846c872777b4a5a6139a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 14:59:36 2010 +0100
+
+    [tests] fix QA test
+
+commit f6db307633cf312be6e1183d3f80d5fd79bc6c55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 12:08:33 2010 +0100
+
+    Tagging Entropy version 0.99.34
+
+commit e38fe4fdf9b205655950e76cdd40d371935ac8a9
+Author: Roger Calvó <rogerc@sabayon.(none)>
+Date:   Thu Feb 11 11:28:10 2010 +0100
+
+    [translations] fix typo in my name
+
+commit bc1516b87b7fab8b7003090f66dc4a0d786ef2b8
+Author: Roger Calvó <rogerc@sabayon.(none)>
+Date:   Thu Feb 11 11:23:39 2010 +0100
+
+    [po] update Catalan translation
+
 commit a42456f405c4ca0325dd9a0993f6d8f88647c1d0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 10 23:58:14 2010 +0100
