@@ -4653,23 +4653,18 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
         self.__instance_destroyed = True
         if hasattr(self, 'Client'):
             self.Client.destroy()
-        if hasattr(self, 'sys_settings_server_plugin'):
-            try:
-                self.SystemSettings.remove_plugin(self.sys_settings_plugin_id)
-            except KeyError:
-                pass
-        if hasattr(self, 'sys_settings_fatscope_plugin'):
-            try:
-                self.SystemSettings.remove_plugin(
-                    self.sys_settings_fatscope_plugin)
-            except KeyError:
-                pass
-        if hasattr(self, 'sys_settings_fake_cli_plugin'):
-            try:
-                self.SystemSettings.remove_plugin(
-                    self.sys_settings_fake_cli_plugin)
-            except KeyError:
-                pass
+
+        plug_id = getattr(self, 'sys_settings_plugin_id', None)
+        plug_id1 = getattr(self, 'sys_settings_fatscope_plugin_id', None)
+        plug_id2 = getattr(self, 'sys_settings_fake_cli_plugin_id', None)
+        plugs = [plug_id, plug_id1, plug_id2]
+        for plug in plugs:
+            if plug is None:
+                continue
+            if not self.SystemSettings.has_plugin(plug):
+                continue
+            self.SystemSettings.remove_plugin(plug)
+
         self.close_repositories()
 
     def is_destroyed(self):
