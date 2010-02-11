@@ -52,7 +52,6 @@ class RepositoryMixin:
 
         # valid repositories
         del self._enabled_repos[:]
-        print self.SystemSettings['repositories']['order'] 
         for repoid in self.SystemSettings['repositories']['order']:
             # open database
             try:
