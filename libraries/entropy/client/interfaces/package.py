@@ -75,9 +75,7 @@ class Package:
 
     def check_action_validity(self, action):
         if action not in self.valid_actions:
-            raise AttributeError("Action must be in %s" % (mytxt,
-                self.valid_actions,)
-            )
+            raise AttributeError("Action must be in %s" % (self.valid_actions,))
 
     @staticmethod
     def get_standard_fetch_disk_path(download):
