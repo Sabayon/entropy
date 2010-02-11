@@ -110,7 +110,7 @@ class SocketAuthenticator:
 
 class RemoteDatabase:
 
-    def escape_fake(mystr):
+    def escape_fake(self, mystr):
         return mystr
 
     def __init__(self):
