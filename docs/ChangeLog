@@ -1,3 +1,291 @@
+commit a42456f405c4ca0325dd9a0993f6d8f88647c1d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 23:58:14 2010 +0100
+
+    [conf] update list of mirrors, add NLUUG
+
+commit a7189d2b0626595ae44edad3dd09e4226eeb2608
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 22:54:32 2010 +0100
+
+    [sulfur] change console background saturation
+
+commit b5601de11e8845bb4487bc32ab5194b14d08b981
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 22:51:33 2010 +0100
+
+    [sulfur] after pkg install, switch back to proper pkgs tab
+
+commit 3fe82590a326b6aeb5faac47633584e9818b3ad6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 18:31:36 2010 +0100
+
+    [entropy.db] fix a possible undefined reference issue in idpackageValidator
+
+commit ec93ff7034289d9d6b85f2dad73aeb5511e6f92d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 12:07:29 2010 +0100
+
+    [equo] fix read-only fs management (was due to old exception handling code)
+
+commit ef532246fd26d90a5aa71f07fd3e2f60d7b33f30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 11:40:09 2010 +0100
+
+    [po] update translations
+
+commit 8c67dfaa6e5ae50a14d0c874944db9cbbe42a724
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 11:39:50 2010 +0100
+
+    [todo] update TODO
+
+commit e32bd11ae87743e9aff99207b21c331a856e3d62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 11:27:45 2010 +0100
+
+    [sulfur] implement security updates, properly highlight vulnerable updates
+
+commit 94fec0d0941827bf9ff414ac85408d60511e0ca5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 11:17:01 2010 +0100
+
+    [entropy.client.interfaces.dep] remove debugging code
+
+commit 27bc1da8f8a01b687d711fce22248f0b61a865b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 10:59:43 2010 +0100
+
+    [entropy.client.interfaces.dep] add calculate_security_updates()
+
+commit c264871ffcb3263af6888cf0447b8bbb24752a1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 10:59:18 2010 +0100
+
+    [entropy.security] System.get_advisories_metadata: add use_cache argument
+
+commit f6e4c466951d994131a8427c0d5a77964c4902e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 10 09:14:37 2010 +0100
+
+    [sulfur] always show installation tab
+
+commit 64395c9919efb1a8804aa5dc4701be537be8a5ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 9 12:39:30 2010 +0100
+
+    [sulfur] fix dependencies_test when no pkgs have to be added to queue
+
+commit 7620cedfb1ffc1b74d91e08c4febb927dc5a9125
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 9 11:02:01 2010 +0100
+
+    [entropy.client.interfaces.repository] catch EntropyRepository errors on spm sync
+
+commit 930ee7f861d49b1661646b3cf3ef25ef5f03e92b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 9 11:01:46 2010 +0100
+
+    [todo] update TODO
+
+commit 8b3f5a42dd13d298dffba5fcc67a84a5dc148e00
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 8 20:33:02 2010 +0100
+
+    [todo] update TODO
+
+commit 18cc42a207bfc2453a6effc49a9279627988e85f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 8 20:32:41 2010 +0100
+
+    [equo] fix trivial issue with fetch parameters
+
+commit 2c283893586ebd8050a97a4e55c9d5c4510acb79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 8 13:47:14 2010 +0100
+
+    [services] client updates daemon, disable debug by default
+
+commit e38217892553f150a7df8d5e033f624140c22fc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 8 13:46:39 2010 +0100
+
+    [services] add Tracker installed packages metadata miner (first chunk)
+
+commit 86fa7fcf1f1a2ba5a3621934618ec12c91f2d4c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 8 13:23:31 2010 +0100
+
+    [equo] catch TimeoutError exceptions on UGC sync
+
+commit e8d22a5070c637ce1c8ef0d890724c21e7e6503c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 7 08:16:48 2010 +0100
+
+    [entropy.client] fix undefined reference
+
+commit 03b92f8f31a6bb59765859b587f3651fd160e6d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 7 08:14:30 2010 +0100
+
+    [entropy.client] fix undefined reference
+
+commit 6a18bfee9b44df08261f17e417a355502cb58472
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 7 08:05:11 2010 +0100
+
+    [equo] check "equo smart" argv len
+
+commit b21b33c80af96e4ac376d25e17b005a09b350a34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:38:09 2010 +0100
+
+    [entropy.server] fix function call
+
+commit 35d9422f1a5eebbe8d9a88dbc73cb61d0eb9bb3c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:31:43 2010 +0100
+
+    [entropy.server] when downloading data, make sure download dir exists
+
+commit e6aa5687cd4925bf68d823af5fef0f37ad11adbc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:25:42 2010 +0100
+
+    [entropy.client] fix undefined reference
+
+commit c0914c6dab9734fe7b18f20ff16883d9cfae415b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:20:57 2010 +0100
+
+    [entropy.server] remove unused import
+
+commit c5dd3a7a491fb85be8e48103fba1c5b611b1f49c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:20:12 2010 +0100
+
+    [entropy.db] remove more evidences of old branch management code
+
+commit b7951c4f4c7607586b01a5034907456d87ed3c38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:04:58 2010 +0100
+
+    [entropy.client] code style update
+
+commit dd910a73ebd2dae580110d993e13823e3f4b464c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:04:32 2010 +0100
+
+    [entropy.const] tweak Entropy server installed packages repository id
+
+commit 1d94eb55427bf2643b48068d0774a3d057363ed4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:04:06 2010 +0100
+
+    [entropy.client] remove Entropy Server ugly hacks in atom_match code
+
+commit 8f0e303b280a7799176a638cd6e2732e99caff53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 14:03:32 2010 +0100
+
+    [entropy.server] make Entropy Client be able to use Entropy Server repos transparently
+
+commit 14b66c69c93eae69d4ce1288ab0b4357375f3ecd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 12:13:56 2010 +0100
+
+    [equo] cleanup some code
+
+commit d31273ffd8c39c356f75fe929a71a3b00a197b04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 11:41:20 2010 +0100
+
+    [entropy.client] move Entropy Package Sets interface to separate class, update API
+
+commit a1dfa6a81067cf350d41617646b77cd493e989a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 11:01:06 2010 +0100
+
+    [entropy.security] general module pre-spring cleanup ;)
+
+commit c845fc2f1a1063f2457657d15d5e51b54d62d3d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 5 07:34:45 2010 +0100
+
+    [docs] update API documentation
+
+commit 91a3af1a0cc6da2fc9a0cb5b7450bb28a43554d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 23:38:19 2010 +0100
+
+    [todo] update TODO
+
+commit 2ca6877e5753d99f6504a63b9807e3035e6c90c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:30:18 2010 +0100
+
+    [todo] update TODO
+
+commit 99dc6bd842bbd1c27044fa4fec9210ddf307bbca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:30:06 2010 +0100
+
+    [todo] update TODO
+
+commit db8876237b75540b3a9fb1596292aace9e653671
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:29:14 2010 +0100
+
+    [entropy.client] make QA and Security interface handling methods private
+
+commit 004d1055b27bbe42f7ab31bc85d925133f93760d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:24:49 2010 +0100
+
+    [entropy.db] EntropyRepository: rename retrieveVersionTag to retrieveTag
+
+commit 712699ee2289dc6a93675da499f450276b880626
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:16:24 2010 +0100
+
+    [todo] update TODO
+
+commit d930dddaa776d6be9b402d7a4e21478d05d092a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:15:45 2010 +0100
+
+    [todo] update TODO
+
+commit 708e8ea89d9979b9b3c0a0b7a33c0087b03ade60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:14:33 2010 +0100
+
+    [entropy.exceptions] ditch IncorrectParameter exceptions
+
+commit b8c9b040839be5972bbc335c3c1365f757ebd64d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:04:36 2010 +0100
+
+    [entropy.exception] ditch InvalidData exception in favour of AttributeError
+
+commit f235456707d3a2c0c34e5e7ea0db97e738b3c77e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 20:00:29 2010 +0100
+
+    [entropy.exceptions] ditch InvalidDataType exception in favour of AttributeError
+
+commit 1de4608f658cf6357d624f5cb749af625fdd7a8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:34:50 2010 +0100
+
+    [equo] warn user if equo/entropy version mismatch
+
+commit 9756569875aa1c89370e26281e1b42807d4984a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 4 19:25:49 2010 +0100
+
+    Tagging Entropy version 0.99.33.6
+
 commit 70862b58a2e6e60769a9eaa10dc915bbda1922e2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 4 19:25:28 2010 +0100
