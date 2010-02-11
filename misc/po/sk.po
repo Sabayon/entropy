@@ -74,7 +74,7 @@ msgstr "presuny balíčkov úspešne dokončené"
 
 #: ../../libraries/entropy/db/__init__.py:1045
 msgid "Moving old entry"
-msgstr ""
+msgstr "Moving old entry"
 
 #: ../../libraries/entropy/db/__init__.py:1047
 #: ../../client/text_configuration.py:118
@@ -280,11 +280,11 @@ msgstr ""
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:2276
 msgid "Successfully connected to host"
-msgstr ""
+msgstr "Pripojenie na sever bolo úspešné"
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:2316
 msgid "Successfully disconnected from host"
-msgstr ""
+msgstr "Odpojenie zo serveru bolo úspešné"
 
 #: ../../libraries/entropy/services/repository/interfaces.py:113
 msgid "database does not exist. Locking services for it"
@@ -2721,16 +2721,16 @@ msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/package.py:2289
 msgid "Unpacking"
-msgstr ""
+msgstr "Rozbaľovanie"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2295
 msgid "Merging"
-msgstr ""
+msgstr "Zlučovanie"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2308
 #: ../../sulfur/src/sulfur/entropyapi.py:267
 msgid "Installing"
-msgstr ""
+msgstr "Inštalovanie"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2316
 #: ../../client/text_rescue.py:514 ../../sulfur/src/sulfur/entropyapi.py:225
@@ -2807,15 +2807,15 @@ msgstr ""
 #: ../../libraries/entropy/client/interfaces/repository.py:558
 #: ../../client/text_repositories.py:165
 msgid "Database URL"
-msgstr ""
+msgstr "URL databázy"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:566
 msgid "Database local path"
-msgstr ""
+msgstr "Lokálna cesta k databáze"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:574
 msgid "Database EAPI"
-msgstr ""
+msgstr "EAPI databázy"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:670
 #: ../../libraries/entropy/client/interfaces/repository.py:808
@@ -2910,6 +2910,8 @@ msgstr ""
 #: ../../libraries/entropy/security.py:271
 msgid "Make sure to verify the imported key and set an appropriate trust level"
 msgstr ""
+"Uistite sa overením pridaného kľúča a nastavením vhodných úrovní "
+"dôveryhodnosti"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1032
 msgid "This repository suports GPG-signed packages"
@@ -2921,24 +2923,21 @@ msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1071
 #: ../../libraries/entropy/security.py:307
-#, fuzzy
 msgid "GPG key changed for"
-msgstr "Preinštalovaný balíček"
+msgstr "Zmenený GPG kľúč pre"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1091
 #: ../../libraries/entropy/security.py:326
-#, fuzzy
 msgid "GPG key already installed for"
-msgstr "Preinštalovaný balíček"
+msgstr "GPG kľúč je už nainštalovaný pre"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1104
 msgid "GPG key EXPIRED for repository"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1116
-#, fuzzy
 msgid "Installing GPG key for repository"
-msgstr "Vložiť repozitár"
+msgstr "Inštalácia GPG kľúča pre repozitár"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1129
 #: ../../libraries/entropy/security.py:364
@@ -2990,7 +2989,7 @@ msgstr "je k dispozícii nová verzia"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1538
 msgid "Mind to install it before any other package"
-msgstr ""
+msgstr "Nezabudnite ju nainštalovať skôr ako iné balíčky"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1555
 msgid "Unpacking database to"
@@ -3023,15 +3022,15 @@ msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1728
 msgid "database does not exist online"
-msgstr ""
+msgstr "databáza neexistuje online"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1744
 msgid "database is already up to date"
-msgstr ""
+msgstr "databáza je už aktualizovaná"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1757
 msgid "database will be ready soon"
-msgstr ""
+msgstr "databáza bude čoskoro pripravená"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1773
 msgid "Repository is being updated"
@@ -3097,7 +3096,7 @@ msgstr ""
 #. let's dance!
 #: ../../libraries/entropy/client/interfaces/repository.py:2056
 msgid "Repositories synchronization"
-msgstr ""
+msgstr "Synchronizácia repozitárov"
 
 #: ../../libraries/entropy/client/interfaces/trigger.py:47
 msgid "Source Package Manager interface can't be loaded"
@@ -3319,9 +3318,8 @@ msgid "Add item"
 msgstr ""
 
 #: ../../libraries/entropy/output.py:800
-#, fuzzy
 msgid "Edit item"
-msgstr "_Upraviť časť"
+msgstr "Upraviť položku"
 
 #: ../../libraries/entropy/output.py:801
 msgid "Remove item"
@@ -3473,14 +3471,12 @@ msgid "GPG key EXPIRED for URL"
 msgstr ""
 
 #: ../../libraries/entropy/security.py:350
-#, fuzzy
 msgid "Installing GPG key for URL"
-msgstr "Vložiť repozitár"
+msgstr "Inštalácia GPG kľúča pre URL"
 
 #: ../../libraries/entropy/security.py:375
-#, fuzzy
 msgid "Successfully installed GPG key for URL"
-msgstr "úspešne spustené"
+msgstr "Úspešne nainštalovaný GPG kľúč pre URL"
 
 #: ../../libraries/entropy/security.py:429
 #: ../../libraries/entropy/security.py:992
@@ -3498,128 +3494,127 @@ msgstr "úspešne spustené"
 #: ../../libraries/entropy/security.py:1206
 #: ../../libraries/entropy/security.py:1219
 msgid "Security Advisories"
-msgstr ""
+msgstr "Bezpečnostné avíza"
 
 #: ../../libraries/entropy/security.py:430
 msgid "GPG key verification successful"
-msgstr ""
+msgstr "overenie GPG kľúča bolo úspešné"
 
 #: ../../libraries/entropy/security.py:642
 msgid "Warning"
-msgstr ""
+msgstr "Upozornenie"
 
 #: ../../libraries/entropy/security.py:644
 msgid "advisory broken"
-msgstr ""
+msgstr "avíza sú poškodené"
 
 #: ../../libraries/entropy/security.py:993
 msgid "testing service connection"
-msgstr ""
+msgstr "testovanie pripojenia služby"
 
 #: ../../libraries/entropy/security.py:1005
 msgid "getting latest advisories"
-msgstr ""
+msgstr "získavanie nových avíz"
 
 #: ../../libraries/entropy/security.py:1039
 msgid "updated successfully"
-msgstr ""
+msgstr "úspešne aktualizované"
 
 #: ../../libraries/entropy/security.py:1046
 msgid "already up to date"
-msgstr ""
+msgstr "už je aktualizované"
 
 #: ../../libraries/entropy/security.py:1067
 msgid "cannot download checksum, sorry"
-msgstr ""
+msgstr "nie je možné stiahnuť kontrolný súčet, prepáčte"
 
 #: ../../libraries/entropy/security.py:1091
 msgid "unable to download advisories, sorry"
-msgstr ""
+msgstr "nie je možné stiahnuť avíza, prepáčte"
 
 #: ../../libraries/entropy/security.py:1104
 msgid "Verifying checksum"
-msgstr ""
+msgstr "Overovanie kontrolného súčtu"
 
 #: ../../libraries/entropy/security.py:1121
 msgid "cannot open packages, sorry"
-msgstr ""
+msgstr "nie je možné otvoriť balíček, prepáčte"
 
 #: ../../libraries/entropy/security.py:1134
 msgid "cannot read the checksum, sorry"
-msgstr ""
+msgstr "nedá sa čítať kontrolný súčet, prepáčte"
 
 #: ../../libraries/entropy/security.py:1147
 msgid "digest verification failed, sorry"
-msgstr ""
+msgstr "zlyhal prehľad overenia, prepáčte"
 
 #: ../../libraries/entropy/security.py:1160
 msgid "verification successful"
-msgstr ""
+msgstr "overenie bolo úspešné"
 
 #: ../../libraries/entropy/security.py:1181
-#, fuzzy
 msgid "GPG service not available"
-msgstr "nie je dostupný"
+msgstr "Služba GPG nie je dostupná"
 
 #: ../../libraries/entropy/security.py:1207
 msgid "digest verification failed, try again later"
-msgstr ""
+msgstr "zlyhal prehľad overenia, skúste to neskôr"
 
 #: ../../libraries/entropy/security.py:1220
 msgid "installing"
-msgstr ""
+msgstr "inštalovanie"
 
 #: ../../client/equo.py:38
 msgid "You should run equo --help"
-msgstr ""
+msgstr "Mali by ste spustiť equo --help"
 
 #: ../../client/equo.py:39
 msgid "You didn't run equo --help, did you?"
-msgstr ""
+msgstr "Vy ste nespustili equo --help že?"
 
 #: ../../client/equo.py:40
 msgid "Did you even read equo --help??"
-msgstr ""
+msgstr "Už ste čítali equo --help??"
 
 #: ../../client/equo.py:41
 msgid "I give up. Run that equo --help !!!!!!!"
-msgstr ""
+msgstr "Vzdávam to. Spustite to equo --help !!!!!!!"
 
 #: ../../client/equo.py:42
 msgid "OH MY GOD. RUN equo --heeeeeeeeeeeeeelp"
-msgstr ""
+msgstr "O Môj Bože. Spustite equo --heeeeeeeeeeeeeelp"
 
 #: ../../client/equo.py:43
 msgid "Illiteracy is a huge problem in this world"
-msgstr ""
+msgstr "Negramotnosť je veľký problém na svete"
 
 #: ../../client/equo.py:44
 msgid "Ok i give up, you are hopeless"
-msgstr ""
+msgstr "Ok vzdávam to, ste beznádejní"
 
 #: ../../client/equo.py:45
 msgid "Go to hell."
-msgstr ""
+msgstr "Choďte do pekla."
 
 #: ../../client/equo.py:57 ../../server/activator.py:39
 #: ../../server/reagent.py:38
 msgid "Basic Options"
-msgstr ""
+msgstr "Základné možnosti"
 
 #: ../../client/equo.py:59 ../../server/activator.py:41
 #: ../../server/reagent.py:40
 msgid "this output"
-msgstr ""
+msgstr "tento výstup"
 
 #: ../../client/equo.py:60 ../../server/activator.py:42
 #: ../../server/reagent.py:41
 msgid "print version"
-msgstr ""
+msgstr "verzia pre tlač"
 
 #: ../../client/equo.py:61 ../../server/activator.py:43
 #: ../../server/reagent.py:42
 msgid "disable colorized output"
-msgstr ""
+msgstr "vypnúť farebný výstup"
 
 #: ../../client/equo.py:62
 msgid "print a bash completion script to stdout"
@@ -3639,19 +3634,16 @@ msgid "force sync regardless repositories status"
 msgstr ""
 
 #: ../../client/equo.py:69
-#, fuzzy
 msgid "manage your repositories"
-msgstr "Skúste aktualizovať vaše repozitáre"
+msgstr "spravujte vaše repozitáre"
 
 #: ../../client/equo.py:70
-#, fuzzy
 msgid "enable given repository"
-msgstr "vstúpil do repozitára"
+msgstr "zapnúť daný repozitár"
 
 #: ../../client/equo.py:71
-#, fuzzy
 msgid "disable given repository"
-msgstr "Zmazaný repozitár"
+msgstr "vypnúť daný repozitár"
 
 #: ../../client/equo.py:72
 msgid "repository notice board reader"
@@ -3848,14 +3840,12 @@ msgid "makes configuration files to be removed"
 msgstr ""
 
 #: ../../client/equo.py:151
-#, fuzzy
 msgid "mask one or more packages"
-msgstr "Vymaž balíčky"
+msgstr "skryť jeden alebo viac balíčkov"
 
 #: ../../client/equo.py:154
-#, fuzzy
 msgid "unmask one or more packages"
-msgstr "Vymaž balíčky"
+msgstr "odkryť jeden alebo viac balíčkov"
 
 #: ../../client/equo.py:158
 msgid "configure one or more installed packages"
@@ -4294,9 +4284,8 @@ msgid "import keypair, bind to given repository"
 msgstr ""
 
 #: ../../client/equo.py:309 ../../server/reagent.py:106
-#, fuzzy
 msgid "export public key of given repository"
-msgstr "Zoraď podľa repozitára"
+msgstr "exportuj verejný kľúč daného repozitára"
 
 #: ../../client/equo.py:310 ../../server/reagent.py:107
 msgid "export private key of given repository"
@@ -4574,9 +4563,8 @@ msgid "Cleaning Entropy cache, please wait ..."
 msgstr ""
 
 #: ../../client/text_cache.py:35
-#, fuzzy
 msgid "Entropy cache cleaned."
-msgstr "Entropy Správca balíčkov"
+msgstr "Vyrovnávacia pamäť Entropy je vymazaná."
 
 #: ../../client/text_configuration.py:41 ../../client/text_rescue.py:73
 msgid "You are not root"
@@ -5005,9 +4993,8 @@ msgid "Revision Search"
 msgstr "Revízia"
 
 #: ../../client/text_query.py:1364
-#, fuzzy
 msgid "Installed packages repository"
-msgstr "vstúpil do repozitára"
+msgstr "Nainštalovaný repozitár balíčkov"
 
 #: ../../client/text_query.py:1394
 msgid "License Search"
@@ -5149,24 +5136,20 @@ msgid "You must be root"
 msgstr ""
 
 #: ../../client/text_repositories.py:108
-#, fuzzy
 msgid "repository already enabled"
-msgstr "Aktualizujú sa repozitáre"
+msgstr "repozitár je už povolený"
 
 #: ../../client/text_repositories.py:112 ../../client/text_repositories.py:130
-#, fuzzy
 msgid "repository not available"
-msgstr "nie je dostupný"
+msgstr "repozitár nie je dostupný"
 
 #: ../../client/text_repositories.py:116
-#, fuzzy
 msgid "repository enabled"
-msgstr "repozitár"
+msgstr "repozitár je povolený"
 
 #: ../../client/text_repositories.py:126
-#, fuzzy
 msgid "repository already disabled"
-msgstr "Preinštalovaný balíček"
+msgstr "repozitár je už zablokovaný"
 
 #: ../../client/text_repositories.py:134
 msgid "cannot disable default repository"
@@ -5175,7 +5158,7 @@ msgstr ""
 #: ../../client/text_repositories.py:138
 #, fuzzy
 msgid "repository disabled"
-msgstr "repozitár"
+msgstr "repozitár je povolený"
 
 #: ../../client/text_repositories.py:154
 msgid "active"
@@ -6010,19 +5993,16 @@ msgid "Even if they are usually harmless, it is suggested to remove them."
 msgstr ""
 
 #: ../../client/text_ui.py:441
-#, fuzzy
 msgid "Selective"
-msgstr "Výber"
+msgstr "Výberový"
 
 #: ../../client/text_ui.py:448
-#, fuzzy
 msgid "Would you like to remove them?"
-msgstr "Chcete pokračovať ?"
+msgstr "Chcete ich odstrániť?"
 
 #: ../../client/text_ui.py:466
-#, fuzzy
 msgid "Remove this?"
-msgstr "_Odstrániť časť"
+msgstr "Odstrániť?"
 
 #: ../../client/text_ui.py:482
 msgid "Nothing to remove"
@@ -6578,28 +6558,24 @@ msgid "package dependencies"
 msgstr ""
 
 #: ../../server/server_reagent.py:241
-#, fuzzy
 msgid "Dependency type"
-msgstr "Test závislostí"
+msgstr "Typ závislosti"
 
 #: ../../server/server_reagent.py:245
 msgid "Select a dependency type for"
 msgstr ""
 
 #: ../../server/server_reagent.py:269
-#, fuzzy
 msgid "Dependencies editor"
-msgstr "Test závislostí"
+msgstr "Editor závislostí"
 
 #: ../../server/server_reagent.py:278
-#, fuzzy
 msgid "Confirm ?"
-msgstr "Prosím potvrďte"
+msgstr "Potvrdiť?"
 
 #: ../../server/server_reagent.py:301
-#, fuzzy
 msgid "dependencies updated successfully"
-msgstr "presuny balíčkov úspešne dokončené"
+msgstr "závislosti boli úspešne aktualizované"
 
 #: ../../server/server_reagent.py:318
 msgid "already pulled in"
@@ -6761,59 +6737,69 @@ msgid ""
 "Did you know that you can comment, vote and add documents to applications "
 "like in a wiki?"
 msgstr ""
+"Vedeli ste, že možete komentovať, hlasovať a pridávať dokumenty k aplikáciam "
+"ako na wiki?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:71
 msgid ""
 "Did you know that you can add icons or files to applications by simply "
 "dropping images from your Desktop onto them?"
 msgstr ""
+"Vedeli ste, že múžete pridávať ikony alebo súbory k aplikáciam jednoduchým "
+"pretiahnutím obrázkov z vašej plochy na ne?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:72
 msgid ""
 "Did you know that Sulfur has an Advanced mode, just click Sulfur -> Advanced "
 "mode?"
 msgstr ""
+"Vedeli ste, že Sulfur má pokročilý režim? len kliknite Sulfur -> Pokročilý "
+"režim"
 
 #: ../../sulfur/src/sulfur/dialogs.py:73
 msgid ""
 "Did you know that the guy who wrote this tip was really asleep at the time?"
-msgstr ""
+msgstr "Vedeli ste, že chlapík čo napísal tento tip vtedy spal?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:74
 msgid ""
 "Did you know that you can backup your installed application repository by "
 "enabling Advanced mode and going to Preferences tab?"
 msgstr ""
+"Vedeli ste, že môžete zálohovať váš repozitár nainštalovaných aplikácií na "
+"karte Predvoľby po zapnutí Pokročilého režimu?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:75
 msgid ""
 "Did you know that you can customize interface colors by enabling Advanced "
 "mode and going to Preferences tab?"
 msgstr ""
+"Vedeli ste, že si môžete upraviť farby rozhrania na karte Predvoľby po "
+"zapnutí Pokročilého režimu?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:174
 msgid "No Repository Identifier"
-msgstr ""
+msgstr "Žiaden identifikátor repozitáru"
 
 #: ../../sulfur/src/sulfur/dialogs.py:178
 msgid "Duplicated Repository Identifier"
-msgstr ""
+msgstr "Duplicitný identifikátor repozitára"
 
 #: ../../sulfur/src/sulfur/dialogs.py:184
 msgid "No download mirrors"
-msgstr ""
+msgstr "Nesťahovať zrkadlá"
 
 #: ../../sulfur/src/sulfur/dialogs.py:191
 msgid "Database URL must start either with http:// or ftp:// or file://"
-msgstr ""
+msgstr "URL databázy musí začínať s http:// alebo ftp:// alebo file://"
 
 #: ../../sulfur/src/sulfur/dialogs.py:199
 msgid "Repository Services Port not valid"
-msgstr ""
+msgstr "Port služby repozitáru nie je platný"
 
 #: ../../sulfur/src/sulfur/dialogs.py:207
 msgid "Secure Services Port not valid"
-msgstr ""
+msgstr "Port bečnostných služieb nie je platný"
 
 #: ../../sulfur/src/sulfur/dialogs.py:237
 #: ../../sulfur/src/sulfur/dialogs.py:250
@@ -6823,11 +6809,11 @@ msgstr "Vložte URL"
 #: ../../sulfur/src/sulfur/dialogs.py:238
 #: ../../sulfur/src/sulfur/dialogs.py:251
 msgid "Enter a download mirror, HTTP or FTP"
-msgstr ""
+msgstr "Vložte a stiahnite zrkadlo, HTTP alebo FTP"
 
 #: ../../sulfur/src/sulfur/dialogs.py:258
 msgid "You must enter either a HTTP or a FTP url."
-msgstr ""
+msgstr "Musíte vložiť buď HTTP alebo FTP url."
 
 #: ../../sulfur/src/sulfur/dialogs.py:263
 msgid "Insert Repository"
@@ -6839,12 +6825,12 @@ msgstr "Vložte indentifikačný reťazec repozitáru"
 
 #: ../../sulfur/src/sulfur/dialogs.py:275
 msgid "This Repository identification string is malformed"
-msgstr ""
+msgstr "Identifikačný reťazec repozitáru je poškodený"
 
 #: ../../sulfur/src/sulfur/dialogs.py:291
 #: ../../sulfur/src/sulfur/dialogs.py:298
 msgid "Wrong entries, errors"
-msgstr ""
+msgstr "Nesprávne položky, chyby"
 
 #: ../../sulfur/src/sulfur/dialogs.py:327
 #: ../../sulfur/src/sulfur/sulfur.glade.h:205
@@ -6866,7 +6852,7 @@ msgstr "Poznámka"
 
 #: ../../sulfur/src/sulfur/dialogs.py:596
 msgid "Expand to browse"
-msgstr ""
+msgstr "Rozbaľ k prehliadaniu"
 
 #: ../../sulfur/src/sulfur/dialogs.py:619
 #: ../../sulfur/src/sulfur/sulfur.glade.h:102
@@ -6876,15 +6862,15 @@ msgstr "Názov"
 #: ../../sulfur/src/sulfur/dialogs.py:625
 #: ../../sulfur/src/sulfur/sulfur.glade.h:16
 msgid "Author"
-msgstr ""
+msgstr "Autor"
 
 #: ../../sulfur/src/sulfur/dialogs.py:793
 msgid "Timeout Error"
-msgstr ""
+msgstr "Chyba časového limitu"
 
 #: ../../sulfur/src/sulfur/dialogs.py:794
 msgid "Connection timed out, sorry!"
-msgstr ""
+msgstr "Časový limit pripojenia vypršal, prepáčte!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1009
 msgid "Package ChangeLog"
@@ -6893,16 +6879,16 @@ msgstr ""
 #: ../../sulfur/src/sulfur/dialogs.py:1063
 #: ../../sulfur/src/sulfur/views.py:1814
 msgid "Vote registered successfully"
-msgstr ""
+msgstr "Hlas bol úspešne započítaný"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1065
 #: ../../sulfur/src/sulfur/views.py:1818
 msgid "Error registering vote"
-msgstr ""
+msgstr "Chyba pri započítavaní hlasu"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1078
 msgid "License name"
-msgstr ""
+msgstr "Meno licencie"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1094
 #: ../../sulfur/src/sulfur/sulfur.glade.h:135
@@ -6953,19 +6939,19 @@ msgstr "Zmazaný repozitár"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1483
 msgid "Bug"
-msgstr ""
+msgstr "Chyba"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1491
 msgid "Reference"
-msgstr ""
+msgstr "Posudok"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1568
 msgid "impact"
-msgstr ""
+msgstr "vplyv"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1572
 msgid "access"
-msgstr ""
+msgstr "prístup"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1587
 msgid "Vulnerables"
@@ -6977,11 +6963,11 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/dialogs.py:1679
 msgid "Id"
-msgstr ""
+msgstr "Id"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1779
 msgid "Write your"
-msgstr ""
+msgstr "Napíšte vaše"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1782
 msgid "Select your"
@@ -6989,40 +6975,40 @@ msgstr "Vyberte váš"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1789
 msgid "Submit issue"
-msgstr ""
+msgstr "Odovzdať problém"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1802
 msgid "Empty Document"
-msgstr ""
+msgstr "Prázdny dokument"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1806
 msgid "Invalid Description"
-msgstr ""
+msgstr "Neplatný popis"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1812
 msgid "Invalid Document Type"
-msgstr ""
+msgstr "Neplatný typ dokumentu"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1815
 msgid "Invalid Title"
-msgstr ""
+msgstr "Neplatný nadpis"
 
 #. confirm ?
 #: ../../sulfur/src/sulfur/dialogs.py:1819
 msgid "Do you confirm your submission?"
-msgstr ""
+msgstr "Potvrdzujete vaše podanie?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1845
 msgid "UGC Error"
-msgstr ""
+msgstr "OVU Chyba"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1849
 msgid "Document added successfully. Thank you"
-msgstr ""
+msgstr "Dokument bol úspešne pridaný. Ďakujeme"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1849
 msgid "Success!"
-msgstr ""
+msgstr "Úspech!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1903
 msgid "Write your document"
@@ -7034,19 +7020,20 @@ msgstr "Vyberte váš súbor"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1951
 msgid "On repository"
-msgstr ""
+msgstr "V repozitári"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2020
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
+"Toto sú balíčky, ktoré musia byť aktivované, aby bola splnená vaša požiadavka"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2022
 msgid "Some packages are masked"
-msgstr ""
+msgstr "Niektoré balíčky sú skryté"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2111
 msgid "Masked package"
-msgstr ""
+msgstr "Skrytý balíček"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2192
 #: ../../sulfur/src/sulfur/dialogs.py:2425
@@ -7057,18 +7044,18 @@ msgstr ""
 #: ../../sulfur/src/sulfur/package.py:273 ../../sulfur/src/sulfur/views.py:87
 #: ../../sulfur/src/sulfur/views.py:147 ../../sulfur/src/sulfur/views.py:2416
 msgid "No description"
-msgstr ""
+msgstr "Žiaden popis"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2315
 msgid "Please confirm the actions above"
-msgstr ""
+msgstr "Prosím potvrď te hore zobrazené činnosti"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2359
 #: ../../sulfur/src/sulfur/__init__.py:857
 #: ../../sulfur/src/sulfur/__init__.py:867
 #: ../../sulfur/src/sulfur/__init__.py:877
 msgid "Item"
-msgstr ""
+msgstr "Položka"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2376
 #: ../../sulfur/src/sulfur/dialogs.py:2430
@@ -7110,7 +7097,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/dialogs.py:2726
 msgid "Hey!"
-msgstr ""
+msgstr "Hej!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2768
 msgid "Please fill the following form"
@@ -7118,16 +7105,16 @@ msgstr "Prosím vyplnte nasledujúci formulár"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2838
 msgid "Add atom"
-msgstr ""
+msgstr "Pridať atom"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2994
 #: ../../sulfur/src/sulfur/dialogs.py:2996
 msgid "Invalid entry"
-msgstr ""
+msgstr "Neplatný vstup"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3056
 msgid "Cancel"
-msgstr ""
+msgstr "Zrušiť"
 
 #. new
 #: ../../sulfur/src/sulfur/dialogs.py:3147
@@ -7137,7 +7124,7 @@ msgstr "Prijatá"
 #: ../../sulfur/src/sulfur/dialogs.py:3214
 #: ../../sulfur/src/sulfur/events.py:673
 msgid "license text"
-msgstr ""
+msgstr "text licencie"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3256
 msgid "Exception caught"
@@ -7145,15 +7132,15 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/dialogs.py:3257
 msgid "Sulfur crashed! An unexpected error occured."
-msgstr ""
+msgstr "Sulfur spadol! Vyskytkla sa neočakavaná chyba."
 
 #: ../../sulfur/src/sulfur/dialogs.py:3278
 msgid "Your report has been submitted successfully! Thanks a lot."
-msgstr ""
+msgstr "Vaše známenie bolo úspešne odovzdané! Ďakujeme pekne."
 
 #: ../../sulfur/src/sulfur/dialogs.py:3280
 msgid "Cannot submit your report. Not connected to Internet?"
-msgstr ""
+msgstr "Nie je možné odovzdať vaše oznámenie. Ste pripojení na internet?"
 
 #: ../../sulfur/src/sulfur/entropyapi.py:98
 msgid "Error enabling masked package"
@@ -7161,66 +7148,66 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/entropyapi.py:130
 msgid "Downloading sources"
-msgstr ""
+msgstr "Sťahovanie zdrojov"
 
 #: ../../sulfur/src/sulfur/events.py:58
 msgid "Error during backup"
-msgstr ""
+msgstr "Chyba počas zálohy"
 
 #: ../../sulfur/src/sulfur/events.py:61
 msgid "Backup complete"
-msgstr ""
+msgstr "Záloha dokončená"
 
 #: ../../sulfur/src/sulfur/events.py:77
 msgid "Error during restore"
-msgstr ""
+msgstr "Chyba počas obnovenia"
 
 #: ../../sulfur/src/sulfur/events.py:82
 msgid "Restore complete"
-msgstr ""
+msgstr "Obnovenie dokončené"
 
 #: ../../sulfur/src/sulfur/events.py:92
 msgid "Error during removal"
-msgstr ""
+msgstr "Chyba počas odstránenia"
 
 #: ../../sulfur/src/sulfur/events.py:104
 msgid "The chosen package is not vulnerable"
-msgstr ""
+msgstr "Vybraný balíček nie je nechránený"
 
 #: ../../sulfur/src/sulfur/events.py:112
 msgid "Packages in Advisory have been queued."
-msgstr ""
+msgstr "Baličky v odporúčení boli pridané do fronty."
 
 #: ../../sulfur/src/sulfur/events.py:130
 msgid "Packages in all Advisories have been queued."
-msgstr ""
+msgstr "Balíčky vo všetkých odporúčaniach boli pridané do fronty."
 
 #: ../../sulfur/src/sulfur/events.py:246
 msgid "You! Why do you want to remove the main repository ?"
-msgstr ""
+msgstr "Vy! Prečo chcete odstrániť hlavný repozitár?"
 
 #: ../../sulfur/src/sulfur/events.py:278
 msgid "Are you sure ?"
-msgstr ""
+msgstr "Ste si istí?"
 
 #: ../../sulfur/src/sulfur/events.py:291
 msgid "Error saving parameter"
-msgstr ""
+msgstr "Chyba ukladania parametru"
 
 #: ../../sulfur/src/sulfur/events.py:292
 #: ../../sulfur/src/sulfur/__init__.py:1005
 msgid "An issue occured while saving a preference"
-msgstr ""
+msgstr "Počas ukladania predvoľby sa vyskytol problém"
 
 #: ../../sulfur/src/sulfur/events.py:293
 #: ../../sulfur/src/sulfur/__init__.py:970
 #: ../../sulfur/src/sulfur/__init__.py:1006
 msgid "Parameter"
-msgstr ""
+msgstr "Parameter"
 
 #: ../../sulfur/src/sulfur/events.py:293
 msgid "not saved"
-msgstr ""
+msgstr "nie je uložené"
 
 #: ../../sulfur/src/sulfur/events.py:306 ../../sulfur/src/sulfur/events.py:312
 #: ../../sulfur/src/sulfur/events.py:318 ../../sulfur/src/sulfur/events.py:342
@@ -7240,28 +7227,28 @@ msgstr "Prosím upravte vybranú cestu"
 
 #: ../../sulfur/src/sulfur/events.py:385
 msgid "You have chosen to install this package"
-msgstr ""
+msgstr "Vybrali ste nainštalovať tento balíček"
 
 #: ../../sulfur/src/sulfur/events.py:387
 msgid "Are you supa sure?"
-msgstr ""
+msgstr "Ste si fakt istí?"
 
 #: ../../sulfur/src/sulfur/events.py:407
 msgid "Cannot install"
-msgstr ""
+msgstr "Nie je možné nainštalovať"
 
 #: ../../sulfur/src/sulfur/events.py:538
 msgid "Please select at least one repository"
-msgstr ""
+msgstr "Prosím vyberte aspoň jeden repozitár"
 
 #. Check there are any packages in the queue
 #: ../../sulfur/src/sulfur/events.py:560
 msgid "No packages in queue"
-msgstr ""
+msgstr "Žiadne balíčky nie sú vo fronte"
 
 #: ../../sulfur/src/sulfur/events.py:600
 msgid "Queue is too old. Cannot load."
-msgstr ""
+msgstr "Fronta je príliš stará. Nie je možné načítať."
 
 #: ../../sulfur/src/sulfur/events.py:686
 msgid "Update your system now ?"
@@ -7270,11 +7257,11 @@ msgstr ""
 #: ../../sulfur/src/sulfur/events.py:703
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
-msgstr ""
+msgstr "Vybrali ste prerušiť spracovanie. Ste si istí že to chcete urobiť?"
 
 #: ../../sulfur/src/sulfur/events.py:791
 msgid "Cleaning UGC cache of"
-msgstr ""
+msgstr "Čistenie vyrovnávacej pamäť OVU od"
 
 #: ../../sulfur/src/sulfur/events.py:792
 msgid "UGC cache cleared"
@@ -7313,15 +7300,16 @@ msgid "Choose what Package Set you want to remove"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:78
-#, fuzzy
 msgid ""
 "Another Entropy instance is running. You won't be able to install/remove/"
 "sync applications."
-msgstr "Beží ina výzva Entropy. Nie je možné spracovať frontu."
+msgstr ""
+"Beží ina výzva Entropy. Nebudete môcť inštalovať/odstrániť/synchronizovať "
+"aplikácie"
 
 #: ../../sulfur/src/sulfur/__init__.py:84
 msgid "Entropy is running in safe mode"
-msgstr ""
+msgstr "Entropy beží v bezpečnom móde"
 
 #: ../../sulfur/src/sulfur/__init__.py:85
 msgid "Please fix as soon as possible"
@@ -7329,19 +7317,19 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:87
 msgid "Safe Mode"
-msgstr ""
+msgstr "Bezpečný mód"
 
 #: ../../sulfur/src/sulfur/__init__.py:107
 msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
-msgstr ""
+msgstr "1. Apríl, w0000h0000! Bude vymazaný váš pevný disk!"
 
 #: ../../sulfur/src/sulfur/__init__.py:109
 msgid "Love love love... <3"
-msgstr ""
+msgstr "Láska láska láska... <3"
 
 #: ../../sulfur/src/sulfur/__init__.py:111
 msgid "Oh oh ooooh... Merry Xmas!"
-msgstr ""
+msgstr "Oh oh ooooh... Veselé Vianoce!"
 
 #: ../../sulfur/src/sulfur/__init__.py:322
 #: ../../sulfur/src/sulfur/views.py:2328
@@ -7351,7 +7339,7 @@ msgstr "Aplikácie"
 
 #: ../../sulfur/src/sulfur/__init__.py:324
 msgid "Sync"
-msgstr ""
+msgstr "Synchronizovať"
 
 #: ../../sulfur/src/sulfur/__init__.py:328
 #: ../../sulfur/src/sulfur/sulfur.glade.h:216
@@ -7414,7 +7402,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:582
 msgid "Skip"
-msgstr ""
+msgstr "Preskočiť"
 
 #: ../../sulfur/src/sulfur/__init__.py:886
 msgid "Database"
@@ -7431,7 +7419,7 @@ msgstr "Prihlásený ako"
 
 #: ../../sulfur/src/sulfur/__init__.py:944
 msgid "UGC Status"
-msgstr ""
+msgstr "OVU Stav"
 
 #: ../../sulfur/src/sulfur/__init__.py:967
 #: ../../sulfur/src/sulfur/__init__.py:1003
@@ -7480,9 +7468,8 @@ msgid "Error loading advisories"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1339
-#, fuzzy
 msgid "Updating repositories..."
-msgstr "_Aktualizovať Repozitáre"
+msgstr "Aktualizácia repozitárov"
 
 #: ../../sulfur/src/sulfur/__init__.py:1342
 #: ../../sulfur/src/sulfur/__init__.py:1419
@@ -7497,51 +7484,52 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1374
 msgid "Please check logs below for more info"
-msgstr ""
+msgstr "Prosím pre viac informácií skontrolujte zápis dolu"
 
 #: ../../sulfur/src/sulfur/__init__.py:1378
 msgid "Repositories updated successfully"
-msgstr ""
+msgstr "Repozitáre boli úspešne aktualizované"
 
 #: ../../sulfur/src/sulfur/__init__.py:1382
 msgid "All the repositories were already up to date."
-msgstr ""
+msgstr "Všetky repozitáre boli už aktualizované."
 
 #: ../../sulfur/src/sulfur/__init__.py:1385
 msgid "repositories were already up to date. Others have been updated."
-msgstr ""
+msgstr "repozitáre boli už aktualizované. Ostatné bolo aktualizované."
 
 #: ../../sulfur/src/sulfur/__init__.py:1389
 msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr ""
+msgstr "je potrebné aktualizovať sys-apps/entropy čo najskôr."
 
 #: ../../sulfur/src/sulfur/__init__.py:1416
-#, fuzzy
 msgid "Testing dependencies..."
-msgstr "závislosť"
+msgstr "Testovanie závislostí..."
 
 #: ../../sulfur/src/sulfur/__init__.py:1448
 msgid "No missing dependencies found."
-msgstr ""
+msgstr "Neboli nájdené žiadne chýbajúce závislosti."
 
 #: ../../sulfur/src/sulfur/__init__.py:1485
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
+"Boli zistené chýbajúce závislosti, ale niektoré z nich nie sú v repozitároch."
 
 #: ../../sulfur/src/sulfur/__init__.py:1492
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
 msgstr ""
+"Niektoré chýbajúce závislosti neboli uzavreté, ostatné budú pridané do "
+"fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1495
 msgid "All the missing dependencies are going to be added to the queue"
-msgstr ""
+msgstr "Vsetky chýbajúce závislosti budú pridané do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1507
-#, fuzzy
 msgid "Testing libraries..."
-msgstr "Potrebné knižnice"
+msgstr "Testovanie knižníc..."
 
 #: ../../sulfur/src/sulfur/__init__.py:1530
 #: ../../sulfur/src/sulfur/__init__.py:2275
@@ -7550,17 +7538,18 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:1560
 msgid "Libraries test aborted"
-msgstr ""
+msgstr "Test knižníc bol prerušený"
 
 #: ../../sulfur/src/sulfur/__init__.py:1570
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
 msgstr ""
+"Niektoré poškodené balíčky neboli uzavreté, ostatné budú pridané do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1573
 msgid "All the broken packages are going to be added to the queue"
-msgstr ""
+msgstr "Všetky poškodené balíčky budú pridané do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1581
 msgid "Nothing to do. I am idle."
@@ -7583,6 +7572,8 @@ msgid ""
 "These packages should be removed because support has been dropped. Do you "
 "want to remove them?"
 msgstr ""
+"Tieto balíčky by mali byť odstránené, pretože ich podpora bola vyradená. "
+"Chcete ich vymazať?"
 
 #: ../../sulfur/src/sulfur/__init__.py:1688
 msgid "updates"
@@ -7595,24 +7586,23 @@ msgstr "Zobrazenie"
 #: ../../sulfur/src/sulfur/__init__.py:1797
 msgid "No packages need or can be queued at the moment."
 msgstr ""
+"Vtomto momente žiaden balíček nie je potrebné alebo možné pridať do fronty."
 
 #: ../../sulfur/src/sulfur/__init__.py:1888
-#, fuzzy
 msgid "Name and description"
-msgstr "Popis príkazu"
+msgstr "Meno a popis"
 
 #: ../../sulfur/src/sulfur/__init__.py:1894
-#, fuzzy
 msgid "Entropy Search"
-msgstr "Entropy API"
+msgstr "Entropy hľadanie"
 
 #: ../../sulfur/src/sulfur/__init__.py:1952
 msgid "Abort action"
-msgstr ""
+msgstr "Prerušiť činnosť"
 
 #: ../../sulfur/src/sulfur/__init__.py:1953
 msgid "Ignore"
-msgstr ""
+msgstr "Ignorovať"
 
 #: ../../sulfur/src/sulfur/__init__.py:1985
 #: ../../sulfur/src/sulfur/__init__.py:2001
@@ -7634,22 +7624,20 @@ msgid "Attention. You chose to abort the processing."
 msgstr "Pozor. Vybrali ste prerušenie spracovanie."
 
 #: ../../sulfur/src/sulfur/__init__.py:2129
-#, fuzzy
 msgid ""
 "Attention. An error occured while processing the queue.\n"
 "Please have a look at the terminal."
 msgstr ""
 "Pozor. Vyskytla sa chyba počas spracovania fronty.\n"
-"Prosím pozrite sa do terminálu o spracovaní."
+"Prosím pozrite sa na terminál."
 
 #: ../../sulfur/src/sulfur/__init__.py:2141
-#, fuzzy
 msgid ""
 "Attention. Something really bad happened.\n"
 "Please have a look at the terminal."
 msgstr ""
-"Pozor. Vyskytla sa chyba počas spracovania fronty.\n"
-"Prosím pozrite sa do terminálu o spracovaní."
+"Pozor. Stalo sa niečo zlé.\n"
+"Prosím pozrite sa na terminál."
 
 #: ../../sulfur/src/sulfur/__init__.py:2149
 msgid ""
@@ -7733,7 +7721,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/packages.py:958
 msgid "Unknown"
-msgstr ""
+msgstr "Neznámy"
 
 #: ../../sulfur/src/sulfur/packages.py:963
 msgid "User configuration"
@@ -7753,17 +7741,16 @@ msgstr "Vyzerá, že váš systém je už aktuálny. Výborne!"
 
 #: ../../sulfur/src/sulfur/packages.py:1043
 #: ../../sulfur/src/sulfur/views.py:2611
-#, fuzzy
 msgid "Please wait, loading..."
-msgstr "Prosím čakajte"
+msgstr "Prosím čakajte, načítavanie..."
 
 #: ../../sulfur/src/sulfur/packages.py:1044
 msgid "The current view is loading."
-msgstr ""
+msgstr "Aktuálne zobrazenie sa načítava"
 
 #: ../../sulfur/src/sulfur/packages.py:1045
 msgid "Be patient, sit down and relax."
-msgstr ""
+msgstr "Buďte trpezliví, sadnite si a relaxujte."
 
 #: ../../sulfur/src/sulfur/packages.py:1054
 msgid "No packages found means nothing to show!"
@@ -7776,7 +7763,7 @@ msgstr "Neboli nájdené žiadne balíčky zodpovedajúce hľadanému výrazu"
 #: ../../sulfur/src/sulfur/packages.py:1063
 #: ../../sulfur/src/sulfur/packages.py:1066
 msgid "No packages to show"
-msgstr ""
+msgstr "Žiadne balíčky k zobrazeniu"
 
 #: ../../sulfur/src/sulfur/packages.py:1067
 msgid "There are no packages that can be shown, sorry."
@@ -7792,7 +7779,7 @@ msgstr "Preklad:"
 
 #: ../../sulfur/src/sulfur/setup.py:143
 msgid "Dedicated to:"
-msgstr "Venovaný:"
+msgstr "Venované:"
 
 #: ../../sulfur/src/sulfur/views.py:347
 msgid "entered the repository"
@@ -7881,9 +7868,8 @@ msgid "Application name"
 msgstr "Meno aplikácie"
 
 #: ../../sulfur/src/sulfur/views.py:2612
-#, fuzzy
 msgid "Advisories are being loaded"
-msgstr "Aktualizujú sa repozitáre"
+msgstr "Odporúčania sa načítavajú"
 
 #: ../../sulfur/src/sulfur/views.py:2669
 msgid "No advisories"
@@ -8098,11 +8084,11 @@ msgstr "Pridať Dokument"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:5
 msgid "Add USE"
-msgstr ""
+msgstr "Pridať USE"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:6
 msgid "Add USE flags on atoms"
-msgstr ""
+msgstr "Pridať USE označenia na atomoch"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:7
 msgid "Add/Edit Repository"
@@ -8115,7 +8101,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:9
 msgid "Advanced Mode"
-msgstr "Pokročilý Režim"
+msgstr "Pokročilý režim"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:10
 msgid "Advisory information"
@@ -8198,7 +8184,7 @@ msgstr "Vymazať všetky posudky"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:37
 msgid "Click to start searching"
-msgstr ""
+msgstr "Kliknite sem na začatie hľadania"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:38
 msgid "Close notice"
@@ -8226,7 +8212,7 @@ msgstr "Príkazy"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:44
 msgid "Compile atoms"
-msgstr ""
+msgstr "Kompilovať atomy"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:45
 msgid "Compile packages on the remote server"
@@ -8307,9 +8293,8 @@ msgstr ""
 "Inštalácia+Odstránenie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:68
-#, fuzzy
 msgid "Discard login information"
-msgstr "Informácie o balíčkoch"
+msgstr "Vymazať prihlasovacie informácie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:70
 msgid "Done"
@@ -8398,9 +8383,8 @@ msgid "General"
 msgstr "Hlavné"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:92
-#, fuzzy
 msgid "Generate login information"
-msgstr "Vytvoriť Prihlásenie"
+msgstr "Vytvoriť prihlasovacie informácie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:93
 msgid "Generic title 1"
@@ -8448,7 +8432,7 @@ msgstr "Zamietnuté chranené súbory"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:107
 msgid "Install Set"
-msgstr ""
+msgstr "Nainštalovať systémový balíček"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:108
 msgid "Install Size"
@@ -8472,7 +8456,7 @@ msgstr "Nainštaluje vybraný balíček"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:114
 msgid "Installed Packages"
-msgstr ""
+msgstr "Nainštalované balíčky"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:115
 msgid "Interactivity"
@@ -8492,11 +8476,11 @@ msgstr "Kľúčové slová (oddelené medzerou)"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "Library test"
-msgstr ""
+msgstr "Test knižnice"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Load User Generated Content"
-msgstr ""
+msgstr "Načítať užívateľom vytvorený obsah"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:124
 msgid "Load content"
@@ -8516,15 +8500,15 @@ msgstr "Z_lúčiť"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:128
 msgid "Mark as read"
-msgstr ""
+msgstr "Označ ako prečítané"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "Mask the selected packages"
-msgstr ""
+msgstr "Skryť vybrané balíčky"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:130
 msgid "Mask this package"
-msgstr ""
+msgstr "Skryť tieto balíčky"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:132
 msgid "Merge all"
@@ -8580,7 +8564,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:148
 msgid "Package Information"
-msgstr ""
+msgstr "Informácie o balíčku"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:149
 msgid "Package Masking"
@@ -8705,7 +8689,7 @@ msgstr "Úplne ostrániť"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:180
 msgid "Q_ueue packages in selected Advisory"
-msgstr "P_ridať balíčky v pokročilom výbere"
+msgstr "P_ridať balíčky vo vybranom odporučení"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:181
 msgid "Queue Id"
@@ -8777,7 +8761,7 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:200
 msgid "Remove packages on the remote server"
-msgstr ""
+msgstr "Vymazať balíčky na vzdialenom serveri"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:201
 msgid "Remove the selected Package Set"
@@ -8789,7 +8773,7 @@ msgstr "Vymazať vybraný balíček"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:203
 msgid "Remove the selected package and its configuration"
-msgstr "Vymazať vybraný balíček a jeho natavenie"
+msgstr "Vymazať vybraný balíček a jeho nastavenie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:204
 msgid "Repositories"
@@ -8837,7 +8821,7 @@ msgstr "Bezpečnostné avíza, uistite sa, že váš počítač je skutočne zab
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:220
 msgid "Security updates"
-msgstr ""
+msgstr "Bezpečnostné aktualizácie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:221
 msgid "Services Port"
@@ -8845,7 +8829,7 @@ msgstr "Port"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Sets"
-msgstr ""
+msgstr "Systémové"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:223
 msgid "Show ChangeLog"
@@ -8857,7 +8841,7 @@ msgstr "Ukáž vybrané"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:225
 msgid "Show Sulfur tips and tricks"
-msgstr ""
+msgstr "Zobrazí tipy a triky pre Sulfur"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:226
 msgid "Show all"
@@ -8889,11 +8873,11 @@ msgstr "Ukáže skryté aplikácie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "Show package sets (groups)"
-msgstr ""
+msgstr "Ukáže systémové balíčky (skupiny)"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:234
 msgid "Show tips on startup"
-msgstr ""
+msgstr "Zobraz tipy pri štarte"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:235
 msgid "Show unapplied"
@@ -8937,7 +8921,7 @@ msgstr "Sulfur"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:247
 msgid "Sulfur tips and tricks"
-msgstr ""
+msgstr "Tipy a triky pre Sulfur"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:248
 msgid "Switch Sulfur to Advanced Mode"
@@ -8977,11 +8961,11 @@ msgstr "Toto je to, čo sa nazýva \"nice level\""
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "Tips 'n tricks"
-msgstr ""
+msgstr "Tipy a triky"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:260
 msgid "UGC Entry Information"
-msgstr ""
+msgstr "OVU vstupné informácie"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:261
 msgid "URI"
@@ -9149,7 +9133,7 @@ msgstr "_Vlastnosti"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:306
 msgid "_Queue all vulnerable packages"
-msgstr "_Pridať všetky poškodené balíčky"
+msgstr "_Pridať všetky nechránené balíčky"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:307
 msgid "_Read License"
@@ -9188,9 +9172,8 @@ msgid "_Update Repositories"
 msgstr "_Aktualizovať Repozitáre"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:316
-#, fuzzy
 msgid "_Update all"
-msgstr "Aktualizuj"
+msgstr "_Aktualizuj všetko"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:317
 msgid "button"
@@ -9247,9 +9230,8 @@ msgstr "Spustiť Správcu _Balíčkov"
 #~ msgid "Already removed"
 #~ msgstr "Už zmazané"
 
-#, fuzzy
 #~ msgid "Actions"
-#~ msgstr "operácia"
+#~ msgstr "Činnosti"
 
 #~ msgid "_Add All"
 #~ msgstr "_Pridať Všetko"
@@ -9263,15 +9245,14 @@ msgstr "Spustiť Správcu _Balíčkov"
 #~ msgid "While you are waiting, take a break and look outside. Is it rainy?"
 #~ msgstr "Zatiaľ čo čakáte, dajte si pauzu a pozrite sa von. Prší?"
 
-#, fuzzy
-#~ msgid "Queue"
-#~ msgstr "Spustiť frontu"
-
 #~ msgid "Applications marked for install or removal are here!"
 #~ msgstr "Tu sú aplikácie označené na inštaláciu alebo zmazanie!"
 
 #~ msgid "Installation"
 #~ msgstr "Inštalácia"
+
+#~ msgid "Run Queue"
+#~ msgstr "Spustiť frontu"
 
 #~ msgid "valid database path needed"
 #~ msgstr "je potrebná platná cesta k databáze"
