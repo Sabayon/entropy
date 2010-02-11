@@ -1,3 +1,21 @@
+commit aa2e3f17b1d4d1824fedd2cfedc847eff19fc037
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 20:40:10 2010 +0100
+
+    [entropy.client] I HATE PYTHON
+
+commit 36b6fedd8d464d615e4a2fc02d5bb68644c7a990
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 20:39:05 2010 +0100
+
+    [entropy.client] fix undefined reference
+
+commit 4d8f44db4548db94e84d3d781fbef489c99e837b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 19:05:26 2010 +0100
+
+    Tagging Entropy version 0.99.34.2
+
 commit abb64da09586663a2424793819a7fd036e2d165f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 11 19:05:03 2010 +0100
