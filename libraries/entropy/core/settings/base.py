@@ -287,12 +287,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         with self.__mutex:
             return len(self.__data)
 
-    def get(self, mykey, alt_obj = None):
+    def get(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.get(mykey, alt_obj)
+            return self.__data.get(*args, **kwargs)
 
     def copy(self):
         """
@@ -301,12 +301,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         with self.__mutex:
             return self.__data.copy()
 
-    def fromkeys(self, seq, val = None):
+    def fromkeys(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.fromkeys(seq, val)
+            return self.__data.fromkeys(*args, **kwargs)
 
     def items(self):
         """
@@ -336,12 +336,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         with self.__mutex:
             return self.__data.keys()
 
-    def pop(self, mykey, default = None):
+    def pop(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.pop(mykey, default)
+            return self.__data.pop(*args, **kwargs)
 
     def popitem(self):
         """
@@ -350,12 +350,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         with self.__mutex:
             return self.__data.popitem()
 
-    def setdefault(self, mykey, default = None):
+    def setdefault(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.setdefault(mykey, default)
+            return self.__data.setdefault(*args, **kwargs)
 
     def update(self, kwargs):
         """
