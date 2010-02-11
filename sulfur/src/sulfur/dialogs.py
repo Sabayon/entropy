@@ -867,6 +867,10 @@ class PkgInfoMenu(MenuSkel):
                 "setup_ugc_icon, UGC store path fetched for (%s, %s): %s" % (
                     self.pkgkey, self.repository, store_path,))
 
+        if store_path is None:
+            # cannot get store path
+            return
+
         if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
             return
 
