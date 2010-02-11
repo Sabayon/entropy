@@ -43,6 +43,8 @@ help_opts = [
     None,
     (0, _('Application Options'), 0, None),
     None,
+    (1, 'status', 3, _('show current repositories status')),
+    None,
     (1, 'update', 3, _('scan the System looking for newly compiled packages')),
         (2, '--seekstore', 2, _('analyze the Entropy Store directory directly')),
         (2, '--repackage <atoms>', 1, _('repackage the specified atoms')),
@@ -88,7 +90,6 @@ help_opts = [
     (1, 'repo', 3, _('manage a repository')),
         (2, 'enable <repo>', 3, _('enable the specified repository')),
         (2, 'disable <repo>', 3, _('disable the specified repository')),
-        (2, 'status <repo>', 3, _('show the current Server Interface status')),
         (2, 'package-dep <repo> [atoms]', 1, _('handle packages dependencies')),
         (2, 'package-tag <repo> <tag-string> [atoms]', 1, _('clone a package assigning it an arbitrary tag')),
         (2, 'move <from> <to> [atoms]', 1, _('move packages from a repository to another')),
@@ -183,7 +184,6 @@ elif main_cmd == "inject":
     rc = server_reagent.inject(options)
     server_reagent.Entropy.close_repositories()
 
-# database tool
 elif main_cmd == "database":
     if "switchbranch" in options:
         etpUi['warn'] = False
@@ -199,6 +199,12 @@ elif main_cmd == "query":
 elif main_cmd == "repo":
     import server_reagent
     rc = server_reagent.repositories(options)
+
+elif main_cmd == "status":
+    import server_reagent
+    server_reagent.status()
+    server_reagent.Entropy.close_repositories()
+    rc = 0
 
 elif main_cmd == "key":
     import server_key

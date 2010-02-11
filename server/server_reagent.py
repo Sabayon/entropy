@@ -16,9 +16,12 @@ from entropy.output import red, bold, brown, purple, darkgreen, darkred, blue, \
     green, print_info, print_warning, print_error, print_generic, teal
 from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
+from entropy.core.settings.base import SystemSettings
 from entropy.i18n import _
+
 import entropy.tools
 Entropy = Server(community_repo = etpConst['community']['mode'])
+SYS_SET = SystemSettings()
 
 def inject(options):
 
@@ -123,9 +126,6 @@ def repositories(options):
         Entropy.switch_default_repository(repoid, save = True)
         return 0
 
-    elif cmd == "status":
-        return 0
-
     elif cmd == "package-tag":
 
         if len(myopts) < 3:
@@ -134,7 +134,7 @@ def repositories(options):
 
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        srv_set = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+        srv_set = SYS_SET[sys_settings_plugin_id]['server']
         if repo not in srv_set['repositories']:
             return 3
 
@@ -165,7 +165,7 @@ def repositories(options):
 
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        srv_set = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+        srv_set = SYS_SET[sys_settings_plugin_id]['server']
         if repo not in srv_set['repositories']:
             return 3
 
@@ -646,7 +646,7 @@ def database(options):
 
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        for repoid in Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories']:
+        for repoid in SYS_SET[sys_settings_plugin_id]['server']['repositories']:
 
             print_info(darkgreen(" * ")+"%s %s %s: %s" % (
                 blue(_("Collecting packages that would be marked")),
@@ -832,13 +832,51 @@ def database(options):
                 dbpath = db_data.pop(myid)
             except IndexError:
                 continue
-            if not os.path.isfile(dbpath): continue
+            if not os.path.isfile(dbpath):
+                continue
             break
 
         status, err_msg = Entropy.Client.restore_database(dbpath, db_file)
         if status:
             return 0
         return 1
+
+def status():
+
+    sys_settings_plugin_id = \
+        etpConst['system_settings_plugins_ids']['server_plugin']
+    repos_data = SYS_SET[sys_settings_plugin_id]['server']['repositories']
+
+    for repo_id in sorted(repos_data):
+        repo_data = repos_data[repo_id]
+        repo_rev = Entropy.get_local_repository_revision(repo = repo_id)
+        store_dir = Entropy._get_local_store_directory(repo = repo_id)
+        upload_basedir = Entropy._get_local_upload_directory(repo = repo_id)
+        upload_files, upload_packages = \
+            Entropy.Mirrors._calculate_local_upload_files(repo = repo_id)
+        local_files, local_packages = \
+            Entropy.Mirrors._calculate_local_package_files(repo = repo_id)
+
+        print_info("[%s] %s" % (purple(repo_id),
+            brown(repo_data['description']),))
+
+        print_info("  %s:\t\t\t%s" % (
+            blue(_("local revision")), repo_rev,))
+        print_info("  %s:\t\t\t%s" % (
+            darkgreen(_("local packages")), local_files,))
+
+        store_pkgs = []
+        if os.path.isdir(store_dir):
+            store_pkgs = os.listdir(store_dir)
+        print_info("  %s:\t\t\t%s" % (
+            darkgreen(_("stored packages")), len(store_pkgs),))
+        for pkg_rel in sorted(store_pkgs):
+            print_info("\t%s" % (brown(pkg_rel),))
+
+        print_info("  %s:\t\t\t%s" % (
+            teal(_("upload packages")), upload_files,))
+        for pkg_rel in sorted(upload_packages):
+            print_info("\t%s" % (brown(pkg_rel),))
 
 
 def spm(options):

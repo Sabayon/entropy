@@ -40,6 +40,10 @@ disable colorized output
 
 =over
 
+=item B<status>
+
+show current repositories status
+
 =item B<update>
 
 scan the System looking for newly compiled packages
@@ -244,10 +248,6 @@ enable the specified repository
 =item B<disable <repo>>
 
 disable the specified repository
-
-=item B<status <repo>>
-
-show the current Server Interface status
 
 =item B<package-dep <repo> [atoms]>
 
