@@ -125,7 +125,7 @@ class const:
 
            (_("Translation:"),
             (
-                "ca - Roger Calvò",
+                "ca - Roger Calvó",
                 "de - N/A",
                 "es - Daniel Halens Rodriguez",
                 "fr - Suffys Nicolas",
