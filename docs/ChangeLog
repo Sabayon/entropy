@@ -1,3 +1,27 @@
+commit abb64da09586663a2424793819a7fd036e2d165f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 19:05:03 2010 +0100
+
+    [entropy.server] atom_match: disable packagesFilter
+
+commit 3c9096d7ad98065b928aa7481c529c8bb564b168
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:50:29 2010 +0100
+
+    [sulfur] dialogs: when UGC icon store path is not available, just give up
+
+commit 40dfae77f0364a08e61fbe8a73607403bb87eebb
+Author: Daniel Halens Rodriguez <dhalens@lappie.(none)>
+Date:   Thu Feb 11 17:35:33 2010 +0000
+
+    [translations] Update sk translation
+
+commit 2908295d5672301a1ab67a9814ab007848a31b4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 18:30:40 2010 +0100
+
+    Tagging Entropy version 0.99.34.1
+
 commit 9da7ad8cdde9bab02e050885b4045bf5821d3cda
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 11 18:30:04 2010 +0100
