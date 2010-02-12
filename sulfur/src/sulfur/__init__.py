@@ -72,10 +72,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._ugc_status = "--nougc" not in sys.argv
         self._RESOURCES_LOCKED = False
         locked = self.Equo.application_lock_check(silent = True)
-        if locked:
+        is_root = os.getuid() == 0
+        if locked or (not is_root):
             self._RESOURCES_LOCKED = True
-            okDialog( None,
-                _("Another Entropy instance is running. You won't be able to install/remove/sync applications.") )
+            if locked:
+                okDialog( None,
+                    _("Another Entropy instance is running. You won't be able to install/remove/sync applications.") )
         self.safe_mode_txt = ''
         # check if we'are running in safe mode
         if self.Equo.safe_mode:
@@ -287,7 +289,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.reset_progress_text()
         self.pkgProperties_selected = None
         self.setup_pkg_sorter()
-        self.setup_user_generated_content()
+        self.setup_user_generated_content()        if not self._RESOURCES_LOCKED:
+            self.ui.systemVbox.show()
+        else:
+            self.ui.systemVbox.hide()
 
         simple_mode = 1
         if "--advanced" in sys.argv:
@@ -395,8 +400,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbPkgSets.hide()
         self.ui.rbAll.show()
 
-        if self.filesView.is_filled():
-            self.ui.systemVbox.show()
+        # completely hide config files update menu if resources are locked
+        if not self._RESOURCES_LOCKED:
+            if self.filesView.is_filled():
+                self.ui.systemVbox.show()
+            else:
+                self.ui.systemVbox.hide()
         else:
             self.ui.systemVbox.hide()
 
@@ -450,7 +459,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbPkgSets.show()
         self.ui.rbAll.hide()
 
-        self.ui.systemVbox.show()
+        # completely hide config files update menu if resources are locked
+        if not self._RESOURCES_LOCKED:
+            self.ui.systemVbox.show()
+        else:
+            self.ui.systemVbox.hide()
         self.ui.securityVbox.show()
         self.ui.prefsVbox.show()
         self.ui.reposVbox.show()
@@ -1846,7 +1859,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.progressVBox.show()
 
     def show_notebook_tabs_after_install(self):
-        self.ui.systemVbox.show()
+        if not self._RESOURCES_LOCKED:
+            self.ui.systemVbox.show()
+        else:
+            self.ui.systemVbox.hide()
         self.ui.packagesVbox.show()
         self.switch_application_mode(SulfurConf.simple_mode)
 
