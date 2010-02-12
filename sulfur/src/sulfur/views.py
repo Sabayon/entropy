@@ -687,6 +687,7 @@ class EntropyPackageView:
         self.queue_empty_exception = Empty
 
         self.__pkg_ugc_icon_cache = {}
+        self.__pkg_ugc_icon_call_cache = {}
         self._ugc_load_queue = queue_class(10) # max 10 items at time
         self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
         if self._ugc_status:
@@ -1691,6 +1692,7 @@ class EntropyPackageView:
             self.Equo.UGC.get_docs(repoid, key)
 
         self.__pkg_ugc_icon_cache.clear()
+        self.__pkg_ugc_icon_call_cache.clear()
         self._ugc_pixbuf_map.clear()
         self._ugc_metadata_sync_exec_cache.clear()
         self._emit_ugc_update()
@@ -2006,6 +2008,7 @@ class EntropyPackageView:
                 if self.Equo.UGC.UGCCache.is_alldocs_cached(key, repoid):
                     continue
                 self.Equo.UGC.get_docs(repoid, key)
+            self.__pkg_ugc_icon_call_cache.clear()
 
         def do_fork():
             fork_function(do_ugc_sync, self._emit_ugc_update)
@@ -2049,7 +2052,10 @@ class EntropyPackageView:
 
         if store_path is None:
             # not cached
-            self._spawn_ugc_icon_fetch(icon_doc, repoid)
+            called = self.__pkg_ugc_icon_call_cache.get(cache_key)
+            if not called:
+                self._spawn_ugc_icon_fetch(icon_doc, repoid)
+            self.__pkg_ugc_icon_call_cache[cache_key] = True
             return
 
         if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
