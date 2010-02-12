@@ -2064,7 +2064,8 @@ class EntropyPackageView:
                 try:
                     resize_image(EntropyPackageView.ROW_HEIGHT, store_path,
                         icon_path)
-                except ValueError:
+                except (ValueError, OSError,):
+                    # OSError = source file moved while copying
                     return None
 
             try:
