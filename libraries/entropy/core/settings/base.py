@@ -1331,7 +1331,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: raw text extracted from file
         @rtype: list
         """
-        return entropy.tools.generic_file_content_parser(filepath)
+        lines = entropy.tools.generic_file_content_parser(filepath)
+        # filter out non-ASCII lines
+        lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
+        return lines
 
     def __remove_repo_cache(self, repoid = None):
         """
