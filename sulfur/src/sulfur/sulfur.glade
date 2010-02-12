@@ -721,7 +721,7 @@
                   <widget class="GtkScrolledWindow" id="swPkg">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hadjustment">0 0 1372 137.20000000000002 1234.8 1372</property>
+                    <property name="hadjustment">0 0 1400 140 1260 1400</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
@@ -779,7 +779,7 @@
                                         <property name="visible">True</property>
                                         <property name="spacing">2</property>
                                         <child>
-                                          <widget class="GtkImage" id="image84">
+                                          <widget class="GtkImage" id="updateAllImage">
                                             <property name="visible">True</property>
                                             <property name="icon_name">emblem-downloads</property>
                                           </widget>

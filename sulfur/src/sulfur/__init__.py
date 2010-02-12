@@ -760,8 +760,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         iconpath = os.path.join(const.PIXMAPS_PATH, "sabayon.png")
         if os.path.isfile(iconpath) and os.access(iconpath, os.R_OK):
             try:
-                p = gtk.gdk.pixbuf_new_from_file( iconpath )
+                p = gtk.gdk.pixbuf_new_from_file(iconpath)
                 self.ui.progressImage.set_from_pixbuf(p)
+            except gobject.GError:
+                pass
+
+        # setup Update All icon
+        iconpath = os.path.join(const.PIXMAPS_PATH, "update-all.png")
+        if os.path.isfile(iconpath) and os.access(iconpath, os.R_OK):
+            try:
+                p = gtk.gdk.pixbuf_new_from_file(iconpath)
+                self.ui.updateAllImage.set_from_pixbuf(p)
             except gobject.GError:
                 pass
 
