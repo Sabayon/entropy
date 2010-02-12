@@ -289,7 +289,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.reset_progress_text()
         self.pkgProperties_selected = None
         self.setup_pkg_sorter()
-        self.setup_user_generated_content()        if not self._RESOURCES_LOCKED:
+        self.setup_user_generated_content()
+        if not self._RESOURCES_LOCKED:
             self.ui.systemVbox.show()
         else:
             self.ui.systemVbox.hide()
