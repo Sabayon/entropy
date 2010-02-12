@@ -527,7 +527,7 @@ class RmNoticeBoardMenu(MenuSkel):
             t = xitem.get_text()
             xitem.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_pkgsubtitle, t,))
         t = self.rm_ui.rmNoticeBoardTextLabel.get_text()
-        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_subdesc, t,))
+        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'>%s</span>" % (SulfurConf.color_subdesc, t,))
         self.rm_ui.rmNoticeBoardInfo.show_all()
         self.item = item
 
