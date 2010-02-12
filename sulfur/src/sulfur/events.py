@@ -674,12 +674,10 @@ class SulfurApplicationEventsMixin:
                 TextReadDialog(mytitle, license_text)
 
     def on_select_clicked(self, widget):
-        self.set_busy()
+
         self.start_working()
-        busy_cursor(self.ui.main)
         sts = self.pkgView.select_all()
         self.end_working()
-        self.unset_busy()
         normal_cursor(self.ui.main)
         # now start updating the system
         if not sts:
@@ -691,9 +689,7 @@ class SulfurApplicationEventsMixin:
         # @deprecated
         self.ui.pkgFilter.set_text("")
         self.on_clear_clicked(widget)
-        self.set_busy()
         self.pkgView.deselect_all()
-        self.unset_busy()
 
     def on_skipMirror_clicked(self, widget):
         self.Equo.MirrorStatus.add_failing_working_mirror(75)

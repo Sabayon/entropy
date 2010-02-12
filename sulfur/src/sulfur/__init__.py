@@ -1230,11 +1230,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._is_working = True
         if do_busy:
             busy_cursor(self.ui.main)
-        self.ui.progressVBox.grab_add()
+        #self.ui.progressVBox.grab_add()
 
     def end_working(self):
         self._is_working = False
-        self.ui.progressVBox.grab_remove()
+        #self.ui.progressVBox.grab_remove()
         normal_cursor(self.ui.main)
 
     def setup_application(self, on_init = False):
@@ -1273,9 +1273,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         meta_id = "glsa_metadata"
         meta_cached = self.etpbase.is_cached(meta_id)
 
-        if not meta_cached and not background:
-            self.set_busy()
-
         try:
             cached = self.etpbase.get_groups(meta_id)
         except Exception as e:
@@ -1288,9 +1285,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.advisoriesView.populate(self.Equo.Security(), cached, show,
                 use_cache = meta_cached)
 
-        if not meta_cached and not background:
-            self.unset_busy()
-
         if widget is not None:
             widget.grab_remove()
 
@@ -1302,9 +1296,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         except CacheCorruptionError:
             pass
         if cached == None:
-            self.set_busy()
             cached = self.Equo.FileUpdates.scanfs(quiet = True)
-            self.unset_busy()
         if cached:
             self.filesView.populate(cached)
 
@@ -1621,14 +1613,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_repoView(self):
         self.repoView.populate()
 
-    def set_busy(self):
-        self.isBusy = True
-        busy_cursor(self.ui.main)
-
-    def unset_busy(self):
-        self.isBusy = False
-        normal_cursor(self.ui.main)
-
     def set_package_radio(self, tag):
         self.lastPkgPB = tag
         widget = self.packageRB[tag]
@@ -1806,46 +1790,40 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if matches is None:
             matches = set()
 
-        self.set_busy()
-        try:
+        if not matches:
+            # resolve atoms ?
+            for atom in atoms:
+                match = self.Equo.atom_match(atom)
+                if match[0] != -1:
+                    matches.add(match)
+        if not matches:
+            okDialog( self.ui.main,
+                _("No packages need or can be queued at the moment.") )
+            return
 
-            if not matches:
-                # resolve atoms ?
-                for atom in atoms:
-                    match = self.Equo.atom_match(atom)
-                    if match[0] != -1:
-                        matches.add(match)
-            if not matches:
-                okDialog( self.ui.main,
-                    _("No packages need or can be queued at the moment.") )
-                return
+        resolved = []
 
-            resolved = []
+        self.etpbase.get_groups('installed')
+        self.etpbase.get_groups('available')
+        self.etpbase.get_groups('reinstallable')
+        self.etpbase.get_groups('updates')
+        self.etpbase.get_groups("downgrade")
 
-            self.etpbase.get_groups('installed')
-            self.etpbase.get_groups('available')
-            self.etpbase.get_groups('reinstallable')
-            self.etpbase.get_groups('updates')
-            self.etpbase.get_groups("downgrade")
+        for match in matches:
+            resolved.append(self.etpbase.get_package_item(match)[0])
 
-            for match in matches:
-                resolved.append(self.etpbase.get_package_item(match)[0])
+        found_objs = []
+        master_queue = []
+        for key in self.queue.packages:
+            master_queue += self.queue.packages[key]
+        for obj in resolved:
+            if obj in master_queue:
+                continue
+            found_objs.append(obj)
 
-            found_objs = []
-            master_queue = []
-            for key in self.queue.packages:
-                master_queue += self.queue.packages[key]
-            for obj in resolved:
-                if obj in master_queue:
-                    continue
-                found_objs.append(obj)
-
-            if found_objs:
-                return self.add_to_queue(found_objs, "u", always_ask)
-            return True
-
-        finally:
-            self.unset_busy()
+        if found_objs:
+            return self.add_to_queue(found_objs, "u", always_ask)
+        return True
 
     def reset_cache_status(self):
         self.pkgView.clear()
