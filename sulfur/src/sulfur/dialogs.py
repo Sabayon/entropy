@@ -501,7 +501,7 @@ class RmNoticeBoardMenu(MenuSkel):
     def load(self, item):
 
         na = _("N/A")
-        self.rm_ui.rmNoticeBoardIdLabel.set_text(item['id'])
+        self.rm_ui.rmNoticeBoardIdLabel.set_text(str(item['id']))
         self.rm_ui.rmNoticeBoardDateLabel.set_text(cleanMarkupString(item['pubDate']))
         self.rm_ui.rmNoticeBoardTitleLabel.set_text(cleanMarkupString(item['title']))
         self.rm_ui.rmNoticeBoardLinkLabel.set_label(item['link'])
