@@ -1,3 +1,63 @@
+commit 700da269016258e8ed8eb5e44c8090751eb06ff4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 13:36:12 2010 +0100
+
+    [sulfur] don't ask me why, but new Notice Board RSS format returns int as id
+
+commit 62245ec7a2450bb2e9ca161b9d19e1298a4afde0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 13:31:11 2010 +0100
+
+    [sulfur] fix typo
+
+commit e196893b1fa3e05b149e52c9ab30cf6ad6125d8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 13:16:18 2010 +0100
+
+    [sulfur] handle non-root mode
+
+commit 04d883889802fc52dc07a3baed75382aceb3b294
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 13:09:32 2010 +0100
+
+    [sulfur] catch OSError exceptions on resize_image call
+
+commit aaae62bfc28f0eb162bc9eecf60330e34541a48e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 13:06:16 2010 +0100
+
+    [entropy.core.settings.base] SystemSettings: __generic_parser() now returns ASCII-only lines
+
+commit 2354ead132e4d06438c5e58d20bf9101d5fbd705
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 08:31:10 2010 +0100
+
+    [conf] add two more Entropy mirrors
+
+commit 476e424d9958d77efe1c7d2bbaabfd40ff9ca994
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 23:49:46 2010 +0100
+
+    [entropy.services] add Server.repositories() method
+
+commit af8baaff288a89a5e03111e8a46d8a9821aabb0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 23:49:27 2010 +0100
+
+    [reagent] add "reagent status" tool, print repositories status
+
+commit d50393284be5883285fd478afe10d46d6037078c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 20:41:50 2010 +0100
+
+    [entropy.services] fix function signature
+
+commit 470d1b0c65313c2cb4f6100c899cc48ef4988dfc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 11 20:40:49 2010 +0100
+
+    Tagging Entropy version 0.99.34.3
+
 commit aa2e3f17b1d4d1824fedd2cfedc847eff19fc037
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 11 20:40:10 2010 +0100
