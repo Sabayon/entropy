@@ -885,7 +885,7 @@ class PkgInfoMenu(MenuSkel):
             if not (os.path.isfile(icon_path) and os.access(icon_path, os.R_OK)):
                 try:
                     resize_image(48.0, store_path, icon_path)
-                except ValueError:
+                except (ValueError, OSError,):
                     # image should be a GdkPixbuf or empty
                     return # wtf!
             self.pkginfo_ui.pkgImage.set_from_file(icon_path)
@@ -918,11 +918,9 @@ class PkgInfoMenu(MenuSkel):
                 if (store_path != None) and os.access(store_path, os.R_OK):
                     preview_path = store_path+".sulfur_preview"
                     try:
-                        if not os.path.isfile(preview_path) and \
-                            (os.lstat(store_path)[6] < 1024000):
-                            resize_image(64.0, store_path, preview_path)
-                            mydoc['preview_path'] = preview_path
-                    except:
+                        resize_image(64.0, store_path, preview_path)
+                        mydoc['preview_path'] = preview_path
+                    except (ValueError, OSError,):
                         continue
 
     def populate_ugc_view(self):
