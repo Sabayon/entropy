@@ -723,13 +723,15 @@ class RepositoryMixin:
         self._add_plugin_to_client_repository(conn, dbname)
         return conn
 
-    def open_temp_repository(self, dbname = None):
-        if dbname == None:
+    def open_temp_repository(self, dbname = None, temp_file = None):
+        if dbname is None:
             dbname = etpConst['genericdbid']
+        if temp_file is None:
+            temp_file = entropy.tools.get_random_temp_file()
 
         dbc = EntropyRepository(
             readOnly = False,
-            dbFile = entropy.tools.get_random_temp_file(),
+            dbFile = temp_file,
             dbname = dbname,
             xcache = False,
             indexing = False,
