@@ -1132,15 +1132,18 @@ class EntropyPackageView:
 
         q_cache = {}
         for obj in just_show_objs+new_objs:
+            if obj.matched_atom in q_cache:
+                # duplicated, skip
+                continue
             q_cache[obj.matched_atom] = (obj.queued, obj.do_purge,)
             obj.queued = action
             if action:
                 obj.do_purge = do_purge
 
         if action:
-            status = self.add_to_queue(new_objs, action)
+            status = self._enqueue(new_objs, action, managed_rollback = True)
         else:
-            status = self.remove_queued(new_objs)
+            status = self._dequeue(new_objs, managed_rollback = True)
         if status != 0:
             for obj in just_show_objs+new_objs:
                 queued, do_purge = q_cache[obj.matched_atom]
@@ -1182,20 +1185,19 @@ class EntropyPackageView:
     def on_undoreinstall_activate(self, widget):
         self.do_reinstall(None)
 
-    def remove_queued(self, objs):
-
-        if not isinstance(objs, list):
-            objs = [objs]
+    def _dequeue(self, objs, managed_rollback = False):
 
         q_cache = {}
-        for obj in objs:
-            q_cache[obj.matched_atom] = obj.queued
-            obj.queued = None
+        if not managed_rollback:
+            for obj in objs:
+                q_cache[obj.matched_atom] = obj.queued
+                obj.queued = None
 
         status, myaction = self.queue.remove(objs)
         if status != 0:
-            for obj in objs:
-                obj.queued = q_cache.get(obj.matched_atom)
+            if not managed_rollback:
+                for obj in objs:
+                    obj.queued = q_cache.get(obj.matched_atom)
         else:
             # queued tab content is tainted
             if "queued" in self.etpbase._packages:
@@ -1214,17 +1216,19 @@ class EntropyPackageView:
 
         return status
 
-    def add_to_queue(self, objs, action):
+    def _enqueue(self, objs, action, managed_rollback = False):
 
         q_cache = {}
-        for obj in objs:
-            q_cache[obj.matched_atom] = obj.queued
-            obj.queued = action
+        if not managed_rollback:
+            for obj in objs:
+                q_cache[obj.matched_atom] = obj.queued
+                obj.queued = action
 
         status, myaction = self.queue.add(objs)
         if status != 0:
-            for obj in objs:
-                obj.queued = q_cache.get(obj.matched_atom)
+            if not managed_rollback:
+                for obj in objs:
+                    obj.queued = q_cache.get(obj.matched_atom)
         else:
             # queued tab content is tainted
             if "queued" in self.etpbase._packages:
@@ -1490,13 +1494,13 @@ class EntropyPackageView:
     def on_install_update_activate(self, widget, action):
         busy_cursor(self.main_window)
         if self.selected_objs:
-            self.add_to_queue(self.selected_objs, action)
+            self._enqueue(self.selected_objs, action)
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
         busy_cursor(self.main_window)
-        self.remove_queued(self.selected_objs)
+        self._dequeue(self.selected_objs)
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
@@ -1510,7 +1514,7 @@ class EntropyPackageView:
 
         busy_cursor(self.main_window)
         if selected_objs:
-            status = self.add_to_queue(selected_objs, "u")
+            status = self._enqueue(selected_objs, "u")
             if status == 0:
                 # also update original objects
                 for obj in self.selected_objs:
@@ -1526,8 +1530,8 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         # need to translate installed objects into updates
         selected_objs = self.get_installed_pkg_objs_for_selected()
-        self.remove_queued(selected_objs)
-        self.remove_queued(self.selected_objs)
+        self._dequeue(selected_objs)
+        self._dequeue(self.selected_objs)
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
