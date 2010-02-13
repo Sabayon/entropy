@@ -1,3 +1,87 @@
+commit 23962962e580f08f086fa848a49060f13ab3c320
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:59:19 2010 +0100
+
+    [tests] fix wrong mkstemp() call in db.py test
+
+commit 4fd50e1eeb6e7e56638f741cc07902dd25492efb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:54:27 2010 +0100
+
+    [entropy.tools] fix dep_getcat
+
+commit fdc9bebfeba002aad47999dc15949d166ab48e03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:54:11 2010 +0100
+
+    [entropy.debug] fix DebugList.__setslice__
+
+commit dd757c0af75cace94b78b743c3e6ad06774c64d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:51:11 2010 +0100
+
+    [todo] update TODO
+
+commit c51385663d2d70e8383c204ecac7aad2bea66505
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:48:05 2010 +0100
+
+    [sulfur] EntropyPackage: show instance memory position in hex
+
+commit eb390a34481dc65e2ce9f026835587a01556d207
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:47:41 2010 +0100
+
+    [sulfur] fix queue status rollback handling
+
+commit b7219b3553abaa337c5502003b99b0d72c3af990
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:24:47 2010 +0100
+
+    [sulfur] Queue: do not alter pkgs list passed
+
+commit 53a773f5e6dabb4eea33bddc0a3755a2eb1b5b66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 00:47:49 2010 +0100
+
+    [sulfur] improve UGC pkg properties view image cache handling
+
+commit a949a943f0d4096ebdd6e1ac6ef44ff2e6e69139
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 00:32:35 2010 +0100
+
+    [sulfur] remove set_busy() and unset_busy() calls
+
+commit 3043bcb9302e811de60578e6b6c68ae381a7f693
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 00:19:04 2010 +0100
+
+    [sulfur] embed "Update All" icon file
+
+commit 41392b22e44a3eade84c8ba17e5cc8d199d80fb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 23:30:48 2010 +0100
+
+    [magneto] update application icons
+
+commit 298ba32541b56608bf772cc15528107b48b4a9f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 17:45:20 2010 +0100
+
+    [sulfur] cache UGC icon fetch requests, improve performance
+
+commit 1cd887b2bf04379624fbf31789cf022411874b38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 14:05:01 2010 +0100
+
+    [sulfur] increase notice board message size
+
+commit c1162f174b78b9284f36f39f4ca2975f7b32c1b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 12 13:37:28 2010 +0100
+
+    Tagging Entropy version 0.99.34.4
+
 commit 700da269016258e8ed8eb5e44c8090751eb06ff4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Feb 12 13:36:12 2010 +0100
