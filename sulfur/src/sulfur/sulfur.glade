@@ -13375,8 +13375,8 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                       <widget class="GtkImage" id="image1">
                         <property name="visible">True</property>
                         <property name="yalign">1</property>
+                        <property name="stock">gtk-dialog-info</property>
                         <property name="pixel_size">128</property>
-                        <property name="icon_name">dialog-information</property>
                         <property name="icon-size">6</property>
                       </widget>
                       <packing>
