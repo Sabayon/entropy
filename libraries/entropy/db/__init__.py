@@ -6575,6 +6575,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             m = hashlib.md5()
 
 
+        if not self._doesTableExist("baseinfo"):
+            if strings:
+                m.update(const_convert_to_rawstring("~empty~"))
+                result = m.hexdigest()
+            else:
+                result = "~empty_db~"
+            self.live_cache[c_tup] = result[:]
+            return result
+
         cur = self._cursor().execute("""
         SELECT idpackage,atom,name,version,versiontag,
         revision,branch,slot,etpapi,trigger FROM 
