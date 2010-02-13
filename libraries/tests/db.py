@@ -4,6 +4,7 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
 import os
+import tempfile
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
     const_convert_to_rawstring
@@ -405,7 +406,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         buf.flush()
         buf.close()
 
-        fd, new_db_path = os.mkstemp()
+        fd, new_db_path = tempfile.mkstemp()
         os.close(fd)
         self.test_db.doDatabaseImport(buf_file, new_db_path)
         new_db = self.Client.open_generic_database(new_db_path)
