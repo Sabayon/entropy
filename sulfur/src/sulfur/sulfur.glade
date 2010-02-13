@@ -93,7 +93,7 @@
                         <child internal-child="image">
                           <widget class="GtkImage" id="image4">
                             <property name="visible">True</property>
-                            <property name="icon_name">dialog-information</property>
+                            <property name="stock">gtk-dialog-info</property>
                           </widget>
                         </child>
                       </widget>
