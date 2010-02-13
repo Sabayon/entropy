@@ -133,7 +133,7 @@ class DebugList(list):
         const_debug_write(__name__,
             "%s __setslice__ called: i:%s,j:%s,seq:%s" % (
                 self, i, j, sequence,))
-        return list.__setitem__(self, key, value)
+        return list.__setslice__(self, i, j, sequence)
 
     def append(self, item):
         const_debug_write(__name__, "%s append called: %s" % (self, item,))
