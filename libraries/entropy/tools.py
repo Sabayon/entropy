@@ -1698,7 +1698,7 @@ def dep_getcat(mydep):
     """
     Extract package category from dependency.
     """
-    return dep_getkey().split("/")[0]
+    return dep_getkey(mydep).split("/")[0]
 
 def dep_getcpv(mydep):
     """
