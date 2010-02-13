@@ -21,8 +21,8 @@ class SecurityTest(unittest.TestCase):
         NOTE: this requires gnupg as test-dependency.
         """
         self._tmp_dir = tempfile.mkdtemp()
+        self._entropy = Client(noclientdb = True)
         self._repository = Repository(keystore_dir = self._tmp_dir)
-        self._entropy = Client()
 
         self._security_cache_dir = tempfile.mkdtemp()
         self._security_dir = tempfile.mkdtemp()
