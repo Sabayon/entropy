@@ -704,13 +704,13 @@ class RepositoryMixin:
 
     def open_generic_database(self, dbfile, dbname = None, xcache = None,
             readOnly = False, indexing_override = None, skipChecks = False):
-        if xcache == None:
+        if xcache is None:
             xcache = self.xcache
         if indexing_override != None:
             indexing = indexing_override
         else:
             indexing = self.indexing
-        if dbname == None:
+        if dbname is None:
             dbname = etpConst['genericdbid']
         conn = EntropyRepository(
             readOnly = readOnly,
@@ -1207,7 +1207,7 @@ class MiscMixin:
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir, 0o775)
         const_setup_perms(lockdir, etpConst['entropygid'])
-        if mypid == None:
+        if mypid is None:
             mypid = os.getpid()
 
         pid_f = open(pidfile, "w")
@@ -1337,7 +1337,7 @@ class MiscMixin:
         return False
 
     def unused_packages_test(self, dbconn = None):
-        if dbconn == None: dbconn = self._installed_repository
+        if dbconn is None: dbconn = self._installed_repository
         return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]
 
     def is_entropy_package_free(self, pkg_id, repo_id):
@@ -1534,7 +1534,7 @@ class MiscMixin:
 
     def get_installed_package_config_protect(self, idpackage, mask = False):
 
-        if self._installed_repository == None:
+        if self._installed_repository is None:
             return []
         cl_id = self.sys_settings_client_plugin_id
         misc_data = self.SystemSettings[cl_id]['misc']
@@ -1552,7 +1552,7 @@ class MiscMixin:
 
     def get_system_config_protect(self, mask = False):
 
-        if self._installed_repository == None:
+        if self._installed_repository is None:
             return []
 
         # FIXME: workaround because this method is called
@@ -1586,7 +1586,7 @@ class MiscMixin:
         os.remove(tmp_path)
 
     def quickpkg(self, atomstring, savedir = None):
-        if savedir == None:
+        if savedir is None:
             savedir = etpConst['packagestmpdir']
             if not os.path.isdir(etpConst['packagestmpdir']):
                 os.makedirs(etpConst['packagestmpdir'])
@@ -1597,7 +1597,7 @@ class MiscMixin:
         atom = self._installed_repository.atomMatch(match[0])
         pkgdata = self._installed_repository.getPackageData(match[0])
         resultfile = self.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
-        if resultfile == None:
+        if resultfile is None:
             return -1, atom, None
         else:
             return 0, atom, resultfile
