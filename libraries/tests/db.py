@@ -26,8 +26,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db_name = "%s_test_suite" % (etpConst['dbnamerepoprefix'],)
         self.client_sysset_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        self.test_db = self.__open_test_db()
-        self.test_db2 = self.__open_test_db()
+        self.test_db = self.__open_test_db(":memory:")
+        self.test_db2 = self.__open_test_db(":memory:")
         self.SystemSettings = SystemSettings()
 
     def tearDown(self):
@@ -40,8 +40,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db2.closeDB()
         self.Client.destroy()
 
-    def __open_test_db(self):
-        return self.Client.open_temp_repository(dbname = self.test_db_name)
+    def __open_test_db(self, tmp_path):
+        return self.Client.open_temp_repository(dbname = self.test_db_name,
+            temp_file = tmp_path)
 
     def test_db_clearcache(self):
         self.test_db.clearCache()
@@ -400,7 +401,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         etpUi['mute'] = True
 
         # export
-        buf_file = "dbtst.txt"
+        fd, buf_file = tempfile.mkstemp()
+        os.close(fd)
         buf = open(buf_file, "wb")
         self.test_db.doDatabaseExport(buf)
         buf.flush()
