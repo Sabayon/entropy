@@ -102,11 +102,11 @@ class RepositoryMixin:
         return (repoid, etpConst['systemroot'],)
 
     def _init_generic_temp_repository(self, repoid, description,
-        package_mirrors = None):
+        package_mirrors = None, temp_file = None):
         if package_mirrors is None:
             package_mirrors = []
 
-        dbc = self.open_temp_repository(dbname = repoid)
+        dbc = self.open_temp_repository(dbname = repoid, temp_file = temp_file)
         repo_key = self.__get_repository_cache_key(repoid)
         self._memory_db_instances[repo_key] = dbc
 
@@ -593,23 +593,16 @@ class RepositoryMixin:
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
             mytxt = "%s, %s" % (_("System database not found or corrupted"),
                 _("running in safe mode using temporary, empty repository"),)
-            if not etpSys['unittest']:
-                self.output(
-                    darkred(mytxt),
-                    importance = 1,
-                    type = "warning",
-                    header = bold(" !!! "),
-                )
+            self.output(
+                darkred(mytxt),
+                importance = 1,
+                type = "warning",
+                header = bold(" !!! "),
+            )
             m_conn = self.open_temp_repository(dbname = etpConst['clientdbid'])
             self._add_plugin_to_client_repository(m_conn,
                 etpConst['clientdbid'])
             return m_conn
-
-        # if we are in unit testing mode (triggered by unit testing
-        # code), always use db from ram
-        if etpSys['unittest']:
-            self._installed_repository = load_db_from_ram()
-            return self._installed_repository
 
         db_dir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
         if not os.path.isdir(db_dir):
