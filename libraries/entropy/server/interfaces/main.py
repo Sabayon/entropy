@@ -3525,7 +3525,7 @@ class ServerRepositoryMixin:
 
         if mirrors is None:
             mirrors = []
-        dbc = self._open_temp_repository(repoid)
+        dbc = self._open_temp_repository(repoid, temp_file = ":memory:")
         self._memory_db_instances[repoid] = dbc
 
         eapi3_port = int(etpConst['socket_service']['port'])
@@ -3562,7 +3562,7 @@ class ServerRepositoryMixin:
         dbc.add_plugin(srv_plug)
         return dbc
 
-    def _open_temp_repository(self, repo):
+    def _open_temp_repository(self, repo, temp_file = None):
         """
         Open temporary EntropyRepository interface.
 
@@ -3571,9 +3571,12 @@ class ServerRepositoryMixin:
         @keyword output_interface: entropy.output.TextInterface based instance
         @type output_interface: entropy.output.TextInterface based instance
         """
+        if temp_file is None:
+            temp_file = entropy.tools.get_random_temp_file()
+
         conn = EntropyRepository(
             readOnly = False,
-            dbFile = entropy.tools.get_random_temp_file(),
+            dbFile = temp_file,
             dbname = repo,
             xcache = False,
             indexing = False,
