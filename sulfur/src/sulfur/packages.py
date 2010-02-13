@@ -228,15 +228,16 @@ class Queue:
     def remove(self, pkgs, accept = False, accept_reinsert = False,
         always_ask = False):
 
-        try:
-            if not isinstance(pkgs, list):
-                pkgs = [pkgs]
+        # make sure to not taint list object passed
+        q_pkgs = pkgs[:]
 
-            action = [pkgs[0].action]
+        try:
+
+            action = [q_pkgs[0].action]
             if action[0] in ("u", "i", "rr", "d"): # update/install/downgrade
 
                 action = ["u", "i", "rr", "d"]
-                pkgs_matches = [x.matched_atom for x in pkgs]
+                pkgs_matches = [x.matched_atom for x in q_pkgs]
                 myq = [x.matched_atom for x in self.packages['u'] + \
                     self.packages['i'] + self.packages['rr'] + self.packages['d']]
                 xlist = [x for x in myq if x not in pkgs_matches]
@@ -267,13 +268,13 @@ class Queue:
             else:
 
                 xlist = [x.matched_atom[0] for x in \
-                    self.packages[action[0]] if x not in pkgs]
-                #toberemoved_idpackages = [x.matched_atom[0] for x in pkgs]
+                    self.packages[action[0]] if x not in q_pkgs]
+                #toberemoved_idpackages = [x.matched_atom[0] for x in q_pkgs]
                 mydepends = set(self.Entropy.get_removal_queue(
-                    [x.matched_atom[0] for x in pkgs]))
+                    [x.matched_atom[0] for x in q_pkgs]))
                 mydependencies = set()
                 myQA = self.Entropy.QA()
-                for pkg in pkgs:
+                for pkg in q_pkgs:
                     mydeps = myQA.get_deep_dependency_list(
                         self.Entropy.installed_repository(), pkg.matched_atom[0])
                     mydependencies |= set([x for x in mydeps if x in xlist])
@@ -282,7 +283,8 @@ class Queue:
                 mylist -= mydepends
                 mylist |= mydependencies
                 if mylist:
-                    xlist = self.elaborate_reinsert(mylist, xlist, accept_reinsert)
+                    xlist = self.elaborate_reinsert(mylist, xlist,
+                        accept_reinsert)
 
                 self.before = self.packages[action[0]][:]
                 # clean, will be refilled
@@ -312,16 +314,17 @@ class Queue:
 
     def add(self, pkgs, accept = False, always_ask = False):
 
-        try:
-            if not isinstance(pkgs, list):
-                pkgs = [pkgs]
+        # make sure to not taint list object passed
+        q_pkgs = pkgs[:]
 
-            action = [pkgs[0].queued]
+        try:
+
+            action = [q_pkgs[0].queued]
 
             if action[0] in ("u", "i", "rr", "d"): # update/install
 
                 self._keyslotFilter.clear()
-                blocked = self.key_slot_filtering(pkgs)
+                blocked = self.key_slot_filtering(q_pkgs)
                 if blocked:
                     self.show_key_slot_error_message(blocked)
                     return 1, 0
@@ -329,7 +332,8 @@ class Queue:
                 action = ["u", "i", "rr", "d"]
                 myq = [x.matched_atom for x in self.packages['u'] + \
                     self.packages['i'] + self.packages['rr'] + self.packages['d']]
-                xlist = myq+[x.matched_atom for x in pkgs if x.matched_atom not in myq]
+                xlist = myq+[x.matched_atom for x in q_pkgs if \
+                    x.matched_atom not in myq]
                 status = self.elaborate_install(xlist, action, False, accept,
                     always_ask)
                 if status == 0:
@@ -343,21 +347,23 @@ class Queue:
                         return False
                     return True
 
-                pkgs = list(filter(myfilter, pkgs))
-                if not pkgs: return -2, 1
+                q_pkgs = list(filter(myfilter, q_pkgs))
+                if not q_pkgs:
+                    return -2, 1
                 myq = [x.matched_atom[0] for x in self.packages['r']]
-                pkgs = [x.matched_atom[0] for x in pkgs if x.matched_atom[0] \
-                    not in myq] + myq
-                status = self.elaborate_removal(pkgs, False, accept, always_ask)
+                q_pkgs = [x.matched_atom[0] for x in q_pkgs if \
+                    x.matched_atom[0] not in myq] + myq
+                status = self.elaborate_removal(q_pkgs, False, accept,
+                    always_ask)
                 return status, 1
 
         finally:
-            items = [x for x in list(self.packages.values()) if x]
-            if items:
+            items_len = len([x for x in list(self.packages.values()) if x])
+            if items_len:
                 SulfurSignals.emit('install_queue_filled')
             else:
                 SulfurSignals.emit('install_queue_empty')
-            SulfurSignals.emit('install_queue_changed', len(items))
+            SulfurSignals.emit('install_queue_changed', items_len)
 
     def elaborate_masked_packages(self, matches):
 
@@ -545,7 +551,6 @@ class Queue:
                 if not rem_pkg:
                     continue
                 todo.append(rem_pkg)
-            del r_cache, my_rcache
 
             if todo:
                 ok = True
