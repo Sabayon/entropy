@@ -592,7 +592,7 @@ class RepositoryMixin:
         def load_db_from_ram():
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
             mytxt = "%s, %s" % (_("System database not found or corrupted"),
-                _("running in safe mode using empty database from RAM"),)
+                _("running in safe mode using temporary, empty repository"),)
             if not etpSys['unittest']:
                 self.output(
                     darkred(mytxt),
