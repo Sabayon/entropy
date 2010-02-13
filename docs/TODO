@@ -2,6 +2,9 @@
   0.99.40:
 
     - entropy.db: extract mimetype metadata
+        iddesktop | idpackage | pkg_path | Path | Exec | TryExec | Type | Name |
+            GenericName | Comment | Version | Icon | Categories | URL | Hidden |
+                OnlyShowIn | NotShowIn | NoDisplay | StartupNotify
     - entropy.client API rework
         - make methods private
 
