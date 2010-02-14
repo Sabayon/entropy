@@ -1,3 +1,87 @@
+commit c6bcf87caf39c3d8b3712e877229d7ea5a9dcea5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 14 10:54:20 2010 +0100
+
+    [entropy.security] fix Entropy Security cache dir handling, create it if not available
+
+commit 48dc0d585d65434f740a11cada8285376b6aefb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 14 10:39:15 2010 +0100
+
+    [conf] reduce proirity of NLUUG mirror
+
+commit a01d1db195834605b921e23d707f0d77f077fa1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 22:47:17 2010 +0100
+
+    [sulfur] fix another icon path
+
+commit 11542840ecffc82037d3214c216f3f52139952cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 20:39:18 2010 +0100
+
+    [sulfur] fix Tips 'n tricks icon
+
+commit 61ebb4013d8725c8f25849a289914265c1236d3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:58:15 2010 +0100
+
+    [tests] security: open Entropy Client with noclientdb=True
+
+commit afd8de99d9f7446c5693329ab5bd195889cf2ed3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:57:08 2010 +0100
+
+    [entropy.server] improve performance by using in-memory repositories when possible (and allow this, even if not advised)
+
+commit 2696d64395dee584b1c27dd91e7cdeea7a03c0ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:56:15 2010 +0100
+
+    [entropy.db] EntropyRepository.checksum: skip queries if baseinfo table does not exist
+
+commit a75c1a19b6ace65318206a404ea18775bab159eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:23:37 2010 +0100
+
+    [tests] improve client module tests speed
+
+commit d676b73f9e879180c5e840f19bf7c2ed79cc68f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:23:17 2010 +0100
+
+    [tests] improve db module tests speed
+
+commit 80bd1e01b0a215363ea99583d40df4db391fdcf3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:22:37 2010 +0100
+
+    [entropy.client] remove hackish etpSys['unittest'] support
+
+commit 1c50c0177fc4eda45a150adfaf3ce57d94aa07a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 19:01:33 2010 +0100
+
+    [entropy.client] tweak warning message
+
+commit 08708e373029c8f36a7a5f7db39f2a8a9de64e9e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 18:53:19 2010 +0100
+
+    [entropy.client] add "temp_file" argument to open_temp_repository
+
+commit b39cea591ade5ec3f58979efa8c4951f97b9e9fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 18:53:10 2010 +0100
+
+    [entropy.client] code style update
+
+commit bcdc67359feb7bfa02b690977d378d0d62d06a91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 13 12:59:49 2010 +0100
+
+    Tagging Entropy version 0.99.35
+
 commit 23962962e580f08f086fa848a49060f13ab3c320
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Feb 13 12:59:19 2010 +0100
