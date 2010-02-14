@@ -166,6 +166,13 @@ class System:
             pass
         const_setup_perms(sec_dir, etpConst['entropygid'])
 
+        try:
+            if not os.path.isdir(System._CACHE_DIR):
+                os.makedirs(System._CACHE_DIR, 0o775)
+        except OSError:
+            pass
+        const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
+
         if os.access(self.old_download_package_checksum, os.R_OK) and \
             os.path.isfile(self.old_download_package_checksum):
 
