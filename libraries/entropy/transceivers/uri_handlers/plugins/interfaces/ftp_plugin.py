@@ -21,7 +21,7 @@ from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 class EntropyFtpUriHandler(EntropyUriHandler):
 
-    PLUGIN_API_VERSION = 0
+    PLUGIN_API_VERSION = 1
 
     """
     EntropyUriHandler based FTP transceiver plugin.
@@ -389,6 +389,14 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     )
                 self._reconnect() # reconnect
 
+    def download_many(self, remote_paths, save_dir):
+        for remote_path in remote_paths:
+            save_path = os.path.join(save_dir, os.path.basename(remote_path))
+            rc = self.download(remote_path, save_path)
+            if rc != 0:
+                return rc
+        return 0
+
     def upload(self, load_path, remote_path):
 
         self.__connect_if_not()
@@ -444,6 +452,14 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 self.delete(tmp_path)
                 self.delete(path)
 
+    def upload_many(self, load_path_list, remote_dir):
+        for load_path in load_path_list:
+            remote_path = os.path.join(remote_dir, os.path.basename(load_path))
+            rc = self.upload(load_path, remote_path)
+            if rc != 0:
+                return rc
+        return 0
+
     def rename(self, remote_path_old, remote_path_new):
 
         self.__connect_if_not()
@@ -478,6 +494,13 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             # otherwise not found
 
         return done
+
+    def delete_many(self, remote_paths):
+        for remote_path in remote_paths:
+            rc = self.delete(remote_path)
+            if rc != 0:
+                return rc
+        return 0
 
     def get_md5(self, remote_path):
         # PROFTPD with mod_md5 supports it!

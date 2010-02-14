@@ -14,7 +14,7 @@ from entropy.output import TextInterface
 
 class EntropyUriHandler(object, TextInterface):
 
-    BASE_PLUGIN_API_VERSION = 0
+    BASE_PLUGIN_API_VERSION = 1
 
     TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
 
@@ -176,6 +176,23 @@ class EntropyUriHandler(object, TextInterface):
         """
         raise NotImplementedError()
 
+    def download_many(self, remote_paths, save_dir):
+        """
+        Download many files at once, taken from remote_paths, stored into
+        save_dir
+
+        @param remote_paths: list of remote paths to handle
+        @type remote_paths: list
+        @param save_dir: directory where to store file from uri.
+            If directory doesn't exist, it will be created with default
+            Entropy permissions.
+        @type save_dir: string
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
+        """
+        raise NotImplementedError()
+
     def upload(self, load_path, remote_path):
         """
         Upload URI from load_path location to uri.
@@ -184,6 +201,21 @@ class EntropyUriHandler(object, TextInterface):
         @type load_path: string
         @param remote_path: remote path to handle ("directory"/"file name" !)
         @type remote_path: string
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
+        """
+        raise NotImplementedError()
+
+    def upload_many(self, load_path_list, remote_dir):
+        """
+        Upload many files at once, taken from load_path_list, stored into
+        remote_dir
+
+        @param load_path_list: remote path to handle
+        @type load_path_list: list
+        @param remote_dir: remote dir where to store data
+        @type remote_dir: string
         @return: execution status, True if done
         @rtype: bool
         @raise ConnectionError: if problems happen
@@ -212,6 +244,18 @@ class EntropyUriHandler(object, TextInterface):
         @type remote_path_old: string
         @return: True, if operation went successful
         @rtype: bool
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
+        """
+        raise NotImplementedError()
+
+    def delete_many(self, remote_paths):
+        """
+        Remove many files at once, taken from remote_paths.
+
+        @param remote_paths: list of remote paths to handle
+        @type remote_paths: list
         @return: execution status, True if done
         @rtype: bool
         @raise ConnectionError: if problems happen
