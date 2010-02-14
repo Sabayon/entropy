@@ -2749,10 +2749,10 @@ def okDialog(parent, msg, title = None):
     dlg = gtk.MessageDialog(parent=parent,
                             type=gtk.MESSAGE_INFO,
                             buttons=gtk.BUTTONS_OK)
-    dlg.set_markup(msg)
+    dlg.set_markup(cleanMarkupString(msg))
     if not title:
         title = _("Attention")
-    dlg.set_title( title )
+    dlg.set_title(title)
     dlg.run()
     dlg.destroy()
 
