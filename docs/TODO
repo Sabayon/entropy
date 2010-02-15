@@ -1,6 +1,7 @@
 
   0.99.40:
 
+    - packages-restricted (banned) support (libdvdcss)
     - entropy.db: extract mimetype metadata
         iddesktop | idpackage | pkg_path | Path | Exec | TryExec | Type | Name |
             GenericName | Comment | Version | Icon | Categories | URL | Hidden |
