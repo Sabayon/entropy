@@ -1,3 +1,53 @@
+commit 91e6249c2bf39e25d563d98755329ed829a31184
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 19:51:49 2010 +0100
+
+    [sulfur] make sure all pkgs that are going to be removed are marked for removal
+
+commit 2a8d7e7747307006f7646e6baae336d157dd6a2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 19:38:14 2010 +0100
+
+    [sulfur] EntropyPackage: __repr__ now prints more debugging info
+
+commit 1746007d5cd036cf6d74a530dd6c319c2a95f6a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 19:30:16 2010 +0100
+
+    [todo] update TODO
+
+commit 2b8c521fe259a68a0b169dbfd0e641f9f6d5885c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 00:23:50 2010 +0100
+
+    [entropy.transceivers] implement EntropyUriHandler.download_many and EntropyUriHandler.upload_many and EntropyUriHandler.delete_many
+    
+    This will help slower EntropyTransceiver implementations (such as SSH) to be faster
+
+commit 2099a5db044f60ee1b25508c8afcf399ce44ac8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 00:16:56 2010 +0100
+
+    [conf] add mirror.us.sabayon.org to mirror list
+
+commit 35a490b543db47aa7658565cf4da3ded0028bf8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 14 21:09:17 2010 +0100
+
+    [sulfur] okDialog() wrap set_markup() with cleanMarkupString()
+
+commit 5abb6de68317a3d6fe60b7e38c2a996bc2a5690f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 14 19:14:50 2010 +0100
+
+    [conf] repositories.conf add fsn.hu mirror to Entropy mirror list
+
+commit 9347175a201c2c33eb9381ed4e71f85e7f8e86da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 14 10:55:30 2010 +0100
+
+    Tagging Entropy version 0.99.35.1
+
 commit c6bcf87caf39c3d8b3712e877229d7ea5a9dcea5
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 14 10:54:20 2010 +0100
