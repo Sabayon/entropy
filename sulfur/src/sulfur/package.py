@@ -163,7 +163,9 @@ class EntropyPackage:
                     etpConst['entropyrepoprefix'] + self.repoid_clean
 
     def __repr__(self):
-        return "<EntropyPackage at %s @ %s>" % (hex(id(self)), str(self),)
+        return "<EntropyPackage at %s @ %s | a: %s | q: %s brk: %s | ma: %s | im: %s>" % (
+            hex(id(self)), str(self), self.action, self.queued, self.broken,
+                self.matched_atom, self.installed_match,)
 
     def __cmp__(self, pkg):
         if pkg.matched_atom == self.matched_atom:
