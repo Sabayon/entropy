@@ -537,6 +537,8 @@ class Queue:
         r_cache = set(map(r_cache_map, self.packages['r']))
         removalQueue = self.Entropy.get_removal_queue(mylist)
 
+        a_cache = []
+
         if removalQueue:
             todo = []
             my_rcache = set()
@@ -550,6 +552,13 @@ class Queue:
                 rem_pkg, new = self.etpbase.get_package_item((idpackage, 0))
                 if not rem_pkg:
                     continue
+
+                # there can be pkgs not marked for removal, mark them
+                if rem_pkg.action is None:
+                    # set to "r"
+                    rem_pkg.action = "r"
+                    a_cache.append(rem_pkg)
+
                 todo.append(rem_pkg)
 
             if todo:
@@ -584,6 +593,9 @@ class Queue:
                             rem_pkg.queued = rem_pkg.action
                             self.packages[rem_pkg.action].append(rem_pkg)
                 else:
+                    # restore previous removal state
+                    for rem_pkg in a_cache:
+                        rem_pkg.action = None
                     return -10
 
         return 0
