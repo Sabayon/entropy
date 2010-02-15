@@ -1757,7 +1757,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.pkgSorter.set_property('sensitive', True)
 
         orphans = None
-        if not self._orphans_message_shown:
+        if (not self._orphans_message_shown) and (not self._RESOURCES_LOCKED):
             if action == "updates" and \
                 (not self.etpbase.get_raw_groups('updates')):
 
