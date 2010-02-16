@@ -1,3 +1,33 @@
+commit 1e34c89babfdb291fc1d6a9f65ecb99ea43cdc2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 16 11:43:51 2010 +0100
+
+    [todo] update TODO
+
+commit 4a6140d4a6a2cf26014a66bbe6ff755689d807b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 16 11:43:09 2010 +0100
+
+    [entropy] add support for packages-restricted separate packages directory
+
+commit d45bc5277aadecbd0eb9547fcb61e901668c4d2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 16 11:07:31 2010 +0100
+
+    [entropy.client] catch RuntimeError exceptions when calling os.path.realpath (cope with circular symlink)
+
+commit 06d73fc66e45cd79e56b159226b818f893d88909
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 22:59:31 2010 +0100
+
+    [sulfur] do not show orphans message if resources are locked
+
+commit 44f4359ad987344b2fd70ae175d6721d1050f4fa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 15 19:52:25 2010 +0100
+
+    Tagging Entropy version 0.99.35.2
+
 commit 91e6249c2bf39e25d563d98755329ed829a31184
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 15 19:51:49 2010 +0100
