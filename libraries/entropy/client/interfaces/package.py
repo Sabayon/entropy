@@ -1354,8 +1354,51 @@ class Package:
             if do_return:
                 return 0
 
-            if os.path.realpath(fromfile) == os.path.realpath(tofile) and \
-                os.path.islink(tofile):
+            try:
+                from_r_path = os.path.realpath(fromfile)
+            except RuntimeError:
+                # circular symlink, fuck!
+                # really weird...!
+                self.Entropy.clientLog.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "WARNING!!! %s is a circular symlink !!!" % (fromfile,)
+                )
+                mytxt = "%s: %s" % (
+                    _("Circular symlink issue"),
+                    const_convert_to_unicode(fromfile),
+                )
+                self.Entropy.output(
+                    darkred("QA: ") + darkred(mytxt),
+                    importance = 1,
+                    type = "warning",
+                    header = red(" !!! ")
+                )
+                from_r_path = fromfile
+
+            try:
+                to_r_path = os.path.realpath(tofile)
+            except RuntimeError:
+                # circular symlink, fuck!
+                # really weird...!
+                self.Entropy.clientLog.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "WARNING!!! %s is a circular symlink !!!" % (tofile,)
+                )
+                mytxt = "%s: %s" % (
+                    _("Circular symlink issue"),
+                    const_convert_to_unicode(tofile),
+                )
+                self.Entropy.output(
+                    darkred("QA: ") + darkred(mytxt),
+                    importance = 1,
+                    type = "warning",
+                    header = red(" !!! ")
+                )
+                to_r_path = tofile
+
+            if from_r_path == to_r_path and os.path.islink(tofile):
                 # there is a serious issue here, better removing tofile,
                 # happened to someone.
 
