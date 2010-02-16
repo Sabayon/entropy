@@ -232,7 +232,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 4
+    PLUGIN_API_VERSION = 5
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -759,7 +759,8 @@ class PortagePlugin(SpmPlugin):
         if defaults:
             return defaults[0]
 
-    def extract_package_metadata(self, package_file, license_callback = None):
+    def extract_package_metadata(self, package_file, license_callback = None,
+        restricted_callback = None):
         """
         Reimplemented from SpmPlugin class.
         """
@@ -986,17 +987,6 @@ class PortagePlugin(SpmPlugin):
         # this actually changes provide format
         data['provide_extended'] = provide_extended
 
-        # prepare download URL string, check licenses
-        nonfree = False
-        if license_callback is not None:
-            nonfree = not license_callback(data['license'].split())
-        data['download'] = entropy.tools.create_package_dirpath(data['branch'],
-            nonfree = nonfree)
-        data['download'] = os.path.join(data['download'],
-            entropy.tools.create_package_filename(
-                data['category'], data['name'], data['version'],
-                    data['versiontag']))
-
         # Get License text if possible
         licenses_dir = os.path.join(self.get_setting('PORTDIR'), 'licenses')
         data['licensedata'] = self._extract_pkg_metadata_license_data(
@@ -1024,6 +1014,20 @@ class PortagePlugin(SpmPlugin):
 
         # etpapi must be int, as returned by entropy.db.getPackageData
         data['etpapi'] = int(etpConst['etpapi'])
+
+        # prepare download URL string, check licenses
+        nonfree = False
+        restricted = False
+        if license_callback is not None:
+            nonfree = not license_callback(data)
+        if restricted_callback is not None:
+            restricted = restricted_callback(data)
+        data['download'] = entropy.tools.create_package_dirpath(data['branch'],
+            nonfree = nonfree, restricted = restricted)
+        data['download'] = os.path.join(data['download'],
+            entropy.tools.create_package_filename(
+                data['category'], data['name'], data['version'],
+                    data['versiontag']))
 
         # removing temporary directory
         shutil.rmtree(tmp_dir, True)

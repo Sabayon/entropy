@@ -18,7 +18,7 @@ from entropy.misc import LogFile
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 4
+    BASE_PLUGIN_API_VERSION = 5
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -359,18 +359,23 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def extract_package_metadata(self, package_file, license_callback = None):
+    def extract_package_metadata(self, package_file, license_callback = None,
+        restricted_callback = None):
         """
         Extract Source Package Manager package metadata from given file.
 
         @param package_file: path to valid SPM package file
         @type package_file: string
-        @param license_callback: if not None, it will be used to determine
+        @keyword license_callback: if not None, it will be used to determine
             if package_file can be considered free (as in freedom) or not.
             Please return True if so, otherwise false. The signature of
-            the callback is: bool callback(list), where list is a list of
-            license names used by package_file.
+            the callback is: bool callback(pkg_metadata).
         @type license_callback: callable
+        @keyword restricted_callback: if not None, it will be used to determine
+            if package_file can be considered legal in all countries or not.
+            Please return True if so, otherwise false. The signature of
+            the callback is: bool callback(pkg_metadata).
+        @type restricted_callback: callable
         @return: package metadata extracted
         @rtype: dict
         @raise entropy.exceptions.SPMError: when something went bad

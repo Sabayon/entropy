@@ -1,0 +1,17 @@
+# Server side packages.db.restricted file
+# List here atoms (either package key or package key : slot) that should be
+# considered legally sensible such as libdvdcss and friends
+
+# LINE CONSTRUCTION:
+# <atom>
+# See examples below
+
+# EXAMPLES:
+# dev-libs/libdvdcss
+# app-foo/foo:2
+# app-foo/foo
+
+# NOT ALLOWED:
+# >=app-foo/foo-1.2.3
+# <app-foo/foo-1.2.3
+# app-foo/foo-1.2.3

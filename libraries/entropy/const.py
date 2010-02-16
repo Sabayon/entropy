@@ -220,7 +220,9 @@ def const_default_settings(rootdir):
         # returned by EntropyRepository.retrieveDownloadURL())
         'packagesrelativepath_basedir': "packages",
         'packagesrelativepath_basedir_nonfree': "packages-nonfree",
-        'packagesrelativepaths': ("packages", "pacakges-nonfree"),
+        'packagesrelativepath_basedir_restricted': "packages-restricted",
+        'packagesrelativepaths': ("packages", "pacakges-nonfree",
+            "packages-restricted"),
         'packagesrelativepath_basename': ETP_ARCH_CONST,
 
         'entropyworkdir': default_etp_dir, # Entropy workdir
@@ -249,6 +251,8 @@ def const_default_settings(rootdir):
         'etpdatabaseupdatefile': default_etp_dbfile+".repo_updates",
         'etpdatabaselicwhitelistfile': default_etp_dbfile+".lic_whitelist",
         'etpdatabasecriticalfile': default_etp_dbfile+".critical",
+        # per-repository configuration file to list legally sensible pkgs
+        'etpdatabaserestrictedfile': default_etp_dbfile+".restricted",
         # the local/remote database revision file
         'etpdatabaserevisionfile': default_etp_dbfile+".revision",
         # missing dependencies black list file

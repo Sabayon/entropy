@@ -649,6 +649,13 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                                 etpConst['packagesrelativepath_basedir_nonfree'],
                                 etpConst['currentarch']
                             )
+            data['repositories'][repoid]['packages_dir_restricted'] = \
+                os.path.join(   etpConst['entropyworkdir'],
+                                "server",
+                                repoid,
+                                etpConst['packagesrelativepath_basedir_restricted'],
+                                etpConst['currentarch']
+                            )
             data['repositories'][repoid]['store_dir'] = \
                 os.path.join(   etpConst['entropyworkdir'],
                                 "server",
@@ -830,7 +837,8 @@ class ServerSettingsMixin:
 
     def _get_pkg_dir_names(self):
         return [etpConst['packagesrelativepath_basedir'],
-            etpConst['packagesrelativepath_basedir_nonfree']]
+            etpConst['packagesrelativepath_basedir_nonfree'],
+            etpConst['packagesrelativepath_basedir_restricted']]
 
     def _get_remote_database_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -1007,6 +1015,12 @@ class ServerSettingsMixin:
             repo = self.default_repository
         return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasecriticalfile'])
+
+    def _get_local_restricted_file(self, repo = None, branch = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self._get_local_database_dir(repo, branch),
+            etpConst['etpdatabaserestrictedfile'])
 
     def _get_local_database_keywords_file(self, repo = None, branch = None):
         if repo is None:
@@ -1869,15 +1883,26 @@ class ServerPackagesHandlingMixin:
             # we need the new path.
             updated_package_rel_path = package_rel_path
             srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-            if srv_set['nonfree_packages_dir_support']:
-                def _package_injector_check_license(licenses):
-                    return self._is_pkg_free(licenses, repo = to_repo)
 
-                tmp_data = self.Spm().extract_package_metadata(from_file,
-                    license_callback = _package_injector_check_license)
-                updated_package_rel_path = tmp_data['download'][:]
-                del tmp_data
+            def _package_injector_check_license(pkg_data):
+                licenses = pkg_data['license'].split()
+                return self._is_pkg_free(licenses, repo = to_repo)
 
+            def _package_injector_check_restricted(pkg_data):
+                pkgatom = entropy.tools.create_package_atom_string(
+                    pkg_data['category'], pkg_data['name'], pkg_data['version'],
+                    pkg_data['versiontag'])
+                return self._is_pkg_restricted(pkgatom, pkg_data['slot'],
+                    repo = to_repo)
+
+            # check if pkg is restricted
+            # and check if pkg is free, we must do this step in any case
+            # XXX: it sucks!
+            tmp_data = self.Spm().extract_package_metadata(from_file,
+                license_callback = _package_injector_check_license,
+                restricted_callback = _package_injector_check_restricted)
+            updated_package_rel_path = tmp_data['download'][:]
+            del tmp_data
 
             to_file = self.complete_local_upload_package_path(
                 updated_package_rel_path, repo = to_repo)
@@ -3779,6 +3804,37 @@ class ServerRepositoryMixin:
             return []
         return entropy.tools.generic_file_content_parser(wl_file)
 
+    def _get_restricted_packages(self, repo = None):
+
+        if repo is None:
+            repo = self.default_repository
+
+        rl_file = self._get_local_restricted_file(repo = repo)
+        if not os.path.isfile(rl_file):
+            return []
+        return entropy.tools.generic_file_content_parser(rl_file)
+
+    def _is_pkg_restricted(self, pkg_atom, pkg_slot, repo = None):
+
+        if repo is None:
+            repo = self.default_repository
+
+        restricted_pkgs = self._get_restricted_packages(repo = repo)
+        if not restricted_pkgs:
+            return False
+
+        pkg_key = entropy.tools.dep_getkey(pkg_atom)
+        for r_dep in restricted_pkgs:
+            r_key, r_slot = entropy.tools.dep_getkey(r_dep), \
+                entropy.tools.dep_getslot(r_dep)
+            if r_slot is None:
+                r_slot = pkg_slot
+
+            if (r_key == pkg_key) and (r_slot == pkg_slot):
+                return True
+
+        return False
+
     def _is_pkg_free(self, pkg_licenses, repo = None):
 
         if repo is None:
@@ -3808,8 +3864,16 @@ class ServerRepositoryMixin:
             repo = self.default_repository
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
 
-        def _package_injector_check_license(licenses):
+        def _package_injector_check_license(pkg_data):
+            licenses = pkg_data['license'].split()
             return self._is_pkg_free(licenses, repo = repo)
+
+        def _package_injector_check_restricted(pkg_data):
+            pkgatom = entropy.tools.create_package_atom_string(
+                pkg_data['category'], pkg_data['name'], pkg_data['version'],
+                pkg_data['versiontag'])
+            return self._is_pkg_restricted(pkgatom, pkg_data['slot'],
+                repo = repo)
 
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
@@ -3826,7 +3890,8 @@ class ServerRepositoryMixin:
             back = True
         )
         mydata = self.Spm().extract_package_metadata(package_file,
-            license_callback = _package_injector_check_license)
+            license_callback = _package_injector_check_license,
+            restricted_callback = _package_injector_check_restricted)
         self._pump_extracted_package_metadata(mydata, repo,
             {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)

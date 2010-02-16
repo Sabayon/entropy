@@ -1148,6 +1148,12 @@ class Server(ServerNoticeBoardMixin):
                 data['critical_updates_file'] = critical_updates_file
             extra_text_files.append(critical_updates_file)
 
+        restricted_file = self.Entropy._get_local_restricted_file(repo)
+        if os.path.isfile(restricted_file) or download:
+            if download:
+                data['restricted_file'] = restricted_file
+            extra_text_files.append(restricted_file)
+
         keywords_file = self.Entropy._get_local_database_keywords_file(
             repo)
         if os.path.isfile(keywords_file) or download:

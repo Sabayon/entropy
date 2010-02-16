@@ -3116,7 +3116,7 @@ def collect_paths():
     """
     return os.getenv("PATH", "").split(":")
 
-def create_package_dirpath(branch, nonfree = False):
+def create_package_dirpath(branch, nonfree = False, restricted = False):
     """
     Create Entropy package relative directory path used for building
     EntropyRepository "download" metadatum and for handling package file life
@@ -3131,6 +3131,8 @@ def create_package_dirpath(branch, nonfree = False):
     """
     if nonfree:
         down_rel_basedir = etpConst['packagesrelativepath_basedir_nonfree']
+    elif restricted:
+        down_rel_basedir = etpConst['packagesrelativepath_basedir_restricted']
     else:
         down_rel_basedir = etpConst['packagesrelativepath_basedir']
     down_rel_basename = etpConst['packagesrelativepath_basename']
