@@ -1,4 +1,4 @@
 *.pyc
 *.pyo
 misc/po/*.mo
-.*/.directory$
+*.directory
