@@ -46,7 +46,7 @@ class EntropyCacher(Singleton):
     # Max amount of processes to spawn
     _PROC_LIMIT = 10
     # Max number of cache objects written at once
-    _OBJS_WRITTEN_AT_ONCE = 150
+    _OBJS_WRITTEN_AT_ONCE = 250
 
     """
     Entropy asynchronous and synchronous cache writer
@@ -209,7 +209,7 @@ class EntropyCacher(Singleton):
         @return: None
         """
         self.__cache_buffer.clear()
-        self.__cache_writer = TimeScheduled(1, self.__cacher)
+        self.__cache_writer = TimeScheduled(2, self.__cacher)
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
         while not self.__cache_writer.isAlive():
