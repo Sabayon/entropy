@@ -393,9 +393,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         for remote_path in remote_paths:
             save_path = os.path.join(save_dir, os.path.basename(remote_path))
             rc = self.download(remote_path, save_path)
-            if rc != 0:
+            if not rc:
                 return rc
-        return 0
+        return True
 
     def upload(self, load_path, remote_path):
 
@@ -456,9 +456,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         for load_path in load_path_list:
             remote_path = os.path.join(remote_dir, os.path.basename(load_path))
             rc = self.upload(load_path, remote_path)
-            if rc != 0:
+            if not rc:
                 return rc
-        return 0
+        return True
 
     def rename(self, remote_path_old, remote_path_new):
 
@@ -498,9 +498,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     def delete_many(self, remote_paths):
         for remote_path in remote_paths:
             rc = self.delete(remote_path)
-            if rc != 0:
+            if not rc:
                 return rc
-        return 0
+        return True
 
     def get_md5(self, remote_path):
         # PROFTPD with mod_md5 supports it!
