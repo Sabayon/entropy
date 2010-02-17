@@ -1,3 +1,39 @@
+commit 379688cdd9a819a172608bc7b385dcbab116467d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 17 12:38:41 2010 +0100
+
+    [entropy.tools] fix is_valid_ascii
+
+commit a22db350c694ab944c1417282cf273d42c7c075d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 17 12:31:29 2010 +0100
+
+    [entropy.cache] EntropyCacher: tweak cacher parameters
+
+commit 343b3ee22b0ac5ca5614d284e00f68b727befbdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 17 09:57:31 2010 +0100
+
+    [git] update .gitignore
+
+commit 66914ec3d0d6297b4b2e83ce81b042a05cbd41ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 17 09:55:12 2010 +0100
+
+    [entropy.transceivers] introduce file:// URI handler
+
+commit eb30ca1546b5d9b6ded729fc7cce2dcae77aac15
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 17 09:16:35 2010 +0100
+
+    [entropy.transceivers] EntropyFtpUriHandler: fix download_many, upload_many, delete_many
+
+commit 3062832df0b12c257de209e2e3bbcf9bd6e7b7d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 16 16:16:41 2010 +0100
+
+    Tagging Entropy version 0.99.35.3
+
 commit 1e34c89babfdb291fc1d6a9f65ecb99ea43cdc2b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Feb 16 11:43:51 2010 +0100
