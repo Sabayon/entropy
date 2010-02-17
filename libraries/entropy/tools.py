@@ -424,7 +424,7 @@ def is_valid_ascii(string):
     @rtype: bool
     """
     for elem in string:
-        if not ((ord(elem) > 0x20) and (ord(elem) <= 0x80)):
+        if not ((ord(elem) >= 0x20) and (ord(elem) <= 0x80)):
             return False
     return True
 
