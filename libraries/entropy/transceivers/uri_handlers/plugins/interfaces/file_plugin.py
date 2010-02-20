@@ -7,7 +7,7 @@
     @copyright: Copyright (C) 2002 Lars Gustaebel <lars@gustaebel.de>
     @license: GPL-2
 
-    B{EntropyTransceiver SSH URI Handler module}.
+    B{EntropyTransceiver File URI Handler module}.
 
 """
 import os
@@ -115,7 +115,8 @@ class EntropyFileUriHandler(EntropyUriHandler):
 
     def __init__(self, uri):
         EntropyUriHandler.__init__(self, uri)
-        self.__dir = os.path.expandvars(self._drop_file_protocol(uri))
+        self.__dir = os.path.expanduser(
+            os.path.expandvars(self._drop_file_protocol(uri)))
 
     def __enter__(self):
         pass
