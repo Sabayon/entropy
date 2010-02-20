@@ -1,3 +1,21 @@
+commit c9415504aa7749a5965f5c0cb66a9d4dbe0a7b1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 21 00:15:08 2010 +0100
+
+    [entropy.transceivers] EntropyFileUriHandler: also expand home dir
+
+commit 83f336f7ec773fdc8051b91a7336cede2c672cec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 21 00:14:14 2010 +0100
+
+    [entropy.db] always create packagespmrepository table if not available
+
+commit 8b4374b10c5c623775181c4a4855e3d66372d7e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 17 12:38:56 2010 +0100
+
+    Tagging Entropy version 0.99.35.5
+
 commit 379688cdd9a819a172608bc7b385dcbab116467d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 17 12:38:41 2010 +0100
