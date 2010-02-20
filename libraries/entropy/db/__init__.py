@@ -2283,6 +2283,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @param repository: Source Package Manager repository
         @type repository: string
         """
+        # FIXME backward compatibility
+        if not self._doesTableExist('packagespmrepository'):
+            self._createPackagespmrepository()
         self._cursor().execute("""
         INSERT INTO packagespmrepository VALUES (?,?)
         """, (idpackage, repository,))
