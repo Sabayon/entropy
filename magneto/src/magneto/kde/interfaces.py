@@ -147,7 +147,9 @@ class Magneto(MagnetoCore):
 
     def change_icon(self, image):
         qpixmap = self.icons.best_match(image, self.applet_size)
-        self.status_icon.addPixmap(qpixmap, KIcon.Normal, KIcon.On)
+        qicon = QIcon(qpixmap)
+        self._window.setIcon(qicon)
+        self.status_icon = qicon
 
     def disable_applet(self, *args):
         MagnetoCore.disable_applet(self)
