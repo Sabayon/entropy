@@ -1,3 +1,15 @@
+commit 83793c8f80b8e2dfb6e322dff1bd129c445622ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 21 18:32:56 2010 +0100
+
+    [magneto] fix system tray icon handling (magneto-kde only)
+
+commit f57a5826229a46b9290ce3654f1cd7e21dc95e89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 21 00:19:26 2010 +0100
+
+    Tagging Entropy version 0.99.35.6
+
 commit c9415504aa7749a5965f5c0cb66a9d4dbe0a7b1a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 21 00:15:08 2010 +0100
