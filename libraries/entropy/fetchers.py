@@ -105,6 +105,8 @@ class UrlFetcher:
         self.__elapsed = 0.0
         self.__updatestep = 0.2
         self.__starttime = time.time()
+        self.__last_update_time = self.__starttime
+        self.__last_downloadedsize = 0
         self.__existed_before = False
         if os.path.lexists(self.__path_to_save):
             self.__existed_before = True
@@ -129,6 +131,7 @@ class UrlFetcher:
             self.localfile = open(self.__path_to_save, "ab")
             self.localfile.seek(0, os.SEEK_END)
             self.__startingposition = int(self.localfile.tell())
+            self.__last_downloadedsize = self.__startingposition
             self.__resumed = True
             return
 
@@ -344,9 +347,24 @@ class UrlFetcher:
     def _update_speed(self):
         cur_time = time.time()
         self.__elapsed = cur_time - self.__starttime
+        last_elapsed = cur_time - self.__last_update_time
         # we have the diff size
         x_delta = self.__downloadedsize - self.__startingposition
-        self.__datatransfer = x_delta / self.__elapsed
+        x_delta_now = self.__downloadedsize - self.__last_downloadedsize
+
+        f = self.__elapsed
+        if self.__elapsed > 1:
+            f = 1
+
+        self.__datatransfer = 0.5 * self.__datatransfer +                  \
+                              0.5 * (                                      \
+                                        f * x_delta / self.__elapsed   +   \
+                                        (1-f) * x_delta_now / last_elapsed \
+                                    )
+
+        self.__last_update_time = cur_time
+        self.__last_downloadedsize = self.__downloadedsize
+
         if self.__datatransfer < 0:
             self.__datatransfer = 0
         try:
