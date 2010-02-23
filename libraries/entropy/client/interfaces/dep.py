@@ -594,8 +594,16 @@ class CalculatorsMixin:
 
         return unsatisfied
 
-    # expands package sets, and in future something more perhaps
     def packages_expand(self, packages):
+        """
+        Given a list of user requested packages, expands it resolving for
+        instance, items such as package sets.
+
+        @param packages: list of user requested packages
+        @type packages: list
+        @return: expanded list
+        @rtype: list
+        """
         new_packages = []
         sets = self.Sets()
 
@@ -612,101 +620,6 @@ class CalculatorsMixin:
                 new_packages.append(package)
 
         return new_packages
-
-    def get_masked_packages_tree(self, match, atoms = False, flat = False,
-        matchfilter = None):
-
-        if not isinstance(matchfilter, set):
-            matchfilter = set()
-
-        maskedtree = {}
-        mybuffer = Lifo()
-        depcache = set()
-        treelevel = -1
-
-        match_id, match_repo = match
-
-        mydbconn = self.open_repository(match_repo)
-        myatom = mydbconn.retrieveAtom(match_id)
-        idpackage, idreason = mydbconn.idpackageValidator(match_id)
-        if idpackage == -1:
-            treelevel += 1
-            if atoms:
-                mydict = {myatom: idreason,}
-            else:
-                mydict = {match: idreason,}
-            if flat:
-                maskedtree.update(mydict)
-            else:
-                maskedtree[treelevel] = mydict
-
-        excluded_deps = [etpConst['dependency_type_ids']['bdepend_id']]
-        mydeps = mydbconn.retrieveDependencies(match_id,
-            exclude_deptypes = excluded_deps)
-        for mydep in mydeps:
-            mybuffer.push(mydep)
-
-        try:
-            mydep = mybuffer.pop()
-        except ValueError:
-            mydep = None # stack empty
-
-        open_db = self.open_repository
-        am = self.atom_match
-        while mydep:
-
-            if mydep in depcache:
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    break # stack empty
-                continue
-            depcache.add(mydep)
-
-            idpackage, repoid = am(mydep)
-            if (idpackage, repoid) in matchfilter:
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    break # stack empty
-                continue
-
-            if idpackage != -1:
-                # doing even here because atomMatch with packagesFilter = False can pull
-                # something different
-                matchfilter.add((idpackage, repoid))
-
-            # collect masked
-            if idpackage == -1:
-                idpackage, repoid = am(mydep, packagesFilter = False)
-                if idpackage != -1:
-                    treelevel += 1
-                    if treelevel not in maskedtree and not flat:
-                        maskedtree[treelevel] = {}
-                    dbconn = open_db(repoid)
-                    vidpackage, idreason = dbconn.idpackageValidator(idpackage)
-                    if atoms:
-                        mydict = {dbconn.retrieveAtom(idpackage): idreason}
-                    else:
-                        mydict = {(idpackage, repoid): idreason}
-                    if flat: maskedtree.update(mydict)
-                    else: maskedtree[treelevel].update(mydict)
-
-            # push its dep into the buffer
-            if idpackage != -1:
-                matchfilter.add((idpackage, repoid))
-                dbconn = open_db(repoid)
-                owndeps = dbconn.retrieveDependencies(idpackage,
-                    exclude_deptypes = excluded_deps)
-                for owndep in owndeps:
-                    mybuffer.push(owndep)
-
-            try:
-                mydep = mybuffer.pop()
-            except ValueError:
-                break # stack empty
-
-        return maskedtree
 
     def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match,
         stack):
@@ -1738,6 +1651,102 @@ class CalculatorsMixin:
                 os.remove(br_path)
 
         return update, remove, fine, spm_fine
+
+    def get_masked_packages_tree(self, match, atoms = False, flat = False,
+        matchfilter = None):
+
+        if not isinstance(matchfilter, set):
+            matchfilter = set()
+
+        maskedtree = {}
+        mybuffer = Lifo()
+        depcache = set()
+        treelevel = -1
+
+        match_id, match_repo = match
+
+        mydbconn = self.open_repository(match_repo)
+        myatom = mydbconn.retrieveAtom(match_id)
+        idpackage, idreason = mydbconn.idpackageValidator(match_id)
+        if idpackage == -1:
+            treelevel += 1
+            if atoms:
+                mydict = {myatom: idreason,}
+            else:
+                mydict = {match: idreason,}
+            if flat:
+                maskedtree.update(mydict)
+            else:
+                maskedtree[treelevel] = mydict
+
+        excluded_deps = [etpConst['dependency_type_ids']['bdepend_id']]
+        mydeps = mydbconn.retrieveDependencies(match_id,
+            exclude_deptypes = excluded_deps)
+        for mydep in mydeps:
+            mybuffer.push(mydep)
+
+        try:
+            mydep = mybuffer.pop()
+        except ValueError:
+            mydep = None # stack empty
+
+        open_db = self.open_repository
+        am = self.atom_match
+        while mydep:
+
+            if mydep in depcache:
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
+                continue
+            depcache.add(mydep)
+
+            idpackage, repoid = am(mydep)
+            if (idpackage, repoid) in matchfilter:
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
+                continue
+
+            if idpackage != -1:
+                # doing even here because atomMatch with
+                # packagesFilter = False can pull something different
+                matchfilter.add((idpackage, repoid))
+
+            # collect masked
+            if idpackage == -1:
+                idpackage, repoid = am(mydep, packagesFilter = False)
+                if idpackage != -1:
+                    treelevel += 1
+                    if treelevel not in maskedtree and not flat:
+                        maskedtree[treelevel] = {}
+                    dbconn = open_db(repoid)
+                    vidpackage, idreason = dbconn.idpackageValidator(
+                        idpackage)
+                    if atoms:
+                        mydict = {dbconn.retrieveAtom(idpackage): idreason}
+                    else:
+                        mydict = {(idpackage, repoid): idreason}
+                    if flat: maskedtree.update(mydict)
+                    else: maskedtree[treelevel].update(mydict)
+
+            # push its dep into the buffer
+            if idpackage != -1:
+                matchfilter.add((idpackage, repoid))
+                dbconn = open_db(repoid)
+                owndeps = dbconn.retrieveDependencies(idpackage,
+                    exclude_deptypes = excluded_deps)
+                for owndep in owndeps:
+                    mybuffer.push(owndep)
+
+            try:
+                mydep = mybuffer.pop()
+            except ValueError:
+                break # stack empty
+
+        return maskedtree
 
     def check_package_update(self, atom, deep = False):
 

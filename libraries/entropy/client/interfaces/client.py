@@ -692,6 +692,11 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
 
     def destroy(self):
+        """
+        Destroy this Singleton instance, closing repositories, removing
+        SystemSettings plugins added during instance initialization.
+        This method should be always called when instance is not used anymore.
+        """
         self.__instance_destroyed = True
         if hasattr(self, '_installed_repository'):
             if self._installed_repository != None:
