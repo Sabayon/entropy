@@ -622,7 +622,7 @@ class Repository:
             return {}
         return data
 
-    def _handle_eapi3_database_sync(self, repo, threshold = 300,
+    def _handle_eapi3_database_sync(self, repo, threshold = 600,
         chunk_size = 12):
 
         def prepare_exit(mysock, session = None):
