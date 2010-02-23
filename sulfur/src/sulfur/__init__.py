@@ -1593,10 +1593,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         do_stop()
 
     def reset_progress_text(self):
-        self.progress.set_mainLabel(_('Nothing to do. I am idle.'))
-        self.progress.set_subLabel(
-            _('Really, don\'t waste your time here. This is just a placeholder'))
-        self.progress.set_extraLabel(_('I am still alive and kickin\''))
+        self.progress.set_mainLabel("")
+        self.progress.set_subLabel("")
+        self.progress.set_extraLabel("")
         self.hide_progress_bars()
 
     def hide_progress_bars(self):
@@ -1772,7 +1771,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page(back_to_page)
 
         # reset labels
-        self.reset_progress_text()
         self.reset_queue_progress_bars()
         self.disable_ugc = False
 
@@ -2207,6 +2205,16 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             gobject.timeout_add(0, rb.clicked)
 
         self.Equo.resources_remove_lock()
+
+        if state:
+            self.progress.set_mainLabel(_("Tasks completed successfully."))
+            self.progress.set_subLabel(_("Please make sure to read all the messages in the terminal below."))
+            self.progress.set_extraLabel("Have phun!")
+        else:
+            self.progress.set_mainLabel(_("Oh, a fairytale gone bad!"))
+            self.progress.set_subLabel(_("Something bad happened, have a look at the messages in the terminal below."))
+            self.progress.set_extraLabel(_("Don't feel guilty, it's all my fault!"))
+
         return state
 
     def ui_lock(self, lock):
