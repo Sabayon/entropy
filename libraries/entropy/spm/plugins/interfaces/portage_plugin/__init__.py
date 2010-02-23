@@ -2982,7 +2982,13 @@ class PortagePlugin(SpmPlugin):
             "portage/" + portage_cpv
         )
 
-        os.makedirs(portage_db_fakedir, 0o755)
+        try:
+            os.makedirs(portage_db_fakedir, 0o755)
+        except OSError as err:
+            if err.errno != 17:
+                raise
+            shutil.rmtree(portage_db_fakedir, True)
+            os.makedirs(portage_db_fakedir, 0o755)
         # now link it to package_metadata['imagedir']
         os.symlink(package_metadata['imagedir'],
             os.path.join(portage_db_fakedir, "image"))
