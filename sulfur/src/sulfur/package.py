@@ -157,10 +157,13 @@ class EntropyPackage:
     def __str__(self):
         if self.pkgset:
             return self.matched_atom
+        repo_id = self.repoid_clean
+        if repo_id is None:
+            repo_id = ''
         return str(self.dbconn.retrieveAtom(self.matched_id) + \
             etpConst['entropyrevisionprefix'] + \
                 str(self.dbconn.retrieveRevision(self.matched_id))) + \
-                    etpConst['entropyrepoprefix'] + self.repoid_clean
+                    etpConst['entropyrepoprefix'] + repo_id
 
     def __repr__(self):
         return "<EntropyPackage at %s @ %s | a: %s | q: %s brk: %s | ma: %s | im: %s>" % (
