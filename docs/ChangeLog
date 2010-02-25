@@ -1,3 +1,65 @@
+commit 3d61f84ac7543e87e8bc5dccdbc406d03e8ae674
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 25 10:17:05 2010 +0100
+
+    [sulfur] catch OperationalError when filtering reinstallable packages
+
+commit 5c3d2fa3ef5f54fb9e69fdac68e6c847b4a9cfa8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 25 10:10:37 2010 +0100
+
+    [sulfur] EntropyPackage: fix __str__ when repository id is None
+
+commit 559d70e67ec217542f3531c25b5d4a18c2640661
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 25 10:03:50 2010 +0100
+
+    [entropy.client.services.ugc] catch TypeError exceptions when cached data is invalid
+
+commit ac406f8d4a24a6b2fad07d6cb614f03cf57788c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 25 17:19:05 2010 +0100
+
+    [services] fix Entropy Updates Notification Daemon, add exception handler
+
+commit 43fb0f41546c1c7e06d5be41305c5ed25a043e19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 23 21:12:14 2010 +0100
+
+    [entropy.client.services.repository] tweak EAPI3 sync packages threshold
+
+commit 18a4acae352fda956d307569eca3fde6793b035e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 23 21:04:04 2010 +0100
+
+    [sulfur] improve Progress tab messages on labels
+
+commit 3393238bc2c25403e525aca27ee6eb4f1e6baa4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 23 21:03:26 2010 +0100
+
+    [entropy.spm] catch OSError exceptions when trying os.makedirs in entropy_install_unpack_hook
+
+commit 846345f368df020b065ee4a3ea0ca0de1025e241
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 23 17:40:45 2010 +0100
+
+    [entropy.client] add some docstrings
+
+commit b2c8f15e644fc3938ef2fbbed30359cdfee9460c
+Author: Vincenzo Di Massa <vincenzo.dimassa@itsme.it>
+Date:   Mon Feb 22 13:28:39 2010 +0100
+
+    A.R.M.A. + variable time delta dwnloadrate prediction
+    
+    Signed-off-by: Fabio Erculiani <lxnay@sabayon.org>
+
+commit ff13363e4f882ccbd726bdf806efea499a5d24be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 21 18:37:05 2010 +0100
+
+    Tagging Entropy version 0.99.35.7
+
 commit 83793c8f80b8e2dfb6e322dff1bd129c445622ff
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 21 18:32:56 2010 +0100
