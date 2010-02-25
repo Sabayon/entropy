@@ -24,6 +24,7 @@ from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import print_generic
 from entropy.graph import Graph
+from entropy.db.exceptions import OperationalError
 
 from sulfur.setup import SulfurConf, cleanMarkupString, const
 from sulfur.package import EntropyPackage, DummyEntropyPackage
@@ -1229,7 +1230,10 @@ class EntropyPackages:
         matched_data = set()
         for repoid in self.Entropy.repositories():
             dbconn = self.Entropy.open_repository(repoid)
-            repodata = dbconn.listAllPackages(get_scope = True)
+            try:
+                repodata = dbconn.listAllPackages(get_scope = True)
+            except OperationalError:
+                continue # wtf?
             mydata = {}
             for idpackage, atom, slot, revision in repodata:
                 mydata[(atom, slot, revision)] = idpackage
