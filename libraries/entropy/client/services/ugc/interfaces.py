@@ -345,7 +345,7 @@ class Client:
             docs_data, err_msg = data
         else:
             return False, 'wrong server answer'
-        self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
+        self.UGCCache.save_alldocs_cache(pkgkey, repository, docs_data)
         return docs_data, err_msg
 
     def get_icon(self, repository, pkgkey):
@@ -665,9 +665,6 @@ class Cache:
             cached.update(down_dict)
         self.save_downloads_cache(repository, cached)
 
-    def update_alldocs_cache(self, pkgkey, repository, alldocs_dict):
-        self.save_alldocs_cache(pkgkey, repository, alldocs_dict)
-
     def clear_alldocs_cache(self, repository):
         with self.CacheLock:
             self._clear_cache_dir(
@@ -813,8 +810,12 @@ class Cache:
         img_doc_type = etpConst['ugc_doctypes']['image']
         icon_id = Cache.PKG_ICON_IDENTIFIER
 
-        icon_elements = [x for x in docs_cache if \
-            x['iddoctype'] == img_doc_type and x['title'] == icon_id]
+        try:
+            icon_elements = [x for x in docs_cache if \
+                x['iddoctype'] == img_doc_type and x['title'] == icon_id]
+        except TypeError:
+            # cache corruption, invalid data, misc bullshit
+            return None
         if not icon_elements:
             return None
         # get first (chronologically) icon
