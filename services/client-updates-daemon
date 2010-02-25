@@ -39,11 +39,11 @@ from entropy.misc import LogFile
 from entropy.i18n import _
 from entropy.exceptions import PermissionDenied, RepositoryError, \
     MissingParameter
-import entropy.tools as entropyTools
+import entropy.tools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.const import etpConst, const_setup_entropy_pid, \
-    const_remove_entropy_pid
+    const_remove_entropy_pid, const_convert_to_rawstring
 from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.misc import ParallelTask
 from entropy.output import TextInterface, nocolor
@@ -75,6 +75,24 @@ def write_output(*args, **kwargs):
     DAEMON_LOG.flush()
     if DAEMON_DEBUG:
         TEXT.output(*args, **kwargs)
+
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
+def handle_exception(exc_class, exc_instance, exc_tb):
+
+    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+
+    # restore original exception handler, to avoid loops
+    uninstall_exception_handler()
+    # write exception to log file
+    write_output(const_convert_to_rawstring(t_back))
+    raise exc_instance
+
+install_exception_handler()
 
 class DaemonUrlFetcher(UrlFetcher):
 
@@ -261,7 +279,8 @@ class UpdatesDaemon(dbus.service.Object):
 
         try:
             repo_conn = entropy.Repositories(
-                repos, fetch_security = False, noEquoCheck = True)
+                repo_identifiers = repos, fetch_security = False,
+                entropy_updates_alert = True)
             if DAEMON_DEBUG:
                 write_output("__run_sync: repository interface loaded")
         except MissingParameter, err:
@@ -371,7 +390,7 @@ class UpdatesDaemon(dbus.service.Object):
                         entropy.calculate_updates(use_cache = False)
                     del fine, remove
                 except Exception, err:
-                    entropyTools.print_traceback(f = DAEMON_LOG)
+                    entropy.tools.print_traceback(f = DAEMON_LOG)
                     msg = "%s: %s" % (_("Updates: error"), err,)
                     self.do_alert(_("Updates: error"), msg)
                     del self.__updates[:]
@@ -425,7 +444,7 @@ class UpdatesDaemon(dbus.service.Object):
             repos = {}
             try:
                 repo_conn = entropy.Repositories(
-                    noEquoCheck = True, fetch_security = False)
+                    entropy_updates_alert = True, fetch_security = False)
             except MissingParameter:
                 return repos
             except Exception, e:
@@ -483,7 +502,7 @@ class UpdatesDaemon(dbus.service.Object):
                 update, remove, fine, spm_fine = \
                     entropy.calculate_updates(use_cache = False)
             except Exception, err:
-                entropyTools.print_traceback(f = DAEMON_LOG)
+                entropy.tools.print_traceback(f = DAEMON_LOG)
                 msg = "get_updates: %s: %s" % (_("Updates: error"), err,)
                 self.do_alert(_("Updates: error"), msg)
                 return self.__updates
