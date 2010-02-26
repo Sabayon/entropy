@@ -9,6 +9,9 @@
         - make methods private
 
   0.99.50:
+    - entropy.fetchers API docs
+    - entropy.server API docs
+    - entropy.client API docs
     - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
         stuff to move:
             - package sets matching from entropy.client
