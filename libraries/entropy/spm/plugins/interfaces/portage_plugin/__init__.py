@@ -1576,18 +1576,17 @@ class PortagePlugin(SpmPlugin):
         if licenses is None:
             licenses = []
 
-        oldsystderr = sys.stderr
-        dev_null = open("/dev/null", "w")
-        if not etpUi['debug']:
-            sys.stderr = dev_null
-
         ### SETUP ENVIRONMENT
         # if mute, supress portage output
-        domute = False
         if etpUi['mute']:
-            domute = True
+            tmp_fd, tmp_file = tempfile.mkstemp()
+            os.close(tmp_fd)
+            tmp_fw = open(tmp_file, "w")
+
             oldsysstdout = sys.stdout
-            sys.stdout = dev_null
+            oldsysstderr = sys.stderr
+            sys.stdout = tmp_fw
+            sys.stderr = tmp_fw
 
         root = etpConst['systemroot'] + os.path.sep
 
@@ -1714,11 +1713,15 @@ class PortagePlugin(SpmPlugin):
             raise
 
         # if mute, restore old stdout/stderr
-        if domute:
+        if etpUi['mute']:
             sys.stdout = oldsysstdout
-
-        sys.stderr = oldsystderr
-        dev_null.close()
+            sys.stderr = oldsysstderr
+            tmp_fw.flush()
+            tmp_fw.close()
+            try:
+                os.remove(tmp_file)
+            except OSError:
+                pass
 
         if portage_tmpdir_created:
             shutil.rmtree(portage_tmpdir, True)
@@ -1872,209 +1875,151 @@ class PortagePlugin(SpmPlugin):
 
     def _pkg_fooinst(self, package_metadata, phase):
 
-        tmp_file = tempfile.mktemp()
-        stdfile = open(tmp_file, "wb")
-        oldstderr = sys.stderr
-        oldstdout = sys.stdout
-        sys.stderr = stdfile
-
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
         rc = 0
-        remove_tmp = True
 
-        try:
-            # is ebuild available
-            if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
-                return rc
-
-            try:
-
-                if not etpUi['debug']:
-                    sys.stdout = stdfile
-                self._pkg_setup(package_metadata, skip_if_found = True)
-                if not etpUi['debug']:
-                    sys.stdout = oldstdout
-
-                rc = self._portage_doebuild(ebuild, phase, "bintree",
-                    package, portage_tmpdir = package_metadata['unpackdir'],
-                    licenses = package_metadata.get('accept_license'))
-
-                if rc != 0:
-                    self.log_message(
-                        "[PRE] ATTENTION Cannot properly run SPM %s"
-                        " phase for %s. Something bad happened." % (
-                            phase, package,)
-                    )
-
-            except Exception as e:
-
-                stdfile.flush()
-                sys.stdout = oldstdout
-                entropy.tools.print_traceback()
-
-                self.log_message(
-                    "[PRE] ATTENTION Cannot properly run SPM %s"
-                    " phase for %s. Something bad happened."
-                    " Exception %s [%s]" % (
-                        phase, package, Exception, e,)
-                )
-
-                mytxt = "%s: %s %s." % (
-                    bold(_("QA")),
-                    brown(_("Cannot run Source Package Manager trigger for")),
-                    bold(str(package)),
-                )
-                self.output(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                mytxt = "%s. %s: %s + %s [%s]" % (
-                    brown(_("Please report it")),
-                    bold(_("Attach this")),
-                    darkred(etpConst['spmlogfile']),
-                    darkred(tmp_file),
-                    brown(phase),
-                )
-                self.output(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                remove_tmp = False
-
+        # is ebuild available
+        if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
             return rc
 
-        finally:
+        try:
 
-            sys.stderr = oldstderr
-            sys.stdout = oldstdout
-            stdfile.flush()
-            stdfile.close()
+            self._pkg_setup(package_metadata, skip_if_found = True)
 
-            if (rc == 0) and remove_tmp:
-                try:
-                    os.remove(tmp_file)
-                except OSError:
-                    pass
+            rc = self._portage_doebuild(ebuild, phase, "bintree",
+                package, portage_tmpdir = package_metadata['unpackdir'],
+                licenses = package_metadata.get('accept_license'))
+
+            if rc != 0:
+                self.log_message(
+                    "[PRE] ATTENTION Cannot properly run SPM %s"
+                    " phase for %s. Something bad happened." % (
+                        phase, package,)
+                )
+
+        except Exception as e:
+
+            entropy.tools.print_traceback()
+
+            self.log_message(
+                "[PRE] ATTENTION Cannot properly run SPM %s"
+                " phase for %s. Something bad happened."
+                " Exception %s [%s]" % (
+                    phase, package, Exception, e,)
+            )
+
+            mytxt = "%s: %s %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run Source Package Manager trigger for")),
+                bold(str(package)),
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            mytxt = "%s. %s: %s [%s]" % (
+                brown(_("Please report it")),
+                bold(_("Attach this")),
+                darkred(etpConst['spmlogfile']),
+                brown(phase),
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+
+        return rc
 
     def _pkg_foorm(self, package_metadata, phase):
 
-        tmp_file = tempfile.mktemp()
-        stdfile = open(tmp_file, "wb")
-        oldstderr = sys.stderr
-        oldstdout = sys.stdout
-        sys.stderr = stdfile
-
         rc = 0
-        remove_tmp = True
         moved_ebuild = None
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         ebuild = self.get_installed_package_build_script_path(package)
 
+        if not os.path.isfile(ebuild):
+            return 0
+
+        try:
+            ebuild, moved_ebuild = self._pkg_remove_setup_ebuild_env(
+                ebuild, package)
+
+        except EOFError as e:
+            # stuff on system is broken, ignore it
+            self.output(
+                darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
+                    str(e) + darkred(" - ignoring"),
+                importance = 1,
+                type = "warning",
+                header = red("   ## ")
+            )
+            return 0
+
+        except ImportError as e:
+            # stuff on system is broken, ignore it
+            self.output(
+                darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
+                    str(e) + darkred(" - ignoring"),
+                importance = 1,
+                type = "warning",
+                header = red("   ## ")
+            )
+            return 0
+
         try:
 
-            if not os.path.isfile(ebuild):
-                return 0
+            work_dir = os.path.join(etpConst['entropyunpackdir'], package)
 
-            try:
-                ebuild, moved_ebuild = self._pkg_remove_setup_ebuild_env(
-                    ebuild, package)
+            rc = self._portage_doebuild(ebuild, phase, "bintree",
+                package, portage_tmpdir = work_dir,
+                licenses = package_metadata.get('accept_license'))
 
-            except EOFError as e:
-                sys.stderr = oldstderr
-                # stuff on system is broken, ignore it
-                self.output(
-                    darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
-                        str(e) + darkred(" - ignoring"),
-                    importance = 1,
-                    type = "warning",
-                    header = red("   ## ")
-                )
-                return 0
-
-            except ImportError as e:
-                sys.stderr = oldstderr
-                # stuff on system is broken, ignore it
-                self.output(
-                    darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
-                        str(e) + darkred(" - ignoring"),
-                    importance = 1,
-                    type = "warning",
-                    header = red("   ## ")
-                )
-                return 0
-
-            try:
-
-                work_dir = os.path.join(etpConst['entropyunpackdir'], package)
-
-                rc = self._portage_doebuild(ebuild, phase, "bintree",
-                    package, portage_tmpdir = work_dir,
-                    licenses = package_metadata.get('accept_license'))
-
-                if rc != 1:
-                    self.log_message(
-                        "[PRE] ATTENTION Cannot properly run SPM %s trigger "
-                        "for %s. Something bad happened." % (phase, package,)
-                    )
-
-            except Exception as e:
-
-                stdfile.flush()
-                sys.stdout = oldstdout
-                sys.stderr = oldstderr
-                entropy.tools.print_traceback()
-
+            if rc != 1:
                 self.log_message(
-                    "[PRE] ATTENTION Cannot properly run SPM %s"
-                    " phase for %s. Something bad happened."
-                    " Exception %s [%s]" % (phase, package, Exception, e,)
+                    "[PRE] ATTENTION Cannot properly run SPM %s trigger "
+                    "for %s. Something bad happened." % (phase, package,)
                 )
 
-                mytxt = "%s: %s %s." % (
-                    bold(_("QA")),
-                    brown(_("Cannot run Source Package Manager trigger for")),
-                    bold(str(package)),
-                )
-                self.output(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                mytxt = "%s. %s: %s + %s [%s]" % (
-                    brown(_("Please report it")),
-                    bold(_("Attach this")),
-                    darkred(etpConst['spmlogfile']),
-                    darkred(tmp_file),
-                    brown(phase),
-                )
-                self.output(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                remove_tmp = False
+        except Exception as e:
 
-            if moved_ebuild is not None:
-                if os.path.isfile(moved_ebuild):
-                    self._pkg_remove_overlayed_ebuild(moved_ebuild)
+            entropy.tools.print_traceback()
 
-            return rc
+            self.log_message(
+                "[PRE] ATTENTION Cannot properly run SPM %s"
+                " phase for %s. Something bad happened."
+                " Exception %s [%s]" % (phase, package, Exception, e,)
+            )
 
-        finally:
+            mytxt = "%s: %s %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run Source Package Manager trigger for")),
+                bold(str(package)),
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            mytxt = "%s. %s: %s [%s]" % (
+                brown(_("Please report it")),
+                bold(_("Attach this")),
+                darkred(etpConst['spmlogfile']),
+                brown(phase),
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
 
-            sys.stderr = oldstderr
-            sys.stdout = oldstdout
-            stdfile.flush()
-            stdfile.close()
+        if moved_ebuild is not None:
+            if os.path.isfile(moved_ebuild):
+                self._pkg_remove_overlayed_ebuild(moved_ebuild)
 
-            if (rc == 0) and remove_tmp:
-                try:
-                    os.remove(tmp_file)
-                except OSError:
-                    pass
+        return rc
 
     def _pkg_preinst(self, package_metadata):
         return self._pkg_fooinst(package_metadata, "preinst")
