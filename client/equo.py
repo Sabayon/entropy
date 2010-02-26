@@ -227,9 +227,9 @@ help_opts_extended = [
     (2, 'extract', 2, _('extract Entropy metadata from provided Entropy package files')),
     (3, '--savedir', 1, _('save new metadata into the specified directory')),
     None,
-    (1, 'database', 1, _('handles installed packages database')),
-        (2, 'check', 2, _('check System Database for errors')),
-        (2, 'vacuum', 2, _('remove System Database internal indexes to save space')),
+    (1, 'rescue', 1, _('contains System rescue tools')),
+        (2, 'check', 2, _('check installed packages repository for errors')),
+        (2, 'vacuum', 2, _('remove installed packages repository internal indexes to save disk space')),
         (2, 'generate', 1, _('generate installed packages database using Source Package Manager repositories')),
         (2, 'resurrect', 1, _('generate installed packages database using files on the system [last hope]')),
         (2, 'revdeps', 1, _('regenerate reverse dependencies metadata')),
@@ -409,7 +409,14 @@ def _do_search(main_cmd, options):
     import text_query
     return text_query.query([main_cmd] + options)
 
-def _do_text_database(main_cmd, options):
+def _do_text_rescue(main_cmd, options):
+    if main_cmd == "database":
+        print_warning("")
+        print_warning("'%s' %s: '%s'" % (
+            purple("equo database"),
+            blue(_("is deprecated, please use")),
+            darkgreen("equo rescue"),))
+        print_warning("")
     import text_rescue
     return text_rescue.database(options)
 
@@ -459,7 +466,7 @@ def _do_text_community(main_cmd, options):
                     options[0] = options[0][3:]
                     rc = server_activator.database(options)
 
-    elif sub_cmd == "database":
+    elif sub_cmd == "repo":
 
         do = True
         # hook to support spmuids command, which is just
@@ -478,17 +485,8 @@ def _do_text_community(main_cmd, options):
                 print_error(darkgreen(comm_err_msg))
                 rc = 1
             else:
-                rc = server_reagent.database(options)
+                rc = server_reagent.repositories(options)
                 server_reagent.Entropy.close_repositories()
-
-    elif sub_cmd == "repo":
-        try:
-            import server_reagent
-        except ImportError:
-            print_error(darkgreen(comm_err_msg))
-            rc = 1
-        else:
-            rc = server_reagent.repositories(options)
 
     elif sub_cmd == "key":
         try:
@@ -633,7 +631,8 @@ CMDS_MAP = {
 
     "match": _do_search,
     "search": _do_search,
-    "database": _do_text_database,
+    "database": _do_text_rescue,
+    "rescue": _do_text_rescue,
     "ugc": _do_text_ugc,
     "community": _do_text_community,
 

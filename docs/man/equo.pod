@@ -709,20 +709,20 @@ save new metadata into the specified directory
 =back
 
 
-=item B<database>
+=item B<rescue>
 
-handles installed packages database
+contains System rescue tools
 
 =over
 
 
 =item B<check>
 
-check System Database for errors
+check installed packages repository for errors
 
 =item B<vacuum>
 
-remove System Database internal indexes to save space
+remove installed packages repository internal indexes to save disk space
 
 =item B<generate>
 
