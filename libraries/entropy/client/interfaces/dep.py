@@ -347,11 +347,15 @@ class CalculatorsMixin:
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None):
 
+        cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        misc_settings = cl_settings['misc']
+        ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
+
         if self.xcache:
             c_data = sorted(dependencies)
             client_checksum = self._installed_repository.checksum()
-            c_hash = hash("%s|%s|%s|%s" % (c_data, deep_deps,
-                client_checksum, relaxed_deps,))
+            c_hash = hash("%s|%s|%s|%s|%s" % (c_data, deep_deps,
+                client_checksum, relaxed_deps, ignore_spm_downgrades,))
             c_hash = "%s%s" % (
                 EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash,)
 
@@ -543,6 +547,17 @@ class CalculatorsMixin:
                 if vcmp == 0:
                     if cdigest != repo_digest:
                         vcmp = 1
+
+                # check against SPM downgrades and ignore_spm_downgrades
+                if (vcmp < 0) and ignore_spm_downgrades and \
+                    (installed_rev == 9999) and (installed_rev != repo_pkgrev):
+                    # In this case, do not override Source Package Manager
+                    # installed pkgs
+                    const_debug_write(__name__,
+                        "_get_unsatisfied_dependencies => SPM downgrade! " + \
+                            "(not cached, deep: %s) => %s" % (
+                                deep_deps, dependency,))
+                    vcmp = 0
 
                 if vcmp == 0:
                     const_debug_write(__name__,
