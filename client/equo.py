@@ -268,7 +268,8 @@ help_opts_extended = [
 
         None,
 
-        (2, 'database', 1, _('community repositories database functions')),
+        (2, 'repo', 2, _('manage a repository')),
+
             (3, '--initialize', 2, _('(re)initialize the current repository database')),
                 (4, '--empty', 2, _('do not refill database using packages on mirrors')),
                 (4, '--repo=<repo>', 2, _('(re)create the database for the specified repository')),
@@ -284,9 +285,6 @@ help_opts_extended = [
             (3, 'restore', 3, _('restore a previously backed-up repository database')),
             (3, 'spmuids', 2, _('regenerate SPM UIDs map (SPM <-> Entropy packages)'),),
 
-        None,
-
-        (2, 'repo', 2, _('manage a repository')),
             (3, 'enable <repo>', 3, _('enable the specified repository')),
             (3, 'disable <repo>', 3, _('disable the specified repository')),
             (3, 'status <repo>', 3, _('show the current Server Interface status')),

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2010-01-28" "perl v5.8.8" "Entropy"
+.TH EQUO 1 "2010-02-26" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBequo\fR \- Official Sabayon Linux Package Manager Client
 .SH "SYNOPSIS"
@@ -815,9 +815,9 @@ remove binary packages not in repositories and expired
 .RE
 .RS 4
 .RE
-.IP "\fBdatabase\fR" 4
-.IX Item "database"
-community repositories database functions
+.IP "\fBrepo\fR" 4
+.IX Item "repo"
+manage a repository
 .RS 4
 .IP "\fB\-\-initialize\fR" 4
 .IX Item "--initialize"
@@ -826,12 +826,6 @@ community repositories database functions
 .IP "\fB\-\-empty\fR" 4
 .IX Item "--empty"
 do not refill database using packages on mirrors
-.IP "\fB\-\-repo=<repo\fR>" 4
-.IX Item "--repo=<repo>"
-(re)create the database for the specified repository
-.RE
-.RS 4
-.RE
 .IP "\fBbump\fR" 4
 .IX Item "bump"
 manually force a revision bump for the current repository database
@@ -876,13 +870,6 @@ restore a previously backed-up repository database
 .IP "\fBspmuids\fR" 4
 .IX Item "spmuids"
 regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
-.RE
-.RS 4
-.RE
-.IP "\fBrepo\fR" 4
-.IX Item "repo"
-manage a repository
-.RS 4
 .IP "\fBenable <repo\fR>" 4
 .IX Item "enable <repo>"
 enable the specified repository
@@ -939,9 +926,12 @@ export public key of given repository
 .IX Item "export-private <repo_id <key_path>>"
 export private key of given repository
 .RE
-.IP "\fBquery\fR"
+.RS 4
+.RE
+.IP "\fBquery\fR" 4
 .IX Item "query"
 do some searches into community repository databases
+.RS 4
 .IP "\fBbelongs\fR" 4
 .IX Item "belongs"
 show from what package the provided files belong
@@ -982,9 +972,12 @@ show more details
 .IX Item "--quiet"
 print results in a scriptable way
 .RE
-.IP "\fBspm\fR"
+.RS 4
+.RE
+.IP "\fBspm\fR" 4
 .IX Item "spm"
 source package manager functions
+.RS 4
 .IP "\fBcompile\fR" 4
 .IX Item "compile"
 compilation function
@@ -1025,9 +1018,12 @@ run mirror sync if all went fine
 .IX Item "orphans"
 scan orphaned packages on \s-1SPM\s0
 .RE
-.IP "\fBnotice\fR"
+.RS 4
+.RE
+.IP "\fBnotice\fR" 4
 .IX Item "notice"
 notice board handling functions
+.RS 4
 .IP "\fBadd\fR" 4
 .IX Item "add"
 add a news item to the notice board
@@ -1038,21 +1034,21 @@ remove a news item from the notice board
 .IX Item "read"
 read the current notice board
 .RE
-.IP "\fBdeptest\fR"
+.RS 4
+.RE
+.IP "\fBdeptest\fR" 4
 .IX Item "deptest"
 look for unsatisfied dependencies across community repositories
-.RE
-.IP "\fBpkgtest\fR"
+.IP "\fBpkgtest\fR" 4
 .IX Item "pkgtest"
 verify the integrity of local package files
-.RE
-.IP "\fBrevdeps\fR"
+.IP "\fBrevdeps\fR" 4
 .IX Item "revdeps"
 regenerate reverse dependencies metadata
-.RE
-.IP "\fBugc\fR"
+.IP "\fBugc\fR" 4
 .IX Item "ugc"
 handles User Generated Content features
+.RS 4
 .IP "\fBlogin <repository\fR>" 4
 .IX Item "login <repository>"
 login against a specified repository
@@ -1096,9 +1092,12 @@ add vote for the specified package key (example: x11\-libs/qt)
 .RS 4
 .RE
 .RE
-.IP "\fBcache\fR"
+.RS 4
+.RE
+.IP "\fBcache\fR" 4
 .IX Item "cache"
 handles Entropy cache
+.RS 4
 .IP "\fBclean\fR" 4
 .IX Item "clean"
 clean Entropy cache
@@ -1109,25 +1108,26 @@ show more details
 .IX Item "--quiet"
 print results in a scriptable way
 .RE
-.IP "\fBcleanup\fR"
+.RS 4
+.RE
+.IP "\fBcleanup\fR" 4
 .IX Item "cleanup"
 remove downloaded packages and clean temp. directories
-.RE
-.IP "\fB\-\-info\fR"
+.IP "\fB\-\-info\fR" 4
 .IX Item "--info"
 show system information
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
 \&\fB\s-1ETP_NOCACHE\s0\fR=1: if set, all the Entropy framework will never use its internal
 on-disk cache.
-.PP
+.Sp
 \&\fB\s-1FORCE_EAPI\s0\fR=N: if set to 1, 2 or 3 and used with '\fBequo\fR update', Entropy
 repository synchronized will be force to use the provided \s-1EAPI\s0 to update
 repositories.
-.PP
+.Sp
 \&\fB\s-1ACCEPT_LICENSE\s0\fR=license_id1:license_id2:...: this is a way to avoid equo
 asking to accept specific licenses.
-.PP
+.Sp
 \&\fB\s-1ETP_NO_COLOR\s0\fR=1: disable entropy coloured output.
 .SH "BUGS"
 .IX Header "BUGS"

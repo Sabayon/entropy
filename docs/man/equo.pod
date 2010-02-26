@@ -898,9 +898,9 @@ remove binary packages not in repositories and expired
 =back
 
 
-=item B<database>
+=item B<repo>
 
-community repositories database functions
+manage a repository
 
 =over
 
@@ -915,12 +915,6 @@ community repositories database functions
 =item B<--empty>
 
 do not refill database using packages on mirrors
-
-=item B<--repo=<repo>>
-
-(re)create the database for the specified repository
-
-=back
 
 
 =item B<bump>
@@ -981,16 +975,6 @@ restore a previously backed-up repository database
 =item B<spmuids>
 
 regenerate SPM UIDs map (SPM <-> Entropy packages)
-
-=back
-
-
-=item B<repo>
-
-manage a repository
-
-=over
-
 
 =item B<enable <repo>>
 
