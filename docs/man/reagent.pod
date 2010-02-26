@@ -164,9 +164,9 @@ print results in a scriptable way
 =back
 
 
-=item B<database>
+=item B<repo>
 
-repository database functions
+manage a repository
 
 =over
 
@@ -174,15 +174,6 @@ repository database functions
 =item B<--initialize>
 
 (re)initialize the current repository database
-
-=over
-
-
-=item B<--repo=<repo>>
-
-(re)create the database for the specified repository
-
-=back
 
 
 =item B<bump>
@@ -230,16 +221,6 @@ backup current repository database
 =item B<restore>
 
 restore a previously backed-up repository database
-
-=back
-
-
-=item B<repo>
-
-manage a repository
-
-=over
-
 
 =item B<enable <repo>>
 

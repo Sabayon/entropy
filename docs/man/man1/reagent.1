@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2010-02-11" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2010-02-26" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -253,20 +253,13 @@ print results in a scriptable way
 .RE
 .RS 4
 .RE
-.IP "\fBdatabase\fR" 4
-.IX Item "database"
-repository database functions
+.IP "\fBrepo\fR" 4
+.IX Item "repo"
+manage a repository
 .RS 4
 .IP "\fB\-\-initialize\fR" 4
 .IX Item "--initialize"
 (re)initialize the current repository database
-.RS 4
-.IP "\fB\-\-repo=<repo\fR>" 4
-.IX Item "--repo=<repo>"
-(re)create the database for the specified repository
-.RE
-.RS 4
-.RE
 .IP "\fBbump\fR" 4
 .IX Item "bump"
 manually force a revision bump for the current repository database
@@ -301,13 +294,6 @@ backup current repository database
 .IP "\fBrestore\fR" 4
 .IX Item "restore"
 restore a previously backed-up repository database
-.RE
-.RS 4
-.RE
-.IP "\fBrepo\fR" 4
-.IX Item "repo"
-manage a repository
-.RS 4
 .IP "\fBenable <repo\fR>" 4
 .IX Item "enable <repo>"
 enable the specified repository

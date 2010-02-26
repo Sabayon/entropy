@@ -73,7 +73,7 @@ help_opts = [
         (2, '--verbose', 2, _('show more details')),
         (2, '--quiet', 2, _('print results in a scriptable way')),
     None,
-    (1, 'database', 2, _('repository database functions')),
+    (1, 'repo', 3, _('manage a repository')),
         (2, '--initialize', 3, _('(re)initialize the current repository database')),
             (3, '--repo=<repo>', 2, _('(re)create the database for the specified repository')),
         (2, 'bump', 4, _('manually force a revision bump for the current repository database')),
@@ -86,8 +86,6 @@ help_opts = [
         (2, 'md5remote', 3, _('verify remote integrity of the provided atoms (or world)')),
         (2, 'backup', 4, _('backup current repository database')),
         (2, 'restore', 4, _('restore a previously backed-up repository database')),
-    None,
-    (1, 'repo', 3, _('manage a repository')),
         (2, 'enable <repo>', 3, _('enable the specified repository')),
         (2, 'disable <repo>', 3, _('disable the specified repository')),
         (2, 'package-dep <repo> [atoms]', 1, _('handle packages dependencies')),
@@ -184,21 +182,16 @@ elif main_cmd == "inject":
     rc = server_reagent.inject(options)
     server_reagent.Entropy.close_repositories()
 
-elif main_cmd == "database":
-    if "switchbranch" in options:
-        etpUi['warn'] = False
-    import server_reagent
-    server_reagent.database(options)
-    server_reagent.Entropy.close_repositories()
-    rc = 0
-
 elif main_cmd == "query":
     import server_query
     rc = server_query.query(options)
 
 elif main_cmd == "repo":
+    if "switchbranch" in options:
+        etpUi['warn'] = False
     import server_reagent
     rc = server_reagent.repositories(options)
+    server_reagent.Entropy.close_repositories()
 
 elif main_cmd == "status":
     import server_reagent

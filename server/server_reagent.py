@@ -51,13 +51,21 @@ def repositories(options):
     repoid_dest = None
     pull_deps = False
     invalid_repos = False
+    request_noask = False
+    request_sync = False
+
     if not options:
         cmd = ""
     else:
         cmd = options[0]
     myopts = []
     for opt in options[1:]:
-        if cmd in ["enable", "disable"]:
+
+        if opt == "--sync":
+            request_sync = True
+        elif opt == "--noask":
+            request_noask = True
+        elif cmd in ["enable", "disable"]:
             if opt not in valid_repos:
                 invalid_repos = True
             repoid = opt
@@ -337,6 +345,235 @@ def repositories(options):
             return 0
         return 1
 
+    elif cmd == "remove":
+
+        print_info(darkgreen(" * ") + \
+            red("%s..." % (_("Matching packages to remove"),) ), back = True)
+
+        if not myopts:
+            print_error(brown(" * ")+red(_("Not enough parameters")))
+            return 1
+
+        dbconn = Entropy.open_server_repository(read_only = True,
+            no_upload = True)
+        pkglist = set()
+        for atom in myopts:
+            pkg = dbconn.atomMatch(atom, multiMatch = True)
+            for idpackage in pkg[0]:
+                pkglist.add(idpackage)
+
+        if not pkglist:
+            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
+            return 2
+
+        print_info(darkgreen(" * ") + \
+            red("%s:" % (_("These are the packages that would be removed from the database"),) ))
+        for idpackage in pkglist:
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            branch = dbconn.retrieveBranch(idpackage)
+            print_info(red("   # ")+blue("[")+red(branch)+blue("] ")+bold(pkgatom))
+
+
+        rc = Entropy.ask_question(_("Would you like to continue ?"))
+        if rc == _("No"):
+            return 0
+
+        print_info(darkgreen(" * ") + \
+            red("%s..." % (_("Removing selected packages"),) ))
+        Entropy.remove_packages(pkglist)
+        print_info(darkgreen(" * ") + \
+            red(_("Packages removed. To remove binary packages, run activator.")))
+
+        return 0
+
+    elif cmd == "multiremove":
+
+        print_info(darkgreen(" * ") + \
+            red("%s..." % (_("Searching injected packages to remove"),) ),
+                back = True)
+
+        dbconn = Entropy.open_server_repository(read_only = True,
+            no_upload = True)
+
+        idpackages = set()
+        if not myopts:
+            allidpackages = dbconn.listAllIdpackages()
+            for idpackage in allidpackages:
+                if dbconn.isInjected(idpackage):
+                    idpackages.add(idpackage)
+        else:
+            for atom in myopts:
+                match = dbconn.atomMatch(atom, multiMatch = True)
+                for x in match[0]:
+                    if dbconn.isInjected(x):
+                        idpackages.add(x)
+
+        if not idpackages:
+            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
+            return 1
+
+        print_info(darkgreen(" * ") + \
+            blue("%s:" % (
+                _("These are the injected packages pulled in for removal"),) ))
+
+        for idpackage in idpackages:
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            print_info(darkred("    # ")+brown(pkgatom))
+
+        # ask to continue
+        rc = Entropy.ask_question(_("Would you like to continue ?"))
+        if rc == _("No"):
+            return 0
+
+        print_info(green(" * ")+red("%s ..." % (_("Removing selected packages"),) ))
+        Entropy.remove_packages(idpackages)
+
+        Entropy.close_repository(dbconn)
+        print_info(darkgreen(" * ") + \
+            red(_("Packages removed. To remove binary packages, run activator.")))
+        return 0
+
+    elif cmd == "--initialize":
+
+        rc = Entropy.initialize_server_repository()
+        if rc == 0:
+            print_info(darkgreen(" * ") + \
+                red(_("Entropy database has been reinitialized using binary packages available")))
+
+    elif cmd == "create-empty-database":
+
+        dbpath = None
+        if myopts:
+            dbpath = myopts[0]
+        print_info(darkgreen(" * ")+red("%s: " % (_("Creating empty database to"),) )+dbpath)
+        if os.path.isfile(dbpath):
+            print_error(darkgreen(" * ")+red("%s: " % (_("Cannot overwrite already existing file"),) )+dbpath)
+            return 1
+        Entropy.setup_empty_repository(dbpath)
+        return 0
+
+    elif cmd == "switchbranch":
+
+        if (len(myopts) < 2):
+            print_error(brown(" * ")+red(_("Not enough parameters")))
+            return 1
+
+        from_branch = myopts[0]
+        to_branch = myopts[1]
+        print_info(darkgreen(" * ")+red(_("Switching branch, be sure to have your packages in sync.")))
+
+        sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        for repoid in SYS_SET[sys_settings_plugin_id]['server']['repositories']:
+
+            print_info(darkgreen(" * ")+"%s %s %s: %s" % (
+                blue(_("Collecting packages that would be marked")),
+                bold(to_branch), blue(_("on")), purple(repoid),) )
+
+            dbconn_old = Entropy.open_server_repository(read_only = True,
+                no_upload = True, repo = repoid, use_branch = from_branch,
+                do_treeupdates = False)
+            pkglist = dbconn_old.listAllIdpackages()
+
+            print_info(darkgreen(" * ")+"%s %s: %s %s" % (
+                blue(_("These are the packages that would be marked")),
+                bold(to_branch), len(pkglist), darkgreen(_("packages")),))
+
+            rc = Entropy.ask_question(_("Would you like to continue ?"))
+            if rc == _("No"):
+                return 4
+
+            status = Entropy.switch_packages_branch(from_branch, to_branch,
+                repo = repoid)
+            if status is None:
+                return 1
+
+        switched, already_switched, ignored, not_found, no_checksum = status
+        if not_found or no_checksum:
+            return 1
+        return 0
+
+    elif cmd == "flushback":
+
+        if not myopts:
+            print_error(brown(" * ")+red(_("Not enough parameters")))
+            return 1
+
+        status = Entropy.flushback_packages(myopts)
+        if status:
+            return 0
+        return 1
+
+    elif cmd == "md5remote":
+
+        Entropy.verify_remote_packages(myopts, ask = not request_noask)
+        return 0
+
+    elif cmd == "bump":
+
+        print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
+        Entropy._bump_database()
+        if request_sync:
+            errors, fine, broken = Entropy.Mirrors.sync_repositories()
+
+    elif cmd == "backup":
+
+        db_path = Entropy._get_local_database_file()
+        rc, err_msg = Entropy.Client.backup_database(db_path,
+            backup_dir = os.path.dirname(db_path))
+        if not rc:
+            print_info(darkred(" ** ")+red("%s: %s" % (_("Error"), err_msg,) ))
+            return 1
+        return 0
+
+    elif cmd == "restore":
+
+
+        db_file = Entropy._get_local_database_file()
+        db_dir = os.path.dirname(db_file)
+        dblist = Entropy.Client.list_backedup_client_databases(
+            client_dbdir = db_dir)
+        if not dblist:
+            print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
+            return 1
+
+        mydblist = []
+        db_data = []
+        for mydb in dblist:
+            ts = os.path.getmtime(mydb)
+            mytime = entropy.tools.convert_unix_time_to_human_time(ts)
+            mydblist.append("[%s] %s" % (mytime, mydb,))
+            db_data.append(mydb)
+
+        def fake_cb(s):
+            return s
+
+        input_params = [
+            ('db', ('combo', (_('Select the database you want to restore'),
+                mydblist),), fake_cb, True)
+        ]
+
+        while True:
+            data = Entropy.input_box(
+                red(_("Entropy installed packages database restore tool")),
+                input_params, cancel_button = True)
+            if data is None:
+                return 1
+            myid, dbx = data['db']
+            print(dbx)
+            try:
+                dbpath = db_data.pop(myid)
+            except IndexError:
+                continue
+            if not os.path.isfile(dbpath):
+                continue
+            break
+
+        status, err_msg = Entropy.Client.restore_database(dbpath, db_file)
+        if status:
+            return 0
+        return 1
+
     return -10
 
 def update(options):
@@ -593,253 +830,6 @@ def update(options):
     print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
     return 0
 
-
-def database(options):
-
-    d_request_noask = False
-    d_request_sync = False
-    repo = None
-    _options = []
-    for opt in options:
-        if opt.startswith("--noask"):
-            d_request_noask = True
-        elif opt.startswith("--sync"):
-            d_request_sync = True
-        elif opt.startswith("--repo=") and len(opt.split("=")) == 2:
-            repo = opt.split("=")[1]
-        else:
-            _options.append(opt)
-    options = _options
-
-    if not options:
-        print_error(brown(" * ")+red(_("Not enough parameters")))
-        return 1
-
-    if (options[0] == "--initialize"):
-
-        rc = Entropy.initialize_server_repository(repo = repo)
-        if rc == 0:
-            print_info(darkgreen(" * ")+red(_("Entropy database has been reinitialized using binary packages available")))
-
-    elif (options[0] == "create-empty-database"):
-
-        myopts = options[1:]
-        dbpath = None
-        if myopts:
-            dbpath = myopts[0]
-        print_info(darkgreen(" * ")+red("%s: " % (_("Creating empty database to"),) )+dbpath)
-        if os.path.isfile(dbpath):
-            print_error(darkgreen(" * ")+red("%s: " % (_("Cannot overwrite already existing file"),) )+dbpath)
-            return 1
-        Entropy.setup_empty_repository(dbpath)
-        return 0
-
-    elif (options[0] == "switchbranch"):
-
-        if (len(options) < 3):
-            print_error(brown(" * ")+red(_("Not enough parameters")))
-            return 1
-
-        from_branch = options[1]
-        to_branch = options[2]
-        print_info(darkgreen(" * ")+red(_("Switching branch, be sure to have your packages in sync.")))
-
-        sys_settings_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
-        for repoid in SYS_SET[sys_settings_plugin_id]['server']['repositories']:
-
-            print_info(darkgreen(" * ")+"%s %s %s: %s" % (
-                blue(_("Collecting packages that would be marked")),
-                bold(to_branch), blue(_("on")), purple(repoid),) )
-
-            dbconn_old = Entropy.open_server_repository(read_only = True,
-                no_upload = True, repo = repoid, use_branch = from_branch,
-                do_treeupdates = False)
-            pkglist = dbconn_old.listAllIdpackages()
-
-            print_info(darkgreen(" * ")+"%s %s: %s %s" % (
-                blue(_("These are the packages that would be marked")),
-                bold(to_branch), len(pkglist), darkgreen(_("packages")),))
-
-            rc = Entropy.ask_question(_("Would you like to continue ?"))
-            if rc == _("No"):
-                return 4
-
-            status = Entropy.switch_packages_branch(from_branch, to_branch,
-                repo = repoid)
-            if status is None:
-                return 1
-
-        switched, already_switched, ignored, not_found, no_checksum = status
-        if not_found or no_checksum:
-            return 1
-        return 0
-
-    elif (options[0] == "flushback"):
-
-        if (len(options) < 2):
-            print_error(brown(" * ")+red(_("Not enough parameters")))
-            return 1
-
-        from_branches = options[1:]
-        status = Entropy.flushback_packages(from_branches)
-        if status:
-            return 0
-        return 1
-
-    elif (options[0] == "remove"):
-
-        print_info(darkgreen(" * ")+red("%s..." % (_("Matching packages to remove"),) ), back = True)
-        myopts = []
-        for opt in options[1:]:
-            myopts.append(opt)
-
-        if not myopts:
-            print_error(brown(" * ")+red(_("Not enough parameters")))
-            return 1
-
-        dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
-        pkglist = set()
-        for atom in myopts:
-            pkg = dbconn.atomMatch(atom, multiMatch = True)
-            for idpackage in pkg[0]:
-                pkglist.add(idpackage)
-
-        if not pkglist:
-            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
-            return 2
-
-        print_info(darkgreen(" * ")+red("%s:" % (_("These are the packages that would be removed from the database"),) ))
-        for idpackage in pkglist:
-            pkgatom = dbconn.retrieveAtom(idpackage)
-            branch = dbconn.retrieveBranch(idpackage)
-            print_info(red("   # ")+blue("[")+red(branch)+blue("] ")+bold(pkgatom))
-
-
-        rc = Entropy.ask_question(_("Would you like to continue ?"))
-        if rc == _("No"):
-            return 0
-
-        print_info(darkgreen(" * ")+red("%s..." % (_("Removing selected packages"),) ))
-        Entropy.remove_packages(pkglist)
-        print_info(darkgreen(" * ")+red(_("Packages removed. To remove binary packages, run activator.")))
-
-        return 0
-
-    elif (options[0] == "multiremove"):
-
-        print_info(darkgreen(" * ")+red("%s..." % (_("Searching injected packages to remove"),) ), back = True)
-
-        atoms = []
-        for opt in options[1:]:
-            atoms.append(opt)
-
-        dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
-
-        idpackages = set()
-        if not atoms:
-            allidpackages = dbconn.listAllIdpackages()
-            for idpackage in allidpackages:
-                if dbconn.isInjected(idpackage):
-                    idpackages.add(idpackage)
-        else:
-            for atom in atoms:
-                match = dbconn.atomMatch(atom, multiMatch = True)
-                for x in match[0]:
-                    if dbconn.isInjected(x):
-                        idpackages.add(x)
-
-        if not idpackages:
-            print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
-            return 1
-
-        print_info(darkgreen(" * ")+blue("%s:" % (_("These are the injected packages pulled in for removal"),) ))
-
-        for idpackage in idpackages:
-            pkgatom = dbconn.retrieveAtom(idpackage)
-            print_info(darkred("    # ")+brown(pkgatom))
-
-        # ask to continue
-        rc = Entropy.ask_question(_("Would you like to continue ?"))
-        if rc == _("No"):
-            return 0
-
-        print_info(green(" * ")+red("%s ..." % (_("Removing selected packages"),) ))
-        Entropy.remove_packages(idpackages)
-
-        Entropy.close_repository(dbconn)
-        print_info(darkgreen(" * ")+red(_("Packages removed. To remove binary packages, run activator.")))
-        return 0
-
-    # used by reagent
-    elif (options[0] == "md5remote"):
-
-        mypackages = options[1:]
-        Entropy.verify_remote_packages(mypackages, ask = not d_request_noask)
-        return 0
-
-    # bump tool
-    elif (options[0] == "bump"):
-
-        print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
-        Entropy._bump_database()
-        if d_request_sync:
-            errors, fine, broken = Entropy.Mirrors.sync_repositories()
-
-    elif (options[0] == "backup"):
-
-        db_path = Entropy._get_local_database_file()
-        rc, err_msg = Entropy.Client.backup_database(db_path,
-            backup_dir = os.path.dirname(db_path))
-        if not rc:
-            print_info(darkred(" ** ")+red("%s: %s" % (_("Error"), err_msg,) ))
-            return 1
-        return 0
-
-    elif (options[0] == "restore"):
-
-
-        db_file = Entropy._get_local_database_file()
-        db_dir = os.path.dirname(db_file)
-        dblist = Entropy.Client.list_backedup_client_databases(
-            client_dbdir = db_dir)
-        if not dblist:
-            print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
-            return 1
-
-        mydblist = []
-        db_data = []
-        for mydb in dblist:
-            ts = os.path.getmtime(mydb)
-            mytime = entropy.tools.convert_unix_time_to_human_time(ts)
-            mydblist.append("[%s] %s" % (mytime, mydb,))
-            db_data.append(mydb)
-
-        def fake_cb(s):
-            return s
-
-        input_params = [
-            ('db', ('combo', (_('Select the database you want to restore'), mydblist),), fake_cb, True)
-        ]
-
-        while True:
-            data = Entropy.input_box(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
-            if data is None:
-                return 1
-            myid, dbx = data['db']
-            print(dbx)
-            try:
-                dbpath = db_data.pop(myid)
-            except IndexError:
-                continue
-            if not os.path.isfile(dbpath):
-                continue
-            break
-
-        status, err_msg = Entropy.Client.restore_database(dbpath, db_file)
-        if status:
-            return 0
-        return 1
 
 def status():
 
