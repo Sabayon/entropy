@@ -515,6 +515,7 @@ def repositories(options):
         Entropy._bump_database()
         if request_sync:
             errors, fine, broken = Entropy.Mirrors.sync_repositories()
+        return 0
 
     elif cmd == "backup":
 
