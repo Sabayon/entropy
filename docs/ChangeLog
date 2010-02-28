@@ -1,3 +1,51 @@
+commit fe497e12a18c20479a7f88fcbf8897e739b4cbf6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 20:15:22 2010 +0100
+
+    [entropy.fetchers] fix UrlFetcher._update_speed regression (zero division error)
+
+commit 5c4cf501b8e983ea017d41d2ce34cf390f277e2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 14:23:03 2010 +0100
+
+    [entropy.spm] PortagePlugin: unmute stdout and stderr by default, issues have to be fixed upstream from now on
+
+commit e3a9c245f27601b127e650bdeeebe3d3ec480715
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 09:48:27 2010 +0100
+
+    [todo] update TODO
+
+commit c0f96e9a8a4f1df8fb74380b6e92725ed60860cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 09:42:12 2010 +0100
+
+    [equo] complete "equo community database" migration, rename "equo database" into "equo rescue"
+
+commit 97862548d11450018d0b16b694293e9d1b918a91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 09:34:07 2010 +0100
+
+    [equo] merge "equo community database" with "equo community repo"
+
+commit 74e948519c231858c1a50a7f396223a02ba87e2c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 09:29:53 2010 +0100
+
+    [reagent] merge "reagent database" with "reagent repo"
+
+commit 116e288d57aea53c96a83f6173195c537006bb95
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 26 09:02:11 2010 +0100
+
+    [entropy.client.interfaces.dep] fully ignore spm dowgrades in satisfied deps calculation
+
+commit 0e941331041d92b59c8af55bf19e4b12d6f044bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 25 17:34:57 2010 +0100
+
+    Tagging Entropy version 0.99.35.8
+
 commit 3d61f84ac7543e87e8bc5dccdbc406d03e8ae674
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 25 10:17:05 2010 +0100
