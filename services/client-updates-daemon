@@ -180,9 +180,9 @@ class UpdatesDaemon(dbus.service.Object):
         self.__oncall_updater = gobject.timeout_add(
             1000, self.run_oncall_fetcher)
         self.__quit_service_wd = gobject.timeout_add(
-            2000, self.quit_service_watchdog)
+            10000, self.quit_service_watchdog)
         self.__system_changes_checker = gobject.timeout_add(
-            60*1000, self.check_system_changes)
+            120*1000, self.check_system_changes)
         if "--disable-timer" not in sys.argv:
             self.__client_ping_checker = gobject.timeout_add(
                 120*1000, self.check_client_ping)
@@ -482,11 +482,6 @@ class UpdatesDaemon(dbus.service.Object):
         self.__trigger_oncall_updater = True
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
-        out_signature = '')
-    def trigger_check(self):
-        self.__trigger_oncall_updater = True
-
-    @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'av')
     def get_updates(self):
 
@@ -574,12 +569,13 @@ class UpdatesDaemon(dbus.service.Object):
                 entropy.destroy()
 
 
-    @dbus.service.method ( "org.entropy.Client", in_signature = '',
+    @dbus.service.method("org.entropy.Client", in_signature = '',
         out_signature = '')
     def client_ping(self):
         self.__got_client_ping = True
         if DAEMON_DEBUG:
             write_output("client_ping: got client ping")
+        return False
 
     # signal sent when updates are available for retrive
     @dbus.service.signal(dbus_interface = 'org.entropy.Client',
@@ -587,6 +583,7 @@ class UpdatesDaemon(dbus.service.Object):
     def signal_updates(self):
         if DAEMON_DEBUG:
             write_output("signal_updates: updates available!")
+        return False
 
     # signal sent when daemon is updating the repositories
     @dbus.service.signal(dbus_interface = 'org.entropy.Client',
@@ -594,6 +591,7 @@ class UpdatesDaemon(dbus.service.Object):
     def signal_updating(self):
         if DAEMON_DEBUG:
             write_output("signal_updating: updating repos!")
+        return False
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
