@@ -392,6 +392,19 @@ class CalculatorsMixin:
             # push to cache
             depcache[dependency] = is_unsat
 
+        def _my_get_available_tags(dependency, installed_tags):
+            available_tags = set()
+            matches, t_rc = self.atom_match(dependency, multiMatch = True,
+                multiRepo = True)
+            for pkg_id, repo_id in matches:
+                dbconn = self.open_repository(repo_id)
+                t_ver_tag = dbconn.retrieveTag(pkg_id)
+                if installed_tags is None:
+                    available_tags.add(t_ver_tag)
+                elif t_ver_tag in installed_tags:
+                    available_tags.add(t_ver_tag)
+            return available_tags
+
         unsatisfied = set()
         for dependency in dependencies:
 
@@ -425,6 +438,35 @@ class CalculatorsMixin:
             c_ids, c_rc = self._installed_repository.atomMatch(dependency,
                 multiMatch = True)
             if c_rc != 0:
+
+                # check if dependency can be matched in available repos and
+                # if it is a tagged package, in this case, we need to rewrite
+                # the dependency string to restrict its scope
+                dependency_tag = entropy.tools.dep_gettag(dependency)
+                if not dependency_tag:
+                    # also filter out empty tags (pkgs without tags)
+                    av_tags = [x for x in \
+                        _my_get_available_tags(dependency, None) if x]
+                    if av_tags:
+                        # XXX: since tags replace slots, use them as slots
+                        i_key = entropy.tools.dep_getkey(dependency)
+                        matching_tags = set()
+                        for a_tag in av_tags:
+                            c_id, c_rc = self._installed_repository.atomMatch(
+                                i_key, matchSlot = a_tag)
+                            if c_rc != 0:
+                                continue
+                            # make sure we get a valid tag
+                            c_tag = self._installed_repository.retrieveTag(c_id)
+                            if c_tag == a_tag:
+                                matching_tags.add(c_tag)
+
+                        if matching_tags:
+                            best_tag = entropy.tools.sort_entropy_package_tags(
+                                matching_tags)[-1]
+                            dependency += etpConst['entropytagprefix'] + \
+                                best_tag
+
                 const_debug_write(__name__,
                     "_get_unsatisfied_dependencies not satisfied on system for => %s" % (
                         dependency,))
@@ -490,14 +532,15 @@ class CalculatorsMixin:
                     installed_ver, installed_tag, installed_rev = \
                         self._installed_repository.getVersioningData(c_id)
                     # note: read rationale below
-                    installedDigest = self._installed_repository.retrieveDigest(c_id)
+                    installed_digest = self._installed_repository.retrieveDigest(
+                        c_id)
                 except TypeError: # corrupted entry?
                     installed_ver = "0"
                     installed_tag = ''
                     installed_rev = 0
-                    installedDigest = None
+                    installed_digest = None
                 client_data.add((installed_ver, installed_tag, installed_rev,
-                    installedDigest,))
+                    installed_digest,))
 
             # restrict dependency matching scope inside mutually available
             # package tags. Equals to tags available in both installed and
@@ -507,15 +550,8 @@ class CalculatorsMixin:
             if installed_tags and not dependency_tag:
 
                 installed_tags = set(installed_tags)
-                available_tags = set()
-
-                matches, t_rc = self.atom_match(dependency, multiMatch = True,
-                    multiRepo = True)
-                for pkg_id, repo_id in matches:
-                    dbconn = self.open_repository(repo_id)
-                    t_ver_tag = dbconn.retrieveTag(pkg_id)
-                    if t_ver_tag in installed_tags:
-                        available_tags.add(t_ver_tag)
+                available_tags = _my_get_available_tags(dependency,
+                    installed_tags)
 
                 if available_tags:
                     # always take the higher tag.
