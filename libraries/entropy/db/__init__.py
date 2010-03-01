@@ -533,10 +533,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             hex(id(self)), self.dbFile,)
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
             self.readOnly, self.xcache, self.indexing,)
-        third_part = ", name: %s, skip_upd: %s, st_upd: %s>" % (
+        third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
             self.dbname, self.skipChecks, self.__structure_update,)
+        fourth_part = ", conn_cache: %s, cursor_cache: %s>" % (
+            self.__connection_cache, self.__cursor_cache,)
 
-        return first_part + second_part + third_part
+        return first_part + second_part + third_part + fourth_part
 
     def __repr__(self):
         return self.__show_info()
