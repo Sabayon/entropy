@@ -1,3 +1,15 @@
+commit 8d5eda920f1d7ef59adee924ec14df05d17e4a41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 18:46:26 2010 +0100
+
+    [entropy.client.interfaces.dep] also reduce matching scope for tagged packages when there's no matching installed pkg (apparently)
+
+commit f1a0e5763e861d87e474a78c5801b52340421c6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 15:12:52 2010 +0100
+
+    Tagging Entropy version 0.99.36.1
+
 commit 1679ff429514daa0ef64b90566116d6d36142907
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 1 15:12:30 2010 +0100
