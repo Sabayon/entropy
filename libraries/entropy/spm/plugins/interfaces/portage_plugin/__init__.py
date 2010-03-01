@@ -1685,7 +1685,8 @@ class PortagePlugin(SpmPlugin):
         ### ACCEPT_LICENSE
         for lic in licenses:
             lic_path = os.path.join(portdir_lic, lic)
-            if os.access(portdir_lic, os.W_OK | os.R_OK):
+            if os.access(portdir_lic, os.W_OK | os.R_OK) and \
+                os.path.isdir(portdir_lic):
                 lic_f = open(lic_path, "wb")
                 lic_f.close()
 
