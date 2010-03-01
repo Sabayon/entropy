@@ -2541,8 +2541,15 @@ class Package:
             self.Entropy.installed_repository().getTriggerInfo(idpackage)
         self.pkgmeta['triggers']['remove']['removecontent'] = \
             self.pkgmeta['removecontent']
-        self.pkgmeta['triggers']['remove']['accept_license'] = \
-            self.Entropy.installed_repository().retrieveLicensedataKeys(idpackage)
+
+        pkg_license = self.Entropy.installed_repository().retrieveLicense(
+            idpackage)
+        if pkg_license is None:
+            pkg_license = set()
+        else:
+            pkg_license = set(pkg_license.split())
+
+        self.pkgmeta['triggers']['remove']['accept_license'] = pkg_license
 
         self.pkgmeta['steps'] = [
             "preremove", "remove", "postremove"
@@ -2564,8 +2571,15 @@ class Package:
             self.Entropy.installed_repository().retrieveCategory(idpackage)
         self.pkgmeta['name'] = \
             self.Entropy.installed_repository().retrieveName(idpackage)
-        self.pkgmeta['accept_license'] = \
-            self.Entropy.installed_repository().retrieveLicensedataKeys(idpackage)
+
+        pkg_license = self.Entropy.installed_repository().retrieveLicense(
+            idpackage)
+        if pkg_license is None:
+            pkg_license = set()
+        else:
+            pkg_license = set(pkg_license.split())
+
+        self.pkgmeta['accept_license'] = pkg_license
         self.pkgmeta['steps'] = []
         self.pkgmeta['steps'].append("config")
 
@@ -2613,8 +2627,6 @@ class Package:
             'gpg': gpg,
         }
         self.pkgmeta['signatures'] = signatures
-        self.pkgmeta['accept_license'] = \
-            dbconn.retrieveLicensedataKeys(idpackage)
         self.pkgmeta['conflicts'] = \
             self.Entropy.get_match_conflicts(self.matched_atom)
 
@@ -2712,9 +2724,16 @@ class Package:
                 )
             self.pkgmeta['triggers']['remove']['removecontent'] = \
                 self.pkgmeta['removecontent'] # pass reference, not copy! nevva!
-            self.pkgmeta['triggers']['remove']['accept_license'] = \
-                self.Entropy.installed_repository().retrieveLicensedataKeys(
+
+            pkg_rm_license = \
+                self.Entropy.installed_repository().retrieveLicense(
                     self.pkgmeta['removeidpackage'])
+            if pkg_rm_license is None:
+                pkg_rm_license = set()
+            else:
+                pkg_rm_license = set(pkg_rm_license.split())
+            self.pkgmeta['triggers']['remove']['accept_license'] = \
+                pkg_rm_license
 
         # set steps
         self.pkgmeta['steps'] = []
@@ -2735,8 +2754,13 @@ class Package:
         self.pkgmeta['steps'].append("cleanup")
 
         self.pkgmeta['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
-        self.pkgmeta['triggers']['install']['accept_license'] = \
-            self.pkgmeta['accept_license']
+        pkg_license = dbconn.retrieveLicense(idpackage)
+        if pkg_license is None:
+            pkg_license = set()
+        else:
+            pkg_license = set(pkg_license.split())
+        self.pkgmeta['accept_license'] = pkg_license
+        self.pkgmeta['triggers']['install']['accept_license'] = pkg_license
         self.pkgmeta['triggers']['install']['unpackdir'] = \
             self.pkgmeta['unpackdir']
         self.pkgmeta['triggers']['install']['imagedir'] = \
