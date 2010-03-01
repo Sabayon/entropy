@@ -482,6 +482,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 pass
             try:
                 conn = self.__connection_cache.pop((th_id, pid))
+                if not self.readOnly:
+                    conn.commit()
                 conn.close()
             except KeyError:
                 pass
