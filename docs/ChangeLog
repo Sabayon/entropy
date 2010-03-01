@@ -1,3 +1,15 @@
+commit 1679ff429514daa0ef64b90566116d6d36142907
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 15:12:30 2010 +0100
+
+    [entropy.misc] s/KeyboardError/KeyboardInterrupt/
+
+commit ead69a2715f9df97db89da63141fd647e7a48f5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 14:00:58 2010 +0100
+
+    Tagging Entropy version 0.99.36
+
 commit e3da84f83192f031f853fde5e90f28bf9923eed0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 1 12:52:15 2010 +0100
