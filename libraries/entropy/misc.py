@@ -282,7 +282,10 @@ class TimeScheduled(threading.Thread):
 
             if self.__f == None:
                 break
-            self.__f(*self.__args, **self.__kwargs)
+            try:
+                self.__f(*self.__args, **self.__kwargs)
+            except KeyboardError:
+                break
 
             if not self.__delay_before:
                 do_break = self.__do_delay()
