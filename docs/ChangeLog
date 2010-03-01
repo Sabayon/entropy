@@ -1,3 +1,60 @@
+commit e3da84f83192f031f853fde5e90f28bf9923eed0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 12:52:15 2010 +0100
+
+    [entropy.spm] PortagePlugin: trivial fix
+
+commit c18142a18ce86010ce272863bda8c59709ae5924
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 12:50:17 2010 +0100
+
+    [entropy.client.interfaces.package] fix Entropy trigger metadata setup (accept_license)
+    
+    When using repositories without package license metadata, retrieveLicenseKeys() returns
+    an empty list. So, use retrieveLicense() instead.
+
+commit d2e347b654678bf9bde9968f47eabbd7bd6ae6e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 12:10:48 2010 +0100
+
+    [entropy.db] always commit() sqlite3 Connection instances before closing
+
+commit 8590f782dd2d920aa03ceae64f8e55fe6f8ff8c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 12:02:20 2010 +0100
+
+    [entropy.db] EntropyRepository, append more info to __show_info output
+
+commit b0e96e2b250d8045b320eab8b92bb24d28172cc1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 11:56:14 2010 +0100
+
+    [services] tweak client-updates-daemon timers
+
+commit dc05dc03a96baf7409c1f294435d3b651a19b671
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 11:55:38 2010 +0100
+
+    [entropy.server] improve performance on db upload, do not index db twice
+
+commit 4f8c9bc39061eb42d943da0e363fe178dc0e7687
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 09:27:05 2010 +0100
+
+    [entropy.misc] TimeScheduled, handle KeyboardError exceptions on run()
+
+commit a2c15726a17106d2355b7ec6cf7ee9711c87d8d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 28 20:53:01 2010 +0100
+
+    [reagent] fix "reagent repo bump"
+
+commit 97d9b0ad455d6048919b5b859d4d3cb5215c6637
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 28 12:57:11 2010 +0100
+
+    Tagging Entropy version 0.99.35.9
+
 commit fe497e12a18c20479a7f88fcbf8897e739b4cbf6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Feb 26 20:15:22 2010 +0100
