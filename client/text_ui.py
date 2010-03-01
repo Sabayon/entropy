@@ -223,7 +223,8 @@ def package(options):
                 rc, status = remove_packages(entropy_client,
                 packages = myopts, deps = e_req_deps,
                 deep = e_req_deep, remove_config_files = e_req_config_files,
-                resume = e_req_resume, recursive = e_req_recursive)
+                resume = e_req_resume, recursive = e_req_recursive,
+                empty = e_req_empty_deps)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -1677,7 +1678,8 @@ def _configure_packages(entropy_client, packages):
 
 def remove_packages(entropy_client, packages = None, atomsdata = None,
     deps = True, deep = False, system_packages_check = True,
-    remove_config_files = False, resume = False, recursive = True):
+    remove_config_files = False, resume = False, recursive = True,
+    empty = False):
 
     if packages is None:
         packages = []
@@ -1795,7 +1797,8 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
         if look_for_orphaned_packages:
             removal_queue += entropy_client.get_removal_queue(
-                plain_removal_queue, deep = deep, recursive = recursive)
+                plain_removal_queue, deep = deep, recursive = recursive,
+                empty = empty)
 
         removal_queue += [x for x in plain_removal_queue if x \
             not in removal_queue]

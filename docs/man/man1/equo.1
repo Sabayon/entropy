@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2010-02-26" "perl v5.8.8" "Entropy"
+.TH EQUO 1 "2010-03-01" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBequo\fR \- Official Sabayon Linux Package Manager Client
 .SH "SYNOPSIS"
@@ -427,6 +427,9 @@ do not pull in any dependency
 .IP "\fB\-\-deep\fR" 4
 .IX Item "--deep"
 also pull unused dependencies where reverse deps list is empty
+.IP "\fB\-\-empty\fR" 4
+.IX Item "--empty"
+when used with \-\-deep, helps the removal of virtual packages
 .IP "\fB\-\-configfiles\fR" 4
 .IX Item "--configfiles"
 makes configuration files to be removed

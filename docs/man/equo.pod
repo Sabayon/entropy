@@ -382,6 +382,10 @@ do not pull in any dependency
 
 also pull unused dependencies where reverse deps list is empty
 
+=item B<--empty>
+
+when used with --deep, helps the removal of virtual packages
+
 =item B<--configfiles>
 
 makes configuration files to be removed

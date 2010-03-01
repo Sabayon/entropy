@@ -1276,12 +1276,12 @@ class CalculatorsMixin:
         return depends
 
     def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
-        recursive = True):
+        recursive = True, empty = False):
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
-                hash("%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
-                    recursive,),
+                hash("%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
+                    recursive, empty,),
             ),
         )
         if self.xcache:
@@ -1369,10 +1369,16 @@ class CalculatorsMixin:
 
                 for d_rev_dep, d_repo_id in mydeps:
                     d_repo_db = self.open_repository(d_repo_id)
-                    mydepends = d_repo_db.retrieveReverseDependencies(
-                        d_rev_dep, exclude_deptypes = (pdepend_id, bdepend_id,))
+                    mydepends = set()
+                    if not empty:
+                        mydepends = d_repo_db.retrieveReverseDependencies(
+                            d_rev_dep, exclude_deptypes = \
+                                (pdepend_id, bdepend_id,))
                     if not mydepends:
                         reverse_deps.add((d_rev_dep, d_repo_id))
+
+                if empty:
+                    empty = False
 
             if recursive:
                 for rev_dep in reverse_deps:
@@ -1870,13 +1876,26 @@ class CalculatorsMixin:
         return True
 
 
-    def get_removal_queue(self, idpackages, deep = False, recursive = True):
+    def get_removal_queue(self, idpackages, deep = False, recursive = True,
+        empty = False):
         """
         Return removal queue (list of idpackages).
+
+        @param idpackages: list of package identifiers proposed for removal
+        @type idpackages: list
+        @keyword deep: deeply scan inverse dependencies to include unused
+            packages
+        @type deep: bool
+        @keyword recursive: scan inverse dependencies recursively, building
+            a complete dependency graph
+        @type recursive: bool
+        @keyword empty: when used with "deep", includes more reverse
+            dependencies, especially useful for the removal of virtual packages.
+        @type empty: bool
         """
         _idpackages = [(x, etpConst['clientdbid']) for x in idpackages]
         treeview = self._generate_reverse_dependency_tree(_idpackages,
-            deep = deep, recursive = recursive)
+            deep = deep, recursive = recursive, empty = empty)
         queue = []
         for x in sorted(treeview, reverse = True):
             queue.extend(treeview[x])

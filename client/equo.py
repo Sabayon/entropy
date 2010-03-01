@@ -145,6 +145,7 @@ help_opts = [
     (2, '--pretend', 1, _('just show what would be done')),
     (2, '--nodeps', 1, _('do not pull in any dependency')),
     (2, '--deep', 2, _('also pull unused dependencies where reverse deps list is empty')),
+    (2, '--empty', 2, _('when used with --deep, helps the removal of virtual packages')),
     (2, '--configfiles', 1, _('makes configuration files to be removed')),
     (2, '--resume', 1, _('resume previously interrupted operations')),
     None,
