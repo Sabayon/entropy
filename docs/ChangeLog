@@ -1,3 +1,21 @@
+commit 2513d0fb59c2b4090c8ca663005088797ea1da1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 2 08:04:34 2010 +0100
+
+    [services] fix client-updates-daemon dbus methods signatures
+
+commit dd7083d9241ccfd3a35c4ccf0d3980aae241d924
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 23:59:34 2010 +0100
+
+    [entropy.client/equo] ease the removal of virtual packages, add --empty support to "equo remove"
+
+commit e698e18e67b38d38aae6b0ab35e81b7db8177d42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 1 18:51:12 2010 +0100
+
+    Tagging Entropy version 0.99.36.2
+
 commit 8d5eda920f1d7ef59adee924ec14df05d17e4a41
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 1 18:46:26 2010 +0100
