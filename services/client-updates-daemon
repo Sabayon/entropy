@@ -539,12 +539,12 @@ class UpdatesDaemon(dbus.service.Object):
                 # say goodbye
                 entropy.destroy()
 
-    @dbus.service.method ( "org.entropy.Client", in_signature = '',
+    @dbus.service.method("org.entropy.Client", in_signature = '',
         out_signature = 'b')
     def is_system_changed(self):
         return self._is_system_changed()
 
-    @dbus.service.method ( "org.entropy.Client", in_signature = '',
+    @dbus.service.method("org.entropy.Client", in_signature = '',
         out_signature = 'av')
     def get_updates_atoms(self):
 
@@ -575,7 +575,6 @@ class UpdatesDaemon(dbus.service.Object):
         self.__got_client_ping = True
         if DAEMON_DEBUG:
             write_output("client_ping: got client ping")
-        return False
 
     # signal sent when updates are available for retrive
     @dbus.service.signal(dbus_interface = 'org.entropy.Client',
