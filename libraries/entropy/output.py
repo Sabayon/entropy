@@ -779,7 +779,10 @@ class TextInterface:
                 self.output(txt)
                 counter += 1
             while True:
-                myresult = readtext("%s: " % (_('Selected number'),)).decode('utf-8')
+                try:
+                    myresult = readtext("%s: " % (_('Selected number'),)).decode('utf-8')
+                except UnicodeDecodeError:
+                    continue
                 try:
                     myresult = int(myresult)
                 except ValueError:
@@ -802,7 +805,10 @@ class TextInterface:
                 self.output("  ("+blue("4")+")  "+darkgreen(_("Show current list")))
                 # wait user interaction
                 self.output('')
-                action = readtext(darkgreen(_("Your choice (type a number and press enter):"))+" ")
+                try:
+                    action = readtext(darkgreen(_("Your choice (type a number and press enter):"))+" ")
+                except UnicodeDecodeError:
+                    return ''
                 return action
 
             mydict = {}
@@ -844,7 +850,10 @@ class TextInterface:
                 elif action == 1: # add item
                     while True:
                         try:
-                            s_el = readtext(darkred(_("String to add (-1 to go back):"))+" ")
+                            try:
+                                s_el = readtext(darkred(_("String to add (-1 to go back):"))+" ")
+                            except UnicodeDecodeError:
+                                raise ValueError()
                             if s_el == "-1":
                                 break
                             if not callback(s_el):
@@ -861,14 +870,20 @@ class TextInterface:
                     while True:
                         try:
                             edit_msg = _("Element number to edit (-1 to go back):")
-                            s_el = int(readtext(darkred(edit_msg)+" "))
+                            try:
+                                s_el = int(readtext(darkred(edit_msg)+" "))
+                            except UnicodeDecodeError:
+                                raise ValueError()
                             if s_el == -1:
                                 break
                             if s_el not in mydict:
                                 raise ValueError()
-                            new_s_val = readtext("[%s: %s] %s " % (
-                                _("old"), mydict[s_el], _("new value:"),)
-                            )
+                            try:
+                                new_s_val = readtext("[%s: %s] %s " % (
+                                    _("old"), mydict[s_el], _("new value:"),)
+                                )
+                            except UnicodeDecodeError:
+                                new_s_val = ''
                             if not callback(new_s_val):
                                 raise ValueError()
                             mydict[s_el] = new_s_val[:]
@@ -881,7 +896,10 @@ class TextInterface:
                 elif action == 3: # remove item
                     while True:
                         try:
-                            s_el = int(readtext(darkred(_("Element number to remove (-1 to go back):"))+" "))
+                            try:
+                                s_el = int(readtext(darkred(_("Element number to remove (-1 to go back):"))+" "))
+                            except UnicodeDecodeError:
+                                raise ValueError()
                             if s_el == -1:
                                 break
                             if s_el not in mydict:
@@ -918,7 +936,12 @@ class TextInterface:
                             use_cb = False
                             myresult = list_editor(data, cancel_button, callback)
                     else:
-                        myresult = readtext(input_text+": ", password = password).decode('utf-8')
+                        while True:
+                            try:
+                                myresult = readtext(input_text+": ", password = password).decode('utf-8')
+                            except UnicodeDecodeError:
+                                continue
+                            break
                 except (KeyboardInterrupt, EOFError,):
                     if not cancel_button: # use with care
                         continue
