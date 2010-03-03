@@ -456,6 +456,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'packagehashes': etpConst['packagehashes'],
             'gpg': True,
             'ignore_spm_downgrades': False,
+            'multifetch': 1,
             'collisionprotect': etpConst['collisionprotect'],
             'configprotect': etpConst['configprotect'][:],
             'configprotectmask': etpConst['configprotectmask'][:],
@@ -498,6 +499,20 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                         hashes.append(opt)
                 if hashes:
                     data['packagehashes'] = tuple(hashes)
+
+            elif line.startswith("multifetch|") and (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                try:
+                    compatopt_int = int(compatopt)
+                except ValueError:
+                    compatopt_int = None
+                if compatopt_int is not None:
+                    if compatopt_int not in range(2, 11):
+                        compatopt_int = 10
+                    data['multifetch'] = compatopt_int
+                elif compatopt in ("enable", "enabled", "true",):
+                    data['multifetch'] = 3
 
             elif line.startswith("gpg|") and (split_line_len == 2):
 

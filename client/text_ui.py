@@ -111,7 +111,7 @@ def package(options):
                 myn = int(opt[len("--multifetch="):])
             except ValueError:
                 continue
-            if myn not in list(range(2, 11)):
+            if myn not in range(2, 11):
                 myn = 10
             e_req_multifetch = myn
         elif (opt == "--nochecksum"):
@@ -945,8 +945,15 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
     dochecksum = True):
 
     totalqueue = str(len(run_queue))
-
     fetchqueue = 0
+
+    sys_set_client_plg_id = \
+        etpConst['system_settings_plugins_ids']['client_plugin']
+    equo_client_settings = entropy_client.SystemSettings[sys_set_client_plg_id]['misc']
+
+    if multifetch <= 1:
+        multifetch = equo_client_settings.get('multifetch', 1)
+
     mymultifetch = multifetch
     if multifetch > 1:
         myqueue = []
