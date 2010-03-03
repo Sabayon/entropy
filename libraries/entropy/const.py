@@ -126,6 +126,17 @@ def initconfig_entropy_constants(rootdir):
     const_setup_perms(etpConst['confdir'], etpConst['entropygid'],
         recursion = False)
 
+    # setup pid file directory if not existing
+    # this is really important, build system should also handle this
+    # but better being paranoid and do stuff ourselves :-)
+    if not os.path.isdir(etpConst['pidfiledir']):
+        try:
+            os.makedirs(etpConst['pidfiledir'], 0o775)
+        except OSError:
+            pass
+    const_setup_perms(etpConst['pidfiledir'], etpConst['entropygid'],
+        recursion = False)
+
     if sys.excepthook is sys.__excepthook__:
         sys.excepthook = __const_handle_exception
 
@@ -164,6 +175,8 @@ def const_default_settings(rootdir):
         rootdir+"/var/log/entropy/")
     default_etp_vardir = os.getenv('DEV_ETP_TMP_DIR',
         rootdir+"/var/tmp/entropy")
+    default_etp_tmpcache_dir = os.getenv('DEV_ETP_CACHE_DIR',
+        rootdir+"/tmp/entropy-cache-%s" % (os.getuid(),))
 
     cmdline = []
     cmdline_file = "/proc/cmdline"
@@ -456,7 +469,8 @@ def const_default_settings(rootdir):
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|",
         # Entropy resources lock file path
-        'pidfile': default_etp_dir+"/entropy.lock",
+        'pidfiledir': "/var/run/entropy",
+        'pidfile': "/var/run/entropy/entropy.lock",
         'applicationlock': False,
         # option to keep a backup of config files after
         # being overwritten by equo conf update
@@ -518,8 +532,7 @@ def const_default_settings(rootdir):
         # data storage directory, useful to speed up
         # entropy client across multiple issued commands
         #'dumpstoragedir': default_etp_dir+default_etp_cachesdir,
-        'dumpstoragedir': os.path.join("/tmp",
-            "entropy-cache-%s" % (os.getuid(),)),
+        'dumpstoragedir': default_etp_tmpcache_dir,
         # where GLSAs are stored
         'securitydir': default_etp_dir+default_etp_securitydir,
         'securityurl': "http://community.sabayon.org/security"
