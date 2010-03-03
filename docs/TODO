@@ -1,7 +1,8 @@
 
   0.99.40:
 
-    - client.conf: multifetch option
+    - per-user cache: remove ebuild clean script
+    - init script: remove references to entropy_client in ebuild
     - entropy.client API rework
         - make methods private
     - entropy.db: extract mimetype metadata
