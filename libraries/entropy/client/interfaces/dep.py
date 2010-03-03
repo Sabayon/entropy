@@ -23,12 +23,10 @@ import entropy.tools
 
 class CalculatorsMixin:
 
-    def dependencies_test(self, dbconn = None):
+    def dependencies_test(self):
 
-        if dbconn is None:
-            dbconn = self._installed_repository
         # get all the installed packages
-        installed_packages = dbconn.listAllIdpackages()
+        installed_packages = self._installed_repository.listAllIdpackages()
 
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
@@ -40,7 +38,7 @@ class CalculatorsMixin:
             count += 1
 
             if (count%150 == 0) or (count == length) or (count == 1):
-                atom = dbconn.retrieveAtom(idpackage)
+                atom = self._installed_repository.retrieveAtom(idpackage)
                 self.output(
                     darkgreen(_("Checking %s") % (bold(atom),)),
                     importance = 0,
@@ -50,28 +48,13 @@ class CalculatorsMixin:
                     header = darkred(" @@ ")
                 )
 
-            xdeps = dbconn.retrieveDependencies(idpackage,
+            xdeps = self._installed_repository.retrieveDependencies(idpackage,
                 exclude_deptypes = (pdepend_id, bdepend_id,))
-            needed_deps = [(x, dbconn.atomMatch(x),) for x in xdeps]
+            needed_deps = [(x, self._installed_repository.atomMatch(x),) for \
+                x in xdeps]
             deps_not_matched |= set([x for x, (y, z,) in needed_deps if y == -1])
 
         return deps_not_matched
-
-    def find_belonging_dependency(self, matched_atoms):
-        crying_atoms = set()
-        for atom in matched_atoms:
-            for repo in self._enabled_repos:
-                rdbconn = self.open_repository(repo)
-                riddep = rdbconn.searchDependency(atom)
-                if riddep != -1:
-                    ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
-                    for i in ridpackages:
-                        i, r = rdbconn.idpackageValidator(i)
-                        if i == -1:
-                            continue
-                        iatom = rdbconn.retrieveAtom(i)
-                        crying_atoms.add((iatom, repo))
-        return crying_atoms
 
     def __handle_multi_repo_matches(self, results, extended_results,
         valid_repos):
@@ -167,17 +150,17 @@ class CalculatorsMixin:
             if reponame in conflictingRevisions:
                 return (results[reponame], reponame)
 
-    def __validate_atom_match_cache(self, cached_obj, multiMatch,
-        extendedResults, multiRepo):
+    def __validate_atom_match_cache(self, cached_obj, multi_match,
+        extended_results, multi_repo):
 
         data, rc = cached_obj
         if rc == 1:
             return cached_obj
 
-        if multiRepo or multiMatch:
+        if multi_repo or multi_match:
             # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
             matches = data
-            if extendedResults:
+            if extended_results:
                 # set([((14789, '3.3.8b', '', 0), 'sabayonlinux.org')])
                 matches = [(x[0][0], x[1],) for x in data]
             for m_id, m_repo in matches:
@@ -192,7 +175,7 @@ class CalculatorsMixin:
         else:
             # (14479, 'sabayonlinux.org')
             m_id, m_repo = cached_obj
-            if extendedResults:
+            if extended_results:
                 # ((14479, '4.4.2', '', 0), 'sabayonlinux.org')
                 m_id, m_repo = cached_obj[0][0], cached_obj[1]
             m_db = self.open_repository(m_repo)
@@ -201,74 +184,88 @@ class CalculatorsMixin:
 
         return cached_obj
 
-    def atom_match(self, atom, matchSlot = None, packagesFilter = True,
-            multiMatch = False, multiRepo = False, matchRepo = None,
-            extendedResults = False, useCache = True):
+    def atom_match(self, atom, match_slot = None, mask_filter = True,
+            multi_match = False, multi_repo = False, match_repo = None,
+            extended_results = False, use_cache = True, **kwargs):
+
+        # TODO: remove this on 20101010, backward compatiblity
+        if kwargs:
+            import warnings
+            warnings.warn(
+                "Client.atom_match() called with deprecated args %s" % (
+                    kwargs,))
+            match_slot = kwargs.get('matchSlot', match_slot)
+            mask_filter = kwargs.get('packagesFilter', mask_filter)
+            multi_match = kwargs.get('multiMatch', multi_match)
+            multi_repo = kwargs.get('multiRepo', multi_repo)
+            match_repo = kwargs.get('matchRepo', match_repo)
+            extended_results = kwargs.get('extendedResults', extended_results)
+            use_cache = kwargs.get('useCache', use_cache)
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
         atom, repos = entropy.tools.dep_get_match_in_repos(atom)
-        if (matchRepo is None) and (repos is not None):
-            matchRepo = repos
+        if (match_repo is None) and (repos is not None):
+            match_repo = repos
 
         u_hash = ""
         k_ms = "//"
-        if isinstance(matchRepo, (list, tuple, set)):
-            u_hash = hash(tuple(matchRepo))
-        if const_isstring(matchSlot):
-            k_ms = matchSlot
+        if isinstance(match_repo, (list, tuple, set)):
+            u_hash = hash(tuple(match_repo))
+        if const_isstring(match_slot):
+            k_ms = match_slot
         repos_ck = self._all_repositories_checksum()
 
         c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
-            atom, k_ms, packagesFilter,
+            atom, k_ms, mask_filter,
             hash(tuple(self._enabled_repos)),
             hash(tuple(self.SystemSettings['repositories']['available'])),
-            multiMatch, multiRepo, extendedResults, u_hash,
+            multi_match, multi_repo, extended_results, u_hash,
         )
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
 
-        if self.xcache and useCache:
+        if self.xcache and use_cache:
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
                 try:
                     cached = self.__validate_atom_match_cache(cached,
-                        multiMatch, extendedResults, multiRepo)
+                        multi_match, extended_results, multi_repo)
                 except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
             if cached is not None:
                 return cached
 
         valid_repos = self._enabled_repos
-        if matchRepo and (type(matchRepo) in (list, tuple, set)):
-            valid_repos = list(matchRepo)
+        if match_repo and (type(match_repo) in (list, tuple, set)):
+            valid_repos = list(match_repo)
 
         repo_results = {}
         for repo in valid_repos:
 
             # search
             dbconn = self.open_repository(repo)
-            use_cache = useCache
+            xuse_cache = use_cache
             while True:
                 try:
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
-                        matchSlot = matchSlot,
-                        packagesFilter = packagesFilter,
-                        extendedResults = extendedResults,
-                        useCache = use_cache
+                        matchSlot = match_slot,
+                        packagesFilter = mask_filter,
+                        extendedResults = extended_results,
+                        useCache = xuse_cache
                     )
                     if query_rc == 0:
                         # package found, add to our dictionary
-                        if extendedResults:
+                        if extended_results:
                             repo_results[repo] = (query_data[0], query_data[2],
                                 query_data[3], query_data[4])
                         else:
                             repo_results[repo] = query_data
                 except TypeError:
-                    if not use_cache:
+                    if not xuse_cache:
                         raise
-                    use_cache = False
+                    xuse_cache = False
                     continue
                 except OperationalError:
                     # repository fooked, skip!
@@ -276,10 +273,10 @@ class CalculatorsMixin:
                 break
 
         dbpkginfo = (-1, 1)
-        if extendedResults:
+        if extended_results:
             dbpkginfo = ((-1, None, None, None), 1)
 
-        if multiRepo and repo_results:
+        if multi_repo and repo_results:
 
             data = set()
             for repoid in repo_results:
@@ -295,28 +292,28 @@ class CalculatorsMixin:
 
             # we have to decide which version should be taken
             mypkginfo = self.__handle_multi_repo_matches(repo_results,
-                extendedResults, valid_repos)
+                extended_results, valid_repos)
             if mypkginfo is not None:
                 dbpkginfo = mypkginfo
 
         # multimatch support
-        if multiMatch:
+        if multi_match:
 
             if dbpkginfo[1] == 1:
                 dbpkginfo = (set(), 1)
             else: # can be "0" or a string, but 1 means failure
-                if multiRepo:
+                if multi_repo:
                     data = set()
                     for q_id, q_repo in dbpkginfo[0]:
                         dbconn = self.open_repository(q_repo)
                         query_data, query_rc = dbconn.atomMatch(
                             atom,
-                            matchSlot = matchSlot,
-                            packagesFilter = packagesFilter,
+                            matchSlot = match_slot,
+                            packagesFilter = mask_filter,
                             multiMatch = True,
-                            extendedResults = extendedResults
+                            extendedResults = extended_results
                         )
-                        if extendedResults:
+                        if extended_results:
                             for item in query_data:
                                 _item_d = (item[0], item[2], item[3], item[4])
                                 data.add((_item_d, q_repo))
@@ -328,10 +325,10 @@ class CalculatorsMixin:
                     dbconn = self.open_repository(dbpkginfo[1])
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
-                        matchSlot = matchSlot,
-                        packagesFilter = packagesFilter,
+                        matchSlot = match_slot,
+                        packagesFilter = mask_filter,
                         multiMatch = True,
-                        extendedResults = extendedResults
+                        extendedResults = extended_results
                     )
                     if extendedResults:
                         dbpkginfo = (set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) \
@@ -339,7 +336,7 @@ class CalculatorsMixin:
                     else:
                         dbpkginfo = (set([(x, dbpkginfo[1]) for x in query_data]), 0)
 
-        if self.xcache and useCache:
+        if self.xcache and use_cache:
             self.Cacher.push(c_hash, dbpkginfo)
 
         return dbpkginfo
@@ -375,8 +372,8 @@ class CalculatorsMixin:
             satisfied_list = self.SystemSettings['satisfied']
             tmp_satisfied_data = set()
             for atom in satisfied_list:
-                matches, m_res = self.atom_match(atom, multiMatch = True,
-                    packagesFilter = False, multiRepo = True)
+                matches, m_res = self.atom_match(atom, multi_match = True,
+                    mask_filter = False, multi_repo = True)
                 if m_res == 0:
                     tmp_satisfied_data |= matches
             satisfied_data = tmp_satisfied_data
@@ -394,8 +391,8 @@ class CalculatorsMixin:
 
         def _my_get_available_tags(dependency, installed_tags):
             available_tags = set()
-            matches, t_rc = self.atom_match(dependency, multiMatch = True,
-                multiRepo = True)
+            matches, t_rc = self.atom_match(dependency, multi_match = True,
+                multi_repo = True)
             for pkg_id, repo_id in matches:
                 dbconn = self.open_repository(repo_id)
                 t_ver_tag = dbconn.retrieveTag(pkg_id)
@@ -914,7 +911,7 @@ class CalculatorsMixin:
 
         conflict_match = self.atom_match(conflict_atom)
         mykey, myslot = self._installed_repository.retrieveKeySlot(client_idpackage)
-        new_match = self.atom_match(mykey, matchSlot = myslot)
+        new_match = self.atom_match(mykey, match_slot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
             return
 
@@ -970,7 +967,7 @@ class CalculatorsMixin:
                     break
 
             if not found:
-                mymatch = self.atom_match(key, matchSlot = slot)
+                mymatch = self.atom_match(key, match_slot = slot)
                 if mymatch[0] == -1:
                     continue
                 cmpstat = gpa(mymatch)
@@ -1131,7 +1128,7 @@ class CalculatorsMixin:
             repo_matches.add((idpackage, repo))
 
         for key, slot in client_keyslots:
-            idpackage, repo = self.atom_match(key, matchSlot = slot)
+            idpackage, repo = self.atom_match(key, match_slot = slot)
             if idpackage == -1:
                 continue
             cmpstat = self.get_package_action((idpackage, repo))
@@ -1146,14 +1143,14 @@ class CalculatorsMixin:
 
         return client_matches
 
-    def get_required_packages(self, matched_atoms, empty_deps = False,
+    def _get_required_packages(self, package_matches, empty_deps = False,
         deep_deps = False, relaxed_deps = False, build_deps = False,
         quiet = False, recursive = True):
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['dep_tree'],
             hash("%s|%s|%s|%s|%s|%s|%s|%s" % (
-                hash(frozenset(sorted(matched_atoms))),
+                hash(frozenset(sorted(package_matches))),
                 empty_deps,
                 deep_deps,
                 relaxed_deps,
@@ -1171,29 +1168,30 @@ class CalculatorsMixin:
 
         graph = Graph()
         deptree_conflicts = set()
-        atomlen = len(matched_atoms); count = 0
+        atomlen = len(package_matches)
+        count = 0
         error_generated = 0
         error_tree = set()
 
         # check if there are repositories needing some mandatory packages
         forced_matches = self._lookup_system_mask_repository_deps()
         if forced_matches:
-            if isinstance(matched_atoms, list):
-                matched_atoms = forced_matches + [x for x in matched_atoms \
+            if isinstance(package_matches, list):
+                package_matches = forced_matches + [x for x in package_matches \
                     if x not in forced_matches]
 
-            elif isinstance(matched_atoms, set):
+            elif isinstance(package_matches, set):
                 # we cannot do anything about the order here
-                matched_atoms |= set(forced_matches)
+                package_matches |= set(forced_matches)
 
         sort_dep_text = _("Sorting dependencies")
         unsat_deps_cache = {}
         elements_cache = set()
         matchfilter = set()
-        for matched_atom in matched_atoms:
+        for matched_atom in package_matches:
 
             const_debug_write(__name__,
-                "get_required_packages matched_atom => %s" % (matched_atom,))
+                "_get_required_packages matched_atom => %s" % (matched_atom,))
 
             if not quiet:
                 count += 1
@@ -1312,13 +1310,14 @@ class CalculatorsMixin:
                 continue
             match_cache.add((idpackage, repo_id))
 
-            repo_db = self.open_repository(repo_id)
             system_pkg = not self.validate_package_removal(idpackage,
-                dbconn = repo_db)
+                repo_id = repo_id)
 
             if system_pkg:
                 # this is a system package, removal forbidden
                 continue
+
+            repo_db = self.open_repository(repo_id)
             # validate package
             if not repo_db.isIdpackageAvailable(idpackage):
                 continue
@@ -1530,16 +1529,37 @@ class CalculatorsMixin:
             pkg_id, rc = self._installed_repository.atomMatch(vul_dep)
             if pkg_id == -1:
                 continue
-            matches, rc = self.atom_match(vul_dep, multiRepo = True,
-                multiMatch = True)
+            matches, rc = self.atom_match(vul_dep, multi_repo = True,
+                multi_match = True)
             # filter dups, keeping order
             matches = [x for x in matches if x not in sec_updates]
             sec_updates += [x for x in matches if x in update]
 
         return sec_updates
 
-    def calculate_updates(self, empty_deps = False, use_cache = True,
+    def calculate_updates(self, empty = False, use_cache = True,
         critical_updates = True):
+
+        """
+        Calculate package updates. By default, this method also handles critical
+        updates priority. Updates (as well as other objects here) are returned
+        in alphabetical order. To generate a valid installation queue, have a
+        look at Client.get_install_queue().
+
+        @keyword empty: consider the installed packages repository
+            empty. Mark every package as update.
+        @type empty: bool
+        @keyword use_cache: use Entropy cache
+        @type use_cache: bool
+        @keyword critical_updates: if False, disable critical updates check
+            priority.
+        @type critical_updates: bool
+        @return: tuple composed by (list of package matches (updates),
+            list of installed package identifiers (removal), list of
+            package names already up-to-date (fine), list of package names
+            already up-to-date when user enabled "ignore-spm-downgrades")
+        @rtype: tuple
+        """
 
         cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
@@ -1558,7 +1578,7 @@ class CalculatorsMixin:
 
         db_digest = self._all_repositories_checksum()
         if use_cache and self.xcache:
-            cached = self._get_updates_cache(empty_deps = empty_deps,
+            cached = self._get_updates_cache(empty_deps = empty,
                 db_digest = db_digest)
             if cached is not None:
                 return cached
@@ -1606,9 +1626,9 @@ class CalculatorsMixin:
                 try:
                     match = self.atom_match(
                         cl_pkgkey,
-                        matchSlot = cl_slot,
-                        extendedResults = True,
-                        useCache = use_match_cache
+                        match_slot = cl_slot,
+                        extended_results = True,
+                        use_cache = use_match_cache
                     )
                 except OperationalError:
                     # ouch, but don't crash here
@@ -1633,7 +1653,7 @@ class CalculatorsMixin:
                 version = match[0][1]
                 tag = match[0][2]
                 revision = match[0][3]
-                if empty_deps:
+                if empty:
                     if (m_idpackage, repoid) not in update:
                         update.append((m_idpackage, repoid))
                     continue
@@ -1681,8 +1701,8 @@ class CalculatorsMixin:
                     continue
 
             # don't take action if it's just masked
-            maskedresults = self.atom_match(cl_pkgkey, matchSlot = cl_slot,
-                packagesFilter = False)
+            maskedresults = self.atom_match(cl_pkgkey, match_slot = cl_slot,
+                mask_filter = False)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
                 # look for packages that would match key
@@ -1694,7 +1714,7 @@ class CalculatorsMixin:
                         update.append(matchresults)
 
         if self.xcache:
-            c_hash = self._get_updates_cache_hash(db_digest, empty_deps,
+            c_hash = self._get_updates_cache_hash(db_digest, empty,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine,)
             self.Cacher.push(c_hash, data, async = False)
@@ -1709,19 +1729,17 @@ class CalculatorsMixin:
 
         return update, remove, fine, spm_fine
 
-    def get_masked_packages_tree(self, match, atoms = False, flat = False,
-        matchfilter = None):
+    def _get_masked_packages_tree(self, package_match, atoms = False,
+        flat = False, matchfilter = None):
 
-        if not isinstance(matchfilter, set):
+        if matchfilter is None:
             matchfilter = set()
-
         maskedtree = {}
         mybuffer = Lifo()
         depcache = set()
         treelevel = -1
 
-        match_id, match_repo = match
-
+        match_id, match_repo = package_match
         mydbconn = self.open_repository(match_repo)
         myatom = mydbconn.retrieveAtom(match_id)
         idpackage, idreason = mydbconn.idpackageValidator(match_id)
@@ -1730,7 +1748,7 @@ class CalculatorsMixin:
             if atoms:
                 mydict = {myatom: idreason,}
             else:
-                mydict = {match: idreason,}
+                mydict = {package_match: idreason,}
             if flat:
                 maskedtree.update(mydict)
             else:
@@ -1747,8 +1765,6 @@ class CalculatorsMixin:
         except ValueError:
             mydep = None # stack empty
 
-        open_db = self.open_repository
-        am = self.atom_match
         while mydep:
 
             if mydep in depcache:
@@ -1759,7 +1775,7 @@ class CalculatorsMixin:
                 continue
             depcache.add(mydep)
 
-            idpackage, repoid = am(mydep)
+            idpackage, repoid = self.atom_match(mydep)
             if (idpackage, repoid) in matchfilter:
                 try:
                     mydep = mybuffer.pop()
@@ -1774,25 +1790,29 @@ class CalculatorsMixin:
 
             # collect masked
             if idpackage == -1:
-                idpackage, repoid = am(mydep, packagesFilter = False)
+                idpackage, repoid = self.atom_match(mydep,
+                    mask_filter = False)
                 if idpackage != -1:
                     treelevel += 1
                     if treelevel not in maskedtree and not flat:
                         maskedtree[treelevel] = {}
-                    dbconn = open_db(repoid)
+                    dbconn = self.open_repository(repoid)
                     vidpackage, idreason = dbconn.idpackageValidator(
                         idpackage)
                     if atoms:
                         mydict = {dbconn.retrieveAtom(idpackage): idreason}
                     else:
                         mydict = {(idpackage, repoid): idreason}
-                    if flat: maskedtree.update(mydict)
-                    else: maskedtree[treelevel].update(mydict)
+
+                    if flat:
+                        maskedtree.update(mydict)
+                    else:
+                        maskedtree[treelevel].update(mydict)
 
             # push its dep into the buffer
             if idpackage != -1:
                 matchfilter.add((idpackage, repoid))
-                dbconn = open_db(repoid)
+                dbconn = self.open_repository(repoid)
                 owndeps = dbconn.retrieveDependencies(idpackage,
                     exclude_deptypes = excluded_deps)
                 for owndep in owndeps:
@@ -1808,7 +1828,7 @@ class CalculatorsMixin:
     def check_package_update(self, atom, deep = False):
 
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['check_package_update'],
-                hash("%s%s" % (atom, deep,)
+                hash("%s|%s" % (atom, deep,)
             ),
         )
         if self.xcache:
@@ -1817,13 +1837,13 @@ class CalculatorsMixin:
                 return cached
 
         found = False
-        match = self._installed_repository.atomMatch(atom)
+        pkg_id, pkg_rc = self._installed_repository.atomMatch(atom)
         matched = None
-        if match[0] != -1:
-            myatom = self._installed_repository.retrieveAtom(match[0])
+        if pkg_id != -1:
+            myatom = self._installed_repository.retrieveAtom(pkg_id)
             mytag = entropy.tools.dep_gettag(myatom)
             myatom = entropy.tools.remove_tag(myatom)
-            myrev = self._installed_repository.retrieveRevision(match[0])
+            myrev = self._installed_repository.retrieveRevision(pkg_id)
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
                 pkg_match += "%s%s" % (etpConst['entropytagprefix'], mytag,)
@@ -1832,23 +1852,38 @@ class CalculatorsMixin:
             if pkg_unsatisfied:
                 # does it really exist on current repos?
                 pkg_key = entropy.tools.dep_getkey(myatom)
-                pkg_id, pkg_repo = self.atom_match(pkg_key)
-                if pkg_id != -1:
+                f_pkg_id, pkg_repo = self.atom_match(pkg_key)
+                if f_pkg_id != -1:
                     found = True
-            del pkg_unsatisfied
             matched = self.atom_match(pkg_match)
-        del match
 
         if self.xcache:
             self.Cacher.push(c_hash, (found, matched))
         return found, matched
 
-    def validate_package_removal(self, idpackage, dbconn = None):
+    def validate_package_removal(self, package_id, repo_id = None):
+        """
+        Determine whether given package identifier is allowed to be removed.
+        System packages or per-repository-specified ones (generally handled
+        by repository admins) could be critical for the health of the system.
+        If repo_id is None, package_id has to point to an installed package
+        identifier. In general, this function works with every repository, not
+        just the installed packages one.
 
-        if dbconn is None:
+        @param package_id: Entropy package identifier
+        @type package_id: int
+        @keyword repo_id: Entropy Repository identifier
+        @type repo_id: string
+        @return: return True, if package can be removed, otherwise false.
+        @rtype: bool
+        """
+
+        if repo_id is None:
             dbconn = self._installed_repository
+        else:
+            dbconn = self.open_repository(repo_id)
 
-        pkgatom = dbconn.retrieveAtom(idpackage)
+        pkgatom = dbconn.retrieveAtom(package_id)
         pkgkey = entropy.tools.dep_getkey(pkgatom)
         cl_set_plg = self.sys_settings_client_plugin_id
         mask_data = self.SystemSettings[cl_set_plg]['system_mask']
@@ -1856,7 +1891,7 @@ class CalculatorsMixin:
 
         # cannot check this for pkgs not coming from installed pkgs repo
         if dbconn is self._installed_repository:
-            if self.is_installed_idpackage_in_system_mask(idpackage):
+            if self.is_installed_idpackage_in_system_mask(package_id):
                 idpackages = mask_installed_keys.get(pkgkey)
                 if not idpackages:
                     return False
@@ -1865,7 +1900,7 @@ class CalculatorsMixin:
                 return False # sorry!
 
         # did we store the bastard in the db?
-        system_pkg = dbconn.isSystemPackage(idpackage)
+        system_pkg = dbconn.isSystemPackage(package_id)
         if not system_pkg:
             return True
         # check if the package is slotted and exist more
@@ -1875,14 +1910,36 @@ class CalculatorsMixin:
             return False
         return True
 
-
-    def get_removal_queue(self, idpackages, deep = False, recursive = True,
-        empty = False):
+    def get_masked_packages(self, package_matches):
         """
-        Return removal queue (list of idpackages).
+        Return a list of masked packages which are dependencies of given package
+        matches.
+        NOTE: dependencies are not sorted.
 
-        @param idpackages: list of package identifiers proposed for removal
-        @type idpackages: list
+        @param package_matches: list of package matches coming from
+            Client.atom_match()
+        @type package_matches: list
+        @return: dictionary composed by package match as key, and masking
+            reason id as value (see etpConst['pkg_masking_reasons'] and
+            etpConst['pkg_masking_reference']).
+        @rtype: dict
+        """
+        matchfilter = set()
+        masks = {}
+        for match in package_matches:
+            mymasks = self._get_masked_packages_tree(match, atoms = False,
+                flat = True, matchfilter = matchfilter)
+            masks.update(mymasks)
+        return masks
+
+    def get_removal_queue(self, package_identifiers, deep = False,
+        recursive = True, empty = False):
+        """
+        Return removal queue (list of installed packages identifiers).
+
+        @param package_identifiers: list of package identifiers proposed
+            for removal (returned by Client.installed_repository().listAllIdpackages())
+        @type package_identifiers: list
         @keyword deep: deeply scan inverse dependencies to include unused
             packages
         @type deep: bool
@@ -1893,7 +1950,7 @@ class CalculatorsMixin:
             dependencies, especially useful for the removal of virtual packages.
         @type empty: bool
         """
-        _idpackages = [(x, etpConst['clientdbid']) for x in idpackages]
+        _idpackages = [(x, etpConst['clientdbid']) for x in package_identifiers]
         treeview = self._generate_reverse_dependency_tree(_idpackages,
             deep = deep, recursive = recursive, empty = empty)
         queue = []
@@ -1901,28 +1958,40 @@ class CalculatorsMixin:
             queue.extend(treeview[x])
         return [x for x, y in queue]
 
-    def get_reverse_dependencies(self, matched_atoms, deep = False,
-        recursive = True):
+    def get_install_queue(self, package_matches, empty, deep,
+        relaxed = False, build = False, quiet = False, recursive = True):
         """
-        Return an ordered reverse dependencies list (list of pkg matches).
-        """
-        treeview = self._generate_reverse_dependency_tree(matched_atoms,
-            deep = deep, recursive = recursive)
-        queue = []
-        for x in sorted(treeview, reverse = True):
-            queue.extend(treeview[x])
-        return queue
+        Return the ordered installation queue (including dependencies, if
+        required), for given package matches.
 
-    def get_install_queue(self, matched_atoms, empty_deps, deep_deps,
-        relaxed_deps = False, build_deps = False, quiet = False,
-        recursive = True):
+        @param package_matches: list of package matches coming from
+            Client.atom_match()
+        @type package_matches: list
+        @param empty: consider installed packages repository as empty, pull
+            in the complete dependency graph
+        @type empty: bool
+        @param deep: deeply scan dependencies, also include "softly" satisfied
+            dependencies.
+        @type deep: bool
+        @keyword relaxed: use relaxed dependencies resolution algorithm,
+            ignoring possible binary libraries with only API bumps (and no ABI).
+            By default, Entropy Client also pulls in package updates even when
+            not strictly required by the related dependency string.
+        @type relaxed: bool
+        @keyword build: Also include build-time dependencies.
+        @type build: bool
+        @keyword quiet: do not print progress
+        @type quiet: bool
+        @keyword recursive: scan dependencies recursively (usually, this is
+            the wanted behaviour)
+        @type recursive: bool
+        """
 
         install = []
         removal = []
-        treepackages, result = self.get_required_packages(matched_atoms,
-            empty_deps = empty_deps, deep_deps = deep_deps,
-            relaxed_deps = relaxed_deps, build_deps = build_deps,
-            quiet = quiet, recursive = recursive)
+        treepackages, result = self._get_required_packages(package_matches,
+            empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed, 
+            build_deps = build, quiet = quiet, recursive = recursive)
 
         if result == -2:
             return treepackages, removal, result

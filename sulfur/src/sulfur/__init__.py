@@ -1482,7 +1482,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 for c_idpackage in c_idpackages:
                     key, slot = c_repo.retrieveKeySlot(
                         c_idpackage)
-                    match = self.Equo.atom_match(key, matchSlot = slot)
+                    match = self.Equo.atom_match(key, match_slot = slot)
                     cmpstat = 0
                     if match[0] != -1:
                         cmpstat = self.Equo.get_package_action(match)
@@ -1913,7 +1913,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         entropy_pkg = "sys-apps/entropy"
 
         etp_matches, etp_rc = self.Equo.atom_match(entropy_pkg,
-            multiMatch = True, multiRepo = True)
+            multi_match = True, multi_repo = True)
         if etp_rc != 0:
             return False
 

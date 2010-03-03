@@ -1230,7 +1230,7 @@ class ServerPackageDepsMixin:
 
     def atom_match(self, *args, **kwargs):
         # disable masked packages for server-side repos
-        kwargs['packagesFilter'] = False
+        kwargs['mask_filter'] = False
         return self.Client.atom_match(*args, **kwargs)
 
     def match_packages(self, packages, repo = None):

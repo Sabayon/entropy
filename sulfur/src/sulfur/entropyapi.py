@@ -104,7 +104,7 @@ class QueueExecutor:
         if (not fetch_only) and (not download_sources):
             runQueue, conflicts_queue, status = self.Entropy.get_install_queue(
                 install_queue, False, False,
-                relaxed_deps = (SulfurConf.relaxed_deps == 1)
+                relaxed = (SulfurConf.relaxed_deps == 1)
             )
         if removal_queue:
             removalQueue += [(x, False) for x in removal_queue if x \

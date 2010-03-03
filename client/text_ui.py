@@ -309,7 +309,7 @@ def _upgrade_package_handle_calculation(entropy_client, resume, replay, onlyfetc
 
         try:
             update, remove, fine, spm_fine = entropy_client.calculate_updates(
-                empty_deps = replay)
+                empty = replay)
         except SystemDatabaseError:
             # handled in equo.py
             raise
@@ -561,8 +561,25 @@ def branch_hop(entropy_client, branch):
 
 def _show_masked_pkg_info(entropy_client, package, from_user = True):
 
-    masked_matches = entropy_client.atom_match(package, packagesFilter = False,
-        multiMatch = True)
+    def find_belonging_dependency(package_atoms):
+        crying_atoms = set()
+        for atom in package_atoms:
+            for repo in entropy_client.repositories():
+                rdbconn = entropy_client.open_repository(repo)
+                riddep = rdbconn.searchDependency(atom)
+                if riddep == -1:
+                    continue
+                ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
+                for i in ridpackages:
+                    i, r = rdbconn.idpackageValidator(i)
+                    if i == -1:
+                        continue
+                    iatom = rdbconn.retrieveAtom(i)
+                    crying_atoms.add((iatom, repo))
+        return crying_atoms
+
+    masked_matches = entropy_client.atom_match(package, mask_filter = False,
+        multi_match = True)
     if masked_matches[1] == 0:
 
         mytxt = "%s %s %s %s." % (
@@ -622,7 +639,7 @@ def _show_masked_pkg_info(entropy_client, package, from_user = True):
     else:
         print_error(red("    # ")+blue("%s: " % (_("Not found"),) ) + \
             brown(package))
-        crying_atoms = entropy_client.find_belonging_dependency([package])
+        crying_atoms = find_belonging_dependency([package])
         if crying_atoms:
             print_error(red("      # ") + \
                 blue("%s:" % (_("Probably needed by"),) ))
@@ -850,8 +867,8 @@ def _generate_run_queue(entropy_client, found_pkg_atoms, deps, emptydeps,
         print_info(red(" @@ ")+blue("%s ...") % (
             _("Calculating dependencies"),) )
         run_queue, removal_queue, status = entropy_client.get_install_queue(
-            found_pkg_atoms, emptydeps, deepdeps, relaxed_deps = relaxeddeps,
-            build_deps = builddeps, recursive = recursive)
+            found_pkg_atoms, emptydeps, deepdeps, relaxed = relaxeddeps,
+            build = builddeps, recursive = recursive)
         if status == -2:
             print_error(red(" @@ ") + blue("%s: " % (
                 _("Cannot find needed dependencies"),) ))
@@ -1389,8 +1406,8 @@ def install_packages(entropy_client,
 
             if skipfirst and run_queue:
                 run_queue, x, status = entropy_client.get_install_queue(run_queue[1:],
-                    emptydeps, deepdeps, relaxed_deps = relaxed_deps,
-                    build_deps = build_deps)
+                    emptydeps, deepdeps, relaxed = relaxed_deps,
+                    build = build_deps)
                 del x # was removal_queue
                 # save new queues
                 resume_cache['run_queue'] = run_queue
@@ -1531,7 +1548,7 @@ def _mask_unmask_packages(entropy_client, packages, action):
     found_pkg_atoms = []
     for package in packages:
         idpackage, repoid = entropy_client.atom_match(package,
-            packagesFilter = False)
+            mask_filter = False)
         if idpackage == -1:
             mytxt = "## %s: %s %s." % (
                 red(_("ATTENTION")),
@@ -1556,8 +1573,8 @@ def _mask_unmask_packages(entropy_client, packages, action):
 
     for package in found_pkg_atoms:
         matches, rc = entropy_client.atom_match(
-            package, multiMatch = True, multiRepo = True,
-                packagesFilter = False)
+            package, multi_match = True, multi_repo = True,
+                mask_filter = False)
         match_data[package] = matches
 
 
@@ -1990,7 +2007,7 @@ def _dependencies_test(entropy_client):
                     key, slot = entropy_client.installed_repository().retrieveKeySlot(c_idpackage)
                     key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
                         slot,)
-                    match = entropy_client.atom_match(key, matchSlot = slot)
+                    match = entropy_client.atom_match(key, match_slot = slot)
 
                     cmpstat = 0
                     if match[0] != -1:

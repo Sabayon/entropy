@@ -202,7 +202,7 @@ class EntropyPackage:
     def is_user_masked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
+            m_id, m_r = EquoIntf.atom_match(key, match_slot = slot)
             if m_id == -1:
                 return False
             return EquoIntf.is_match_masked_by_user((m_id, m_r,))
@@ -211,7 +211,7 @@ class EntropyPackage:
     def is_user_unmasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
+            m_id, m_r = EquoIntf.atom_match(key, match_slot = slot)
             if m_id == -1:
                 return False
             return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))

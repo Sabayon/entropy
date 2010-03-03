@@ -1413,7 +1413,7 @@ class EntropyPackageView:
             key, slot = self.Equo.installed_repository().retrieveKeySlot(idpackage)
             if not self.Equo.validate_package_removal(idpackage):
                 continue
-            mymatch = self.Equo.atom_match(key, matchSlot = slot)
+            mymatch = self.Equo.atom_match(key, match_slot = slot)
             if mymatch[0] == -1: continue
             yp, new = self.etpbase.get_package_item(mymatch)
             repo_objs.append(yp)
@@ -1541,7 +1541,7 @@ class EntropyPackageView:
         objs = []
         for x in self.selected_objs:
             key, slot = x.keyslot
-            m = self.Equo.atom_match(key, matchSlot = slot)
+            m = self.Equo.atom_match(key, match_slot = slot)
             if m[0] != -1: objs.append(m)
 
         busy_cursor(self.main_window)
@@ -1868,7 +1868,7 @@ class EntropyPackageView:
         selected_objs = []
         for inst_obj in self.selected_objs:
             key, slot = inst_obj.keyslot
-            m_tup = self.Equo.atom_match(key, matchSlot = slot)
+            m_tup = self.Equo.atom_match(key, match_slot = slot)
             if m_tup[0] != -1:
                 ep, new = self.etpbase.get_package_item(m_tup)
                 if new:

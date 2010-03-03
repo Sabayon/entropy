@@ -165,7 +165,7 @@ class Queue:
             [mynew.update(d[x]) for x in d]
             return mynew
 
-        dep_tree, st = self.Entropy.get_required_packages(proposed_matches[:])
+        dep_tree, st = self.Entropy._get_required_packages(proposed_matches[:])
         if st != 0:
             return proposed_matches, False # wtf?
         if 0 in dep_tree: dep_tree.pop(0)
@@ -368,16 +368,7 @@ class Queue:
 
     def elaborate_masked_packages(self, matches):
 
-        matchfilter = set()
-        masks = {}
-        for match in matches:
-            mymasks = self.Entropy.get_masked_packages_tree(match,
-                atoms = False, flat = True, matchfilter = matchfilter)
-            masks.update(mymasks)
-        # run dialog if found some
-        if not masks:
-            return 0
-
+        masks = self.Entropy.get_masked_packages(matches)
         # filter already masked
         mymasks = {}
         for match in masks:
@@ -413,8 +404,8 @@ class Queue:
         if status != 0:
             return status
 
-        (runQueue, removalQueue, status) = self.Entropy.get_install_queue(
-            xlist, False, deep_deps, relaxed_deps = (SulfurConf.relaxed_deps == 1),
+        runQueue, removalQueue, status = self.Entropy.get_install_queue(
+            xlist, False, deep_deps, relaxed = (SulfurConf.relaxed_deps == 1),
             quiet = True)
         if status == -2: # dependencies not found
             confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,

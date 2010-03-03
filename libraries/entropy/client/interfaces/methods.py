@@ -1915,7 +1915,7 @@ class MatchMixin:
 
                         if not (strip_line.startswith("#") or not strip_line):
                             mymatch = self.atom_match(strip_line,
-                                packagesFilter = False)
+                                mask_filter = False)
                             if mymatch == match:
                                 continue
 

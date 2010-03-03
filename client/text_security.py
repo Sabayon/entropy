@@ -257,7 +257,7 @@ def install_packages(entropy_client, security_intf, fetch = False):
         # get key + slot
         key, slot = entropy_client.installed_repository().retrieveKeySlot(match[0])
         # match in repos
-        match = entropy_client.atom_match(key, matchSlot = slot)
+        match = entropy_client.atom_match(key, match_slot = slot)
         if match[0] != -1:
             valid_matches.add(match)
 

@@ -807,7 +807,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 for idpackage in idpackages:
 
                     key, slot = dbconn.retrieveKeySlot(idpackage)
-                    mymatch = client.atom_match(key, matchSlot = slot)
+                    mymatch = client.atom_match(key, match_slot = slot)
                     if mymatch[0] == -1:
                         matched.add(brokenlib)
                         continue

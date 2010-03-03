@@ -637,7 +637,7 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
             result = Equo.atom_match(atom)
 
         if (result[0] == -1) and match_repo:
-            result = Equo.atom_match(atom, packagesFilter = False)
+            result = Equo.atom_match(atom, mask_filter = False)
             if result[0] != -1:
                 repoMasked = True
 
@@ -1204,8 +1204,8 @@ def match_package(packages, multiMatch = False, multiRepo = False,
         if not etpUi['quiet'] and not get_results:
             print_info("%s: %s" % (blue("  # "), bold(package),))
 
-        match = Equo.atom_match(package, multiMatch = multiMatch,
-            multiRepo = multiRepo, packagesFilter = False)
+        match = Equo.atom_match(package, multi_match = multiMatch,
+            multi_repo = multiRepo, mask_filter = False)
         if match[1] != 1:
 
             if not multiMatch:

@@ -151,7 +151,7 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atom_match(package + '#', matchRepo = [repo])
+            match = Entropy.atom_match(package + '#', match_repo = [repo])
             if (match[1] == repo):
                 idpackages.append(match[0])
             else:
@@ -181,7 +181,7 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atom_match(package, matchRepo = [repo])
+            match = Entropy.atom_match(package, match_repo = [repo])
             if match[1] == repo:
                 idpackages.append(match[0])
             else:
@@ -319,7 +319,7 @@ def repositories(options):
         if "world" not in myopts:
             # match
             for package in myopts:
-                match = Entropy.atom_match(package, matchRepo = [repoid])
+                match = Entropy.atom_match(package, match_repo = [repoid])
                 if match in matches:
                     print_warning(  brown(" * ") + \
                         red("%s: " % (_("Package"),) ) + bold(package) + \
@@ -777,7 +777,7 @@ def update(options):
                 etp_repo = None
                 if spm_repo is not None:
                     pkg_id, repo_id = Entropy.atom_match(spm_key,
-                        matchSlot = spm_slot)
+                        match_slot = spm_slot)
                     if repo_id != 1:
                         repo_db = Entropy.open_server_repository(
                             repo = repo_id, just_reading = True)
