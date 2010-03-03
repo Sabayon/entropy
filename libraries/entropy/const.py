@@ -517,7 +517,9 @@ def const_default_settings(rootdir):
 
         # data storage directory, useful to speed up
         # entropy client across multiple issued commands
-        'dumpstoragedir': default_etp_dir+default_etp_cachesdir,
+        #'dumpstoragedir': default_etp_dir+default_etp_cachesdir,
+        'dumpstoragedir': os.path.join("/tmp",
+            "entropy-cache-%s" % (os.getuid(),)),
         # where GLSAs are stored
         'securitydir': default_etp_dir+default_etp_securitydir,
         'securityurl': "http://community.sabayon.org/security"
