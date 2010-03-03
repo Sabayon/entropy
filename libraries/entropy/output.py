@@ -726,7 +726,7 @@ class TextInterface:
             except UnicodeEncodeError:
                 sys.stdout.write(msg.encode("utf-8"))
             xterm_title_reset()
-            raise SystemExit(100)
+            raise KeyboardInterrupt()
 
         xterm_title_reset()
         _flush_stdouterr()
