@@ -176,7 +176,7 @@ def const_default_settings(rootdir):
     default_etp_vardir = os.getenv('DEV_ETP_TMP_DIR',
         rootdir+"/var/tmp/entropy")
     default_etp_tmpcache_dir = os.getenv('DEV_ETP_CACHE_DIR',
-        rootdir+"/tmp/entropy-cache-%s" % (os.getuid(),))
+        default_etp_dir+default_etp_cachesdir)
 
     cmdline = []
     cmdline_file = "/proc/cmdline"
