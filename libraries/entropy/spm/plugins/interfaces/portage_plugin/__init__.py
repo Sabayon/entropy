@@ -1752,6 +1752,8 @@ class PortagePlugin(SpmPlugin):
         # cached vartree class
         vartree = self._get_portage_vartree(root = root)
 
+        self.log_message("PortagePlugin<_portage_doebuild>, environment: %s" % (
+            locals(),))
         try:
             rc = self.portage.doebuild(
                 myebuild = str(myebuild),
