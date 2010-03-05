@@ -15,6 +15,8 @@ import sys
 import shutil
 import tempfile
 import subprocess
+import tarfile
+
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
@@ -715,30 +717,61 @@ class PortagePlugin(SpmPlugin):
             )
         )
 
-    def _add_kernel_dependency_to_pkg(self, pkg_data):
+    def _add_kernel_dependency_to_pkg(self, pkg_data, pkg_dir_prefix):
 
+        # NOTE: i hate hardcoded shit, but our SPM doesn't support
+        # kernel dependencies.
         kmod_pfx = "/lib/modules"
+        kmox_sfx = ".ko"
+        modinfo_path = "/sbin/modinfo"
         content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
-        content = [x for x in content if x != kmod_pfx]
+        content = [x for x in content if x.endswith(kmox_sfx)]
 
         # filter out hidden files
-        content = [x for x in content if not \
-            os.path.basename(x).startswith(".")]
         if not content:
             return
-        content.sort()
+
+        def read_kern_vermagic(ko_path):
+
+            tmp_fd, tmp_file = tempfile.mkstemp()
+            os.close(tmp_fd)
+
+            tmp_fw = open(tmp_file, "w")
+            rc = subprocess.call((modinfo_path, "-F", "vermagic",
+                ko_path), stdout = tmp_fw, stderr = tmp_fw)
+            tmp_fw.flush()
+            tmp_fw.close()
+            tmp_r = open(tmp_file, "r")
+            modinfo_output = tmp_r.read().strip()
+            tmp_r.close()
+            os.remove(tmp_file)
+
+            if rc != 0:
+                import warnings
+                warnings.warn(
+                    "Cannot properly guess kernel module vermagic, error" + \
+                    modinfo_output)
+                return
+
+            return modinfo_output.split()[0]
 
         for item in content:
 
-            owners = self.search_paths_owners([item])
-            if not owners:
+            # read vermagic
+            item_pkg_path = os.path.join(pkg_dir_prefix, item[1:])
+            kern_vermagic = read_kern_vermagic(item_pkg_path)
+            if kern_vermagic is None:
                 continue
 
-            k_base = os.path.basename(item)
             # MUST match SLOT (for triggers here, to be able to handle
             # multiple packages correctly and set back slot).
-            pkg_data['versiontag'] = k_base
+            pkg_data['versiontag'] = kern_vermagic
+            # overwrite slot, yeah
+            pkg_data['slot'] = kern_vermagic
 
+            # now try to guess package providing that vermagic
+            possible_kernel_owned_path = os.path.join(kmod_pfx, kern_vermagic)
+            owners = self.search_paths_owners([possible_kernel_owned_path])
             owner_data = None
             for k_atom, k_slot in owners:
                 k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
@@ -746,16 +779,14 @@ class PortagePlugin(SpmPlugin):
                     owner_data = (k_cat, k_name, k_ver, k_rev,)
                     break
 
-            # no kernel found
             if owner_data is None:
-                continue
+                # heh, user has broken deps, who cares!
+                return
 
+            # yippie, kernel dep installed also for SPM.
             k_cat, k_name, k_ver, k_rev = owner_data
             if k_rev != "r0":
                 k_ver += "-%s" % (k_rev,)
-
-            # overwrite slot, yeah
-            pkg_data['slot'] = k_base
             kern_dep_key = "=%s~-1" % (k_atom,)
 
             return kern_dep_key
@@ -792,8 +823,12 @@ class PortagePlugin(SpmPlugin):
 
         # extract stuff
         xpaktools.extract_xpak(package_file, meta_dir)
-        entropy.tools.uncompress_tarball(package_file,
-            extract_path = pkg_dir, catch_empty = True)
+        empty_content = False
+        try:
+            entropy.tools.uncompress_tarball(package_file,
+                extract_path = pkg_dir, catch_empty = False)
+        except tarfile.ReadError:
+            empty_content = True
 
         # package injection status always false by default
         # developer can change metadatum after this function
@@ -859,10 +894,23 @@ class PortagePlugin(SpmPlugin):
 
         content_file = os.path.join(meta_dir,
             PortagePlugin.xpak_entries['contents'])
+        # even if pkg_dir is tweaked after this, it's fine anyway for
+        # packages emerge with -B, because for those, we also get the
+        # full package_file (not a fake one).
         data['content'] = self._extract_pkg_metadata_content(content_file,
-            package_file)
-        data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
+            package_file, pkg_dir)
+        # There are packages providing no files, even if given package_file
+        # is complete (meaning, it contains real file. Not a fake one, like
+        # it can happen with "equo rescue spmsync", to make things quicker).
+        # So, to differentiate between "complete package file with no content"
+        # and "fake package file, with arbitrary content", we check
+        # data['content']. If empty_content is True but data['content'] is
+        # contains something, then we have a fake package_file.
+        if data['content'] and empty_content:
+            # fake package_file, need to tweak pkg_dir to systemroot
+            pkg_dir = etpConst['systemroot'] + os.path.sep
 
+        data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
         data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
             pkg_dir, data['content'])
 
@@ -871,7 +919,7 @@ class PortagePlugin(SpmPlugin):
         kern_dep_key = None
 
         if data['category'] != PortagePlugin.KERNEL_CATEGORY:
-            kern_dep_key = self._add_kernel_dependency_to_pkg(data)
+            kern_dep_key = self._add_kernel_dependency_to_pkg(data, pkg_dir)
 
         file_ext = PortagePlugin.EBUILD_EXT
         ebuilds_in_path = [x for x in os.listdir(meta_dir) if \
@@ -3808,7 +3856,7 @@ class PortagePlugin(SpmPlugin):
         }
         return data
 
-    def _extract_pkg_metadata_content(self, content_file, package_path):
+    def _extract_pkg_metadata_content(self, content_file, package_path, pkg_dir):
 
         pkg_content = {}
         obj_t = const_convert_to_unicode("obj")
@@ -3853,32 +3901,16 @@ class PortagePlugin(SpmPlugin):
 
             # CONTENTS is not generated when a package is emerged with
             # portage and the option -B
-            # we have to unpack the tbz2 and generate content dict
-            mytempdir = os.path.join(etpConst['packagestmpdir'],
-                os.path.basename(package_path) + ".inject")
-            if os.path.isdir(mytempdir):
-                shutil.rmtree(mytempdir)
-            if not os.path.isdir(mytempdir):
-                os.makedirs(mytempdir)
-
-            entropy.tools.uncompress_tarball(package_path,
-                extract_path = mytempdir, catch_empty = True)
-            tmpdir_len = len(mytempdir)
-            for currentdir, subdirs, files in os.walk(mytempdir):
+            # we have to use the unpacked package file and generate content dict
+            tmpdir_len = len(pkg_dir)
+            for currentdir, subdirs, files in os.walk(pkg_dir):
                 pkg_content[currentdir[tmpdir_len:]] = dir_t
                 for item in files:
-                    item = currentdir + "/" + item
+                    item = currentdir + os.path.sep + item
                     if os.path.islink(item):
                         pkg_content[item[tmpdir_len:]] = sym_t
                     else:
                         pkg_content[item[tmpdir_len:]] = obj_t
-
-            # now remove
-            shutil.rmtree(mytempdir, True)
-            try:
-                os.rmdir(mytempdir)
-            except (OSError,):
-                pass
 
         return pkg_content
 
