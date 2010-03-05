@@ -1369,7 +1369,8 @@ def search_rev_packages(revisions, Equo = None):
         found = True
         for idpackage in results:
             print_package_info(idpackage, dbconn, Equo = Equo,
-                extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
+                extended = etpUi['verbose'], strictOutput = etpUi['quiet'],
+                clientSearch = True)
 
         if not etpUi['quiet']:
             print_info(blue(" %s: " % (_("Keyword"),)) + \
