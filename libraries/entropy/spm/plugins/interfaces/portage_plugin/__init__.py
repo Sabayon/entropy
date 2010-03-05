@@ -330,6 +330,12 @@ class PortagePlugin(SpmPlugin):
             self.portage_sets = None
 
         try:
+            from portage._global_updates import _global_updates
+        except ImportError:
+            _global_updates = self.portage._global_updates
+        self._portage_global_updates = _global_updates
+
+        try:
             import glsa
             self.glsa = glsa
         except ImportError:
@@ -601,7 +607,7 @@ class PortagePlugin(SpmPlugin):
                 sys.stdout = log
                 sys.stderr = log
 
-                self.portage._global_updates(mydb, {})
+                self._portage_global_updates(mydb, {})
 
                 sys.stdout = old_stdout
                 sys.stderr = old_stderr
@@ -609,7 +615,7 @@ class PortagePlugin(SpmPlugin):
                 log.close()
                 os._exit(0)
         else:
-            self.portage._global_updates(mydb, {}) # always force
+            self._portage_global_updates(mydb, {}) # always force
 
     def match_package(self, package, match_type = None):
         """
