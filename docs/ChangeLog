@@ -1,3 +1,84 @@
+commit 6d47df7460e7c328f18d84a15fa610cfa7da48b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 12:53:11 2010 +0100
+
+    [entropy.client.interfaces.dep] fix undefined reference
+
+commit 8588bfd25b0df0d038f6ea09301fa1864ac9f10d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 12:50:39 2010 +0100
+
+    [entropy.spm] PortagePlugin: update _global_updates call path
+
+commit 197cdc5f5e9df3576437bbe9cf73fd6404e8a884
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 4 22:19:28 2010 +0100
+
+    Revert "[entropy.const] update Entropy default cache directory, move to /tmp"
+    
+    This reverts commit def6b3f545b346f41dd8fc558264fe146e4a9285.
+    
+    Conflicts:
+    
+    	libraries/entropy/const.py
+
+commit ae9f5e4dadce7607fff0492ee21d3fd7edb49fcf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 3 16:58:03 2010 +0100
+
+    [todo] update TODO
+
+commit e10132b3873323b51f58c106698ada569e93a66c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 3 16:56:22 2010 +0100
+
+    [entropy.const] use /var/run/entropy for storing pid/lock file data
+    
+    In this way, files get cleaned up every boot. No need for entropy_client
+    init script anymore
+
+commit 8de5c31afe9efba0a2c6162627f0844cb2ab0996
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 3 16:55:47 2010 +0100
+
+    [entropy.output] properly raise exception when CTRL+C is hit when ask_question is running
+
+commit def6b3f545b346f41dd8fc558264fe146e4a9285
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 3 16:25:46 2010 +0100
+
+    [entropy.const] update Entropy default cache directory, move to /tmp
+
+commit b959963c0e396a168e994fbeac89d3edb7edb1af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 3 16:13:34 2010 +0100
+
+    [entropy.client/equo] implement multifetch setting in client.conf
+
+commit f510cca10862187fe4fccf5d0a3abd95ae30bc7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 3 15:26:52 2010 +0100
+
+    [entropy.client.interfaces.dep] complete module refactoring
+
+commit eb10538b59793af323b6c2e38a03d16654579a19
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 2 22:07:47 2010 +0100
+
+    [entropy.output] catch UnicodeDecodeError exceptions raised by readtext()
+
+commit 13a613cb3fb4ab7fe33132aad5e1619f83ee4855
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 2 21:59:40 2010 +0100
+
+    [todo] update TODO
+
+commit 671dd8517d92a7065fce77771ac273c70afc0c8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 2 08:05:15 2010 +0100
+
+    Tagging Entropy version 0.99.36.3
+
 commit 2513d0fb59c2b4090c8ca663005088797ea1da1f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 2 08:04:34 2010 +0100
