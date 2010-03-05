@@ -330,7 +330,7 @@ class CalculatorsMixin:
                         multiMatch = True,
                         extendedResults = extended_results
                     )
-                    if extendedResults:
+                    if extended_results:
                         dbpkginfo = (set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) \
                             for x in query_data]), 0)
                     else:
