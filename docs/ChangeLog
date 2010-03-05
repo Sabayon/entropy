@@ -1,3 +1,40 @@
+commit bb9c02a7c8df534a5abfd99b7a9817c0068e767c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 15:25:35 2010 +0100
+
+    [equo] fix "equo query revisions" information output (set clientSearch=True)
+
+commit ffd90f21c796d3e16e41d3e3aaab74ada8019a5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 14:56:18 2010 +0100
+
+    [entropy.spm] PortagePlugin: several fixes to kernel dependencies and metadata extraction handling
+    
+    1. Portage doesn't know anything about files installed in /lib/modules
+       so, when mixing Portage and Entropy and syncing the two repositories
+       it can happen to build wrong kernel dependencies. So, use modinfo
+       to get kernel module version magic and use that as tag. Moreover,
+       make sure that kernel dependency metadata is added only when really
+       available.
+    
+    2. This patch should also make metadata extraction "live-system" independent.
+       Since package is always extracted (to collect extra metadata required
+       nowadays), use the extract path in every metadata collection function.
+       Also check against fake package files provided (ones with no content
+       inside).
+
+commit e673a821c2ed0bad048c42dd7b91a47ba35801cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 14:55:02 2010 +0100
+
+    [entropy.output] catch IOError exceptions on _flush_stdouterr
+
+commit 799939c2c6092a9d756e7eeca6829fe3d5f28919
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 12:55:30 2010 +0100
+
+    Tagging Entropy version 0.99.37
+
 commit 6d47df7460e7c328f18d84a15fa610cfa7da48b2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 5 12:53:11 2010 +0100
