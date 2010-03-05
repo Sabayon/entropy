@@ -440,8 +440,11 @@ def reset_cursor():
     _flush_stdouterr()
 
 def _flush_stdouterr():
-    sys.stdout.flush()
-    sys.stderr.flush()
+    try:
+        sys.stdout.flush()
+        sys.stderr.flush()
+    except IOError:
+        return
 
 def _stdout_write(msg):
     if not const_isstring(msg):
