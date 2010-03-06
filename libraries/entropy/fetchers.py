@@ -12,6 +12,7 @@
 import os
 import sys
 import time
+import httplib
 
 if sys.hexversion >= 0x3000000:
     import urllib.request as urlmod
@@ -194,6 +195,12 @@ class UrlFetcher:
                 return self.__status
 
             except urlmod_error.URLError as err: # timeout error
+                self.__close(True)
+                self.__status = "-3"
+                return self.__status
+
+            except httplib.BadStatusLine:
+                # obviously, something to cope with
                 self.__close(True)
                 self.__status = "-3"
                 return self.__status
