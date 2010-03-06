@@ -1893,7 +1893,7 @@ class PortagePlugin(SpmPlugin):
             PortagePlugin.ENV_FILE_COMP)
 
         if "linux-info" in package_metadata['eclasses'] and \
-            os.path.isfile(bz2envfile):
+            os.path.isfile(bz2envfile) and package_metadata['versiontag']:
 
             envfile = entropy.tools.unpack_bzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile, "w")
