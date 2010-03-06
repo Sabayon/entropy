@@ -511,7 +511,7 @@ def const_default_settings(rootdir):
         'current_nice': 0,
         'default_nice': 0,
         # Default download socket timeout for Entropy Client transceivers
-        'default_download_timeout': 20,
+        'default_download_timeout': 30,
         # Entropy package dependencies type identifiers
         'dependency_type_ids': {
             'rdepend_id': 0, # runtime dependencies
