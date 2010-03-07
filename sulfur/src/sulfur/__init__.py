@@ -1834,7 +1834,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # 2-3 more cycles than having unattended
         # behaviours
         self.Equo.SystemSettings.clear()
-        self.Equo.close_all_repositories()
+        self.Equo.close_repositories()
 
     def hide_notebook_tabs_for_install(self):
         self.ui.securityVbox.hide()

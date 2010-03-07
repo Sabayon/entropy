@@ -96,7 +96,7 @@ class RepositoryMixin:
                 continue
 
         # to avoid having zillions of open files when loading a lot of EquoInterfaces
-        self.close_all_repositories(mask_clear = False)
+        self.close_repositories(mask_clear = False)
 
     def __get_repository_cache_key(self, repoid):
         return (repoid, etpConst['systemroot'],)
@@ -121,7 +121,7 @@ class RepositoryMixin:
         self.add_repository(repodata)
         return dbc
 
-    def close_all_repositories(self, mask_clear = True):
+    def close_repositories(self, mask_clear = True):
         for item in sorted(self._repodb_cache.keys()):
             # in-memory repositories cannot be closed
             # otherwise everything will be lost, to
@@ -281,7 +281,7 @@ class RepositoryMixin:
 
             self.__save_repository_settings(repodata)
             self.SystemSettings._clear_repository_cache(repoid = repoid)
-            self.close_all_repositories()
+            self.close_repositories()
             self.clear_cache()
             self.SystemSettings.clear()
 
@@ -308,7 +308,7 @@ class RepositoryMixin:
             self._enabled_repos.remove(repoid)
 
         # ensure that all dbs are closed
-        self.close_all_repositories()
+        self.close_repositories()
 
         if done:
 
@@ -331,7 +331,7 @@ class RepositoryMixin:
             mem_inst.closeDB()
 
         # reset db cache
-        self.close_all_repositories()
+        self.close_repositories()
         self.validate_repositories()
 
     def __save_repository_settings(self, repodata, remove = False,
@@ -458,7 +458,7 @@ class RepositoryMixin:
         self.__write_ordered_repositories_entries(
             self.SystemSettings['repositories']['order'])
         self.SystemSettings.clear()
-        self.close_all_repositories()
+        self.close_repositories()
         self.SystemSettings._clear_repository_cache(repoid = repoid)
         self.validate_repositories()
 
@@ -469,7 +469,7 @@ class RepositoryMixin:
         repodata['repoid'] = repoid
         self.__save_repository_settings(repodata, enable = True)
         self.SystemSettings.clear()
-        self.close_all_repositories()
+        self.close_repositories()
         self.validate_repositories()
 
     def disable_repository(self, repoid):
@@ -496,7 +496,7 @@ class RepositoryMixin:
             self.__save_repository_settings(repodata, disable = True)
             self.SystemSettings.clear()
 
-        self.close_all_repositories()
+        self.close_repositories()
         self.validate_repositories()
 
     def get_repository_settings(self, repoid):
@@ -1308,7 +1308,7 @@ class MiscMixin:
     def switch_chroot(self, chroot = ""):
         # clean caches
         self.clear_cache()
-        self.close_all_repositories()
+        self.close_repositories()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
@@ -1317,7 +1317,7 @@ class MiscMixin:
         self.reopen_installed_repository()
         # keep them closed, since SystemSettings.clear() is called
         # above on reopen_installed_repository()
-        self.close_all_repositories()
+        self.close_repositories()
         if chroot:
             try:
                 self._installed_repository.resetTreeupdatesDigests()
@@ -1396,7 +1396,7 @@ class MiscMixin:
         Set new Entropy branch. This is NOT thread-safe.
         Please note that if you call this method all your
         repository instance references will become invalid.
-        This is caused by close_all_repositories and SystemSettings
+        This is caused by close_repositories and SystemSettings
         clear methods.
         Once you changed branch, the repository databases won't be
         available until you fetch them (through Repositories class)
@@ -1408,7 +1408,7 @@ class MiscMixin:
         self.Cacher.discard()
         self.Cacher.stop()
         self.clear_cache()
-        self.close_all_repositories()
+        self.close_repositories()
         # etpConst should be readonly but we override the rule here
         # this is also useful when no config file or parameter into it exists
         etpConst['branch'] = branch
@@ -1422,7 +1422,7 @@ class MiscMixin:
         self.reopen_installed_repository()
         self._installed_repository.resetTreeupdatesDigests()
         self.validate_repositories(quiet = True)
-        self.close_all_repositories()
+        self.close_repositories()
         if self.xcache:
             self.Cacher.start()
 

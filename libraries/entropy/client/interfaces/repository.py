@@ -1481,9 +1481,9 @@ class Repository:
                 os.remove(dbfile_old)
 
         # keep them closed
-        self.Entropy.close_all_repositories()
+        self.Entropy.close_repositories()
         self.Entropy.validate_repositories()
-        self.Entropy.close_all_repositories()
+        self.Entropy.close_repositories()
 
         # clean caches, fetch security
         if self.updated:
@@ -1504,7 +1504,7 @@ class Repository:
                     except Error:
                         # EntropyRepository error, missing table?
                         continue
-                self.Entropy.close_all_repositories()
+                self.Entropy.close_repositories()
 
         if self.sync_errors:
             self.Entropy.output(
@@ -2050,7 +2050,7 @@ class Repository:
     def sync(self):
 
         # close them
-        self.Entropy.close_all_repositories()
+        self.Entropy.close_repositories()
 
         # let's dance!
         mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)

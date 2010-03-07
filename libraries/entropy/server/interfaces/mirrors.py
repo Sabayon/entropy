@@ -27,6 +27,7 @@ from entropy.transceivers import EntropyTransceiver
 from entropy.security import Repository as RepositorySecurity
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 from entropy.db.exceptions import Error
+from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 import entropy.dump
@@ -249,7 +250,7 @@ class Server(ServerNoticeBoardMixin):
         self.Cacher = EntropyCacher()
         self.sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        self.SystemSettings = self.Entropy.SystemSettings
+        self.SystemSettings = SystemSettings()
 
         mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
         self.Entropy.output(
@@ -259,7 +260,7 @@ class Server(ServerNoticeBoardMixin):
             header = red(" @@ ")
         )
         mytxt = _("mirror")
-        for mirror in self.Entropy.get_remote_mirrors(repo):
+        for mirror in self.Entropy.get_remote_mirrors(repo = repo):
             mirror = EntropyTransceiver.hide_sensible_data(mirror)
             self.Entropy.output(
                 blue("%s: %s") % (mytxt, darkgreen(mirror),),
@@ -1796,7 +1797,7 @@ class Server(ServerNoticeBoardMixin):
                 shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
                 # open and remove content table
                 eapi1_tmp_dbconn = \
-                    self.Entropy.Client.open_generic_database(
+                    self.Entropy.open_generic_database(
                         temp_eapi1_dbfile, indexing_override = False,
                         xcache = False)
                 eapi1_tmp_dbconn.dropContent()
@@ -1995,7 +1996,7 @@ class Server(ServerNoticeBoardMixin):
                     fromfile = os.path.join(mytmpdir, myfile)
                     tofile = os.path.join(database_dir_path, myfile)
                     shutil.move(fromfile, tofile)
-                    self.Entropy.Client.setup_default_file_perms(tofile)
+                    self.Entropy.setup_default_file_perms(tofile)
 
             if os.path.isdir(mytmpdir):
                 shutil.rmtree(mytmpdir)

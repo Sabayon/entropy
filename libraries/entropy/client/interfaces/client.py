@@ -716,21 +716,19 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if hasattr(self, '_installed_repository'):
             if self._installed_repository != None:
                 self._installed_repository.closeDB()
-        if hasattr(self, 'FileUpdates'):
-            del self.FileUpdates
         if hasattr(self, 'clientLog'):
             self.clientLog.close()
         if hasattr(self, 'SystemSettings') and \
-            hasattr(self, 'sys_settings_client_plugin_id'):
+            hasattr(self, 'sys_settings_client_plugin_id') and \
+            hasattr(self.SystemSettings, 'remove_plugin'):
 
-            if hasattr(self.SystemSettings, 'remove_plugin'):
-                try:
-                    self.SystemSettings.remove_plugin(
-                        self.sys_settings_client_plugin_id)
-                except KeyError:
-                    pass
+            try:
+                self.SystemSettings.remove_plugin(
+                    self.sys_settings_client_plugin_id)
+            except KeyError:
+                pass
 
-        self.close_all_repositories(mask_clear = False)
+        self.close_repositories(mask_clear = False)
 
     def repository_packages_spm_sync(self, repository_identifier, repo_db,
         force = False):
@@ -828,4 +826,3 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
     def __del__(self):
         self.destroy()
-

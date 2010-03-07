@@ -173,12 +173,14 @@ class FileUpdates:
                         if not quiet:
                             try:
                                 self.Entropy.output(
-                                    "("+blue(str(counter))+") " + red(" file: ") + \
-                                    os.path.dirname(filepath) + "/" + os.path.basename(filepath)[10:],
+                                    "("+blue(str(counter))+") " + \
+                                    red(" file: ") + \
+                                    os.path.dirname(filepath) + "/" + \
+                                    os.path.basename(filepath)[10:],
                                     importance = 1,
                                     type = "info"
                                 )
-                            except:
+                            except (UnicodeEncodeError, UnicodeDecodeError):
                                 pass # possible encoding issues
         # store data
         self.Cacher.push(FileUpdates.CACHE_ID, scandata)

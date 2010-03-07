@@ -39,6 +39,7 @@ from entropy.spm.plugins.factory import get_default_instance as get_spm, \
 from entropy.qa import QAInterfacePlugin
 from entropy.security import Repository as RepositorySecurity
 from entropy.db.exceptions import ProgrammingError
+from entropy.client.interfaces import Client as _Client
 
 import entropy.tools
 import entropy.dump
@@ -1181,7 +1182,7 @@ class ServerLoadersMixin:
         @rtype: entropy.qa.QAInterface instance
         """
         qa_plugin = ServerQAInterfacePlugin()
-        qa = self.Client.QA()
+        qa = _Client.QA(self)
         qa.add_plugin(qa_plugin)
         return qa
 
@@ -1217,21 +1218,21 @@ class ServerLoadersMixin:
 class ServerPackageDepsMixin:
 
     def sets_available(self, *args, **kwargs):
-        sets = self.Client.Sets()
+        sets = _Client.Sets(self)
         return sets.available(*args, **kwargs)
 
     def sets_search(self, *args, **kwargs):
-        sets = self.Client.Sets()
+        sets = _Client.Sets(self)
         return sets.search(*args, **kwargs)
 
     def sets_match(self, *args, **kwargs):
-        sets = self.Client.Sets()
+        sets = _Client.Sets(self)
         return sets.match(*args, **kwargs)
 
     def atom_match(self, *args, **kwargs):
         # disable masked packages for server-side repos
         kwargs['mask_filter'] = False
-        return self.Client.atom_match(*args, **kwargs)
+        return _Client.atom_match(self, *args, **kwargs)
 
     def match_packages(self, packages, repo = None):
 
@@ -2104,7 +2105,7 @@ class ServerPackagesHandlingMixin:
             )
             data = dbconn.getPackageData(idpackage)
             treeupdates_actions = dbconn.listAllTreeUpdatesActions()
-            self.Client.inject_entropy_database_into_package(
+            self.inject_entropy_database_into_package(
                 package_path, data, treeupdates_actions)
 
             # GPG-sign package if GPG signature is set
@@ -3291,13 +3292,15 @@ class ServerQAMixin:
 
 class ServerRepositoryMixin:
 
-    def close_repositories(self):
+    def close_repositories(self, mask_clear = False):
         for item in self._server_dbcache:
             try:
                 self._server_dbcache[item].closeDB()
             except ProgrammingError: # already closed?
                 pass
         self._server_dbcache.clear()
+        if mask_clear:
+            self.SystemSettings.clear()
 
     def close_repository(self, dbinstance):
         found = None
@@ -3551,7 +3554,7 @@ class ServerRepositoryMixin:
         if mirrors is None:
             mirrors = []
         dbc = self._open_temp_repository(repoid, temp_file = ":memory:")
-        self._memory_db_instances[repoid] = dbc
+        self._memory_db_srv_instances[repoid] = dbc
 
         eapi3_port = int(etpConst['socket_service']['port'])
         eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
@@ -3644,12 +3647,12 @@ class ServerRepositoryMixin:
         if repo is None:
             repo = self.default_repository
 
-        if repo == etpConst['clientserverrepoid'] and self.community_repo:
-            return self.Client.installed_repository()
-
         # in-memory server repos
-        if repo in self._memory_db_instances:
-            return self._memory_db_instances.get(repo)
+        if repo in self._memory_db_srv_instances:
+            return self._memory_db_srv_instances[repo]
+
+        if repo == etpConst['clientserverrepoid'] and self.community_repo:
+            return self.installed_repository()
 
         if just_reading:
             read_only = True
@@ -3778,7 +3781,7 @@ class ServerRepositoryMixin:
             header = darkgreen(" * "),
             back = True
         )
-        dbconn = self.Client.open_generic_database(dbpath)
+        dbconn = self.open_generic_database(dbpath)
         dbconn.initializeDatabase()
         dbconn.commitChanges()
         dbconn.closeDB()
@@ -4160,29 +4163,7 @@ class ServerMiscMixin:
             const_setup_perms(dir_path, etpConst['entropygid'])
 
     def _setup_services(self):
-
         self._setup_entropy_settings()
-        cs_name = 'Client'
-        if hasattr(self, cs_name):
-            obj = getattr(self, cs_name)
-            # no need to close, remove, whatever QA plugins, it's automagically
-            # arranged
-            obj.destroy()
-
-        from entropy.client.interfaces import Client
-        self.Client = Client(
-            indexing = self.indexing,
-            xcache = self.xcache,
-            repo_validation = False,
-            noclientdb = 1
-        )
-        self.Cacher = EntropyCacher()
-        self.Client.output = self.output
-        self.Client.ask_question = self.ask_question
-        self.Client.input_box = self.input_box
-        self.Client.set_title = self.set_title
-
-        self._enabled_repos = self.Client.repositories()
         self._backup_entropy_settings()
         self.Mirrors = MirrorsServer(self)
 
@@ -4199,7 +4180,7 @@ class ServerMiscMixin:
         # setup client database
         if not self.community_repo:
             etpConst['etpdatabaseclientfilepath'] = \
-                self._get_local_database_file(repo)
+                self._get_local_database_file(repo = repo)
             etpConst['clientdbid'] = etpConst['serverdbid']
         const_create_working_dirs()
 
@@ -4243,7 +4224,7 @@ class ServerMiscMixin:
     def _backup_entropy_settings(self):
         for setting in self._settings_to_backup:
             if isinstance(setting, const_get_stringtype()):
-                self.Client.backup_constant(setting)
+                self.backup_constant(setting)
             elif isinstance(setting, dict):
                 self.SystemSettings.set_persistent_setting(setting)
 
@@ -4302,7 +4283,7 @@ class ServerMiscMixin:
             back = True
         )
         # scanning for config files not updated
-        scandata = self.Client.FileUpdates.scanfs(dcache = False)
+        scandata = self.FileUpdates.scanfs(dcache = False)
         if scandata:
             self.output(
                 "[%s] %s" % (
@@ -4644,17 +4625,16 @@ class ServerMiscMixin:
             dbconn.insertPackageSets(package_sets)
         dbconn.commitChanges()
 
-
-class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
+class Server(ServerSettingsMixin, ServerLoadersMixin,
     ServerPackageDepsMixin, ServerPackagesHandlingMixin, ServerQAMixin,
-    ServerRepositoryMixin, ServerMiscMixin):
+    ServerRepositoryMixin, ServerMiscMixin, _Client):
 
     # Entropy Server cache directory, mainly used for storing commit changes
     CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "server_cache")
 
     def init_singleton(self, default_repository = None, save_repository = False,
             community_repo = False, fake_default_repo = False,
-            fake_default_repo_id = '::fake::',
+            fake_default_repo_id = None,
             fake_default_repo_desc = 'this is a fake repository'):
 
         self.__instance_destroyed = False
@@ -4663,14 +4643,16 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
             import warnings
             warnings.warn(mytxt)
 
+        self.Cacher = EntropyCacher()
         # settings
-        self._memory_db_instances = {}
+        self._memory_db_srv_instances = {}
         self._treeupdates_repos = set()
         self._server_dbcache = {}
         self.SystemSettings = SystemSettings()
         self.community_repo = community_repo
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
+        self.fake_default_repo_id = fake_default_repo_id
         self.indexing = False
         self.xcache = False
         self.Mirrors = None
@@ -4728,11 +4710,18 @@ class Server(Singleton, TextInterface, ServerSettingsMixin, ServerLoadersMixin,
             )
 
         self.switch_default_repository(self.default_repository)
+        # initialize Entropy Client superclass
+        _Client.init_singleton(self,
+            indexing = self.indexing,
+            xcache = self.xcache,
+            repo_validation = False,
+            noclientdb = 1
+        )
 
     def destroy(self):
         self.__instance_destroyed = True
-        if hasattr(self, 'Client'):
-            self.Client.destroy()
+        _Client.close_repositories(self, mask_clear = False)
+        _Client.destroy(self)
 
         plug_id2 = self.sys_settings_fake_cli_plugin_id
         plug_id1 = self.sys_settings_fatscope_plugin_id

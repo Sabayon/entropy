@@ -395,7 +395,7 @@ def _database_spmsync(entropy_client):
     # make it crash
     entropy_client.noclientdb = False
     entropy_client.reopen_installed_repository()
-    entropy_client.close_all_repositories()
+    entropy_client.close_repositories()
 
     print_info(red(" %s..." % (
         _("Collecting Source Package Manager metadata"),) ), back = True)

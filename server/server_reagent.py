@@ -520,7 +520,7 @@ def repositories(options):
     elif cmd == "backup":
 
         db_path = Entropy._get_local_database_file()
-        rc, err_msg = Entropy.Client.backup_database(db_path,
+        rc, err_msg = Entropy.backup_database(db_path,
             backup_dir = os.path.dirname(db_path))
         if not rc:
             print_info(darkred(" ** ")+red("%s: %s" % (_("Error"), err_msg,) ))
@@ -532,7 +532,7 @@ def repositories(options):
 
         db_file = Entropy._get_local_database_file()
         db_dir = os.path.dirname(db_file)
-        dblist = Entropy.Client.list_backedup_client_databases(
+        dblist = Entropy.list_backedup_client_databases(
             client_dbdir = db_dir)
         if not dblist:
             print_info(brown(" @@ ")+blue("%s." % (_("No backed up databases found"),)))
@@ -570,7 +570,7 @@ def repositories(options):
                 continue
             break
 
-        status, err_msg = Entropy.Client.restore_database(dbpath, db_file)
+        status, err_msg = Entropy.restore_database(dbpath, db_file)
         if status:
             return 0
         return 1
