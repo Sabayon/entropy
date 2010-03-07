@@ -117,4 +117,10 @@ class MiscTest(unittest.TestCase):
         sender.send_text_email(mail_sender, mail_recipients, mail_sub, mail_msg)
 
 if __name__ == '__main__':
+    if "--debug" in sys.argv:
+        sys.argv.remove("--debug")
+        from entropy.const import etpUi
+        etpUi['debug'] = True
     unittest.main()
+    entropy.tools.kill_threads()
+    raise SystemExit(0)

@@ -26,6 +26,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         # create fake server repo
         self.Server = Server(fake_default_repo_id = self.default_repo,
             fake_default_repo_desc = 'foo desc', fake_default_repo = True)
+        foo_db = self.Server.open_server_repository(repo = self.default_repo,
+            read_only = False, lock_remote = False, is_new = True)
+        foo_db.initializeDatabase()
 
 
     def tearDown(self):
@@ -34,6 +37,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
+        self.Server.Cacher.stop()
         self.Server.destroy()
 
     def test_server_instance(self):
@@ -63,3 +67,4 @@ if __name__ == '__main__':
         etpUi['debug'] = True
     unittest.main()
     entropy.tools.kill_threads()
+    raise SystemExit(0)

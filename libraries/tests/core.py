@@ -54,3 +54,5 @@ if __name__ == '__main__':
         from entropy.const import etpUi
         etpUi['debug'] = True
     unittest.main()
+    entropy.tools.kill_threads()
+    raise SystemExit(0)
