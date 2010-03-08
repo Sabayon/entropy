@@ -484,7 +484,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 conn = self.__connection_cache.pop((th_id, pid))
                 if not self.readOnly:
                     conn.commit()
-                conn.close()
+                try:
+                    conn.close()
+                except OperationalError:
+                    # heh, unable to close due to unfinalised statements
+                    # interpreter shutdown?
+                    pass
             except KeyError:
                 pass
 
