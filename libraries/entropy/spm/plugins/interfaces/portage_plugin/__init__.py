@@ -1925,7 +1925,7 @@ class PortagePlugin(SpmPlugin):
             "bintree", package, portage_tmpdir = package_metadata['unpackdir'],
             licenses = package_metadata.get('accept_license'))
 
-        if rc == 1:
+        if rc != 0:
             self.log_message(
                 "[POST] ATTENTION Cannot properly run Source Package Manager"
                 " setup phase for %s Something bad happened." % (package,)
@@ -2037,7 +2037,7 @@ class PortagePlugin(SpmPlugin):
                 package, portage_tmpdir = work_dir,
                 licenses = package_metadata.get('accept_license'))
 
-            if rc != 1:
+            if rc != 0:
                 self.log_message(
                     "[PRE] ATTENTION Cannot properly run SPM %s trigger "
                     "for %s. Something bad happened." % (phase, package,)
