@@ -1,3 +1,89 @@
+commit a1cb1e8bc5700ca6e3ca097a101c11158aded782
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 8 12:37:30 2010 +0100
+
+    [entropy.spm] PortagePlugin: fix rc evaluation in ebuild phase calls
+
+commit ee73a0d782ad83b1e4bbf37cc09e511b6e227354
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 8 12:23:29 2010 +0100
+
+    [entropy.spm] PortagePlugin: improve _portage_doebuild reliability (also add --debug support)
+
+commit b0e3942287f22b16d289462a53f018dceb19097d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 8 11:11:07 2010 +0100
+
+    [entropy.db] EntropyRepository._cleanup_stale_cur_conn: catch OperationalError on connection.close()
+
+commit 9d8ee582e8422e4a62c93990ce1609a6ec1a3b94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 8 07:23:00 2010 +0100
+
+    [entropy.const] add preliminary MIPS arch support bits (untested)
+
+commit 611ee32670f8902f4912a7ac891b40d78aac6390
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 7 22:17:07 2010 +0100
+
+    [entropy.client/entropy.server] make Entropy Server interface a subclass of Entropy Client
+
+commit e6b841b02fb4c547a4cc2adc33cb065611f8a011
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 7 22:15:50 2010 +0100
+
+    [tests] update the way test scripts are executed when directly called
+
+commit c114cafad3e72d9d01437ccc42a09c582248bc1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 21:14:07 2010 +0100
+
+    [sulfur] catch OperationalError in new_ugc_pixbuf
+
+commit 967d41de686febceb6d2cf9edc22208ebb88d38e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 14:17:58 2010 +0100
+
+    [entropy.const] tweak default download timeout
+
+commit 686ec61327310222321a4fc66797863ac29a0247
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 09:07:02 2010 +0100
+
+    [todo] update TODO
+
+commit 559cd81ec9c2ce603c249f4cc7173c156e54ac33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 09:05:51 2010 +0100
+
+    [entropy.fetchers] catch httplib.BadStatusLine exception in UrlFetcher.download()
+
+commit 9488990e94ab41c68081ab6ffbd775e5a1c2a0c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 08:34:46 2010 +0100
+
+    Revert "[entropy.spm] PortagePlugin._pkg_setup: fix KV_OUT_DIR for every eclass using linux-info"
+    
+    This reverts commit 593a40b705b7304790fbd981294727da85e7fea2.
+
+commit 593a40b705b7304790fbd981294727da85e7fea2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 08:33:01 2010 +0100
+
+    [entropy.spm] PortagePlugin._pkg_setup: fix KV_OUT_DIR for every eclass using linux-info
+
+commit d268fb9eedcd2950d004e788995710561a46e263
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 6 00:09:12 2010 +0100
+
+    [entropy.spm] PortagePlugin: log more debugging info when calling _portage_doebuild
+
+commit e2cc452122f14229fa00c262211a2824dab94206
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 5 15:43:21 2010 +0100
+
+    Tagging Entropy version 0.99.37.1
+
 commit bb9c02a7c8df534a5abfd99b7a9817c0068e767c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 5 15:25:35 2010 +0100
