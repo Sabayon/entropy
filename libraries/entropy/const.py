@@ -44,6 +44,7 @@ from entropy.i18n import _
 ETP_ARCH_MAP = {
     ("i386", "i486", "i586", "i686",): "x86",
     ("x86_64",): "amd64",
+    ("mips", "mips64",): "mips",
     ("sun4u",): None,
     ("ppc",): None,
 }
