@@ -1754,6 +1754,7 @@ class PortagePlugin(SpmPlugin):
 
         self.log_message("PortagePlugin<_portage_doebuild>, environment: %s" % (
             locals(),))
+
         try:
             rc = self.portage.doebuild(
                 myebuild = str(myebuild),
@@ -1763,34 +1764,36 @@ class PortagePlugin(SpmPlugin):
                 mysettings = mysettings,
                 mydbapi = mydbapi,
                 vartree = vartree,
-                use_cache = 0
+                use_cache = 0,
+                debug = etpUi['debug']
             )
         except:
             self.log_message(entropy.tools.get_traceback())
             raise
+        finally:
+            # if mute, restore old stdout/stderr
+            if etpUi['mute']:
+                sys.stdout = oldsysstdout
+                sys.stderr = oldsysstderr
+                tmp_fw.flush()
+                tmp_fw.close()
+                try:
+                    os.remove(tmp_file)
+                except OSError:
+                    pass
 
-        # if mute, restore old stdout/stderr
-        if etpUi['mute']:
-            sys.stdout = oldsysstdout
-            sys.stderr = oldsysstderr
-            tmp_fw.flush()
-            tmp_fw.close()
-            try:
-                os.remove(tmp_file)
-            except OSError:
-                pass
+            if portage_tmpdir_created:
+                shutil.rmtree(portage_tmpdir, True)
 
-        if portage_tmpdir_created:
-            shutil.rmtree(portage_tmpdir, True)
+            # reset PORTDIR back to its old path
+            # for security !
+            mysettings["PORTDIR"] = old_portdir
+            mysettings.backup_changes("PORTDIR")
 
-        # reset PORTDIR back to its old path
-        # for security !
-        mysettings["PORTDIR"] = old_portdir
-        mysettings.backup_changes("PORTDIR")
+            del mydbapi
+            del metadata
+            del keys
 
-        del mydbapi
-        del metadata
-        del keys
         return rc
 
     @staticmethod
