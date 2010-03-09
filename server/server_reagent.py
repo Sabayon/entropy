@@ -438,7 +438,7 @@ def repositories(options):
         rc = Entropy.initialize_server_repository()
         if rc == 0:
             print_info(darkgreen(" * ") + \
-                red(_("Entropy database has been reinitialized using binary packages available")))
+                red(_("Entropy repository has been initialized")))
 
     elif cmd == "create-empty-database":
 
