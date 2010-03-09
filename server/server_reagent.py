@@ -815,7 +815,10 @@ def update(options):
                 print_info(brown("    !!! ")+bold("%s..." % (
                     _("Ignoring broken Spm entry, please recompile it"),) ))
 
-    etp_pkg_files = os.listdir(Entropy._get_local_store_directory())
+    store_dir = Entropy._get_local_store_directory()
+    etp_pkg_files = []
+    if os.path.isdir(store_dir):
+        etp_pkg_files = os.listdir(store_dir)
     if not etp_pkg_files:
         print_info(brown(" * ")+red(_("Nothing to do, check later.")))
         # then exit gracefully
