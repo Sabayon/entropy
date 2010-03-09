@@ -1279,29 +1279,28 @@ class ServerPackagesHandlingMixin:
         if os.path.isfile(self._get_local_database_file(repo)):
 
             # test out
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo, warnings = show_warnings)
-            self.close_repository(dbconn)
+            if show_warnings:
+                dbconn = self.open_server_repository(read_only = True,
+                    no_upload = True, repo = repo, warnings = show_warnings)
+                self.close_repository(dbconn)
 
-            mytxt = "%s: %s: %s" % (
-                bold(_("WARNING")),
-                red(_("database already exists")),
-                self._get_local_database_file(repo),
-            )
-            self.output(
-                mytxt,
-                importance = 1,
-                type = "warning",
-                header = darkred(" !!! ")
-            )
+                mytxt = "%s: %s: %s" % (
+                    bold(_("WARNING")),
+                    red(_("database already exists")),
+                    self._get_local_database_file(repo),
+                )
+                self.output(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" !!! ")
+                )
 
-            rc_question = self.ask_question(_("Do you want to continue ?"))
-            if rc_question == _("No"):
-                return
-            try:
-                os.remove(self._get_local_database_file(repo))
-            except OSError:
-                pass
+                rc_question = self.ask_question(_("Do you want to continue ?"))
+                if rc_question == _("No"):
+                    return
+
+            os.remove(self._get_local_database_file(repo))
 
         # initialize
         dbconn = self.open_server_repository(read_only = False,
@@ -3352,9 +3351,26 @@ class ServerRepositoryMixin:
 
     def _handle_uninitialized_repository(self, repoid):
 
-        if not self._is_repository_initialized(repoid):
-            mytxt = blue("%s.") % (
-                _("Your default repository is not initialized"),)
+        if self._is_repository_initialized(repoid):
+            return
+
+        mytxt = blue("%s.") % (
+            _("Your default repository is not initialized"),)
+        self.output(
+            "[%s:%s] %s" % (
+                brown("repo"),
+                purple(repoid),
+                mytxt,
+            ),
+            importance = 1,
+            type = "warning",
+            header = darkred(" !!! ")
+        )
+        answer = self.ask_question(
+            _("Do you want to initialize your default repository ?"))
+        if answer == _("No"):
+            mytxt = red("%s.") % (
+                _("Continuing with an uninitialized repository"),)
             self.output(
                 "[%s:%s] %s" % (
                     brown("repo"),
@@ -3365,28 +3381,13 @@ class ServerRepositoryMixin:
                 type = "warning",
                 header = darkred(" !!! ")
             )
-            answer = self.ask_question(
-                _("Do you want to initialize your default repository ?"))
-            if answer == _("No"):
-                mytxt = red("%s.") % (
-                    _("Continuing with an uninitialized repository"),)
-                self.output(
-                    "[%s:%s] %s" % (
-                        brown("repo"),
-                        purple(repoid),
-                        mytxt,
-                    ),
-                    importance = 1,
-                    type = "warning",
-                    header = darkred(" !!! ")
-                )
-            else:
-                # move empty database for security sake
-                dbfile = self._get_local_database_file(repoid)
-                if os.path.isfile(dbfile):
-                    shutil.move(dbfile, dbfile+".backup")
-                self.initialize_server_repository(repo = repoid,
-                    show_warnings = False)
+        else:
+            # move empty database for security sake
+            dbfile = self._get_local_database_file(repoid)
+            if os.path.isfile(dbfile):
+                shutil.move(dbfile, dbfile+".backup")
+            self.initialize_server_repository(repo = repoid,
+                show_warnings = False)
 
     def _save_default_repository(self, repoid):
 
