@@ -1543,7 +1543,8 @@ class EntropyPackageView:
         for x in self.selected_objs:
             key, slot = x.keyslot
             m = self.Equo.atom_match(key, match_slot = slot)
-            if m[0] != -1: objs.append(m)
+            if m[0] != -1:
+                objs.append(x)
 
         busy_cursor(self.main_window)
         if objs:
