@@ -24,7 +24,7 @@ class CacheMixin:
 
     def _validate_repositories_cache(self):
         # is the list of repos changed?
-        cached = self.Cacher.pop(CacheMixin.REPO_LIST_CACHE_ID)
+        cached = self._cacher.pop(CacheMixin.REPO_LIST_CACHE_ID)
         if cached != self.SystemSettings['repositories']['order']:
             # invalidate matching cache
             try:
@@ -34,12 +34,12 @@ class CacheMixin:
             self._store_repository_list_cache()
 
     def _store_repository_list_cache(self):
-        self.Cacher.push(CacheMixin.REPO_LIST_CACHE_ID,
+        self._cacher.push(CacheMixin.REPO_LIST_CACHE_ID,
             self.SystemSettings['repositories']['order'],
             async = False)
 
     def clear_cache(self):
-        self.Cacher.stop()
+        self._cacher.stop()
         try:
             shutil.rmtree(etpConst['dumpstoragedir'], True)
             os.makedirs(etpConst['dumpstoragedir'], 0o775)
@@ -48,7 +48,7 @@ class CacheMixin:
         except (shutil.Error, IOError, OSError,):
             pass # ignore cache purge errors?
         finally:
-            self.Cacher.start()
+            self._cacher.start()
 
     def update_ugc_cache(self, repository):
         if not self.UGC.is_repository_eapi3_aware(repository):
@@ -82,8 +82,8 @@ class CacheMixin:
         if down_cache is None:
             return False
 
-        vote_ache = self.UGC.UGCCache.get_vote_cache(repository)
-        if vote_ache is None:
+        vote_cache = self.UGC.UGCCache.get_vote_cache(repository)
+        if vote_cache is None:
             return False
 
         return True
@@ -115,7 +115,7 @@ class CacheMixin:
     def _get_available_packages_cache(self, myhash = None):
         if myhash is None:
             myhash = self._get_available_packages_chash()
-        return self.Cacher.pop("%s%s" % (
+        return self._cacher.pop("%s%s" % (
             EntropyCacher.CACHE_IDS['world_available'], myhash))
 
     def _get_updates_cache(self, empty_deps, db_digest = None):
@@ -131,7 +131,7 @@ class CacheMixin:
             c_hash = self._get_updates_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
 
-            disk_cache = self.Cacher.pop(c_hash)
+            disk_cache = self._cacher.pop(c_hash)
             if isinstance(disk_cache, tuple):
                 return disk_cache
 
@@ -156,7 +156,7 @@ class CacheMixin:
             c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['critical_update'],
                 self._get_critical_update_cache_hash(db_digest),)
 
-            return self.Cacher.pop(c_hash)
+            return self._cacher.pop(c_hash)
 
     def _get_critical_update_cache_hash(self, db_digest):
 

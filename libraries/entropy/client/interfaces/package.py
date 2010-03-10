@@ -17,7 +17,7 @@ import shutil
 import tempfile
 import time
 
-from entropy.const import etpConst, etpSys, const_setup_perms, \
+from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _
@@ -26,7 +26,7 @@ from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
 from entropy.misc import TimeScheduled
 from entropy.db import EntropyRepository
 from entropy.client.interfaces.client import Client
-from entropy.cache import EntropyCacher
+from entropy.client.mirrors import StatusInterface
 from entropy.core.settings.base import SystemSettings
 from entropy.security import System as SystemSecurity, \
     Repository as RepositorySecurity
@@ -35,33 +35,30 @@ import entropy.tools
 
 class Package:
 
-    def __init__(self, EquoInstance):
+    def __init__(self, entropy_client):
 
-        if not isinstance(EquoInstance, Client):
+        if not isinstance(entropy_client, Client):
             mytxt = "A valid Client instance or subclass is needed"
             raise AttributeError(mytxt)
-        self.Entropy = EquoInstance
+        self._entropy = entropy_client
 
         self._system_settings = SystemSettings()
-        self.Cacher = EntropyCacher()
         self.pkgmeta = {}
         self.__prepared = False
-        self.matched_atom = ()
-        self.valid_actions = ("source", "fetch", "multi_fetch", "remove",
+        self._package_match = ()
+        self._valid_actions = ("source", "fetch", "multi_fetch", "remove",
             "remove_conflict", "install", "config"
         )
-        self.action = None
-        self.fetch_abort_function = None
-        self.xterm_title = ''
+        self._action = None
+        self._xterm_title = ''
 
     def kill(self):
         self.pkgmeta.clear()
 
-        self.matched_atom = ()
-        self.valid_actions = ()
-        self.action = None
+        self._package_match = ()
+        self._valid_actions = ()
+        self._action = None
         self.__prepared = False
-        self.fetch_abort_function = None
 
     def error_on_prepared(self):
         if self.__prepared:
@@ -74,8 +71,8 @@ class Package:
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
     def check_action_validity(self, action):
-        if action not in self.valid_actions:
-            raise AttributeError("Action must be in %s" % (self.valid_actions,))
+        if action not in self._valid_actions:
+            raise AttributeError("Action must be in %s" % (self._valid_actions,))
 
     @staticmethod
     def get_standard_fetch_disk_path(download):
@@ -112,6 +109,482 @@ class Package:
             return -2
 
         return -1
+
+    def __fetch_files(self, url_data_list, checksum = True, resume = True):
+
+        fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
+        url_path_list = []
+        checksum_map = {}
+        count = 0
+
+        for url, dest_path, cksum in url_data_list:
+            count += 1
+            filename = os.path.basename(url)
+            dest_dir = os.path.dirname(dest_path)
+            if not os.path.isdir(dest_dir):
+                os.makedirs(dest_dir, 0o755)
+                const_setup_perms(dest_dir, etpConst['entropygid'])
+
+            url_path_list.append((url, dest_path,))
+            if cksum is not None:
+                checksum_map[count] = cksum
+
+        # load class
+        fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
+            resume = resume, abort_check_func = fetch_abort_function,
+            OutputInterface = self._entropy,
+            UrlFetcherClass = self._entropy.urlFetcher, checksum = checksum)
+        try:
+            data = fetch_intf.download()
+        except KeyboardInterrupt:
+            return -100, {}, 0
+
+        diff_map = {}
+        if checksum_map and checksum: # verify checksums
+            diff_map = dict((url_path_list[x-1][0], checksum_map.get(x)) \
+                for x in checksum_map if checksum_map.get(x) != data.get(x))
+
+        data_transfer = fetch_intf.get_data_transfer()
+        if diff_map:
+            defval = -1
+            for key, val in list(diff_map.items()):
+                if val == "-1": # general error
+                    diff_map[key] = -1
+                elif val == "-2":
+                    diff_map[key] = -2
+                elif val == "-4": # timeout
+                    diff_map[key] = -4
+                elif val == "-3": # not found
+                    diff_map[key] = -3
+                elif val == -100:
+                    defval = -100
+            return defval, diff_map, data_transfer
+
+        return 0, diff_map, data_transfer
+
+    def _download_packages(self, download_list, checksum = False):
+
+        avail_data = self._system_settings['repositories']['available']
+        repo_uris = dict(((x[0], avail_data[x[0]]['packages'][::-1],) for x \
+            in download_list))
+        remaining = repo_uris.copy()
+        my_download_list = download_list[:]
+        mirror_status = StatusInterface()
+
+        def get_best_mirror(repository):
+            try:
+                return remaining[repository][0]
+            except IndexError:
+                return None
+
+        def update_download_list(down_list, failed_down):
+            newlist = []
+            for repo, fname, cksum, signatures in down_list:
+                myuri = get_best_mirror(repo)
+                myuri = os.path.join(myuri, fname)
+                if myuri not in failed_down:
+                    continue
+                newlist.append((repo, fname, cksum, signatures,))
+            return newlist
+
+        # return True: for failing, return False: for fine
+        def mirror_fail_check(repository, best_mirror):
+            # check if uri is sane
+            if not mirror_status.get_failing_mirror_status(best_mirror) >= 30:
+                return False
+            # set to 30 for convenience
+            mirror_status.set_failing_mirror_status(best_mirror, 30)
+            mirrorcount = repo_uris[repo].index(best_mirror)+1
+            mytxt = "( mirror #%s ) " % (mirrorcount,)
+            mytxt += blue(" %s: ") % (_("Mirror"),)
+            mytxt += red(entropy.tools.spliturl(best_mirror)[1])
+            mytxt += " - %s." % (_("maximum failure threshold reached"),)
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = red("   ## ")
+            )
+
+            if mirror_status.get_failing_mirror_status(best_mirror) == 30:
+                mirror_status.add_failing_mirror(best_mirror, 45)
+            elif mirror_status.get_failing_mirror_status(best_mirror) > 31:
+                mirror_status.add_failing_mirror(best_mirror, -4)
+            else:
+                mirror_status.set_failing_mirror_status(best_mirror, 0)
+
+            remaining[repository].discard(best_mirror)
+            return True
+
+        def show_download_summary(down_list):
+            for repo, fname, cksum, signatures in down_list:
+                best_mirror = get_best_mirror(repo)
+                mirrorcount = repo_uris[repo].index(best_mirror)+1
+                mytxt = "( mirror #%s ) " % (mirrorcount,)
+                basef = os.path.basename(fname)
+                mytxt += "[%s] %s " % (brown(basef), blue("@"),)
+                mytxt += red(entropy.tools.spliturl(best_mirror)[1])
+                # now fetch the new one
+                self._entropy.output(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = red("   ## ")
+                )
+
+        def show_successful_download(down_list, data_transfer):
+            for repo, fname, cksum, signatures in down_list:
+                best_mirror = get_best_mirror(repo)
+                mirrorcount = repo_uris[repo].index(best_mirror)+1
+                mytxt = "( mirror #%s ) " % (mirrorcount,)
+                basef = os.path.basename(fname)
+                mytxt += "[%s] %s %s " % (brown(basef), darkred(_("success")), blue("@"),)
+                mytxt += red(entropy.tools.spliturl(best_mirror)[1])
+                self._entropy.output(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = red("   ## ")
+                )
+            mytxt = " %s: %s%s%s" % (
+                blue(_("Aggregated transfer rate")),
+                bold(entropy.tools.bytes_into_human(data_transfer)),
+                darkred("/"),
+                darkblue(_("second")),
+            )
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
+
+        def show_download_error(down_list, rc):
+            for repo, fname, cksum, signatures in down_list:
+                best_mirror = get_best_mirror(repo)
+                mirrorcount = repo_uris[repo].index(best_mirror)+1
+                mytxt = "( mirror #%s ) " % (mirrorcount,)
+                mytxt += blue("%s: %s") % (
+                    _("Error downloading from"),
+                    red(entropy.tools.spliturl(best_mirror)[1]),
+                )
+                if rc == -1:
+                    mytxt += " - %s." % (_("data not available on this mirror"),)
+                elif rc == -2:
+                    mirror_status.add_failing_mirror(best_mirror, 1)
+                    mytxt += " - %s." % (_("wrong checksum"),)
+                elif rc == -3:
+                    mytxt += " - %s." % (_("not found"),)
+                elif rc == -4: # timeout!
+                    mytxt += " - %s." % (_("timeout error"),)
+                elif rc == -100:
+                    mytxt += " - %s." % (_("discarded download"),)
+                else:
+                    mirror_status.add_failing_mirror(best_mirror, 5)
+                    mytxt += " - %s." % (_("unknown reason"),)
+                self._entropy.output(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+
+        def remove_failing_mirrors(repos):
+            for repo in repos:
+                best_mirror = get_best_mirror(repo)
+                if remaining[repo]:
+                    remaining[repo].pop(0)
+
+        def check_remaining_mirror_failure(repos):
+            return [x for x in repos if not remaining.get(x)]
+
+        while True:
+
+            do_resume = True
+            timeout_try_count = 50
+            while True:
+
+                fetch_files_list = []
+                for repo, fname, cksum, signatures in my_download_list:
+                    best_mirror = get_best_mirror(repo)
+                    # set working mirror, dont care if its None
+                    mirror_status.set_working_mirror(best_mirror)
+                    if best_mirror is not None:
+                        mirror_fail_check(repo, best_mirror)
+                        best_mirror = get_best_mirror(repo)
+                    if best_mirror is None:
+                        # at least one package failed to download
+                        # properly, give up with everything
+                        return 3, my_download_list
+                    myuri = os.path.join(best_mirror, fname)
+                    pkg_path = os.path.join(etpConst['entropyworkdir'],
+                        fname)
+                    fetch_files_list.append((myuri, pkg_path, cksum,))
+
+                try:
+
+                    show_download_summary(my_download_list)
+                    rc, failed_downloads, data_transfer = self.__fetch_files(
+                        fetch_files_list, checksum = checksum,
+                        resume = do_resume
+                    )
+                    if rc == 0:
+                        show_successful_download(my_download_list,
+                            data_transfer)
+                        return 0, []
+
+                    # update my_download_list
+                    my_download_list = update_download_list(my_download_list,
+                        failed_downloads)
+                    if rc not in (-3, -4, -100,) and failed_downloads and \
+                        do_resume:
+                        # disable resume
+                        do_resume = False
+                        continue
+                    else:
+                        show_download_error(my_download_list, rc)
+                        if rc == -4: # timeout
+                            timeout_try_count -= 1
+                            if timeout_try_count > 0:
+                                continue
+                        elif rc == -100: # user discarded fetch
+                            return 1, []
+                        myrepos = set([x[0] for x in my_download_list])
+                        remove_failing_mirrors(myrepos)
+                        # make sure we don't have nasty issues
+                        remaining_failure = check_remaining_mirror_failure(
+                            myrepos)
+                        if remaining_failure:
+                            return 3, my_download_list
+                        break
+                except KeyboardInterrupt:
+                    return 1, []
+        return 0, []
+
+    def __fetch_file(self, url, save_path, digest = None, resume = True):
+
+        def do_stfu_rm(xpath):
+            try:
+                os.remove(xpath)
+            except OSError:
+                pass
+
+        fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
+        filename = os.path.basename(url)
+        filepath_dir = os.path.dirname(save_path)
+        # symlink support
+        if not os.path.isdir(os.path.realpath(filepath_dir)):
+            try:
+                os.remove(filepath_dir)
+            except OSError:
+                pass
+            os.makedirs(filepath_dir, 0o755)
+
+        existed_before = False
+        if os.path.isfile(save_path) and os.path.exists(save_path):
+            existed_before = True
+
+        # load class
+        fetch_intf = self._entropy.urlFetcher(url, save_path, resume = resume,
+            abort_check_func = fetch_abort_function,
+            OutputInterface = self._entropy)
+
+        # start to download
+        data_transfer = 0
+        resumed = False
+        try:
+            fetch_checksum = fetch_intf.download()
+            data_transfer = fetch_intf.get_transfer_rate()
+            resumed = fetch_intf.is_resumed()
+        except KeyboardInterrupt:
+            return -100, data_transfer, resumed
+        except NameError:
+            raise
+        except:
+            if etpUi['debug']:
+                self._entropy.output(
+                    "fetch_file:",
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                entropy.tools.print_traceback()
+            if (not existed_before) or (not resume):
+                do_stfu_rm(save_path)
+            return -1, data_transfer, resumed
+        if fetch_checksum == "-3":
+            # not found
+            return -3, data_transfer, resumed
+        elif fetch_checksum == "-4":
+            # timeout
+            return -4, data_transfer, resumed
+
+        del fetch_intf
+
+        if digest and (fetch_checksum != digest):
+            # not properly downloaded
+            if (not existed_before) or (not resume):
+                do_stfu_rm(save_path)
+            return -2, data_transfer, resumed
+
+        return 0, data_transfer, resumed
+
+
+    def _download_package(self, repository, download, save_path,
+        digest = False):
+
+        avail_data = self._system_settings['repositories']['available']
+        uris = avail_data[repository]['packages'][::-1]
+        remaining = set(uris)
+        mirror_status = StatusInterface()
+
+        mirrorcount = 0
+        for uri in uris:
+
+            if not remaining:
+                # tried all the mirrors, quitting for error
+                mirror_status.set_working_mirror(None)
+                return 3
+
+            mirror_status.set_working_mirror(uri)
+            mirrorcount += 1
+            mirror_count_txt = "( mirror #%s ) " % (mirrorcount,)
+            url = uri + "/" + download
+
+            # check if uri is sane
+            if mirror_status.get_failing_mirror_status(uri) >= 30:
+                # ohohoh!
+                # set to 30 for convenience
+                mirror_status.set_failing_mirror_status(uri, 30)
+                mytxt = mirror_count_txt
+                mytxt += blue(" %s: ") % (_("Mirror"),)
+                mytxt += red(entropy.tools.spliturl(uri)[1])
+                mytxt += " - %s." % (_("maximum failure threshold reached"),)
+                self._entropy.output(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+
+                if mirror_status.get_failing_mirror_status(uri) == 30:
+                    # put to 75 then decrement by 4 so we
+                    # won't reach 30 anytime soon ahahaha
+                    mirror_status.add_failing_mirror(uri, 45)
+                elif mirror_status.get_failing_mirror_status(uri) > 31:
+                    # now decrement each time this point is reached,
+                    # if will be back < 30, then equo will try to use it again
+                    mirror_status.add_failing_mirror(uri, -4)
+                else:
+                    # put to 0 - reenable mirror, welcome back uri!
+                    mirror_status.set_failing_mirror_status(uri, 0)
+
+                remaining.discard(uri)
+                continue
+
+            do_resume = True
+            timeout_try_count = 50
+            while True:
+                try:
+                    mytxt = mirror_count_txt
+                    mytxt += blue("%s: ") % (_("Downloading from"),)
+                    mytxt += red(entropy.tools.spliturl(uri)[1])
+                    # now fetch the new one
+                    self._entropy.output(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = red("   ## ")
+                    )
+                    rc, data_transfer, resumed = self.__fetch_file(
+                        url,
+                        save_path,
+                        digest = digest,
+                        resume = do_resume
+                    )
+                    if rc == 0:
+                        mytxt = mirror_count_txt
+                        mytxt += "%s: " % (
+                            blue(_("Successfully downloaded from")),
+                        )
+                        mytxt += red(entropy.tools.spliturl(uri)[1])
+                        human_bytes = entropy.tools.bytes_into_human(
+                            data_transfer)
+                        mytxt += " %s %s/%s" % (_("at"),
+                            human_bytes, _("second"),)
+                        self._entropy.output(
+                            mytxt,
+                            importance = 1,
+                            type = "info",
+                            header = red("   ## ")
+                        )
+
+                        mirror_status.set_working_mirror(None)
+                        return 0
+                    elif resumed and (rc not in (-3, -4, -100,)):
+                        do_resume = False
+                        continue
+                    else:
+                        error_message = mirror_count_txt
+                        error_message += blue("%s: %s") % (
+                            _("Error downloading from"),
+                            red(entropy.tools.spliturl(uri)[1]),
+                        )
+                        # something bad happened
+                        if rc == -1:
+                            error_message += " - %s." % (
+                                _("file not available on this mirror"),)
+                        elif rc == -2:
+                            mirror_status.add_failing_mirror(uri, 1)
+                            error_message += " - %s." % (_("wrong checksum"),)
+                            # If file is fetched (with no resume) and its complete
+                            # better to enforce resume to False.
+                            if (data_transfer < 1) and do_resume:
+                                error_message += " %s." % (
+                                    _("Disabling resume"),)
+                                do_resume = False
+                                continue
+                        elif rc == -3:
+                            mirror_status.add_failing_mirror(uri, 3)
+                            error_message += " - %s." % (_("not found"),)
+                        elif rc == -4: # timeout!
+                            timeout_try_count -= 1
+                            if timeout_try_count > 0:
+                                error_message += " - %s." % (
+                                    _("timeout, retrying on this mirror"),)
+                            else:
+                                error_message += " - %s." % (
+                                    _("timeout, giving up"),)
+                        elif rc == -100:
+                            error_message += " - %s." % (
+                                _("discarded download"),)
+                        else:
+                            mirror_status.add_failing_mirror(uri, 5)
+                            error_message += " - %s." % (_("unknown reason"),)
+                        self._entropy.output(
+                            error_message,
+                            importance = 1,
+                            type = "warning",
+                            header = red("   ## ")
+                        )
+                        if rc == -4: # timeout
+                            if timeout_try_count > 0:
+                                continue
+                        elif rc == -100: # user discarded fetch
+                            mirror_status.set_working_mirror(None)
+                            return 1
+                        remaining.discard(uri)
+                        # make sure we don't have nasty issues
+                        if not remaining:
+                            mirror_status.set_working_mirror(None)
+                            return 3
+                        break
+                except KeyboardInterrupt:
+                    mirror_status.set_working_mirror(None)
+                    return 1
+
+        mirror_status.set_working_mirror(None)
+        return 0
 
     def _match_checksum(self, repository, checksum, download, signatures):
 
@@ -154,7 +627,7 @@ class Package:
         def do_compare_gpg(pkg_path, hash_val):
 
             try:
-                repo_sec = self.Entropy.RepositorySecurity()
+                repo_sec = self._entropy.RepositorySecurity()
             except RepositorySecurity.GPGServiceNotAvailable:
                 return None
 
@@ -184,7 +657,7 @@ class Package:
                 return True
 
             if err_msg:
-                self.Entropy.output(
+                self._entropy.output(
                     "%s: %s, %s" % (
                         darkred(_("Package signature verification error for")),
                         purple("GPG"),
@@ -215,7 +688,7 @@ class Package:
                     if hash_val is None:
                         continue
                     if hash_type not in enabled_hashes:
-                        self.Entropy.output(
+                        self._entropy.output(
                             "%s %s" % (
                                 purple(hash_type.upper()),
                                 darkgreen(_("disabled")),
@@ -230,7 +703,7 @@ class Package:
                     if cmp_func is None:
                         continue
 
-                    self.Entropy.output(
+                    self._entropy.output(
                         "%s: %s" % (blue(_("Checking package signature")),
                             purple(hash_type.upper()),),
                         importance = 0,
@@ -240,7 +713,7 @@ class Package:
                     )
                     valid = cmp_func(pkg_disk_path, hash_val)
                     if valid is None:
-                        self.Entropy.output(
+                        self._entropy.output(
                             "%s '%s' %s" % (
                                 darkred(_("Package signature verification")),
                                 purple(hash_type.upper()),
@@ -252,7 +725,7 @@ class Package:
                         )
                         continue
                     if not valid:
-                        self.Entropy.output(
+                        self._entropy.output(
                             "%s: %s %s" % (
                                 darkred(_("Package signature")),
                                 purple(hash_type.upper()),
@@ -263,7 +736,7 @@ class Package:
                             header = darkred("   ## ")
                         )
                         return 1
-                    self.Entropy.output(
+                    self._entropy.output(
                         "%s %s" % (
                             purple(hash_type.upper()),
                             darkgreen(_("matches")),
@@ -279,7 +752,7 @@ class Package:
 
         while dlcount <= 5:
 
-            self.Entropy.output(
+            self._entropy.output(
                 blue(_("Checking package checksum...")),
                 importance = 0,
                 type = "info",
@@ -291,7 +764,7 @@ class Package:
                 checksum = checksum)
             if dlcheck == 0:
                 basef = os.path.basename(download)
-                self.Entropy.output(
+                self._entropy.output(
                     "%s: %s" % (
                         blue(_("Package checksum matches")),
                         darkgreen(basef),
@@ -317,21 +790,20 @@ class Package:
                 mytxt = _("Checksum does not match. Download attempt #%s") % (
                     dlcount,
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     darkred(mytxt),
                     importance = 0,
                     type = "warning",
                     header = darkred("   ## ")
                 )
-                fetch = self.Entropy.fetch_file_on_mirrors( 
+                fetch = self._download_package( 
                     repository,
                     download,
                     pkg_disk_path,
-                    checksum,
-                    fetch_abort_function = self.fetch_abort_function,
+                    checksum
                 )
                 if fetch != 0:
-                    self.Entropy.output(
+                    self._entropy.output(
                         blue(_("Cannot properly fetch package! Quitting.")),
                         importance = 0,
                         type = "error",
@@ -347,7 +819,7 @@ class Package:
             mytxt = _("Cannot fetch package or checksum does not match")
             mytxt2 = _("Try to download latest repositories")
             for txt in (mytxt, mytxt2,):
-                self.Entropy.output(
+                self._entropy.output(
                     "%s." % (blue(txt),),
                     importance = 0,
                     type = "info",
@@ -371,13 +843,13 @@ class Package:
     def __unpack_package(self):
 
         if not self.pkgmeta['merge_from']:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Unpacking package: %s" % (self.pkgmeta['atom'],)
             )
         else:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Merging package: %s" % (self.pkgmeta['atom'],)
@@ -429,7 +901,7 @@ class Package:
                         catch_empty = True
                     )
                 except EOFError:
-                    self.Entropy.clientLog.log(
+                    self._entropy.clientLog.log(
                         "[Package]", etpConst['logging']['normal_loglevel_id'], 
                         "EOFError on " + self.pkgmeta['pkgpath']
                     )
@@ -437,7 +909,7 @@ class Package:
                 except:
                     # this will make devs to actually catch the
                     # right exception and prepare a fix
-                    self.Entropy.clientLog.log(
+                    self._entropy.clientLog.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "Raising Unicode/Pickling Error for " + \
@@ -469,17 +941,17 @@ class Package:
                     self.pkgmeta['imagedir'])
                 os._exit(0)
 
-        spm_class = self.Entropy.Spm_class()
+        spm_class = self._entropy.Spm_class()
         # call Spm unpack hook
-        return spm_class.entropy_install_unpack_hook(self.Entropy, self.pkgmeta)
+        return spm_class.entropy_install_unpack_hook(self._entropy, self.pkgmeta)
 
 
     def __configure_package(self):
 
         try:
-            Spm = self.Entropy.Spm()
+            Spm = self._entropy.Spm()
         except Exception as err:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -488,7 +960,7 @@ class Package:
             )
             return 1
 
-        self.Entropy.output(
+        self._entropy.output(
             "SPM: %s" % (brown(_("configuration phase")),),
             importance = 0,
             header = red("   ## ")
@@ -498,9 +970,9 @@ class Package:
 
     def __remove_package(self):
 
-        self.Entropy.clear_cache()
+        self._entropy.clear_cache()
 
-        self.Entropy.clientLog.log("[Package]",
+        self._entropy.clientLog.log("[Package]",
             etpConst['logging']['normal_loglevel_id'],
                 "Removing package: %s" % (self.pkgmeta['removeatom'],))
 
@@ -508,20 +980,20 @@ class Package:
             blue(_("Removing from Entropy")),
             red(self.pkgmeta['removeatom']),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
             header = red("   ## ")
         )
         automerge_metadata = \
-            self.Entropy.installed_repository().retrieveAutomergefiles(
+            self._entropy.installed_repository().retrieveAutomergefiles(
                 self.pkgmeta['removeidpackage'], get_dict = True
             )
         self.remove_installed_package(self.pkgmeta['removeidpackage'])
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
-        self.Entropy.installed_repository().commitChanges()
+        self._entropy.installed_repository().commitChanges()
 
         # if another package with the same atom is installed in
         # Entropy db, do not call SPM at all because it would cause
@@ -531,7 +1003,7 @@ class Package:
         # for other pkgs with same atom but different tag (which is an
         # entropy-only metadatum)
         test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
-        others_installed = self.Entropy.installed_repository().getIdpackages(test_atom)
+        others_installed = self._entropy.installed_repository().getIdpackages(test_atom)
 
         # It's obvious that clientdb cannot have more than one idpackage
         # featuring the same "atom" value, but still, let's be fault-tolerant.
@@ -562,7 +1034,7 @@ class Package:
         @param idpackage: Entropy Repository package identifier
         @type idpackage: int
         """
-        self.Entropy.installed_repository().removePackage(idpackage, do_commit = False,
+        self._entropy.installed_repository().removePackage(idpackage, do_commit = False,
             do_cleanup = False)
 
     def remove_content_from_system(self, idpackage, automerge_metadata = None):
@@ -580,8 +1052,8 @@ class Package:
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         sys_settings = self._system_settings
-        protect = self.Entropy.get_installed_package_config_protect(idpackage)
-        mask = self.Entropy.get_installed_package_config_protect(idpackage,
+        protect = self._entropy.get_installed_package_config_protect(idpackage)
+        mask = self._entropy.get_installed_package_config_protect(idpackage,
             mask = True)
 
         sys_set_plg_id = \
@@ -605,7 +1077,7 @@ class Package:
             # collision check
             if col_protect > 0:
 
-                if self.Entropy.installed_repository().isFileAvailable(item) \
+                if self._entropy.installed_repository().isFileAvailable(item) \
                     and os.path.isfile(sys_root_item):
 
                     # in this way we filter out directories
@@ -650,7 +1122,7 @@ class Package:
                             darkgreen(prot_msg),
                             blue(item),
                         )
-                        self.Entropy.output(
+                        self._entropy.output(
                             mytxt,
                             importance = 1,
                             type = "info",
@@ -661,7 +1133,7 @@ class Package:
 
             # Is file or directory a protected item?
             if protected:
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['verbose_loglevel_id'],
                     "[remove] Protecting config file: %s" % (sys_root_item,)
@@ -671,7 +1143,7 @@ class Package:
                     brown(_("Protecting config file")),
                     sys_root_item,
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -689,7 +1161,7 @@ class Package:
             except UnicodeEncodeError:
                 msg = _("This package contains a badly encoded file !!!")
                 mytxt = brown(msg)
-                self.Entropy.output(
+                self._entropy.output(
                     red("QA: ")+mytxt,
                     importance = 1,
                     type = "warning",
@@ -720,7 +1192,7 @@ class Package:
             try:
                 os.remove(sys_root_item)
             except OSError as err:
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "[remove] Unable to remove %s, error: %s" % (
@@ -740,7 +1212,7 @@ class Package:
 
 
         if colliding_path_messages:
-            self.Entropy.output(
+            self._entropy.output(
                 "%s:" % (_("Collision found during removal of"),),
                 importance = 1,
                 type = "warning",
@@ -748,13 +1220,13 @@ class Package:
             )
 
         for path in sorted(colliding_path_messages):
-            self.Entropy.output(
+            self._entropy.output(
                 purple(path),
                 importance = 0,
                 type = "warning",
                 header = red("   ## ")
             )
-            self.Entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
+            self._entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
                 "Collision found during removal of %s - cannot overwrite" % (
                     path,)
             )
@@ -814,9 +1286,9 @@ class Package:
     def __install_package(self):
 
         # clear on-disk cache
-        self.Entropy.clear_cache()
+        self._entropy.clear_cache()
 
-        self.Entropy.clientLog.log(
+        self._entropy.clientLog.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Installing package: %s" % (self.pkgmeta['atom'],)
@@ -825,7 +1297,7 @@ class Package:
         already_protected_config_files = {}
         if self.pkgmeta['removeidpackage'] != -1:
             already_protected_config_files = \
-                self.Entropy.installed_repository().retrieveAutomergefiles(
+                self._entropy.installed_repository().retrieveAutomergefiles(
                     self.pkgmeta['removeidpackage'], get_dict = True
                 )
 
@@ -841,7 +1313,7 @@ class Package:
             blue(_("Updating database")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -853,13 +1325,13 @@ class Package:
         if self.pkgmeta['removeidpackage'] != -1:
 
             # doing a diff removal
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Remove old package: %s" % (self.pkgmeta['removeatom'],)
             )
 
-            self.Entropy.output(
+            self._entropy.output(
                 blue(_("Cleaning previously installed information...")),
                 importance = 1,
                 type = "info",
@@ -886,9 +1358,9 @@ class Package:
         @rtype: int
         """
         try:
-            Spm = self.Entropy.Spm()
+            Spm = self._entropy.Spm()
         except Exception as err:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -897,7 +1369,7 @@ class Package:
             )
             return -1
 
-        self.Entropy.clientLog.log(
+        self._entropy.clientLog.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Installing new SPM entry: %s" % (self.pkgmeta['atom'],)
@@ -905,7 +1377,7 @@ class Package:
 
         spm_uid = Spm.add_installed_package(self.pkgmeta)
         if spm_uid != -1:
-            self.Entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
+            self._entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
 
         return 0
 
@@ -926,9 +1398,9 @@ class Package:
         @rtype: int
         """
         try:
-            Spm = self.Entropy.Spm()
+            Spm = self._entropy.Spm()
         except Exception as err:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -942,7 +1414,7 @@ class Package:
             spm_uid = Spm.assign_uid_to_installed_package(spm_package)
         except (SPMError, KeyError,):
             # installed package not available, we must ignore it
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Spm uid not available for Spm package: %s (pkg not avail?)" % (
@@ -952,7 +1424,7 @@ class Package:
             return 0
 
         if spm_uid != -1:
-            self.Entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
+            self._entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
 
         return 0
 
@@ -966,9 +1438,9 @@ class Package:
         @rtype: int
         """
         try:
-            Spm = self.Entropy.Spm()
+            Spm = self._entropy.Spm()
         except Exception as err:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -977,7 +1449,7 @@ class Package:
             )
             return -1
 
-        self.Entropy.clientLog.log(
+        self._entropy.clientLog.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Removing from SPM: %s" % (self.pkgmeta['removeatom'],)
@@ -994,7 +1466,7 @@ class Package:
 
         # fetch info
         smart_pkg = self.pkgmeta['smartpackage']
-        dbconn = self.Entropy.open_repository(self.pkgmeta['repository'])
+        dbconn = self._entropy.open_repository(self.pkgmeta['repository'])
 
         if smart_pkg or self.pkgmeta['merge_from']:
 
@@ -1003,7 +1475,7 @@ class Package:
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
-                    self.Entropy.installed_repository().contentDiff(
+                    self._entropy.installed_repository().contentDiff(
                         self.pkgmeta['removeidpackage'],
                         dbconn,
                         self.pkgmeta['idpackage']
@@ -1021,7 +1493,7 @@ class Package:
             # skipChecks = False : creating missing tables is unwanted,
             # and also no foreign keys update
             # readOnly = True: no need to open in write mode
-            pkg_dbconn = self.Entropy.open_generic_database(
+            pkg_dbconn = self._entropy.open_generic_database(
                 self.pkgmeta['pkgdbpath'], skipChecks = True,
                 indexing_override = False, readOnly = True,
                 xcache = False)
@@ -1039,7 +1511,7 @@ class Package:
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
-                    self.Entropy.installed_repository().contentDiff(
+                    self._entropy.installed_repository().contentDiff(
                         self.pkgmeta['removeidpackage'],
                         pkg_dbconn,
                         pkg_idpackage
@@ -1069,34 +1541,34 @@ class Package:
         if "changelog" in data:
             del data['changelog']
 
-        idpackage, rev, x = self.Entropy.installed_repository().handlePackage(
+        idpackage, rev, x = self._entropy.installed_repository().handlePackage(
             data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
         ctime = time.time()
-        self.Entropy.installed_repository().setCreationDate(idpackage, str(ctime))
+        self._entropy.installed_repository().setCreationDate(idpackage, str(ctime))
 
         # TODO: remove this in future, drop changelog table
-        self.Entropy.installed_repository().dropChangelog()
+        self._entropy.installed_repository().dropChangelog()
 
         # add idpk to the installedtable
-        self.Entropy.installed_repository().dropInstalledPackageFromStore(idpackage)
-        self.Entropy.installed_repository().storeInstalledPackage(idpackage,
+        self._entropy.installed_repository().dropInstalledPackageFromStore(idpackage)
+        self._entropy.installed_repository().storeInstalledPackage(idpackage,
             self.pkgmeta['repository'], self.pkgmeta['install_source'])
 
         automerge_data = self.pkgmeta.get('configprotect_data')
         if automerge_data:
-            self.Entropy.installed_repository().insertAutomergefiles(idpackage,
+            self._entropy.installed_repository().insertAutomergefiles(idpackage,
                 automerge_data)
 
         # clear depends table, this will make clientdb dependstable to be
         # regenerated during the next request (retrieveReverseDependencies)
-        self.Entropy.installed_repository().taintReverseDependenciesMetadata()
+        self._entropy.installed_repository().taintReverseDependenciesMetadata()
         return idpackage
 
     def __fill_image_dir(self, mergeFrom, image_dir):
 
-        dbconn = self.Entropy.open_repository(self.pkgmeta['repository'])
+        dbconn = self._entropy.open_repository(self.pkgmeta['repository'])
         # this is triggered by merge_from pkgmeta metadata
         # even if repositories are allowed to not have content
         # metadata, in this particular case, it is mandatory
@@ -1152,10 +1624,10 @@ class Package:
     def move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
-        protect = self.Entropy.get_package_match_config_protect(
-            self.matched_atom)
-        mask = self.Entropy.get_package_match_config_protect(
-            self.matched_atom, mask = True)
+        protect = self._entropy.get_package_match_config_protect(
+            self._package_match)
+        mask = self._entropy.get_package_match_config_protect(
+            self._package_match, mask = True)
 
         # support for unit testing settings
         sys_root = self.pkgmeta.get('unittest_root', '') + \
@@ -1185,7 +1657,7 @@ class Package:
             # if our directory is a file on the live system
             elif os.path.isfile(rootdir): # really weird...!
 
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a file when it should be " \
@@ -1194,7 +1666,7 @@ class Package:
                 mytxt = darkred(_("%s is a file when should be a " \
                 "directory !! Removing in 20 seconds...") % (rootdir,))
 
-                self.Entropy.output(
+                self._entropy.output(
                     red("QA: ")+mytxt,
                     importance = 1,
                     type = "warning",
@@ -1208,7 +1680,7 @@ class Package:
                 # if our live system features a directory instead of
                 # a symlink, we should consider removing the directory
                 if not os.path.islink(rootdir) and os.path.isdir(rootdir):
-                    self.Entropy.clientLog.log(
+                    self._entropy.clientLog.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! %s is a directory when it should be " \
@@ -1221,7 +1693,7 @@ class Package:
                     )
                     mytxt2 = _("Removing in 20 seconds !!")
                     for txt in (mytxt, mytxt2,):
-                        self.Entropy.output(
+                        self._entropy.output(
                             darkred("QA: ") + darkred(txt),
                             importance = 1,
                             type = "warning",
@@ -1234,7 +1706,7 @@ class Package:
                     try:
                         shutil.rmtree(rootdir, True)
                     except (shutil.Error, OSError,) as err:
-                        self.Entropy.clientLog.log(
+                        self._entropy.clientLog.log(
                             "[Package]",
                             etpConst['logging']['normal_loglevel_id'],
                             "WARNING!!! Failed to rm %s " \
@@ -1307,7 +1779,7 @@ class Package:
                     self.pkgmeta['configprotect_data'].append(
                         (prot_old_tofile, prot_md5,))
                 except (IOError,) as err:
-                    self.Entropy.clientLog.log(
+                    self._entropy.clientLog.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to get md5 of %s " \
@@ -1341,7 +1813,7 @@ class Package:
                             darkgreen(msg),
                             blue(pre_tofile),
                         )
-                        self.Entropy.output(
+                        self._entropy.output(
                             mytxt,
                             importance = 1,
                             type = "info",
@@ -1359,7 +1831,7 @@ class Package:
             except RuntimeError:
                 # circular symlink, fuck!
                 # really weird...!
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a circular symlink !!!" % (fromfile,)
@@ -1368,7 +1840,7 @@ class Package:
                     _("Circular symlink issue"),
                     const_convert_to_unicode(fromfile),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     darkred("QA: ") + darkred(mytxt),
                     importance = 1,
                     type = "warning",
@@ -1381,7 +1853,7 @@ class Package:
             except RuntimeError:
                 # circular symlink, fuck!
                 # really weird...!
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a circular symlink !!!" % (tofile,)
@@ -1390,7 +1862,7 @@ class Package:
                     _("Circular symlink issue"),
                     const_convert_to_unicode(tofile),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     darkred("QA: ") + darkred(mytxt),
                     importance = 1,
                     type = "warning",
@@ -1406,7 +1878,7 @@ class Package:
                     # try to cope...
                     os.remove(tofile)
                 except (OSError, IOError,) as err:
-                    self.Entropy.clientLog.log(
+                    self._entropy.clientLog.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to cope to oddity of %s " \
@@ -1419,7 +1891,7 @@ class Package:
             if os.path.isdir(tofile) and not os.path.islink(tofile):
 
                 # really weird...!
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a directory when it should " \
@@ -1432,7 +1904,7 @@ class Package:
                 )
                 mytxt2 = _("Removing in 20 seconds !!")
                 for txt in (mytxt, mytxt2,):
-                    self.Entropy.output(
+                    self._entropy.output(
                         darkred("QA: ") + darkred(txt),
                         importance = 1,
                         type = "warning",
@@ -1442,7 +1914,7 @@ class Package:
                 try:
                     shutil.rmtree(tofile, True)
                 except (shutil.Error, IOError,) as err:
-                    self.Entropy.clientLog.log(
+                    self._entropy.clientLog.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to cope to oddity of %s " \
@@ -1461,7 +1933,7 @@ class Package:
                 if err.errno not in (errno.ENOENT, errno.EACCES,):
                     raise
 
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Error during file move" \
@@ -1474,7 +1946,7 @@ class Package:
                 done = True
 
             if not done:
-                self.Entropy.clientLog.log(
+                self._entropy.clientLog.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Error during file move" \
@@ -1486,7 +1958,7 @@ class Package:
                     const_convert_to_unicode(tofile),
                     _("please report"),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     red("QA: ")+darkred(mytxt),
                     importance = 1,
                     type = "warning",
@@ -1500,7 +1972,7 @@ class Package:
 
             if protected:
                 # add to disk cache
-                self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
+                self._entropy.FileUpdates.add(tofile, quiet = True)
 
             return 0
 
@@ -1675,7 +2147,7 @@ class Package:
 
         # check if protection is disabled for this element
         if tofile in misc_settings['configprotectskip']:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Skipping config file installation/removal, " \
@@ -1686,7 +2158,7 @@ class Package:
                     _("Skipping file installation/removal"),
                     tofile,
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -1720,13 +2192,13 @@ class Package:
                 os.path.basename(oldtofile)[10:])
 
         if not do_quiet:
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Protecting config file: %s" % (oldtofile,)
             )
             mytxt = red("%s: %s") % (_("Protecting config file"), oldtofile,)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1738,7 +2210,7 @@ class Package:
 
     def _handle_install_collision_protect(self, tofile, todbfile):
 
-        avail = self.Entropy.installed_repository().isFileAvailable(todbfile,
+        avail = self._entropy.installed_repository().isFileAvailable(todbfile,
             get_id = True)
 
         if (self.pkgmeta['removeidpackage'] not in avail) and avail:
@@ -1747,13 +2219,13 @@ class Package:
                 blue(tofile),
                 darkred(_("cannot overwrite")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 red("QA: ")+mytxt,
                 importance = 1,
                 type = "warning",
                 header = darkred("   ## ")
             )
-            self.Entropy.clientLog.log(
+            self._entropy.clientLog.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "WARNING!!! Collision found during install " \
@@ -1807,33 +2279,31 @@ class Package:
 
             mytxt = "%s: %s" % (blue(_("Downloading")), brown(url),)
             # now fetch the new one
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
                 header = red("   ## ")
             )
 
-            rc, data_transfer, resumed = self.Entropy._fetch_file(
+            rc, data_transfer, resumed = self.__fetch_file(
                 url,
                 dest_file,
-                None,
-                None,
-                False,
-                fetch_file_abort_function = self.fetch_abort_function
+                digest = None,
+                resume = False
             )
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
                 mytxt += red(entropy.tools.spliturl(url)[1])
                 human_bytes = entropy.tools.bytes_into_human(data_transfer)
                 mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     importance = 1,
                     type = "info",
                     header = red("   ## ")
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     "%s: %s" % (blue(_("Local path")), brown(dest_file),),
                     importance = 1,
                     type = "info",
@@ -1855,7 +2325,7 @@ class Package:
                     error_message += " - %s." % (_("discarded download"),)
                 else:
                     error_message += " - %s: %s" % (_("unknown reason"), rc,)
-                self.Entropy.output(
+                self._entropy.output(
                     error_message,
                     importance = 1,
                     type = "warning",
@@ -1872,7 +2342,7 @@ class Package:
 
         mytxt = "%s: %s" % (blue(_("Downloading archive")),
             red(os.path.basename(self.pkgmeta['download'])),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1883,12 +2353,11 @@ class Package:
         rc = 0
         if not self.pkgmeta['verified']:
 
-            rc = self.Entropy.fetch_file_on_mirrors(
+            rc = self._download_package(
                 self.pkgmeta['repository'],
                 self.pkgmeta['download'],
                 pkg_disk_path,
-                self.pkgmeta['checksum'],
-                fetch_abort_function = self.fetch_abort_function
+                self.pkgmeta['checksum']
             )
 
         if rc == 0:
@@ -1899,7 +2368,7 @@ class Package:
             blue(_("Error")),
             rc,
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "error",
@@ -1918,16 +2387,15 @@ class Package:
             _("archives"),
         )
 
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
             header = red("   ## ")
         )
-        rc, err_list = self.Entropy.fetch_files_on_mirrors(
+        rc, err_list = self._download_packages(
             self.pkgmeta['multi_fetch_list'],
-            self.pkgmeta['checksum'],
-            fetch_abort_function = self.fetch_abort_function
+            self.pkgmeta['checksum']
         )
 
         if rc == 0:
@@ -1937,13 +2405,13 @@ class Package:
         mytxt2 = _("Try to update your repositories and retry")
         mytxt3 = "%s: %s" % (brown(_("Error")), bold(str(rc)),)
         for txt in (mytxt, mytxt2,):
-            self.Entropy.output(
+            self._entropy.output(
                 "%s." % (darkred(txt),),
                 importance = 0,
                 type = "info",
                 header = red("   ## ")
             )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt3,
             importance = 0,
             type = "info",
@@ -1951,7 +2419,7 @@ class Package:
         )
 
         for repo, fname, cksum, signatures in err_list:
-            self.Entropy.output(
+            self._entropy.output(
                 "[%s|%s] %s" % (blue(repo), darkgreen(cksum), darkred(fname),),
                 importance = 1,
                 type = "error",
@@ -1961,7 +2429,7 @@ class Package:
         return rc
 
     def fetch_not_available_step(self):
-        self.Entropy.output(
+        self._entropy.output(
             blue(_("Package cannot be downloaded, unknown error.")),
             importance = 1,
             type = "info",
@@ -1970,7 +2438,7 @@ class Package:
         return 0
 
     def vanished_step(self):
-        self.Entropy.output(
+        self._entropy.output(
             blue(_("Installed package in queue vanished, skipping.")),
             importance = 1,
             type = "info",
@@ -1996,7 +2464,7 @@ class Package:
                 blue(_("Unpacking package")),
                 red(os.path.basename(self.pkgmeta['download'])),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -2007,7 +2475,7 @@ class Package:
                 blue(_("Merging package")),
                 red(os.path.basename(self.pkgmeta['atom'])),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -2029,7 +2497,7 @@ class Package:
                     blue(_("Error")),
                     rc,
                 )
-            self.Entropy.output(
+            self._entropy.output(
                 errormsg,
                 importance = 1,
                 type = "error",
@@ -2043,7 +2511,7 @@ class Package:
             blue(_("Installing package")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2051,7 +2519,7 @@ class Package:
         )
         if self.pkgmeta.get('description'):
             mytxt = "[%s]" % (purple(self.pkgmeta.get('description')),)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -2066,7 +2534,7 @@ class Package:
                 blue(_("Error")),
                 rc,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -2080,7 +2548,7 @@ class Package:
             blue(_("Removing data")),
             red(self.pkgmeta['removeatom']),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2095,7 +2563,7 @@ class Package:
                 blue(_("Error")),
                 rc,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -2109,7 +2577,7 @@ class Package:
             blue(_("Cleaning")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2121,14 +2589,14 @@ class Package:
 
     def logmessages_step(self):
         for msg in self.pkgmeta['messages']:
-            self.Entropy.clientLog.write(">>>  "+msg)
+            self._entropy.clientLog.write(">>>  "+msg)
         return 0
 
     def postinstall_step(self):
         self.error_on_not_prepared()
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
-            trigger = self.Entropy.Triggers('postinstall', pkgdata, self.action)
+            trigger = self._entropy.Triggers('postinstall', pkgdata, self._action)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -2141,15 +2609,15 @@ class Package:
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
 
-            trigger = self.Entropy.Triggers('preinstall', pkgdata, self.action)
+            trigger = self._entropy.Triggers('preinstall', pkgdata, self._action)
             do = trigger.prepare()
             if self.pkgmeta.get("diffremoval") and do:
                 # diffremoval is true only when the
                 # removal is triggered by a package install
                 remdata = self.pkgmeta['triggers'].get('remove')
                 if remdata:
-                    r_trigger = self.Entropy.Triggers('preremove', remdata,
-                        self.action)
+                    r_trigger = self._entropy.Triggers('preremove', remdata,
+                        self._action)
                     r_trigger.prepare()
                     r_trigger.triggers = [x for x in trigger.triggers if x \
                         not in r_trigger.triggers]
@@ -2166,7 +2634,7 @@ class Package:
         self.error_on_not_prepared()
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
-            trigger = self.Entropy.Triggers('preremove', remdata, self.action)
+            trigger = self._entropy.Triggers('preremove', remdata, self._action)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -2179,7 +2647,7 @@ class Package:
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
 
-            trigger = self.Entropy.Triggers('postremove', remdata, self.action)
+            trigger = self._entropy.Triggers('postremove', remdata, self._action)
             do = trigger.prepare()
             if self.pkgmeta['diffremoval'] and \
                 (self.pkgmeta.get("atom") is not None) and do:
@@ -2187,8 +2655,8 @@ class Package:
                 # action is triggered by pkgs install
                 pkgdata = self.pkgmeta['triggers'].get('install')
                 if pkgdata:
-                    i_trigger = self.Entropy.Triggers('postinstall', pkgdata,
-                        self.action)
+                    i_trigger = self._entropy.Triggers('postinstall', pkgdata,
+                        self._action)
                     i_trigger.prepare()
                     i_trigger.triggers = [x for x in trigger.triggers if x \
                         not in i_trigger.triggers]
@@ -2205,14 +2673,14 @@ class Package:
         self.error_on_not_prepared()
 
         for idpackage in self.pkgmeta['conflicts']:
-            if not self.Entropy.installed_repository().isIdpackageAvailable(idpackage):
+            if not self._entropy.installed_repository().isIdpackageAvailable(idpackage):
                 continue
 
-            pkg = self.Entropy.Package()
+            pkg = self._entropy.Package()
             pkg.prepare((idpackage,), "remove_conflict",
                 self.pkgmeta['remove_metaopts'])
 
-            rc = pkg.run(xterm_header = self.xterm_title)
+            rc = pkg.run(xterm_header = self._xterm_title)
             pkg.kill()
             if rc != 0:
                 return rc
@@ -2226,7 +2694,7 @@ class Package:
             blue(_("Configuring package")),
             red(self.pkgmeta['atom']),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2241,13 +2709,13 @@ class Package:
                 blue(_("Error")),
                 conf_rc,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 darkred(mytxt),
                 importance = 1,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt2,
                 importance = 1,
                 type = "error",
@@ -2261,13 +2729,13 @@ class Package:
                 blue(_("Error")),
                 conf_rc,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 darkred(mytxt),
                 importance = 1,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt2,
                 importance = 1,
                 type = "error",
@@ -2281,134 +2749,134 @@ class Package:
             xterm_header = ""
 
         if 'remove_installed_vanished' in self.pkgmeta:
-            self.xterm_title += ' %s' % (_("Installed package vanished"),)
-            self.Entropy.set_title(self.xterm_title)
+            self._xterm_title += ' %s' % (_("Installed package vanished"),)
+            self._entropy.set_title(self._xterm_title)
             rc = self.vanished_step()
             return rc
 
         if 'fetch_not_available' in self.pkgmeta:
-            self.xterm_title += ' %s' % (_("Fetch not available"),)
-            self.Entropy.set_title(self.xterm_title)
+            self._xterm_title += ' %s' % (_("Fetch not available"),)
+            self._entropy.set_title(self._xterm_title)
             rc = self.fetch_not_available_step()
             return rc
 
         def do_fetch():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Fetching"),
                 os.path.basename(self.pkgmeta['download']),
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.fetch_step()
 
         def do_multi_fetch():
-            self.xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
+            self._xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
                 len(self.pkgmeta['multi_fetch_list']), _("packages"),)
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.multi_fetch_step()
 
         def do_sources_fetch():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Fetching sources"),
                 os.path.basename(self.pkgmeta['atom']),)
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.sources_fetch_step()
 
         def do_checksum():
-            self.xterm_title += ' %s: %s' % (_("Verifying"),
+            self._xterm_title += ' %s: %s' % (_("Verifying"),
                 os.path.basename(self.pkgmeta['download']),)
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.checksum_step()
 
         def do_multi_checksum():
-            self.xterm_title += ' %s: %s %s' % (_("Multi Verification"),
+            self._xterm_title += ' %s: %s %s' % (_("Multi Verification"),
                 len(self.pkgmeta['multi_checksum_list']), _("packages"),)
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.multi_checksum_step()
 
         def do_unpack():
             if not self.pkgmeta['merge_from']:
                 mytxt = _("Unpacking")
-                self.xterm_title += ' %s: %s' % (
+                self._xterm_title += ' %s: %s' % (
                     mytxt,
                     os.path.basename(self.pkgmeta['download']),
                 )
             else:
                 mytxt = _("Merging")
-                self.xterm_title += ' %s: %s' % (
+                self._xterm_title += ' %s: %s' % (
                     mytxt,
                     os.path.basename(self.pkgmeta['atom']),
                 )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.unpack_step()
 
         def do_remove_conflicts():
             return self.removeconflict_step()
 
         def do_install():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Installing"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.install_step()
 
         def do_remove():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Removing"),
                 self.pkgmeta['removeatom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.remove_step()
 
         def do_logmessages():
             return self.logmessages_step()
 
         def do_cleanup():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Cleaning"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.cleanup_step()
 
         def do_postinstall():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Postinstall"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.postinstall_step()
 
         def do_preinstall():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Preinstall"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.preinstall_step()
 
         def do_preremove():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Preremove"),
                 self.pkgmeta['removeatom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.preremove_step()
 
         def do_postremove():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Postremove"),
                 self.pkgmeta['removeatom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.postremove_step()
 
         def do_config():
-            self.xterm_title += ' %s: %s' % (
+            self._xterm_title += ' %s: %s' % (
                 _("Configuring"),
                 self.pkgmeta['atom'],
             )
-            self.Entropy.set_title(self.xterm_title)
+            self._entropy.set_title(self._xterm_title)
             return self.config_step()
 
         steps_data = {
@@ -2432,7 +2900,7 @@ class Package:
 
         rc = 0
         for step in self.pkgmeta['steps']:
-            self.xterm_title = xterm_header
+            self._xterm_title = xterm_header
             rc = steps_data.get(step)()
             if rc != 0:
                 break
@@ -2442,18 +2910,18 @@ class Package:
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
-        gave_up = self.Entropy.lock_check(self.Entropy.resources_check_lock)
+        gave_up = self._entropy.lock_check(self._entropy.resources_check_lock)
         if gave_up:
             return 20
 
-        locked = self.Entropy.application_lock_check()
+        locked = self._entropy.application_lock_check()
         if locked:
             return 21
 
         # lock
-        acquired = self.Entropy.resources_create_lock()
+        acquired = self._entropy.resources_create_lock()
         if not acquired:
-            self.Entropy.output(
+            self._entropy.output(
                 blue(_("Cannot acquire Entropy resources lock.")),
                 importance = 2,
                 type = "error",
@@ -2463,10 +2931,10 @@ class Package:
         try:
             rc = self.run_stepper(xterm_header)
         finally:
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
 
         if rc != 0:
-            self.Entropy.output(
+            self._entropy.output(
                 blue(_("An error occured. Action aborted.")),
                 importance = 2,
                 type = "error",
@@ -2479,8 +2947,8 @@ class Package:
 
         self.check_action_validity(action)
 
-        self.action = action
-        self.matched_atom = matched_atom
+        self._action = action
+        self._package_match = matched_atom
 
         if metaopts is None:
             metaopts = {}
@@ -2492,19 +2960,19 @@ class Package:
     def generate_metadata(self):
         self.error_on_prepared()
 
-        self.check_action_validity(self.action)
+        self.check_action_validity(self._action)
 
-        if self.action == "fetch":
+        if self._action == "fetch":
             self.__generate_fetch_metadata()
-        elif self.action == "multi_fetch":
+        elif self._action == "multi_fetch":
             self.__generate_multi_fetch_metadata()
-        elif self.action in ("remove", "remove_conflict"):
+        elif self._action in ("remove", "remove_conflict"):
             self.__generate_remove_metadata()
-        elif self.action == "install":
+        elif self._action == "install":
             self.__generate_install_metadata()
-        elif self.action == "source":
+        elif self._action == "source":
             self.__generate_fetch_metadata(sources = True)
-        elif self.action == "config":
+        elif self._action == "config":
             self.__generate_config_metadata()
 
         self.__prepared = True
@@ -2512,9 +2980,9 @@ class Package:
     def __generate_remove_metadata(self):
 
         self.pkgmeta.clear()
-        idpackage = self.matched_atom[0]
+        idpackage = self._package_match[0]
 
-        if not self.Entropy.installed_repository().isIdpackageAvailable(idpackage):
+        if not self._entropy.installed_repository().isIdpackageAvailable(idpackage):
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
 
@@ -2523,11 +2991,11 @@ class Package:
         self.pkgmeta['configprotect_data'] = []
         self.pkgmeta['triggers'] = {}
         self.pkgmeta['removeatom'] = \
-            self.Entropy.installed_repository().retrieveAtom(idpackage)
+            self._entropy.installed_repository().retrieveAtom(idpackage)
         self.pkgmeta['slot'] = \
-            self.Entropy.installed_repository().retrieveSlot(idpackage)
+            self._entropy.installed_repository().retrieveSlot(idpackage)
         self.pkgmeta['versiontag'] = \
-            self.Entropy.installed_repository().retrieveTag(idpackage)
+            self._entropy.installed_repository().retrieveTag(idpackage)
         self.pkgmeta['diffremoval'] = False
 
         remove_config = False
@@ -2536,13 +3004,13 @@ class Package:
         self.pkgmeta['removeconfig'] = remove_config
 
         self.pkgmeta['removecontent'] = \
-            self.Entropy.installed_repository().retrieveContent(idpackage)
+            self._entropy.installed_repository().retrieveContent(idpackage)
         self.pkgmeta['triggers']['remove'] = \
-            self.Entropy.installed_repository().getTriggerInfo(idpackage)
+            self._entropy.installed_repository().getTriggerInfo(idpackage)
         self.pkgmeta['triggers']['remove']['removecontent'] = \
             self.pkgmeta['removecontent']
 
-        pkg_license = self.Entropy.installed_repository().retrieveLicense(
+        pkg_license = self._entropy.installed_repository().retrieveLicense(
             idpackage)
         if pkg_license is None:
             pkg_license = set()
@@ -2559,20 +3027,20 @@ class Package:
 
     def __generate_config_metadata(self):
         self.pkgmeta.clear()
-        idpackage = self.matched_atom[0]
+        idpackage = self._package_match[0]
 
         self.pkgmeta['atom'] = \
-            self.Entropy.installed_repository().retrieveAtom(idpackage)
-        key, slot = self.Entropy.installed_repository().retrieveKeySlot(idpackage)
+            self._entropy.installed_repository().retrieveAtom(idpackage)
+        key, slot = self._entropy.installed_repository().retrieveKeySlot(idpackage)
         self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
         self.pkgmeta['version'] = \
-            self.Entropy.installed_repository().retrieveVersion(idpackage)
+            self._entropy.installed_repository().retrieveVersion(idpackage)
         self.pkgmeta['category'] = \
-            self.Entropy.installed_repository().retrieveCategory(idpackage)
+            self._entropy.installed_repository().retrieveCategory(idpackage)
         self.pkgmeta['name'] = \
-            self.Entropy.installed_repository().retrieveName(idpackage)
+            self._entropy.installed_repository().retrieveName(idpackage)
 
-        pkg_license = self.Entropy.installed_repository().retrieveLicense(
+        pkg_license = self._entropy.installed_repository().retrieveLicense(
             idpackage)
         if pkg_license is None:
             pkg_license = set()
@@ -2588,14 +3056,13 @@ class Package:
     def __generate_install_metadata(self):
         self.pkgmeta.clear()
 
-        idpackage, repository = self.matched_atom
+        idpackage, repository = self._package_match
         self.pkgmeta['idpackage'] = idpackage
         self.pkgmeta['repository'] = repository
 
         # fetch abort function
-        if 'fetch_abort_function' in self.metaopts:
-            self.fetch_abort_function = \
-                self.metaopts.pop('fetch_abort_function')
+        self.pkgmeta['fetch_abort_function'] = \
+            self.metaopts.get('fetch_abort_function')
 
         install_source = etpConst['install_sources']['unknown']
         meta_inst_source = self.metaopts.get('install_source', install_source)
@@ -2604,7 +3071,7 @@ class Package:
         self.pkgmeta['install_source'] = install_source
 
         self.pkgmeta['configprotect_data'] = []
-        dbconn = self.Entropy.open_repository(repository)
+        dbconn = self._entropy.open_repository(repository)
         self.pkgmeta['triggers'] = {}
         self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
         self.pkgmeta['slot'] = dbconn.retrieveSlot(idpackage)
@@ -2628,7 +3095,7 @@ class Package:
         }
         self.pkgmeta['signatures'] = signatures
         self.pkgmeta['conflicts'] = \
-            self.Entropy.get_match_conflicts(self.matched_atom)
+            self._entropy.get_match_conflicts(self._package_match)
 
         description = dbconn.retrieveDescription(idpackage)
         if description:
@@ -2657,7 +3124,7 @@ class Package:
         self.pkgmeta['removeconfig'] = removeConfig
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
-        inst_idpackage, inst_rc = self.Entropy.installed_repository().atomMatch(pkgkey,
+        inst_idpackage, inst_rc = self._entropy.installed_repository().atomMatch(pkgkey,
             matchSlot = self.pkgmeta['slot'])
 
         # filled later...
@@ -2665,10 +3132,10 @@ class Package:
         self.pkgmeta['removeidpackage'] = inst_idpackage
 
         if self.pkgmeta['removeidpackage'] != -1:
-            avail = self.Entropy.installed_repository().isIdpackageAvailable(
+            avail = self._entropy.installed_repository().isIdpackageAvailable(
                 self.pkgmeta['removeidpackage'])
             if avail:
-                inst_atom = self.Entropy.installed_repository().retrieveAtom(
+                inst_atom = self._entropy.installed_repository().retrieveAtom(
                     self.pkgmeta['removeidpackage'])
                 self.pkgmeta['removeatom'] = inst_atom
             else:
@@ -2715,18 +3182,18 @@ class Package:
             # differential remove list
             self.pkgmeta['diffremoval'] = True
             self.pkgmeta['removeatom'] = \
-                self.Entropy.installed_repository().retrieveAtom(
+                self._entropy.installed_repository().retrieveAtom(
                     self.pkgmeta['removeidpackage'])
 
             self.pkgmeta['triggers']['remove'] = \
-                self.Entropy.installed_repository().getTriggerInfo(
+                self._entropy.installed_repository().getTriggerInfo(
                     self.pkgmeta['removeidpackage']
                 )
             self.pkgmeta['triggers']['remove']['removecontent'] = \
                 self.pkgmeta['removecontent'] # pass reference, not copy! nevva!
 
             pkg_rm_license = \
-                self.Entropy.installed_repository().retrieveLicense(
+                self._entropy.installed_repository().retrieveLicense(
                     self.pkgmeta['removeidpackage'])
             if pkg_rm_license is None:
                 pkg_rm_license = set()
@@ -2766,20 +3233,19 @@ class Package:
         self.pkgmeta['triggers']['install']['imagedir'] = \
             self.pkgmeta['imagedir']
 
-        spm_class = self.Entropy.Spm_class()
+        spm_class = self._entropy.Spm_class()
         # call Spm setup hook
-        return spm_class.entropy_install_setup_hook(self.Entropy, self.pkgmeta)
+        return spm_class.entropy_install_setup_hook(self._entropy, self.pkgmeta)
 
     def __generate_fetch_metadata(self, sources = False):
         self.pkgmeta.clear()
 
-        idpackage, repository = self.matched_atom
+        idpackage, repository = self._package_match
         dochecksum = True
 
         # fetch abort function
-        if 'fetch_abort_function' in self.metaopts:
-            self.fetch_abort_function = \
-                self.metaopts.pop('fetch_abort_function')
+        self.pkgmeta['fetch_abort_function'] = \
+            self.metaopts.get('fetch_abort_function')
 
         if 'dochecksum' in self.metaopts:
             dochecksum = self.metaopts.get('dochecksum')
@@ -2795,7 +3261,7 @@ class Package:
 
         self.pkgmeta['repository'] = repository
         self.pkgmeta['idpackage'] = idpackage
-        dbconn = self.Entropy.open_repository(repository)
+        dbconn = self._entropy.open_repository(repository)
         self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
         if sources:
             self.pkgmeta['download'] = dbconn.retrieveSources(idpackage,
@@ -2868,25 +3334,24 @@ class Package:
     def __generate_multi_fetch_metadata(self):
         self.pkgmeta.clear()
 
-        if not isinstance(self.matched_atom, list):
+        if not isinstance(self._package_match, list):
             raise AttributeError(
                 "matched_atom must be a list of tuples, not %s" % (
-                    type(self.matched_atom,)
+                    type(self._package_match,)
                 )
             )
 
         dochecksum = True
 
         # meta options
-        if 'fetch_abort_function' in self.metaopts:
-            self.fetch_abort_function = \
-                self.metaopts.pop('fetch_abort_function')
+        self.pkgmeta['fetch_abort_function'] = \
+            self.metaopts.get('fetch_abort_function')
 
         if 'dochecksum' in self.metaopts:
             dochecksum = self.metaopts.get('dochecksum')
         self.pkgmeta['checksum'] = dochecksum
 
-        matches = self.matched_atom
+        matches = self._package_match
         self.pkgmeta['matches'] = matches
         self.pkgmeta['atoms'] = []
         self.pkgmeta['repository_atoms'] = {}
@@ -2898,7 +3363,7 @@ class Package:
             if repository.endswith(etpConst['packagesext']):
                 continue
 
-            dbconn = self.Entropy.open_repository(repository)
+            dbconn = self._entropy.open_repository(repository)
             myatom = dbconn.retrieveAtom(idpackage)
 
             # general purpose metadata

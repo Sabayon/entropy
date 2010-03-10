@@ -46,7 +46,6 @@ class UrlFetcher:
             speed_limit = \
                 self.__system_settings['repositories']['transfer_limit']
 
-        self.progress = None
         import entropy.tools as entropyTools
         import socket
         self.entropyTools, self.socket = entropyTools, socket

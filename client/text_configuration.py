@@ -72,7 +72,7 @@ def update(entropy_client, cmd = None):
     while True:
         print_info(brown(" @@ ") + \
             darkgreen("%s ..." % (_("Scanning filesystem"),)))
-        scandata = entropy_client.FileUpdates.scanfs(dcache = cache_status)
+        scandata = entropy_client.FileUpdates.scan(dcache = cache_status)
         if cache_status:
             for x in scandata:
                 print_info("("+blue(str(x))+") "+red(" %s: " % (_("file"),) ) + \
@@ -102,8 +102,8 @@ def update(entropy_client, cmd = None):
             # automerge files asking one by one
             for key in keys:
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    entropy_client.FileUpdates.remove_from_cache(key)
-                    scandata = entropy_client.FileUpdates.scandata
+                    entropy_client.FileUpdates.ignore(key)
+                    scandata = entropy_client.FileUpdates.scan()
                     continue
                 print_info(darkred("%s: " % (_("Configuration file"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['destination']))
@@ -119,8 +119,8 @@ def update(entropy_client, cmd = None):
                     brown(etpConst['systemroot'] + \
                     scandata[key]['destination']))
 
-                entropy_client.FileUpdates.merge_file(key)
-                scandata = entropy_client.FileUpdates.scandata
+                entropy_client.FileUpdates.merge(key)
+                scandata = entropy_client.FileUpdates.scan()
 
             break
 
@@ -129,8 +129,8 @@ def update(entropy_client, cmd = None):
 
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
 
-                    entropy_client.FileUpdates.remove_from_cache(key)
-                    scandata = entropy_client.FileUpdates.scandata
+                    entropy_client.FileUpdates.ignore(key)
+                    scandata = entropy_client.FileUpdates.scan()
 
                     continue
                 print_info(darkred("%s: " % (_("Configuration file"),) ) + \
@@ -143,8 +143,8 @@ def update(entropy_client, cmd = None):
                 print_info(darkred("%s " % (_("Discarding"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['source']))
 
-                entropy_client.FileUpdates.remove_file(key)
-                scandata = entropy_client.FileUpdates.scandata
+                entropy_client.FileUpdates.remove(key)
+                scandata = entropy_client.FileUpdates.scan()
 
             break
 
@@ -154,16 +154,16 @@ def update(entropy_client, cmd = None):
                 # do files exist?
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
 
-                    entropy_client.FileUpdates.remove_from_cache(cmd)
-                    scandata = entropy_client.FileUpdates.scandata
+                    entropy_client.FileUpdates.ignore(cmd)
+                    scandata = entropy_client.FileUpdates.scan()
 
                     continue
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                     print_info(darkred("%s: " % (_("Automerging file"),) ) + \
                         darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
-                    entropy_client.FileUpdates.merge_file(cmd)
-                    scandata = entropy_client.FileUpdates.scandata
+                    entropy_client.FileUpdates.merge(cmd)
+                    scandata = entropy_client.FileUpdates.scan()
 
                     continue
                 # end check
@@ -174,8 +174,8 @@ def update(entropy_client, cmd = None):
                     print_info(darkred("%s " % (_("Automerging file"),) ) + \
                         darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
-                    entropy_client.FileUpdates.merge_file(cmd)
-                    scandata = entropy_client.FileUpdates.scandata
+                    entropy_client.FileUpdates.merge(cmd)
+                    scandata = entropy_client.FileUpdates.scan()
 
                     continue
 
@@ -203,8 +203,8 @@ def update(entropy_client, cmd = None):
                             scandata[cmd]['destination']) + darkred(" %s " % (_("with"),) ) + \
                             darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
 
-                        entropy_client.FileUpdates.merge_file(cmd)
-                        scandata = entropy_client.FileUpdates.scandata
+                        entropy_client.FileUpdates.merge(cmd)
+                        scandata = entropy_client.FileUpdates.scan()
 
                         comeback = True
                         break
@@ -215,8 +215,8 @@ def update(entropy_client, cmd = None):
                             scandata[cmd]['source'])
                         )
 
-                        entropy_client.FileUpdates.remove_file(cmd)
-                        scandata = entropy_client.FileUpdates.scandata
+                        entropy_client.FileUpdates.remove(cmd)
+                        scandata = entropy_client.FileUpdates.scan()
 
                         comeback = True
                         break
@@ -243,8 +243,8 @@ def update(entropy_client, cmd = None):
                             print_info(darkred("%s " % (_("Automerging file"),) ) + \
                                 darkgreen(scandata[cmd]['source']))
 
-                            entropy_client.FileUpdates.merge_file(cmd)
-                            scandata = entropy_client.FileUpdates.scandata
+                            entropy_client.FileUpdates.merge(cmd)
+                            scandata = entropy_client.FileUpdates.scan()
 
                             comeback = True
                             break
@@ -334,7 +334,7 @@ def showdiff(fromfile, tofile):
 '''
 def confinfo(entropy_client):
     print_info(brown(" @@ ")+darkgreen(_("These are the files that would be updated:")))
-    data = entropy_client.FileUpdates.scanfs(dcache = False)
+    data = entropy_client.FileUpdates.scan(dcache = False)
     counter = 0
     for item in data:
         counter += 1

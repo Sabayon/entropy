@@ -275,7 +275,7 @@ def show_config_files_to_update(entropy_client):
     try:
         while True:
             try:
-                scandata = entropy_client.FileUpdates.scanfs(
+                scandata = entropy_client.FileUpdates.scan(
                     dcache = True, quiet = True)
                 break
             except KeyboardInterrupt:

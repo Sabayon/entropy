@@ -9,9 +9,4 @@
     B{Entropy Package Manager Client Interface}.
 
 """
-
-from entropy.client.interfaces.trigger import Trigger
-from entropy.client.interfaces.repository import Repository
 from entropy.client.interfaces.client import Client
-from entropy.client.interfaces.package import Package
-

@@ -14,8 +14,10 @@ import os
 import sys
 import shutil
 import subprocess
+from entropy.cache import EntropyCacher
+from entropy.core.settings.base import SystemSettings
 from entropy.client.interfaces import Client
-from entropy.exceptions import *
+from entropy.exceptions import CacheCorruptionError
 from entropy.const import etpConst, const_convert_to_rawstring
 from entropy.output import darkred, darkgreen, red, brown, blue
 from entropy.tools import getstatusoutput
@@ -25,76 +27,74 @@ class FileUpdates:
 
     CACHE_ID = "conf/scanfs"
 
-    def __init__(self, EquoInstance):
-        if not isinstance(EquoInstance, Client):
+    def __init__(self, entropy_client):
+        if not isinstance(entropy_client, Client):
             mytxt = "A valid Client instance or subclass is needed"
             raise AttributeError(mytxt)
-        self.Entropy = EquoInstance
-        from entropy.cache import EntropyCacher
-        from entropy.core.settings.base import SystemSettings
-        self.Cacher = EntropyCacher()
-        self.SystemSettings = SystemSettings()
-        self.scandata = None
+        self._entropy = entropy_client
+        self._settings = SystemSettings()
+        self._cacher = EntropyCacher()
+        self._scandata = None
 
-    def merge_file(self, key):
-        self.scanfs(dcache = True)
-        self.do_backup(key)
-        source_file = etpConst['systemroot'] + self.scandata[key]['source']
-        dest_file = etpConst['systemroot'] + self.scandata[key]['destination']
+    def merge(self, key):
+        self.scan(dcache = True)
+        self._backup(key)
+        source_file = etpConst['systemroot'] + self._scandata[key]['source']
+        dest_file = etpConst['systemroot'] + self._scandata[key]['destination']
         if os.access(source_file, os.R_OK):
             shutil.move(source_file, dest_file)
-        self.remove_from_cache(key)
+        self.remove(key)
 
-    def remove_file(self, key):
-        self.scanfs(dcache = True)
-        source_file = etpConst['systemroot'] + self.scandata[key]['source']
+    def remove(self, key):
+        self.scan(dcache = True)
+        source_file = etpConst['systemroot'] + self._scandata[key]['source']
         if os.path.isfile(source_file) and os.access(source_file, os.W_OK):
             os.remove(source_file)
-        self.remove_from_cache(key)
+        self.remove(key)
 
-    def do_backup(self, key):
-        self.scanfs(dcache = True)
+    def _backup(self, key):
+        self.scan(dcache = True)
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        files_backup = self.Entropy.SystemSettings[sys_set_plg_id]['misc']['filesbackup']
-        dest_file = etpConst['systemroot'] + self.scandata[key]['destination']
+        files_backup = self._settings[sys_set_plg_id]['misc']['filesbackup']
+        dest_file = etpConst['systemroot'] + self._scandata[key]['destination']
         if files_backup and os.path.isfile(dest_file):
             bcount = 0
             backupfile = etpConst['systemroot'] + \
-                os.path.dirname(self.scandata[key]['destination']) + \
+                os.path.dirname(self._scandata[key]['destination']) + \
                 "/._entropy_backup." + str(bcount) + "_" + \
-                os.path.basename(self.scandata[key]['destination'])
+                os.path.basename(self._scandata[key]['destination'])
             while os.path.lexists(backupfile):
                 bcount += 1
                 backupfile = etpConst['systemroot'] + \
-                os.path.dirname(self.scandata[key]['destination']) + \
+                os.path.dirname(self._scandata[key]['destination']) + \
                 "/._entropy_backup." + str(bcount) + "_" + \
-                os.path.basename(self.scandata[key]['destination'])
+                os.path.basename(self._scandata[key]['destination'])
             try:
                 shutil.copy2(dest_file, backupfile)
             except IOError:
                 pass
 
-    def scanfs(self, dcache = True, quiet = False):
+    def scan(self, dcache = True, quiet = False):
 
         if dcache:
 
-            if self.scandata != None:
-                return self.scandata
+            if self._scandata != None:
+                return self._scandata
 
             # can we load cache?
             try:
-                z = self.load_cache()
+                z = self._load_cache()
                 if z != None:
-                    self.scandata = z
-                    return self.scandata
+                    self._scandata = z
+                    return self._scandata
             except (CacheCorruptionError, KeyError, IOError, OSError,):
                 pass
 
         scandata = {}
         counter = 0
         name_cache = set()
-        client_conf_protect = self.Entropy.get_system_config_protect()
+        client_conf_protect = self._entropy.get_system_config_protect()
 
         for path in client_conf_protect:
 
@@ -135,11 +135,11 @@ class FileUpdates:
                             continue # skip, already done
                         name_cache.add(filepath)
 
-                        mydict = self.generate_dict(filepath)
+                        mydict = self._generate_dict(filepath)
                         if mydict['automerge']:
                             if not quiet:
                                 mytxt = _("Automerging file")
-                                self.Entropy.output(
+                                self._entropy.output(
                                     darkred("%s: %s") % (
                                         mytxt,
                                         darkgreen(etpConst['systemroot'] + mydict['source']),
@@ -160,7 +160,7 @@ class FileUpdates:
                                             blue("error"),
                                             e,
                                         )
-                                        self.Entropy.output(
+                                        self._entropy.output(
                                             mytxt,
                                             importance = 1,
                                             type = "warning"
@@ -172,7 +172,7 @@ class FileUpdates:
 
                         if not quiet:
                             try:
-                                self.Entropy.output(
+                                self._entropy.output(
                                     "("+blue(str(counter))+") " + \
                                     red(" file: ") + \
                                     os.path.dirname(filepath) + "/" + \
@@ -183,12 +183,12 @@ class FileUpdates:
                             except (UnicodeEncodeError, UnicodeDecodeError):
                                 pass # possible encoding issues
         # store data
-        self.Cacher.push(FileUpdates.CACHE_ID, scandata)
-        self.scandata = scandata.copy()
+        self._cacher.push(FileUpdates.CACHE_ID, scandata)
+        self._scandata = scandata.copy()
         return scandata
 
-    def load_cache(self):
-        sd = self.Cacher.pop(FileUpdates.CACHE_ID)
+    def _load_cache(self):
+        sd = self._cacher.pop(FileUpdates.CACHE_ID)
         if not isinstance(sd, dict):
             raise CacheCorruptionError("CacheCorruptionError")
         # quick test if data is reliable
@@ -209,15 +209,15 @@ class FileUpdates:
         except (KeyError, EOFError, IOError,):
             raise CacheCorruptionError("CacheCorruptionError")
 
-    def add_to_cache(self, filepath, quiet = False):
-        self.scanfs(dcache = True, quiet = quiet)
-        keys = list(self.scandata.keys())
-        try:
-            for key in keys:
-                if self.scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:
-                    del self.scandata[key]
-        except:
-            pass
+    def add(self, filepath, quiet = False):
+        self.scan(dcache = True, quiet = quiet)
+        keys = list(self._scandata.keys())
+        root_len = len(etpConst['systemroot'])
+        for key in keys:
+            if key not in self._scandata:
+                continue
+            if self._scandata[key]['source'] == filepath[root_len:]:
+                del self._scandata[key]
         # get next counter
         if keys:
             keys = sorted(keys)
@@ -225,20 +225,18 @@ class FileUpdates:
         else:
             index = 0
         index += 1
-        mydata = self.generate_dict(filepath)
-        self.scandata[index] = mydata.copy()
-        self.Cacher.push(FileUpdates.CACHE_ID, self.scandata)
+        mydata = self._generate_dict(filepath)
+        self._scandata[index] = mydata.copy()
+        self._cacher.push(FileUpdates.CACHE_ID, self._scandata)
 
-    def remove_from_cache(self, key):
-        self.scanfs(dcache = True)
-        try:
-            del self.scandata[key]
-        except:
-            pass
-        self.Cacher.push(FileUpdates.CACHE_ID, self.scandata)
-        return self.scandata
+    def ignore(self, key):
+        self.scan(dcache = True)
+        if key in self._scandata:
+            del self._scandata[key]
+        self._cacher.push(FileUpdates.CACHE_ID, self._scandata)
+        return self._scandata
 
-    def generate_dict(self, filepath):
+    def _generate_dict(self, filepath):
 
         item = os.path.basename(filepath)
         currentdir = os.path.dirname(filepath)

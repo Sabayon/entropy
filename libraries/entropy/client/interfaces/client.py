@@ -19,7 +19,6 @@ from entropy.client.interfaces.cache import CacheMixin
 from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
-from entropy.client.interfaces.fetch import FetchersMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_convert_to_unicode
@@ -580,7 +579,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
-        RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, NoticeBoardMixin):
+        RepositoryMixin, MiscMixin, MatchMixin, NoticeBoardMixin):
 
     def init_singleton(self, indexing = True, noclientdb = 0,
             xcache = True, user_xcache = False, repo_validation = True,
@@ -601,10 +600,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.FileUpdates = None
         self._enabled_repos = []
         self.UGC = None
-        # supporting external output stuff, you can point self.progress
-        # to your progress bar and reimplement output
-        # FIXME: deprecate and remove this
-        self.progress = None
         self.safe_mode = 0
         self.indexing = indexing
         self.repo_validation = repo_validation
@@ -619,7 +614,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         LoadersMixin.__init__(self)
 
         # modules import
-        # XXX: backward compatibility
+        # FIXME: backward compatibility
         self.dumpTools = entropy.dump
         self.entropyTools = entropy.tools
 
@@ -636,14 +631,10 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             from entropy.fetchers import MultipleUrlFetcher
             self.MultipleUrlFetcher = MultipleUrlFetcher
 
-        self.Cacher = EntropyCacher()
+        self._cacher = EntropyCacher()
 
         from entropy.client.misc import FileUpdates
         self.FileUpdates = FileUpdates(self)
-
-        from entropy.client.mirrors import StatusInterface
-        # mirror status interface
-        self.MirrorStatus = StatusInterface()
 
         if noclientdb in (False, 0):
             self.noclientdb = False
@@ -686,7 +677,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # needs to be started here otherwise repository cache will be
         # always dropped
         if self.xcache:
-            self.Cacher.start()
+            self._cacher.start()
 
         if do_validate_repo_cache:
             self._validate_repositories_cache()

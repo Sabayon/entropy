@@ -58,7 +58,7 @@ class Repository:
         )
         self.__big_sock_timeout = 10
         self.Entropy = entropy_client_instance
-        self.Cacher = EntropyCacher()
+        self._cacher = EntropyCacher()
         self.repo_ids = repo_identifiers
         self.force = force
         self.sync_errors = False
@@ -464,7 +464,6 @@ class Repository:
             abort_check_func = lock_status_func,
             disallow_redirect = disallow_redirect
         )
-        fetchConn.progress = self.Entropy.progress
 
         rc = fetchConn.download()
         del fetchConn
@@ -865,7 +864,7 @@ class Repository:
         maxcount = len(added_ids)
         for idpackage in added_ids:
             count += 1
-            mydata = self.Cacher.pop("%s%s" % (
+            mydata = self._cacher.pop("%s%s" % (
                 Repository.EAPI3_CACHE_ID, idpackage,))
             if mydata is None:
                 mytxt = "%s: %s" % (

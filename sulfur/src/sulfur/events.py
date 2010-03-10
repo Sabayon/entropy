@@ -34,6 +34,7 @@ from entropy.const import etpConst, initconfig_entropy_constants, \
 from entropy.output import print_generic
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
+from entropy.client.mirrors import StatusInterface
 
 from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
@@ -141,31 +142,31 @@ class SulfurApplicationEventsMixin:
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        self.Equo.FileUpdates.remove_file(identifier)
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.Equo.FileUpdates.remove(identifier)
+        self.filesView.populate(self.Equo.FileUpdates.scan())
 
     def on_filesMerge_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        self.Equo.FileUpdates.merge_file(identifier)
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.Equo.FileUpdates.merge(identifier)
+        self.filesView.populate(self.Equo.FileUpdates.scan())
 
     def on_mergeFiles_clicked( self, widget ):
-        self.Equo.FileUpdates.scanfs(dcache = True)
-        keys = list(self.Equo.FileUpdates.scandata.keys())
+        self.Equo.FileUpdates.scan(dcache = True)
+        keys = list(self.Equo.FileUpdates.scan().keys())
         for key in keys:
-            self.Equo.FileUpdates.merge_file(key)
+            self.Equo.FileUpdates.merge(key)
             # it's cool watching it runtime
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.filesView.populate(self.Equo.FileUpdates.scan())
 
     def on_deleteFiles_clicked( self, widget ):
-        self.Equo.FileUpdates.scanfs(dcache = True)
-        keys = list(self.Equo.FileUpdates.scandata.keys())
+        self.Equo.FileUpdates.scan(dcache = True)
+        keys = list(self.Equo.FileUpdates.scan().keys())
         for key in keys:
-            self.Equo.FileUpdates.remove_file(key)
+            self.Equo.FileUpdates.remove(key)
             # it's cool watching it runtime
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.filesView.populate(self.Equo.FileUpdates.scan())
 
     def on_filesEdit_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
@@ -207,8 +208,8 @@ class SulfurApplicationEventsMixin:
         TextReadDialog(dest, mybuffer)
 
     def on_filesViewRefresh_clicked( self, widget ):
-        self.Equo.FileUpdates.scanfs(dcache = False)
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.Equo.FileUpdates.scan(dcache = False)
+        self.filesView.populate(self.Equo.FileUpdates.scan())
 
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self._get_selected_repo_index()
@@ -692,7 +693,7 @@ class SulfurApplicationEventsMixin:
         self.pkgView.deselect_all()
 
     def on_skipMirror_clicked(self, widget):
-        self.Equo.MirrorStatus.add_failing_working_mirror(75)
+        StatusInterface().add_failing_working_mirror(75)
         self.skipMirrorNow = True
 
     def on_abortQueue_clicked(self, widget):

@@ -9,10 +9,11 @@
     B{Entropy Package Manager Client Download Mirrors Interface}.
 
 """
+from entropy.core import Singleton
 
-class StatusInterface(dict):
+class StatusInterface(Singleton, dict):
 
-    def __init__(self):
+    def init_singleton(self):
         self.__last_mirrorname = None
         dict.__init__(self)
 

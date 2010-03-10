@@ -346,7 +346,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # configuration files update cache generation
         def file_updates_cache_gen():
-            self.Equo.FileUpdates.scanfs(quiet = True)
+            self.Equo.FileUpdates.scan(quiet = True)
             self.Cacher.sync()
             return False
 
@@ -1290,13 +1290,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _populate_files_update(self):
         # load filesUpdate interface and fill self.filesView
-        cached = None
-        try:
-            cached = self.Equo.FileUpdates.load_cache()
-        except CacheCorruptionError:
-            pass
-        if cached == None:
-            cached = self.Equo.FileUpdates.scanfs(quiet = True)
+        cached = self.Equo.FileUpdates.scan(quiet = True)
         if cached:
             self.filesView.populate(cached)
 
@@ -2025,9 +2019,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 total += len(pkgs[key])
 
         def do_file_updates_check():
-            self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
-            if self.Equo.FileUpdates.scandata:
-                if len(self.Equo.FileUpdates.scandata) > 0:
+            self.Equo.FileUpdates.scan(dcache = False, quiet = True)
+            fs_data = self.Equo.FileUpdates.scan()
+            if fs_data:
+                if len(fs_data) > 0:
                     switch_back_page = 'filesconf'
 
         state = True

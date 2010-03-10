@@ -32,6 +32,7 @@ from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
+from entropy.client.mirrors import StatusInterface
 
 import entropy.tools
 
@@ -43,7 +44,7 @@ class QueueExecutor:
         self.__on_lic_request = False
         self.__on_lic_rc = None
         # clear download mirrors status
-        self.Entropy.MirrorStatus.clear()
+        StatusInterface().clear()
 
     def handle_licenses(self, queue):
 

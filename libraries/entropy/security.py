@@ -249,7 +249,6 @@ class System:
         """
         fetcher = self.Entropy.urlFetcher(url, save_to, resume = False,
             show_speed = show_speed)
-        fetcher.progress = self.Entropy.progress
         rc_fetch = fetcher.download()
         del fetcher
         if rc_fetch in ("-1", "-2", "-3", "-4"):

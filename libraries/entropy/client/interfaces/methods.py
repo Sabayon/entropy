@@ -31,6 +31,7 @@ from entropy.exceptions import RepositoryError, InvalidPackageSet,\
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
+from entropy.client.mirrors import StatusInterface
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
 from entropy.db.exceptions import IntegrityError, OperationalError, \
@@ -41,7 +42,7 @@ import entropy.tools
 class RepositoryMixin:
 
     def validate_repositories(self, quiet = False):
-        self.MirrorStatus.clear()
+        StatusInterface().clear()
         self._repo_error_messages_cache.clear()
 
         # clear live masking validation cache, if exists
@@ -224,7 +225,7 @@ class RepositoryMixin:
                 except (OperationalError, DatabaseError,):
                     updated = False
                 if updated:
-                    self.Cacher.discard()
+                    self._cacher.discard()
                     EntropyCacher.clear_cache_item(
                         EntropyCacher.CACHE_IDS['world_update'])
                     EntropyCacher.clear_cache_item(
@@ -1405,8 +1406,8 @@ class MiscMixin:
         @type branch basestring
         @return None
         """
-        self.Cacher.discard()
-        self.Cacher.stop()
+        self._cacher.discard()
+        self._cacher.stop()
         self.clear_cache()
         self.close_repositories()
         # etpConst should be readonly but we override the rule here
@@ -1424,7 +1425,7 @@ class MiscMixin:
         self.validate_repositories(quiet = True)
         self.close_repositories()
         if self.xcache:
-            self.Cacher.start()
+            self._cacher.start()
 
     def get_meant_packages(self, search_term, from_installed = False,
         valid_repos = None):
@@ -1805,7 +1806,7 @@ class MatchMixin:
             raise AttributeError('%s: %s' % (
                 _("not a valid method"), method,) )
 
-        self.Cacher.discard()
+        self._cacher.discard()
         self.SystemSettings._clear_repository_cache(match[1])
         done = f(match, dry_run)
         if done and not dry_run:

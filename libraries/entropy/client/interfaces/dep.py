@@ -226,7 +226,7 @@ class CalculatorsMixin:
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
 
         if self.xcache and use_cache:
-            cached = self.Cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hash)
             if cached is not None:
                 try:
                     cached = self.__validate_atom_match_cache(cached,
@@ -337,7 +337,7 @@ class CalculatorsMixin:
                         dbpkginfo = (set([(x, dbpkginfo[1]) for x in query_data]), 0)
 
         if self.xcache and use_cache:
-            self.Cacher.push(c_hash, dbpkginfo)
+            self._cacher.push(c_hash, dbpkginfo)
 
         return dbpkginfo
 
@@ -356,7 +356,7 @@ class CalculatorsMixin:
             c_hash = "%s%s" % (
                 EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash,)
 
-            cached = self.Cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hash)
             if cached is not None:
                 return cached
 
@@ -638,7 +638,7 @@ class CalculatorsMixin:
             push_to_cache(dependency, True)
 
         if self.xcache:
-            self.Cacher.push(c_hash, unsatisfied)
+            self._cacher.push(c_hash, unsatisfied)
 
         return unsatisfied
 
@@ -1055,7 +1055,7 @@ class CalculatorsMixin:
         )
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['library_breakage'], hash(c_hash),)
         if self.xcache:
-            cached = self.Cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hash)
             if cached is not None:
                 return cached
 
@@ -1139,7 +1139,7 @@ class CalculatorsMixin:
         client_matches |= repo_matches
 
         if self.xcache:
-            self.Cacher.push(c_hash, client_matches)
+            self._cacher.push(c_hash, client_matches)
 
         return client_matches
 
@@ -1162,7 +1162,7 @@ class CalculatorsMixin:
                 self.SystemSettings['repositories']['branch'],
         )),)
         if self.xcache:
-            cached = self.Cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hash)
             if cached is not None:
                 return cached
 
@@ -1241,7 +1241,7 @@ class CalculatorsMixin:
         reverse_tree[0] = deptree_conflicts
 
         if self.xcache:
-            self.Cacher.push(c_hash, (reverse_tree, 0))
+            self._cacher.push(c_hash, (reverse_tree, 0))
 
         return reverse_tree, 0
 
@@ -1283,7 +1283,7 @@ class CalculatorsMixin:
             ),
         )
         if self.xcache:
-            cached = self.Cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hash)
             # XXX drop old cache object format
             if not isinstance(cached, dict):
                 cached = None
@@ -1390,7 +1390,7 @@ class CalculatorsMixin:
         del graph
 
         if self.xcache:
-            self.Cacher.push(c_hash, deptree)
+            self._cacher.push(c_hash, deptree)
         return deptree
 
     def calculate_available_packages(self, use_cache = True):
@@ -1448,7 +1448,7 @@ class CalculatorsMixin:
             available += myavailable[:]
 
         if self.xcache:
-            self.Cacher.push("%s%s" % (
+            self._cacher.push("%s%s" % (
                 EntropyCacher.CACHE_IDS['world_available'], c_hash), available)
         return available
 
@@ -1486,7 +1486,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             c_hash = self._get_critical_update_cache_hash(db_digest)
-            self.Cacher.push(
+            self._cacher.push(
                 "%s%s" % (EntropyCacher.CACHE_IDS['critical_update'], c_hash,),
                     data, async = False)
 
@@ -1717,8 +1717,8 @@ class CalculatorsMixin:
             c_hash = self._get_updates_cache_hash(db_digest, empty,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine,)
-            self.Cacher.push(c_hash, data, async = False)
-            self.Cacher.sync()
+            self._cacher.push(c_hash, data, async = False)
+            self._cacher.sync()
 
         if not update:
             # delete branch upgrade file if exists, since there are
@@ -1832,7 +1832,7 @@ class CalculatorsMixin:
             ),
         )
         if self.xcache:
-            cached = self.Cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hash)
             if cached is not None:
                 return cached
 
@@ -1858,7 +1858,7 @@ class CalculatorsMixin:
             matched = self.atom_match(pkg_match)
 
         if self.xcache:
-            self.Cacher.push(c_hash, (found, matched))
+            self._cacher.push(c_hash, (found, matched))
         return found, matched
 
     def validate_package_removal(self, package_id, repo_id = None):
