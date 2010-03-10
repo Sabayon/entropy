@@ -149,7 +149,7 @@ class MagnetoCore(MagnetoCoreUI):
             ("web_site", _("_Sabayon Linux Website"),
                 _("Launch Sabayon Linux Website"), self.load_website),
             None,
-            ("exit", _("_Exit"), _("Exit"), self.exit_applet),
+            ("application-exit", _("_Exit"), _("Exit"), self.exit_applet),
         )
 
         self._main_loop_class = main_loop_class
@@ -335,6 +335,8 @@ class MagnetoCore(MagnetoCoreUI):
 
         if name == "update_now":
             pix = self.icons.best_match("sulfur", 22)
+        elif name == "check_now":
+            pix = self.icons.best_match("okay", 22)
         elif name in ["web_panel", "web_site"]:
             pix = self.icons.best_match("web", 22)
         elif name == "configure_applet":
