@@ -164,6 +164,8 @@ class Repository(SocketCommands):
         metadata['treeupdates_digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
         # FIXME: kept for backward compatibility (<=0.99.0.x) remove in future
         metadata['library_idpackages'] = []
+        metadata['revision'] = self.get_database_revision(repository, arch,
+            product, branch)
 
         self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_repository_metadata'), metadata, repository)
         dbconn.closeDB()
@@ -312,3 +314,18 @@ class Repository(SocketCommands):
         mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
         dbpath = os.path.join(mydbroot, etpConst['etpdatabasefile'])
         return dbpath
+
+    def get_database_revision(self, repository, arch, product, branch):
+        repoitems = (repository, arch, product, branch,)
+        mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
+        dbrev_path = os.path.join(mydbroot, etpConst['etpdatabaserevisionfile'])
+        dbrev = -1
+        if os.path.isfile(dbrev_path) and os.access(dbrev_path, os.R_OK):
+            db_f = open(dbrev_path, "r")
+            f_dbrev = db_f.readline().strip()
+            db_f.close()
+            try:
+                dbrev = int(f_dbrev)
+            except ValueError:
+                pass
+        return dbrev

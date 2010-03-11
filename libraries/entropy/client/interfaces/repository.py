@@ -382,6 +382,25 @@ class Repository:
     def get_online_repository_revision(self, repoid):
 
         self.__validate_repository_id(repoid)
+
+        if self.dbformat_eapi == 3:
+            # ask UGC then
+            eapi3_interface = self.__get_eapi3_connection(repoid)
+            if eapi3_interface is None:
+                # EAPI3 not available now!
+                self.dbformat_eapi -= 1
+            else:
+                session = eapi3_interface.open_session()
+                repo_metadata = self.__get_eapi3_repository_metadata(
+                    eapi3_interface, repoid, session)
+                repo_rev = repo_metadata.get('revision')
+                if repo_rev is None:
+                    # cannot reliably detect revision in EAPI=3 world
+                    # so we need to drop EAPI3 in favour of EAPI2
+                    self.dbformat_eapi -= 1
+                else:
+                    return repo_rev
+
         avail_data = self.Entropy.SystemSettings['repositories']['available']
         repo_data = avail_data[repoid]
 
@@ -415,7 +434,7 @@ class Repository:
         self.__validate_repository_id(repo)
 
         onlinestatus = self.get_online_repository_revision(repo)
-        if (onlinestatus != -1):
+        if onlinestatus != -1:
             localstatus = self.Entropy.get_repository_revision(repo)
             if (localstatus == onlinestatus) and (not self.force):
                 return False
