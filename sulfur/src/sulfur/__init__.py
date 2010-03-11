@@ -122,7 +122,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 else:
                     self.show_sulfur_tips()
 
-    def quit(self, widget = None, event = None, sysexit = True):
+    def quit(self, widget = None, event = None, sysexit = -1):
 
         def do_kill(pid):
             try:
@@ -135,8 +135,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if hasattr(self, 'Equo'):
             self.Equo.destroy()
 
-        if sysexit:
+        if sysexit != -1:
             self.exit_now()
+            if isinstance(sysexit, int):
+                raise SystemExit(sysexit)
             raise SystemExit(0)
 
     def exit_now(self):
@@ -2147,9 +2149,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         "\nSulfur will be reloaded.")
                     )
                     self.Equo.resources_remove_lock()
-                    self.quit(sysexit = False)
-                    self.exit_now()
-                    raise SystemExit(99)
+                    self.quit(sysexit = 99)
 
             if self.do_debug:
                 print_generic("process_queue: end_working?")
