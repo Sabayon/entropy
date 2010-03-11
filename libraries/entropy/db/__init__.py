@@ -6616,9 +6616,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             b_hash = hash(tuple(cur.fetchall()))
 
         if include_signatures:
+            # TODO: backward compatibility, remove this in future
+            gpg_str = ", gpg"
+            if not self._doesColumnInTableExist("packagesignatures", "gpg"):
+                gpg_str = ""
             cur = self._cursor().execute("""
-            SELECT idpackage, sha1, gpg FROM
-            packagesignatures %s""" % (idpackage_order,))
+            SELECT idpackage, sha1%s FROM
+            packagesignatures %s""" % (gpg_str, idpackage_order,))
             if strings:
                 do_update_md5(m, cur)
             else:
