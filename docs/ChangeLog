@@ -1,3 +1,93 @@
+commit 28b5d09c0a6cd3715d6e5dddd6b3755dd1036e30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 17:10:28 2010 +0100
+
+    [sulfur] fix application exit
+
+commit f18ef4225f014d051319035fd6605fc22c98ded8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 16:41:40 2010 +0100
+
+    [entropy.client.misc] fix regression in FileUpdates class
+
+commit 060d516717ceb36392583ca51551046c36bd7e6f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 16:24:12 2010 +0100
+
+    [sulfur] fix GuiUrlFetcher UI objects connection
+
+commit f9e5718fca3786d2450e00a31e8caf858c48f9fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 16:03:00 2010 +0100
+
+    [todo] update TODO
+
+commit 8647e99673beeb78fd818a6c61f2c3c656f75c80
+Author: Daniel Halens Rodriguez <dhalens@lappie.(none)>
+Date:   Thu Mar 11 13:53:28 2010 +0000
+
+    [i18n] update sk translation
+
+commit 3218c6b023b9ef69058b4ab727626a70921dc5e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 14:54:14 2010 +0100
+
+    [sulfur] make Sulfur respawn feature working
+
+commit e3996a40133cbb145d3aa7c3f7d12b1e479b4b46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 14:54:08 2010 +0100
+
+    [sulfur] fix undefined reference
+
+commit 109db27c4b3a4c430e2f56a581984a189f0f12fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 14:50:39 2010 +0100
+
+    [sulfur] fix Update All button hide/show logic
+
+commit bb04d9c18b555a9b0d34cb687d8b66dc7b694af8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 10 19:54:11 2010 +0100
+
+    [magneto] fix right click menu icon ids
+
+commit bf5cbb2032a41f62e7de2a8bb8ba4fd6e6f58606
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 10 14:41:56 2010 +0100
+
+    [sulfur] fix EntropyPackageView.on_mask_activate call
+
+commit e9ae2fd18831c401001c935cb6e5ca53469fc961
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 10 07:18:16 2010 +0100
+
+    [entropy.client] more module refactoring work
+
+commit add2c309122e0d18b0df92041ebcd6f453480ba0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 9 16:07:05 2010 +0100
+
+    [reagent] check if Entropy Server store directory exists
+
+commit 81ff9d0d27a9915ec1d18e978f0167f06d159538
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 9 15:55:59 2010 +0100
+
+    [reagent] trivial message string update
+
+commit ed351f29502348112fa12456858a3a80d4c211bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 9 15:55:45 2010 +0100
+
+    [entropy.server] trivial code style update
+
+commit 8855433af2ab86f951c9cf5b8a8d7ef02bab9714
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 8 12:42:29 2010 +0100
+
+    Tagging Entropy version 0.99.37.2
+
 commit a1cb1e8bc5700ca6e3ca097a101c11158aded782
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 8 12:37:30 2010 +0100
