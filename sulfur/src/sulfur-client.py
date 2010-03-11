@@ -79,7 +79,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     kill_threads()
     if MAIN_APP is not None:
         MAIN_APP.quit(sysexit = False)
-    raise SystemExit(exit_status)
+    raise SystemExit(1)
 
 def install_exception_handler():
     sys.excepthook = handle_exception
