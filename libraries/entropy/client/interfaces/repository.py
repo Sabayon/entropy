@@ -64,25 +64,23 @@ class Repository:
         self.sync_errors = False
         self.updated = False
         self.new_entropy = False
+        self.__current_repo_locked = False
+        self.updated_repos = set()
         self.fetch_security = fetch_security
         self.entropy_updates_alert = entropy_updates_alert
         self.already_updated = 0
         self.not_available = 0
         self._valid_eapis = [1, 2, 3]
         self._gpg_feature = gpg
+        self._repo_eapi = {}
         env_gpg = os.getenv('ETP_DISBLE_GPG')
         if env_gpg is not None:
             self._gpg_feature = False
-
         # Developer Repository mode enabled?
         sys_set = self.Entropy.SystemSettings
         self._developer_repo = sys_set['repositories']['developer_repo']
         if self._developer_repo:
             const_debug_write(__name__, "__init__: developer repo mode enabled")
-
-        self.__reset_dbformat_eapi(None)
-        self.__current_repo_locked = False
-        self.updated_repos = set()
 
         avail_data = sys_set['repositories']['available']
         # check self.Entropy.SystemSettings['repositories']['available']
@@ -93,6 +91,7 @@ class Repository:
 
         if not self.repo_ids:
             self.repo_ids.extend(list(avail_data.keys()))
+        self._setup_repo_eapi()
 
     def __del__(self):
         if self.__lock_scanner is not None:
@@ -127,40 +126,44 @@ class Repository:
             return False
         return True
 
-    def __reset_dbformat_eapi(self, repoid):
-
-        self.dbformat_eapi = 2
-        if repoid is not None:
-            eapi_avail = self.__check_eapi3_availability(repoid)
-            if eapi_avail:
-                self.dbformat_eapi = 3
-
-        # FIXME, find a way to do that without needing sqlite3 exec.
-        if not os.access("/usr/bin/sqlite3", os.X_OK) or entropy.tools.islive():
-            self.dbformat_eapi = 1
-        else:
-            rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null",
-                shell = True)
-            if rc != 0:
-                self.dbformat_eapi = 1
+    def _setup_repo_eapi(self):
 
         eapi_env = os.getenv("FORCE_EAPI")
-        if eapi_env is not None:
-            try:
-                myeapi = int(eapi_env)
-            except (ValueError, TypeError,):
-                return
-            if myeapi in self._valid_eapis:
-                self.dbformat_eapi = myeapi
-            # FORCE_EAPI is triggered, disable
-            # developer_repo mode
-            self._developer_repo = False
-            const_debug_write(__name__,
-                "__reset_dbformat_eapi: developer repo mode disabled FORCE_EAPI")
-        elif self.dbformat_eapi > 1 and self._developer_repo:
-            # enforce EAPI=1
-            self.dbformat_eapi = 1
+        sqlite3_access = os.access("/usr/bin/sqlite3", os.X_OK)
+        sqlite3_rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null",
+            shell = True)
+        try:
+            eapi_env_clear = int(eapi_env)
+            if eapi_env_clear not in self._valid_eapis:
+                raise ValueError()
+        except (ValueError, TypeError,):
+            eapi_env_clear = None
 
+        for repoid in self.repo_ids:
+
+            self._repo_eapi[repoid] = 2
+            eapi_avail = self.__check_eapi3_availability(repoid)
+            if eapi_avail:
+                self._repo_eapi[repoid] = 3
+            else:
+                if not sqlite3_access or entropy.tools.islive():
+                    self._repo_eapi[repoid] = 1
+                elif sqlite3_rc != 0:
+                    self._repo_eapi[repoid] = 1
+
+            # check EAPI
+            if eapi_env_clear is not None:
+                self._repo_eapi[repoid] = eapi_env_clear
+
+                # FORCE_EAPI is triggered, disable
+                # developer_repo mode
+                self._developer_repo = False
+                const_debug_write(__name__,
+                    "_setup_repo_eapi: developer repo mode disabled FORCE_EAPI")
+
+            elif self._repo_eapi[repoid] > 1 and self._developer_repo:
+                # enforce EAPI=1
+                self._repo_eapi[repoid] = 1
 
     def __validate_repository_id(self, repoid):
         if repoid not in self.repo_ids:
@@ -319,13 +322,13 @@ class Repository:
 
         garbage, myfile = self._construct_paths(down_item, repo, cmethod)
 
-        if self.dbformat_eapi in (1, 2,):
+        if self._repo_eapi[repo] in (1, 2,):
             try:
 
                 myfunc = getattr(entropy.tools, cmethod[1])
                 path = myfunc(myfile)
                 # rename path correctly
-                if self.dbformat_eapi == 1:
+                if self._repo_eapi[repo] == 1:
                     new_path = os.path.join(os.path.dirname(path),
                         etpConst['etpdatabasefile'])
                     os.rename(path, new_path)
@@ -335,7 +338,7 @@ class Repository:
                 rc = 1
 
         else:
-            mytxt = "self.dbformat_eapi must be in (1,2)"
+            mytxt = "invalid EAPI must be = 1 or 2"
             raise AttributeError(mytxt)
 
         if rc == 0:
@@ -356,7 +359,7 @@ class Repository:
         avail_config = sys_settings_repos['available'][repo]
 
         sep = os.path.sep
-        if self.dbformat_eapi == 1:
+        if self._repo_eapi[repo] == 1:
             if self._developer_repo:
                 remote_gb, dbfile = self._construct_paths('db', repo, cmethod)
                 remote_gb, md5file = self._construct_paths('dbck', repo, cmethod)
@@ -364,12 +367,12 @@ class Repository:
                 remote_gb, dbfile = self._construct_paths('dblight', repo, cmethod)
                 remote_gb, md5file = self._construct_paths('cklight', repo, cmethod)
 
-        elif self.dbformat_eapi == 2:
+        elif self._repo_eapi[repo] == 2:
             remote_gb, dbfile = self._construct_paths('dbdumplight', repo, cmethod)
             remote_gb, md5file = self._construct_paths('dbdumplightck', repo, cmethod)
 
         else:
-            mytxt = "self.dbformat_eapi must be in (1,2)"
+            mytxt = "EAPI must be = 1 or 2"
             raise AttributeError(mytxt)
 
         if not (os.access(md5file, os.R_OK) and os.path.isfile(md5file)):
@@ -379,30 +382,31 @@ class Repository:
 
     # @returns -1 if the file is not available
     # @returns int>0 if the revision has been retrieved
-    def get_online_repository_revision(self, repoid):
+    def get_online_repository_revision(self, repo):
 
-        self.__validate_repository_id(repoid)
+        self.__validate_repository_id(repo)
 
-        if self.dbformat_eapi == 3:
+        if self._repo_eapi[repo] == 3:
             # ask UGC then
-            eapi3_interface = self.__get_eapi3_connection(repoid)
+            eapi3_interface = self.__get_eapi3_connection(repo)
             if eapi3_interface is None:
                 # EAPI3 not available now!
-                self.dbformat_eapi -= 1
+                self._repo_eapi[repo] -= 1
             else:
                 session = eapi3_interface.open_session()
                 repo_metadata = self.__get_eapi3_repository_metadata(
-                    eapi3_interface, repoid, session)
+                    eapi3_interface, repo, session)
+                self.__eapi3_close(eapi3_interface, session = session)
                 repo_rev = repo_metadata.get('revision')
                 if repo_rev is None:
                     # cannot reliably detect revision in EAPI=3 world
                     # so we need to drop EAPI3 in favour of EAPI2
-                    self.dbformat_eapi -= 1
+                    self._repo_eapi[repo] -= 1
                 else:
                     return repo_rev
 
         avail_data = self.Entropy.SystemSettings['repositories']['available']
-        repo_data = avail_data[repoid]
+        repo_data = avail_data[repo]
 
         url = repo_data['database'] + "/" + etpConst['etpdatabaserevisionfile']
         status = entropy.tools.get_remote_data(url,
@@ -494,7 +498,7 @@ class Repository:
     def _check_downloaded_database(self, repo, cmethod):
 
         dbitem = 'dblight'
-        if self.dbformat_eapi == 2:
+        if self._repo_eapi[repo] == 2:
             dbitem = 'dbdumplight'
         elif self._developer_repo:
             dbitem = 'db'
@@ -590,7 +594,7 @@ class Repository:
             header = blue("  # ")
         )
         mytxt = "%s: %s" % (red(_("Database EAPI")),
-            darkgreen(str(self.dbformat_eapi)),)
+            darkgreen(str(self._repo_eapi[repo])),)
         self.Entropy.output(
             mytxt,
             importance = 0,
@@ -640,16 +644,16 @@ class Repository:
             return {}
         return data
 
+    def __eapi3_close(self, eapi3_interface, session = None):
+        try:
+            if session is not None:
+                eapi3_interface.close_session(session)
+            eapi3_interface.disconnect()
+        except (socket.error,):
+            pass
+
     def _handle_eapi3_database_sync(self, repo, threshold = 600,
         chunk_size = 12):
-
-        def prepare_exit(mysock, session = None):
-            try:
-                if session is not None:
-                    mysock.close_session(session)
-                mysock.disconnect()
-            except (socket.error,):
-                pass
 
         eapi3_interface = self.__get_eapi3_connection(repo)
         if eapi3_interface is None:
@@ -663,14 +667,14 @@ class Repository:
                 raise AttributeError()
         except (DatabaseError, IntegrityError, OperationalError,
             AttributeError,):
-            prepare_exit(eapi3_interface, session)
+            self.__eapi3_close(eapi3_interface, session)
             return False
 
         try:
             myidpackages = mydbconn.listAllIdpackages()
         except (DatabaseError, IntegrityError, OperationalError,):
             mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
+            self.__eapi3_close(eapi3_interface, session)
             return False
 
         added_ids, removed_ids, secure_checksum = \
@@ -679,12 +683,12 @@ class Repository:
         if (None in (added_ids, removed_ids, secure_checksum)) or \
             (not added_ids and not removed_ids and self.force):
                 mydbconn.closeDB()
-                prepare_exit(eapi3_interface, session)
+                self.__eapi3_close(eapi3_interface, session)
                 return False
 
         elif not secure_checksum: # {added_ids, removed_ids, secure_checksum} == False
             mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
+            self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
                 darkred(_("remote database suddenly locked")),)
             self.Entropy.output(
@@ -711,7 +715,7 @@ class Repository:
                 header = blue("  # "),
             )
             mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
+            self.__eapi3_close(eapi3_interface, session)
             return False
 
         count = 0
@@ -747,7 +751,7 @@ class Repository:
                 # anti loop protection
                 if fetch_count > max_fetch_count:
                     mydbconn.closeDB()
-                    prepare_exit(eapi3_interface, session)
+                    self.__eapi3_close(eapi3_interface, session)
                     return False
 
                 fetch_count += 1
@@ -773,7 +777,7 @@ class Repository:
                         header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
-                    prepare_exit(eapi3_interface, session)
+                    self.__eapi3_close(eapi3_interface, session)
                     return None
                 elif isinstance(pkgdata, tuple):
                     mytxt = "%s: %s, %s. %s" % (
@@ -786,7 +790,7 @@ class Repository:
                         header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
-                    prepare_exit(eapi3_interface, session)
+                    self.__eapi3_close(eapi3_interface, session)
                     return None
 
                 try:
@@ -807,7 +811,7 @@ class Repository:
                         header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
-                    prepare_exit(eapi3_interface, session)
+                    self.__eapi3_close(eapi3_interface, session)
                     return None
 
                 break
@@ -821,7 +825,7 @@ class Repository:
         for elem in metadata_elements:
             if elem not in repo_metadata:
                 mydbconn.closeDB()
-                prepare_exit(eapi3_interface, session)
+                self.__eapi3_close(eapi3_interface, session)
                 mytxt = "%s: %s" % (
                     blue(_("EAPI3 Service status")),
                     darkred(_("cannot fetch repository metadata")),
@@ -842,7 +846,7 @@ class Repository:
                 repo_metadata['treeupdates_actions'])
         except (Error,):
             mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
+            self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % (
                 blue(_("EAPI3 Service status")),
                 darkred(_("cannot update treeupdates data")),
@@ -861,7 +865,7 @@ class Repository:
             mydbconn.insertPackageSets(repo_metadata['sets'])
         except (Error,):
             mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
+            self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % (
                 blue(_("EAPI3 Service status")),
                 darkred(_("cannot update package sets data")),
@@ -876,7 +880,7 @@ class Repository:
 
         # I don't need you anymore
         # disconnect socket
-        prepare_exit(eapi3_interface, session)
+        self.__eapi3_close(eapi3_interface, session)
 
         # now that we have all stored, add
         count = 0
@@ -1255,7 +1259,6 @@ class Repository:
         for repo in self.repo_ids:
 
             repocount += 1
-            self.__reset_dbformat_eapi(repo)
             self._show_repository_information(repo, (repocount, repolength))
 
             if not self.force:
@@ -1300,7 +1303,7 @@ class Repository:
                 downloaded_db_item = None
                 sig_down_status = False
                 db_checksum_down_status = False
-                if self.dbformat_eapi < 3:
+                if self._repo_eapi[repo] < 3:
 
                     down_status, sig_down_status, downloaded_db_item = \
                         self.__handle_database_download(repo, cmethod)
@@ -1313,14 +1316,14 @@ class Repository:
                         self.__handle_database_checksum_download(repo, cmethod)
                     break
 
-                elif self.dbformat_eapi == 3 and not \
+                elif self._repo_eapi[repo] == 3 and not \
                     (os.path.isfile(dbfile) and os.access(dbfile, os.W_OK)):
 
                     do_db_update_transfer = None
-                    self.dbformat_eapi -= 1
+                    self._repo_eapi[repo] -= 1
                     continue
 
-                elif self.dbformat_eapi == 3:
+                elif self._repo_eapi[repo] == 3:
 
                     status = False
                     try:
@@ -1350,12 +1353,12 @@ class Repository:
                             skip_this_repo = True
                         else: # ah, well... dunno then...
                             do_db_update_transfer = None
-                            self.dbformat_eapi -= 1
+                            self._repo_eapi[repo] -= 1
                         continue
                     elif not status: # (status == False)
                         # set to none and completely skip database alignment
                         do_db_update_transfer = None
-                        self.dbformat_eapi -= 1
+                        self._repo_eapi[repo] -= 1
                         continue
 
                     break
@@ -1400,7 +1403,7 @@ class Repository:
 
             # Now we can unpack
             files_to_remove = []
-            if self.dbformat_eapi in (1, 2,):
+            if self._repo_eapi[repo] in (1, 2,):
 
                 # if do_db_update_transfer == False and not None
                 if (do_db_update_transfer is not None) and not \
@@ -1432,17 +1435,17 @@ class Repository:
                     do_db_update_transfer = False
 
                 elif os.path.isfile(dbfile) and not do_db_update_transfer and \
-                    (self.dbformat_eapi != 1):
+                    (self._repo_eapi[repo] != 1):
                     os.remove(dbfile)
 
-                if self.dbformat_eapi == 2:
+                if self._repo_eapi[repo] == 2:
                     rc = self.__eapi2_inject_downloaded_dump(dumpfile,
                         dbfile, cmethod)
 
                 if do_db_update_transfer:
                     self.__eapi1_eapi2_databases_alignment(dbfile, dbfile_old)
 
-                if self.dbformat_eapi == 2:
+                if self._repo_eapi[repo] == 2:
                     # remove the dump
                     files_to_remove.append(dumpfile)
 
@@ -1565,9 +1568,9 @@ class Repository:
     def __handle_downloaded_database_unpack(self, repo, cmethod):
 
         file_to_unpack = etpConst['etpdatabasedump']
-        if self.dbformat_eapi == 1:
+        if self._repo_eapi[repo] == 1:
             file_to_unpack = etpConst['etpdatabasefile']
-        elif self.dbformat_eapi == 2:
+        elif self._repo_eapi[repo] == 2:
             file_to_unpack = etpConst['etpdatabasedumplight']
 
         mytxt = "%s %s %s" % (red(_("Unpacking database to")),
@@ -1580,7 +1583,7 @@ class Repository:
         )
 
         myitem = 'dblight'
-        if self.dbformat_eapi == 2:
+        if self._repo_eapi[repo] == 2:
             myitem = 'dbdumplight'
         elif self._developer_repo:
             myitem = 'db'
@@ -1604,7 +1607,7 @@ class Repository:
         downitem = 'cklight'
         if self._developer_repo:
             downitem = 'dbck'
-        if self.dbformat_eapi == 2: # EAPI = 2
+        if self._repo_eapi[repo] == 2: # EAPI = 2
             downitem = 'dbdumplightck'
 
         garbage_url, hashfile = self._construct_paths(downitem, repo, cmethod)
@@ -1694,7 +1697,7 @@ class Repository:
         downloaded_item = None
         down_status = False
         sig_status = False
-        if self.dbformat_eapi == 2:
+        if self._repo_eapi[repo] == 2:
 
             # start a check in background
             self.__load_background_repository_lock_check(repo)
@@ -1719,7 +1722,7 @@ class Repository:
 
             # start a check in background
             self.__load_background_repository_lock_check(repo)
-            self.dbformat_eapi = 1
+            self._repo_eapi[repo] = 1
             down_item = "dblight"
             if self._developer_repo:
                 # if developer repo mode is enabled, fetch full-blown db
@@ -1768,7 +1771,7 @@ class Repository:
             )
             return True
         # also check for eapi3 lock
-        if self.dbformat_eapi == 3:
+        if self._repo_eapi[repo] == 3:
             locked = self.__get_online_eapi3_lock(repo)
             if locked:
                 mytxt = "%s: %s." % (bold(_("Attention")),
