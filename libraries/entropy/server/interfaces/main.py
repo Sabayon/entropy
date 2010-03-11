@@ -4284,7 +4284,7 @@ class ServerMiscMixin:
             back = True
         )
         # scanning for config files not updated
-        scandata = self.FileUpdates.scanfs(dcache = False)
+        scandata = self.FileUpdates.scan(dcache = False)
         if scandata:
             self.output(
                 "[%s] %s" % (
