@@ -122,7 +122,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 else:
                     self.show_sulfur_tips()
 
-    def quit(self, widget = None, event = None, sysexit = -1):
+    def quit(self, widget = None, event = None, sysexit = 0):
 
         def do_kill(pid):
             try:
