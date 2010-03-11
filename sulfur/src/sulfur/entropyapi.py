@@ -309,6 +309,7 @@ class Equo(Client):
 
     def connect_to_gui(self, application):
         self.progress = application.progress
+        GuiUrlFetcher.progress = application.progress
         self.urlFetcher = GuiUrlFetcher
         # EXPERIMENTALLY enable color
         # nocolor()
@@ -419,6 +420,7 @@ class GuiUrlFetcher(UrlFetcher):
     gui_last_avg = 0
     _default_divider = 1
     _use_progress_bar = True
+    progress = None
 
     @staticmethod
     def enable_progress_bar(enable):
@@ -427,13 +429,6 @@ class GuiUrlFetcher(UrlFetcher):
     @staticmethod
     def get_progress_bar_enable():
         return GuiUrlFetcher._use_progress_bar
-
-    def connect_to_gui(self, progress):
-        self.progress = progress
-        self.__average = 0
-        self.__downloadedsize = 0
-        self.__remotesize = 0
-        self.__datatransfer = 0
 
     def handle_statistics(self, th_id, downloaded_size, total_size,
             average, old_average, update_step, show_speed, data_transfer,
