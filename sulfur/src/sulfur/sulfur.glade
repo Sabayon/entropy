@@ -757,6 +757,7 @@
                     <property name="visible">True</property>
                     <child>
                       <widget class="GtkHBox" id="updatesButtonbox">
+                        <property name="visible">True</property>
                         <child>
                           <widget class="GtkHButtonBox" id="updatesButtonboxAddRemove">
                             <property name="visible">True</property>
