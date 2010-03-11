@@ -1,3 +1,15 @@
+commit 230e38d6a0caf0260fe074f3ed285921a63ad6ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 19:45:36 2010 +0100
+
+    [entropy.server] fix undefined reference
+
+commit a32fb2d4a69066f428ece52b1b61616fa5a5ff97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 19:27:03 2010 +0100
+
+    Tagging Entropy version 0.99.38.1
+
 commit 8747dc8ebbd9e42c00ab0b066dd12e285ddfd0ae
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Mar 11 19:24:13 2010 +0100
