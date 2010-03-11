@@ -43,14 +43,14 @@ class FileUpdates:
         dest_file = etpConst['systemroot'] + self._scandata[key]['destination']
         if os.access(source_file, os.R_OK):
             shutil.move(source_file, dest_file)
-        self.remove(key)
+        self.ignore(key)
 
     def remove(self, key):
         self.scan(dcache = True)
         source_file = etpConst['systemroot'] + self._scandata[key]['source']
         if os.path.isfile(source_file) and os.access(source_file, os.W_OK):
             os.remove(source_file)
-        self.remove(key)
+        self.ignore(key)
 
     def _backup(self, key):
         self.scan(dcache = True)
