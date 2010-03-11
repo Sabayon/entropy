@@ -1,3 +1,27 @@
+commit 8747dc8ebbd9e42c00ab0b066dd12e285ddfd0ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 19:24:13 2010 +0100
+
+    [entropy.db] EntropyRepository.checksum() check against gpg column
+
+commit 2e388f45d45bb9e1494855dfa66f779c137ba32b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 19:20:23 2010 +0100
+
+    [entropy.client.interfaces.repository] fix EAPI handling among various repositories
+
+commit 86487e17942682abd71b0309ac869e98c65a03a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 18:55:36 2010 +0100
+
+    [entropy.services/entropy.client] when syncing repos with EAPI3, get repo revision via EAPI3 services
+
+commit 92b66d0ca83e48a2abc309da860ff16b89136d17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 17:12:39 2010 +0100
+
+    Tagging Entropy version 0.99.38
+
 commit 28b5d09c0a6cd3715d6e5dddd6b3755dd1036e30
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Mar 11 17:10:28 2010 +0100
