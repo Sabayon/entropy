@@ -1,6 +1,7 @@
 
   0.99.40:
 
+    - "activator repo" (instead of "activator database")
     - for tagged packages, do not overwrite slot metadatum (fix in entropy.spm,
         entropy.client.interfaces.package, entropy.client.interfaces.dep (si))
     - entropy.client API rework
