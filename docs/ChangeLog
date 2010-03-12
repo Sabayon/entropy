@@ -1,3 +1,27 @@
+commit 0dc0376797871378224da1963db44667506f1440
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 17:53:52 2010 +0100
+
+    [entropy.client.interfaces.repository] checking against EAPI3 repo file is not required anymore
+
+commit 774b646d0b5615054ec25dbf5efa85fedaf2b312
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 17:24:07 2010 +0100
+
+    [entropy.services.repository] rewrite EAPI3 repository updates handling
+
+commit 4d9efc545b6ab8e075f7cfbffad7e89e3f57b40a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 16:20:24 2010 +0100
+
+    [entropy.services.repository] also consider revision file mtime for cache evaluation
+
+commit 38593b9bd87c597a6957c2745ccb883ffc3b7acd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 12:20:31 2010 +0100
+
+    Tagging Entropy version 0.99.38.3
+
 commit 1e5a44a613066b5d5313a8e22af512b9fdc10324
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 12 12:12:13 2010 +0100
