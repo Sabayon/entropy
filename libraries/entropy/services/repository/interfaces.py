@@ -78,7 +78,7 @@ class Server(SocketHost):
             self.LockScanner.kill()
 
     def start_repository_lock_scanner(self):
-        self.LockScanner = TimeScheduled(0.5, self.lock_scan)
+        self.LockScanner = TimeScheduled(5, self.lock_scan)
         self.LockScanner.start()
 
     def set_repository_db_availability(self, repo_tuple):
@@ -102,15 +102,19 @@ class Server(SocketHost):
         return True
 
     def lock_scan(self):
+
         do_clear = set()
         for repository, arch, product, branch in self.repositories:
+
             x = (repository, arch, product, branch,)
             self.set_repository_db_availability(x)
+
             if not self.repositories[x]['enabled']:
                 if x in self.syscache['dbs_not_available']:
                     continue
                 self.syscache['dbs_not_available'].add(x)
-                mytxt = blue("%s.") % (_("database does not exist. Locking services for it"),)
+                mytxt = blue("%s.") % (
+                    _("database does not exist. Locking services for it"),)
                 self.output(
                     "[%s] %s" % (
                             brown(str(x)),
@@ -121,57 +125,50 @@ class Server(SocketHost):
                 )
                 do_clear.add(repository)
                 continue
-            if os.path.isfile(self.repositories[x]['download_lock']) and \
-                not self.repositories[x]['locked']:
-                    self.repositories[x]['locked'] = True
-                    mydbpath = os.path.join(self.repositories[x]['dbpath'], etpConst['etpdatabasefile'])
-                    self.close_db(mydbpath)
-                    self.eapi3_lock_repo(*x)
-                    do_clear.add(repository)
-                    mytxt = blue("%s.") % (_("database got locked. Locking services for it"),)
-                    self.output(
-                        "[%s] %s" % (
-                                brown(str(x)),
-                                mytxt,
-                        ),
-                        importance = 1,
-                        type = "info"
-                    )
-            elif not os.path.isfile(self.repositories[x]['download_lock']) and \
-                self.repositories[x]['locked']:
 
-                # setup variables
-                dbpath = self.repositories[x]['dbpath']
-                cmethod = self.repositories[x]['cmethod']
-                cmethod_data = etpConst['etpdatabasecompressclasses'].get(cmethod)
-                unpack_method = cmethod_data[1]
-                compressed_dbfile = etpConst[cmethod_data[2]]
-                compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
+            saved_rev = self.repositories[x]['live_db_rev']
+            dbrev_path = os.path.join(self.repositories[x]['dbpath'],
+                etpConst['etpdatabaserevisionfile'])
+            db_path = os.path.join(self.repositories[x]['dbpath'],
+                etpConst['etpdatabasefile'])
 
-                if not (os.access(compressed_dbpath, os.R_OK | os.W_OK) and \
-                    os.path.isfile(compressed_dbpath)):
-                    mytxt = darkred("%s: %s !!") % (
-                        _("cannot unlock database, compressed file not found"),
-                        compressed_dbpath,
-                    )
-                    self.output(
-                        "[%s] %s" % (
-                                brown(str(x)),
-                                mytxt,
-                        ),
-                        importance = 1,
-                        type = "warning"
-                    )
-                    self.syscache['dbs_not_available'].add(x)
-                    do_clear.add(repository)
-                    continue
+            cur_rev = None
+            if os.path.isfile(dbrev_path):
+                cur_f = open(dbrev_path, "r")
+                cur_rev = cur_f.readline().strip()
+                cur_f.close()
 
-                # make sure this db is closed
-                mydbpath = os.path.join(dbpath, etpConst['etpdatabasefile'])
-                self.close_db(mydbpath)
+            if cur_rev == saved_rev:
+                continue
 
-                mytxt = blue("%s: %s") % (
-                    _("unpacking compressed database"),
+            self.repositories[x]['locked'] = True
+            # trash old databases
+            self.close_db(db_path)
+            do_clear.add(repository)
+            mytxt = blue("%s.") % (
+                _("repository changed. Updating metadata"),)
+            self.output(
+                "[%s] %s" % (
+                        brown(str(x)),
+                        mytxt,
+                ),
+                importance = 1,
+                type = "info"
+            )
+
+            # now unpack and unlock
+            dbpath = self.repositories[x]['dbpath']
+            cmethod = self.repositories[x]['cmethod']
+            cmethod_data = etpConst['etpdatabasecompressclasses'].get(
+                cmethod)
+            unpack_method = cmethod_data[1]
+            compressed_dbfile = etpConst[cmethod_data[2]]
+            compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
+
+            if not (os.access(compressed_dbpath, os.R_OK | os.W_OK) and \
+                os.path.isfile(compressed_dbpath)):
+                mytxt = darkred("%s: %s !!") % (
+                    _("cannot unlock database, compressed file not found"),
                     compressed_dbpath,
                 )
                 self.output(
@@ -180,61 +177,70 @@ class Server(SocketHost):
                             mytxt,
                     ),
                     importance = 1,
-                    type = "info"
+                    type = "warning"
                 )
+                self.syscache['dbs_not_available'].add(x)
+                do_clear.add(repository)
+                continue
 
-                # now unpack compressed db in place
-                unpack_func = getattr(entropy.tools, unpack_method)
-                generated_outpath = unpack_func(compressed_dbpath)
-                if mydbpath != generated_outpath:
-                    try:
-                        os.rename(generated_outpath, mydbpath)
-                    except OSError:
-                        shutil.move(generated_outpath, mydbpath)
+            # make sure this db is closed
+            self.close_db(db_path)
 
-                mytxt = blue("%s. %s:") % (
-                    _("unlocking and indexing database"),
-                    _("hash"),
-                )
-                self.output(
-                    "[%s] %s" % (
-                            brown(str(x)),
-                            mytxt,
-                    ),
-                    importance = 1,
-                    type = "info"
-                )
-                # woohoo, got unlocked eventually
-                mydb = self.open_db(mydbpath, docache = False)
-                mydb.createAllIndexes()
-                self.output(
-                    darkgreen(str(mydb.checksum(do_order = True, strict = False, strings = True))),
-                    importance = 1,
-                    type = "info"
-                )
-                mydb.closeDB()
-                self.__cacher.discard()
-                EntropyCacher.clear_cache_item(
-                    Server.CACHE_ID+"/"+repository+"/")
-                self.repositories[x]['locked'] = False
-                self.eapi3_unlock_repo(*x)
+            mytxt = blue("%s: %s") % (
+                _("unpacking compressed database"),
+                compressed_dbpath,
+            )
+            self.output(
+                "[%s] %s" % (
+                        brown(str(x)),
+                        mytxt,
+                ),
+                importance = 1,
+                type = "info"
+            )
+
+            # now unpack compressed db in place
+            unpack_func = getattr(entropy.tools, unpack_method)
+            generated_outpath = unpack_func(compressed_dbpath)
+            if db_path != generated_outpath:
+                try:
+                    os.rename(generated_outpath, db_path)
+                except OSError:
+                    shutil.move(generated_outpath, db_path)
+
+            mytxt = blue("%s. %s:") % (
+                _("unlocking and indexing database"),
+                _("hash"),
+            )
+            self.output(
+                "[%s] %s" % (
+                        brown(str(x)),
+                        mytxt,
+                ),
+                importance = 1,
+                type = "info"
+            )
+            # woohoo, got unlocked eventually
+            mydb = self.open_db(db_path, docache = False)
+            mydb.createAllIndexes()
+            db_ck = mydb.checksum(do_order = True, strict = False,
+                strings = True)
+            self.output(
+                darkgreen(str(db_ck)),
+                importance = 1,
+                type = "info"
+            )
+            mydb.closeDB()
+            self.__cacher.discard()
+            EntropyCacher.clear_cache_item(
+                Server.CACHE_ID+"/"+repository+"/")
+
+            self.repositories[x]['live_db_rev'] = cur_rev
+            self.repositories[x]['locked'] = False
 
         self.__cacher.discard()
         for repo in do_clear:
             EntropyCacher.clear_cache_item(Server.CACHE_ID+"/"+repo+"/")
-
-    def eapi3_lock_repo(self, repository, arch, product, branch):
-        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'], etpConst['etpdatabaseeapi3lockfile'])
-        if not os.path.lexists(lock_file):
-            f = open(lock_file, "w")
-            f.write("this repository is EAPI3 locked")
-            f.flush()
-            f.close()
-
-    def eapi3_unlock_repo(self, repository, arch, product, branch):
-        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'], etpConst['etpdatabaseeapi3lockfile'])
-        if os.path.isfile(lock_file):
-            os.remove(lock_file)
 
     def get_dcache(self, item, repo = '_norepo_'):
         return entropy.dump.loadobj(Server.CACHE_ID+"/"+repo+"/"+str(hash(item)))
@@ -286,10 +292,7 @@ class Server(SocketHost):
                         continue
                     break
             self.repositories[x]['dbrevision'] = myrev
-            self.repositories[x]['download_lock'] = os.path.join(
-                mydbpath,
-                etpConst['etpdatabasedownloadlockfile']
-            )
+            self.repositories[x]['live_db_rev'] = None
             if 'cmethod' not in self.repositories[x]:
                 raise AttributeError("cmethod not specified for: %s" % (x,))
             if self.repositories[x]['cmethod'] not in etpConst['etpdatabasesupportedcformats']:

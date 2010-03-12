@@ -103,10 +103,10 @@ class Repository(SocketCommands):
 
         dbpath = self.get_database_path(repository, arch, product, branch)
         mtime = self.get_database_mtime(repository, arch, product, branch)
-        rev_mtime = self.get_revision_mtime(repository, arch, product, branch)
+        rev_id = self.get_database_revision(repository, arch, product, branch)
 
         cached = self.HostInterface.get_dcache(
-            x + ('docmd_dbdiff', mtime, rev_mtime,), repository)
+            x + ('docmd_dbdiff', mtime, rev_id,), repository)
         if cached is not None:
             std_checksum, secure_checksum, myids = cached
         else:
@@ -118,7 +118,7 @@ class Repository(SocketCommands):
             myids = dbconn.listAllIdpackages()
             cached = std_checksum, secure_checksum, myids
             self.HostInterface.set_dcache(
-                x + ('docmd_dbdiff', mtime, rev_mtime,), cached, repository)
+                x + ('docmd_dbdiff', mtime, rev_id,), cached, repository)
             dbconn.closeDB()
 
         foreign_idpackages = set(foreign_idpackages)
@@ -155,10 +155,10 @@ class Repository(SocketCommands):
             return valid
 
         mtime = self.get_database_mtime(repository, arch, product, branch)
-        rev_mtime = self.get_revision_mtime(repository, arch, product, branch)
+        rev_id = self.get_database_revision(repository, arch, product, branch)
         cached = self.HostInterface.get_dcache(
             (repository, arch, product, branch, 'docmd_repository_metadata',
-                mtime, rev_mtime), repository)
+                mtime, rev_id), repository)
         if cached is not None:
             return cached
 
@@ -175,7 +175,7 @@ class Repository(SocketCommands):
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_repository_metadata',
-                mtime, rev_mtime,), metadata, repository)
+                mtime, rev_id,), metadata, repository)
         dbconn.closeDB()
 
         return metadata
@@ -201,10 +201,10 @@ class Repository(SocketCommands):
             return valid
 
         mtime = self.get_database_mtime(repository, arch, product, branch)
-        rev_mtime = self.get_revision_mtime(repository, arch, product, branch)
+        rev_id = self.get_database_revision(repository, arch, product, branch)
         cached = self.HostInterface.get_dcache(
             (repository, arch, product, branch, 'docmd_package_sets',
-                mtime, rev_mtime,), repository)
+                mtime, rev_id,), repository)
         if cached is not None:
             return cached
 
@@ -216,7 +216,7 @@ class Repository(SocketCommands):
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_package_sets',
-                mtime, rev_mtime,), data, repository)
+                mtime, rev_id,), data, repository)
         dbconn.closeDB()
 
         return data
@@ -242,10 +242,10 @@ class Repository(SocketCommands):
             return valid
 
         mtime = self.get_database_mtime(repository, arch, product, branch)
-        rev_mtime = self.get_revision_mtime(repository, arch, product, branch)
+        rev_id = self.get_database_revision(repository, arch, product, branch)
         cached = self.HostInterface.get_dcache(
             (repository, arch, product, branch, 'docmd_treeupdates', mtime,
-                rev_mtime), repository)
+                rev_id), repository)
         if cached is not None:
             return cached
 
@@ -259,7 +259,7 @@ class Repository(SocketCommands):
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_treeupdates', mtime,
-                rev_mtime,), data, repository)
+                rev_id,), data, repository)
         dbconn.closeDB()
 
         return data
@@ -296,10 +296,10 @@ class Repository(SocketCommands):
             return valid
 
         mtime = self.get_database_mtime(repository, arch, product, branch)
-        rev_mtime = self.get_revision_mtime(repository, arch, product, branch)
+        rev_id = self.get_database_revision(repository, arch, product, branch)
         cached = self.HostInterface.get_dcache(
             (repository, arch, product, branch, idpackages,
-                'docmd_pkginfo_strict', mtime, rev_mtime),
+                'docmd_pkginfo_strict', mtime, rev_id),
                     repository)
         if cached is not None:
             return cached
@@ -325,7 +325,7 @@ class Repository(SocketCommands):
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, idpackages,
-                'docmd_pkginfo_strict', mtime, rev_mtime,),
+                'docmd_pkginfo_strict', mtime, rev_id,),
                     result, repository)
         dbconn.closeDB()
         return result
@@ -344,25 +344,10 @@ class Repository(SocketCommands):
             mtime = 0.0
         return mtime
 
-    def get_revision_mtime(self, repository, arch, product, branch):
-        dbpath = self.get_database_revision(repository, arch, product, branch)
-        try:
-            mtime = os.path.getmtime(dbpath)
-        except (OSError, IOError,):
-            mtime = 0.0
-        return mtime
-
     def get_database_revision(self, repository, arch, product, branch):
-        repoitems = (repository, arch, product, branch,)
-        mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
-        dbrev_path = os.path.join(mydbroot, etpConst['etpdatabaserevisionfile'])
+        x = (repository, arch, product, branch,)
+        l_dbrev = self.HostInterface.repositories[x]['live_db_rev']
         dbrev = -1
-        if os.path.isfile(dbrev_path) and os.access(dbrev_path, os.R_OK):
-            db_f = open(dbrev_path, "r")
-            f_dbrev = db_f.readline().strip()
-            db_f.close()
-            try:
-                dbrev = int(f_dbrev)
-            except ValueError:
-                pass
+        if l_dbrev:
+            dbrev = l_dbrev
         return dbrev
