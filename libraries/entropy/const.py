@@ -283,8 +283,6 @@ def const_default_settings(rootdir):
 
         # the remote database lock file
         'etpdatabaselockfile': default_etp_dbfile+".lock",
-        # the remote database lock file
-        'etpdatabaseeapi3lockfile': default_etp_dbfile+".eapi3_lock",
         # the remote database download lock file
         'etpdatabasedownloadlockfile': default_etp_dbfile+".download.lock",
         'etpdatabasecacertfile': "ca.cert",
