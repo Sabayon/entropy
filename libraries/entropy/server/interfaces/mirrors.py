@@ -1737,7 +1737,7 @@ class Server(ServerNoticeBoardMixin):
 
             self._sync_database_treeupdates(repo)
             self.Entropy._update_database_package_sets(repo)
-            dbconn = self.open_server_repository(
+            dbconn = self.Entropy.open_server_repository(
                 read_only = False, no_upload = True, repo = repo,
                 do_treeupdates = False)
             dbconn.commitChanges()
