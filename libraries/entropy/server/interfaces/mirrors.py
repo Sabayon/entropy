@@ -1645,7 +1645,6 @@ class Server(ServerNoticeBoardMixin):
             dbconn.bumpTreeUpdatesActions(backed_up_entries)
 
         dbconn.commitChanges()
-        self.Entropy.close_repository(dbconn)
 
     def _create_repository_pkglist(self, repo = None, branch = None):
         pkglist_file = self.Entropy._get_local_pkglist_file(repo = repo,
@@ -1738,7 +1737,11 @@ class Server(ServerNoticeBoardMixin):
 
             self._sync_database_treeupdates(repo)
             self.Entropy._update_database_package_sets(repo)
-            self.Entropy.close_repositories()
+            dbconn = self.open_server_repository(
+                read_only = False, no_upload = True, repo = repo,
+                do_treeupdates = False)
+            dbconn.commitChanges()
+            # now we can safely copy it
 
             # backup current database to avoid re-indexing
             old_dbpath = self.Entropy._get_local_database_file(repo)
