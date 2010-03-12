@@ -10,7 +10,7 @@
 #|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db[,sabayon.org][#bz2][#1026,1027]
 #
 # Sabayon Linux Official Repository
-repository|sabayonlinux.org|Sabayon Linux Official Repository||http://pkg.sabayon.org,sabayon.org
+repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
 repository|sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy|
 repository|sabayonlinux.org||http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy|
 repository|sabayonlinux.org||http://ftp2.cz.freebsd.org/pub/sabayon/entropy|
