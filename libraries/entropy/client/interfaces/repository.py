@@ -421,18 +421,6 @@ class Repository:
         else:
             return -1
 
-    def __get_online_eapi3_lock(self, repo):
-        self.__validate_repository_id(repo)
-
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
-        repo_data = avail_data[repo]
-
-        url = repo_data['database'] + "/" + etpConst['etpdatabaseeapi3lockfile']
-        data = entropy.tools.get_remote_data(url)
-        if not data:
-            return False
-        return True
-
     def _is_repository_updatable(self, repo):
 
         self.__validate_repository_id(repo)
@@ -1770,19 +1758,6 @@ class Repository:
                 header = "\t"
             )
             return True
-        # also check for eapi3 lock
-        if self._repo_eapi[repo] == 3:
-            locked = self.__get_online_eapi3_lock(repo)
-            if locked:
-                mytxt = "%s: %s." % (bold(_("Attention")),
-                    red(_("database will be ready soon")),)
-                self.Entropy.output(
-                    mytxt,
-                    importance = 1,
-                    type = "info",
-                    header = "\t"
-                )
-                return True
         return False
 
     def __handle_repository_lock(self, repo):
