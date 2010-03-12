@@ -1830,7 +1830,7 @@ class Server(ServerNoticeBoardMixin):
                 uploader = self.TransceiverServerHandler(
                     self.Entropy,
                     [uri],
-                    sorted([upload_data[x] for x in upload_data]),
+                    [upload_data[x] for x in sorted(upload_data)],
                     critical_files = critical,
                     repo = repo
                 )
