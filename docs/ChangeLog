@@ -1,3 +1,21 @@
+commit 1e5a44a613066b5d5313a8e22af512b9fdc10324
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 12:12:13 2010 +0100
+
+    [entropy.server] append packages.db.revision upload to the end of the upload queue
+
+commit 320d91da1cca52324c3ebcbfbe7cd8ea97c5b5a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 08:05:43 2010 +0100
+
+    [entropy.services.repository] use repo database mtime for cache validation
+
+commit b975de2907700248d160ea00954d7798b0783c93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 11 19:46:04 2010 +0100
+
+    Tagging Entropy version 0.99.38.2
+
 commit 230e38d6a0caf0260fe074f3ed285921a63ad6ea
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Mar 11 19:45:36 2010 +0100
