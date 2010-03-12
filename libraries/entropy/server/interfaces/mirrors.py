@@ -1052,7 +1052,9 @@ class Server(ServerNoticeBoardMixin):
         gpg_signed_files = []
         data = {}
         db_rev_file = self.Entropy._get_local_database_revision_file(repo)
-        data['database_revision_file'] = db_rev_file
+        # adding ~ at the beginning makes this file to be appended at the end
+        # of the upload queue
+        data['~database_revision_file'] = db_rev_file
         extra_text_files.append(db_rev_file)
         critical.append(db_rev_file)
 
@@ -1828,7 +1830,7 @@ class Server(ServerNoticeBoardMixin):
                 uploader = self.TransceiverServerHandler(
                     self.Entropy,
                     [uri],
-                    [upload_data[x] for x in upload_data],
+                    sorted([upload_data[x] for x in upload_data]),
                     critical_files = critical,
                     repo = repo
                 )
