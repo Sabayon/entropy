@@ -102,8 +102,9 @@ class Repository(SocketCommands):
             return valid
 
         dbpath = self.get_database_path(repository, arch, product, branch)
+        mtime = self.get_database_mtime(repository, arch, product, branch)
 
-        cached = self.HostInterface.get_dcache(x + ('docmd_dbdiff',),
+        cached = self.HostInterface.get_dcache(x + ('docmd_dbdiff', mtime,),
             repository)
         if cached is not None:
             std_checksum, secure_checksum, myids = cached
@@ -115,7 +116,7 @@ class Repository(SocketCommands):
                 strings = True, include_signatures = True)
             myids = dbconn.listAllIdpackages()
             cached = std_checksum, secure_checksum, myids
-            self.HostInterface.set_dcache(x + ('docmd_dbdiff',), cached,
+            self.HostInterface.set_dcache(x + ('docmd_dbdiff', mtime,), cached,
                 repository)
             dbconn.closeDB()
 
@@ -152,8 +153,9 @@ class Repository(SocketCommands):
         if not valid:
             return valid
 
-        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_repository_metadata'), repository)
-        if cached != None:
+        mtime = self.get_database_mtime(repository, arch, product, branch)
+        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_repository_metadata', mtime), repository)
+        if cached is not None:
             return cached
 
         metadata = {}
@@ -167,7 +169,7 @@ class Repository(SocketCommands):
         metadata['revision'] = self.get_database_revision(repository, arch,
             product, branch)
 
-        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_repository_metadata'), metadata, repository)
+        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_repository_metadata', mtime), metadata, repository)
         dbconn.closeDB()
 
         return metadata
@@ -192,8 +194,9 @@ class Repository(SocketCommands):
         if not valid:
             return valid
 
-        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_package_sets'), repository)
-        if cached != None:
+        mtime = self.get_database_mtime(repository, arch, product, branch)
+        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_package_sets', mtime), repository)
+        if cached is not None:
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
@@ -202,7 +205,7 @@ class Repository(SocketCommands):
         # get data
         data = dbconn.retrievePackageSets()
 
-        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_package_sets'), data, repository)
+        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_package_sets', mtime), data, repository)
         dbconn.closeDB()
 
         return data
@@ -227,8 +230,9 @@ class Repository(SocketCommands):
         if not valid:
             return valid
 
-        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_treeupdates'), repository)
-        if cached != None:
+        mtime = self.get_database_mtime(repository, arch, product, branch)
+        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_treeupdates', mtime), repository)
+        if cached is not None:
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
@@ -239,7 +243,7 @@ class Repository(SocketCommands):
         data['actions'] = dbconn.listAllTreeUpdatesActions()
         data['digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
 
-        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_treeupdates'), data, repository)
+        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_treeupdates', mtime), data, repository)
         dbconn.closeDB()
 
         return data
@@ -275,11 +279,12 @@ class Repository(SocketCommands):
         if not valid:
             return valid
 
+        mtime = self.get_database_mtime(repository, arch, product, branch)
         cached = self.HostInterface.get_dcache(
-            (repository, arch, product, branch, idpackages, 'docmd_pkginfo_strict'),
+            (repository, arch, product, branch, idpackages, 'docmd_pkginfo_strict', mtime),
             repository
         )
-        if cached != None:
+        if cached is not None:
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
@@ -302,7 +307,7 @@ class Repository(SocketCommands):
             result[idpackage] = mydata.copy()
 
         self.HostInterface.set_dcache(
-            (repository, arch, product, branch, idpackages, 'docmd_pkginfo_strict'),
+            (repository, arch, product, branch, idpackages, 'docmd_pkginfo_strict', mtime),
             result,
             repository
         )
@@ -314,6 +319,14 @@ class Repository(SocketCommands):
         mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
         dbpath = os.path.join(mydbroot, etpConst['etpdatabasefile'])
         return dbpath
+
+    def get_database_mtime(self, repository, arch, product, branch):
+        dbpath = self.get_database_path(repository, arch, product, branch)
+        try:
+            mtime = os.path.getmtime(dbpath)
+        except (OSError, IOError,):
+            mtime = 0.0
+        return mtime
 
     def get_database_revision(self, repository, arch, product, branch):
         repoitems = (repository, arch, product, branch,)
