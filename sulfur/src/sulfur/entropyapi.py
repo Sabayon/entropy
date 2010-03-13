@@ -40,7 +40,7 @@ class QueueExecutor:
 
     def __init__(self, SulfurApplication):
         self.Sulfur = SulfurApplication
-        self.Entropy = SulfurApplication.Equo
+        self._entropy = SulfurApplication.Equo
         self.__on_lic_request = False
         self.__on_lic_rc = None
         # clear download mirrors status
@@ -50,12 +50,12 @@ class QueueExecutor:
 
         ### Before even starting the fetch, make sure
         ### that the user accepts their licenses
-        licenses = self.Entropy.get_licenses_to_accept(queue)
+        licenses = self._entropy.get_licenses_to_accept(queue)
         if licenses:
 
             self.__on_lic_request = True
             def do_handle():
-                dialog = LicenseDialog(self.Sulfur, self.Entropy, licenses)
+                dialog = LicenseDialog(self.Sulfur, self._entropy, licenses)
                 accept = dialog.run()
                 dialog.destroy()
                 self.__on_lic_rc = accept, licenses
@@ -91,9 +91,9 @@ class QueueExecutor:
         # unmask packages
         if (not fetch_only) and (not download_sources):
             for match in self.Sulfur.etpbase.unmaskingPackages:
-                result = self.Entropy.unmask_match(match)
-                if not result or self.Entropy.is_match_masked(match):
-                    dbconn = self.Entropy.open_repository(match[1])
+                result = self._entropy.unmask_match(match)
+                if not result or self._entropy.is_match_masked(match):
+                    dbconn = self._entropy.open_repository(match[1])
                     atom = dbconn.retrieveAtom(match[0])
                     self.ok_dialog("%s: %s" % (
                         _("Error enabling masked package"), atom))
@@ -103,7 +103,7 @@ class QueueExecutor:
         runQueue = install_queue
         conflicts_queue = []
         if (not fetch_only) and (not download_sources):
-            runQueue, conflicts_queue, status = self.Entropy.get_install_queue(
+            runQueue, conflicts_queue, status = self._entropy.get_install_queue(
                 install_queue, False, False,
                 relaxed = (SulfurConf.relaxed_deps == 1)
             )
@@ -116,7 +116,7 @@ class QueueExecutor:
             return 3
 
         for lic in licenses:
-            self.Entropy.installed_repository().acceptLicense(lic)
+            self._entropy.installed_repository().acceptLicense(lic)
 
         def do_skip_show():
             self.Sulfur.skipMirrorNow = False
@@ -151,9 +151,9 @@ class QueueExecutor:
                 self.Sulfur.queue_bombing()
 
                 progress_step_count += 1
-                self.Entropy.set_progress(float(progress_step_count)/total_steps)
+                self._entropy.set_progress(float(progress_step_count)/total_steps)
 
-                pkg = self.Entropy.Package()
+                pkg = self._entropy.Package()
                 metaopts = {}
                 metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
                 pkg.prepare(pkg_info, fetch_action, metaopts)
@@ -164,7 +164,7 @@ class QueueExecutor:
                 mykeys[myrepo].add(
                     entropy.tools.dep_getkey(pkg.pkgmeta['atom']))
 
-                self.Entropy.output(
+                self._entropy.output(
                     fetch_string+pkg.pkgmeta['atom'],
                     importance = 2,
                     count = (progress_step_count, total_steps)
@@ -178,10 +178,10 @@ class QueueExecutor:
             if not download_sources:
                 def spawn_ugc():
                     try:
-                        if self.Entropy.UGC != None:
+                        if self._entropy.UGC != None:
                             for myrepo in mykeys:
                                 mypkgkeys = sorted(mykeys[myrepo])
-                                self.Entropy.UGC.add_download_stats(myrepo,
+                                self._entropy.UGC.add_download_stats(myrepo,
                                     mypkgkeys)
                     except:
                         pass
@@ -203,16 +203,16 @@ class QueueExecutor:
 
                 idpackage = rem_data[0]
                 progress_step_count += 1
-                self.Entropy.set_progress(float(progress_step_count)/total_steps)
+                self._entropy.set_progress(float(progress_step_count)/total_steps)
 
                 metaopts = {}
                 metaopts['removeconfig'] = rem_data[1]
                 if idpackage in do_purge_cache:
                     metaopts['removeconfig'] = True
-                pkg = self.Entropy.Package()
+                pkg = self._entropy.Package()
                 pkg.prepare((idpackage,), "remove", metaopts)
 
-                self.Entropy.output(
+                self._entropy.output(
                     "%s: %s" % (
                         _("Removing package"),
                         pkg.pkgmeta['removeatom'],
@@ -222,7 +222,7 @@ class QueueExecutor:
                 )
 
                 if 'remove_installed_vanished' not in pkg.pkgmeta:
-                    self.Entropy.output(
+                    self._entropy.output(
                         "%s: " % (_("Removing"),) + pkg.pkgmeta['removeatom'],
                         importance = 2,
                         count = (progress_step_count, total_steps)
@@ -247,7 +247,7 @@ class QueueExecutor:
             for pkg_info in runQueue:
 
                 progress_step_count += 1
-                self.Entropy.set_progress(float(progress_step_count)/total_steps)
+                self._entropy.set_progress(float(progress_step_count)/total_steps)
                 self.Sulfur.queue_bombing()
 
                 metaopts = {}
@@ -261,10 +261,10 @@ class QueueExecutor:
                     metaopts['install_source'] = \
                         etpConst['install_sources']['automatic_dependency']
 
-                pkg = self.Entropy.Package()
+                pkg = self._entropy.Package()
                 pkg.prepare(pkg_info, "install", metaopts)
 
-                self.Entropy.output(
+                self._entropy.output(
                     "%s: %s" % (_("Installing"), pkg.pkgmeta['atom'],),
                     importance = 2,
                     count = (progress_step_count, total_steps)

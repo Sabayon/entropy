@@ -185,7 +185,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if old_branch == current_branch: # all fine, no need to run
             return
 
-        repos, err = self._helper.run_repositories_post_branch_switch_hooks(
+        repos, err = self._helper._run_repositories_post_branch_switch_hooks(
             old_branch, current_branch)
         if not err:
             write_in_branch_upgrade(current_branch)
@@ -197,7 +197,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if os.getuid() != 0:
             return
 
-        repos, errors = self._helper.run_repository_post_branch_upgrade_hooks(
+        repos, errors = self._helper._run_repository_post_branch_upgrade_hooks(
             pretend = True)
         if not repos:
             # no scripts to run
@@ -224,7 +224,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # actually execute this only if
         # there are no updates left
         if not update:
-            self._helper.run_repository_post_branch_upgrade_hooks()
+            self._helper._run_repository_post_branch_upgrade_hooks()
             delete_in_branch_upgrade()
 
     def system_mask_parser(self, system_settings_instance):
@@ -668,7 +668,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.clear_cache()
 
         if self.openclientdb:
-            self.open_installed_repository()
+            self._open_installed_repository()
 
         # create our SystemSettings plugin
         self.sys_settings_client_plugin = ClientSystemSettingsPlugin(
@@ -683,7 +683,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self._validate_repositories_cache()
 
         if self.repo_validation:
-            self.validate_repositories()
+            self._validate_repositories()
         else:
             self._enabled_repos.extend(
                 self.SystemSettings['repositories']['order'])

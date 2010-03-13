@@ -41,7 +41,8 @@ import entropy.tools
 
 class RepositoryMixin:
 
-    def validate_repositories(self, quiet = False):
+    def _validate_repositories(self, quiet = False):
+
         StatusInterface().clear()
         self._repo_error_messages_cache.clear()
 
@@ -145,12 +146,6 @@ class RepositoryMixin:
             self.SystemSettings.clear()
         self._can_run_sys_set_hooks = old_value
 
-
-    def is_repository_connection_cached(self, repoid):
-        if (repoid, etpConst['systemroot'],) in self._repodb_cache:
-            return True
-        return False
-
     def open_repository(self, repoid):
 
         # support for installed pkgs repository, got by issuing
@@ -160,7 +155,7 @@ class RepositoryMixin:
 
         key = self.__get_repository_cache_key(repoid)
         if key not in self._repodb_cache:
-            dbconn = self.load_repository_database(repoid,
+            dbconn = self._load_repository_database(repoid,
                 xcache = self.xcache, indexing = self.indexing)
             try:
                 dbconn.checkDatabaseApi()
@@ -172,7 +167,7 @@ class RepositoryMixin:
 
         return self._repodb_cache.get(key)
 
-    def load_repository_database(self, repoid, xcache = True, indexing = True):
+    def _load_repository_database(self, repoid, xcache = True, indexing = True):
 
         if const_isstring(repoid):
             if repoid.endswith(etpConst['packagesext']):
@@ -233,23 +228,20 @@ class RepositoryMixin:
         return conn
 
     def get_repository_revision(self, reponame):
+
         db_data = self.SystemSettings['repositories']['available'][reponame]
-        fname = db_data['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
+        fname = os.path.join(db_data['dbpath'],
+            etpConst['etpdatabaserevisionfile'])
         revision = -1
+
         if os.path.isfile(fname) and os.access(fname, os.R_OK):
             with open(fname, "r") as f:
                 try:
                     revision = int(f.readline().strip())
                 except (OSError, IOError, ValueError,):
                     pass
-        return revision
 
-    def update_repository_revision(self, reponame):
-        r = self.get_repository_revision(reponame)
-        db_data = self.SystemSettings['repositories']['available'][reponame]
-        db_data['dbrevision'] = "0"
-        if r != -1:
-            db_data['dbrevision'] = str(r)
+        return revision
 
     def add_repository(self, repodata):
 
@@ -286,7 +278,7 @@ class RepositoryMixin:
             self.clear_cache()
             self.SystemSettings.clear()
 
-        self.validate_repositories()
+        self._validate_repositories()
 
     def remove_repository(self, repoid, disable = False):
 
@@ -303,7 +295,7 @@ class RepositoryMixin:
         # issues when reloading SystemSettings which is bound to Entropy Client
         # SystemSettings plugin, which triggers calculate_world_updates, which
         # triggers _all_repositories_checksum, which triggers open_repository,
-        # which triggers load_repository_database, which triggers an unwanted
+        # which triggers _load_repository_database, which triggers an unwanted
         # output message => "bad repository id specified"
         if repoid in self._enabled_repos:
             self._enabled_repos.remove(repoid)
@@ -333,7 +325,7 @@ class RepositoryMixin:
 
         # reset db cache
         self.close_repositories()
-        self.validate_repositories()
+        self._validate_repositories()
 
     def __save_repository_settings(self, repodata, remove = False,
         disable = False, enable = False):
@@ -461,7 +453,7 @@ class RepositoryMixin:
         self.SystemSettings.clear()
         self.close_repositories()
         self.SystemSettings._clear_repository_cache(repoid = repoid)
-        self.validate_repositories()
+        self._validate_repositories()
 
     def enable_repository(self, repoid):
         self.SystemSettings._clear_repository_cache(repoid = repoid)
@@ -471,7 +463,7 @@ class RepositoryMixin:
         self.__save_repository_settings(repodata, enable = True)
         self.SystemSettings.clear()
         self.close_repositories()
-        self.validate_repositories()
+        self._validate_repositories()
 
     def disable_repository(self, repoid):
         # update self.SystemSettings['repositories']['available']
@@ -498,19 +490,11 @@ class RepositoryMixin:
             self.SystemSettings.clear()
 
         self.close_repositories()
-        self.validate_repositories()
-
-    def get_repository_settings(self, repoid):
-        try:
-            repodata = self.SystemSettings['repositories']['available'][repoid].copy()
-        except KeyError:
-            if repoid not in self.SystemSettings['repositories']['excluded']:
-                raise
-            repodata = self.SystemSettings['repositories']['excluded'][repoid].copy()
-        return repodata
+        self._validate_repositories()
 
     # every tbz2 file that would be installed must pass from here
-    def add_package_to_repos(self, pkg_file):
+    def add_package_to_repositories(self, pkg_file):
+
         atoms_contained = []
         basefile = os.path.basename(pkg_file)
         db_dir = tempfile.mkdtemp()
@@ -527,7 +511,7 @@ class RepositoryMixin:
         repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
         repodata['smartpackage'] = False # extra info added
 
-        mydbconn = self.open_generic_database(dbfile)
+        mydbconn = self.open_generic_repository(dbfile)
         # read all idpackages
         try:
             # all branches admitted from external files
@@ -545,7 +529,7 @@ class RepositoryMixin:
             atoms_contained.append((int(myidpackage), basefile))
 
         self.add_repository(repodata)
-        self.validate_repositories()
+        self._validate_repositories()
         if basefile not in self._enabled_repos:
             self.remove_repository(basefile)
             return -4, atoms_contained
@@ -588,7 +572,7 @@ class RepositoryMixin:
         """
         return self._installed_repository
 
-    def open_installed_repository(self):
+    def _open_installed_repository(self):
 
         def load_db_from_ram():
             self.safe_mode = etpConst['safemodeerrors']['clientdb']
@@ -643,60 +627,11 @@ class RepositoryMixin:
 
     def reopen_installed_repository(self):
         self._installed_repository.closeDB()
-        self.open_installed_repository()
+        self._open_installed_repository()
         # make sure settings are in sync
         self.SystemSettings.clear()
 
-    def client_repository_sanity_check(self):
-        self.output(
-            darkred(_("Sanity Check") + ": " + _("system database")),
-            importance = 2,
-            type = "warning"
-        )
-        idpkgs = self._installed_repository.listAllIdpackages()
-        length = len(idpkgs)
-        count = 0
-        errors = False
-        scanning_txt = _("Scanning...")
-        for x in idpkgs:
-            count += 1
-            self.output(
-                                    darkgreen(scanning_txt),
-                                    importance = 0,
-                                    type = "info",
-                                    back = True,
-                                    count = (count, length),
-                                    percent = True
-                                )
-            try:
-                self._installed_repository.getPackageData(x)
-            except Exception as e:
-                entropy.tools.print_traceback()
-                errors = True
-                self.output(
-                    darkred(_("Errors on idpackage %s, error: %s")) % (x, e),
-                    importance = 0,
-                    type = "warning"
-                )
-
-        if not errors:
-            t = _("Sanity Check") + ": %s" % (bold(_("PASSED")),)
-            self.output(
-                darkred(t),
-                importance = 2,
-                type = "warning"
-            )
-            return 0
-        else:
-            t = _("Sanity Check") + ": %s" % (bold(_("CORRUPTED")),)
-            self.output(
-                darkred(t),
-                importance = 2,
-                type = "warning"
-            )
-            return -1
-
-    def open_generic_database(self, dbfile, dbname = None, xcache = None,
+    def open_generic_repository(self, dbfile, dbname = None, xcache = None,
             readOnly = False, indexing_override = None, skipChecks = False):
         if xcache is None:
             xcache = self.xcache
@@ -736,7 +671,7 @@ class RepositoryMixin:
         dbc.initializeDatabase()
         return dbc
 
-    def backup_database(self, dbpath, backup_dir = None, silent = False,
+    def backup_repository(self, dbpath, backup_dir = None, silent = False,
         compress_level = 9):
 
         if compress_level not in list(range(1, 10)):
@@ -804,7 +739,7 @@ class RepositoryMixin:
             )
         return True, _("All fine")
 
-    def restore_database(self, backup_path, db_destination, silent = False):
+    def restore_repository(self, backup_path, db_destination, silent = False):
 
         bytes_required = 1024000*200
         db_dir = os.path.dirname(db_destination)
@@ -840,7 +775,6 @@ class RepositoryMixin:
                 back = True
             )
 
-        import bz2
         try:
             entropy.tools.uncompress_file(backup_path, db_destination,
                 bz2.BZ2File)
@@ -863,7 +797,7 @@ class RepositoryMixin:
         self.clear_cache()
         return True, _("All fine")
 
-    def list_backedup_client_databases(self, client_dbdir = None):
+    def installed_repository_backups(self, client_dbdir = None):
         if not client_dbdir:
             client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
         return [os.path.join(client_dbdir, x) for x in os.listdir(client_dbdir) \
@@ -871,7 +805,7 @@ class RepositoryMixin:
                     os.access(os.path.join(client_dbdir, x), os.R_OK)
         ]
 
-    def run_repositories_post_branch_switch_hooks(self, old_branch, new_branch):
+    def _run_repositories_post_branch_switch_hooks(self, old_branch, new_branch):
         """
         This method is called whenever branch is successfully switched by user.
         Branch is switched when user wants to upgrade the OS to a new
@@ -988,7 +922,7 @@ class RepositoryMixin:
 
         return hooks_ran, errors
 
-    def run_repository_post_branch_upgrade_hooks(self, pretend = False):
+    def _run_repository_post_branch_upgrade_hooks(self, pretend = False):
         """
         This method is called whenever branch is successfully switched by user
         and all the updates have been installed (also look at:
@@ -1314,7 +1248,7 @@ class MiscMixin:
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
         self.reload_constants()
-        self.validate_repositories()
+        self._validate_repositories()
         self.reopen_installed_repository()
         # keep them closed, since SystemSettings.clear() is called
         # above on reopen_installed_repository()
@@ -1422,7 +1356,7 @@ class MiscMixin:
         # reset treeupdatesactions
         self.reopen_installed_repository()
         self._installed_repository.resetTreeupdatesDigests()
-        self.validate_repositories(quiet = True)
+        self._validate_repositories(quiet = True)
         self.close_repositories()
         if self.xcache:
             self._cacher.start()
@@ -1571,7 +1505,7 @@ class MiscMixin:
         treeupdates_actions = None):
         tmp_fd, tmp_path = tempfile.mkstemp()
         os.close(tmp_fd)
-        dbconn = self.open_generic_database(tmp_path)
+        dbconn = self.open_generic_repository(tmp_path)
         dbconn.initializeDatabase()
         dbconn.addPackage(data, revision = data['revision'])
         if treeupdates_actions != None:

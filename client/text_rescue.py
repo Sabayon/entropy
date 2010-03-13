@@ -110,7 +110,7 @@ def database(options):
             return _database_spmsync(etp_client)
 
         elif options[0] == "backup":
-            status, err_msg = etp_client.backup_database(
+            status, err_msg = etp_client.backup_repository(
                 etpConst['etpdatabaseclientfilepath'])
             if status:
                 return 0
@@ -143,7 +143,7 @@ def _database_vacuum(entropy_client):
 
 def _database_restore(entropy_client):
 
-    dblist = entropy_client.list_backedup_client_databases()
+    dblist = entropy_client.installed_repository_backups()
     if not dblist:
         print_info(brown(" @@ ")+blue("%s." % (
             _("No backed up databases found"),)))
@@ -180,7 +180,7 @@ def _database_restore(entropy_client):
             continue
         break
 
-    status, err_msg = entropy_client.restore_database(dbpath,
+    status, err_msg = entropy_client.restore_repository(dbpath,
         etpConst['etpdatabaseclientfilepath'])
     if status:
         return 0
@@ -260,7 +260,7 @@ def _database_resurrect(entropy_client):
     dbpath = etpConst['etpdatabaseclientfilepath']
     if os.path.isfile(dbpath) and os.access(dbpath, os.W_OK):
         os.remove(dbpath)
-    dbc = entropy_client.open_generic_database(dbpath,
+    dbc = entropy_client.open_generic_repository(dbpath,
         dbname = etpConst['clientdbid']) # don't do this at home
     dbc.initializeDatabase()
     dbc.commitChanges()
@@ -656,7 +656,7 @@ def _database_generate(entropy_client):
     entropy_client.installed_repository().closeDB()
     if os.path.isfile(dbfile):
         os.remove(dbfile)
-    entropy_client.open_installed_repository()
+    entropy_client._open_installed_repository()
     entropy_client.installed_repository().initializeDatabase()
     mytxt = darkred("  %s %s") % (
         _("Database reinitialized correctly at"),
@@ -728,13 +728,63 @@ def _database_generate(entropy_client):
     return 0
 
 def _database_check(entropy_client):
+
+    def client_repository_sanity_check():
+        entropy_client.output(
+            darkred(_("Sanity Check") + ": " + _("system database")),
+            importance = 2,
+            type = "warning"
+        )
+        idpkgs = entropy_client.installed_repository().listAllIdpackages()
+        length = len(idpkgs)
+        count = 0
+        errors = False
+        scanning_txt = _("Scanning...")
+        for x in idpkgs:
+            count += 1
+            entropy_client.output(
+                darkgreen(scanning_txt),
+                importance = 0,
+                type = "info",
+                back = True,
+                count = (count, length),
+                percent = True
+            )
+            try:
+                entropy_client.installed_repository().getPackageData(x)
+            except Exception as e:
+                entropy.tools.print_traceback()
+                errors = True
+                entropy_client.output(
+                    darkred(_("Errors on idpackage %s, error: %s")) % (x, e),
+                    importance = 0,
+                    type = "warning"
+                )
+
+        if not errors:
+            t = _("Sanity Check") + ": %s" % (bold(_("PASSED")),)
+            entropy_client.output(
+                darkred(t),
+                importance = 2,
+                type = "warning"
+            )
+            return 0
+        else:
+            t = _("Sanity Check") + ": %s" % (bold(_("CORRUPTED")),)
+            entropy_client.output(
+                darkred(t),
+                importance = 2,
+                type = "warning"
+            )
+            return -1
+
     try:
         valid = True
         entropy_client.installed_repository().validateDatabase()
     except SystemDatabaseError:
         valid = False
     if valid:
-        entropy_client.client_repository_sanity_check()
+        client_repository_sanity_check()
     else:
         mytxt = "# %s: %s" % (bold(_("ATTENTION")),
             red(_("database does not exist or is badly broken")),)

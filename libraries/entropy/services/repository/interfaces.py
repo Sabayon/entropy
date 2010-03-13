@@ -263,7 +263,7 @@ class Server(SocketHost):
             cached = self.syscache['db'].get(dbpath)
             if cached != None:
                 return cached
-        dbc = self.Entropy.open_generic_database(
+        dbc = self.Entropy.open_generic_repository(
             dbpath,
             xcache = False,
             readOnly = True,

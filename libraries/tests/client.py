@@ -112,7 +112,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_package_repository(self):
         test_pkg = _misc.get_test_entropy_package()
-        rc, atoms_contained = self.Client.add_package_to_repos(test_pkg)
+        rc, atoms_contained = self.Client.add_package_to_repositories(test_pkg)
         self.assertEqual(0, rc)
         self.assertNotEqual([], atoms_contained)
         for idpackage, repoid in atoms_contained:
@@ -147,7 +147,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         etp_pkg = os.path.join(pkg_dir, os.listdir(pkg_dir)[0])
         self.assert_(os.path.isfile(etp_pkg))
 
-        status, matches = self.Client.add_package_to_repos(etp_pkg)
+        status, matches = self.Client.add_package_to_repositories(etp_pkg)
         self.assert_(status == 0)
         self.assert_(matches)
         for match in matches:

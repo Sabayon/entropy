@@ -52,7 +52,7 @@ class SulfurApplicationEventsMixin:
 
     def on_dbBackupButton_clicked(self, widget):
         self.start_working()
-        status, err_msg = self.Equo.backup_database(
+        status, err_msg = self.Equo.backup_repository(
             etpConst['etpdatabaseclientfilepath'])
         self.end_working()
         if not status:
@@ -68,7 +68,7 @@ class SulfurApplicationEventsMixin:
         if myiter == None: return
         dbpath = model.get_value(myiter, 0)
         self.start_working()
-        status, err_msg = self.Equo.restore_database(dbpath,
+        status, err_msg = self.Equo.restore_repository(dbpath,
             etpConst['etpdatabaseclientfilepath'])
         self.end_working()
         self.Equo.reopen_installed_repository()
@@ -242,7 +242,7 @@ class SulfurApplicationEventsMixin:
         # get text
         if repodata[1] != None:
             repoid = self.repoView.get_repoid(repodata)
-            if repoid == self.Equo.SystemSettings['repositories']['default_repository']:
+            if repoid == self._settings['repositories']['default_repository']:
                 okDialog( self.ui.main,
                     _("You! Why do you want to remove the main repository ?"))
                 return True
@@ -250,7 +250,17 @@ class SulfurApplicationEventsMixin:
             self.reset_cache_status()
             self.setup_repoView()
 
-    def on_repoEdit_clicked( self, widget ):
+    def on_repoEdit_clicked(self, widget):
+
+        def get_repository_settings(repoid):
+            try:
+                repodata = self._settings['repositories']['available'][repoid]
+            except KeyError:
+                if repoid not in self._settings['repositories']['excluded']:
+                    raise
+                repodata = self._settings['repositories']['excluded'][repoid]
+            return repodata.copy()
+
         my = AddRepositoryWindow(self, self.ui.main, self.Equo)
         my.addrepo_ui.repoSubmit.hide()
         my.addrepo_ui.repoSubmitEdit.show()
@@ -261,7 +271,7 @@ class SulfurApplicationEventsMixin:
         repostuff = selection.get_selected()
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
-            repodata = self.Equo.get_repository_settings(repoid)
+            repodata = get_repository_settings(repoid)
             my._load_repo_data(repodata)
             my.load()
 
@@ -397,7 +407,7 @@ class SulfurApplicationEventsMixin:
 
         newrepo = os.path.basename(fn)
         # we have it !
-        status, atomsfound = self.Equo.add_package_to_repos(fn)
+        status, atomsfound = self.Equo.add_package_to_repositories(fn)
         if status != 0:
             errtxt = _("is not a valid Entropy package")
             if status == -3:
@@ -781,8 +791,8 @@ class SulfurApplicationEventsMixin:
 
     def on_ugcClearCacheButton_clicked(self, widget):
         if self.Equo.UGC == None: return
-        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        repo_excluded = self._settings['repositories']['excluded']
+        avail_repos = self._settings['repositories']['available']
         for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
             self.Equo.UGC.UGCCache.clear_cache(repoid)
             self.set_status_ticker("%s: %s ..." % (_("Cleaning UGC cache of"), repoid,))
@@ -791,8 +801,8 @@ class SulfurApplicationEventsMixin:
     def on_ugcClearCredentialsButton_clicked(self, widget):
         if self.Equo.UGC == None:
             return
-        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        repo_excluded = self._settings['repositories']['excluded']
+        avail_repos = self._settings['repositories']['available']
         for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
             if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
                 continue

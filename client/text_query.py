@@ -836,7 +836,7 @@ def search_orphaned_files(Equo = None):
     filepath = entropy.tools.get_random_temp_file()
     if os.path.isfile(filepath):
         os.remove(filepath)
-    tdbconn = Equo.open_generic_database(filepath)
+    tdbconn = Equo.open_generic_repository(filepath)
     tdbconn.initializeDatabase()
     tdbconn.dropAllIndexes()
 

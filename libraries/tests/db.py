@@ -411,7 +411,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         fd, new_db_path = tempfile.mkstemp()
         os.close(fd)
         self.test_db.doDatabaseImport(buf_file, new_db_path)
-        new_db = self.Client.open_generic_database(new_db_path)
+        new_db = self.Client.open_generic_repository(new_db_path)
         new_db_data = new_db.getPackageData(idpackage)
         new_db.closeDB()
         etpUi['mute'] = False

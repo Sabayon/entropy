@@ -3782,7 +3782,7 @@ class ServerRepositoryMixin:
             header = darkgreen(" * "),
             back = True
         )
-        dbconn = self.open_generic_database(dbpath)
+        dbconn = self.open_generic_repository(dbpath)
         dbconn.initializeDatabase()
         dbconn.commitChanges()
         dbconn.closeDB()

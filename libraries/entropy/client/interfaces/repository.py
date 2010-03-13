@@ -31,6 +31,7 @@ from entropy.dump import dumpobj
 from entropy.security import Repository as RepositorySecurity
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
     DatabaseError
+from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
@@ -57,8 +58,9 @@ class Repository:
             "meta_file", "meta_file_gpg", "notice_board"
         )
         self.__big_sock_timeout = 10
-        self.Entropy = entropy_client_instance
+        self._entropy = entropy_client_instance
         self._cacher = EntropyCacher()
+        self._settings = SystemSettings()
         self.repo_ids = repo_identifiers
         self.force = force
         self.sync_errors = False
@@ -77,13 +79,13 @@ class Repository:
         if env_gpg is not None:
             self._gpg_feature = False
         # Developer Repository mode enabled?
-        sys_set = self.Entropy.SystemSettings
+        sys_set = self._settings
         self._developer_repo = sys_set['repositories']['developer_repo']
         if self._developer_repo:
             const_debug_write(__name__, "__init__: developer repo mode enabled")
 
         avail_data = sys_set['repositories']['available']
-        # check self.Entropy.SystemSettings['repositories']['available']
+        # check self._settings['repositories']['available']
         if not avail_data:
             mytxt = "No repositories specified in %s" % (
                 etpConst['repositoriesconf'],)
@@ -99,7 +101,7 @@ class Repository:
 
     def __get_eapi3_connection(self, repoid):
         # get database url
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         dburl = avail_data[repoid].get('service_uri')
         if dburl is None:
             return None
@@ -109,7 +111,7 @@ class Repository:
             from entropy.services.ugc.interfaces import Client
             from entropy.client.services.ugc.commands import Client as \
                 CommandsClient
-            eapi3_socket = Client(self.Entropy, CommandsClient,
+            eapi3_socket = Client(self._entropy, CommandsClient,
                 output_header = "\t", socket_timeout = self.__big_sock_timeout)
             eapi3_socket.connect(dburl, port)
             return eapi3_socket
@@ -174,7 +176,7 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        repo_settings = self.Entropy.SystemSettings['repositories']
+        repo_settings = self._settings['repositories']
         dbc_format = repo_settings['available'][repo]['dbcformat']
         cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
         if cmethod is None:
@@ -187,7 +189,7 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         repo_data = avail_data[repo]
 
         # create dir if it doesn't exist
@@ -211,7 +213,7 @@ class Repository:
                 mytxt = "For %s, cmethod can't be None" % (item,)
                 raise AttributeError(mytxt)
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         repo_data = avail_data[repo]
 
         repo_db = repo_data['database']
@@ -308,7 +310,7 @@ class Repository:
         return url, path
 
     def __remove_repository_files(self, repo):
-        sys_set = self.Entropy.SystemSettings
+        sys_set = self._settings
         repo_dbpath = sys_set['repositories']['available'][repo]['dbpath']
         shutil.rmtree(repo_dbpath, True)
 
@@ -317,7 +319,7 @@ class Repository:
         self.__validate_repository_id(repo)
         rc = 0
         path = None
-        sys_set_repos = self.Entropy.SystemSettings['repositories']['available']
+        sys_set_repos = self._settings['repositories']['available']
         repo_data = sys_set_repos[repo]
 
         garbage, myfile = self._construct_paths(down_item, repo, cmethod)
@@ -342,7 +344,7 @@ class Repository:
             raise AttributeError(mytxt)
 
         if rc == 0:
-            self.Entropy.setup_default_file_perms(path)
+            self._entropy.setup_default_file_perms(path)
 
         return rc
 
@@ -355,7 +357,7 @@ class Repository:
     def __verify_database_checksum(self, repo, cmethod = None):
 
         self.__validate_repository_id(repo)
-        sys_settings_repos = self.Entropy.SystemSettings['repositories']
+        sys_settings_repos = self._settings['repositories']
         avail_config = sys_settings_repos['available'][repo]
 
         sep = os.path.sep
@@ -405,7 +407,7 @@ class Repository:
                 else:
                     return repo_rev
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         repo_data = avail_data[repo]
 
         url = repo_data['database'] + "/" + etpConst['etpdatabaserevisionfile']
@@ -427,7 +429,7 @@ class Repository:
 
         onlinestatus = self.get_online_repository_revision(repo)
         if onlinestatus != -1:
-            localstatus = self.Entropy.get_repository_revision(repo)
+            localstatus = self._entropy.get_repository_revision(repo)
             if (localstatus == onlinestatus) and (not self.force):
                 return False
         return True
@@ -468,7 +470,7 @@ class Repository:
             os.makedirs(filepath_dir, 0o775)
             const_setup_perms(filepath_dir, etpConst['entropygid'])
 
-        fetchConn = self.Entropy.urlFetcher(
+        fetchConn = self._entropy.urlFetcher(
             url,
             filepath,
             resume = False,
@@ -480,7 +482,7 @@ class Repository:
         del fetchConn
         if rc in ("-1", "-2", "-3", "-4"):
             return False
-        self.Entropy.setup_default_file_perms(filepath)
+        self._entropy.setup_default_file_perms(filepath)
         return True
 
     def _check_downloaded_database(self, repo, cmethod):
@@ -498,7 +500,7 @@ class Repository:
             darkgreen(os.path.basename(dbfilename)),
             red("..."),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 0,
             back = True,
@@ -511,7 +513,7 @@ class Repository:
                 red(_("Cannot open digest")),
                 red(_("Cannot verify database integrity")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -522,7 +524,7 @@ class Repository:
                 red(_("Downloaded database status")),
                 bold(_("OK")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -533,7 +535,7 @@ class Repository:
                 red(_("Downloaded database status")),
                 darkred(_("ERROR")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -543,7 +545,7 @@ class Repository:
                 red(_("An error occured while checking database integrity")),
                 red(_("Giving up")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "error",
@@ -552,13 +554,19 @@ class Repository:
             return 1
         return 0
 
+    def _update_repository_revision(self, repo):
+        cur_rev = self._entropy.get_repository_revision(repo)
+        db_data = self._settings['repositories']['available'][repo]
+        db_data['dbrevision'] = "0"
+        if cur_rev != -1:
+            db_data['dbrevision'] = str(cur_rev)
 
     def _show_repository_information(self, repo, count_info):
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         repo_data = avail_data[repo]
 
-        self.Entropy.output(
+        self._entropy.output(
             bold("%s") % ( repo_data['description'] ),
             importance = 2,
             type = "info",
@@ -567,7 +575,7 @@ class Repository:
         )
         mytxt = "%s: %s" % (red(_("Database URL")),
             darkgreen(repo_data['database']),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -575,7 +583,7 @@ class Repository:
         )
         mytxt = "%s: %s" % (red(_("Database local path")),
             darkgreen(repo_data['dbpath']),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -583,7 +591,7 @@ class Repository:
         )
         mytxt = "%s: %s" % (red(_("Database EAPI")),
             darkgreen(str(self._repo_eapi[repo])),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -592,13 +600,13 @@ class Repository:
 
     def __get_eapi3_local_database(self, repo):
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         repo_data = avail_data[repo]
 
         dbfile = os.path.join(repo_data['dbpath'], etpConst['etpdatabasefile'])
         mydbconn = None
         try:
-            mydbconn = self.Entropy.open_generic_database(dbfile,
+            mydbconn = self._entropy.open_generic_repository(dbfile,
                 xcache = False, indexing_override = False)
             mydbconn.validateDatabase()
         except (OperationalError, IntegrityError, SystemDatabaseError,
@@ -609,7 +617,7 @@ class Repository:
     def __get_eapi3_database_differences(self, eapi3_interface, repo, idpackages,
         session):
 
-        product = self.Entropy.SystemSettings['repositories']['product']
+        product = self._settings['repositories']['product']
         data = eapi3_interface.CmdInterface.differential_packages_comparison(
             session, idpackages, repo, etpConst['currentarch'], product
         )
@@ -624,7 +632,7 @@ class Repository:
         return data['added'], data['removed'], data['secure_checksum']
 
     def __get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
-        product = self.Entropy.SystemSettings['repositories']['product']
+        product = self._settings['repositories']['product']
         data = eapi3_interface.CmdInterface.get_repository_metadata(
             session, repo, etpConst['currentarch'], product
         )
@@ -679,7 +687,7 @@ class Repository:
             self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
                 darkred(_("remote database suddenly locked")),)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -696,7 +704,7 @@ class Repository:
                 blue(str(len(added_ids))),
                 darkred(str(threshold)),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -722,12 +730,12 @@ class Repository:
         # fetch and store
         count = 0
         maxcount = len(added_segments)
-        product = self.Entropy.SystemSettings['repositories']['product']
+        product = self._settings['repositories']['product']
         for segment in added_segments:
 
             count += 1
             mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
@@ -750,7 +758,7 @@ class Repository:
                 if pkgdata is None:
                     mytxt = "%s: %s" % ( blue(_("Fetch error on segment")),
                         darkred(str(segment)),)
-                    self.Entropy.output(
+                    self._entropy.output(
                         mytxt, importance = 1, type = "warning",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -760,7 +768,7 @@ class Repository:
                         blue(_("Service status")),
                         darkred("remote database suddenly locked"),
                     )
-                    self.Entropy.output(
+                    self._entropy.output(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -773,7 +781,7 @@ class Repository:
                         pkgdata[0], pkgdata[1],
                         darkred("Error processing the command"),
                     )
-                    self.Entropy.output(
+                    self._entropy.output(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -794,7 +802,7 @@ class Repository:
                         darkred("Error storing data"),
                         e,
                     )
-                    self.Entropy.output(
+                    self._entropy.output(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count, maxcount,)
                     )
@@ -818,7 +826,7 @@ class Repository:
                     blue(_("EAPI3 Service status")),
                     darkred(_("cannot fetch repository metadata")),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     importance = 0,
                     type = "info",
@@ -839,7 +847,7 @@ class Repository:
                 blue(_("EAPI3 Service status")),
                 darkred(_("cannot update treeupdates data")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -858,7 +866,7 @@ class Repository:
                 blue(_("EAPI3 Service status")),
                 darkred(_("cannot update package sets data")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 0,
                 type = "info",
@@ -882,7 +890,7 @@ class Repository:
                     blue(_("Fetch error on segment while adding")),
                     darkred(str(segment)),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt, importance = 1, type = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
@@ -893,7 +901,7 @@ class Repository:
                 blue(_("Injecting package")),
                 darkgreen(mydata['atom']),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
@@ -906,7 +914,7 @@ class Repository:
             except (Error,) as err:
                 if etpUi['debug']:
                     entropy.tools.print_traceback()
-                self.Entropy.output("%s: %s" % (
+                self._entropy.output("%s: %s" % (
                     blue(_("repository error while adding packages")),
                     err,),
                     importance = 1, type = "warning",
@@ -915,7 +923,7 @@ class Repository:
                 mydbconn.closeDB()
                 return False
 
-        self.Entropy.output(
+        self._entropy.output(
             blue(_("Packages injection complete")), importance = 0,
             type = "info", header = "\t",
         )
@@ -931,7 +939,7 @@ class Repository:
             mytxt = "%s: %s" % (
                 blue(_("Removing package")),
                 darkred(str(myatom)),)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
@@ -939,7 +947,7 @@ class Repository:
                 mydbconn.removePackage(idpackage, do_cleanup = False,
                     do_commit = False)
             except (Error,):
-                self.Entropy.output(
+                self._entropy.output(
                     blue(_("repository error while removing packages")),
                     importance = 1, type = "warning",
                     header = "\t", count = (count, maxcount,)
@@ -947,7 +955,7 @@ class Repository:
                 mydbconn.closeDB()
                 return False
 
-        self.Entropy.output(
+        self._entropy.output(
             blue(_("Packages removal complete")),
             importance = 0, type = "info",
             header = "\t",
@@ -962,17 +970,17 @@ class Repository:
         if secure_checksum == mychecksum:
             result = True
         else:
-            self.Entropy.output(
+            self._entropy.output(
                 blue(_("Database checksum doesn't match remote.")),
                 importance = 0, type = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('local'), mychecksum,)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt, importance = 0,
                 type = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('remote'), secure_checksum,)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt, importance = 0,
                 type = "info", header = "\t",
             )
@@ -981,7 +989,7 @@ class Repository:
         return result
 
     def _run_post_update_repository_hook(self, repoid):
-        my_repos = self.Entropy.SystemSettings['repositories']
+        my_repos = self._settings['repositories']
         branch = my_repos['branch']
         avail_data = my_repos['available']
         repo_data = avail_data[repoid]
@@ -1011,7 +1019,7 @@ class Repository:
 
     def _install_gpg_key_if_available(self, repoid):
 
-        my_repos = self.Entropy.SystemSettings['repositories']
+        my_repos = self._settings['repositories']
         avail_data = my_repos['available']
         repo_data = avail_data[repoid]
         gpg_path = repo_data['gpg_pubkey']
@@ -1021,7 +1029,7 @@ class Repository:
 
         def do_warn_user(fingerprint):
             mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt + ":",
                 type = "warning",
                 header = "\t"
@@ -1029,25 +1037,25 @@ class Repository:
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
                 etpConst['etpclientgpgdir'], fingerprint,)
             )
-            self.Entropy.output(
+            self._entropy.output(
                 "$ " + mytxt,
                 type = "warning",
                 header = "\t"
             )
 
         try:
-            repo_sec = self.Entropy.RepositorySecurity()
+            repo_sec = self._entropy.RepositorySecurity()
         except RepositorySecurity.GPGError:
             mytxt = "%s," % (
                 purple(_("This repository suports GPG-signed packages")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "warning",
                 header = "\t"
             )
             mytxt = purple(_("you may want to install GnuPG to take advantage of this feature"))
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "warning",
                 header = "\t"
@@ -1064,7 +1072,7 @@ class Repository:
         if pk_avail:
 
             tmp_dir = tempfile.mkdtemp()
-            repo_tmp_sec = self.Entropy.RepositorySecurity(
+            repo_tmp_sec = self._entropy.RepositorySecurity(
                 keystore_dir = tmp_dir)
             # try to install and get fingerprint
             try:
@@ -1081,7 +1089,7 @@ class Repository:
                     purple(_("GPG key changed for")),
                     bold(repoid),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "warning",
                     header = "\t"
@@ -1090,7 +1098,7 @@ class Repository:
                     darkgreen(fingerprint),
                     purple(downloaded_key_fp),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "warning",
                     header = "\t"
@@ -1101,7 +1109,7 @@ class Repository:
                     purple(_("GPG key already installed for")),
                     bold(repoid),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "info",
                     header = "\t"
@@ -1114,7 +1122,7 @@ class Repository:
                 purple(_("GPG key EXPIRED for repository")),
                 bold(repoid),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "warning",
                 header = "\t"
@@ -1126,7 +1134,7 @@ class Repository:
             purple(_("Installing GPG key for repository")),
             brown(repoid),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = "\t",
@@ -1139,7 +1147,7 @@ class Repository:
                 darkred(_("Error during GPG key installation")),
                 err,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "error",
                 header = "\t"
@@ -1150,7 +1158,7 @@ class Repository:
             purple(_("Successfully installed GPG key for repository")),
             brown(repoid),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = "\t"
@@ -1159,7 +1167,7 @@ class Repository:
             darkgreen(_("Fingerprint")),
             bold(fingerprint),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = "\t"
@@ -1170,7 +1178,7 @@ class Repository:
     def _gpg_verify_downloaded_files(self, repo, downloaded_files):
 
         try:
-            repo_sec = self.Entropy.RepositorySecurity()
+            repo_sec = self._entropy.RepositorySecurity()
         except RepositorySecurity.GPGServiceNotAvailable:
             # wtf! it was available a while ago!
             return 0 # GPG not available
@@ -1197,7 +1205,7 @@ class Repository:
                 darkgreen(_("Verifying GPG signature of")),
                 brown(file_name),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "info",
                 header = blue("\t@@ "),
@@ -1211,7 +1219,7 @@ class Repository:
                     darkgreen(_("Verified GPG signature of")),
                     brown(file_name),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "info",
                     header = blue("\t@@ ")
@@ -1221,7 +1229,7 @@ class Repository:
                     darkred(_("Error during GPG verification of")),
                     file_name,
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "error",
                     header = "\t%s " % (bold("!!!"),)
@@ -1230,7 +1238,7 @@ class Repository:
                     purple(_("It could mean a potential security risk")),
                     err_msg,
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "error",
                     header = "\t%s " % (bold("!!!"),)
@@ -1271,7 +1279,7 @@ class Repository:
             do_db_update_transfer = False
             rc = 0
 
-            my_repos = self.Entropy.SystemSettings['repositories']
+            my_repos = self._settings['repositories']
             avail_data = my_repos['available']
             repo_data = avail_data[repo]
 
@@ -1321,7 +1329,7 @@ class Repository:
                             blue(_("EAPI3 Service error")),
                             darkred(repr(err)),
                         )
-                        self.Entropy.output(
+                        self._entropy.output(
                             mytxt,
                             importance = 0,
                             type = "info",
@@ -1450,7 +1458,7 @@ class Repository:
                 continue
 
             if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
-                self.Entropy.setup_default_file_perms(dbfile)
+                self._entropy.setup_default_file_perms(dbfile)
 
             # database has been updated
             self.updated = True
@@ -1462,22 +1470,22 @@ class Repository:
                 except OSError:
                     continue
 
-            self.Entropy.update_repository_revision(repo)
+            self._update_repository_revision(repo)
             self._database_revdeps_setup(repo)
-            if self.Entropy.indexing:
+            if self._entropy.indexing:
                 self._database_indexing(repo)
 
             try:
-                spm_class = self.Entropy.Spm_class()
+                spm_class = self._entropy.Spm_class()
                 spm_class.entropy_client_post_repository_update_hook(
-                    self.Entropy, repo)
+                    self._entropy, repo)
             except Exception as err:
                 entropy.tools.print_traceback()
                 mytxt = "%s: %s" % (
                     blue(_("Configuration files update error, not critical, continuing")),
                     err,
                 )
-                self.Entropy.output(mytxt, importance = 0,
+                self._entropy.output(mytxt, importance = 0,
                     type = "info", header = blue("  # "),)
 
             # execute post update repo hook
@@ -1490,40 +1498,40 @@ class Repository:
                 os.remove(dbfile_old)
 
         # keep them closed
-        self.Entropy.close_repositories()
-        self.Entropy.validate_repositories()
-        self.Entropy.close_repositories()
+        self._entropy.close_repositories()
+        self._entropy._validate_repositories()
+        self._entropy.close_repositories()
 
         # clean caches, fetch security
         if self.updated:
-            self.Entropy.clear_cache()
+            self._entropy.clear_cache()
             if self.fetch_security:
                 self._update_security_advisories()
             # do treeupdates
-            if isinstance(self.Entropy.installed_repository(), EntropyRepository) and \
+            if isinstance(self._entropy.installed_repository(), EntropyRepository) and \
                 entropy.tools.is_root(): # only as root due to Portage
                 for repo in self.repo_ids:
                     try:
-                        dbc = self.Entropy.open_repository(repo)
+                        dbc = self._entropy.open_repository(repo)
                     except RepositoryError:
                         # download failed and repo is not available, skip!
                         continue
                     try:
-                        self.Entropy.repository_packages_spm_sync(repo, dbc)
+                        self._entropy.repository_packages_spm_sync(repo, dbc)
                     except Error:
                         # EntropyRepository error, missing table?
                         continue
-                self.Entropy.close_repositories()
+                self._entropy.close_repositories()
 
         if self.sync_errors:
-            self.Entropy.output(
+            self._entropy.output(
                 red(_("Something bad happened. Please have a look.")),
                 importance = 1,
                 type = "warning",
                 header = darkred(" @@ ")
             )
             self.sync_errors = True
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 128
 
         if self.entropy_updates_alert:
@@ -1535,7 +1543,7 @@ class Repository:
         rc = False
         if self.entropy_updates_alert:
             try:
-                rc, pkg_match = self.Entropy.check_package_update(
+                rc, pkg_match = self._entropy.check_package_update(
                     "sys-apps/entropy", deep = True)
             except:
                 pass
@@ -1546,7 +1554,7 @@ class Repository:
                 blue(_("a new release is available")),
                 darkred(_("Mind to install it before any other package")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1563,7 +1571,7 @@ class Repository:
 
         mytxt = "%s %s %s" % (red(_("Unpacking database to")),
             darkgreen(file_to_unpack), red("..."),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -1580,7 +1588,7 @@ class Repository:
         if myrc != 0:
             mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),
                 red(_("Skipping repository")),)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1605,7 +1613,7 @@ class Repository:
             red("..."),
         )
         # download checksum
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 0,
             type = "info",
@@ -1628,7 +1636,7 @@ class Repository:
                 red(_("Cannot fetch checksum")),
                 red(_("Cannot verify database integrity")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1666,7 +1674,7 @@ class Repository:
                 bold(_("Attention")),
                 red(_("remote database got suddenly locked")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1675,7 +1683,7 @@ class Repository:
 
         # starting to download
         mytxt = "%s ..." % (red(_("Downloading repository database")),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1735,7 +1743,7 @@ class Repository:
         if not down_status:
             mytxt = "%s: %s." % (bold(_("Attention")),
                 red(_("database does not exist online")),)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1751,7 +1759,7 @@ class Repository:
         if not update:
             mytxt = "%s: %s." % (bold(_("Attention")),
                 red(_("database is already up to date")),)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1769,7 +1777,7 @@ class Repository:
                 red(_("Repository is being updated")),
                 red(_("Try again in a few minutes")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1780,9 +1788,9 @@ class Repository:
 
     def __eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
 
-        dbconn = self.Entropy.open_generic_database(dbfile, xcache = False,
+        dbconn = self._entropy.open_generic_repository(dbfile, xcache = False,
             indexing_override = False)
-        old_dbconn = self.Entropy.open_generic_database(dbfile_old,
+        old_dbconn = self._entropy.open_generic_repository(dbfile_old,
             xcache = False, indexing_override = False)
         upd_rc = 0
         try:
@@ -1806,13 +1814,13 @@ class Repository:
             red(_("please wait")),
             red("..."),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 0,
             type = "info",
             header = "\t"
         )
-        dbconn = self.Entropy.open_generic_database(dbfile,
+        dbconn = self._entropy.open_generic_repository(dbfile,
             xcache = False, indexing_override = False)
         rc = dbconn.doDatabaseImport(dumpfile, dbfile)
         dbconn.closeDB()
@@ -1821,12 +1829,12 @@ class Repository:
     def _update_security_advisories(self):
         # update Security Advisories
         try:
-            security_intf = self.Entropy.Security()
+            security_intf = self._entropy.Security()
             security_intf.sync()
         except Exception as e:
-            entropy.tools.print_traceback(f = self.Entropy.clientLog)
+            entropy.tools.print_traceback(f = self._entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "warning",
@@ -1835,7 +1843,7 @@ class Repository:
 
     def _standard_items_download(self, repo):
 
-        repos_data = self.Entropy.SystemSettings['repositories']
+        repos_data = self._settings['repositories']
         repo_data = repos_data['available'][repo]
         notice_board = os.path.basename(repo_data['local_notice_board'])
         db_meta_file = etpConst['etpdatabasemetafilesfile']
@@ -1878,7 +1886,7 @@ class Repository:
         ]
 
         def my_show_info(txt):
-            self.Entropy.output(
+            self._entropy.output(
                 txt,
                 importance = 0,
                 type = "info",
@@ -1887,7 +1895,7 @@ class Repository:
             )
 
         def my_show_down_status(message, mytype):
-            self.Entropy.output(
+            self._entropy.output(
                 message,
                 importance = 0,
                 type = mytype,
@@ -1895,13 +1903,13 @@ class Repository:
             )
 
         def my_show_file_unpack(fp):
-            self.Entropy.output(
+            self._entropy.output(
                 "%s: %s" % (darkgreen(_("unpacked meta file")), brown(fp),),
                 header = blue("\t  << ")
             )
 
         def my_show_file_rm(fp):
-            self.Entropy.output(
+            self._entropy.output(
                 "%s: %s" % (darkgreen(_("removed meta file")), purple(fp),),
                 header = blue("\t  << ")
             )
@@ -2002,9 +2010,9 @@ class Repository:
 
         mytxt = "%s: %s" % (
             red(_("Repository revision")),
-            bold(str(self.Entropy.get_repository_revision(repo))),
+            bold(str(self._entropy.get_repository_revision(repo))),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -2014,70 +2022,70 @@ class Repository:
         return downloaded_files
 
     def _database_revdeps_setup(self, repo):
-        dbconn = self.Entropy.open_repository(repo)
+        dbconn = self._entropy.open_repository(repo)
         dbconn.generateReverseDependenciesMetadata(verbose = False)
         dbconn.commitChanges(force = True)
 
     def _database_indexing(self, repo):
 
         # renice a bit, to avoid eating resources
-        old_prio = self.Entropy.set_priority(15)
+        old_prio = self._entropy.set_priority(15)
         mytxt = red("%s ...") % (_("Indexing Repository metadata"),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
             header = "\t"
         )
-        dbconn = self.Entropy.open_repository(repo)
+        dbconn = self._entropy.open_repository(repo)
         dbconn.createAllIndexes()
         dbconn.commitChanges(force = True)
         # get list of indexes
         repo_indexes = dbconn.listAllIndexes()
-        if self.Entropy.installed_repository() is not None:
+        if self._entropy.installed_repository() is not None:
             try: # client db can be absent
-                client_indexes = self.Entropy.installed_repository().listAllIndexes()
+                client_indexes = self._entropy.installed_repository().listAllIndexes()
                 if repo_indexes != client_indexes:
-                    self.Entropy.installed_repository().createAllIndexes()
+                    self._entropy.installed_repository().createAllIndexes()
             except:
                 pass
-        self.Entropy.set_priority(old_prio)
+        self._entropy.set_priority(old_prio)
 
     def sync(self):
 
         # close them
-        self.Entropy.close_repositories()
+        self._entropy.close_repositories()
 
         # let's dance!
         mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 2,
             type = "info",
             header = darkred(" @@ ")
         )
 
-        gave_up = self.Entropy.lock_check(self.Entropy.resources_check_lock)
+        gave_up = self._entropy.lock_check(self._entropy.resources_check_lock)
         if gave_up:
             return 3
 
-        locked = self.Entropy.application_lock_check()
+        locked = self._entropy.application_lock_check()
         if locked:
             return 4
 
         # lock
-        acquired = self.Entropy.resources_create_lock()
+        acquired = self._entropy.resources_create_lock()
         if not acquired:
             return 4 # app locked during lock acquire
         try:
             rc = self._run_sync()
         finally:
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
         if rc:
             return rc
 
         # remove lock
-        self.Entropy.resources_remove_lock()
+        self._entropy.resources_remove_lock()
 
         if (self.not_available >= len(self.repo_ids)):
             return 2

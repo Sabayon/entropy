@@ -41,8 +41,8 @@ from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
-
 from entropy.db.exceptions import ProgrammingError
+from entropy.core.settings.base import SystemSettings
 
 # Sulfur Imports
 import gtk, gobject
@@ -66,7 +66,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def __init__(self):
 
         self.Equo = Equo()
-        self.Cacher = EntropyCacher()
+        self._cacher = EntropyCacher()
+        self._settings = SystemSettings()
 
         self.do_debug = False
         self._ugc_status = "--nougc" not in sys.argv
@@ -349,7 +350,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # configuration files update cache generation
         def file_updates_cache_gen():
             self.Equo.FileUpdates.scan(quiet = True)
-            self.Cacher.sync()
+            self._cacher.sync()
             return False
 
         def file_updates_fill_view():
@@ -584,7 +585,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 first = False
 
     def warn_repositories(self):
-        all_repos = self.Equo.SystemSettings['repositories']['order']
+        all_repos = self._settings['repositories']['order']
         valid_repos = self.Equo.repositories()
         invalid_repos = [x for x in all_repos if x not in valid_repos]
         invalid_repos = [x for x in invalid_repos if \
@@ -832,7 +833,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         def do_ugc_sync():
             self._ugc_update()
-            self.Cacher.sync()
+            self._cacher.sync()
             print_generic("UGC child process done")
 
         self._spawning_ugc = True
@@ -857,7 +858,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def fill_pref_db_backup_page(self):
         self.dbBackupStore.clear()
-        backed_up_dbs = self.Equo.list_backedup_client_databases()
+        backed_up_dbs = self.Equo.installed_repository_backups()
         for mypath in backed_up_dbs:
             mymtime = os.path.getmtime(mypath)
             mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
@@ -1053,7 +1054,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             etpConst['entropyconf']: [
                 (
                     'ftp-proxy',
-                    self.Equo.SystemSettings['system']['proxy']['ftp'],
+                    self._settings['system']['proxy']['ftp'],
                     const_get_stringtype(),
                     fill_setting,
                     saveSetting,
@@ -1062,7 +1063,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'http-proxy',
-                    self.Equo.SystemSettings['system']['proxy']['http'],
+                    self._settings['system']['proxy']['http'],
                     const_get_stringtype(),
                     fill_setting,
                     saveSetting,
@@ -1071,7 +1072,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'proxy-username',
-                    self.Equo.SystemSettings['system']['proxy']['username'],
+                    self._settings['system']['proxy']['username'],
                     const_get_stringtype(),
                     fill_setting,
                     saveSetting,
@@ -1080,7 +1081,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'proxy-password',
-                    self.Equo.SystemSettings['system']['proxy']['password'],
+                    self._settings['system']['proxy']['password'],
                     const_get_stringtype(),
                     fill_setting,
                     saveSetting,
@@ -1100,7 +1101,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             etpConst['clientconf']: [
                 (
                     'collisionprotect',
-                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['collisionprotect'],
+                    self._settings[sys_settings_plg_id]['misc']['collisionprotect'],
                     int,
                     fill_setting,
                     saveSetting,
@@ -1109,7 +1110,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'configprotect',
-                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotect'],
+                    self._settings[sys_settings_plg_id]['misc']['configprotect'],
                     list,
                     fill_setting_view,
                     save_setting_view,
@@ -1118,7 +1119,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'configprotectmask',
-                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotectmask'],
+                    self._settings[sys_settings_plg_id]['misc']['configprotectmask'],
                     list,
                     fill_setting_view,
                     save_setting_view,
@@ -1127,7 +1128,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'configprotectskip',
-                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotectskip'],
+                    self._settings[sys_settings_plg_id]['misc']['configprotectskip'],
                     list,
                     fill_setting_view,
                     save_setting_view,
@@ -1136,7 +1137,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 ),
                 (
                     'filesbackup',
-                    self.Equo.SystemSettings[sys_settings_plg_id]['misc']['filesbackup'],
+                    self._settings[sys_settings_plg_id]['misc']['filesbackup'],
                     bool,
                     fill_setting,
                     saveSetting,
@@ -1156,7 +1157,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             etpConst['repositoriesconf']: [
                 (
                     'downloadspeedlimit',
-                    self.Equo.SystemSettings['repositories']['transfer_limit'],
+                    self._settings['repositories']['transfer_limit'],
                     int,
                     fill_setting,
                     saveSetting,
@@ -1306,7 +1307,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for repoid in self.Equo.repositories():
             if self.Equo.is_noticeboard_marked_as_read(repoid) and not force:
                 continue
-            avail_repos = self.Equo.SystemSettings['repositories']['available']
+            avail_repos = self._settings['repositories']['available']
             board_file = avail_repos[repoid]['local_notice_board']
             if not (os.path.isfile(board_file) and \
                 os.access(board_file, os.R_OK)):
@@ -1829,7 +1830,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # live masked, and anyway, better wasting
         # 2-3 more cycles than having unattended
         # behaviours
-        self.Equo.SystemSettings.clear()
+        self._settings.clear()
         self.Equo.close_repositories()
 
     def hide_notebook_tabs_for_install(self):
@@ -1929,7 +1930,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def critical_updates_warning(self):
         sys_set_client_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_set = self.Equo.SystemSettings[sys_set_client_plg_id]['misc']
+        misc_set = self._settings[sys_set_client_plg_id]['misc']
         if misc_set.get('forcedupdates'):
             crit_atoms, crit_mtchs = self.Equo.calculate_critical_updates()
             if crit_atoms:
@@ -2118,7 +2119,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if (err == 0) and ((not fetch_only) and (not download_sources)):
                     # this triggers post-branch upgrade function inside
                     # Entropy Client SystemSettings plugin
-                    self.Equo.SystemSettings.clear()
+                    self._settings.clear()
 
                 if self.my_inst_abort:
                     okDialog(self.ui.main,
@@ -2227,7 +2228,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if repodata[1] != None:
             repoid = self.repoView.get_repoid(repodata)
             # do it if it's enabled
-            repo_order = self.Equo.SystemSettings['repositories']['order']
+            repo_order = self._settings['repositories']['order']
             if repoid in repo_order:
                 idx = repo_order.index(repoid)
                 return idx, repoid, repodata
@@ -2302,9 +2303,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
-        repo_order = self.Equo.SystemSettings['repositories']['order']
-        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        repo_order = self._settings['repositories']['order']
+        repo_excluded = self._settings['repositories']['excluded']
+        avail_repos = self._settings['repositories']['available']
         for repoid in repo_order+sorted(repo_excluded.keys()):
             repodata = avail_repos.get(repoid)
             if repodata == None:

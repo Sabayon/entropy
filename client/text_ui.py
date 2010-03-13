@@ -666,7 +666,7 @@ def _scan_packages(entropy_client, packages, etp_pkg_files):
 
     if etp_pkg_files:
         for pkg in etp_pkg_files:
-            status, atomsfound = entropy_client.add_package_to_repos(pkg)
+            status, atomsfound = entropy_client.add_package_to_repositories(pkg)
             if status == 0:
                 found_pkg_atoms += atomsfound[:]
                 del atomsfound

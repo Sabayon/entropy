@@ -234,7 +234,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         while os.path.isfile(dbpath):
             dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
         # create
-        mydbconn = entropy_client.open_generic_database(dbpath)
+        mydbconn = entropy_client.open_generic_repository(dbpath)
         mydbconn.initializeDatabase()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
@@ -357,7 +357,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     os.mkdir(unpackdir+"/db")
     # create master database
     dbfile = unpackdir+"/db/merged.db"
-    mergeDbconn = entropy_client.open_generic_database(dbfile, dbname = "client")
+    mergeDbconn = entropy_client.open_generic_repository(dbfile, dbname = "client")
     mergeDbconn.initializeDatabase()
     tmpdbfile = dbfile+"--readingdata"
     for package in matched_pkgs:
@@ -366,7 +366,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
             etpConst['entropyworkdir'] + os.path.sep + \
                 matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
-        mydbconn = entropy_client.open_generic_database(tmpdbfile)
+        mydbconn = entropy_client.open_generic_repository(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
 
         for myidpackage in idpackages:

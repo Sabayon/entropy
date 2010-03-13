@@ -1493,7 +1493,7 @@ class Package:
             # skipChecks = False : creating missing tables is unwanted,
             # and also no foreign keys update
             # readOnly = True: no need to open in write mode
-            pkg_dbconn = self._entropy.open_generic_database(
+            pkg_dbconn = self._entropy.open_generic_repository(
                 self.pkgmeta['pkgdbpath'], skipChecks = True,
                 indexing_override = False, readOnly = True,
                 xcache = False)

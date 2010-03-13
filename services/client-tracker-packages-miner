@@ -99,7 +99,7 @@ class Entropy(Client):
             url_fetcher = DaemonUrlFetcher, repo_validation = False)
         # validate currently available repos
         # manually, to not taint logs
-        self.validate_repositories(quiet = True)
+        self._validate_repositories(quiet = True)
         self.output(
             "Loading Entropy Client Tracker miner: logfile: %s" % (
                 DAEMON_LOGFILE,)
