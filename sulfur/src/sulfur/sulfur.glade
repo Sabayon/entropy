@@ -721,7 +721,7 @@
                   <widget class="GtkScrolledWindow" id="swPkg">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="hadjustment">0 0 1400 140 1260 1400</property>
+                    <property name="hadjustment">0 0 1372 137.20000000000002 1234.8 1372</property>
                     <property name="hscrollbar_policy">automatic</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">in</property>
@@ -9670,6 +9670,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="editable">False</property>
+                                    <property name="wrap_mode">word</property>
                                   </widget>
                                 </child>
                               </widget>
