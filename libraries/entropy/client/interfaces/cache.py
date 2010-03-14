@@ -39,6 +39,7 @@ class CacheMixin:
             async = False)
 
     def clear_cache(self):
+        started = self._cacher.is_started()
         self._cacher.stop()
         try:
             shutil.rmtree(etpConst['dumpstoragedir'], True)
@@ -48,7 +49,8 @@ class CacheMixin:
         except (shutil.Error, IOError, OSError,):
             pass # ignore cache purge errors?
         finally:
-            self._cacher.start()
+            if started:
+                self._cacher.start()
 
     def update_ugc_cache(self, repository):
         if not self.UGC.is_repository_eapi3_aware(repository):
