@@ -293,11 +293,11 @@ class QueueExecutor:
 class Equo(Client):
 
     def init_singleton(self, *args, **kwargs):
-        Client.init_singleton(self, *args, **kwargs)
+        self.progress = None
         self.progress_log = None
         self.std_output = None
-        self.progress = None
         self.urlFetcher = None
+        Client.init_singleton(self, *args, **kwargs)
         self._progress_divider = 1
         self.xcache = True # force xcache enabling
         if etpUi['debug']:
