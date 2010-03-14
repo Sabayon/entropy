@@ -65,14 +65,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def __init__(self):
 
-        self.Equo = Equo()
+        self._entropy = Equo()
         self._cacher = EntropyCacher()
         self._settings = SystemSettings()
 
         self.do_debug = False
         self._ugc_status = "--nougc" not in sys.argv
         self._RESOURCES_LOCKED = False
-        locked = self.Equo.application_lock_check(silent = True)
+        locked = self._entropy.application_lock_check(silent = True)
         is_root = os.getuid() == 0
         if locked or (not is_root):
             self._RESOURCES_LOCKED = True
@@ -81,8 +81,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     _("Another Entropy instance is running. You won't be able to install/remove/sync applications.") )
         self.safe_mode_txt = ''
         # check if we'are running in safe mode
-        if self.Equo.safe_mode:
-            reason = etpConst['safemodereasons'].get(self.Equo.safe_mode)
+        if self._entropy.safe_mode:
+            reason = etpConst['safemodereasons'].get(self._entropy.safe_mode)
             okDialog( None, "%s: %s. %s" % (
                 _("Entropy is running in safe mode"), reason,
                 _("Please fix as soon as possible"),)
@@ -90,7 +90,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.safe_mode_txt = _("Safe Mode")
 
         self.isBusy = False
-        self.etpbase = EntropyPackages(self.Equo)
+        self.etpbase = EntropyPackages(self._entropy)
 
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE, 'main', 'entropy' )
@@ -118,7 +118,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not pkg_installing:
             if "--nonoticeboard" not in sys.argv:
-                if not self.Equo.are_noticeboards_marked_as_read():
+                if not self._entropy.are_noticeboards_marked_as_read():
                     self.show_notice_board(force = False)
                 else:
                     self.show_sulfur_tips()
@@ -133,8 +133,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for pid in FORK_PIDS:
             do_kill(pid)
 
-        if hasattr(self, 'Equo'):
-            self.Equo.destroy()
+        if hasattr(self, '_entropy'):
+            self._entropy.destroy()
 
         if sysexit != -1:
             self.exit_now()
@@ -175,7 +175,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.filesView = EntropyFilesView(self.ui.filesView, self.ui.systemVbox)
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView,
             self.ui, self.etpbase)
-        self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
+        self.queue.connect_objects(self._entropy, self.etpbase, self.pkgView, self.ui)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
         # Left Side Toolbar
         self._notebook_tabs_cache = {}
@@ -278,7 +278,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.abortQueueNow = False
         self._is_working = False
         self.lastPkgPB = "updates"
-        self.Equo.connect_to_gui(self)
+        self._entropy.connect_to_gui(self)
         self.setup_editor()
 
         self.switch_notebook_page("packages")
@@ -349,7 +349,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # configuration files update cache generation
         def file_updates_cache_gen():
-            self.Equo.FileUpdates.scan(quiet = True)
+            self._entropy.FileUpdates.scan(quiet = True)
             self._cacher.sync()
             return False
 
@@ -586,10 +586,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def warn_repositories(self):
         all_repos = self._settings['repositories']['order']
-        valid_repos = self.Equo.repositories()
+        valid_repos = self._entropy.repositories()
         invalid_repos = [x for x in all_repos if x not in valid_repos]
         invalid_repos = [x for x in invalid_repos if \
-            (self.Equo.get_repository_revision(x) == -1)]
+            (self._entropy.get_repository_revision(x) == -1)]
         if invalid_repos:
             mydialog = ConfirmationDialog(self.ui.main, invalid_repos,
                 top_text = _("The repositories listed below are configured but not available. They should be downloaded."),
@@ -618,7 +618,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # parse atoms
         matches = []
         for atom in atoms:
-            pkg_id, repo_id = self.Equo.atom_match(atom)
+            pkg_id, repo_id = self._entropy.atom_match(atom)
             if pkg_id == -1:
                 return False
             matches.append((pkg_id, repo_id,))
@@ -795,7 +795,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if self.do_debug:
             print_generic("entering UGC")
 
-        if self.Equo.UGC is None:
+        if self._entropy.UGC is None:
             return
 
         if self._spawning_ugc or self.disable_ugc:
@@ -803,14 +803,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not force:
             eapi3_repos = []
-            for repoid in self.Equo.repositories():
-                aware = self.Equo.UGC.is_repository_eapi3_aware(repoid)
+            for repoid in self._entropy.repositories():
+                aware = self._entropy.UGC.is_repository_eapi3_aware(repoid)
                 if aware:
                     eapi3_repos.append(repoid)
 
             cache_available = True
             for repoid in eapi3_repos:
-                if not self.Equo.is_ugc_cached(repoid):
+                if not self._entropy.is_ugc_cached(repoid):
                     cache_available = False
 
             pingus_id = "sulfur_ugc_content_spawn"
@@ -846,11 +846,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _ugc_update(self):
 
-        for repo in self.Equo.repositories():
+        for repo in self._entropy.repositories():
             if self.do_debug:
                 t1 = time.time()
                 print_generic("working UGC update for", repo)
-            self.Equo.update_ugc_cache(repo)
+            self._entropy.update_ugc_cache(repo)
             if self.do_debug:
                 t2 = time.time()
                 td = t2 - t1
@@ -858,7 +858,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def fill_pref_db_backup_page(self):
         self.dbBackupStore.clear()
-        backed_up_dbs = self.Equo.installed_repository_backups()
+        backed_up_dbs = self._entropy.installed_repository_backups()
         for mypath in backed_up_dbs:
             mymtime = os.path.getmtime(mypath)
             mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
@@ -929,19 +929,19 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             obj = model.get_value( myiter, 0 )
             if obj:
                 t = "<i>%s</i>" % (_("Not logged in"),)
-                if self.Equo.UGC != None:
-                    logged_data = self.Equo.UGC.read_login(obj['repoid'])
+                if self._entropy.UGC != None:
+                    logged_data = self._entropy.UGC.read_login(obj['repoid'])
                     if logged_data != None:
                         t = "<i>%s</i>" % (logged_data[0],)
                 cell.set_property('markup', t)
 
         def get_ugc_status_pix( column, cell, model, myiter ):
-            if self.Equo.UGC == None:
+            if self._entropy.UGC == None:
                 cell.set_property( 'icon-name', 'gtk-cancel' )
                 return
             obj = model.get_value( myiter, 0 )
             if obj:
-                if self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']):
+                if self._entropy.UGC.is_repository_eapi3_aware(obj['repoid']):
                     cell.set_property( 'icon-name', 'gtk-apply' )
                 else:
                     cell.set_property( 'icon-name', 'gtk-cancel' )
@@ -1260,7 +1260,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             break
 
     def clean_entropy_caches(self):
-        self.Equo.clear_cache()
+        self._entropy.clear_cache()
         # clear views
         self.etpbase.clear_groups()
         self.etpbase.clear_cache()
@@ -1285,7 +1285,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             cached = {}
 
         if cached:
-            self.advisoriesView.populate(self.Equo.Security(), cached, show,
+            self.advisoriesView.populate(self._entropy.Security(), cached, show,
                 use_cache = meta_cached)
 
         if widget is not None:
@@ -1293,7 +1293,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _populate_files_update(self):
         # load filesUpdate interface and fill self.filesView
-        cached = self.Equo.FileUpdates.scan(quiet = True)
+        cached = self._entropy.FileUpdates.scan(quiet = True)
         if cached:
             self.filesView.populate(cached)
 
@@ -1304,8 +1304,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def show_notice_board(self, force = True):
         repoids = {}
-        for repoid in self.Equo.repositories():
-            if self.Equo.is_noticeboard_marked_as_read(repoid) and not force:
+        for repoid in self._entropy.repositories():
+            if self._entropy.is_noticeboard_marked_as_read(repoid) and not force:
                 continue
             avail_repos = self._settings['repositories']['available']
             board_file = avail_repos[repoid]['local_notice_board']
@@ -1321,7 +1321,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.show_sulfur_tips()
 
     def load_notice_board(self, repoids):
-        my = NoticeBoardWindow(self.ui.main, self.Equo)
+        my = NoticeBoardWindow(self.ui.main, self._entropy)
         my.load(repoids)
 
     def update_repositories(self, repos):
@@ -1332,7 +1332,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         force = self.ui.forceRepoUpdate.get_active()
 
         try:
-            repoConn = self.Equo.Repositories(repos, force = force)
+            repoConn = self._entropy.Repositories(repos, force = force)
         except AttributeError:
             msg = "%s: %s" % (_('No repositories specified in'),
                 etpConst['repositoriesconf'],)
@@ -1374,9 +1374,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         for repo in repos:
             # inform UGC that we are syncing this repo
-            if self.Equo.UGC is not None:
+            if self._entropy.UGC is not None:
                 try:
-                    self.Equo.UGC.add_download_stats(repo, [repo])
+                    self._entropy.UGC.add_download_stats(repo, [repo])
                 except TimeoutError:
                     continue
 
@@ -1445,7 +1445,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.__deptest_deps_not_matched = None
         def run_up():
-            self.__deptest_deps_not_matched = self.Equo.dependencies_test()
+            self.__deptest_deps_not_matched = self._entropy.dependencies_test()
 
         t = ParallelTask(run_up)
         t.start()
@@ -1462,11 +1462,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page('preferences')
             return
 
-        c_repo = self.Equo.installed_repository()
+        c_repo = self._entropy.installed_repository()
         found_matches = set()
         not_all = False
         for dep in deps_not_matched:
-            match = self.Equo.atom_match(dep)
+            match = self._entropy.atom_match(dep)
             if match[0] != -1:
                 found_matches.add(match)
                 continue
@@ -1479,10 +1479,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 for c_idpackage in c_idpackages:
                     key, slot = c_repo.retrieveKeySlot(
                         c_idpackage)
-                    match = self.Equo.atom_match(key, match_slot = slot)
+                    match = self._entropy.atom_match(key, match_slot = slot)
                     cmpstat = 0
                     if match[0] != -1:
-                        cmpstat = self.Equo.get_package_action(match)
+                        cmpstat = self._entropy.get_package_action(match)
                     if cmpstat != 0:
                         found_matches.add(match)
                         continue
@@ -1544,11 +1544,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         packages_matched, broken_execs = {}, set()
         self.__libtest_abort = False
-        QA = self.Equo.QA()
+        QA = self._entropy.QA()
 
         def run_up():
             try:
-                x, y, z = QA.test_shared_objects(self.Equo.installed_repository(),
+                x, y, z = QA.test_shared_objects(self._entropy.installed_repository(),
                     task_bombing_func = task_bombing)
                 packages_matched.update(x)
                 broken_execs.update(y)
@@ -1788,7 +1788,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if not matches:
             # resolve atoms ?
             for atom in atoms:
-                match = self.Equo.atom_match(atom)
+                match = self._entropy.atom_match(atom)
                 if match[0] != -1:
                     matches.add(match)
         if not matches:
@@ -1831,7 +1831,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # 2-3 more cycles than having unattended
         # behaviours
         self._settings.clear()
-        self.Equo.close_repositories()
+        self._entropy.close_repositories()
 
     def hide_notebook_tabs_for_install(self):
         self.ui.securityVbox.hide()
@@ -1857,12 +1857,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def do_name_search(keyword):
             keyword = const_convert_to_unicode(keyword)
             matches = []
-            for repoid in self.Equo.repositories():
-                dbconn = self.Equo.open_repository(repoid)
+            for repoid in self._entropy.repositories():
+                dbconn = self._entropy.open_repository(repoid)
                 results = dbconn.searchPackages(keyword, just_id = True)
                 matches += [(x, repoid) for x in results]
             # disabled due to duplicated entries annoyance
-            #results = self.Equo.installed_repository().searchPackages(keyword,
+            #results = self._entropy.installed_repository().searchPackages(keyword,
             #    just_id = True)
             #matches += [(x, 0) for x in results]
             return matches
@@ -1870,12 +1870,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def do_name_desc_search(keyword):
             keyword = const_convert_to_unicode(keyword)
             matches = []
-            for repoid in self.Equo.repositories():
-                dbconn = self.Equo.open_repository(repoid)
+            for repoid in self._entropy.repositories():
+                dbconn = self._entropy.open_repository(repoid)
                 results = dbconn.searchDescription(keyword)
                 matches += [(x, repoid) for atom, x in results]
             # disabled due to duplicated entries annoyance
-            #results = self.Equo.installed_repository().searchDescription(
+            #results = self._entropy.installed_repository().searchDescription(
             #    keyword)
             #matches += [(x, 0) for atom, x in results]
             return matches
@@ -1889,7 +1889,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             ('search_string', _('Search string'), fake_callback, False),
             ('search_type', ('combo', (_('Search type'), search_types),), fake_callback, False)
         ]
-        data = self.Equo.input_box(
+        data = self._entropy.input_box(
             _('Entropy Search'),
             input_params,
             cancel_button = True
@@ -1909,7 +1909,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         entropy_pkg = "sys-apps/entropy"
 
-        etp_matches, etp_rc = self.Equo.atom_match(entropy_pkg,
+        etp_matches, etp_rc = self._entropy.atom_match(entropy_pkg,
             multi_match = True, multi_repo = True)
         if etp_rc != 0:
             return False
@@ -1922,7 +1922,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if not found_match:
             return False
-        rc, pkg_match = self.Equo.check_package_update(entropy_pkg, deep = True)
+        rc, pkg_match = self._entropy.check_package_update(entropy_pkg, deep = True)
         if rc:
             return True
         return False
@@ -1932,7 +1932,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             etpConst['system_settings_plugins_ids']['client_plugin']
         misc_set = self._settings[sys_set_client_plg_id]['misc']
         if misc_set.get('forcedupdates'):
-            crit_atoms, crit_mtchs = self.Equo.calculate_critical_updates()
+            crit_atoms, crit_mtchs = self._entropy.calculate_critical_updates()
             if crit_atoms:
                 crit_objs = []
                 for crit_match in crit_mtchs:
@@ -1994,7 +1994,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.show_progress_bars()
 
         # preventive check against other instances
-        locked = self.Equo.application_lock_check()
+        locked = self._entropy.application_lock_check()
         if locked or not entropy.tools.is_root():
             okDialog(self.ui.main,
                 _("Another Entropy instance is running. Cannot process queue."))
@@ -2004,7 +2004,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.disable_ugc = True
         # acquire Entropy resources here to avoid surpises afterwards
-        acquired = self.Equo.resources_create_lock()
+        acquired = self._entropy.lock_resources()
         if not acquired:
             okDialog(self.ui.main,
                 _("Another Entropy instance is locking this task at the moment. Try in a few minutes."))
@@ -2022,8 +2022,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 total += len(pkgs[key])
 
         def do_file_updates_check():
-            self.Equo.FileUpdates.scan(dcache = False, quiet = True)
-            fs_data = self.Equo.FileUpdates.scan()
+            self._entropy.FileUpdates.scan(dcache = False, quiet = True)
+            fs_data = self._entropy.FileUpdates.scan()
             if fs_data:
                 if len(fs_data) > 0:
                     switch_back_page = 'filesconf'
@@ -2149,7 +2149,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         _("Attention. You have updated Entropy."
                         "\nSulfur will be reloaded.")
                     )
-                    self.Equo.resources_remove_lock()
+                    self._entropy.resources_remove_lock()
                     self.quit(sysexit = 99)
 
             if self.do_debug:
@@ -2166,12 +2166,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     print_generic("process_queue: cleared caches")
 
                 for myrepo in remove_repos:
-                    self.Equo.remove_repository(myrepo)
+                    self._entropy.remove_repository(myrepo)
 
                 self.reset_cache_status()
                 if self.do_debug:
                     print_generic("process_queue: closed repo dbs")
-                self.Equo.reopen_installed_repository()
+                self._entropy.reopen_installed_repository()
                 if self.do_debug:
                     print_generic("process_queue: cleared caches (again)")
                 # regenerate packages information
@@ -2200,7 +2200,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             rb = self.packageRB["updates"]
             gobject.timeout_add(0, rb.clicked)
 
-        self.Equo.resources_remove_lock()
+        self._entropy.resources_remove_lock()
 
         if state:
             self.progress.set_mainLabel(_("Tasks completed successfully."))
@@ -2263,7 +2263,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         my.load(item)
 
     def load_package_info_menu(self, pkg):
-        mymenu = PkgInfoMenu(self.Equo, pkg, self.ui.main)
+        mymenu = PkgInfoMenu(self._entropy, pkg, self.ui.main)
         load_count = 6
         while True:
             try:

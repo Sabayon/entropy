@@ -2919,7 +2919,7 @@ class Package:
             return 21
 
         # lock
-        acquired = self._entropy.resources_create_lock()
+        acquired = self._entropy.lock_resources()
         if not acquired:
             self._entropy.output(
                 blue(_("Cannot acquire Entropy resources lock.")),

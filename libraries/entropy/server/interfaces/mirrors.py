@@ -2001,7 +2001,7 @@ class Server(ServerNoticeBoardMixin):
                     fromfile = os.path.join(mytmpdir, myfile)
                     tofile = os.path.join(database_dir_path, myfile)
                     shutil.move(fromfile, tofile)
-                    self._entropy.setup_default_file_perms(tofile)
+                    self._entropy.setup_file_permissions(tofile)
 
             if os.path.isdir(mytmpdir):
                 shutil.rmtree(mytmpdir)

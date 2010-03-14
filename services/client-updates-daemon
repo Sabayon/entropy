@@ -354,7 +354,7 @@ class UpdatesDaemon(dbus.service.Object):
                 return rc_fetch
 
             # acquire resources lock
-            acquired = entropy.resources_create_lock()
+            acquired = entropy.lock_resources()
             if not acquired:
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: resources locked during acquire")

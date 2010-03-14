@@ -94,7 +94,7 @@ class System:
             raise AttributeError(
                 "entropy.client.interfaces.Client instance expected")
 
-        self.Entropy = entropy_client_instance
+        self._entropy = entropy_client_instance
 
         self.__cacher = EntropyCacher()
         self._settings = SystemSettings()
@@ -247,19 +247,19 @@ class System:
         @return: download status (True if download succeeded)
         @rtype: bool
         """
-        fetcher = self.Entropy.urlFetcher(url, save_to, resume = False,
+        fetcher = self._entropy.urlFetcher(url, save_to, resume = False,
             show_speed = show_speed)
         rc_fetch = fetcher.download()
         del fetcher
         if rc_fetch in ("-1", "-2", "-3", "-4"):
             return False
         # setup permissions
-        self.Entropy.setup_default_file_perms(save_to)
+        self._entropy.setup_file_permissions(save_to)
         return True
 
     def __load_gpg(self):
         try:
-            repo_sec = self.Entropy.RepositorySecurity(
+            repo_sec = self._entropy.RepositorySecurity(
                 keystore_dir = self.__gpg_keystore_dir)
         except Repository.GPGError:
             return None # GPG not available
@@ -275,7 +275,7 @@ class System:
 
         def do_warn_user(fingerprint):
             mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt + ":",
                 type = "warning",
                 header = red("   # ")
@@ -283,7 +283,7 @@ class System:
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
                 self.__gpg_keystore_dir, fingerprint,)
             )
-            self.Entropy.output(
+            self._entropy.output(
                 "$ " + mytxt,
                 type = "warning",
                 header = red("   # ")
@@ -294,7 +294,7 @@ class System:
         if pk_avail:
 
             tmp_dir = tempfile.mkdtemp()
-            repo_tmp_sec = self.Entropy.RepositorySecurity(
+            repo_tmp_sec = self._entropy.RepositorySecurity(
                 keystore_dir = tmp_dir)
             # try to install and get fingerprint
             try:
@@ -313,7 +313,7 @@ class System:
                     purple(_("GPG key changed for")),
                     bold(easy_url),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "warning",
                     header = red("   # ")
@@ -322,7 +322,7 @@ class System:
                     darkgreen(fingerprint),
                     purple(downloaded_key_fp),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "warning",
                     header = red("   # ")
@@ -332,7 +332,7 @@ class System:
                     purple(_("GPG key already installed for")),
                     bold(easy_url),
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     type = "info",
                     header = red("   # ")
@@ -345,7 +345,7 @@ class System:
                 purple(_("GPG key EXPIRED for URL")),
                 bold(easy_url),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "warning",
                 header = red("   # ")
@@ -356,7 +356,7 @@ class System:
             purple(_("Installing GPG key for URL")),
             brown(easy_url),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = red("   # "),
@@ -370,7 +370,7 @@ class System:
                 darkred(_("Error during GPG key installation")),
                 err,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "error",
                 header = red("   # ")
@@ -381,7 +381,7 @@ class System:
             purple(_("Successfully installed GPG key for URL")),
             brown(easy_url),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = red("   # ")
@@ -390,7 +390,7 @@ class System:
             darkgreen(_("Fingerprint")),
             bold(fingerprint),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = red("   # ")
@@ -415,7 +415,7 @@ class System:
                 purple(_("Error during GPG verification of")),
                 os.path.basename(self.download_package),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "error",
                 header = red("   # ") + bold(" !!! ")
@@ -424,7 +424,7 @@ class System:
                 purple(_("It could mean a potential security risk")),
                 err_msg,
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 type = "error",
                 header = red("   # ") + bold(" !!! ")
@@ -435,7 +435,7 @@ class System:
             bold(_("Security Advisories")),
             purple(_("GPG key verification successful")),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             type = "info",
             header = red("   # ")
@@ -520,9 +520,9 @@ class System:
         """
         Validate cache by looking at some checksum data
         """
-        inst_pkgs_cksum = self.Entropy.installed_repository().checksum(
+        inst_pkgs_cksum = self._entropy.installed_repository().checksum(
             do_order = True, strict = False, strings = True)
-        repo_cksum = self.Entropy._all_repositories_checksum()
+        repo_cksum = self._entropy._all_repositories_checksum()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
         cached = self.__cacher.pop(sys_hash, cache_dir = System._CACHE_DIR)
@@ -618,7 +618,7 @@ class System:
 
             count += 1
             if not etpUi['quiet']:
-                self.Entropy.output(":: " + \
+                self._entropy.output(":: " + \
                     str(round((float(count)/maxlen)*100, 1)) + "% ::",
                     importance = 0, type = "info", back = True)
 
@@ -643,7 +643,7 @@ class System:
                     blue(_("advisory broken")),
                     more_info,
                 )
-                self.Entropy.output(
+                self._entropy.output(
                     mytxt,
                     importance = 1,
                     type = "warning",
@@ -678,7 +678,7 @@ class System:
                 valid = False
                 skipping_keys = set()
                 for a_key in affected_keys:
-                    match = self.Entropy.atom_match(a_key)
+                    match = self._entropy.atom_match(a_key)
                     if match[0] != -1:
                         # it's in the repos, it's valid
                         valid = True
@@ -731,13 +731,13 @@ class System:
             if not vul_atoms:
                 return False
             for atom in unaff_atoms:
-                matches = self.Entropy.installed_repository().atomMatch(atom,
+                matches = self._entropy.installed_repository().atomMatch(atom,
                     multiMatch = True)
                 for idpackage in matches[0]:
                     unaffected_atoms.add((idpackage, 0))
 
             for atom in vul_atoms:
-                match = self.Entropy.installed_repository().atomMatch(atom)
+                match = self._entropy.installed_repository().atomMatch(atom)
                 if (match[0] != -1) and (match not in unaffected_atoms):
                     self.affected_atoms.add(atom)
                     return True
@@ -991,7 +991,7 @@ class System:
             bold(_("Security Advisories")),
             blue(_("testing service connection")),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 2,
             type = "info",
@@ -1004,24 +1004,24 @@ class System:
             blue(_("getting latest advisories")),
             red("..."),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 2,
             type = "info",
             header = red(" @@ ")
         )
 
-        gave_up = self.Entropy.lock_check(
-            self.Entropy.resources_check_lock)
+        gave_up = self._entropy.lock_check(
+            self._entropy.resources_check_lock)
         if gave_up:
             return 7
 
-        locked = self.Entropy.application_lock_check()
+        locked = self._entropy.application_lock_check()
         if locked:
             return 4
 
         # lock
-        acquired = self.Entropy.resources_create_lock()
+        acquired = self._entropy.lock_resources()
         if not acquired:
             return 4 # app locked during lock acquire
 
@@ -1030,7 +1030,7 @@ class System:
             if rc_lock != 0:
                 return rc_lock
         finally:
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
 
         if self.advisories_changed:
             advtext = "%s: %s" % (
@@ -1045,7 +1045,7 @@ class System:
                 darkgreen(_("already up to date")),
             )
 
-        self.Entropy.output(
+        self._entropy.output(
             advtext,
             importance = 2,
             type = "info",
@@ -1065,13 +1065,13 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("cannot download checksum, sorry")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 2
 
         # check if we need to go further
@@ -1089,13 +1089,13 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("unable to download advisories, sorry")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 1
 
         mytxt = "%s: %s %s" % (
@@ -1103,7 +1103,7 @@ class System:
             blue(_("Verifying checksum")),
             red("..."),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",
@@ -1119,46 +1119,46 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("cannot open packages, sorry")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 3
         elif status == 2:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkred(_("cannot read the checksum, sorry")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 4
         elif status == 3:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkred(_("digest verification failed, sorry")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 5
         elif status == 0:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
                 darkgreen(_("verification successful")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 1,
                 type = "info",
@@ -1179,7 +1179,7 @@ class System:
                         bold(_("Security Advisories")),
                         purple(_("GPG service not available")),
                     )
-                    self.Entropy.output(
+                    self._entropy.output(
                         mytxt,
                         type = "info",
                         header = red("   # ")
@@ -1195,7 +1195,7 @@ class System:
             except OSError:
                 shutil.copy2(self.download_package_checksum,
                     self.old_download_package_checksum)
-            self.Entropy.setup_default_file_perms(
+            self._entropy.setup_file_permissions(
                 self.old_download_package_checksum)
 
         # now unpack in place
@@ -1205,13 +1205,13 @@ class System:
                 bold(_("Security Advisories")),
                 darkred(_("digest verification failed, try again later")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 2,
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy.resources_remove_lock()
+            self._entropy.resources_remove_lock()
             return 6
 
         mytxt = "%s: %s %s" % (
@@ -1219,7 +1219,7 @@ class System:
             blue(_("installing")),
             red("..."),
         )
-        self.Entropy.output(
+        self._entropy.output(
             mytxt,
             importance = 1,
             type = "info",

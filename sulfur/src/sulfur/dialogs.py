@@ -122,7 +122,7 @@ class AddRepositoryWindow(MenuSkel):
         self.repoMirrorsView = EntropyRepositoryMirrorsView(
             self.addrepo_ui.mirrorsView)
         self.addrepo_ui.addRepoWin.set_transient_for(window)
-        self.Equo = entropy
+        self._entropy = entropy
         self.Sulfur = application
         self.window = window
         self.addrepo_ui.repoSubmit.show()
@@ -173,7 +173,7 @@ class AddRepositoryWindow(MenuSkel):
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
 
-        if repodata['repoid'] and repodata['repoid'] in self.Equo.SystemSettings['repositories']['available']:
+        if repodata['repoid'] and repodata['repoid'] in self._entropy.SystemSettings['repositories']['available']:
             if not edit:
                 errors.append(_('Duplicated Repository Identifier'))
 
@@ -264,10 +264,10 @@ class AddRepositoryWindow(MenuSkel):
             _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                current_branch = self.Equo.SystemSettings['repositories']['branch']
-                current_product = self.Equo.SystemSettings['repositories']['product']
+                current_branch = self._entropy.SystemSettings['repositories']['branch']
+                current_product = self._entropy.SystemSettings['repositories']['product']
                 repoid, repodata = \
-                    self.Equo.SystemSettings._analyze_client_repo_string(text,
+                    self._entropy.SystemSettings._analyze_client_repo_string(text,
                         current_branch, current_product)
                 self._load_repo_data(repodata)
             else:
@@ -283,7 +283,7 @@ class AddRepositoryWindow(MenuSkel):
         # validate
         errors = self._validate_repo_submit(repodata)
         if not errors:
-            self.Equo.add_repository(repodata)
+            self._entropy.add_repository(repodata)
             self.Sulfur.reset_cache_status()
             self.Sulfur.setup_repoView()
             self.addrepo_ui.addRepoWin.hide()
@@ -300,12 +300,12 @@ class AddRepositoryWindow(MenuSkel):
             return True
         else:
             disable = False
-            repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+            repo_excluded = self._entropy.SystemSettings['repositories']['excluded']
             if repodata['repoid'] in repo_excluded:
                 disable = True
-            self.Equo.remove_repository(repodata['repoid'], disable = disable)
+            self._entropy.remove_repository(repodata['repoid'], disable = disable)
             if not disable:
-                self.Equo.add_repository(repodata)
+                self._entropy.add_repository(repodata)
             self.Sulfur.reset_cache_status()
 
             self.Sulfur.setup_repoView()
@@ -371,7 +371,10 @@ class NoticeBoardWindow(MenuSkel):
         obj = model.get_value(iterator, 0)
         if obj:
             if 'is_repo' in obj:
-                cell.set_property('markup', "<big><b>%s</b></big>\n<small>%s</small>" % (cleanMarkupString(obj['name']), cleanMarkupString(obj['desc']),))
+                cell.set_property('markup',
+                    "<big><b>%s</b></big>\n<small>%s</small>" % (
+                        cleanMarkupString(obj['name']),
+                            cleanMarkupString(obj['desc']),))
             else:
                 mytxt = '<b><u>%s</u></b>\n<small><b>%s</b>: %s</small>' % (
                     cleanMarkupString(obj['pubDate']),

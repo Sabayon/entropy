@@ -1069,15 +1069,14 @@ class MiscMixin:
     RESOURCES_LOCK_F_REF = None
     RESOURCES_LOCK_F_COUNT = 0
 
-    def reload_constants(self):
+    def _reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
         self.SystemSettings.clear()
 
-    def setup_default_file_perms(self, filepath):
-        # setup file permissions
-        const_setup_file(filepath, etpConst['entropygid'], 0o664)
+    def setup_file_permissions(self, file_path):
+        const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
-    def resources_create_lock(self):
+    def lock_resources(self):
         acquired = self.create_pid_file_lock(
             etpConst['locks']['using_resources'])
         if acquired:
@@ -1247,7 +1246,7 @@ class MiscMixin:
         if chroot.endswith("/"):
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
-        self.reload_constants()
+        self._reload_constants()
         self._validate_repositories()
         self.reopen_installed_repository()
         # keep them closed, since SystemSettings.clear() is called

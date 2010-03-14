@@ -52,7 +52,7 @@ class SulfurApplicationEventsMixin:
 
     def on_dbBackupButton_clicked(self, widget):
         self.start_working()
-        status, err_msg = self.Equo.backup_repository(
+        status, err_msg = self._entropy.backup_repository(
             etpConst['etpdatabaseclientfilepath'])
         self.end_working()
         if not status:
@@ -68,10 +68,10 @@ class SulfurApplicationEventsMixin:
         if myiter == None: return
         dbpath = model.get_value(myiter, 0)
         self.start_working()
-        status, err_msg = self.Equo.restore_repository(dbpath,
+        status, err_msg = self._entropy.restore_repository(dbpath,
             etpConst['etpdatabaseclientfilepath'])
         self.end_working()
-        self.Equo.reopen_installed_repository()
+        self._entropy.reopen_installed_repository()
         self.reset_cache_status()
         self.show_packages()
         if not status:
@@ -114,7 +114,7 @@ class SulfurApplicationEventsMixin:
 
     def on_updateAdvAll_clicked( self, widget ):
 
-        security = self.Equo.Security()
+        security = self._entropy.Security()
         adv_data = security.get_advisories_metadata()
         atoms = set()
         for key in adv_data:
@@ -142,31 +142,31 @@ class SulfurApplicationEventsMixin:
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        self.Equo.FileUpdates.remove(identifier)
-        self.filesView.populate(self.Equo.FileUpdates.scan())
+        self._entropy.FileUpdates.remove(identifier)
+        self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_filesMerge_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        self.Equo.FileUpdates.merge(identifier)
-        self.filesView.populate(self.Equo.FileUpdates.scan())
+        self._entropy.FileUpdates.merge(identifier)
+        self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_mergeFiles_clicked( self, widget ):
-        self.Equo.FileUpdates.scan(dcache = True)
-        keys = list(self.Equo.FileUpdates.scan().keys())
+        self._entropy.FileUpdates.scan(dcache = True)
+        keys = list(self._entropy.FileUpdates.scan().keys())
         for key in keys:
-            self.Equo.FileUpdates.merge(key)
+            self._entropy.FileUpdates.merge(key)
             # it's cool watching it runtime
-        self.filesView.populate(self.Equo.FileUpdates.scan())
+        self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_deleteFiles_clicked( self, widget ):
-        self.Equo.FileUpdates.scan(dcache = True)
-        keys = list(self.Equo.FileUpdates.scan().keys())
+        self._entropy.FileUpdates.scan(dcache = True)
+        keys = list(self._entropy.FileUpdates.scan().keys())
         for key in keys:
-            self.Equo.FileUpdates.remove(key)
+            self._entropy.FileUpdates.remove(key)
             # it's cool watching it runtime
-        self.filesView.populate(self.Equo.FileUpdates.scan())
+        self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_filesEdit_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
@@ -208,8 +208,8 @@ class SulfurApplicationEventsMixin:
         TextReadDialog(dest, mybuffer)
 
     def on_filesViewRefresh_clicked( self, widget ):
-        self.Equo.FileUpdates.scan(dcache = False)
-        self.filesView.populate(self.Equo.FileUpdates.scan())
+        self._entropy.FileUpdates.scan(dcache = False)
+        self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self._get_selected_repo_index()
@@ -217,7 +217,7 @@ class SulfurApplicationEventsMixin:
             path = iterdata[0].get_path(iterdata[1])[0]
             if path > 0 and idx > 0:
                 idx -= 1
-                self.Equo.shift_repository(repoid, idx)
+                self._entropy.shift_repository(repoid, idx)
                 # get next iter
                 prev = iterdata[0].get_iter(path-1)
                 self.repoView.store.swap(iterdata[1], prev)
@@ -228,11 +228,11 @@ class SulfurApplicationEventsMixin:
             next = iterdata[0].iter_next(iterdata[1])
             if next:
                 idx += 1
-                self.Equo.shift_repository(repoid, idx)
+                self._entropy.shift_repository(repoid, idx)
                 self.repoView.store.swap(iterdata[1], next)
 
     def on_addRepo_clicked( self, widget ):
-        my = AddRepositoryWindow(self, self.ui.main, self.Equo)
+        my = AddRepositoryWindow(self, self.ui.main, self._entropy)
         my.load()
 
     def on_removeRepo_clicked( self, widget ):
@@ -246,7 +246,7 @@ class SulfurApplicationEventsMixin:
                 okDialog( self.ui.main,
                     _("You! Why do you want to remove the main repository ?"))
                 return True
-            self.Equo.remove_repository(repoid)
+            self._entropy.remove_repository(repoid)
             self.reset_cache_status()
             self.setup_repoView()
 
@@ -261,7 +261,7 @@ class SulfurApplicationEventsMixin:
                 repodata = self._settings['repositories']['excluded'][repoid]
             return repodata.copy()
 
-        my = AddRepositoryWindow(self, self.ui.main, self.Equo)
+        my = AddRepositoryWindow(self, self.ui.main, self._entropy)
         my.addrepo_ui.repoSubmit.hide()
         my.addrepo_ui.repoSubmitEdit.show()
         my.addrepo_ui.repoInsert.hide()
@@ -307,7 +307,7 @@ class SulfurApplicationEventsMixin:
         # re-read configprotect
         self.reset_cache_status()
         self.show_packages()
-        self.Equo.reload_repositories_config()
+        self._entropy.reload_repositories_config()
         self.setup_preferences()
 
     def on_preferencesRestoreButton_clicked(self, widget):
@@ -407,7 +407,7 @@ class SulfurApplicationEventsMixin:
 
         newrepo = os.path.basename(fn)
         # we have it !
-        status, atomsfound = self.Equo.add_package_to_repositories(fn)
+        status, atomsfound = self._entropy.add_package_to_repositories(fn)
         if status != 0:
             errtxt = _("is not a valid Entropy package")
             if status == -3:
@@ -421,9 +421,9 @@ class SulfurApplicationEventsMixin:
             return
 
         def clean_n_quit(newrepo):
-            self.Equo.remove_repository(newrepo)
+            self._entropy.remove_repository(newrepo)
             self.reset_cache_status()
-            self.Equo.reopen_installed_repository()
+            self._entropy.reopen_installed_repository()
             # regenerate packages information
             self.setup_application()
 
@@ -470,7 +470,7 @@ class SulfurApplicationEventsMixin:
             def setup_metadata():
                 self.advisoriesView.populate_loading_message()
                 self.gtk_loop()
-                security = self.Equo.Security()
+                security = self._entropy.Security()
                 security.get_advisories_metadata()
                 gobject.timeout_add(0, adv_populate)
 
@@ -587,14 +587,14 @@ class SulfurApplicationEventsMixin:
             pkgdata = self.queue.get().copy()
             for key in list(pkgdata.keys()):
                 if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
-            self.Equo.dumpTools.dumpobj(fn, pkgdata, True)
+            self._entropy.dumpTools.dumpobj(fn, pkgdata, True)
 
     def on_queueOpen_clicked( self, widget ):
         fn = FileChooser()
         if fn:
 
             try:
-                pkgdata = self.Equo.dumpTools.loadobj(fn, complete_path = True)
+                pkgdata = self._entropy.dumpTools.loadobj(fn, complete_path = True)
             except:
                 return
 
@@ -674,9 +674,9 @@ class SulfurApplicationEventsMixin:
             if license_identifier:
                 repoid = self.pkgProperties_selected.matched_atom[1]
                 if isinstance(repoid, int):
-                    dbconn = self.Equo.installed_repository()
+                    dbconn = self._entropy.installed_repository()
                 else:
-                    dbconn = self.Equo.open_repository(repoid)
+                    dbconn = self._entropy.open_repository(repoid)
                 if dbconn.isLicensedataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     found = True
@@ -692,7 +692,7 @@ class SulfurApplicationEventsMixin:
         normal_cursor(self.ui.main)
         # now start updating the system
         if not sts:
-            rc = self.Equo.ask_question(_("Update your system now ?"))
+            rc = self._entropy.ask_question(_("Update your system now ?"))
             if rc == _("Yes"):
                 self.install_queue()
 
@@ -740,7 +740,7 @@ class SulfurApplicationEventsMixin:
                 flt.activate(False)
             else:
                 flt.activate()
-                flt.setKeys(txt.split(), self.Equo.get_package_groups())
+                flt.setKeys(txt.split(), self._entropy.get_package_groups())
                 self.pkgView.expand()
 
             self.show_packages()
@@ -768,46 +768,46 @@ class SulfurApplicationEventsMixin:
             self.load_color_settings()
 
     def on_ugcLoginButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
+        if self._entropy.UGC == None: return
         model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
         if (myiter == None) or (model == None): return
         obj = model.get_value( myiter, 0 )
         if obj:
-            #logged_data = self.Equo.UGC.read_login(obj['repoid'])
-            self.Equo.UGC.login(obj['repoid'], force = True)
+            #logged_data = self._entropy.UGC.read_login(obj['repoid'])
+            self._entropy.UGC.login(obj['repoid'], force = True)
             self.load_ugc_repositories()
 
     def on_ugcClearLoginButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
+        if self._entropy.UGC == None: return
         model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
         if (myiter == None) or (model == None): return
         obj = model.get_value( myiter, 0 )
         if obj:
-            if not self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']):
+            if not self._entropy.UGC.is_repository_eapi3_aware(obj['repoid']):
                 return
-            logged_data = self.Equo.UGC.read_login(obj['repoid'])
-            if logged_data: self.Equo.UGC.remove_login(obj['repoid'])
+            logged_data = self._entropy.UGC.read_login(obj['repoid'])
+            if logged_data: self._entropy.UGC.remove_login(obj['repoid'])
             self.load_ugc_repositories()
 
     def on_ugcClearCacheButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
+        if self._entropy.UGC == None: return
         repo_excluded = self._settings['repositories']['excluded']
         avail_repos = self._settings['repositories']['available']
         for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
-            self.Equo.UGC.UGCCache.clear_cache(repoid)
+            self._entropy.UGC.UGCCache.clear_cache(repoid)
             self.set_status_ticker("%s: %s ..." % (_("Cleaning UGC cache of"), repoid,))
         self.set_status_ticker("%s" % (_("UGC cache cleared"),))
 
     def on_ugcClearCredentialsButton_clicked(self, widget):
-        if self.Equo.UGC == None:
+        if self._entropy.UGC == None:
             return
         repo_excluded = self._settings['repositories']['excluded']
         avail_repos = self._settings['repositories']['available']
         for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
-            if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
+            if not self._entropy.UGC.is_repository_eapi3_aware(repoid):
                 continue
-            logged_data = self.Equo.UGC.read_login(repoid)
-            if logged_data: self.Equo.UGC.remove_login(repoid)
+            logged_data = self._entropy.UGC.read_login(repoid)
+            if logged_data: self._entropy.UGC.remove_login(repoid)
         self.load_ugc_repositories()
         self.set_status_ticker("%s" % (_("UGC credentials cleared"),))
 
@@ -819,7 +819,7 @@ class SulfurApplicationEventsMixin:
 
     def on_pkgsetAddButton_clicked(self, widget, edit = False):
 
-        sets = self.Equo.Sets()
+        sets = self._entropy.Sets()
         current_sets = sets.available()
         def fake_callback(s):
 
@@ -841,10 +841,10 @@ class SulfurApplicationEventsMixin:
             return False
 
         def lv_callback(atom):
-            c_id, c_rc = self.Equo.installed_repository().atomMatch(atom)
+            c_id, c_rc = self._entropy.installed_repository().atomMatch(atom)
             if c_id != -1:
                 return True
-            c_id, c_rc = self.Equo.atom_match(atom)
+            c_id, c_rc = self._entropy.atom_match(atom)
             if c_id != -1:
                 return True
             return False
@@ -876,7 +876,7 @@ class SulfurApplicationEventsMixin:
                 ('atoms', ('list', (_('Package atoms'), [],),), lv_callback, False)
             ]
 
-        data = self.Equo.input_box(
+        data = self._entropy.input_box(
             edit_title,
             input_params,
             cancel_button = True
@@ -901,7 +901,7 @@ class SulfurApplicationEventsMixin:
 
     def on_pkgsetRemoveButton_clicked(self, widget):
 
-        sets = self.Equo.Sets()
+        sets = self._entropy.Sets()
         def mymf(m):
             set_from, set_name, set_deps = m
             if set_from == etpConst['userpackagesetsid']:
@@ -921,7 +921,7 @@ class SulfurApplicationEventsMixin:
                 fake_callback, False)
         ]
 
-        data = self.Equo.input_box(
+        data = self._entropy.input_box(
             _('Choose what Package Set you want to remove'),
             input_params,
             cancel_button = True

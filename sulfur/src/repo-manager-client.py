@@ -23,7 +23,6 @@ sys.path.insert(0, "../../client")
 sys.path.insert(0, "sulfur")
 sys.path.insert(0, "repoman")
 
-from sulfur.entropyapi import Equo
 # Sulfur Imports
 import gtk, gobject
 from sulfur.setup import const
@@ -45,22 +44,22 @@ class MyRepositoryManager(RepositoryManagerMenu):
 class ManagerApplication:
 
     def __init__(self):
-        self.Equo = Equo()
+        self._entropy = Equo()
         self.ui = None
         self.progress_log_write = sys.stdout
         self.std_output = sys.stdout
         self.progress = None
-        self.Equo.connect_to_gui(self)
+        self._entropy.connect_to_gui(self)
 
     def init(self):
-        mymenu = MyRepositoryManager(self.Equo, None)
+        mymenu = MyRepositoryManager(self._entropy, None)
         rc_status = mymenu.load()
         if not rc_status:
             del mymenu
             raise SystemExit(1)
 
     def destroy(self):
-        self.Equo.destroy()
+        self._entropy.destroy()
 
     def dummy_func(self, *args, **kwargs):
         pass
@@ -79,7 +78,8 @@ if __name__ == "__main__":
         gtk.gdk.threads_enter()
         gtk.main()
         gtk.gdk.threads_leave()
-        Equo.destroy()
+        from sulfur.entropyapi import Equo
+        Equo().destroy()
     except SystemExit:
         print("Quit by User")
         main_app.destroy()

@@ -57,12 +57,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         const_val = set([1, 2, 3])
         etpConst[const_key] = const_val
         self.Client.backup_constant(const_key)
-        self.Client.reload_constants()
+        self.Client._reload_constants()
         self.assertEqual(True, const_key in etpConst)
         self.assertEqual(const_val, etpConst.get(const_key))
         # now remove
         etpConst['backed_up'].pop(const_key)
-        self.Client.reload_constants()
+        self.Client._reload_constants()
         self.assertEqual(False, const_key in etpConst)
         self.assertEqual(None, etpConst.get(const_key))
 

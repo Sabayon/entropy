@@ -344,7 +344,7 @@ class Repository:
             raise AttributeError(mytxt)
 
         if rc == 0:
-            self._entropy.setup_default_file_perms(path)
+            self._entropy.setup_file_permissions(path)
 
         return rc
 
@@ -482,7 +482,7 @@ class Repository:
         del fetchConn
         if rc in ("-1", "-2", "-3", "-4"):
             return False
-        self._entropy.setup_default_file_perms(filepath)
+        self._entropy.setup_file_permissions(filepath)
         return True
 
     def _check_downloaded_database(self, repo, cmethod):
@@ -1458,7 +1458,7 @@ class Repository:
                 continue
 
             if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
-                self._entropy.setup_default_file_perms(dbfile)
+                self._entropy.setup_file_permissions(dbfile)
 
             # database has been updated
             self.updated = True
@@ -2074,7 +2074,7 @@ class Repository:
             return 4
 
         # lock
-        acquired = self._entropy.resources_create_lock()
+        acquired = self._entropy.lock_resources()
         if not acquired:
             return 4 # app locked during lock acquire
         try:

@@ -40,7 +40,7 @@ class QueueExecutor:
 
     def __init__(self, SulfurApplication):
         self.Sulfur = SulfurApplication
-        self._entropy = SulfurApplication.Equo
+        self._entropy = Equo()
         self.__on_lic_request = False
         self.__on_lic_rc = None
         # clear download mirrors status
@@ -311,8 +311,6 @@ class Equo(Client):
         self.progress = application.progress
         GuiUrlFetcher.progress = application.progress
         self.urlFetcher = GuiUrlFetcher
-        # EXPERIMENTALLY enable color
-        # nocolor()
         self.progress_log = application.progress_log_write
         self.std_output = application.std_output
         self.ui = application.ui

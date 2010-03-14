@@ -475,7 +475,7 @@ def _database_spmsync(entropy_client):
     if rc == _("No"):
         return 0
 
-    acquired = entropy_client.resources_create_lock()
+    acquired = entropy_client.lock_resources()
     if not acquired:
         print_info(red(" %s." % (_("Entropy locked during lock acquire"),)))
         return 2

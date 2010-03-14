@@ -476,7 +476,7 @@ class EntropyPackageView:
     def __init__( self, treeview, queue, ui, etpbase, main_window,
         application = None ):
 
-        self.Equo = Equo()
+        self._entropy = Equo()
         self.Sulfur = application
         self._ugc_status = True
         if self.Sulfur is not None:
@@ -709,7 +709,7 @@ class EntropyPackageView:
         if not issubclass(injector, EntropyPackageViewModelInjector):
             raise AttributeError("wrong sorter")
         self.__current_model_injector_class = injector
-        self.Injector = injector(self.store, self.Equo, self.etpbase,
+        self.Injector = injector(self.store, self._entropy, self.etpbase,
             self.dummyCats)
 
     def reset_install_menu(self):
@@ -929,7 +929,7 @@ class EntropyPackageView:
         for obj in objs:
             if obj.is_group or obj.is_pkgset_cat:
                 continue
-            mymenu = PkgInfoMenu(self.Equo, obj, self.ui.main)
+            mymenu = PkgInfoMenu(self._entropy, obj, self.ui.main)
             mymenu.load()
 
     def run_install_menu_stuff(self, objs):
@@ -1115,7 +1115,7 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         objs = self.selected_objs
         oldmask = self.etpbase.unmaskingPackages.copy()
-        mydialog = MaskedPackagesDialog(self.Equo, self.etpbase, self.ui.main, objs)
+        mydialog = MaskedPackagesDialog(self._entropy, self.etpbase, self.ui.main, objs)
         result = mydialog.run()
         if result != -5:
             self.etpbase.unmaskingPackages = oldmask.copy()
@@ -1255,7 +1255,7 @@ class EntropyPackageView:
         result = confirmDialog.run()
         confirmDialog.destroy()
         if result != -5: return
-        for obj in objs: self.Equo.mask_match(obj.matched_atom)
+        for obj in objs: self._entropy.mask_match(obj.matched_atom)
         # clear cache
         self.clear()
         self.etpbase.clear_groups()
@@ -1271,7 +1271,7 @@ class EntropyPackageView:
 
     def _get_pkgset_data(self, items, add = True, remove_action = False):
 
-        sets = self.Equo.Sets()
+        sets = self._entropy.Sets()
 
         pkgsets = set()
         realpkgs = set()
@@ -1316,12 +1316,12 @@ class EntropyPackageView:
         exp_matches = set()
         if remove_action:
             for exp_atom in exp_atoms:
-                exp_match = self.Equo.installed_repository().atomMatch(exp_atom)
+                exp_match = self._entropy.installed_repository().atomMatch(exp_atom)
                 if exp_match[0] == -1: continue
                 exp_matches.add(exp_match)
         else:
             for exp_atom in exp_atoms:
-                exp_match = self.Equo.atom_match(exp_atom)
+                exp_match = self._entropy.atom_match(exp_atom)
                 if exp_match[0] == -1: continue
                 exp_matches.add(exp_match)
 
@@ -1416,10 +1416,10 @@ class EntropyPackageView:
 
         repo_objs = []
         for idpackage, rid in exp_matches:
-            key, slot = self.Equo.installed_repository().retrieveKeySlot(idpackage)
-            if not self.Equo.validate_package_removal(idpackage):
+            key, slot = self._entropy.installed_repository().retrieveKeySlot(idpackage)
+            if not self._entropy.validate_package_removal(idpackage):
                 continue
-            mymatch = self.Equo.atom_match(key, match_slot = slot)
+            mymatch = self._entropy.atom_match(key, match_slot = slot)
             if mymatch[0] == -1: continue
             yp, new = self.etpbase.get_package_item(mymatch)
             repo_objs.append(yp)
@@ -1547,7 +1547,7 @@ class EntropyPackageView:
         objs = []
         for x in self.selected_objs:
             key, slot = x.keyslot
-            m = self.Equo.atom_match(key, match_slot = slot)
+            m = self._entropy.atom_match(key, match_slot = slot)
             if m[0] != -1:
                 objs.append(x)
 
@@ -1703,7 +1703,7 @@ class EntropyPackageView:
                 key, repoid = self._ugc_dnd_cache_taint.pop()
             except KeyError:
                 break
-            self.Equo.UGC.get_docs(repoid, key)
+            self._entropy.UGC.get_docs(repoid, key)
 
         self.__pkg_ugc_icon_cache.clear()
         self.__pkg_ugc_icon_call_cache.clear()
@@ -1751,7 +1751,7 @@ class EntropyPackageView:
             pkg_key = pkg.key
             repoid = pkg.repoid_clean
             # this is an image!
-            my = UGCAddMenu(self.Equo, pkg_key, repoid, self.ui.main,
+            my = UGCAddMenu(self._entropy, pkg_key, repoid, self.ui.main,
                 self.__ugc_dnd_updates_clear_cache)
             self._ugc_dnd_cache_taint.add((pkg_key, repoid,))
             my.load()
@@ -1774,7 +1774,7 @@ class EntropyPackageView:
         os.fsync(tmp_fd)
         os.close(tmp_fd)
 
-        my = UGCAddMenu(self.Equo, pkg_key, repoid, self.ui.main,
+        my = UGCAddMenu(self._entropy, pkg_key, repoid, self.ui.main,
             self.__ugc_dnd_updates_clear_cache)
         self._ugc_dnd_cache_taint.add((pkg_key, repoid,))
         my.load()
@@ -1811,7 +1811,7 @@ class EntropyPackageView:
             obj.voted = 0.0
             return
         repository = obj.repoid
-        if not self.Equo.UGC.is_repository_eapi3_aware(repository):
+        if not self._entropy.UGC.is_repository_eapi3_aware(repository):
             obj.voted = 0.0
             return
         atom = obj.name
@@ -1823,7 +1823,7 @@ class EntropyPackageView:
         t.start()
 
     def vote_submit_thread(self, repository, key, obj):
-        status, err_msg = self.Equo.UGC.add_vote(repository, key, int(obj.voted))
+        status, err_msg = self._entropy.UGC.add_vote(repository, key, int(obj.voted))
 
         if status:
             color = SulfurConf.color_good
@@ -1878,7 +1878,7 @@ class EntropyPackageView:
         selected_objs = []
         for inst_obj in self.selected_objs:
             key, slot = inst_obj.keyslot
-            m_tup = self.Equo.atom_match(key, match_slot = slot)
+            m_tup = self._entropy.atom_match(key, match_slot = slot)
             if m_tup[0] != -1:
                 ep, new = self.etpbase.get_package_item(m_tup)
                 if new:
@@ -2019,9 +2019,9 @@ class EntropyPackageView:
 
         def do_ugc_sync():
             for key, repoid in pkgs:
-                if self.Equo.UGC.UGCCache.is_alldocs_cached(key, repoid):
+                if self._entropy.UGC.UGCCache.is_alldocs_cached(key, repoid):
                     continue
-                self.Equo.UGC.get_docs(repoid, key)
+                self._entropy.UGC.get_docs(repoid, key)
             self.__pkg_ugc_icon_call_cache.clear()
 
         def do_fork():
@@ -2032,7 +2032,7 @@ class EntropyPackageView:
     def _spawn_ugc_icon_fetch(self, icon_doc, repoid):
 
         def do_icon_fetch():
-            self.Equo.UGC.UGCCache.store_document(icon_doc['iddoc'],
+            self._entropy.UGC.UGCCache.store_document(icon_doc['iddoc'],
                 repoid, icon_doc['store_url'])
 
         fork_function(do_icon_fetch, self._emit_ugc_update)
@@ -2060,7 +2060,7 @@ class EntropyPackageView:
         if repoid is None:
             return
 
-        icon_doc = self.Equo.UGC.UGCCache.get_icon_cache(key, repoid)
+        icon_doc = self._entropy.UGC.UGCCache.get_icon_cache(key, repoid)
         if icon_doc is None:
             #const_debug_write(__name__,
             #    "_get_cached_pkg_ugc_icon %s NOT on disk" % (
@@ -2072,7 +2072,7 @@ class EntropyPackageView:
         #    "_get_cached_pkg_ugc_icon %s on disk?" % (
         #        cache_key,))
 
-        store_path = self.Equo.UGC.UGCCache.get_stored_document(
+        store_path = self._entropy.UGC.UGCCache.get_stored_document(
             icon_doc['iddoc'], repoid, icon_doc['store_url'])
 
         if store_path is None:
@@ -2141,7 +2141,7 @@ class EntropyPackageView:
         if sync_item in self._ugc_metadata_sync_exec_cache:
             return
 
-        if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
+        if not self._entropy.UGC.is_repository_eapi3_aware(repoid):
             self._ugc_metadata_sync_exec_cache.add(sync_item)
             return
 
@@ -2366,7 +2366,7 @@ class EntropyQueueView:
         self.view = widget
         self.setup_view()
         self.queue = queue
-        self.Equo = Equo()
+        self._entropy = Equo()
         self.ugc_update_event_handler_id = \
             SulfurSignals.connect('ugc_data_update', self.__ugc_refresh)
 
@@ -2462,7 +2462,7 @@ class EntropyQueueView:
         grandfather = model.append( None, (label,) )
         for category in cats:
             cat_desc = _("No description")
-            cat_desc_data = self.Equo.get_category_description(category)
+            cat_desc_data = self._entropy.get_category_description(category)
             if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
             elif 'en' in cat_desc_data:
@@ -2743,7 +2743,7 @@ class EntropyRepoView:
         self.view = widget
         self.headers = [_('Repository'), _('Filename')]
         self.store = self.setup_view()
-        self.Equo = Equo()
+        self._entropy = Equo()
         self.ui = ui
         self.okDialog = okDialog
         self.Sulfur = application
@@ -2754,15 +2754,15 @@ class EntropyRepoView:
             myiter = self.store.get_iter( path )
             state = self.store.get_value(myiter, 0)
             repoid = self.store.get_value(myiter, 3)
-            if repoid != self.Equo.SystemSettings['repositories']['default_repository']:
+            if repoid != self._entropy.SystemSettings['repositories']['default_repository']:
                 self.store.set_value(myiter, 0, not state)
                 self.Sulfur.gtk_loop()
                 if state:
                     self.store.set_value(myiter, 1, not state)
-                    self.Equo.disable_repository(repoid)
+                    self._entropy.disable_repository(repoid)
                     initconfig_entropy_constants(etpSys['rootdir'])
                 else:
-                    self.Equo.enable_repository(repoid)
+                    self._entropy.enable_repository(repoid)
                     initconfig_entropy_constants(etpSys['rootdir'])
                 self.Sulfur.reset_cache_status()
                 self.Sulfur.show_packages(back_to_page = "repos")
@@ -2826,12 +2826,12 @@ class EntropyRepoView:
     def populate(self):
 
         self.store.clear()
-        for repo in self.Equo.SystemSettings['repositories']['order']:
-            repodata = self.Equo.SystemSettings['repositories']['available'][repo]
+        for repo in self._entropy.SystemSettings['repositories']['order']:
+            repodata = self._entropy.SystemSettings['repositories']['available'][repo]
             self.store.append([1, 1, repodata['dbrevision'], repo,
                 repodata['description']])
         # excluded ones
-        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        repo_excluded = self._entropy.SystemSettings['repositories']['excluded']
         for repo in repo_excluded:
             repodata = repo_excluded[repo]
             self.store.append([0, 0, repodata['dbrevision'], repo,
