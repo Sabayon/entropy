@@ -708,6 +708,7 @@ class PkgInfoMenu(MenuSkel):
         self.hide_loading()
         self.reset_ugc_data()
         self.spawn_ugc_load(force = True)
+        SulfurSignals.emit('ugc_cache_clear')
         self.refresh_ugc_view()
 
     def on_ugc_doubleclick(self, widget, path, view):
@@ -740,6 +741,7 @@ class PkgInfoMenu(MenuSkel):
 
     def refresh_view_cb(self):
         self.spawn_ugc_load(force = True)
+        SulfurSignals.emit('ugc_cache_clear')
 
     def reset_ugc_data(self):
         del self.ugc_data

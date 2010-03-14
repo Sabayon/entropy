@@ -25,7 +25,8 @@ import os
 import tempfile
 
 from entropy.exceptions import RepositoryError, InvalidPackageSet
-from entropy.const import etpConst, etpSys, initconfig_entropy_constants
+from entropy.const import etpConst, etpSys, initconfig_entropy_constants, \
+    const_debug_write
 from entropy.misc import ParallelTask, TimeScheduled
 from entropy.i18n import _, _LOCALE
 from entropy.tools import dep_getkey, print_traceback
@@ -679,6 +680,10 @@ class EntropyPackageView:
 
         self.ugc_update_event_handler_id = \
             SulfurSignals.connect('ugc_data_update', self.__update_ugc_event)
+
+        # clear UGC cache when ugc_cache_clear signal is emitted
+        SulfurSignals.connect('ugc_cache_clear',
+            self.__ugc_dnd_updates_clear_cache)
 
         try:
             from Queue import Queue as queue_class, Full, Empty
@@ -1688,7 +1693,10 @@ class EntropyPackageView:
 
         return store
 
-    def __ugc_dnd_updates_clear_cache(self):
+    def __ugc_dnd_updates_clear_cache(self, *args):
+
+        const_debug_write(__name__, "EntropyPackageView, "
+            "__ugc_dnd_updates_clear_cache called")
 
         while True:
             try:
@@ -2037,9 +2045,13 @@ class EntropyPackageView:
         except ProgrammingError:
             return
 
+        #const_debug_write(__name__, "_get_cached_pkg_ugc_icon called")
+
         cache_key = (key, repoid,)
         cached = self.__pkg_ugc_icon_cache.get(cache_key)
         if cached is not None:
+            #const_debug_write(__name__, "_get_cached_pkg_ugc_icon %s in RAM" % (
+            #    cache_key,))
             return cached
 
         # validate variables...
@@ -2050,8 +2062,15 @@ class EntropyPackageView:
 
         icon_doc = self.Equo.UGC.UGCCache.get_icon_cache(key, repoid)
         if icon_doc is None:
+            #const_debug_write(__name__,
+            #    "_get_cached_pkg_ugc_icon %s NOT on disk" % (
+            #        cache_key,))
             # not cached
             return
+
+        #const_debug_write(__name__,
+        #    "_get_cached_pkg_ugc_icon %s on disk?" % (
+        #        cache_key,))
 
         store_path = self.Equo.UGC.UGCCache.get_stored_document(
             icon_doc['iddoc'], repoid, icon_doc['store_url'])
@@ -2062,15 +2081,27 @@ class EntropyPackageView:
             if not called:
                 self._spawn_ugc_icon_fetch(icon_doc, repoid)
             self.__pkg_ugc_icon_call_cache[cache_key] = True
+            #const_debug_write(__name__,
+            #    "_get_cached_pkg_ugc_icon %s not cached on disk" % (
+            #        cache_key,))
             return
 
         if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
             # not cached
+            #const_debug_write(__name__,
+            #    "_get_cached_pkg_ugc_icon %s path not available" % (
+            #        cache_key,))
             return
 
         icon_path = store_path + ".sulfur_icon_small"
         pixbuf = self._ugc_pixbuf_map.get(icon_path)
+
         if pixbuf is None:
+
+            #const_debug_write(__name__,
+            #    "_get_cached_pkg_ugc_icon %s cannot get pixbuf" % (
+            #        cache_key,))
+
             if not (os.path.isfile(icon_path) and \
                 os.access(icon_path, os.R_OK)):
                 try:
@@ -2089,6 +2120,10 @@ class EntropyPackageView:
                     pass
                 return None
             self._ugc_pixbuf_map[icon_path] = pixbuf
+        #else:
+        #    const_debug_write(__name__,
+        #        "_get_cached_pkg_ugc_icon %s got pixbuf from RAM" % (
+        #            cache_key,))
 
         self.__pkg_ugc_icon_cache[cache_key] = pixbuf
         return pixbuf

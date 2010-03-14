@@ -25,6 +25,8 @@ class _SulfurSignals(gobject.GObject):
 gobject.type_register(_SulfurSignals)
 gobject.signal_new("ugc_data_update", _SulfurSignals, gobject.SIGNAL_RUN_FIRST,
                    gobject.TYPE_NONE, ())
+gobject.signal_new("ugc_cache_clear", _SulfurSignals, gobject.SIGNAL_RUN_FIRST,
+                   gobject.TYPE_NONE, ())
 gobject.signal_new("install_queue_empty", _SulfurSignals,
     gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
 gobject.signal_new("install_queue_filled", _SulfurSignals,
