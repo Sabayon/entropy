@@ -1,3 +1,75 @@
+commit 1920b00a28008c6b27ec97c5575c5e14a185e4a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 08:12:57 2010 +0100
+
+    [po] update/sync translations
+
+commit 9ac947ed8f6bc8a366333cc0b1cc64466c46a76a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 08:06:56 2010 +0100
+
+    [entropy.spm] PortagePlugin: remove self-created temporary directory, do not leak files around
+
+commit 3a12369bae2b07c880f50272e66691b0f50f8883
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 07:30:20 2010 +0100
+
+    [sulfur] improve UGC package icon cache handling
+
+commit 0097c97ac160f5e012117a4c5cd20b048519cfd5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 07:29:51 2010 +0100
+
+    [entropy.tools] check if traceback instance is not None in print_exception
+
+commit ec6dfd255bcb3e2fa125c7ffdb8c0e43b6de3363
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 06:38:03 2010 +0100
+
+    [sulfur] fix Entropy Client variables initialization
+
+commit 38c8f33f61bc47c39586d2eca3d2533063ee32a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 13 22:19:44 2010 +0100
+
+    [entropy.client] more refactoring work in entropy.client.interfaces.methods
+
+commit 8ea881694662a9594e9cd7142d722a825fca1c21
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 19:11:26 2010 +0100
+
+    [entropy.server] fix typo
+
+commit ea55b757a6a1c20d2d619df8ea3cb36750a44a60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 19:07:44 2010 +0100
+
+    [entropy.server.interfaces] relax repository database constraints while preparing for upload
+
+commit acdcc3ce8acf633d072972b125a9525cef3a443f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 19:00:41 2010 +0100
+
+    [entropy.server] fix the way items are sorted for upload
+
+commit 01dc3294b9e5b0ab3f22c1913113abe866c4d606
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 18:46:15 2010 +0100
+
+    [conf] add pkg.sabayon.org as fallback in repositories.conf
+
+commit 008602e08d957de5a8ecc33bc92d6a413870d8fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 18:00:42 2010 +0100
+
+    [entropy.const] remove unused const
+
+commit 413dc61d9de96050b334d748a3fb94dfbb1a3aa9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 12 17:54:30 2010 +0100
+
+    Tagging Entropy version 0.99.38.4
+
 commit 0dc0376797871378224da1963db44667506f1440
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 12 17:53:52 2010 +0100
