@@ -55,7 +55,6 @@
 ../libraries/entropy/client/interfaces/client.py
 ../libraries/entropy/client/interfaces/db.py
 ../libraries/entropy/client/interfaces/dep.py
-../libraries/entropy/client/interfaces/fetch.py
 ../libraries/entropy/client/interfaces/__init__.py
 ../libraries/entropy/client/interfaces/loaders.py
 ../libraries/entropy/client/interfaces/methods.py
