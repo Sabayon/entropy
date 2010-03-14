@@ -150,6 +150,11 @@ class EntropyCacher(Singleton):
         """
         while self.__alive or run_until_empty:
 
+            if etpUi['debug']:
+                const_debug_write(__name__,
+                    "EntropyCacher.__cacher: loop, alive: %s, empty: %s" % (
+                        self.__alive, run_until_empty,))
+
             massive_data = []
             try:
                 massive_data_count = EntropyCacher._OBJS_WRITTEN_AT_ONCE
@@ -210,6 +215,7 @@ class EntropyCacher(Singleton):
         """
         self.__cache_buffer.clear()
         self.__cache_writer = TimeScheduled(2, self.__cacher)
+        self.__cache_writer.setName("EntropyCacher")
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
         while not self.__cache_writer.isAlive():
