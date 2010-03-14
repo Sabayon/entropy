@@ -1782,6 +1782,8 @@ class PortagePlugin(SpmPlugin):
                 except OSError:
                     pass
 
+            # remove self-created portdir directory in any case
+            shutil.rmtree(portdir, True)
             if portage_tmpdir_created:
                 shutil.rmtree(portage_tmpdir, True)
 
@@ -2029,20 +2031,13 @@ class PortagePlugin(SpmPlugin):
             )
             return 0
 
+        work_dir = os.path.join(etpConst['entropyunpackdir'],
+            package.replace("/", "_"))
+
         try:
-
-            work_dir = os.path.join(etpConst['entropyunpackdir'], package)
-
             rc = self._portage_doebuild(ebuild, phase, "bintree",
                 package, portage_tmpdir = work_dir,
                 licenses = package_metadata.get('accept_license'))
-
-            if rc != 0:
-                self.log_message(
-                    "[PRE] ATTENTION Cannot properly run SPM %s trigger "
-                    "for %s. Something bad happened." % (phase, package,)
-                )
-
         except Exception as e:
 
             entropy.tools.print_traceback()
@@ -2073,6 +2068,15 @@ class PortagePlugin(SpmPlugin):
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
+            )
+        finally:
+            if os.path.isdir(work_dir):
+                shutil.rmtree(work_dir, True)
+
+        if rc != 0:
+            self.log_message(
+                "[PRE] ATTENTION Cannot properly run SPM %s trigger "
+                "for %s. Something bad happened." % (phase, package,)
             )
 
         if moved_ebuild is not None:
