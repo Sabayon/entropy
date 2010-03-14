@@ -200,6 +200,8 @@ def print_exception(returndata = False, tb_data = None, all_frame_data = False):
 
     stack = []
     while True:
+        if not tb:
+            break
         if not tb.tb_next:
             break
         tb = tb.tb_next
