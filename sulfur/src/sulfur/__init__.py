@@ -1875,7 +1875,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             matches = []
             for repoid in self._entropy.repositories():
                 dbconn = self._entropy.open_repository(repoid)
-                results = dbconn.searchDescription(keyword)
+                try:
+                    results = dbconn.searchDescription(keyword)
+                except OperationalError:
+                    continue
                 matches += [(x, repoid) for atom, x in results]
             # disabled due to duplicated entries annoyance
             #results = self._entropy.installed_repository().searchDescription(
