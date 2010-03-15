@@ -41,7 +41,7 @@ from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
-from entropy.db.exceptions import ProgrammingError
+from entropy.db.exceptions import ProgrammingError, OperationalError
 from entropy.core.settings.base import SystemSettings
 
 # Sulfur Imports
@@ -1859,7 +1859,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             matches = []
             for repoid in self._entropy.repositories():
                 dbconn = self._entropy.open_repository(repoid)
-                results = dbconn.searchPackages(keyword, just_id = True)
+                try:
+                    results = dbconn.searchPackages(keyword, just_id = True)
+                except OperationalError:
+                    continue
                 matches += [(x, repoid) for x in results]
             # disabled due to duplicated entries annoyance
             #results = self._entropy.installed_repository().searchPackages(keyword,
