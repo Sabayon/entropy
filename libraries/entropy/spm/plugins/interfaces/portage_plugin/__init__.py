@@ -1816,7 +1816,11 @@ class PortagePlugin(SpmPlugin):
         mydir = os.path.dirname(mydir)
         content = os.listdir(mydir)
         while not content:
-            os.rmdir(mydir)
+            try:
+                os.rmdir(mydir)
+            except OSError:
+                # cannot remove further
+                break
             mydir = os.path.dirname(mydir)
             content = os.listdir(mydir)
 
