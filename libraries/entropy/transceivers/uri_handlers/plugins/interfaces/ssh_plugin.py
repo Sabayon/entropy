@@ -80,7 +80,7 @@ class EntropySshUriHandler(EntropyUriHandler):
                 sock.close()
                 return
             except self._socket.error:
-                time.sleep(1)
+                time.sleep(5)
                 continue
 
         raise ConnectionError("cannot connect to %s on port %s" % (
