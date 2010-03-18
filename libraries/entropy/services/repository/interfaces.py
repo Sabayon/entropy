@@ -110,18 +110,21 @@ class Server(SocketHost):
             self.set_repository_db_availability(x)
 
             saved_rev = self.repositories[x]['live_db_rev']
+            saved_rev_mtime = self.repositories[x]['live_db_rev_mtime']
             dbrev_path = os.path.join(self.repositories[x]['dbpath'],
                 etpConst['etpdatabaserevisionfile'])
             db_path = os.path.join(self.repositories[x]['dbpath'],
                 etpConst['etpdatabasefile'])
 
             cur_rev = None
+            cur_mtime = None
             if os.path.isfile(dbrev_path):
+                cur_mtime = os.path.getmtime(dbrev_path)
                 cur_f = open(dbrev_path, "r")
                 cur_rev = cur_f.readline().strip()
                 cur_f.close()
 
-            if cur_rev == saved_rev:
+            if (cur_rev == saved_rev) and (cur_mtime == saved_rev_mtime):
                 continue
 
             self.repositories[x]['locked'] = True
@@ -219,6 +222,7 @@ class Server(SocketHost):
                 Server.CACHE_ID+"/"+repository+"/")
 
             self.repositories[x]['live_db_rev'] = cur_rev
+            self.repositories[x]['live_db_rev_mtime'] = cur_mtime
             self.repositories[x]['locked'] = False
 
         self.__cacher.discard()
@@ -276,6 +280,7 @@ class Server(SocketHost):
                     break
             self.repositories[x]['dbrevision'] = myrev
             self.repositories[x]['live_db_rev'] = None
+            self.repositories[x]['live_db_rev_mtime'] = None
             if 'cmethod' not in self.repositories[x]:
                 raise AttributeError("cmethod not specified for: %s" % (x,))
             if self.repositories[x]['cmethod'] not in etpConst['etpdatabasesupportedcformats']:
