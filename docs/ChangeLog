@@ -1,3 +1,69 @@
+commit 704b85a0b0a7cc1f03f1175b2c65f9034f37470d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 18 19:19:37 2010 +0100
+
+    [entropy.client.interfaces.repository] properly retrieve EAPI3 revision and handle revision file update in a proper way
+
+commit 89bb19bba91cbb42fb2ab605606c67da0b6d4211
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 18 10:40:02 2010 +0100
+
+    [entropy.transceivers] tweak Entropy Transceiver SSH plugin connection timeout
+
+commit 6fd83910edb0245a971a4abac409957deb7a4aa1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 18 10:24:06 2010 +0100
+
+    [entropy.spm] PortagePlugin: remove deprecated argument from getvirtuals()
+
+commit 9aadd3a6fe53c4ea98123fc4f085bdd9e6d49f32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 17 07:08:18 2010 +0100
+
+    [entropy.spm] catch OSError exceptions while recursively cleaning overlayed ebuild dir
+
+commit b5fbe1604266497c8bbc58b40cb048e3c516a129
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 15 09:10:17 2010 +0100
+
+    [sulfur] make package search functions fault tolerant (2)
+
+commit 24dc1dc05140ef2c9c664635899d7bd3519915db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 15 09:09:07 2010 +0100
+
+    [sulfur] make package search functions fault tolerant
+
+commit 0fafa52dbc4fc908c88b61c0d28fe60c3bf6ef89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 15:54:41 2010 +0100
+
+    [entropy.client] more refactoring work in entropy.client.interfaces.methods
+
+commit 70066042c464e8b1bdd50fd3235e8d9b440e2b25
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 15:53:44 2010 +0100
+
+    [entropy.client.interfaces.cache] fix EntropyCacher handling
+
+commit 8a8cb4c5297eaefb86313d3da25b5089a8339dec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 15:53:21 2010 +0100
+
+    [entropy.cache] EntropyCacher: add more debugging output
+
+commit 40f439f15f59b85c2ef2f2bda231d4d17fc6f528
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 12:01:15 2010 +0100
+
+    [sulfur] tweak UGC package info window's textview
+
+commit 5aac9aa76a1a23241dbe9395d06a40613dae4f76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 14 08:13:31 2010 +0100
+
+    Tagging Entropy version 0.99.38.5
+
 commit 1920b00a28008c6b27ec97c5575c5e14a185e4a1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Mar 14 08:12:57 2010 +0100
