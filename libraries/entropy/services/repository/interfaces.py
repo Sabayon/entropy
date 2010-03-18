@@ -109,23 +109,6 @@ class Server(SocketHost):
             x = (repository, arch, product, branch,)
             self.set_repository_db_availability(x)
 
-            if not self.repositories[x]['enabled']:
-                if x in self.syscache['dbs_not_available']:
-                    continue
-                self.syscache['dbs_not_available'].add(x)
-                mytxt = blue("%s.") % (
-                    _("database does not exist. Locking services for it"),)
-                self.output(
-                    "[%s] %s" % (
-                            brown(str(x)),
-                            mytxt,
-                    ),
-                    importance = 1,
-                    type = "info"
-                )
-                do_clear.add(repository)
-                continue
-
             saved_rev = self.repositories[x]['live_db_rev']
             dbrev_path = os.path.join(self.repositories[x]['dbpath'],
                 etpConst['etpdatabaserevisionfile'])
@@ -157,13 +140,13 @@ class Server(SocketHost):
             )
 
             # now unpack and unlock
-            dbpath = self.repositories[x]['dbpath']
             cmethod = self.repositories[x]['cmethod']
             cmethod_data = etpConst['etpdatabasecompressclasses'].get(
                 cmethod)
             unpack_method = cmethod_data[1]
             compressed_dbfile = etpConst[cmethod_data[2]]
-            compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
+            compressed_dbpath = os.path.join(self.repositories[x]['dbpath'],
+                compressed_dbfile)
 
             if not (os.access(compressed_dbpath, os.R_OK | os.W_OK) and \
                 os.path.isfile(compressed_dbpath)):
