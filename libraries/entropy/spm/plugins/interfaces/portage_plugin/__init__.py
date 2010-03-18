@@ -592,7 +592,7 @@ class PortagePlugin(SpmPlugin):
         mydb[root]['vartree'] = self._get_portage_vartree(root)
         mydb[root]['porttree'] = self._get_portage_portagetree(root)
         mydb[root]['bintree'] = self._get_portage_binarytree(root)
-        mydb[root]['virtuals'] = self.portage.settings.getvirtuals(root)
+        mydb[root]['virtuals'] = self.portage.settings.getvirtuals()
 
         if etpUi['mute']:
             pid = os.fork()
