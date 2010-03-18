@@ -61,6 +61,7 @@ class Repository:
         self._entropy = entropy_client_instance
         self._cacher = EntropyCacher()
         self._settings = SystemSettings()
+        self._last_revs = {}
         self.repo_ids = repo_identifiers
         self.force = force
         self.sync_errors = False
@@ -382,8 +383,6 @@ class Repository:
 
         return self.__verify_file_checksum(dbfile, md5file)
 
-    # @returns -1 if the file is not available
-    # @returns int>0 if the revision has been retrieved
     def get_online_repository_revision(self, repo):
 
         self.__validate_repository_id(repo)
@@ -400,11 +399,17 @@ class Repository:
                     eapi3_interface, repo, session)
                 self.__eapi3_close(eapi3_interface, session = session)
                 repo_rev = repo_metadata.get('revision')
+                if repo_rev is not None:
+                    try:
+                        repo_rev = int(repo_rev)
+                    except (ValueError, TypeError):
+                        repo_rev = None
                 if repo_rev is None:
                     # cannot reliably detect revision in EAPI=3 world
                     # so we need to drop EAPI3 in favour of EAPI2
                     self._repo_eapi[repo] -= 1
                 else:
+                    self._last_revs[repo] = repo_rev
                     return repo_rev
 
         avail_data = self._settings['repositories']['available']
@@ -419,9 +424,12 @@ class Repository:
                 status = int(status)
             except ValueError:
                 status = -1
-            return status
         else:
-            return -1
+            status = -1
+
+        self._last_revs[repo] = status
+        return status
+
 
     def _is_repository_updatable(self, repo):
 
@@ -560,6 +568,19 @@ class Repository:
         db_data['dbrevision'] = "0"
         if cur_rev != -1:
             db_data['dbrevision'] = str(cur_rev)
+
+        # update repository revision file
+        # self.get_online_repository_revision() output must be
+        # written into packages.db.revision for consistency
+        # otherwise EAPI3 sync when EAPI3 service is on a separate
+        # server (and uses rsync) doesn't work at its best
+        # self._last_revs
+        downloaded_rev = self._last_revs.get(repo, -1) # must be always int
+        rev_file = os.path.join(db_data['dbpath'],
+            etpConst['etpdatabaserevisionfile'])
+        with open(rev_file, "w") as rev_f:
+            rev_f.write(str(downloaded_rev) + "\n")
+            rev_f.flush()
 
     def _show_repository_information(self, repo, count_info):
 
