@@ -27,6 +27,7 @@ sys.path.insert(0, "repoman")
 import gtk, gobject
 from sulfur.setup import const
 from sulfur.dialogs import ExceptionDialog
+from sulfur.entropyapi import Equo
 from repoman import RepositoryManagerMenu
 
 class MyRepositoryManager(RepositoryManagerMenu):
