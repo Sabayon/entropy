@@ -12,6 +12,7 @@
                 OnlyShowIn | NotShowIn | NoDisplay | StartupNotify
 
   0.99.50:
+    - "OR" dependencies
     - entropy.fetchers API docs
     - entropy.server API docs
     - entropy.client API docs
