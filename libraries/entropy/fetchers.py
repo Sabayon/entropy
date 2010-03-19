@@ -13,6 +13,7 @@ import os
 import sys
 import time
 import httplib
+import socket
 
 if sys.hexversion >= 0x3000000:
     import urllib.request as urlmod
@@ -203,6 +204,10 @@ class UrlFetcher:
                 self.__close(True)
                 self.__status = "-3"
                 return self.__status
+            except socket.timeout:
+                # arghv!!
+                self.__close(True)
+                self.__status = "-3"
 
             except ValueError: # malformed, unsupported URL? raised by urllib
                 self.__close(True)
