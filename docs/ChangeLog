@@ -1,3 +1,39 @@
+commit a9d2e8329d482e64097664263064f6fc41b73bbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 19 15:19:53 2010 +0100
+
+    [todo] update TODO
+
+commit 33ef15eab65efbbce8e8c8c257b2818a9583f21a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 19 15:19:40 2010 +0100
+
+    [entropy.fetchers] urlFetcher: catch socket.timeout exceptions
+
+commit 160fcfe5ebd6834ed7e56113afd569a17f6ddffe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 19 15:15:47 2010 +0100
+
+    [sulfur] fix repo-manager-client.py (add missing import)
+
+commit de8b7e6fd722a41d51b2ca980af2b0842e554712
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 18 20:02:18 2010 +0100
+
+    [entropy.services.repository] when monitoring repositories, also check packages.db.revision mtime
+
+commit f16d42790759afd8a1aed87a929b93d85ef8a639
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 18 19:49:58 2010 +0100
+
+    [entropy.services.repository] remove dead code
+
+commit e862b57b6e5ad4bba626fca437bd243a423e4126
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 18 19:20:57 2010 +0100
+
+    Tagging Entropy version 0.99.38.6
+
 commit 704b85a0b0a7cc1f03f1175b2c65f9034f37470d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Mar 18 19:19:37 2010 +0100
