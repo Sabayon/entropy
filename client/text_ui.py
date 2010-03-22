@@ -1990,13 +1990,14 @@ def _dependencies_test(entropy_client):
 
         crying_atoms = {}
         found_deps = set()
+        inst_repo = entropy_client.installed_repository()
         for dep in deps_not_matched:
 
-            riddep = entropy_client.installed_repository().searchDependency(dep)
+            riddep = inst_repo.searchDependency(dep)
             if riddep != -1:
-                ridpackages = entropy_client.installed_repository().searchIdpackageFromIddependency(riddep)
+                ridpackages = inst_repo.searchIdpackageFromIddependency(riddep)
                 for i in ridpackages:
-                    iatom = entropy_client.installed_repository().retrieveAtom(i)
+                    iatom = inst_repo.retrieveAtom(i)
                     if iatom:
                         obj = crying_atoms.setdefault(dep, set())
                         obj.add(iatom)
@@ -2006,12 +2007,14 @@ def _dependencies_test(entropy_client):
                 found_deps.add(dep)
                 continue
             else:
-                iddep = entropy_client.installed_repository().searchDependency(dep)
+                iddep = inst_repo.searchDependency(dep)
                 if iddep == -1:
                     continue
-                c_idpackages = entropy_client.installed_repository().searchIdpackageFromIddependency(iddep)
+                c_idpackages = inst_repo.searchIdpackageFromIddependency(iddep)
                 for c_idpackage in c_idpackages:
-                    key, slot = entropy_client.installed_repository().retrieveKeySlot(c_idpackage)
+                    if not inst_repo.isIdpackageAvailable(c_idpackage):
+                        continue
+                    key, slot = inst_repo.retrieveKeySlot(c_idpackage)
                     key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
                         slot,)
                     match = entropy_client.atom_match(key, match_slot = slot)
