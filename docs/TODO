@@ -13,6 +13,7 @@
 
   0.99.50:
     - "OR" dependencies
+    - Client.SystemSettings vs Client.Settings()
     - entropy.fetchers API docs
     - entropy.server API docs
     - entropy.client API docs
