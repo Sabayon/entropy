@@ -7,9 +7,11 @@ sys.path.insert(0, '../')
 import unittest
 import os
 import shutil
+import signal
+import time
 import tempfile
 from entropy.client.interfaces import Client
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_setup_entropy_pid
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
@@ -40,6 +42,18 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.flush()
         self.Client.destroy()
 
+    def test_another_instance(self):
+        pid = os.fork()
+        if pid == 0:
+            # child
+            locked = self.Client.another_entropy_running()
+            if locked:
+                os._exit(1)
+            os._exit(0)
+        else:
+            rc = os.waitpid(pid, 0)[1]
+            self.assertNotEqual(rc, 0)
+
     def test_singleton(self):
         myclient = Client(noclientdb = 2)
         self.assert_(myclient is self.Client)
@@ -56,7 +70,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         const_key = 'foo_foo_foo'
         const_val = set([1, 2, 3])
         etpConst[const_key] = const_val
-        self.Client.backup_constant(const_key)
+        self.Client._backup_constant(const_key)
         self.Client._reload_constants()
         self.assertEqual(True, const_key in etpConst)
         self.assertEqual(const_val, etpConst.get(const_key))

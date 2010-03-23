@@ -75,6 +75,26 @@ class FileUpdates:
             except IOError:
                 pass
 
+    def _get_system_config_protect(self, mask = False):
+
+        inst_repo = self._entropy.installed_repository()
+        if inst_repo is None:
+            return []
+
+        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        misc_data = self._settings[cl_id]['misc']
+        if mask:
+            _pmask = inst_repo.listConfigProtectEntries(mask = True)
+            config_protect = set(_pmask)
+            config_protect |= set(misc_data['configprotectmask'])
+        else:
+            _protect = inst_repo.listConfigProtectEntries()
+            config_protect = set(_protect)
+            config_protect |= set(misc_data['configprotect'])
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
+
+        return sorted(config_protect)
+
     def scan(self, dcache = True, quiet = False):
 
         if dcache:
@@ -94,7 +114,7 @@ class FileUpdates:
         scandata = {}
         counter = 0
         name_cache = set()
-        client_conf_protect = self._entropy.get_system_config_protect()
+        client_conf_protect = self._get_system_config_protect()
 
         for path in client_conf_protect:
 

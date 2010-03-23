@@ -389,7 +389,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
     # disable collisions protection, better
     sys_set_client_plg_id = \
         etpConst['system_settings_plugins_ids']['client_plugin']
-    equo_client_settings = entropy_client.SystemSettings[sys_set_client_plg_id]['misc']
+    equo_client_settings = entropy_client.Settings()[sys_set_client_plg_id]['misc']
     oldcollprotect = equo_client_settings['collisionprotect']
     equo_client_settings['collisionprotect'] = 1
 
@@ -486,7 +486,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
     if not etpUi['pretend']:
         # this triggers post-branch upgrade function inside
         # Entropy Client SystemSettings plugin
-        entropy_client.SystemSettings.clear()
+        entropy_client.Settings().clear()
 
     return 0, 0
 
@@ -499,18 +499,18 @@ def branch_hop(entropy_client, branch):
         return 1, -1
 
     # set the new branch
-    if branch == entropy_client.SystemSettings['repositories']['branch']:
+    if branch == entropy_client.Settings()['repositories']['branch']:
         mytxt = "%s %s: %s" % (bold(" !!! "),
             darkred(_("Already on branch")), purple(branch),)
         print_warning(mytxt)
         return 2, -1
 
     old_repo_paths = []
-    avail_data = entropy_client.SystemSettings['repositories']['available']
+    avail_data = entropy_client.Settings()['repositories']['available']
     for repoid in sorted(avail_data):
         old_repo_paths.append(avail_data[repoid]['dbpath'][:])
 
-    old_branch = entropy_client.SystemSettings['repositories']['branch'][:]
+    old_branch = entropy_client.Settings()['repositories']['branch'][:]
     entropy_client.set_branch(branch)
     status = True
 
@@ -578,6 +578,16 @@ def _show_masked_pkg_info(entropy_client, package, from_user = True):
                     crying_atoms.add((iatom, repo))
         return crying_atoms
 
+    def get_masked_package_reason(match):
+        idpackage, repoid = match
+        dbconn = entropy_client.open_repository(repoid)
+        idpackage, idreason = dbconn.idpackageValidator(idpackage)
+        masked = False
+        if idpackage == -1:
+            masked = True
+        settings = entropy_client.Settings()
+        return masked, idreason, settings['pkg_masking_reasons'].get(idreason)
+
     masked_matches = entropy_client.atom_match(package, mask_filter = False,
         multi_match = True)
     if masked_matches[1] == 0:
@@ -593,8 +603,7 @@ def _show_masked_pkg_info(entropy_client, package, from_user = True):
 
         m_reasons = {}
         for match in masked_matches[0]:
-            masked, idreason, reason = entropy_client.get_masked_package_reason(
-                match)
+            masked, idreason, reason = get_masked_package_reason(match)
             if not masked:
                 continue
             reason_obj = (idreason, reason,)
@@ -949,7 +958,7 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
 
     sys_set_client_plg_id = \
         etpConst['system_settings_plugins_ids']['client_plugin']
-    equo_client_settings = entropy_client.SystemSettings[sys_set_client_plg_id]['misc']
+    equo_client_settings = entropy_client.Settings()[sys_set_client_plg_id]['misc']
 
     if multifetch <= 1:
         multifetch = equo_client_settings.get('multifetch', 1)
@@ -1097,7 +1106,7 @@ def install_packages(entropy_client,
 
     sys_set_client_plg_id = \
         etpConst['system_settings_plugins_ids']['client_plugin']
-    equo_client_settings = entropy_client.SystemSettings[sys_set_client_plg_id]['misc']
+    equo_client_settings = entropy_client.Settings()[sys_set_client_plg_id]['misc']
 
     if check_critical_updates and equo_client_settings.get('forcedupdates'):
         crit_atoms, crit_matches = entropy_client.calculate_critical_updates()
@@ -1446,6 +1455,17 @@ def install_packages(entropy_client,
         for mylic in myaccept_license:
             if mylic in licenses:
                 licenses.pop(mylic)
+
+    def get_text_license(license_name, repoid):
+        dbconn = entropy_client.open_repository(repoid)
+        text = dbconn.retrieveLicenseText(license_name)
+        tempfile = entropy.tools.get_random_temp_file()
+        f = open(tempfile, "w")
+        f.write(text)
+        f.flush()
+        f.close()
+        return tempfile
+
     if licenses:
         print_info(red(" @@ ")+blue("%s:" % (_("You need to accept the licenses below"),) ))
         keys = sorted(licenses.keys())
@@ -1466,7 +1486,7 @@ def install_packages(entropy_client,
                 if choice == 0:
                     return 0, 0
                 elif choice == 1: # read
-                    filename = entropy_client.get_text_license(key, match[1])
+                    filename = get_text_license(key, match[1])
                     viewer = get_file_pager()
                     if viewer == None:
                         print_info(red("    %s ! %s %s " % (_("No file viewer"), _("License saved into"), filename,) ))
@@ -1612,9 +1632,9 @@ def _mask_unmask_packages(entropy_client, packages, action):
         for match in matches:
             # effectively do action
             if action == "mask":
-                done = entropy_client.mask_match_generic(match, package)
+                done = entropy_client.mask_package_generic(match, package)
             else:
-                done = entropy_client.unmask_match_generic(match, package)
+                done = entropy_client.unmask_package_generic(match, package)
             if not done:
                 mytxt = "## %s: %s %s." % (
                     red(_("ATTENTION")),
@@ -1964,9 +1984,14 @@ def _unused_packages_test(entropy_client, do_size_sort = False):
         print_info(red(" @@ ")+blue("%s ..." % (
             _("Running unused packages test, pay attention, there are false positives"),) ))
 
-    unused = entropy_client.unused_packages_test()
+    def unused_packages_test():
+        inst_repo = entropy_client.installed_repository()
+        return [x for x in inst_repo.retrieveUnusedIdpackages() if \
+            entropy_client.validate_package_removal(x)]
+
     data = [(entropy_client.installed_repository().retrieveOnDiskSize(x), x, \
-        entropy_client.installed_repository().retrieveAtom(x),) for x in unused]
+        entropy_client.installed_repository().retrieveAtom(x),) for x in \
+            unused_packages_test()]
 
     if do_size_sort:
         data = sorted(data, key = lambda x: x[0])

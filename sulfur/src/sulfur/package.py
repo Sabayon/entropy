@@ -16,7 +16,7 @@ import entropy.tools
 
 from sulfur.entropyapi import Equo
 from sulfur.setup import cleanMarkupString, SulfurConf
-EquoIntf = Equo()
+ENTROPY = Equo()
 
 class DummyEntropyPackage:
 
@@ -85,7 +85,7 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_match, rc = EquoIntf.Sets().match(matched_atom[1:])
+            set_match, rc = ENTROPY.Sets().match(matched_atom[1:])
             if not rc:
                 # package set broken
                 self.broken = True
@@ -111,7 +111,7 @@ class EntropyPackage:
 
         elif self.remote:
 
-            self.dbconn = EquoIntf.open_temp_repository()
+            self.dbconn = ENTROPY.open_temp_repository()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
             matched_atom = (idpackage, matched_atom[1])
             self.from_installed = False
@@ -119,10 +119,10 @@ class EntropyPackage:
         else:
 
             if matched_atom[1] == 0:
-                self.dbconn = EquoIntf.installed_repository()
+                self.dbconn = ENTROPY.installed_repository()
                 self.from_installed = True
             else:
-                self.dbconn = EquoIntf.open_repository(matched_atom[1])
+                self.dbconn = ENTROPY.open_repository(matched_atom[1])
                 self.from_installed = False
 
         if isinstance(matched_atom, tuple):
@@ -202,20 +202,20 @@ class EntropyPackage:
     def is_user_masked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoIntf.atom_match(key, match_slot = slot)
+            m_id, m_r = ENTROPY.atom_match(key, match_slot = slot)
             if m_id == -1:
                 return False
-            return EquoIntf.is_match_masked_by_user((m_id, m_r,))
-        return EquoIntf.is_match_masked_by_user(self.matched_atom)
+            return ENTROPY.is_package_masked_by_user((m_id, m_r,))
+        return ENTROPY.is_package_masked_by_user(self.matched_atom)
 
     def is_user_unmasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-            m_id, m_r = EquoIntf.atom_match(key, match_slot = slot)
+            m_id, m_r = ENTROPY.atom_match(key, match_slot = slot)
             if m_id == -1:
                 return False
-            return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))
-        return EquoIntf.is_match_unmasked_by_user(self.matched_atom)
+            return ENTROPY.is_package_unmasked_by_user((m_id, m_r,))
+        return ENTROPY.is_package_unmasked_by_user(self.matched_atom)
 
     def _get_nameDesc_get_installed_ver(self):
         ver_str = ''
@@ -227,8 +227,8 @@ class EntropyPackage:
             # there are no updates
             return ver_str
 
-        from_ver = EquoIntf.installed_repository().retrieveVersion(idpackage) or ""
-        from_tag = EquoIntf.installed_repository().retrieveTag(idpackage) or ""
+        from_ver = ENTROPY.installed_repository().retrieveVersion(idpackage) or ""
+        from_tag = ENTROPY.installed_repository().retrieveTag(idpackage) or ""
         if from_tag:
             from_tag = '#%s' % (from_tag,)
 
@@ -260,7 +260,7 @@ class EntropyPackage:
             return 'N/A'
 
         key = entropy.tools.dep_getkey(atom)
-        downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo_clean, key)
+        downloads = ENTROPY.UGC.UGCCache.get_package_downloads(repo_clean, key)
         ugc_string = '<small>[%s|<span foreground="%s">%s</span>]</small> ' % (
             downloads, SulfurConf.color_title2, repo_clean,)
         if ver_str:
@@ -271,7 +271,7 @@ class EntropyPackage:
         if self.masked:
             t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (
                 SulfurConf.color_title2,
-                EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
+                ENTROPY.SystemSettings['pkg_masking_reasons'][self.masked],)
 
         desc = self.get_description(markup = False)
         if not desc:
@@ -335,7 +335,7 @@ class EntropyPackage:
             match = self.installed_match
 
         # check if it's a system package
-        s = EquoIntf.validate_package_removal(match[0])
+        s = ENTROPY.validate_package_removal(match[0])
 
         self.__cache['is_sys_pkg'] = not s
         return not s
@@ -353,12 +353,12 @@ class EntropyPackage:
             return cached
 
         key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-        matches = EquoIntf.installed_repository().searchKeySlot(key, slot)
+        matches = ENTROPY.installed_repository().searchKeySlot(key, slot)
 
         if not matches: # not installed, new!
             status = 1
         else:
-            rc, matched = EquoIntf.check_package_update(key+":"+slot, deep = True)
+            rc, matched = ENTROPY.check_package_update(key+":"+slot, deep = True)
             if rc:
                 status = 2
             else:
@@ -570,7 +570,7 @@ class EntropyPackage:
 
     def get_release(self):
         if self.pkgset:
-            return EquoIntf.SystemSettings['repositories']['branch']
+            return ENTROPY.SystemSettings['repositories']['branch']
         return self.dbconn.retrieveBranch(self.matched_id)
 
     def get_ugc_package_vote(self):
@@ -579,7 +579,7 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return None
-        return EquoIntf.UGC.UGCCache.get_package_vote(
+        return ENTROPY.UGC.UGCCache.get_package_vote(
             self.get_repository_clean(), entropy.tools.dep_getkey(atom))
 
     def get_ugc_package_vote_int(self):
@@ -588,7 +588,7 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return 0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(
+        vote = ENTROPY.UGC.UGCCache.get_package_vote(
             self.get_repository_clean(), entropy.tools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0
@@ -600,7 +600,7 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return 0.0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(
+        vote = ENTROPY.UGC.UGCCache.get_package_vote(
             self.get_repository_clean(), entropy.tools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0.0
@@ -616,7 +616,7 @@ class EntropyPackage:
         if not atom:
             return 0
         key = entropy.tools.dep_getkey(atom)
-        return EquoIntf.UGC.UGCCache.get_package_downloads(
+        return ENTROPY.UGC.UGCCache.get_package_downloads(
             self.get_repository_clean(), key)
 
     def get_attribute(self, attr):

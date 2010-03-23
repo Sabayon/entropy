@@ -72,7 +72,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.do_debug = False
         self._ugc_status = "--nougc" not in sys.argv
         self._RESOURCES_LOCKED = False
-        locked = self._entropy.application_lock_check(silent = True)
+        locked = self._entropy.another_entropy_running()
         is_root = os.getuid() == 0
         if locked or (not is_root):
             self._RESOURCES_LOCKED = True
@@ -2000,7 +2000,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.show_progress_bars()
 
         # preventive check against other instances
-        locked = self._entropy.application_lock_check()
+        locked = self._entropy.another_entropy_running()
         if locked or not entropy.tools.is_root():
             okDialog(self.ui.main,
                 _("Another Entropy instance is running. Cannot process queue."))
@@ -2155,7 +2155,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         _("Attention. You have updated Entropy."
                         "\nSulfur will be reloaded.")
                     )
-                    self._entropy.resources_remove_lock()
+                    self._entropy.unlock_resources()
                     self.quit(sysexit = 99)
 
             if self.do_debug:
@@ -2206,7 +2206,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             rb = self.packageRB["updates"]
             gobject.timeout_add(0, rb.clicked)
 
-        self._entropy.resources_remove_lock()
+        self._entropy.unlock_resources()
 
         if state:
             self.progress.set_mainLabel(_("Tasks completed successfully."))

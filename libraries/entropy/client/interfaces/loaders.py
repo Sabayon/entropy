@@ -92,3 +92,9 @@ class LoadersMixin:
 
     def Package(self):
         return self.__PackageLoader(self)
+
+    def Settings(self):
+        """
+        Return SystemSettings instance
+        """
+        return self.SystemSettings

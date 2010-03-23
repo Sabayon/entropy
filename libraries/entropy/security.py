@@ -1011,13 +1011,18 @@ class System:
             header = red(" @@ ")
         )
 
-        gave_up = self._entropy.lock_check(
-            self._entropy.resources_check_lock)
+        gave_up = self._entropy.wait_resources()
         if gave_up:
             return 7
 
-        locked = self._entropy.application_lock_check()
+        locked = self._entropy.another_entropy_running()
         if locked:
+            self._entropy.output(
+                red(_("Another Entropy is currently running.")),
+                importance = 1,
+                type = "error",
+                header = darkred(" @@ ")
+            )
             return 4
 
         # lock
@@ -1030,7 +1035,7 @@ class System:
             if rc_lock != 0:
                 return rc_lock
         finally:
-            self._entropy.resources_remove_lock()
+            self._entropy.unlock_resources()
 
         if self.advisories_changed:
             advtext = "%s: %s" % (
@@ -1071,7 +1076,6 @@ class System:
                 type = "error",
                 header = red("   ## ")
             )
-            self._entropy.resources_remove_lock()
             return 2
 
         # check if we need to go further
@@ -1095,7 +1099,6 @@ class System:
                 type = "error",
                 header = red("   ## ")
             )
-            self._entropy.resources_remove_lock()
             return 1
 
         mytxt = "%s: %s %s" % (
@@ -1125,7 +1128,6 @@ class System:
                 type = "error",
                 header = red("   ## ")
             )
-            self._entropy.resources_remove_lock()
             return 3
         elif status == 2:
             mytxt = "%s: %s." % (
@@ -1138,7 +1140,6 @@ class System:
                 type = "error",
                 header = red("   ## ")
             )
-            self._entropy.resources_remove_lock()
             return 4
         elif status == 3:
             mytxt = "%s: %s." % (
@@ -1151,7 +1152,6 @@ class System:
                 type = "error",
                 header = red("   ## ")
             )
-            self._entropy.resources_remove_lock()
             return 5
         elif status == 0:
             mytxt = "%s: %s." % (
@@ -1211,7 +1211,6 @@ class System:
                 type = "error",
                 header = red("   ## ")
             )
-            self._entropy.resources_remove_lock()
             return 6
 
         mytxt = "%s: %s %s" % (

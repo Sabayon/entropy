@@ -1077,13 +1077,12 @@ class MiscMixin:
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
     def lock_resources(self):
-        acquired = self.create_pid_file_lock(
-            etpConst['locks']['using_resources'])
+        acquired = self._create_pid_file_lock()
         if acquired:
             MiscMixin.RESOURCES_LOCK_F_COUNT += 1
         return acquired
 
-    def resources_remove_lock(self):
+    def unlock_resources(self):
 
         # decrement lock counter
         if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
@@ -1102,16 +1101,24 @@ class MiscMixin:
                 f_obj.close()
             MiscMixin.RESOURCES_LOCK_F_REF = None
 
-        if os.path.isfile(etpConst['locks']['using_resources']):
-            os.remove(etpConst['locks']['using_resources'])
+        lock_file = etpConst['locks']['using_resources']
+        if os.path.isfile(lock_file):
+            os.remove(lock_file)
 
-    def resources_check_lock(self):
-        return self.check_pid_file_lock(etpConst['locks']['using_resources'])
+    def resources_locked(self):
+        """
+        Determine whether Entropy resources are locked (in use).
 
-    def check_pid_file_lock(self, pidfile):
+        @return: True, if resources are locked
+        @rtype: bool
+        """
+        return self._check_pid_file_lock(etpConst['locks']['using_resources'])
+
+    def _check_pid_file_lock(self, pidfile):
         if not os.path.isfile(pidfile):
             return False # not locked
-        f = open(pidfile)
+
+        f = open(pidfile, "r")
         s_pid = f.readline().strip()
         f.close()
         try:
@@ -1126,18 +1133,18 @@ class MiscMixin:
             return True # locked
         return False
 
-    def create_pid_file_lock(self, pidfile, mypid = None):
+    def _create_pid_file_lock(self):
 
         if MiscMixin.RESOURCES_LOCK_F_REF is not None:
             # already locked, reentrant lock
             return True
 
+        pidfile = etpConst['locks']['using_resources']
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir, 0o775)
         const_setup_perms(lockdir, etpConst['entropygid'])
-        if mypid is None:
-            mypid = os.getpid()
+        mypid = os.getpid()
 
         pid_f = open(pidfile, "w")
         try:
@@ -1154,32 +1161,18 @@ class MiscMixin:
         MiscMixin.RESOURCES_LOCK_F_REF = pid_f
         return True
 
-    def application_lock_check(self, silent = False):
+    def another_entropy_running(self):
         # check if another instance is running
-        etpConst['applicationlock'] = False
-        const_setup_entropy_pid(just_read = True)
+        acquired, locked = const_setup_entropy_pid(just_read = True)
+        return locked
 
-        locked = etpConst['applicationlock']
-        if locked:
-            if not silent:
-                self.output(
-                    red(_("Another Entropy instance is currently active, cannot satisfy your request.")),
-                    importance = 1,
-                    type = "error",
-                    header = darkred(" @@ ")
-                )
-            return True
-        return False
-
-    def lock_check(self, check_function):
+    def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300):
 
         lock_count = 0
-        max_lock_count = 600
-        sleep_seconds = 0.5
 
         # check lock file
         while True:
-            locked = check_function()
+            locked = self.resources_locked()
             if not locked:
                 if lock_count > 0:
                     self.output(
@@ -1195,7 +1188,8 @@ class MiscMixin:
             if lock_count >= max_lock_count:
                 mycalc = max_lock_count*sleep_seconds/60
                 self.output(
-                    blue(_("Resources still locked after %s minutes, giving up!")) % (mycalc,),
+                    blue(_("Resources still locked after %s minutes, giving up!")) % (
+                        mycalc,),
                     importance = 1,
                     type = "warning",
                     header = darkred(" @@ ")
@@ -1216,7 +1210,7 @@ class MiscMixin:
             time.sleep(sleep_seconds)
         return False # yay!
 
-    def backup_constant(self, constant_name):
+    def _backup_constant(self, constant_name):
         if constant_name in etpConst:
             myinst = etpConst[constant_name]
             if type(etpConst[constant_name]) in (list, tuple):
@@ -1230,17 +1224,8 @@ class MiscMixin:
             t = _("Nothing to backup in etpConst with %s key") % (constant_name,)
             raise AttributeError(t)
 
-    def set_priority(self, low = 0):
-        return const_set_nice_level(low)
-
-    def reload_repositories_config(self, repositories = None):
-        if repositories is None:
-            repositories = self._enabled_repos
-        for repoid in repositories:
-            self.open_repository(repoid)
-
     def switch_chroot(self, chroot = ""):
-        # clean caches
+
         self.clear_cache()
         self.close_repositories()
         if chroot.endswith("/"):
@@ -1258,16 +1243,13 @@ class MiscMixin:
             except:
                 pass
 
-    def is_installed_idpackage_in_system_mask(self, idpackage):
+    def _is_installed_idpackage_in_system_mask(self, idpackage):
         client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        mask_installed = self.SystemSettings[client_plugin_id]['system_mask']['repos_installed']
+        cl_set = self.SystemSettings[client_plugin_id]
+        mask_installed = cl_set['system_mask']['repos_installed']
         if idpackage in mask_installed:
             return True
         return False
-
-    def unused_packages_test(self, dbconn = None):
-        if dbconn is None: dbconn = self._installed_repository
-        return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]
 
     def is_entropy_package_free(self, pkg_id, repo_id):
         """
@@ -1296,13 +1278,12 @@ class MiscMixin:
         lic_accepted = self.SystemSettings['license_accept']
 
         licenses = {}
-        for match in install_queue:
-            repoid = match[1]
-            dbconn = self.open_repository(repoid)
-            wl = repo_sys_data['license_whitelist'].get(repoid)
+        for pkg_id, repo_id in install_queue:
+            dbconn = self.open_repository(repo_id)
+            wl = repo_sys_data['license_whitelist'].get(repo_id)
             if not wl:
                 continue
-            keys = dbconn.retrieveLicensedataKeys(match[0])
+            keys = dbconn.retrieveLicensedataKeys(pkg_id)
             keys = [x for x in keys if x not in lic_accepted]
             for key in keys:
                 if key in wl:
@@ -1311,19 +1292,9 @@ class MiscMixin:
                 if found:
                     continue
                 obj = licenses.setdefault(key, set())
-                obj.add(match)
+                obj.add((pkg_id, repo_id))
 
         return licenses
-
-    def get_text_license(self, license_name, repoid):
-        dbconn = self.open_repository(repoid)
-        text = dbconn.retrieveLicenseText(license_name)
-        tempfile = entropy.tools.get_random_temp_file()
-        f = open(tempfile, "w")
-        f.write(text)
-        f.flush()
-        f.close()
-        return tempfile
 
     def set_branch(self, branch):
         """
@@ -1339,8 +1310,10 @@ class MiscMixin:
         @type branch basestring
         @return None
         """
+        cacher_started = self._cacher.is_started()
         self._cacher.discard()
-        self._cacher.stop()
+        if cacher_started:
+            self._cacher.stop()
         self.clear_cache()
         self.close_repositories()
         # etpConst should be readonly but we override the rule here
@@ -1357,7 +1330,7 @@ class MiscMixin:
         self._installed_repository.resetTreeupdatesDigests()
         self._validate_repositories(quiet = True)
         self.close_repositories()
-        if self.xcache:
+        if cacher_started:
             self._cacher.start()
 
     def get_meant_packages(self, search_term, from_installed = False,
@@ -1405,7 +1378,7 @@ class MiscMixin:
         groups = spm.get_package_groups().copy()
 
         # expand metadata
-        categories = self.get_package_categories()
+        categories = self._get_package_categories()
         for data in list(groups.values()):
 
             exp_cats = set()
@@ -1415,7 +1388,7 @@ class MiscMixin:
 
         return groups
 
-    def get_package_categories(self):
+    def _get_package_categories(self):
         categories = set()
         for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
@@ -1423,84 +1396,7 @@ class MiscMixin:
             categories.update(set([x[1] for x in catsdata]))
         return sorted(categories)
 
-    def get_category_description(self, category):
-
-        data = {}
-        for repo in self._enabled_repos:
-            try:
-                dbconn = self.open_repository(repo)
-            except RepositoryError:
-                continue
-            try:
-                data = dbconn.retrieveCategoryDescription(category)
-            except (OperationalError, IntegrityError,):
-                continue
-            if data:
-                break
-
-        return data
-
-    def list_installed_packages_in_category(self, category):
-        pkg_matches = set([x[1] for x in \
-            self._installed_repository.searchCategory(category)])
-        return pkg_matches
-
-    def get_package_match_config_protect(self, match, mask = False):
-
-        idpackage, repoid = match
-        dbconn = self.open_repository(repoid)
-        cl_id = self.sys_settings_client_plugin_id
-        misc_data = self.SystemSettings[cl_id]['misc']
-        if mask:
-            config_protect = set(dbconn.retrieveProtectMask(idpackage).split())
-            config_protect |= set(misc_data['configprotectmask'])
-        else:
-            config_protect = set(dbconn.retrieveProtect(idpackage).split())
-            config_protect |= set(misc_data['configprotect'])
-        config_protect = [etpConst['systemroot']+x for x in config_protect]
-
-        return sorted(config_protect)
-
-    def get_installed_package_config_protect(self, idpackage, mask = False):
-
-        if self._installed_repository is None:
-            return []
-        cl_id = self.sys_settings_client_plugin_id
-        misc_data = self.SystemSettings[cl_id]['misc']
-        if mask:
-            _pmask = self._installed_repository.retrieveProtectMask(idpackage).split()
-            config_protect = set(_pmask)
-            config_protect |= set(misc_data['configprotectmask'])
-        else:
-            _protect = self._installed_repository.retrieveProtect(idpackage).split()
-            config_protect = set(_protect)
-            config_protect |= set(misc_data['configprotect'])
-        config_protect = [etpConst['systemroot']+x for x in config_protect]
-
-        return sorted(config_protect)
-
-    def get_system_config_protect(self, mask = False):
-
-        if self._installed_repository is None:
-            return []
-
-        # FIXME: workaround because this method is called
-        # before misc_parser
-        cl_id = self.sys_settings_client_plugin_id
-        misc_data = self.SystemSettings[cl_id]['misc']
-        if mask:
-            _pmask = self._installed_repository.listConfigProtectEntries(mask = True)
-            config_protect = set(_pmask)
-            config_protect |= set(misc_data['configprotectmask'])
-        else:
-            _protect = self._installed_repository.listConfigProtectEntries()
-            config_protect = set(_protect)
-            config_protect |= set(misc_data['configprotect'])
-        config_protect = [etpConst['systemroot']+x for x in config_protect]
-
-        return sorted(config_protect)
-
-    def inject_entropy_database_into_package(self, package_filename, data,
+    def _inject_entropy_database_into_package(self, package_filename, data,
         treeupdates_actions = None):
         tmp_fd, tmp_path = tempfile.mkstemp()
         os.close(tmp_fd)
@@ -1514,42 +1410,23 @@ class MiscMixin:
         entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
         os.remove(tmp_path)
 
-    def quickpkg(self, atomstring, savedir = None):
-        if savedir is None:
-            savedir = etpConst['packagestmpdir']
-            if not os.path.isdir(etpConst['packagestmpdir']):
-                os.makedirs(etpConst['packagestmpdir'])
-        # match package
-        match = self._installed_repository.atomMatch(atomstring)
-        if match[0] == -1:
-            return -1, None, None
-        atom = self._installed_repository.atomMatch(match[0])
-        pkgdata = self._installed_repository.getPackageData(match[0])
-        resultfile = self.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
-        if resultfile is None:
-            return -1, atom, None
-        else:
-            return 0, atom, resultfile
-
-    def quickpkg_handler(self, pkgdata, dirpath, edb = True,
-           fake = False, compression = "bz2", shiftpath = ""):
+    def quickpkg(self, pkgdata, dirpath, edb = True, fake = False,
+        compression = "bz2", shiftpath = ""):
 
         import tarfile
 
         if compression not in ("bz2", "", "gz"):
             compression = "bz2"
 
-        # getting package info
-        pkgtag = ''
-        pkgrev = "~"+str(pkgdata['revision'])
-        if pkgdata['versiontag']:
-            pkgtag = "#"+pkgdata['versiontag']
-        # + version + tag
-        pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag
-        pkgcat = pkgdata['category']
-        pkg_path = dirpath+os.path.sep+pkgname+etpConst['packagesext']
+        version = pkgdata['version']
+        version += "%s%s" % (etpConst['entropyrevisionprefix'],
+            pkgdata['revision'],)
+        pkgname = entropy.tools.create_package_filename(pkgdata['category'],
+            pkgdata['name'], version, pkgdata['versiontag'])
+        pkg_path = os.path.join(dirpath, pkgname)
         if os.path.isfile(pkg_path):
             os.remove(pkg_path)
+
         tar = tarfile.open(pkg_path, "w:"+compression)
 
         if not fake:
@@ -1596,9 +1473,9 @@ class MiscMixin:
 
         # append SPM metadata
         Spm = self.Spm()
-        Spm.append_metadata_to_package(pkgcat + "/" + pkgname, pkg_path)
+        Spm.append_metadata_to_package(pkgname, pkg_path)
         if edb:
-            self.inject_entropy_database_into_package(pkg_path, pkgdata)
+            self._inject_entropy_database_into_package(pkg_path, pkgdata)
 
         if os.path.isfile(pkg_path):
             return pkg_path
@@ -1607,23 +1484,21 @@ class MiscMixin:
 
 class MatchMixin:
 
-    def get_package_action(self, match):
+    def get_package_action(self, package_match):
         """
-            @input: matched atom (idpackage,repoid)
-            @output:
-                    upgrade: int(2)
-                    install: int(1)
-                    reinstall: int(0)
-                    downgrade: int(-1)
+        upgrade: int(2)
+        install: int(1)
+        reinstall: int(0)
+        downgrade: int(-1)
         """
-        dbconn = self.open_repository(match[1])
-        pkgkey, pkgslot = dbconn.retrieveKeySlot(match[0])
+        dbconn = self.open_repository(package_match[1])
+        pkgkey, pkgslot = dbconn.retrieveKeySlot(package_match[0])
         results = self._installed_repository.searchKeySlot(pkgkey, pkgslot)
         if not results:
             return 1
 
         installed_idpackage = results[0][0]
-        pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
+        pkgver, pkgtag, pkgrev = dbconn.getVersioningData(package_match[0])
         installed_ver, installed_tag, installed_rev = \
             self._installed_repository.getVersioningData(installed_idpackage)
         pkgcmp = entropy.tools.entropy_compare_versions(
@@ -1634,7 +1509,7 @@ class MatchMixin:
             # we don't want users to think that they are "reinstalling" stuff
             # because it will just confuse them
             inst_digest = self._installed_repository.retrieveDigest(installed_idpackage)
-            repo_digest = dbconn.retrieveDigest(match[0])
+            repo_digest = dbconn.retrieveDigest(package_match[0])
             if inst_digest != repo_digest:
                 return 2
             return 0
@@ -1642,59 +1517,41 @@ class MatchMixin:
             return 2
         return -1
 
-    def get_masked_package_reason(self, match):
-        idpackage, repoid = match
-        dbconn = self.open_repository(repoid)
-        idpackage, idreason = dbconn.idpackageValidator(idpackage)
-        masked = False
-        if idpackage == -1:
-            masked = True
-        return masked, idreason, self.SystemSettings['pkg_masking_reasons'].get(idreason)
-
-    def get_match_conflicts(self, match):
-        m_id, m_repo = match
-        dbconn = self.open_repository(m_repo)
-        conflicts = dbconn.retrieveConflicts(m_id)
-        found_conflicts = set()
-        for conflict in conflicts:
-            my_m_id, my_m_rc = self._installed_repository.atomMatch(conflict)
-            if my_m_id != -1:
-                # check if the package shares the same slot
-                match_data = dbconn.retrieveKeySlot(m_id)
-                installed_match_data = self._installed_repository.retrieveKeySlot(my_m_id)
-                if match_data != installed_match_data:
-                    found_conflicts.add(my_m_id)
-        return found_conflicts
-
-    def is_match_masked(self, match, live_check = True):
-        m_id, m_repo = match
+    def is_package_masked(self, package_match, live_check = True):
+        m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1:
             return False
         return True
 
-    def is_match_masked_by_user(self, match, live_check = True):
-        # (query_status,masked?,)
-        m_id, m_repo = match
-        if m_repo not in self._enabled_repos: return False
+    def is_package_masked_by_user(self, package_match, live_check = True):
+
+        m_id, m_repo = package_match
+        if m_repo not in self._enabled_repos:
+            return False
         dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
-        if idpackage != -1: return False #,False
+        if idpackage != -1:
+            return False
+
         myr = self.SystemSettings['pkg_masking_reference']
         user_masks = [myr['user_package_mask'], myr['user_license_mask'],
             myr['user_live_mask']]
         if idreason in user_masks:
-            return True #,True
-        return False #,True
+            return True
+        return False
 
-    def is_match_unmasked_by_user(self, match, live_check = True):
-        # (query_status,unmasked?,)
-        m_id, m_repo = match
-        if m_repo not in self._enabled_repos: return False
+    def is_package_unmasked_by_user(self, package_match, live_check = True):
+
+        m_id, m_repo = package_match
+        if m_repo not in self._enabled_repos:
+            return False
         dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
-        if idpackage == -1: return False #,False
+        if idpackage == -1:
+            return False
+
         myr = self.SystemSettings['pkg_masking_reference']
         user_masks = [
             myr['user_package_unmask'], myr['user_live_unmask'],
@@ -1702,36 +1559,40 @@ class MatchMixin:
             myr['user_repo_package_keywords']
         ]
         if idreason in user_masks:
-            return True #,True
-        return False #,True
+            return True
+        return False
 
-    def mask_match(self, match, method = 'atom', dry_run = False):
-        if self.is_match_masked(match, live_check = False):
+    def mask_package(self, package_match, method = 'atom', dry_run = False):
+        if self.is_package_masked(package_match, live_check = False):
             return True
         methods = {
-            'atom': self.mask_match_by_atom,
-            'keyslot': self.mask_match_by_keyslot,
+            'atom': self._mask_package_by_atom,
+            'keyslot': self._mask_package_by_keyslot,
         }
-        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run)
+        rc = self._mask_unmask_package(package_match, method, methods,
+            dry_run = dry_run)
         if dry_run: # inject if done "live"
-            self.SystemSettings['live_packagemasking']['unmask_matches'].discard(match)
-            self.SystemSettings['live_packagemasking']['mask_matches'].add(match)
+            lpm = self.SystemSettings['live_packagemasking']
+            lpm['unmask_matches'].discard(package_match)
+            lpm['mask_matches'].add(package_match)
         return rc
 
-    def unmask_match(self, match, method = 'atom', dry_run = False):
-        if not self.is_match_masked(match, live_check = False):
+    def unmask_package(self, package_match, method = 'atom', dry_run = False):
+        if not self.is_package_masked(package_match, live_check = False):
             return True
         methods = {
-            'atom': self.unmask_match_by_atom,
-            'keyslot': self.unmask_match_by_keyslot,
+            'atom': self._unmask_package_by_atom,
+            'keyslot': self._unmask_package_by_keyslot,
         }
-        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run)
+        rc = self._mask_unmask_package(package_match, method, methods,
+            dry_run = dry_run)
         if dry_run: # inject if done "live"
-            self.SystemSettings['live_packagemasking']['unmask_matches'].add(match)
-            self.SystemSettings['live_packagemasking']['mask_matches'].discard(match)
+            lpm = self.SystemSettings['live_packagemasking']
+            lpm['unmask_matches'].add(package_match)
+            lpm['mask_matches'].discard(package_match)
         return rc
 
-    def _mask_unmask_match(self, match, method, methods_reference,
+    def _mask_unmask_package(self, package_match, method, methods_reference,
         dry_run = False):
 
         f = methods_reference.get(method)
@@ -1740,8 +1601,8 @@ class MatchMixin:
                 _("not a valid method"), method,) )
 
         self._cacher.discard()
-        self.SystemSettings._clear_repository_cache(match[1])
-        done = f(match, dry_run)
+        self.SystemSettings._clear_repository_cache(package_match[1])
+        done = f(package_match, dry_run)
         if done and not dry_run:
             self.SystemSettings.clear()
 
@@ -1749,45 +1610,47 @@ class MatchMixin:
         self.SystemSettings[cl_id]['masking_validation']['cache'].clear()
         return done
 
-    def unmask_match_by_atom(self, match, dry_run = False):
-        m_id, m_repo = match
+    def _unmask_package_by_atom(self, package_match, dry_run = False):
+        m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         atom = dbconn.retrieveAtom(m_id)
-        return self.unmask_match_generic(match, atom, dry_run = dry_run)
+        return self.unmask_package_generic(package_match, atom, dry_run = dry_run)
 
-    def unmask_match_by_keyslot(self, match, dry_run = False):
-        m_id, m_repo = match
+    def _unmask_package_by_keyslot(self, package_match, dry_run = False):
+        m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         key, slot = dbconn.retrieveKeySlot(m_id)
         keyslot = "%s%s%s" % (key, etpConst['entropyslotprefix'], slot,)
-        return self.unmask_match_generic(match, keyslot, dry_run = dry_run)
+        return self.unmask_package_generic(package_match, keyslot,
+            dry_run = dry_run)
 
-    def mask_match_by_atom(self, match, dry_run = False):
-        m_id, m_repo = match
+    def _mask_package_by_atom(self, package_match, dry_run = False):
+        m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         atom = dbconn.retrieveAtom(m_id)
-        return self.mask_match_generic(match, atom, dry_run = dry_run)
+        return self.mask_package_generic(package_match, atom, dry_run = dry_run)
 
-    def mask_match_by_keyslot(self, match, dry_run = False):
-        m_id, m_repo = match
+    def _mask_package_by_keyslot(self, package_match, dry_run = False):
+        m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         key, slot = dbconn.retrieveKeySlot(m_id)
         keyslot = "%s%s%s" % (key, etpConst['entropyslotprefix'], slot)
-        return self.mask_match_generic(match, keyslot, dry_run = dry_run)
+        return self.mask_package_generic(package_match, keyslot,
+            dry_run = dry_run)
 
-    def unmask_match_generic(self, match, keyword, dry_run = False):
-        self.clear_match_mask(match, dry_run)
+    def unmask_package_generic(self, package_match, keyword, dry_run = False):
+        self._clear_package_mask(package_match, dry_run)
         m_file = self.SystemSettings.get_setting_files_data()['unmask']
-        return self._mask_unmask_match_generic(keyword, m_file,
+        return self._mask_unmask_package_generic(keyword, m_file,
             dry_run = dry_run)
 
-    def mask_match_generic(self, match, keyword, dry_run = False):
-        self.clear_match_mask(match, dry_run)
+    def mask_package_generic(self, package_match, keyword, dry_run = False):
+        self._clear_package_mask(package_match, dry_run)
         m_file = self.SystemSettings.get_setting_files_data()['mask']
-        return self._mask_unmask_match_generic(keyword, m_file,
+        return self._mask_unmask_package_generic(keyword, m_file,
             dry_run = dry_run)
 
-    def _mask_unmask_match_generic(self, keyword, m_file, dry_run = False):
+    def _mask_unmask_package_generic(self, keyword, m_file, dry_run = False):
         exist = False
         if not os.path.isfile(m_file):
             if not os.access(os.path.dirname(m_file), os.W_OK):
@@ -1812,14 +1675,18 @@ class MatchMixin:
             f.write(line+"\n")
         f.flush()
         f.close()
-        shutil.move(m_file_tmp, m_file)
+        try:
+            os.rename(m_file_tmp, m_file)
+        except OSError:
+            shutil.copy2(m_file_tmp, m_file)
+            os.remove(m_file_tmp)
         return True
 
-    def clear_match_mask(self, match, dry_run = False):
+    def _clear_package_mask(self, package_match, dry_run = False):
         setting_data = self.SystemSettings.get_setting_files_data()
         masking_list = [setting_data['mask'], setting_data['unmask']]
-        return self._clear_match_generic(match, masking_list = masking_list,
-            dry_run = dry_run)
+        return self._clear_match_generic(package_match,
+            masking_list = masking_list, dry_run = dry_run)
 
     def _clear_match_generic(self, match, masking_list = None, dry_run = False):
 

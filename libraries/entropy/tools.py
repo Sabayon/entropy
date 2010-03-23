@@ -2174,20 +2174,6 @@ def entropy_compare_versions(listA, listB):
 
     return rc
 
-def g_n_w_cmp(a, b):
-    '''
-    @description: reorder a version list
-    @input versionlist: a list
-    @output: the ordered list
-    '''
-    rc = compare_versions(a, b)
-    if rc < 0:
-        return -1
-    elif rc > 0:
-        return 1
-    else:
-        return 0
-
 def get_newer_version(versions):
     """
     Return a sorted list of versions

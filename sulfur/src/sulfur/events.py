@@ -303,11 +303,11 @@ class SulfurApplicationEventsMixin:
                             _("An issue occured while saving a preference"),
                             "%s %s: %s" % (_("Parameter"), name, _("not saved"),),
                         )
+
         initconfig_entropy_constants(etpConst['systemroot'])
         # re-read configprotect
         self.reset_cache_status()
         self.show_packages()
-        self._entropy.reload_repositories_config()
         self.setup_preferences()
 
     def on_preferencesRestoreButton_clicked(self, widget):

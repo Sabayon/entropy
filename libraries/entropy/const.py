@@ -470,7 +470,6 @@ def const_default_settings(rootdir):
         # Entropy resources lock file path
         'pidfiledir': "/var/run/entropy",
         'pidfile': "/var/run/entropy/entropy.lock",
-        'applicationlock': False,
         # option to keep a backup of config files after
         # being overwritten by equo conf update
         'filesbackup': True,
@@ -735,23 +734,25 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     this function will have no effect. If just_read is specified,
     this function will only try to read the current pid string in
     the Entropy pid file (etpConst['pidfile']). If any other entropy
-    istance is currently owning the contained pid, etpConst['applicationlock']
-    becomes True.
+    istance is currently owning the contained pid, the second bool of the tuple
+    is True.
 
     @param just_read: only read the current pid file, if any and if possible
     @type just_read: bool
     @param force_handling: force pid handling even if "--no-pid-handling" is
         given
     @type force_handling: bool
-    @rtype: bool
-    @return: if pid lock file has been acquired
+    @rtype: tuple
+    @return: tuple composed by two bools, (if pid lock file has been acquired,
+        locked resources)
     """
 
     if (("--no-pid-handling" in sys.argv) and not force_handling) \
         and not just_read:
-        return False
+        return False, False
 
     setup_done = False
+    locked = False
 
     # PID creation
     pid = os.getpid()
@@ -772,7 +773,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
         if found_pid != pid:
             # is found_pid still running ?
             if (found_pid != 0) and const_pid_exists(found_pid):
-                etpConst['applicationlock'] = True
+                locked = True
             elif (not just_read) and os.access(pid_file, os.W_OK):
                 try:
                     with open(pid_file, "w") as pid_f:
@@ -811,7 +812,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                         raise
                     # lock is being acquired by somebody else
                     # cannot write
-                    return False
+                    return False, locked
 
             try:
                 const_chmod_entropy_pid()
@@ -819,7 +820,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                 pass
             setup_done = True
 
-    return setup_done
+    return setup_done, locked
 
 def const_remove_entropy_pid():
     """

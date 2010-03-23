@@ -91,8 +91,8 @@ class QueueExecutor:
         # unmask packages
         if (not fetch_only) and (not download_sources):
             for match in self.Sulfur.etpbase.unmaskingPackages:
-                result = self._entropy.unmask_match(match)
-                if not result or self._entropy.is_match_masked(match):
+                result = self._entropy.unmask_package(match)
+                if not result or self._entropy.is_package_masked(match):
                     dbconn = self._entropy.open_repository(match[1])
                     atom = dbconn.retrieveAtom(match[0])
                     self.ok_dialog("%s: %s" % (
@@ -314,6 +314,23 @@ class Equo(Client):
         self.progress_log = application.progress_log_write
         self.std_output = application.std_output
         self.ui = application.ui
+
+    def get_category_description(self, category):
+
+        data = {}
+        for repo in self._enabled_repos:
+            try:
+                dbconn = self.open_repository(repo)
+            except RepositoryError:
+                continue
+            try:
+                data = dbconn.retrieveCategoryDescription(category)
+            except (OperationalError, IntegrityError,):
+                continue
+            if data:
+                break
+
+        return data
 
     def set_progress(self, frac, text = None):
         if text is None:

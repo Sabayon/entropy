@@ -466,7 +466,7 @@ def _database_spmsync(entropy_client):
         return 0
 
     # check lock file
-    gave_up = entropy_client.lock_check(entropy_client.resources_check_lock)
+    gave_up = entropy_client.wait_resources()
     if gave_up:
         print_info(red(" %s." % (_("Entropy locked, giving up"),)))
         return 2
@@ -532,7 +532,7 @@ def _database_spmsync(entropy_client):
             rc = entropy_client.ask_question(">>   %s" % (
                 _("Continue with adding ?"),) )
         if rc == _("No"):
-            entropy_client.resources_remove_lock()
+            entropy_client.unlock_resources()
             return 0
         # now analyze
 
@@ -595,7 +595,7 @@ def _database_spmsync(entropy_client):
         print_info(brown(" @@ ") + \
             blue("%s." % (_("Database update completed"),)))
 
-    entropy_client.resources_remove_lock()
+    entropy_client.unlock_resources()
     return 0
 
 def _database_generate(entropy_client):

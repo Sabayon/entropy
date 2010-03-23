@@ -735,9 +735,12 @@ class PkgInfoMenu(MenuSkel):
         my.load()
 
     def on_ugcAddButton_clicked(self, widget):
-        if self.Entropy.UGC is None: return
-        if self.repository is None: return
-        if self.pkgkey is None: return
+        if self.Entropy.UGC is None:
+            return
+        if self.repository is None:
+            return
+        if self.pkgkey is None:
+            return
         my = UGCAddMenu(self.Entropy, self.pkgkey, self.repository,
             self.pkginfo_ui.pkgInfo, self.refresh_view_cb)
         my.load()
@@ -2057,7 +2060,7 @@ class MaskedPackagesDialog(MenuSkel):
             obj = self.get_obj()
         if not obj: return
         if obj.matched_atom == (0, 0): return
-        result = self.Entropy.unmask_match(obj.matched_atom, dry_run = True)
+        result = self.Entropy.unmask_package(obj.matched_atom, dry_run = True)
         if result:
             self.etpbase.unmaskingPackages.add(obj.matched_atom)
             self.pkgcount += 1

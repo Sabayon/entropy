@@ -36,7 +36,7 @@ from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI, busy_cursor, normal_cursor, \
     STATUS_BAR_CONTEXT_IDS, resize_image, fork_function
 from sulfur.widgets import CellRendererStars
-from sulfur.package import DummyEntropyPackage
+from sulfur.package import DummyEntropyPackage, EntropyPackage
 from sulfur.entropyapi import Equo
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
     PkgInfoMenu, UGCAddMenu
@@ -1254,8 +1254,10 @@ class EntropyPackageView:
         )
         result = confirmDialog.run()
         confirmDialog.destroy()
-        if result != -5: return
-        for obj in objs: self._entropy.mask_match(obj.matched_atom)
+        if result != -5:
+            return
+        for obj in objs:
+            self._entropy.mask_package(obj.matched_atom)
         # clear cache
         self.clear()
         self.etpbase.clear_groups()
@@ -1734,6 +1736,9 @@ class EntropyPackageView:
     def _ugc_drag_store_text_plain(self, pkg, context, selection):
         text_data = selection.data
 
+        if not isinstance(pkg, EntropyPackage):
+            return # cannot drop here
+
         if text_data.startswith("file://"):
             # what is it all about
             file_path = text_data[len("file://"):]
@@ -1764,6 +1769,9 @@ class EntropyPackageView:
                 my.prepare_image_insert(pkg_key, file_path, as_icon = True)
 
     def _ugc_drag_store_image(self, pkg, context, selection):
+
+        if not isinstance(pkg, EntropyPackage):
+            return # cannot drop here
 
         pkg_name = pkg.onlyname
         pkg_key = pkg.key

@@ -42,7 +42,7 @@ class Package:
             raise AttributeError(mytxt)
         self._entropy = entropy_client
 
-        self._system_settings = SystemSettings()
+        self._settings = SystemSettings()
         self.pkgmeta = {}
         self.__prepared = False
         self._package_match = ()
@@ -164,7 +164,7 @@ class Package:
 
     def _download_packages(self, download_list, checksum = False):
 
-        avail_data = self._system_settings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         repo_uris = dict(((x[0], avail_data[x[0]]['packages'][::-1],) for x \
             in download_list))
         remaining = repo_uris.copy()
@@ -433,7 +433,7 @@ class Package:
     def _download_package(self, repository, download, save_path,
         digest = False):
 
-        avail_data = self._system_settings['repositories']['available']
+        avail_data = self._settings['repositories']['available']
         uris = avail_data[repository]['packages'][::-1]
         remaining = set(uris)
         mirror_status = StatusInterface()
@@ -590,7 +590,7 @@ class Package:
 
         self.error_on_not_prepared()
 
-        sys_settings = self._system_settings
+        sys_settings = self._settings
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         enabled_hashes = sys_settings[sys_set_plg_id]['misc']['packagehashes']
@@ -1051,9 +1051,9 @@ class Package:
 
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
-        sys_settings = self._system_settings
-        protect = self._entropy.get_installed_package_config_protect(idpackage)
-        mask = self._entropy.get_installed_package_config_protect(idpackage,
+        sys_settings = self._settings
+        protect = self.__get_installed_package_config_protect(idpackage)
+        mask = self.__get_installed_package_config_protect(idpackage,
             mask = True)
 
         sys_set_plg_id = \
@@ -1533,7 +1533,7 @@ class Package:
         data['counter'] = -1
         # branch must be always set properly, it could happen it's not
         # when installing packages through their .tbz2s
-        data['branch'] = self._system_settings['repositories']['branch']
+        data['branch'] = self._settings['repositories']['branch']
         # there is no need to store needed paths into db
         if "needed_paths" in data:
             del data['needed_paths']
@@ -1620,21 +1620,55 @@ class Package:
                 os.chown(topath, user, group)
                 shutil.copystat(path, topath)
 
+    def __get_package_match_config_protect(self, mask = False):
+
+        idpackage, repoid = self._package_match
+        dbconn = self._entropy.open_repository(repoid)
+        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        misc_data = self._settings[cl_id]['misc']
+        if mask:
+            config_protect = set(dbconn.retrieveProtectMask(idpackage).split())
+            config_protect |= set(misc_data['configprotectmask'])
+        else:
+            config_protect = set(dbconn.retrieveProtect(idpackage).split())
+            config_protect |= set(misc_data['configprotect'])
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
+
+        return sorted(config_protect)
+
+    def __get_installed_package_config_protect(self, installed_package_id,
+        mask = False):
+
+        inst_repo = self._entropy.installed_repository()
+        if inst_repo is None:
+            return []
+
+        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        misc_data = self._settings[cl_id]['misc']
+        if mask:
+            _pmask = inst_repo.retrieveProtectMask(installed_package_id).split()
+            config_protect = set(_pmask)
+            config_protect |= set(misc_data['configprotectmask'])
+        else:
+            _protect = inst_repo.retrieveProtect(installed_package_id).split()
+            config_protect = set(_protect)
+            config_protect |= set(misc_data['configprotect'])
+        config_protect = [etpConst['systemroot']+x for x in config_protect]
+
+        return sorted(config_protect)
 
     def move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
-        protect = self._entropy.get_package_match_config_protect(
-            self._package_match)
-        mask = self._entropy.get_package_match_config_protect(
-            self._package_match, mask = True)
+        protect = self.__get_package_match_config_protect()
+        mask = self.__get_package_match_config_protect(mask = True)
 
         # support for unit testing settings
         sys_root = self.pkgmeta.get('unittest_root', '') + \
             etpConst['systemroot']
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_data = self._system_settings[sys_set_plg_id]['misc']
+        misc_data = self._settings[sys_set_plg_id]['misc']
         col_protect = misc_data['collisionprotect']
         items_installed = set()
 
@@ -2142,7 +2176,7 @@ class Package:
 
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        client_settings = self._system_settings[sys_set_plg_id]
+        client_settings = self._settings[sys_set_plg_id]
         misc_settings = client_settings['misc']
 
         # check if protection is disabled for this element
@@ -2910,12 +2944,18 @@ class Package:
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
-        gave_up = self._entropy.lock_check(self._entropy.resources_check_lock)
+        gave_up = self._entropy.wait_resources()
         if gave_up:
             return 20
 
-        locked = self._entropy.application_lock_check()
+        locked = self._entropy.another_entropy_running()
         if locked:
+            self._entropy.output(
+                red(_("Another Entropy is currently running.")),
+                importance = 1,
+                type = "error",
+                header = darkred(" @@ ")
+            )
             return 21
 
         # lock
@@ -2931,7 +2971,7 @@ class Package:
         try:
             rc = self.run_stepper(xterm_header)
         finally:
-            self._entropy.resources_remove_lock()
+            self._entropy.unlock_resources()
 
         if rc != 0:
             self._entropy.output(
@@ -3053,6 +3093,25 @@ class Package:
 
         return 0
 
+    def __get_match_conflicts(self, match):
+        m_id, m_repo = match
+
+        dbconn = self._entropy.open_repository(m_repo)
+        conflicts = dbconn.retrieveConflicts(m_id)
+        found_conflicts = set()
+        inst_repo = self._entropy.installed_repository()
+
+        for conflict in conflicts:
+            my_m_id, my_m_rc = inst_repo.atomMatch(conflict)
+            if my_m_id != -1:
+                # check if the package shares the same slot
+                match_data = dbconn.retrieveKeySlot(m_id)
+                installed_match_data = inst_repo.retrieveKeySlot(my_m_id)
+                if match_data != installed_match_data:
+                    found_conflicts.add(my_m_id)
+
+        return found_conflicts
+
     def __generate_install_metadata(self):
         self.pkgmeta.clear()
 
@@ -3094,8 +3153,8 @@ class Package:
             'gpg': gpg,
         }
         self.pkgmeta['signatures'] = signatures
-        self.pkgmeta['conflicts'] = \
-            self._entropy.get_match_conflicts(self._package_match)
+        self.pkgmeta['conflicts'] = self.__get_match_conflicts(
+            self._package_match)
 
         description = dbconn.retrieveDescription(idpackage)
         if description:
@@ -3157,7 +3216,7 @@ class Package:
                 self.__prepared = False
                 return -1
 
-            repo_data = self._system_settings['repositories']
+            repo_data = self._settings['repositories']
             repo_meta = repo_data['available'][self.pkgmeta['repository']]
             self.pkgmeta['smartpackage'] = repo_meta['smartpackage']
             self.pkgmeta['pkgpath'] = repo_meta['pkgpath']

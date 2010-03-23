@@ -1361,7 +1361,7 @@ class CalculatorsMixin:
                     if m_repo_db.isSystemPackage(mydep):
                         continue
                     if m_repo_db is self._installed_repository:
-                        if self.is_installed_idpackage_in_system_mask(mydep):
+                        if self._is_installed_idpackage_in_system_mask(mydep):
                             continue
                     new_mydeps.add((mydep, m_repo_id,))
                 mydeps = new_mydeps
@@ -1891,7 +1891,7 @@ class CalculatorsMixin:
 
         # cannot check this for pkgs not coming from installed pkgs repo
         if dbconn is self._installed_repository:
-            if self.is_installed_idpackage_in_system_mask(package_id):
+            if self._is_installed_idpackage_in_system_mask(package_id):
                 idpackages = mask_installed_keys.get(pkgkey)
                 if not idpackages:
                     return False

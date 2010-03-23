@@ -23,7 +23,7 @@ from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.misc import TimeScheduled
 from entropy.const import etpConst, etpUi, const_setup_perms, \
-    const_debug_write
+    const_debug_write, const_set_nice_level
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     ConnectionError
 from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold
@@ -1552,7 +1552,6 @@ class Repository:
                 header = darkred(" @@ ")
             )
             self.sync_errors = True
-            self._entropy.resources_remove_lock()
             return 128
 
         if self.entropy_updates_alert:
@@ -2050,7 +2049,7 @@ class Repository:
     def _database_indexing(self, repo):
 
         # renice a bit, to avoid eating resources
-        old_prio = self._entropy.set_priority(15)
+        old_prio = const_set_nice_level(15)
         mytxt = red("%s ...") % (_("Indexing Repository metadata"),)
         self._entropy.output(
             mytxt,
@@ -2070,7 +2069,7 @@ class Repository:
                     self._entropy.installed_repository().createAllIndexes()
             except:
                 pass
-        self._entropy.set_priority(old_prio)
+        const_set_nice_level(old_prio)
 
     def sync(self):
 
@@ -2086,12 +2085,18 @@ class Repository:
             header = darkred(" @@ ")
         )
 
-        gave_up = self._entropy.lock_check(self._entropy.resources_check_lock)
+        gave_up = self._entropy.wait_resources()
         if gave_up:
             return 3
 
-        locked = self._entropy.application_lock_check()
+        locked = self._entropy.another_entropy_running()
         if locked:
+            self._entropy.output(
+                red(_("Another Entropy is currently running.")),
+                importance = 1,
+                type = "error",
+                header = darkred(" @@ ")
+            )
             return 4
 
         # lock
@@ -2100,13 +2105,10 @@ class Repository:
             return 4 # app locked during lock acquire
         try:
             rc = self._run_sync()
+            if rc:
+                return rc
         finally:
-            self._entropy.resources_remove_lock()
-        if rc:
-            return rc
-
-        # remove lock
-        self._entropy.resources_remove_lock()
+            self._entropy.unlock_resources()
 
         if (self.not_available >= len(self.repo_ids)):
             return 2

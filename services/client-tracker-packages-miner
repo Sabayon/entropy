@@ -104,8 +104,6 @@ class Entropy(Client):
             "Loading Entropy Client Tracker miner: logfile: %s" % (
                 DAEMON_LOGFILE,)
             )
-        # reset application lock status
-        self.application_lock_check(silent = True)
 
     def output(self, *args, **kwargs):
         return write_output(*args, **kwargs)
@@ -217,7 +215,7 @@ class TrackerMiner(dbus.service.Object):
     def __is_system_changed(self):
 
         entropy = Entropy()
-        locked = entropy.resources_check_lock()
+        locked = entropy.resources_locked()
         if locked:
             if DAEMON_DEBUG:
                 write_output("__is_system_changed: resources locked!")

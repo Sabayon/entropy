@@ -2104,7 +2104,7 @@ class ServerPackagesHandlingMixin:
             )
             data = dbconn.getPackageData(idpackage)
             treeupdates_actions = dbconn.listAllTreeUpdatesActions()
-            self.inject_entropy_database_into_package(
+            self._inject_entropy_database_into_package(
                 package_path, data, treeupdates_actions)
 
             # GPG-sign package if GPG signature is set
@@ -4225,7 +4225,7 @@ class ServerMiscMixin:
     def _backup_entropy_settings(self):
         for setting in self._settings_to_backup:
             if isinstance(setting, const_get_stringtype()):
-                self.backup_constant(setting)
+                self._backup_constant(setting)
             elif isinstance(setting, dict):
                 self.SystemSettings.set_persistent_setting(setting)
 
