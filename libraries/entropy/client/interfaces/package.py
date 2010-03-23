@@ -60,19 +60,20 @@ class Package:
         self._action = None
         self.__prepared = False
 
-    def error_on_prepared(self):
+    def _error_on_prepared(self):
         if self.__prepared:
             mytxt = _("Already prepared")
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
-    def error_on_not_prepared(self):
+    def _error_on_not_prepared(self):
         if not self.__prepared:
             mytxt = _("Not yet prepared")
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
-    def check_action_validity(self, action):
+    def _check_action_validity(self, action):
         if action not in self._valid_actions:
-            raise AttributeError("Action must be in %s" % (self._valid_actions,))
+            raise AttributeError("Action must be in %s" % (
+                self._valid_actions,))
 
     @staticmethod
     def get_standard_fetch_disk_path(download):
@@ -238,7 +239,8 @@ class Package:
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 basef = os.path.basename(fname)
-                mytxt += "[%s] %s %s " % (brown(basef), darkred(_("success")), blue("@"),)
+                mytxt += "[%s] %s %s " % (brown(basef),
+                    darkred(_("success")), blue("@"),)
                 mytxt += red(entropy.tools.spliturl(best_mirror)[1])
                 self._entropy.output(
                     mytxt,
@@ -588,7 +590,7 @@ class Package:
 
     def _match_checksum(self, repository, checksum, download, signatures):
 
-        self.error_on_not_prepared()
+        self._error_on_not_prepared()
 
         sys_settings = self._settings
         sys_set_plg_id = \
@@ -872,7 +874,7 @@ class Package:
             if os.path.islink(self.pkgmeta['pkgpath']):
                 os.remove(self.pkgmeta['pkgpath'])
             self.pkgmeta['verified'] = False
-            rc = self.fetch_step()
+            rc = self._fetch_step()
             if rc != 0:
                 return rc
 
@@ -927,7 +929,7 @@ class Package:
                     return rc
                 # otherwise, try to download it again
                 self.pkgmeta['verified'] = False
-                f_rc = self.fetch_step()
+                f_rc = self._fetch_step()
                 if f_rc != 0:
                     return f_rc
 
@@ -990,7 +992,10 @@ class Package:
             self._entropy.installed_repository().retrieveAutomergefiles(
                 self.pkgmeta['removeidpackage'], get_dict = True
             )
-        self.remove_installed_package(self.pkgmeta['removeidpackage'])
+        self._entropy.installed_repository().removePackage(
+            self.pkgmeta['removeidpackage'], do_commit = False,
+            do_cleanup = False)
+
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
         self._entropy.installed_repository().commitChanges()
@@ -1010,11 +1015,11 @@ class Package:
         spm_rc = 0
 
         if not others_installed:
-            spm_rc = self.spm_remove_package()
+            spm_rc = self._spm_remove_package()
 
         for other_installed in others_installed:
             # we have one installed, we need to update SPM uid
-            spm_rc = self.spm_update_package_uid(other_installed,
+            spm_rc = self._spm_update_package_uid(other_installed,
                 self.pkgmeta['removeatom'])
             if spm_rc != 0:
                 break # ohi ohi ohi
@@ -1022,27 +1027,18 @@ class Package:
         if spm_rc != 0:
             return spm_rc
 
-        self.remove_content_from_system(self.pkgmeta['removeidpackage'],
+        self._remove_content_from_system(self.pkgmeta['removeidpackage'],
             automerge_metadata)
 
         return 0
 
-    def remove_installed_package(self, idpackage):
-        """
-        Remove installed package from Entropy installed packages repository.
-
-        @param idpackage: Entropy Repository package identifier
-        @type idpackage: int
-        """
-        self._entropy.installed_repository().removePackage(idpackage, do_commit = False,
-            do_cleanup = False)
-
-    def remove_content_from_system(self, idpackage, automerge_metadata = None):
+    def _remove_content_from_system(self, installed_package_id,
+        automerge_metadata = None):
         """
         Remove installed package content (files/directories) from live system.
 
-        @param idpackage: Entropy Repository package identifier
-        @type idpackage: int
+        @param installed_package_id: Entropy Repository package identifier
+        @type installed_package_id: int
         @keyword automerge_metadata: Entropy "automerge metadata"
         @type automerge_metadata: dict
         """
@@ -1052,8 +1048,9 @@ class Package:
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         sys_settings = self._settings
-        protect = self.__get_installed_package_config_protect(idpackage)
-        mask = self.__get_installed_package_config_protect(idpackage,
+        protect = self.__get_installed_package_config_protect(
+            installed_package_id)
+        mask = self.__get_installed_package_config_protect(installed_package_id,
             mask = True)
 
         sys_set_plg_id = \
@@ -1304,7 +1301,7 @@ class Package:
         # copy files over - install
         # use fork? (in this case all the changed structures
         # need to be pushed back)
-        rc = self.move_image_to_system(already_protected_config_files)
+        rc = self._move_image_to_system(already_protected_config_files)
         if rc != 0:
             return rc
 
@@ -1319,7 +1316,7 @@ class Package:
             type = "info",
             header = red("   ## ")
         )
-        idpackage = self.add_installed_package()
+        idpackage = self._add_installed_package()
 
         # remove old files and spm stuff
         if self.pkgmeta['removeidpackage'] != -1:
@@ -1338,22 +1335,22 @@ class Package:
                 header = red("   ## ")
             )
 
-            spm_rc = self.spm_remove_package()
+            spm_rc = self._spm_remove_package()
             if spm_rc != 0:
                 return spm_rc
 
-            self.remove_content_from_system(self.pkgmeta['removeidpackage'],
+            self._remove_content_from_system(self.pkgmeta['removeidpackage'],
                 automerge_metadata = already_protected_config_files)
 
-        return self.spm_install_package(idpackage)
+        return self._spm_install_package(idpackage)
 
-    def spm_install_package(self, idpackage):
+    def _spm_install_package(self, installed_package_id):
         """
         Call Source Package Manager interface and tell it to register our
         newly installed package.
 
-        @param idpackage: Entropy repository package identifier
-        @type idpackage: int
+        @param installed_package_id: Entropy repository package identifier
+        @type installed_package_id: int
         @return: execution status
         @rtype: int
         """
@@ -1377,11 +1374,12 @@ class Package:
 
         spm_uid = Spm.add_installed_package(self.pkgmeta)
         if spm_uid != -1:
-            self._entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
+            self._entropy.installed_repository().insertSpmUid(
+                installed_package_id, spm_uid)
 
         return 0
 
-    def spm_update_package_uid(self, idpackage, entropy_atom):
+    def _spm_update_package_uid(self, installed_package_id, entropy_atom):
         """
         Update Source Package Manager <-> Entropy package identifiers coupling.
         Entropy can handle multiple packages in the same scope from a SPM POV
@@ -1389,8 +1387,9 @@ class Package:
         for different kernel versions). This method just reassigns a new SPM
         unique package identifier to Entropy.
 
-        @param idpackage: Entropy package identifier bound to given entropy_atom
-        @type idpackage: int
+        @param installed_package_id: Entropy package identifier bound to
+            given entropy_atom
+        @type installed_package_id: int
         @param entropy_atom: Entropy package atom, must be converted to a valid
             SPM package atom.
         @type entropy_atom: string
@@ -1424,12 +1423,13 @@ class Package:
             return 0
 
         if spm_uid != -1:
-            self._entropy.installed_repository().insertSpmUid(idpackage, spm_uid)
+            self._entropy.installed_repository().insertSpmUid(
+                installed_package_id, spm_uid)
 
         return 0
 
 
-    def spm_remove_package(self):
+    def _spm_remove_package(self):
         """
         Call Source Package Manager interface and tell it to remove our
         just removed package.
@@ -1458,7 +1458,7 @@ class Package:
         return Spm.remove_installed_package(self.pkgmeta)
 
 
-    def add_installed_package(self):
+    def _add_installed_package(self):
         """
         For internal use only.
         Copy package from repository to installed packages one.
@@ -1657,7 +1657,7 @@ class Package:
 
         return sorted(config_protect)
 
-    def move_image_to_system(self, already_protected_config_files):
+    def _move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
         protect = self.__get_package_match_config_protect()
@@ -2269,8 +2269,8 @@ class Package:
 
         return True
 
-    def sources_fetch_step(self):
-        self.error_on_not_prepared()
+    def _sources_fetch_step(self):
+        self._error_on_not_prepared()
 
         down_data = self.pkgmeta['download']
         down_keys = list(down_data.keys())
@@ -2281,7 +2281,8 @@ class Package:
         for key in sorted(down_keys):
 
             key_name = os.path.basename(key)
-            if key_name in d_cache: continue
+            if key_name in d_cache:
+                continue
             # first fine wins
 
             for url in down_data[key]:
@@ -2371,8 +2372,8 @@ class Package:
 
         return rc
 
-    def fetch_step(self):
-        self.error_on_not_prepared()
+    def _fetch_step(self):
+        self._error_on_not_prepared()
 
         mytxt = "%s: %s" % (blue(_("Downloading archive")),
             red(os.path.basename(self.pkgmeta['download'])),)
@@ -2411,8 +2412,8 @@ class Package:
 
         return rc
 
-    def multi_fetch_step(self):
-        self.error_on_not_prepared()
+    def _multi_fetch_step(self):
+        self._error_on_not_prepared()
 
         m_fetch_len = len(self.pkgmeta['multi_fetch_list'])
         mytxt = "%s: %s %s" % (
@@ -2462,7 +2463,7 @@ class Package:
 
         return rc
 
-    def fetch_not_available_step(self):
+    def _fetch_not_available_step(self):
         self._entropy.output(
             blue(_("Package cannot be downloaded, unknown error.")),
             importance = 1,
@@ -2471,7 +2472,7 @@ class Package:
         )
         return 0
 
-    def vanished_step(self):
+    def _vanished_step(self):
         self._entropy.output(
             blue(_("Installed package in queue vanished, skipping.")),
             importance = 1,
@@ -2480,18 +2481,18 @@ class Package:
         )
         return 0
 
-    def checksum_step(self):
-        self.error_on_not_prepared()
+    def _checksum_step(self):
+        self._error_on_not_prepared()
         return self._match_checksum(self.pkgmeta['repository'],
             self.pkgmeta['checksum'], self.pkgmeta['download'],
             self.pkgmeta['signatures'])
 
-    def multi_checksum_step(self):
-        self.error_on_not_prepared()
+    def _multi_checksum_step(self):
+        self._error_on_not_prepared()
         return self.multi_match_checksum()
 
-    def unpack_step(self):
-        self.error_on_not_prepared()
+    def _unpack_step(self):
+        self._error_on_not_prepared()
 
         if not self.pkgmeta['merge_from']:
             mytxt = "%s: %s" % (
@@ -2539,8 +2540,8 @@ class Package:
             )
         return rc
 
-    def install_step(self):
-        self.error_on_not_prepared()
+    def _install_step(self):
+        self._error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Installing package")),
             red(self.pkgmeta['atom']),
@@ -2576,8 +2577,8 @@ class Package:
             )
         return rc
 
-    def remove_step(self):
-        self.error_on_not_prepared()
+    def _remove_step(self):
+        self._error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Removing data")),
             red(self.pkgmeta['removeatom']),
@@ -2605,8 +2606,8 @@ class Package:
             )
         return rc
 
-    def cleanup_step(self):
-        self.error_on_not_prepared()
+    def _cleanup_step(self):
+        self._error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Cleaning")),
             red(self.pkgmeta['atom']),
@@ -2621,13 +2622,13 @@ class Package:
         # we don't care if cleanupPackage fails since it's not critical
         return 0
 
-    def logmessages_step(self):
+    def _logmessages_step(self):
         for msg in self.pkgmeta['messages']:
             self._entropy.clientLog.write(">>>  "+msg)
         return 0
 
-    def postinstall_step(self):
-        self.error_on_not_prepared()
+    def _post_install_step(self):
+        self._error_on_not_prepared()
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
             trigger = self._entropy.Triggers('postinstall', pkgdata, self._action)
@@ -2638,8 +2639,8 @@ class Package:
         del pkgdata
         return 0
 
-    def preinstall_step(self):
-        self.error_on_not_prepared()
+    def _pre_install_step(self):
+        self._error_on_not_prepared()
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
 
@@ -2664,8 +2665,8 @@ class Package:
         del pkgdata
         return 0
 
-    def preremove_step(self):
-        self.error_on_not_prepared()
+    def _pre_remove_step(self):
+        self._error_on_not_prepared()
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
             trigger = self._entropy.Triggers('preremove', remdata, self._action)
@@ -2676,8 +2677,8 @@ class Package:
         del remdata
         return 0
 
-    def postremove_step(self):
-        self.error_on_not_prepared()
+    def _post_remove_step(self):
+        self._error_on_not_prepared()
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
 
@@ -2703,8 +2704,8 @@ class Package:
         del remdata
         return 0
 
-    def removeconflict_step(self):
-        self.error_on_not_prepared()
+    def _removeconflict_step(self):
+        self._error_on_not_prepared()
 
         for idpackage in self.pkgmeta['conflicts']:
             if not self._entropy.installed_repository().isIdpackageAvailable(idpackage):
@@ -2721,8 +2722,8 @@ class Package:
 
         return 0
 
-    def config_step(self):
-        self.error_on_not_prepared()
+    def _config_step(self):
+        self._error_on_not_prepared()
 
         mytxt = "%s: %s" % (
             blue(_("Configuring package")),
@@ -2778,20 +2779,20 @@ class Package:
 
         return conf_rc
 
-    def run_stepper(self, xterm_header):
+    def _stepper(self, xterm_header):
         if xterm_header is None:
             xterm_header = ""
 
         if 'remove_installed_vanished' in self.pkgmeta:
             self._xterm_title += ' %s' % (_("Installed package vanished"),)
             self._entropy.set_title(self._xterm_title)
-            rc = self.vanished_step()
+            rc = self._vanished_step()
             return rc
 
         if 'fetch_not_available' in self.pkgmeta:
             self._xterm_title += ' %s' % (_("Fetch not available"),)
             self._entropy.set_title(self._xterm_title)
-            rc = self.fetch_not_available_step()
+            rc = self._fetch_not_available_step()
             return rc
 
         def do_fetch():
@@ -2800,32 +2801,32 @@ class Package:
                 os.path.basename(self.pkgmeta['download']),
             )
             self._entropy.set_title(self._xterm_title)
-            return self.fetch_step()
+            return self._fetch_step()
 
         def do_multi_fetch():
             self._xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
                 len(self.pkgmeta['multi_fetch_list']), _("packages"),)
             self._entropy.set_title(self._xterm_title)
-            return self.multi_fetch_step()
+            return self._multi_fetch_step()
 
         def do_sources_fetch():
             self._xterm_title += ' %s: %s' % (
                 _("Fetching sources"),
                 os.path.basename(self.pkgmeta['atom']),)
             self._entropy.set_title(self._xterm_title)
-            return self.sources_fetch_step()
+            return self._sources_fetch_step()
 
         def do_checksum():
             self._xterm_title += ' %s: %s' % (_("Verifying"),
                 os.path.basename(self.pkgmeta['download']),)
             self._entropy.set_title(self._xterm_title)
-            return self.checksum_step()
+            return self._checksum_step()
 
         def do_multi_checksum():
             self._xterm_title += ' %s: %s %s' % (_("Multi Verification"),
                 len(self.pkgmeta['multi_checksum_list']), _("packages"),)
             self._entropy.set_title(self._xterm_title)
-            return self.multi_checksum_step()
+            return self._multi_checksum_step()
 
         def do_unpack():
             if not self.pkgmeta['merge_from']:
@@ -2841,10 +2842,10 @@ class Package:
                     os.path.basename(self.pkgmeta['atom']),
                 )
             self._entropy.set_title(self._xterm_title)
-            return self.unpack_step()
+            return self._unpack_step()
 
         def do_remove_conflicts():
-            return self.removeconflict_step()
+            return self._removeconflict_step()
 
         def do_install():
             self._xterm_title += ' %s: %s' % (
@@ -2852,7 +2853,7 @@ class Package:
                 self.pkgmeta['atom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.install_step()
+            return self._install_step()
 
         def do_remove():
             self._xterm_title += ' %s: %s' % (
@@ -2860,10 +2861,10 @@ class Package:
                 self.pkgmeta['removeatom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.remove_step()
+            return self._remove_step()
 
         def do_logmessages():
-            return self.logmessages_step()
+            return self._logmessages_step()
 
         def do_cleanup():
             self._xterm_title += ' %s: %s' % (
@@ -2871,7 +2872,7 @@ class Package:
                 self.pkgmeta['atom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.cleanup_step()
+            return self._cleanup_step()
 
         def do_postinstall():
             self._xterm_title += ' %s: %s' % (
@@ -2879,7 +2880,7 @@ class Package:
                 self.pkgmeta['atom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.postinstall_step()
+            return self._post_install_step()
 
         def do_preinstall():
             self._xterm_title += ' %s: %s' % (
@@ -2887,7 +2888,7 @@ class Package:
                 self.pkgmeta['atom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.preinstall_step()
+            return self._pre_install_step()
 
         def do_preremove():
             self._xterm_title += ' %s: %s' % (
@@ -2895,7 +2896,7 @@ class Package:
                 self.pkgmeta['removeatom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.preremove_step()
+            return self._pre_remove_step()
 
         def do_postremove():
             self._xterm_title += ' %s: %s' % (
@@ -2903,7 +2904,7 @@ class Package:
                 self.pkgmeta['removeatom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.postremove_step()
+            return self._post_remove_step()
 
         def do_config():
             self._xterm_title += ' %s: %s' % (
@@ -2911,7 +2912,7 @@ class Package:
                 self.pkgmeta['atom'],
             )
             self._entropy.set_title(self._xterm_title)
-            return self.config_step()
+            return self._config_step()
 
         steps_data = {
             "fetch": do_fetch,
@@ -2942,7 +2943,7 @@ class Package:
 
 
     def run(self, xterm_header = None):
-        self.error_on_not_prepared()
+        self._error_on_not_prepared()
 
         gave_up = self._entropy.wait_resources()
         if gave_up:
@@ -2969,7 +2970,7 @@ class Package:
             )
             return 4 # app locked during lock acquire
         try:
-            rc = self.run_stepper(xterm_header)
+            rc = self._stepper(xterm_header)
         finally:
             self._entropy.unlock_resources()
 
@@ -2982,25 +2983,25 @@ class Package:
             )
         return rc
 
-    def prepare(self, matched_atom, action, metaopts = None):
-        self.error_on_prepared()
+    def prepare(self, package_match, action, metaopts = None):
+        self._error_on_prepared()
 
-        self.check_action_validity(action)
+        self._check_action_validity(action)
 
         self._action = action
-        self._package_match = matched_atom
+        self._package_match = package_match
 
         if metaopts is None:
             metaopts = {}
         self.metaopts = metaopts
 
         # generate metadata dictionary
-        self.generate_metadata()
+        self._generate_metadata()
 
-    def generate_metadata(self):
-        self.error_on_prepared()
+    def _generate_metadata(self):
+        self._error_on_prepared()
 
-        self.check_action_validity(self._action)
+        self._check_action_validity(self._action)
 
         if self._action == "fetch":
             self.__generate_fetch_metadata()
@@ -3022,7 +3023,8 @@ class Package:
         self.pkgmeta.clear()
         idpackage = self._package_match[0]
 
-        if not self._entropy.installed_repository().isIdpackageAvailable(idpackage):
+        if not self._entropy.installed_repository().isIdpackageAvailable(
+            idpackage):
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
 
@@ -3071,7 +3073,8 @@ class Package:
 
         self.pkgmeta['atom'] = \
             self._entropy.installed_repository().retrieveAtom(idpackage)
-        key, slot = self._entropy.installed_repository().retrieveKeySlot(idpackage)
+        key, slot = self._entropy.installed_repository().retrieveKeySlot(
+            idpackage)
         self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
         self.pkgmeta['version'] = \
             self._entropy.installed_repository().retrieveVersion(idpackage)
@@ -3183,8 +3186,8 @@ class Package:
         self.pkgmeta['removeconfig'] = removeConfig
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
-        inst_idpackage, inst_rc = self._entropy.installed_repository().atomMatch(pkgkey,
-            matchSlot = self.pkgmeta['slot'])
+        inst_idpackage, inst_rc = self._entropy.installed_repository().atomMatch(
+            pkgkey, matchSlot = self.pkgmeta['slot'])
 
         # filled later...
         self.pkgmeta['removecontent'] = set()
@@ -3395,7 +3398,7 @@ class Package:
 
         if not isinstance(self._package_match, list):
             raise AttributeError(
-                "matched_atom must be a list of tuples, not %s" % (
+                "package_match must be a list of tuples, not %s" % (
                     type(self._package_match,)
                 )
             )
