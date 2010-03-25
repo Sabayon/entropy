@@ -465,7 +465,7 @@ def _do_text_community(main_cmd, options):
                     rc = server_activator.sync(options[1:], just_tidy = True)
                 elif options[0].startswith("db-"):
                     options[0] = options[0][3:]
-                    rc = server_activator.database(options)
+                    rc = server_activator.repo(options)
 
     elif sub_cmd == "repo":
 

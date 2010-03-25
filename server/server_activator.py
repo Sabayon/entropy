@@ -333,7 +333,7 @@ def notice(options):
 
     return -10
 
-def database(options):
+def repo(options):
 
     cmd = options[0]
     sync_all = False

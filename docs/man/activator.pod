@@ -101,9 +101,9 @@ also verify packages integrity
 =back
 
 
-=item B<database>
+=item B<repo>
 
-database handling functions
+repository handling functions
 
 =over
 

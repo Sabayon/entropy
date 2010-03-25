@@ -58,7 +58,7 @@ help_opts = [
     (3, '--syncall', 2, _('sync all the configured repositories')),
     (3, '--do-packages-check', 1, _('also verify packages integrity')),
     None,
-    (1, 'database', 1, _('database handling functions')),
+    (1, 'repo', 1, _('repository handling functions')),
     (2, 'sync', 3, _('sync the current repository database across primary mirrors')),
     (2, 'lock', 3, _('lock the current repository database (server-side)')),
     (2, 'unlock', 3, _('unlock the current repository database (server-side)')),
@@ -128,9 +128,9 @@ elif main_cmd == "tidy":
     import server_activator
     rc = server_activator.sync(options, just_tidy = True)
 
-elif main_cmd == "database":
+elif main_cmd == "repo":
     import server_activator
-    rc = server_activator.database(options)
+    rc = server_activator.repo(options)
 
 elif main_cmd == "packages":
     import server_activator
