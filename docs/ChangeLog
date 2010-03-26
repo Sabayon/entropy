@@ -1,3 +1,97 @@
+commit 571d98e9d560c070bad8a0b2943e5c93c874f40d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 16:27:14 2010 +0100
+
+    [todo] update TODO
+
+commit a7d8558a1fd7445b2024e0880cf7152ca7422663
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 16:24:17 2010 +0100
+
+    [entropy.db] add support for "or" dependencies
+    
+    OR dependencies support has been always postponed because every
+    solution wasn't good enough, until today.
+    Future Entropy Server versions will enable "OR" dependencies support
+    when generating package metadata improving current Portage<->Entropy
+    support.
+    
+    Syntax is: app-foo/foo;app-bar/baz?
+    Calling EntropyRepository.atomMatch(), the first matched dependencies
+    will be returned.
+
+commit 45e549281f3eb37865d884418e6823f044c9f2fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 13:34:47 2010 +0100
+
+    [entropy.spm] PortagePlugin: fix package metadata extraction when CHOST file is not available
+
+commit 233bba17ed7a4987e6f51d7e2231d4840aec3287
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 12:54:25 2010 +0100
+
+    [entropy.spm] PortagePlugin: add support for "fif" and "dev" file types
+
+commit 4ff791d072454b60c816dd5470aa67cf8c62afe1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 10:48:49 2010 +0100
+
+    [entropy.spm] PortagePlugin.add_installed_package: create CONTENTS file when not available (injected pkgs)
+
+commit 7549176620095c548c162ed2a0d231e7d9556b27
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 10:48:13 2010 +0100
+
+    [reagent] fix reagent inject (supporting any SPM package file extension)
+
+commit 86fdaaecfffdf33af1efb1d2d4208ff58b0e8841
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 10:47:55 2010 +0100
+
+    [todo] update TODO
+
+commit 48f6b17df7c7e746a4bc48d9e00dd3e58d52a5d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 25 08:51:41 2010 +0100
+
+    [activator] rename "activator database" to "activator repo"
+
+commit 363293250c331b9698b6f2749d5a6948cd3bf9fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 23 21:12:10 2010 +0100
+
+    [todo] update TODO
+
+commit 1d3cee77a610c37344f1c5a2cdeab458c847b398
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 23 21:11:39 2010 +0100
+
+    [entropy.client.interfaces.package] complete module refactoring
+
+commit 7051b55d769a2d0aed72040cc00341fac1362702
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 23 20:46:04 2010 +0100
+
+    [todo] update TODO
+
+commit c59edaffe0173e00fe8290c9b4935b023f4b6c7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 23 20:45:27 2010 +0100
+
+    [entropy.client.interfaces.methods] complete module refactoring
+
+commit fd91a7ea6991e846151089d11a814d68775279bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 22 11:19:03 2010 +0100
+
+    [equo] when running deptest, make sure that every inverse package id reference points to a valid location
+
+commit d3050e6d336f7eb5889500323d167793cba39362
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 21 07:42:01 2010 +0100
+
+    Tagging Entropy version 0.99.38.7
+
 commit a9d2e8329d482e64097664263064f6fc41b73bbd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 19 15:19:53 2010 +0100
