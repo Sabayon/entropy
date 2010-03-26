@@ -2388,6 +2388,63 @@ class PortagePlugin(SpmPlugin):
         }
         return phase_calls[portage_phase](package_metadata)
 
+    def _create_contents_file_if_not_available(self, pkg_dir,
+        entropy_package_metadata):
+
+        c_file = PortagePlugin.xpak_entries['contents']
+        cont_path = os.path.join(pkg_dir, c_file)
+        contents_file_exists = os.path.exists(cont_path)
+        if contents_file_exists:
+            return # all fine already
+        entropy_content = entropy_package_metadata['content'] # this is a set
+
+        from portage.dbapi.vartree import write_contents
+
+        obj_t = const_convert_to_rawstring("obj")
+        sym_t = const_convert_to_rawstring("sym")
+        dir_t = const_convert_to_rawstring("dir")
+        content_meta = {}
+        for path_orig in sorted(entropy_content):
+
+            def_t = obj_t
+            path = const_convert_to_rawstring(path_orig)
+
+            if not os.path.lexists(path):
+                mytxt = "%s: %s: %s" % (red(_("QA")),
+                    brown(_("Cannot stat path")),
+                    purple(path_orig),)
+                self.output(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+                continue
+
+            if os.path.islink(path):
+                def_t = sym_t
+                mtime = int(os.path.getmtime(path))
+                content_meta[path] = (def_t, mtime, os.readlink(path),)
+            elif os.path.isdir(path):
+                def_t = dir_t
+                content_meta[path] = (def_t,)
+            elif os.path.isfile(path):
+                md5sum = entropy.tools.md5sum(path)
+                mtime = int(os.path.getmtime(path))
+                content_meta[path] = (def_t, mtime, md5sum,)
+
+
+        root = etpConst['systemroot'] + os.path.sep
+        vartree = self._get_portage_vartree(root = root)
+        portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
+        vartree.dbapi._bump_mtime(portage_cpv)
+
+        with open(cont_path, "wb") as cont_f:
+            write_contents(content_meta, root, cont_f)
+            cont_f.flush()
+
+        vartree.dbapi._bump_mtime(portage_cpv)
+
     def add_installed_package(self, package_metadata):
         """
         Reimplemented from SpmPlugin class.
@@ -2459,6 +2516,12 @@ class PortagePlugin(SpmPlugin):
             # this is a Unit Testing setting, so it's always not available
             # unless in unit testing code
             if not package_metadata.get('unittest_root'):
+
+                # Packages emerged with -B don't contain CONTENTS file in their
+                # metadata, so we have to create one
+                self._create_contents_file_if_not_available(pkg_dir,
+                    package_metadata['triggers']['install'])
+
                 try:
                     counter = self.assign_uid_to_installed_package(spm_package)
                 except SPMError as err:
