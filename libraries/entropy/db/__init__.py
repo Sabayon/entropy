@@ -4412,7 +4412,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @keyword extended: return in extended format
         @type extended: bool
         @keyword contentType: only return given entry type, which can be:
-            "obj", "sym" or "dir"
+            "obj", "sym", "dir", "fif", "dev"
         @type contentType: int
         @keyword formatted: return in dict() form
         @type formatted: bool

@@ -13,6 +13,7 @@ import os
 import bz2
 import sys
 import shutil
+import stat
 import tempfile
 import subprocess
 import tarfile
@@ -2403,10 +2404,11 @@ class PortagePlugin(SpmPlugin):
         obj_t = const_convert_to_rawstring("obj")
         sym_t = const_convert_to_rawstring("sym")
         dir_t = const_convert_to_rawstring("dir")
+        fif_t = const_convert_to_rawstring("fif")
+        dev_t = const_convert_to_rawstring("dev")
         content_meta = {}
         for path_orig in sorted(entropy_content):
 
-            def_t = obj_t
             path = const_convert_to_rawstring(path_orig)
 
             if not os.path.lexists(path):
@@ -2421,18 +2423,26 @@ class PortagePlugin(SpmPlugin):
                 )
                 continue
 
-            if os.path.islink(path):
-                def_t = sym_t
-                mtime = int(os.path.getmtime(path))
-                content_meta[path] = (def_t, mtime, os.readlink(path),)
-            elif os.path.isdir(path):
-                def_t = dir_t
-                content_meta[path] = (def_t,)
-            elif os.path.isfile(path):
+            if os.path.isfile(path):
                 md5sum = entropy.tools.md5sum(path)
                 mtime = int(os.path.getmtime(path))
-                content_meta[path] = (def_t, mtime, md5sum,)
-
+                content_meta[path] = (obj_t, mtime, md5sum,)
+            elif os.path.isdir(path):
+                content_meta[path] = (dir_t,)
+            elif os.path.islink(path):
+                mtime = int(os.path.getmtime(path))
+                content_meta[path] = (sym_t, mtime, os.readlink(path),)
+            else:
+                try:
+                    lstat = os.lstat(path)
+                except (OSError, AttributeError):
+                    lstat = None
+                if lstat is not None:
+                    if stat.S_ISFIFO(lstat[stat.ST_MODE]):
+                        content_meta[path] = (fif_t,)
+                    elif not stat.S_ISREG(lstat[stat.ST_MODE]):
+                        # device?
+                        content_meta[path] = (dev_t,)
 
         root = etpConst['systemroot'] + os.path.sep
         vartree = self._get_portage_vartree(root = root)
@@ -3937,6 +3947,8 @@ class PortagePlugin(SpmPlugin):
         pkg_content = {}
         obj_t = const_convert_to_unicode("obj")
         sym_t = const_convert_to_unicode("sym")
+        fif_t = const_convert_to_unicode("fif")
+        dev_t = const_convert_to_unicode("dev")
         dir_t = const_convert_to_unicode("dir")
 
         if os.path.isfile(content_file):
@@ -3953,7 +3965,7 @@ class PortagePlugin(SpmPlugin):
                     if datatype == obj_t:
                         datafile = datafile[:-2]
                         datafile = ' '.join(datafile)
-                    elif datatype == dir_t:
+                    elif datatype in (dir_t, fif_t, dev_t):
                         datafile = ' '.join(datafile)
                     elif datatype == sym_t:
                         datafile = datafile[:-3]
