@@ -28,7 +28,7 @@ def inject(options):
     etp_pkg_files = []
     for opt in options:
         opt = os.path.realpath(opt)
-        if not os.path.isfile(opt) or not opt.endswith(etpConst['packagesext']):
+        if not (os.path.isfile(opt) and os.access(opt, os.R_OK)):
             print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
             return 1
         etp_pkg_files.append(opt)
