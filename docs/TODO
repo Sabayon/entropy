@@ -7,6 +7,7 @@
         iddesktop | idpackage | pkg_path | Path | Exec | TryExec | Type | Name |
             GenericName | Comment | Version | Icon | Categories | URL | Hidden |
                 OnlyShowIn | NotShowIn | NoDisplay | StartupNotify
+    - PortagePlugin: add support for "fif" and "dev" file types
 
   0.99.50:
     - "OR" dependencies
