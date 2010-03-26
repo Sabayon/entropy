@@ -9,7 +9,6 @@
                 OnlyShowIn | NotShowIn | NoDisplay | StartupNotify
 
   0.99.50:
-    - "OR" dependencies
     - Client.SystemSettings vs Client.Settings()
     - entropy.fetchers API docs
     - entropy.server API docs
@@ -20,6 +19,7 @@
             - package matching from entropy.client and entropy.db (remove atomMatch)
             - move unpack, install phases logic from entropy.client
 
+    - entropy.server: enable OR deps
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
     - entropy.server API docs
     - add splitdebug support?
