@@ -8222,6 +8222,18 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if cached is not None:
                 return cached
 
+        # "or" dependency support
+        # app-foo/foo-1.2.3;app-foo/bar-1.4.3?
+        if atom.endswith(etpConst['entropyordepquestion']):
+            # or dependency!
+            atoms = atom[:-1].split(etpConst['entropyordepsep'])
+            for s_atom in atoms:
+                data, rc = self.atomMatch(s_atom, matchSlot = matchSlot,
+                    multiMatch = multiMatch, packagesFilter = packagesFilter,
+                    extendedResults = extendedResults, useCache = useCache)
+                if rc == 0:
+                    return data, rc
+
         matchTag = entropy.tools.dep_gettag(atom)
         try:
             matchUse = entropy.tools.dep_getusedeps(atom)
