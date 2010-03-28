@@ -9,6 +9,8 @@
                 OnlyShowIn | NotShowIn | NoDisplay | StartupNotify
 
   0.99.50:
+    - entropy.client/entropy.server: subclass EntropyRepository and remove
+        etpConst usage
     - Client.SystemSettings vs Client.Settings()
     - entropy.fetchers API docs
     - entropy.server API docs
