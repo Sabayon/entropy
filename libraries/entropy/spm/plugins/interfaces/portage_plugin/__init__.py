@@ -852,13 +852,13 @@ class PortagePlugin(SpmPlugin):
                     raise
             data[item] = value
 
-        if not data['chost']:
-            # stupid portage devs and virtual pkgs!
-            # try to cope
-            # WARNING: this can be erroneously set to currently running
-            # system CHOST that could not match the CHOST the package was
-            # built with
-            data['chost'] = self.portage.settings['CHOST']
+        #if not data['chost']:
+        #    # stupid portage devs and virtual pkgs!
+        #    # try to cope
+        #    # WARNING: this can be erroneously set to currently running
+        #    # system CHOST that could not match the CHOST the package was
+        #    # built with
+        #    data['chost'] = self.portage.settings['CHOST']
 
         if not data['spm_repository']: # make sure it's set to None
             data['spm_repository'] = None
