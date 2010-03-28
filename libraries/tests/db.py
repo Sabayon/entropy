@@ -182,6 +182,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         from entropy.cache import EntropyCacher
         cacher = EntropyCacher()
+        started = cacher.is_started()
         cacher.start()
 
         cached = self.test_db._EntropyRepository__atomMatchFetchCache(
@@ -198,6 +199,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         cached = self.test_db._EntropyRepository__atomMatchFetchCache(
             key, True, False, False, None, None, False, False, True)
         self.assertEqual(cached, (123, 0))
+        if not started:
+            cacher.stop()
 
     def test_db_insert_compare_match(self):
 
