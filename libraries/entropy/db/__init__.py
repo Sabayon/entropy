@@ -6971,12 +6971,25 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self._createPackagesetsIndex()
         self._createAutomergefilesIndex()
         self._createProvidedLibsIndex()
+        self._createDesktopMimeIndex()
 
     def _createMirrorlinksIndex(self):
         if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
-            ON mirrorlinks ( mirrorname )""")
+            try:
+                self._cursor().execute("""
+                CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
+                ON mirrorlinks ( mirrorname )""")
+            except OperationalError:
+                pass
+
+    def _createDesktopMimeIndex(self):
+        if self.indexing:
+            try:
+                self._cursor().execute("""
+                CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
+                ON packagedesktopmime ( idpackage )""")
+            except OperationalError:
+                pass
 
     def _createPackagesetsIndex(self):
         if self.indexing:
