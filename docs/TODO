@@ -3,10 +3,6 @@
 
     - for tagged packages, do not overwrite slot metadatum (fix in entropy.spm,
         entropy.client.interfaces.package, entropy.client.interfaces.dep (si))
-    - entropy.db: extract mimetype metadata
-        iddesktop | idpackage | pkg_path | Path | Exec | TryExec | Type | Name |
-            GenericName | Comment | Version | Icon | Categories | URL | Hidden |
-                OnlyShowIn | NotShowIn | NoDisplay | StartupNotify
 
   0.99.50:
     - entropy.client/entropy.server: subclass EntropyRepository and remove
