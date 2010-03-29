@@ -5,22 +5,19 @@
         entropy.client.interfaces.package, entropy.client.interfaces.dep (si))
 
   0.99.50:
+
     - entropy.client/entropy.server: subclass EntropyRepository and remove
         etpConst usage
     - entropy support for signalling spm<->entropy db out-of-sync
+
     - Client.SystemSettings vs Client.Settings()
     - entropy.fetchers API docs
     - entropy.server API docs
     - entropy.client API docs
-    - move all the portage related stuff in entropy.tools to entropy.spm.metaphor
-        stuff to move:
-            - package sets matching from entropy.client
-            - package matching from entropy.client and entropy.db (remove atomMatch)
-            - move unpack, install phases logic from entropy.client
-
     - entropy.server: enable OR deps
+    - sulfur: make use of provided_mime (and desktop_mime) metadata
+
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
-    - entropy.server API docs
     - add splitdebug support?
     - Spm.extract_package_metadata, define metadata format (to make easier
         for 3rd party implementations to define it)
