@@ -1,7 +1,6 @@
 
   0.99.40:
 
-    - entropy.spm: collect file association metadata per mime type.
     - for tagged packages, do not overwrite slot metadatum (fix in entropy.spm,
         entropy.client.interfaces.package, entropy.client.interfaces.dep (si))
 

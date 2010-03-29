@@ -1055,8 +1055,9 @@ class PortagePlugin(SpmPlugin):
         data['licensedata'] = self._extract_pkg_metadata_license_data(
             licenses_dir, data['license'])
 
-        data['desktop_mime'] = self._extract_pkg_metadata_desktop_mime(
-            pkg_dir, data['content'])
+        data['desktop_mime'], data['provided_mime'] = \
+            self._extract_pkg_metadata_desktop_mime(
+                pkg_dir, data['content'])
 
         data['mirrorlinks'] = self._extract_pkg_metadata_mirror_links(
             data['sources'])
@@ -4105,7 +4106,7 @@ class PortagePlugin(SpmPlugin):
 
         valid_paths = [x for x in content if x.endswith(".desktop")]
         if not valid_paths:
-            return []
+            return [], set()
 
         data_dirs = [os.path.join(x, "applications") for x in \
             os.getenv("XDG_DATA_DIRS", "/usr/share").split(":")]
@@ -4120,6 +4121,7 @@ class PortagePlugin(SpmPlugin):
         valid_paths = [os.path.join(pkg_dir, x[1:]) for x in valid_paths]
 
         desktop_mime = []
+        provided_mime = set()
 
         for desktop_path in sorted(valid_paths):
             if not (os.path.isfile(desktop_path) and \
@@ -4134,6 +4136,7 @@ class PortagePlugin(SpmPlugin):
                     continue
                 elif "Name" not in raw_desk_meta:
                     continue
+                provided_mime.update(raw_desk_meta['MimeType'].split(";"))
                 desk_meta = {
                     "name": raw_desk_meta['Name'],
                     "mimetype": raw_desk_meta['MimeType'],
@@ -4142,7 +4145,8 @@ class PortagePlugin(SpmPlugin):
                 }
                 desktop_mime.append(desk_meta)
 
-        return desktop_mime
+        provided_mime.discard("")
+        return desktop_mime, provided_mime
 
     def _extract_pkg_metadata_license_data(self, licenses_dir, license_string):
 

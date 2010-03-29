@@ -27,6 +27,10 @@ def get_test_package3():
     test_pkg = "apache-tools-2.2.11.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_package4():
+    test_pkg = "amarok-2.2.2.90.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_entrofoo_test_package():
     test_pkg = "entrofoo-1.tbz2"
     return get_test_generic_package(test_pkg), "app-misc/entrofoo"
@@ -87,6 +91,9 @@ def get_test_package_name2():
 def get_test_package_name3():
     return "apache-tools"
 
+def get_test_package_name4():
+    return "amarok"
+
 def get_test_package_atom():
     return "sys-libs/zlib-1.2.3-r1"
 
@@ -95,6 +102,9 @@ def get_test_package_atom2():
 
 def get_test_package_atom3():
     return "app-admin/apache-tools-2.2.11"
+
+def get_test_package_atom4():
+    return "media-sound/amarok-2.2.2.90"
 
 def get_random_file():
     return get_test_generic_package("random_file")

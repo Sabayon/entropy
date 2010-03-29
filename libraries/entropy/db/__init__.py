@@ -357,6 +357,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
+                CREATE TABLE provided_mime (
+                    mimetype VARCHAR,
+                    idpackage INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+
                 CREATE TABLE packagesignatures (
                     idpackage INTEGER PRIMARY KEY,
                     sha1 VARCHAR,
@@ -1425,7 +1431,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.insertMirrors(pkg_data['mirrorlinks'])
 
         # packages and file association metadata
-        self._insertDesktopMime(idpackage, pkg_data.get('desktop_mime', []))
+        desktop_mime = pkg_data.get('desktop_mime')
+        if desktop_mime:
+            self._insertDesktopMime(idpackage, desktop_mime)
+        provided_mime = pkg_data.get('provided_mime')
+        if provided_mime:
+            self._insertProvidedMime(idpackage, provided_mime)
 
         # package ChangeLog
         if pkg_data.get('changelog'):
@@ -1563,6 +1574,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if self._doesTableExist("packagedesktopmime"):
                 self._cursor().execute("""
                 DELETE FROM packagedesktopmime WHERE idpackage = (?)""",
+                (idpackage,))
+            if self._doesTableExist("provided_mime"):
+                self._cursor().execute("""
+                DELETE FROM provided_mime WHERE idpackage = (?)""",
                 (idpackage,))
 
         if do_cleanup:
@@ -2294,9 +2309,23 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         mime_data = [(idpackage, x['name'], x['mimetype'], x['executable'],
             x['icon']) for x in metadata]
-        if mime_data:
-            self._cursor().executemany("""
-            INSERT INTO packagedesktopmime VALUES (?,?,?,?,?)""", mime_data)
+        self._cursor().executemany("""
+        INSERT INTO packagedesktopmime VALUES (?,?,?,?,?)""", mime_data)
+
+    def _insertProvidedMime(self, idpackage, mimetypes):
+        """
+        Insert file association information for package in a way useful for
+        making direct and inverse queries (having a mimetype or having a
+        package identifier)
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param mimetypes: list of mimetypes supported by package
+        @type mimetypes: list
+        """
+        self._cursor().executemany("""
+        INSERT INTO provided_mime VALUES (?,?)""",
+            [(x, idpackage) for x in mimetypes])
 
     def _insertSpmPhases(self, idpackage, phases):
         """
@@ -3198,6 +3227,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'spm_phases': self.retrieveSpmPhases(idpackage),
             'spm_repository': self.retrieveSpmRepository(idpackage),
             'desktop_mime': [],
+            'provided_mime': [],
         }
 
         @rtype: dict
@@ -3236,7 +3266,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         }
 
         provide_extended = self.retrieveProvide(idpackage)
-        # FIXME: backward compat, remove someday
+        # FIXME: backward compat, remove before 2010-12-31
         old_provide = set()
         for x in provide_extended:
             if isinstance(x, tuple):
@@ -3297,6 +3327,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'spm_phases': self.retrieveSpmPhases(idpackage),
             'spm_repository': self.retrieveSpmRepository(idpackage),
             'desktop_mime': self.retrieveDesktopMime(idpackage),
+            'provided_mime': self.retrieveProvidedMime(idpackage),
         }
 
         return data
@@ -4079,6 +4110,24 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 item['icon'] = row
             data.append(item)
         return data
+
+    def retrieveProvidedMime(self, idpackage):
+        """
+        Return mime types associated to package. Mimetypes whose package
+        can handle.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: list (set) of mimetypes
+        @rtype: set
+        """
+        if not self._doesTableExist("provided_mime"):
+            return set()
+
+        cur = self._cursor().execute("""
+        SELECT mimetype FROM provided_mime WHERE idpackage = (?)""",
+        (idpackage,))
+        return self._cur2set(cur)
 
     def retrieveNeededRaw(self, idpackage):
         """
@@ -5623,6 +5672,24 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         return self._cur2set(cur)
 
+    def searchProvidedMime(self, mimetype):
+        """
+        Search package identifiers owning given mimetype. Results are returned
+        sorted by package name.
+
+        @param mimetype: mimetype to search
+        @type mimetype: string
+        @return: list of package indentifiers owning given mimetype.
+        @rtype: list
+        """
+        cur = self._cursor().execute("""
+        SELECT provided_mime.idpackage FROM provided_mime, baseinfo
+        WHERE provided_mime.mimetype = (?)
+        AND baseinfo.idpackage = provided_mime.idpackage
+        ORDER BY baseinfo.atom""",
+        (mimetype,))
+        return self._cur2list(cur)
+
     def searchSimilarPackages(self, mystring, atom = False):
         """
         Search similar packages (basing on package string given by mystring
@@ -6245,6 +6312,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if not self._doesTableExist("packagedesktopmime"):
             self._createPackageDesktopMimeTable()
+        if not self._doesTableExist("provided_mime"):
+            self._createProvidedMimeTable()
 
         if not self._doesTableExist("licenses_accepted"):
             self._createLicensesAcceptedTable()
@@ -6972,6 +7041,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self._createAutomergefilesIndex()
         self._createProvidedLibsIndex()
         self._createDesktopMimeIndex()
+        self._createProvidedMimeIndex()
 
     def _createMirrorlinksIndex(self):
         if self.indexing:
@@ -6988,6 +7058,18 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self._cursor().execute("""
                 CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
                 ON packagedesktopmime ( idpackage )""")
+            except OperationalError:
+                pass
+
+    def _createProvidedMimeIndex(self):
+        if self.indexing:
+            try:
+                self._cursor().execute("""
+                CREATE INDEX IF NOT EXISTS provided_mime_idpackage
+                ON provided_mime ( idpackage )""")
+                self._cursor().execute("""
+                CREATE INDEX IF NOT EXISTS provided_mime_mimetype
+                ON provided_mime ( mimetype )""")
             except OperationalError:
                 pass
 
@@ -7596,6 +7678,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             mimetype VARCHAR,
             executable VARCHAR,
             icon VARCHAR,
+            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+        );
+        """)
+
+    def _createProvidedMimeTable(self):
+        self._cursor().execute("""
+        CREATE TABLE provided_mime (
+            mimetype VARCHAR,
+            idpackage INTEGER,
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
