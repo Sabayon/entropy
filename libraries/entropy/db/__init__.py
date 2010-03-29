@@ -348,6 +348,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
+                CREATE TABLE packagedesktopmime (
+                    idpackage INTEGER,
+                    name VARCHAR,
+                    mimetype VARCHAR,
+                    executable VARCHAR,
+                    icon VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+
                 CREATE TABLE packagesignatures (
                     idpackage INTEGER PRIMARY KEY,
                     sha1 VARCHAR,
@@ -1414,6 +1423,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.insertKeywords(idpackage, pkg_data['keywords'])
         self.insertLicenses(pkg_data['licensedata'])
         self.insertMirrors(pkg_data['mirrorlinks'])
+
+        # packages and file association metadata
+        self._insertDesktopMime(idpackage, pkg_data.get('desktop_mime', []))
+
         # package ChangeLog
         if pkg_data.get('changelog'):
             self.insertChangelog(pkg_data['category'], pkg_data['name'],
@@ -1546,6 +1559,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 DELETE FROM injected WHERE idpackage = %d;
                 DELETE FROM installedtable WHERE idpackage = %d;
             """ % r_tup)
+            # FIXME: incorportate in query above before 2010-12-31
+            if self._doesTableExist("packagedesktopmime"):
+                self._cursor().execute("""
+                DELETE FROM packagedesktopmime WHERE idpackage = (?)""",
+                (idpackage,))
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -2264,6 +2282,21 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self._cursor().execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?)
             """, (idpackage, sha1, sha256, sha512))
+
+    def _insertDesktopMime(self, idpackage, metadata):
+        """
+        Insert file association information for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param metadata: list of dict() containing file association metadata
+        @type metadata: list
+        """
+        mime_data = [(idpackage, x['name'], x['mimetype'], x['executable'],
+            x['icon']) for x in metadata]
+        if mime_data:
+            self._cursor().executemany("""
+            INSERT INTO packagedesktopmime VALUES (?,?,?,?,?)""", mime_data)
 
     def _insertSpmPhases(self, idpackage, phases):
         """
@@ -3164,6 +3197,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(idpackage),
             'spm_repository': self.retrieveSpmRepository(idpackage),
+            'desktop_mime': [],
         }
 
         @rtype: dict
@@ -3262,6 +3296,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(idpackage),
             'spm_repository': self.retrieveSpmRepository(idpackage),
+            'desktop_mime': self.retrieveDesktopMime(idpackage),
         }
 
         return data
@@ -4021,6 +4056,29 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if spm_repo:
             return spm_repo[0]
+
+    def retrieveDesktopMime(self, idpackage):
+        """
+        Return file association metadata for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: list of dict() containing file association information
+        @rtype: list
+        """
+        if not self._doesTableExist("packagedesktopmime"):
+            return []
+
+        cur = self._cursor().execute("""
+        SELECT name, mimetype, executable, icon FROM packagedesktopmime
+        WHERE idpackage = (?)""", (idpackage,))
+        data = []
+        for row in cur.fetchall():
+            item = {}
+            item['name'], item['mimetype'], item['executable'], \
+                item['icon'] = row
+            data.append(item)
+        return data
 
     def retrieveNeededRaw(self, idpackage):
         """
@@ -6185,6 +6243,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         old_readonly = self.readOnly
         self.readOnly = False
 
+        if not self._doesTableExist("packagedesktopmime"):
+            self._createPackageDesktopMimeTable()
+
         if not self._doesTableExist("licenses_accepted"):
             self._createLicensesAcceptedTable()
 
@@ -7512,6 +7573,18 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     def _createPackagesetsTable(self):
         self._cursor().execute("""
         CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );
+        """)
+
+    def _createPackageDesktopMimeTable(self):
+        self._cursor().execute("""
+        CREATE TABLE packagedesktopmime (
+            idpackage INTEGER,
+            name VARCHAR,
+            mimetype VARCHAR,
+            executable VARCHAR,
+            icon VARCHAR,
+            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+        );
         """)
 
     def createCategoriesdescriptionTable(self):

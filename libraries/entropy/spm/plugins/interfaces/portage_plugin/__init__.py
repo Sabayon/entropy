@@ -1055,6 +1055,9 @@ class PortagePlugin(SpmPlugin):
         data['licensedata'] = self._extract_pkg_metadata_license_data(
             licenses_dir, data['license'])
 
+        data['desktop_mime'] = self._extract_pkg_metadata_desktop_mime(
+            pkg_dir, data['content'])
+
         data['mirrorlinks'] = self._extract_pkg_metadata_mirror_links(
             data['sources'])
 
@@ -1071,7 +1074,8 @@ class PortagePlugin(SpmPlugin):
             self.get_merge_protected_paths_mask())
 
         log_dir = etpConst['logdir']+"/elog"
-        if not os.path.isdir(log_dir): os.makedirs(log_dir)
+        if not os.path.isdir(log_dir):
+            os.makedirs(log_dir)
         data['messages'] = self._extract_pkg_metadata_messages(log_dir,
             data['category'], data['name'], data['version'])
 
@@ -4096,6 +4100,49 @@ class PortagePlugin(SpmPlugin):
                 pkg_messages.append(const_convert_to_unicode(message))
 
         return pkg_messages
+
+    def _extract_pkg_metadata_desktop_mime(self, pkg_dir, content):
+
+        valid_paths = [x for x in content if x.endswith(".desktop")]
+        if not valid_paths:
+            return []
+
+        data_dirs = [os.path.join(x, "applications") for x in \
+            os.getenv("XDG_DATA_DIRS", "/usr/share").split(":")]
+
+        def filter_valid_paths(path):
+            for data_dir in data_dirs:
+                if path.startswith(data_dir):
+                    return True
+            return False
+
+        valid_paths = list(filter(filter_valid_paths, valid_paths))
+        valid_paths = [os.path.join(pkg_dir, x[1:]) for x in valid_paths]
+
+        desktop_mime = []
+
+        for desktop_path in sorted(valid_paths):
+            if not (os.path.isfile(desktop_path) and \
+                os.access(desktop_path, os.R_OK)):
+                continue
+            with open(desktop_path, "r") as desk_f:
+                desk_data = [x.strip().split("=", 1) for x in \
+                    desk_f.readlines() if len(x.strip().split("=", 1)) == 2]
+                raw_desk_meta = dict(desk_data)
+
+                if "MimeType" not in raw_desk_meta:
+                    continue
+                elif "Name" not in raw_desk_meta:
+                    continue
+                desk_meta = {
+                    "name": raw_desk_meta['Name'],
+                    "mimetype": raw_desk_meta['MimeType'],
+                    "executable": raw_desk_meta.get('Exec'),
+                    "icon": raw_desk_meta.get("Icon"),
+                }
+                desktop_mime.append(desk_meta)
+
+        return desktop_mime
 
     def _extract_pkg_metadata_license_data(self, licenses_dir, license_string):
 
