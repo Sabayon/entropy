@@ -4049,7 +4049,7 @@ class PortagePlugin(SpmPlugin):
             if obj_dir not in ldpaths:
                 continue
 
-            unpack_obj = os.path.join(pkg_dir, obj)
+            unpack_obj = os.path.join(pkg_dir, obj[1:])
             try:
                 os.stat(unpack_obj)
             except OSError:
