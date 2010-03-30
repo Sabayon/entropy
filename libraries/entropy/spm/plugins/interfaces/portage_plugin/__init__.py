@@ -304,6 +304,8 @@ class PortagePlugin(SpmPlugin):
         # interface only needed OutputInterface functions
         self.output = OutputInterface.output
         self.ask_question = OutputInterface.ask_question
+        self.input_box = OutputInterface.input_box
+        self.set_title = OutputInterface.set_title
 
         # importing portage stuff
         import portage
