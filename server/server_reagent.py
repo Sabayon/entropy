@@ -368,7 +368,8 @@ def repositories(options):
         pkg_matches = [(x, def_repo) for x in pkglist]
         if not request_nodeps:
             # Entropy.default_repository
-            pkg_matches = Entropy.get_reverse_queue(pkg_matches)
+            pkg_matches = Entropy.get_reverse_queue(pkg_matches,
+                system_packages = False)
 
         if not pkg_matches:
             print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))

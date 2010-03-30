@@ -1785,28 +1785,31 @@ class ServerPackagesHandlingMixin:
 
             # do we want to pull in also package dependencies?
             if pull_deps:
-                dep_idpackages = list(my_qa.get_deep_dependency_list(dbconn,
-                    idpackage))
-                revdeps_idpackages = [x for x in \
-                    dbconn.retrieveReverseDependencies(idpackage) if x not \
-                        in dep_idpackages]
-                dep_idpackages.extend(revdeps_idpackages)
+                dep_matches = [(x, repo) for x in \
+                    my_qa.get_deep_dependency_list(dbconn, idpackage)]
+                revdep_matches = self.get_reverse_queue(dep_matches,
+                    system_packages = False)
+                dep_matches += [x for x in revdep_matches if x not in \
+                    dep_matches]
 
-                for dep_idpackage in dep_idpackages:
+                for dep_idpackage, dep_repo in dep_matches:
 
-                    my_dep_match = (dep_idpackage, repo,)
+                    my_dep_match = (dep_idpackage, dep_repo,)
                     if my_dep_match in pull_deps_matches:
                         continue
                     if my_dep_match in my_matches:
                         continue
 
                     pull_deps_matches.append(my_dep_match)
-                    if dep_idpackage in revdeps_idpackages:
+                    dep_dbconn = self.open_server_repository(read_only = True,
+                        no_upload = True, repo = dep_repo)
+                    dep_atom = dep_dbconn.retrieveAtom(dep_idpackage)
+                    if my_dep_match in revdep_matches:
                         self.output(
                             "[%s|%s] %s" % (
                                 brown(branch),
                                 blue(_("reverse dependency")),
-                                teal(dbconn.retrieveAtom(dep_idpackage)),
+                                teal(dep_atom),
                             ),
                             importance = 0,
                             type = "info",
@@ -1817,7 +1820,7 @@ class ServerPackagesHandlingMixin:
                             "[%s|%s] %s" % (
                                 brown(branch),
                                 blue(_("dependency")),
-                                purple(dbconn.retrieveAtom(dep_idpackage)),
+                                purple(dep_atom),
                             ),
                             importance = 0,
                             type = "info",
@@ -4490,14 +4493,11 @@ class ServerMiscMixin:
                             # expired !!!
                             # add this and its depends (reverse deps)
 
-                            # TODO, FIXME: maybe we should check if other pkgs
-                            # satisfy these reverse deps before pulling
-                            # everything in for removal?
-                            # NOTE: also pull in build reverse deps?
-                            to_be_removed.add((idpackage, xrepo))
-                            for my_id in dbconn.retrieveReverseDependencies(
-                                idpackage):
-                                to_be_removed.add((my_id, xrepo))
+                            rm_match = (idpackage, xrepo)
+                            #to_be_removed.add(rm_match)
+                            revdep_matches = self.get_reverse_queue([rm_match],
+                                system_packages = False)
+                            to_be_removed.update(revdep_matches)
 
                     else:
                         to_be_removed.add((idpackage, xrepo))
