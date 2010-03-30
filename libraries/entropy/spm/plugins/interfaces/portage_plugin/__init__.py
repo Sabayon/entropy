@@ -766,11 +766,14 @@ class PortagePlugin(SpmPlugin):
             if kern_vermagic is None:
                 continue
 
-            # MUST match SLOT (for triggers here, to be able to handle
-            # multiple packages correctly and set back slot).
+            if not entropy.tools.is_valid_package_tag(kern_vermagic):
+                # argh! wtf, this is invalid!
+                continue
+
+            # properly set package tag and slot
             pkg_data['versiontag'] = kern_vermagic
-            # overwrite slot, yeah
-            pkg_data['slot'] = kern_vermagic
+            # tweak slot, yeah
+            pkg_data['slot'] = "%s,%s" % (pkg_data['slot'], kern_vermagic,)
 
             # now try to guess package providing that vermagic
             possible_kernel_owned_path = os.path.join(kmod_pfx, kern_vermagic)
@@ -2470,6 +2473,9 @@ class PortagePlugin(SpmPlugin):
 
         vartree.dbapi._bump_mtime(portage_cpv)
 
+    def __remove_kernel_tag_from_slot(slot):
+        return slot[::-1].split(",", 1)[-1][::-1]
+
     def add_installed_package(self, package_metadata):
         """
         Reimplemented from SpmPlugin class.
@@ -2567,10 +2573,16 @@ class PortagePlugin(SpmPlugin):
             return counter
 
         myslot = package_metadata['slot'][:]
+        # old slot protocol for kernel packages
+        # FIXME: remove before 2010-12-31
         if (package_metadata['versiontag'] == package_metadata['slot']) \
             and package_metadata['versiontag']:
             # usually kernel packages
             myslot = "0"
+        elif package_metadata['versiontag'] and \
+            ("," in package_metadata['slot']):
+            # new slot format for kernel tagged packages
+            myslot = self.__remove_kernel_tag_from_slot(myslot)
 
         keyslot = const_convert_to_rawstring(key+":"+myslot)
         key = const_convert_to_rawstring(key)
@@ -2631,7 +2643,11 @@ class PortagePlugin(SpmPlugin):
         slot = package_metadata['slot']
         tag = package_metadata['versiontag']
         if (tag == slot) and tag:
+            # old kernel tagged pkgs protocol
             slot = "0"
+        elif tag and ("," in slot):
+            # new kernel tagged pkgs protocol
+            slot = self.__remove_kernel_tag_from_slot(slot)
 
         def do_rm_path_atomic(xpath):
             for my_el in os.listdir(xpath):
@@ -4212,4 +4228,18 @@ class PortagePlugin(SpmPlugin):
             return ebuild_tag
         tag = tags[-1]
         tag = tag.split("=")[-1].strip('"').strip("'").strip()
+
+        if not entropy.tools.is_valid_package_tag(tag):
+            # invalid
+            mytxt = "%s: %s: %s" % (
+                bold(_("QA")),
+                brown(_("illegal Entropy package tag in ebuild")),
+                tag,
+            )
+            self.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            return ebuild_tag
         return tag
