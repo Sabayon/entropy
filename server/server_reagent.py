@@ -380,8 +380,8 @@ def repositories(options):
         for idpackage, repo_id in pkg_matches:
             repo_db = Entropy.open_repository(repo_id)
             pkgatom = repo_db.retrieveAtom(idpackage)
-            print_info(red("   # ") + blue("[") + red(repo_id) + blue("] ") + \
-                bold(pkgatom))
+            print_info(red("   # ") + blue("[") + teal(repo_id) + blue("] ") + \
+                purple(pkgatom))
             obj = repo_map.setdefault(repo_id, [])
             obj.append(idpackage)
 
