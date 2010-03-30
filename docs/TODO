@@ -1,8 +1,9 @@
 
   0.99.50:
 
+    - "reagent spm orphans" doesn't seem to play nice with overlays
     - entropy.client/entropy.server: subclass EntropyRepository and remove
-        etpConst usage
+        etpConst usage (for repo type identification)
     - entropy support for signalling spm<->entropy db out-of-sync
 
     - Client.SystemSettings vs Client.Settings()
@@ -27,7 +28,6 @@
   1.0 - deprecations:
 
     - ditch entropyTools, dumpTools
-    - _databaseStructureUpdates (missing tables creation)
     - type argument in updateProgress
 
   2.0:
