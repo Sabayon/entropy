@@ -929,6 +929,27 @@ def spm(options):
         not_found = Entropy.orphaned_spm_packages_test()
         return 0
 
+    elif action == "new":
+        spm = Entropy.Spm()
+        spm_avail = spm.get_packages(categories = options)
+        spm_installed = spm.get_installed_packages(categories = options)
+        spm_avail_exp = set((x, spm.get_package_metadata(x, "SLOT")) for x \
+            in spm_avail)
+        spm_installed_exp = set((x, spm.get_installed_package_metadata(x,
+            "SLOT")) for x in spm_installed)
+
+        newly_available = sorted(spm_avail_exp - spm_installed_exp)
+
+        print_info(brown(" @@ ")+blue("%s:" % (_("These are the newly available packages, either updatable or not installed"),) ))
+        if etpUi['quiet']:
+            print_generic(' '.join(["=%s:%s" % (x, y) for x, y in \
+                newly_available]))
+        else:
+            for pkg, slot in newly_available:
+                print_info(red("   # =") + teal(pkg) + blue(":") + purple(slot))
+
+        return 0
+
     return -10
 
 def spm_compile_categories(options, do_list = False):

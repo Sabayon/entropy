@@ -359,7 +359,11 @@ run mirror sync if all went fine
 
 =item B<orphans>
 
-scan orphaned packages on SPM
+scan orphaned packages in SPM
+
+=item B<new [categories]>
+
+scan new packages available in SPM
 
 =back
 
