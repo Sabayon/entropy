@@ -12,7 +12,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: entropy_vitovtREV01\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-03-29 15:36+0200\n"
+"POT-Creation-Date: 2010-03-30 20:59+0200\n"
 "PO-Revision-Date: 2010-01-15 21:04+0200\n"
 "Last-Translator: Grusha Linux Team\n"
 "Language-Team:  <contact@lgrusha.org.ua>\n"
@@ -37,109 +37,109 @@ msgstr "Entropy потребує Python, скомпільований з під�
 #: ../../libraries/entropy/client/interfaces/package.py:2744
 #: ../../libraries/entropy/client/interfaces/package.py:2764
 #: ../../libraries/entropy/client/interfaces/trigger.py:48
-#: ../../libraries/entropy/security.py:638 ../../server/server_reagent.py:526
+#: ../../libraries/entropy/security.py:638 ../../server/server_reagent.py:539
 #: ../../sulfur/src/sulfur/events.py:890 ../../sulfur/src/sulfur/events.py:896
 #: ../../sulfur/src/sulfur/events.py:935
 #: ../../sulfur/src/sulfur/sulfur.glade.h:83
 msgid "Error"
 msgstr "Помилка"
 
-#: ../../libraries/entropy/db/__init__.py:782
-#: ../../libraries/entropy/db/__init__.py:1062
+#: ../../libraries/entropy/db/__init__.py:788
+#: ../../libraries/entropy/db/__init__.py:1068
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy/db/__init__.py:783
+#: ../../libraries/entropy/db/__init__.py:789
 msgid "Running fixpackages"
 msgstr "Старт фікспакунків"
 
-#: ../../libraries/entropy/db/__init__.py:784
+#: ../../libraries/entropy/db/__init__.py:790
 msgid "it could take a while"
 msgstr "ця дія може тривати деякий час"
 
-#: ../../libraries/entropy/db/__init__.py:803
-#: ../../libraries/entropy/db/__init__.py:822
-#: ../../libraries/entropy/db/__init__.py:845
+#: ../../libraries/entropy/db/__init__.py:809
+#: ../../libraries/entropy/db/__init__.py:828
+#: ../../libraries/entropy/db/__init__.py:851
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy/db/__init__.py:804
+#: ../../libraries/entropy/db/__init__.py:810
 msgid "action"
 msgstr "дія"
 
-#: ../../libraries/entropy/db/__init__.py:823
+#: ../../libraries/entropy/db/__init__.py:829
 msgid "package move actions complete"
 msgstr "переміщення пакунку завершене"
 
-#: ../../libraries/entropy/db/__init__.py:837
+#: ../../libraries/entropy/db/__init__.py:843
 #: ../../libraries/entropy/server/interfaces/main.py:1288
 msgid "WARNING"
 msgstr "ОБЕРЕЖНО"
 
-#: ../../libraries/entropy/db/__init__.py:838
+#: ../../libraries/entropy/db/__init__.py:844
 msgid "Cannot run SPM cleanup, error"
 msgstr "Неможливо виконати очищення SPM, помилка"
 
-#: ../../libraries/entropy/db/__init__.py:846
+#: ../../libraries/entropy/db/__init__.py:852
 msgid "package moves completed successfully"
 msgstr "переміщення пакунку вдало завершені"
 
-#: ../../libraries/entropy/db/__init__.py:1063
+#: ../../libraries/entropy/db/__init__.py:1069
 msgid "Moving old entry"
 msgstr "Переміщення старого запису"
 
-#: ../../libraries/entropy/db/__init__.py:1065
+#: ../../libraries/entropy/db/__init__.py:1071
 #: ../../client/text_configuration.py:118
 msgid "to"
 msgstr "на"
 
-#: ../../libraries/entropy/db/__init__.py:6303
+#: ../../libraries/entropy/db/__init__.py:6372
 msgid "baseinfo error. Either does not exist or corrupted."
 msgstr "Помилка таблиці baseinfo. Вона не існує або зіпсована."
 
-#: ../../libraries/entropy/db/__init__.py:6311
+#: ../../libraries/entropy/db/__init__.py:6380
 msgid "extrainfo error. Either does not exist or corrupted."
 msgstr "Помилка таблиці extrainfo. Вона не існує або зіпсована."
 
-#: ../../libraries/entropy/db/__init__.py:6378
+#: ../../libraries/entropy/db/__init__.py:6447
 msgid "Syncing current database"
 msgstr "Синхронізація поточної бази даних"
 
-#: ../../libraries/entropy/db/__init__.py:6379
+#: ../../libraries/entropy/db/__init__.py:6448
 #: ../../libraries/entropy/client/interfaces/repository.py:1834
 msgid "please wait"
 msgstr "зачекайте, будь-ласка"
 
-#: ../../libraries/entropy/db/__init__.py:6394
+#: ../../libraries/entropy/db/__init__.py:6463
 msgid "Removing entry"
 msgstr "Видалення запису"
 
-#: ../../libraries/entropy/db/__init__.py:6413
+#: ../../libraries/entropy/db/__init__.py:6482
 msgid "Adding entry"
 msgstr "Додавання запису"
 
-#: ../../libraries/entropy/db/__init__.py:6458
+#: ../../libraries/entropy/db/__init__.py:6527
 msgid "Repository EAPI > Entropy EAPI."
 msgstr "EAPI Репозиторію> EAPI Entropy."
 
-#: ../../libraries/entropy/db/__init__.py:6464
+#: ../../libraries/entropy/db/__init__.py:6533
 msgid "Please update Equo/Entropy as soon as possible !"
 msgstr "Будь-ласка оновіть Equo/Entropy якомога швидше!"
 
-#: ../../libraries/entropy/db/__init__.py:6513
+#: ../../libraries/entropy/db/__init__.py:6582
 msgid "Exporting database table"
 msgstr "Експорт таблиці бази даних"
 
-#: ../../libraries/entropy/db/__init__.py:6555
+#: ../../libraries/entropy/db/__init__.py:6624
 msgid "Database Export complete."
 msgstr "Експорт бази даних завершено.  "
 
-#: ../../libraries/entropy/db/__init__.py:7227
-#: ../../libraries/entropy/db/__init__.py:7241
-#: ../../libraries/entropy/db/__init__.py:7318
-#: ../../libraries/entropy/db/__init__.py:7417
-#: ../../libraries/entropy/db/__init__.py:7430
-#: ../../libraries/entropy/client/interfaces/client.py:782
+#: ../../libraries/entropy/db/__init__.py:7322
+#: ../../libraries/entropy/db/__init__.py:7336
+#: ../../libraries/entropy/db/__init__.py:7413
+#: ../../libraries/entropy/db/__init__.py:7512
+#: ../../libraries/entropy/db/__init__.py:7525
+#: ../../libraries/entropy/client/interfaces/client.py:791
 #: ../../client/text_rescue.py:220 ../../client/text_rescue.py:225
 #: ../../client/text_rescue.py:608 ../../client/text_rescue.py:789
 #: ../../client/text_ui.py:687 ../../client/text_ui.py:1581
@@ -148,22 +148,22 @@ msgstr "Експорт бази даних завершено.  "
 msgid "ATTENTION"
 msgstr "УВАГА"
 
-#: ../../libraries/entropy/db/__init__.py:7228
+#: ../../libraries/entropy/db/__init__.py:7323
 #, fuzzy
 msgid "Spm error occured"
 msgstr "дзеркало розблоковано"
 
-#: ../../libraries/entropy/db/__init__.py:7242
+#: ../../libraries/entropy/db/__init__.py:7337
 #, fuzzy
 msgid "Spm Unique Identifier not found for"
 msgstr "Шлях до лічильника Spm не знайдено"
 
-#: ../../libraries/entropy/db/__init__.py:7320
+#: ../../libraries/entropy/db/__init__.py:7415
 #, fuzzy
 msgid "updating repository metadata layout, please wait!"
 msgstr "Генерація мета-інформації. Будь-ласка, зачекайте."
 
-#: ../../libraries/entropy/db/__init__.py:7418
+#: ../../libraries/entropy/db/__init__.py:7513
 msgid "generating provided_libs metadata, please wait!"
 msgstr "Генерація мета-інформації. Будь-ласка, зачекайте."
 
@@ -508,10 +508,10 @@ msgstr "Бажаєте продовжити?"
 #. masked ?
 #: ../../libraries/entropy/server/interfaces/main.py:1300
 #: ../../libraries/entropy/server/interfaces/main.py:1479
-#: ../../libraries/entropy/server/interfaces/main.py:1834
-#: ../../libraries/entropy/server/interfaces/main.py:2226
-#: ../../libraries/entropy/server/interfaces/main.py:2777
-#: ../../libraries/entropy/server/interfaces/main.py:3371
+#: ../../libraries/entropy/server/interfaces/main.py:1837
+#: ../../libraries/entropy/server/interfaces/main.py:2229
+#: ../../libraries/entropy/server/interfaces/main.py:2780
+#: ../../libraries/entropy/server/interfaces/main.py:3374
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3062
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3377
 #: ../../libraries/entropy/output.py:697 ../../libraries/entropy/qa.py:396
@@ -527,9 +527,9 @@ msgstr "Бажаєте продовжити?"
 #: ../../client/text_ui.py:1705 ../../client/text_ui.py:1835
 #: ../../client/text_ui.py:1894 ../../client/text_ui.py:2064
 #: ../../client/text_ui.py:2146 ../../server/server_activator.py:125
-#: ../../server/server_reagent.py:287 ../../server/server_reagent.py:378
-#: ../../server/server_reagent.py:425 ../../server/server_reagent.py:483
-#: ../../server/server_reagent.py:799 ../../sulfur/src/sulfur/dialogs.py:1360
+#: ../../server/server_reagent.py:290 ../../server/server_reagent.py:390
+#: ../../server/server_reagent.py:438 ../../server/server_reagent.py:496
+#: ../../server/server_reagent.py:812 ../../sulfur/src/sulfur/dialogs.py:1360
 #: ../../sulfur/src/sulfur/entropyapi.py:378
 msgid "No"
 msgstr "Ni"
@@ -556,12 +556,12 @@ msgstr "ось пакунки, які будуть повернуті"
 
 #. ask to continue
 #: ../../libraries/entropy/server/interfaces/main.py:1478
-#: ../../libraries/entropy/server/interfaces/main.py:1833
-#: ../../libraries/entropy/server/interfaces/main.py:2225
-#: ../../libraries/entropy/server/interfaces/main.py:2776
+#: ../../libraries/entropy/server/interfaces/main.py:1836
+#: ../../libraries/entropy/server/interfaces/main.py:2228
+#: ../../libraries/entropy/server/interfaces/main.py:2779
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3376
-#: ../../client/text_ui.py:835 ../../server/server_reagent.py:377
-#: ../../server/server_reagent.py:424 ../../server/server_reagent.py:482
+#: ../../client/text_ui.py:835 ../../server/server_reagent.py:389
+#: ../../server/server_reagent.py:437 ../../server/server_reagent.py:495
 msgid "Would you like to continue ?"
 msgstr "Бажаєте продовжити?"
 
@@ -650,105 +650,105 @@ msgstr "новий тег"
 msgid "remove"
 msgstr "видалити"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1808
+#: ../../libraries/entropy/server/interfaces/main.py:1811
 #, fuzzy
 msgid "reverse dependency"
 msgstr "Зворотні залежності"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1819
+#: ../../libraries/entropy/server/interfaces/main.py:1822
 msgid "dependency"
 msgstr "залежність"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1850
+#: ../../libraries/entropy/server/interfaces/main.py:1853
 msgid "switching"
 msgstr "переключення"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1870
+#: ../../libraries/entropy/server/interfaces/main.py:1873
 msgid "cannot switch, package not found, skipping"
 msgstr "неможливо переключити, пакунок не знайдений, пропускаємо"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1941
+#: ../../libraries/entropy/server/interfaces/main.py:1944
 msgid "moving file"
 msgstr "переміщення файлу"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1957
+#: ../../libraries/entropy/server/interfaces/main.py:1960
 msgid "loading data from source database"
 msgstr "завантаження інформації з бази даних джерела"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1985
+#: ../../libraries/entropy/server/interfaces/main.py:1988
 #, fuzzy
 msgid "GPG key was available in"
 msgstr "найновіша версія -"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2004
+#: ../../libraries/entropy/server/interfaces/main.py:2007
 msgid "injecting data to destination database"
 msgstr "введення інформації в базу даних призначення"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2022
+#: ../../libraries/entropy/server/interfaces/main.py:2025
 msgid "removing entry from source database"
 msgstr "видалення запису з джерела бази даних"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2040
+#: ../../libraries/entropy/server/interfaces/main.py:2043
 msgid "successfully handled atom"
 msgstr "вдало оброблений атом"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2067
+#: ../../libraries/entropy/server/interfaces/main.py:2070
 msgid "Injecting entropy metadata into built packages"
 msgstr "Додавання мета-інформації entropy в зібрані пакунки"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2083
+#: ../../libraries/entropy/server/interfaces/main.py:2086
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2097
+#: ../../libraries/entropy/server/interfaces/main.py:2100
 msgid "injecting entropy metadata"
 msgstr "додавання мета-інформації entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2135
+#: ../../libraries/entropy/server/interfaces/main.py:2138
 msgid "injection complete"
 msgstr "додавання завершено"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2156
+#: ../../libraries/entropy/server/interfaces/main.py:2159
 msgid "removing package"
 msgstr "видалення пакунку"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2168
+#: ../../libraries/entropy/server/interfaces/main.py:2171
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2697
 msgid "removal complete"
 msgstr "видалення завершено"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2183
-#: ../../libraries/entropy/server/interfaces/main.py:2389
+#: ../../libraries/entropy/server/interfaces/main.py:2186
+#: ../../libraries/entropy/server/interfaces/main.py:2392
 msgid "Integrity verification of the selected packages"
 msgstr "Перевірка цілісності обраних пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2198
-#: ../../libraries/entropy/server/interfaces/main.py:2402
+#: ../../libraries/entropy/server/interfaces/main.py:2201
+#: ../../libraries/entropy/server/interfaces/main.py:2405
 msgid "All the packages in repository will be checked."
 msgstr "Всі пакунки в репозиторії Entropy Packages будуть перевірені."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2205
+#: ../../libraries/entropy/server/interfaces/main.py:2208
 msgid "This is the list of the packages that would be checked"
 msgstr "Ось перелік пакунків, які будуть перевірені"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2239
+#: ../../libraries/entropy/server/interfaces/main.py:2242
 msgid "Working on mirror"
 msgstr "Робота з дзеркалом"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2266
+#: ../../libraries/entropy/server/interfaces/main.py:2269
 msgid "checking hash"
 msgstr "перевірка хеша"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2281
+#: ../../libraries/entropy/server/interfaces/main.py:2284
 msgid "digest verification of"
 msgstr "перевірка списків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2283
+#: ../../libraries/entropy/server/interfaces/main.py:2286
 msgid "not supported"
 msgstr "не підтримується"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2299
-#: ../../libraries/entropy/server/interfaces/main.py:2447
+#: ../../libraries/entropy/server/interfaces/main.py:2302
+#: ../../libraries/entropy/server/interfaces/main.py:2450
 #: ../../libraries/entropy/server/interfaces/mirrors.py:695
 #: ../../libraries/entropy/server/interfaces/mirrors.py:714
 #: ../../libraries/entropy/server/interfaces/mirrors.py:746
@@ -757,397 +757,397 @@ msgstr "не підтримується"
 msgid "package"
 msgstr "пакунок"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2301
+#: ../../libraries/entropy/server/interfaces/main.py:2304
 msgid "NOT healthy"
 msgstr "НЕ все гаразд"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2314
-#: ../../libraries/entropy/server/interfaces/main.py:2459
+#: ../../libraries/entropy/server/interfaces/main.py:2317
+#: ../../libraries/entropy/server/interfaces/main.py:2462
 msgid "This is the list of broken packages"
 msgstr "Ось перелік зламаних пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2323
+#: ../../libraries/entropy/server/interfaces/main.py:2326
 #: ../../libraries/entropy/client/interfaces/package.py:200
 #: ../../libraries/entropy/client/interfaces/package.py:462
 msgid "Mirror"
 msgstr "Дзеркало"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2342
-#: ../../server/server_reagent.py:834
+#: ../../libraries/entropy/server/interfaces/main.py:2345
+#: ../../server/server_reagent.py:847
 msgid "Statistics"
 msgstr "Статистика"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2351
+#: ../../libraries/entropy/server/interfaces/main.py:2354
 msgid "Number of checked packages"
 msgstr "Кількість перевірених пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2361
+#: ../../libraries/entropy/server/interfaces/main.py:2364
 msgid "Number of healthy packages"
 msgstr "Число нормальних пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2371
+#: ../../libraries/entropy/server/interfaces/main.py:2374
 msgid "Number of broken packages"
 msgstr "Число зламаних пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2388
-#: ../../libraries/entropy/server/interfaces/main.py:2551
+#: ../../libraries/entropy/server/interfaces/main.py:2391
+#: ../../libraries/entropy/server/interfaces/main.py:2554
 #: ../../libraries/entropy/client/interfaces/repository.py:998
 msgid "local"
 msgstr "локально"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2427
+#: ../../libraries/entropy/server/interfaces/main.py:2430
 msgid "checking status of"
 msgstr "перевірка статусу для"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2449
+#: ../../libraries/entropy/server/interfaces/main.py:2452
 msgid "is corrupted, stored checksum"
 msgstr "зіпсований, збережена контрольна сума"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2486
+#: ../../libraries/entropy/server/interfaces/main.py:2489
 msgid "checked packages"
 msgstr "перевірені пакунки"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2496
+#: ../../libraries/entropy/server/interfaces/main.py:2499
 msgid "healthy packages"
 msgstr "нормальні пакунки"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2506
-#: ../../libraries/entropy/server/interfaces/main.py:2689
+#: ../../libraries/entropy/server/interfaces/main.py:2509
+#: ../../libraries/entropy/server/interfaces/main.py:2692
 msgid "broken packages"
 msgstr "зламані пакунки"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2516
-#: ../../libraries/entropy/server/interfaces/main.py:2699
+#: ../../libraries/entropy/server/interfaces/main.py:2519
+#: ../../libraries/entropy/server/interfaces/main.py:2702
 msgid "downloaded packages"
 msgstr "завантажені пакунки"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2526
-#: ../../libraries/entropy/server/interfaces/main.py:2709
+#: ../../libraries/entropy/server/interfaces/main.py:2529
+#: ../../libraries/entropy/server/interfaces/main.py:2712
 msgid "failed downloads"
 msgstr "невдалі завантаження"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2552
+#: ../../libraries/entropy/server/interfaces/main.py:2555
 #, fuzzy
 msgid "GPG signing packages for repository"
 msgstr "використання пакунків у репозиторії"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2564
+#: ../../libraries/entropy/server/interfaces/main.py:2567
 #, fuzzy
 msgid "All the missing packages in repository will be downloaded."
 msgstr "Всі пакунки в репозиторії Entropy Packages будуть перевірені."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2580
+#: ../../libraries/entropy/server/interfaces/main.py:2583
 #, fuzzy
 msgid "GnuPG not available"
 msgstr "недоступний"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2598
+#: ../../libraries/entropy/server/interfaces/main.py:2601
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1440
 msgid "Keys for repository are expired"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2606
+#: ../../libraries/entropy/server/interfaces/main.py:2609
 #, fuzzy
 msgid "Keys not available for"
 msgstr "недоступний"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2637
+#: ../../libraries/entropy/server/interfaces/main.py:2640
 #, fuzzy
 msgid "signing package"
 msgstr "Об'єднання пакунку"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2651
+#: ../../libraries/entropy/server/interfaces/main.py:2654
 #, fuzzy
 msgid "Unknown error signing package"
 msgstr "Об'єднання пакунку"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2679
+#: ../../libraries/entropy/server/interfaces/main.py:2682
 #, fuzzy
 msgid "signed packages"
 msgstr "замаскований пакунок"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2742
+#: ../../libraries/entropy/server/interfaces/main.py:2745
 msgid "available"
 msgstr "наявно"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2754
+#: ../../libraries/entropy/server/interfaces/main.py:2757
 msgid "upload/ignored"
 msgstr "завантажено/пропущено"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2765
-#: ../../libraries/entropy/server/interfaces/main.py:3532
+#: ../../libraries/entropy/server/interfaces/main.py:2768
+#: ../../libraries/entropy/server/interfaces/main.py:3535
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1918
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2304
 msgid "download"
 msgstr "завантажити"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2789
+#: ../../libraries/entropy/server/interfaces/main.py:2792
 msgid "Starting to download missing files"
 msgstr "Початок завантаження відсутніх файлів"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2800
+#: ../../libraries/entropy/server/interfaces/main.py:2803
 msgid "Searching missing/broken files on another mirror"
 msgstr "Пошук відсутніх/зламаних файлів на іншому дзеркалі"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2821
+#: ../../libraries/entropy/server/interfaces/main.py:2824
 msgid "Binary packages downloaded successfully."
 msgstr "Бінарні пакунки вдало завантажено."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2830
+#: ../../libraries/entropy/server/interfaces/main.py:2833
 msgid "These are the packages that cannot be found online"
 msgstr "А ось ці пакунки не можуть бути знайдені в інтернеті"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2846
+#: ../../libraries/entropy/server/interfaces/main.py:2849
 msgid "They won't be checked"
 msgstr "Вони не будуть перевірені"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2863
+#: ../../libraries/entropy/server/interfaces/main.py:2866
 msgid "Please setup your branch to"
 msgstr "Встановіть Вашу гілку на"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2865
+#: ../../libraries/entropy/server/interfaces/main.py:2868
 msgid "and retry"
 msgstr "і спробуйте"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2875
+#: ../../libraries/entropy/server/interfaces/main.py:2878
 msgid "Copying database (if not exists)"
 msgstr "Копіювання бази даних (якщо копії ще не існує)"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2907
+#: ../../libraries/entropy/server/interfaces/main.py:2910
 msgid "Switching packages"
 msgstr "Перемикання пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2942
+#: ../../libraries/entropy/server/interfaces/main.py:2945
 msgid "Ignoring"
 msgstr "Пропускаємо"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2944
+#: ../../libraries/entropy/server/interfaces/main.py:2947
 msgid "already in branch"
 msgstr "вже на гілці"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2978
+#: ../../libraries/entropy/server/interfaces/main.py:2981
 msgid "migration loop completed"
 msgstr "міграційний цикл завершений"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2998
+#: ../../libraries/entropy/server/interfaces/main.py:3001
 msgid "Running orphaned SPM packages test"
 msgstr "Виконання тесту осиротілих пакунків SPM"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3013
+#: ../../libraries/entropy/server/interfaces/main.py:3016
 msgid "Scanning package"
 msgstr "Сканування пакунку"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3031
+#: ../../libraries/entropy/server/interfaces/main.py:3034
 msgid "not found anymore"
 msgstr "більше нічого не знайдено"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3043
-#: ../../libraries/entropy/server/interfaces/main.py:3275
+#: ../../libraries/entropy/server/interfaces/main.py:3046
+#: ../../libraries/entropy/server/interfaces/main.py:3278
 msgid "Packages string"
 msgstr "Рядок пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3073
+#: ../../libraries/entropy/server/interfaces/main.py:3076
 msgid "Checking"
 msgstr "Перевірка"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3103
+#: ../../libraries/entropy/server/interfaces/main.py:3106
 msgid "Running dependencies test"
 msgstr "Виконуємо тест залежностей"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3132
+#: ../../libraries/entropy/server/interfaces/main.py:3135
 #: ../../client/text_ui.py:2054
 msgid "These are the dependencies not found"
 msgstr "Є незнайдені залежності"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3139
+#: ../../libraries/entropy/server/interfaces/main.py:3142
 #: ../../client/text_ui.py:2058
 msgid "Needed by"
 msgstr "Необхідно для"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3157
+#: ../../libraries/entropy/server/interfaces/main.py:3160
 msgid "by repo"
 msgstr "для репозиторію"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3167
+#: ../../libraries/entropy/server/interfaces/main.py:3170
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "Всі залежності задоволені. З чим і вітаю."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3185
+#: ../../libraries/entropy/server/interfaces/main.py:3188
 msgid "Broken and matched packages list"
 msgstr "Перелік зламаних та підходящих пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3187
+#: ../../libraries/entropy/server/interfaces/main.py:3190
 #: ../../libraries/entropy/qa.py:490
 msgid "Dumping results into these files"
 msgstr "Запис результатів у ці файли"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3217
+#: ../../libraries/entropy/server/interfaces/main.py:3220
 #: ../../client/text_ui.py:2110
 msgid "System is healthy"
 msgstr "З системою все гаразд"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3226
+#: ../../libraries/entropy/server/interfaces/main.py:3229
 msgid "Matching libraries with Spm, please wait"
 msgstr "Порівняння бібліотек з SPM, почекайте"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3240
+#: ../../libraries/entropy/server/interfaces/main.py:3243
 msgid "These are the matched packages"
 msgstr "Ось підходящі пакунки"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3284
+#: ../../libraries/entropy/server/interfaces/main.py:3287
 msgid "No matched packages"
 msgstr "Немає підходящих пакунків"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3331
+#: ../../libraries/entropy/server/interfaces/main.py:3334
 #: ../../libraries/entropy/server/interfaces/main.py:4703
 msgid "repository not configured"
 msgstr "репозиторій не налаштовано"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3358
+#: ../../libraries/entropy/server/interfaces/main.py:3361
 msgid "Your default repository is not initialized"
 msgstr "Ваш репозиторій за замовчуванням не ініціалізовано"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3370
+#: ../../libraries/entropy/server/interfaces/main.py:3373
 msgid "Do you want to initialize your default repository ?"
 msgstr "Ви бажаєте ініціалізувати Ваш репозиторій за замовчуванням?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3373
+#: ../../libraries/entropy/server/interfaces/main.py:3376
 msgid "Continuing with an uninitialized repository"
 msgstr "Продовжуємо з неініціалізованим репозиторієм"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3489
+#: ../../libraries/entropy/server/interfaces/main.py:3492
 msgid "Entropy database is already locked by you :-)"
 msgstr "База даних Entropy вже заблокована тобою :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy/server/interfaces/main.py:3496
+#: ../../libraries/entropy/server/interfaces/main.py:3499
 msgid "Locking and Syncing Entropy database"
 msgstr "Блокування та синхронізація бази даних Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3510
+#: ../../libraries/entropy/server/interfaces/main.py:3513
 #: ../../server/server_activator.py:397
 msgid "Mirrors status table"
 msgstr "Таблиця додаткових репозиторіїв"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3519
 #: ../../libraries/entropy/server/interfaces/main.py:3522
+#: ../../libraries/entropy/server/interfaces/main.py:3525
 #: ../../server/server_activator.py:403 ../../server/server_activator.py:407
 msgid "Unlocked"
 msgstr "Розблоковано"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3521
 #: ../../libraries/entropy/server/interfaces/main.py:3524
+#: ../../libraries/entropy/server/interfaces/main.py:3527
 #: ../../server/server_activator.py:401 ../../server/server_activator.py:405
 msgid "Locked"
 msgstr "Заблоковано"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3530
-#: ../../libraries/entropy/server/interfaces/main.py:3728
+#: ../../libraries/entropy/server/interfaces/main.py:3533
+#: ../../libraries/entropy/server/interfaces/main.py:3731
 msgid "database"
 msgstr "база даних"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3541
+#: ../../libraries/entropy/server/interfaces/main.py:3544
 msgid "cannot lock mirror"
 msgstr "неможливо заблокувати дзеркало"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3715
+#: ../../libraries/entropy/server/interfaces/main.py:3718
 msgid "Entropy database is corrupted!"
 msgstr "База даних Entropy пошкоджена!"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3729
+#: ../../libraries/entropy/server/interfaces/main.py:3732
 msgid "indexing database"
 msgstr "індексування бази даних"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3777
+#: ../../libraries/entropy/server/interfaces/main.py:3780
 msgid "Initializing an empty database"
 msgstr "Ініціювання порожньої бази даних"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3790
+#: ../../libraries/entropy/server/interfaces/main.py:3793
 msgid "Entropy database file"
 msgstr "Файл бази даних Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3792
+#: ../../libraries/entropy/server/interfaces/main.py:3795
 msgid "successfully initialized"
 msgstr "вдало ініціалізований"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3887
-#: ../../libraries/entropy/server/interfaces/main.py:4042
+#: ../../libraries/entropy/server/interfaces/main.py:3890
+#: ../../libraries/entropy/server/interfaces/main.py:4045
 msgid "adding package"
 msgstr "додавання пакунку"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3959
+#: ../../libraries/entropy/server/interfaces/main.py:3962
 msgid "added package"
 msgstr "додано пакунок"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3961
+#: ../../libraries/entropy/server/interfaces/main.py:3964
 msgid "rev"
 msgstr "версія"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3974
+#: ../../libraries/entropy/server/interfaces/main.py:3977
 msgid "manual dependencies for"
 msgstr "ручні залежності для"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4065
+#: ../../libraries/entropy/server/interfaces/main.py:4068
 msgid "Exception caught, closing tasks"
 msgstr "Виявлено виняток, закриваємо завдання"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4189
+#: ../../libraries/entropy/server/interfaces/main.py:4192
 msgid "server-side repository"
 msgstr "репозиторій сервера"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4191
+#: ../../libraries/entropy/server/interfaces/main.py:4194
 msgid "community repository"
 msgstr "репозиторій співтовариства"
 
 #. ..on repository: <repository_name>
-#: ../../libraries/entropy/server/interfaces/main.py:4193
+#: ../../libraries/entropy/server/interfaces/main.py:4196
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Сесія Entropy Server Interface в репозиторії"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4198
+#: ../../libraries/entropy/server/interfaces/main.py:4201
 msgid "current branch"
 msgstr "поточна гілка"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4200
-#: ../../server/server_reagent.py:214
+#: ../../libraries/entropy/server/interfaces/main.py:4203
+#: ../../server/server_reagent.py:217
 msgid "type"
 msgstr "тип"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4210
+#: ../../libraries/entropy/server/interfaces/main.py:4213
 msgid "Currently configured repositories"
 msgstr "Вірно налаштовані репозиторії"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4247
+#: ../../libraries/entropy/server/interfaces/main.py:4250
 #, fuzzy
 msgid "GPG key expired"
 msgstr "протермінований"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4249
+#: ../../libraries/entropy/server/interfaces/main.py:4252
 #, fuzzy
 msgid "please frigging fix"
 msgstr "будь-ласка, виправте (пофіксіть)"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4260
+#: ../../libraries/entropy/server/interfaces/main.py:4263
 msgid "GPG got unexpected error"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:4262
+#: ../../libraries/entropy/server/interfaces/main.py:4265
 msgid "skipping"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:4278
-#: ../../libraries/entropy/server/interfaces/main.py:4291
+#: ../../libraries/entropy/server/interfaces/main.py:4281
+#: ../../libraries/entropy/server/interfaces/main.py:4294
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2157
 msgid "config files"
 msgstr "файли налаштуваннь"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:4279
+#: ../../libraries/entropy/server/interfaces/main.py:4282
 msgid "checking system"
 msgstr "перевірка системи"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:4292
+#: ../../libraries/entropy/server/interfaces/main.py:4295
 msgid "there are configuration files not updated yet"
 msgstr "є ще не оновлені файли налаштуваннь"
 
@@ -1576,7 +1576,7 @@ msgid "socket error"
 msgstr "помилка сокета"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2997
-#: ../../server/server_reagent.py:471
+#: ../../server/server_reagent.py:484
 msgid "on"
 msgstr "на"
 
@@ -1726,10 +1726,10 @@ msgid "Please login against"
 msgstr "Будь ласка, залогіньтесь знову"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:147
-#: ../../server/server_reagent.py:101 ../../server/server_reagent.py:105
-#: ../../server/server_reagent.py:118 ../../server/server_reagent.py:122
-#: ../../server/server_reagent.py:161 ../../server/server_reagent.py:191
-#: ../../server/server_reagent.py:334
+#: ../../server/server_reagent.py:104 ../../server/server_reagent.py:108
+#: ../../server/server_reagent.py:121 ../../server/server_reagent.py:125
+#: ../../server/server_reagent.py:164 ../../server/server_reagent.py:194
+#: ../../server/server_reagent.py:337
 msgid "repository"
 msgstr "репозиторій"
 
@@ -1761,9 +1761,9 @@ msgstr "Вхід вдалий. Бажаєте зберегти ці параме
 #: ../../client/text_ugc.py:412 ../../client/text_ugc.py:488
 #: ../../client/text_ugc.py:507 ../../client/text_ui.py:442
 #: ../../client/text_ui.py:468 ../../server/server_activator.py:317
-#: ../../server/server_reagent.py:695 ../../server/server_reagent.py:696
-#: ../../server/server_reagent.py:721 ../../server/server_reagent.py:734
-#: ../../server/server_reagent.py:735 ../../server/server_reagent.py:750
+#: ../../server/server_reagent.py:708 ../../server/server_reagent.py:709
+#: ../../server/server_reagent.py:734 ../../server/server_reagent.py:747
+#: ../../server/server_reagent.py:748 ../../server/server_reagent.py:763
 #: ../../sulfur/src/sulfur/dialogs.py:1363
 #: ../../sulfur/src/sulfur/dialogs.py:1830
 #: ../../sulfur/src/sulfur/entropyapi.py:378
@@ -1972,7 +1972,7 @@ msgid "Build only"
 msgstr "Тільки зібрати"
 
 #: ../../libraries/entropy/client/services/system/methods.py:187
-#: ../../server/server_reagent.py:217
+#: ../../server/server_reagent.py:220
 msgid "No dependencies"
 msgstr "Без залежностей"
 
@@ -2237,11 +2237,11 @@ msgstr "Системна помилка"
 msgid "Cannot automerge file"
 msgstr "Неможливо автоматично об'єднати файл"
 
-#: ../../libraries/entropy/client/interfaces/client.py:783
+#: ../../libraries/entropy/client/interfaces/client.py:792
 msgid "forcing packages metadata update"
 msgstr "примусове оновлення мета-інформації пакунків"
 
-#: ../../libraries/entropy/client/interfaces/client.py:792
+#: ../../libraries/entropy/client/interfaces/client.py:801
 msgid "Updating system database using repository"
 msgstr "Оновлення системної бази даних, використовуючи ID репозиторію"
 
@@ -2258,19 +2258,19 @@ msgstr "Сортування залежностей"
 msgid "Calculating inverse dependencies for"
 msgstr "Підрахунок протилежних залежностей для"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1405
+#: ../../libraries/entropy/client/interfaces/dep.py:1410
 msgid "Calculating available packages for"
 msgstr "Підрахунок наявних пакунків для"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1599
+#: ../../libraries/entropy/client/interfaces/dep.py:1604
 #, fuzzy
 msgid "Calculating updates"
 msgstr "Підрахунок оновлень ..."
 
 #: ../../libraries/entropy/client/interfaces/methods.py:71
 #: ../../libraries/entropy/client/interfaces/methods.py:91
-#: ../../client/text_ui.py:446 ../../server/server_reagent.py:108
-#: ../../server/server_reagent.py:125 ../../sulfur/src/sulfur/__init__.py:955
+#: ../../client/text_ui.py:446 ../../server/server_reagent.py:111
+#: ../../server/server_reagent.py:128 ../../sulfur/src/sulfur/__init__.py:955
 #: ../../sulfur/src/sulfur/views.py:2752
 msgid "Repository"
 msgstr "Репозиторій"
@@ -2423,7 +2423,7 @@ msgstr "невірна контрольна сума"
 
 #: ../../libraries/entropy/client/interfaces/package.py:279
 #: ../../libraries/entropy/client/interfaces/package.py:551
-#: ../../server/server_reagent.py:113 ../../server/server_reagent.py:130
+#: ../../server/server_reagent.py:116 ../../server/server_reagent.py:133
 msgid "not found"
 msgstr "не знайдено"
 
@@ -2745,7 +2745,7 @@ msgstr "Мульти-завантаження"
 #: ../../libraries/entropy/client/interfaces/package.py:2808
 #: ../../libraries/entropy/client/interfaces/package.py:2827
 #: ../../client/text_query.py:750 ../../client/text_query.py:783
-#: ../../client/text_ui.py:994 ../../server/server_reagent.py:480
+#: ../../client/text_ui.py:994 ../../server/server_reagent.py:493
 msgid "packages"
 msgstr "пакунки"
 
@@ -3934,7 +3934,7 @@ msgstr "видалити один або більше пакунків"
 msgid "configure one or more installed packages"
 msgstr "налаштувати один або більше пакунків"
 
-#: ../../client/equo.py:163 ../../server/reagent.py:120
+#: ../../client/equo.py:163 ../../server/reagent.py:122
 msgid "look for unsatisfied dependencies"
 msgstr "шукати незадоволені залежності"
 
@@ -3946,11 +3946,11 @@ msgstr "шукати пакунки, що не використовуються 
 msgid "sort packages by disk size"
 msgstr "сортувати пакунки за розміром на диску"
 
-#: ../../client/equo.py:172 ../../server/reagent.py:121
+#: ../../client/equo.py:172 ../../server/reagent.py:123
 msgid "look for missing libraries"
 msgstr "шукати зіпсовані бібліотеки"
 
-#: ../../client/equo.py:173 ../../server/reagent.py:122
+#: ../../client/equo.py:173 ../../server/reagent.py:124
 msgid "dump results to files"
 msgstr "записати результати у файли"
 
@@ -4302,11 +4302,11 @@ msgstr "змінити пакунки старих гілок на пакунк�
 msgid "remove the provided atoms from the current repository database"
 msgstr "видалити дані атоми з поточної бази даних репозиторію"
 
-#: ../../client/equo.py:281 ../../server/reagent.py:83
+#: ../../client/equo.py:281 ../../server/reagent.py:84
 msgid "remove the provided injected atoms (all if no atom specified)"
 msgstr "видалити дані завантажені атоми (всі, якщо не обрано жодногоатома)"
 
-#: ../../client/equo.py:282 ../../server/reagent.py:84
+#: ../../client/equo.py:282 ../../server/reagent.py:85
 msgid "create an empty repository database in the provided path"
 msgstr "створити порожню базу даних репозиторію за вказаним шляхом"
 
@@ -4314,23 +4314,23 @@ msgstr "створити порожню базу даних репозиторі
 msgid "switch to the specified branch the provided atoms (or world)"
 msgstr "перемкнути на вказану гілку дані атоми (або всі)"
 
-#: ../../client/equo.py:284 ../../server/reagent.py:86
+#: ../../client/equo.py:284 ../../server/reagent.py:87
 msgid "verify remote integrity of the provided atoms (or world)"
 msgstr "віддалено перевірити цілісність даних атомів (або всіх)"
 
-#: ../../client/equo.py:285 ../../server/reagent.py:87
+#: ../../client/equo.py:285 ../../server/reagent.py:88
 msgid "backup current repository database"
 msgstr "створити резервну копію поточної бази даних репозиторію"
 
-#: ../../client/equo.py:286 ../../server/reagent.py:88
+#: ../../client/equo.py:286 ../../server/reagent.py:89
 msgid "restore a previously backed-up repository database"
 msgstr "відновити попередньо створену резервну копію бази даних репозиторію"
 
-#: ../../client/equo.py:289 ../../server/reagent.py:89
+#: ../../client/equo.py:289 ../../server/reagent.py:90
 msgid "enable the specified repository"
 msgstr "увімкнути обраний репозиторій"
 
-#: ../../client/equo.py:290 ../../server/reagent.py:90
+#: ../../client/equo.py:290 ../../server/reagent.py:91
 msgid "disable the specified repository"
 msgstr "вимкнути обраний репозиторій"
 
@@ -4338,7 +4338,7 @@ msgstr "вимкнути обраний репозиторій"
 msgid "show the current Server Interface status"
 msgstr "відобразити поточний статус Серверного Інтерфейсу"
 
-#: ../../client/equo.py:292 ../../server/reagent.py:91
+#: ../../client/equo.py:292 ../../server/reagent.py:92
 #, fuzzy
 msgid "handle packages dependencies"
 msgstr "власноруч керувати залежностями пакунків"
@@ -4347,56 +4347,56 @@ msgstr "власноруч керувати залежностями пакун�
 msgid "clone a package inside a repository assigning it an arbitrary tag"
 msgstr "клонувати пакунок всередині репозиторію, описуючи його довільним тегом"
 
-#: ../../client/equo.py:294 ../../server/reagent.py:93
+#: ../../client/equo.py:294 ../../server/reagent.py:94
 msgid "move packages from a repository to another"
 msgstr "перемістити пакунки в інший репозиторій"
 
 #: ../../client/equo.py:295 ../../client/equo.py:297
-#: ../../server/reagent.py:94 ../../server/reagent.py:96
+#: ../../server/reagent.py:95 ../../server/reagent.py:97
 msgid "pulls dependencies in"
 msgstr "встановити залежності"
 
-#: ../../client/equo.py:296 ../../server/reagent.py:95
+#: ../../client/equo.py:296 ../../server/reagent.py:96
 msgid "copy packages from a repository to another"
 msgstr "копіювати пакунки в інший репозиторій"
 
-#: ../../client/equo.py:298 ../../server/reagent.py:97
+#: ../../client/equo.py:298 ../../server/reagent.py:98
 msgid "set the default repository"
 msgstr "встановити репозиторій за замовчуванням"
 
-#: ../../client/equo.py:302 ../../server/reagent.py:99
+#: ../../client/equo.py:302 ../../server/reagent.py:100
 msgid "manage repository digital signatures (OpenGPG)"
 msgstr ""
 
-#: ../../client/equo.py:303 ../../server/reagent.py:100
+#: ../../client/equo.py:303 ../../server/reagent.py:101
 #, fuzzy
 msgid "create keypair for repositories and sign packages"
 msgstr "Спробуйте оновити репозиторії і повторіть спробу"
 
-#: ../../client/equo.py:304 ../../server/reagent.py:101
+#: ../../client/equo.py:304 ../../server/reagent.py:102
 msgid "delete keypair (and digital signatures) of repository"
 msgstr ""
 
-#: ../../client/equo.py:305 ../../server/reagent.py:102
+#: ../../client/equo.py:305 ../../server/reagent.py:103
 #, fuzzy
 msgid "show currently configured keys information for given repositories"
 msgstr "Вірно налаштовані репозиторії"
 
-#: ../../client/equo.py:306 ../../server/reagent.py:103
+#: ../../client/equo.py:306 ../../server/reagent.py:104
 msgid "sign (or re-sign) packages in repository using currently set keypair"
 msgstr ""
 
-#: ../../client/equo.py:307 ../../server/reagent.py:104
+#: ../../client/equo.py:307 ../../server/reagent.py:105
 #, fuzzy
 msgid "import keypair, bind to given repository"
 msgstr "відсутня в списках в поточній базі даних репозиторіїв!!"
 
-#: ../../client/equo.py:308 ../../server/reagent.py:105
+#: ../../client/equo.py:308 ../../server/reagent.py:106
 #, fuzzy
 msgid "export public key of given repository"
 msgstr "Сортувати за репозиторієм"
 
-#: ../../client/equo.py:309 ../../server/reagent.py:106
+#: ../../client/equo.py:309 ../../server/reagent.py:107
 #, fuzzy
 msgid "export private key of given repository"
 msgstr "Репозиторій призначення"
@@ -4434,44 +4434,44 @@ msgstr "відобразити пакунки з певними тегами"
 msgid "show installed packages owning the specified revisions"
 msgstr "відобразити пакунки з певними тегами"
 
-#: ../../client/equo.py:331 ../../server/reagent.py:108
+#: ../../client/equo.py:331 ../../server/reagent.py:109
 msgid "source package manager functions"
 msgstr "функції пакункового менеджера джерела"
 
-#: ../../client/equo.py:332 ../../server/reagent.py:109
+#: ../../client/equo.py:332 ../../server/reagent.py:110
 msgid "compilation function"
 msgstr "функція компіляції"
 
-#: ../../client/equo.py:333 ../../server/reagent.py:110
+#: ../../client/equo.py:333 ../../server/reagent.py:111
 msgid "compile packages belonging to the provided categories"
 msgstr "компілювати пакунки, що стосуються даних категорій"
 
 #: ../../client/equo.py:334 ../../client/equo.py:337
-#: ../../server/reagent.py:111 ../../server/reagent.py:114
+#: ../../server/reagent.py:112 ../../server/reagent.py:115
 msgid "just list packages"
 msgstr "відобразити лише перелік пакунків"
 
-#: ../../client/equo.py:335 ../../server/reagent.py:112
+#: ../../client/equo.py:335 ../../server/reagent.py:113
 msgid "do not pull old package slots"
 msgstr "не заповнювати слоти старих пакунків"
 
-#: ../../client/equo.py:336 ../../server/reagent.py:113
+#: ../../client/equo.py:336 ../../server/reagent.py:114
 msgid "compile packages in provided package set names"
 msgstr "компілювати пакунки з іменами даного набору пакунків"
 
-#: ../../client/equo.py:338 ../../server/reagent.py:115
+#: ../../client/equo.py:338 ../../server/reagent.py:116
 msgid "rebuild everything"
 msgstr "перебудувати всі"
 
-#: ../../client/equo.py:339 ../../server/reagent.py:116
+#: ../../client/equo.py:339 ../../server/reagent.py:117
 msgid "run database update if all went fine"
 msgstr "виконати оновлення бази даних, якщо все пройшло добре"
 
-#: ../../client/equo.py:340 ../../server/reagent.py:117
+#: ../../client/equo.py:340 ../../server/reagent.py:118
 msgid "run mirror sync if all went fine"
 msgstr "виконати синхронізацію з дзеркалом, якщо все гаразд"
 
-#: ../../client/equo.py:341 ../../server/reagent.py:118
+#: ../../client/equo.py:341
 msgid "scan orphaned packages on SPM"
 msgstr "шукати осиротілі пакунки в SPM"
 
@@ -4495,11 +4495,11 @@ msgstr "прочитати актуальну дошку повідомлень"
 msgid "look for unsatisfied dependencies across community repositories"
 msgstr "шукати недотримані залежності в репозиторіях співтовариства"
 
-#: ../../client/equo.py:353 ../../server/reagent.py:123
+#: ../../client/equo.py:353 ../../server/reagent.py:125
 msgid "verify the integrity of local package files"
 msgstr "перевірити цілісність файлів локального пакунку"
 
-#: ../../client/equo.py:354 ../../server/reagent.py:124
+#: ../../client/equo.py:354 ../../server/reagent.py:126
 #, fuzzy
 msgid "regenerate the reverse dependencies metadata"
 msgstr "відновити таблицю залежностей"
@@ -4744,8 +4744,8 @@ msgid "Type a number."
 msgstr "Введіть число."
 
 #: ../../client/text_configuration.py:108
-#: ../../client/text_configuration.py:136 ../../server/server_reagent.py:112
-#: ../../server/server_reagent.py:129
+#: ../../client/text_configuration.py:136 ../../server/server_reagent.py:115
+#: ../../server/server_reagent.py:132
 msgid "Configuration file"
 msgstr "Файл налаштування"
 
@@ -4875,7 +4875,7 @@ msgstr "Хибна команда"
 #: ../../client/text_query.py:64 ../../client/text_repositories.py:40
 #: ../../client/text_smart.py:42 ../../client/text_ugc.py:32
 #: ../../client/text_ui.py:122 ../../server/activator.py:146
-#: ../../server/reagent.py:244
+#: ../../server/reagent.py:246
 msgid "Wrong parameters"
 msgstr "Хибні параметри"
 
@@ -4942,7 +4942,7 @@ msgid "packages already pulled in as dependency in upper levels (circularity)"
 msgstr ""
 
 #: ../../client/text_query.py:301 ../../client/text_query.py:1517
-#: ../../client/text_query.py:1518 ../../server/server_reagent.py:201
+#: ../../client/text_query.py:1518 ../../server/server_reagent.py:204
 #: ../../sulfur/src/sulfur/dialogs.py:506
 #: ../../sulfur/src/sulfur/dialogs.py:602
 #: ../../sulfur/src/sulfur/dialogs.py:605
@@ -5022,7 +5022,7 @@ msgid "Eclass Search"
 msgstr "Пошук Eclass"
 
 #: ../../client/text_query.py:815 ../../client/text_query.py:1533
-#: ../../server/server_reagent.py:325 ../../sulfur/src/sulfur/dialogs.py:1485
+#: ../../server/server_reagent.py:328 ../../sulfur/src/sulfur/dialogs.py:1485
 #: ../../sulfur/src/sulfur/dialogs.py:2363
 msgid "Package"
 msgstr "Пакунок"
@@ -5090,8 +5090,8 @@ msgstr "Пошук переміщених"
 #: ../../client/text_query.py:1029 ../../client/text_ui.py:907
 #: ../../client/text_ui.py:1050 ../../client/text_ui.py:1138
 #: ../../client/text_ui.py:1592 ../../client/text_ui.py:1676
-#: ../../client/text_ui.py:1767 ../../server/server_reagent.py:366
-#: ../../server/server_reagent.py:412
+#: ../../client/text_ui.py:1767 ../../server/server_reagent.py:375
+#: ../../server/server_reagent.py:425
 msgid "No packages found"
 msgstr "Пакунків не знайдено"
 
@@ -5223,7 +5223,7 @@ msgstr "Завантаження"
 msgid "Checksum"
 msgstr "Контрольна сума"
 
-#: ../../client/text_query.py:1598 ../../server/server_reagent.py:274
+#: ../../client/text_query.py:1598 ../../server/server_reagent.py:277
 #: ../../sulfur/src/sulfur/dialogs.py:1136
 msgid "Dependencies"
 msgstr "Залежності"
@@ -5420,15 +5420,15 @@ msgstr "Очищено 'під нуль' базу даних системи"
 msgid "No System Databases found"
 msgstr "Не знайдено баз даних системи"
 
-#: ../../client/text_rescue.py:149 ../../server/server_reagent.py:538
+#: ../../client/text_rescue.py:149 ../../server/server_reagent.py:551
 msgid "No backed up databases found"
 msgstr "Не знайдено резервних копій баз даних"
 
-#: ../../client/text_rescue.py:164 ../../server/server_reagent.py:553
+#: ../../client/text_rescue.py:164 ../../server/server_reagent.py:566
 msgid "Select the database you want to restore"
 msgstr "оберіть базу даних, котру бажаєте відновити"
 
-#: ../../client/text_rescue.py:170 ../../server/server_reagent.py:559
+#: ../../client/text_rescue.py:170 ../../server/server_reagent.py:572
 msgid "Entropy installed packages database restore tool"
 msgstr "Інструмент відновлення бази даних пакунків Entropy"
 
@@ -6137,7 +6137,7 @@ msgstr "Поточна оцінка пакунку"
 #: ../../client/text_ui.py:229 ../../client/text_ui.py:236
 #: ../../client/text_ui.py:244 ../../client/text_ui.py:252
 #: ../../client/text_ui.py:1153 ../../client/text_ui.py:1822
-#: ../../server/server_reagent.py:999
+#: ../../server/server_reagent.py:1033
 msgid "Nothing to do"
 msgstr "Більше нічого робити"
 
@@ -6280,8 +6280,8 @@ msgstr "зламаний"
 msgid "atom"
 msgstr "атом"
 
-#: ../../client/text_ui.py:630 ../../server/server_reagent.py:160
-#: ../../server/server_reagent.py:190 ../../server/server_reagent.py:333
+#: ../../client/text_ui.py:630 ../../server/server_reagent.py:163
+#: ../../server/server_reagent.py:193 ../../server/server_reagent.py:336
 msgid "in"
 msgstr "в"
 
@@ -6558,7 +6558,7 @@ msgstr "Видалення заборонено"
 msgid "Would you like to calculate dependencies ?"
 msgstr "Чи бажаєте підрахувати залежності?"
 
-#: ../../client/text_ui.py:1830 ../../server/server_reagent.py:732
+#: ../../client/text_ui.py:1830 ../../server/server_reagent.py:745
 msgid "Would you like to remove them now ?"
 msgstr "Бажаєте видалити їх зараз ?"
 
@@ -6645,15 +6645,30 @@ msgstr "пошукайте в базах даних репозиторію"
 msgid "match package dependency inside the default repository database"
 msgstr "шукати пакунки в базі даних репозиторію за замовчуванням"
 
-#: ../../server/reagent.py:85
+#: ../../server/reagent.py:83
+#, fuzzy
+msgid "do not include reverse dependencies"
+msgstr "Неможливо знайти необхідні залежності"
+
+#: ../../server/reagent.py:86
 msgid "switch to the specified branch the repository"
 msgstr "перемкнути репозиторій на обрану гілку"
 
-#: ../../server/reagent.py:92
+#: ../../server/reagent.py:93
 msgid "clone a package assigning it an arbitrary tag"
 msgstr "клонувати пакунок з присвоєнням йому довільного тега"
 
-#: ../../server/reagent.py:126
+#: ../../server/reagent.py:119
+#, fuzzy
+msgid "scan orphaned packages in SPM"
+msgstr "шукати осиротілі пакунки в SPM"
+
+#: ../../server/reagent.py:120
+#, fuzzy
+msgid "scan new packages available in SPM"
+msgstr "шукати осиротілі пакунки в SPM"
+
+#: ../../server/reagent.py:128
 msgid "remove downloaded packages and clean temp. directories)"
 msgstr "видалити завантажені пакунки і очистити тимчасові теки"
 
@@ -6760,248 +6775,254 @@ msgstr "Нічого не знайдено"
 msgid "no package specified."
 msgstr "жодного пакунку не обрано."
 
-#: ../../server/server_reagent.py:92
+#: ../../server/server_reagent.py:95
 msgid "No valid repositories specified."
 msgstr "Жодного коректного репозиторію не обрано."
 
-#: ../../server/server_reagent.py:96
+#: ../../server/server_reagent.py:99
 msgid "Invalid repositories specified."
 msgstr "обрані некоректні репозиторії."
 
-#: ../../server/server_reagent.py:100
+#: ../../server/server_reagent.py:103
 msgid "Enabling"
 msgstr "Увімкнення"
 
-#: ../../server/server_reagent.py:104 ../../sulfur/src/sulfur/dialogs.py:2129
+#: ../../server/server_reagent.py:107 ../../sulfur/src/sulfur/dialogs.py:2129
 msgid "Enabled"
 msgstr "Увімкнено"
 
-#: ../../server/server_reagent.py:109
+#: ../../server/server_reagent.py:112
 msgid "already enabled"
 msgstr "вже увімкнено"
 
-#: ../../server/server_reagent.py:117
+#: ../../server/server_reagent.py:120
 msgid "Disabling"
 msgstr "Вимкнення"
 
-#: ../../server/server_reagent.py:121
+#: ../../server/server_reagent.py:124
 msgid "Disabled"
 msgstr "Вимкнений"
 
-#: ../../server/server_reagent.py:126
+#: ../../server/server_reagent.py:129
 msgid "already disabled"
 msgstr "вже вимкнено"
 
-#: ../../server/server_reagent.py:159 ../../server/server_reagent.py:189
-#: ../../server/server_reagent.py:332 ../../server/server_reagent.py:635
+#: ../../server/server_reagent.py:162 ../../server/server_reagent.py:192
+#: ../../server/server_reagent.py:335 ../../server/server_reagent.py:648
 msgid "Cannot match"
 msgstr "Неможливо порівняти"
 
-#: ../../server/server_reagent.py:208
+#: ../../server/server_reagent.py:211
 msgid "package dependencies"
 msgstr "залежності пакунків"
 
-#: ../../server/server_reagent.py:249
+#: ../../server/server_reagent.py:252
 #, fuzzy
 msgid "Dependency type"
 msgstr "Тест залежностей"
 
-#: ../../server/server_reagent.py:253
+#: ../../server/server_reagent.py:256
 #, fuzzy
 msgid "Select a dependency type for"
 msgstr "ручні залежності для"
 
-#: ../../server/server_reagent.py:277
+#: ../../server/server_reagent.py:280
 #, fuzzy
 msgid "Dependencies editor"
 msgstr "Тест залежностей"
 
-#: ../../server/server_reagent.py:286
+#: ../../server/server_reagent.py:289
 #, fuzzy
 msgid "Confirm ?"
 msgstr "Підтвердити"
 
-#: ../../server/server_reagent.py:309
+#: ../../server/server_reagent.py:312
 #, fuzzy
 msgid "dependencies updated successfully"
 msgstr "залежності, що призначаються власноруч, вдало додані"
 
-#: ../../server/server_reagent.py:326
+#: ../../server/server_reagent.py:329
 msgid "already pulled in"
 msgstr "вже додані"
 
-#: ../../server/server_reagent.py:351
+#: ../../server/server_reagent.py:354
 msgid "Matching packages to remove"
 msgstr "Порівняння пакунків до видалення"
 
-#: ../../server/server_reagent.py:354 ../../server/server_reagent.py:458
-#: ../../server/server_reagent.py:499
+#: ../../server/server_reagent.py:357 ../../server/server_reagent.py:471
+#: ../../server/server_reagent.py:512
 msgid "Not enough parameters"
 msgstr "Недостатньо параметрів"
 
-#: ../../server/server_reagent.py:370 ../../server/server_reagent.py:727
+#: ../../server/server_reagent.py:379 ../../server/server_reagent.py:740
 msgid "These are the packages that would be removed from the database"
 msgstr "Ось пакунки, що будуть вилучені з бази даних"
 
-#: ../../server/server_reagent.py:382 ../../server/server_reagent.py:428
+#: ../../server/server_reagent.py:394 ../../server/server_reagent.py:441
 msgid "Removing selected packages"
 msgstr "Вилучення обраних пакунків"
 
-#: ../../server/server_reagent.py:385 ../../server/server_reagent.py:433
+#: ../../server/server_reagent.py:398 ../../server/server_reagent.py:446
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr "Пакунки вилучені. Щоб видалити бінарні пакунки, увімкніть активатор."
 
-#: ../../server/server_reagent.py:392
+#: ../../server/server_reagent.py:405
 msgid "Searching injected packages to remove"
 msgstr "Пошук додаткових пакунків до видалення"
 
-#: ../../server/server_reagent.py:417
+#: ../../server/server_reagent.py:430
 msgid "These are the injected packages pulled in for removal"
 msgstr "Тут введені пакунки, відібрані до видалення"
 
-#: ../../server/server_reagent.py:441
+#: ../../server/server_reagent.py:454
 #, fuzzy
 msgid "Entropy repository has been initialized"
 msgstr "Ваш репозиторій за замовчуванням не ініціалізовано"
 
-#: ../../server/server_reagent.py:448
+#: ../../server/server_reagent.py:461
 msgid "Creating empty database to"
 msgstr "Створення порожньої бази даних в"
 
-#: ../../server/server_reagent.py:450
+#: ../../server/server_reagent.py:463
 msgid "Cannot overwrite already existing file"
 msgstr "Неможливо перезаписати вже існуючий файл"
 
-#: ../../server/server_reagent.py:463
+#: ../../server/server_reagent.py:476
 msgid "Switching branch, be sure to have your packages in sync."
 msgstr "При перемиканні гілки, будьте певні, що ваші пакунки синхронізовані"
 
-#: ../../server/server_reagent.py:470
+#: ../../server/server_reagent.py:483
 msgid "Collecting packages that would be marked"
 msgstr "Підрахунок пакунків, що будуть позначені"
 
-#: ../../server/server_reagent.py:479
+#: ../../server/server_reagent.py:492
 msgid "These are the packages that would be marked"
 msgstr "Ось пакунки, що будуть позначені"
 
-#: ../../server/server_reagent.py:514
+#: ../../server/server_reagent.py:527
 msgid "Bumping Repository database"
 msgstr "Створюю резервну копію бази даних репозиторію"
 
-#: ../../server/server_reagent.py:651
+#: ../../server/server_reagent.py:664
 msgid "No valid packages to repackage."
 msgstr "Немає коректних пакунків до перепакування"
 
 #. normal scanning
-#: ../../server/server_reagent.py:656
+#: ../../server/server_reagent.py:669
 msgid "Scanning database for differences"
 msgstr "Сканую базу даних на відмінності"
 
-#: ../../server/server_reagent.py:676
+#: ../../server/server_reagent.py:689
 #, fuzzy
 msgid "Invalid atom"
 msgstr "Хибна дія."
 
-#: ../../server/server_reagent.py:683
+#: ../../server/server_reagent.py:696
 msgid "Zarro thinggz totoo"
 msgstr "І ще дещо зробити"
 
-#: ../../server/server_reagent.py:687
+#: ../../server/server_reagent.py:700
 msgid "These are the packages that would be changed to injected status"
 msgstr "Ось пакунки, статус яких має бути змінено на 'введено'"
 
-#: ../../server/server_reagent.py:693
+#: ../../server/server_reagent.py:706
 #, fuzzy
 msgid "Would you like to transform them now ?"
 msgstr "Бажаєте трансформувати їх зараз?"
 
-#: ../../server/server_reagent.py:700
+#: ../../server/server_reagent.py:713
 msgid "Transforming from database"
 msgstr "Трансформування з бази даних"
 
-#: ../../server/server_reagent.py:703
+#: ../../server/server_reagent.py:716
 msgid "Database transform complete"
 msgstr "Трансформація даних бази завершена"
 
-#: ../../server/server_reagent.py:712
+#: ../../server/server_reagent.py:725
 msgid "expired"
 msgstr "протермінований"
 
-#: ../../server/server_reagent.py:716
+#: ../../server/server_reagent.py:729
 msgid "So sweetheart, what packages do you want to remove ?"
 msgstr "Отже, зайчику, котрий набір пакунків ти бажаєш видалити"
 
-#: ../../server/server_reagent.py:720
+#: ../../server/server_reagent.py:733
 msgid "Remove this package?"
 msgstr "Видалити пакунки"
 
-#: ../../server/server_reagent.py:745
+#: ../../server/server_reagent.py:758
 msgid "So sweetheart, what packages do you want to add ?"
 msgstr "Отже, котику, котрий набір пакунків ти бажаєш додати"
 
-#: ../../server/server_reagent.py:749
+#: ../../server/server_reagent.py:762
 msgid "Add this package?"
 msgstr "Додати цей пакунок?"
 
-#: ../../server/server_reagent.py:756
+#: ../../server/server_reagent.py:769
 msgid "These are the packages that would be added/updated to the add list"
 msgstr "Ось пакунки, які слід додати/оновити до переліку додатків"
 
-#: ../../server/server_reagent.py:787
+#: ../../server/server_reagent.py:800
 #, fuzzy
 msgid "warning"
 msgstr "Обережно"
 
-#: ../../server/server_reagent.py:794
+#: ../../server/server_reagent.py:807
 msgid "Would you like to package them now ?"
 msgstr "Бажаєте запакувати їх зараз?"
 
-#: ../../server/server_reagent.py:795
+#: ../../server/server_reagent.py:808
 msgid "inside"
 msgstr "всередині"
 
 #. package them
-#: ../../server/server_reagent.py:807
+#: ../../server/server_reagent.py:820
 msgid "Compressing packages"
 msgstr "Стиснення пакунків"
 
-#: ../../server/server_reagent.py:816
+#: ../../server/server_reagent.py:829
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr "Пропускаємо зіпсований запис Spm, будь-ласка, налаштуйте його повторно"
 
-#: ../../server/server_reagent.py:823
+#: ../../server/server_reagent.py:836
 msgid "Nothing to do, check later."
 msgstr "Робити більше нічого, перевірте згодом."
 
-#: ../../server/server_reagent.py:834
+#: ../../server/server_reagent.py:847
 msgid "Entries handled"
 msgstr "обслуговані записи"
 
-#: ../../server/server_reagent.py:858
+#: ../../server/server_reagent.py:871
 #, fuzzy
 msgid "local revision"
 msgstr "перевірка"
 
-#: ../../server/server_reagent.py:860
+#: ../../server/server_reagent.py:873
 #, fuzzy
 msgid "local packages"
 msgstr "життєво важливий пакунок"
 
-#: ../../server/server_reagent.py:866
+#: ../../server/server_reagent.py:879
 #, fuzzy
 msgid "stored packages"
 msgstr "замаскований пакунок"
 
-#: ../../server/server_reagent.py:871
+#: ../../server/server_reagent.py:884
 #, fuzzy
 msgid "upload packages"
 msgstr "завантажені пакунки"
 
-#: ../../server/server_reagent.py:962
+#: ../../server/server_reagent.py:943
+#, fuzzy
+msgid ""
+"These are the newly available packages, either updatable or not installed"
+msgstr "Ось пакунки, що повинні бути встановлені"
+
+#: ../../server/server_reagent.py:996
 msgid "No package sets found"
 msgstr "Не знайдено жодного набору пакунків"
 
-#: ../../server/server_reagent.py:970
+#: ../../server/server_reagent.py:1004
 msgid "package set not found"
 msgstr "набір пакунків не знайдений"
 
