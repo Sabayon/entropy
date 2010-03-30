@@ -1274,12 +1274,12 @@ class CalculatorsMixin:
         return depends
 
     def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
-        recursive = True, empty = False):
+        recursive = True, empty = False, system_packages = True):
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
-                hash("%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
-                    recursive, empty,),
+                hash("%s|%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
+                    recursive, empty, system_packages,),
             ),
         )
         if self.xcache:
@@ -1310,12 +1310,13 @@ class CalculatorsMixin:
                 continue
             match_cache.add((idpackage, repo_id))
 
-            system_pkg = not self.validate_package_removal(idpackage,
-                repo_id = repo_id)
+            if system_packages:
+                system_pkg = not self.validate_package_removal(idpackage,
+                    repo_id = repo_id)
 
-            if system_pkg:
-                # this is a system package, removal forbidden
-                continue
+                if system_pkg:
+                    # this is a system package, removal forbidden
+                    continue
 
             repo_db = self.open_repository(repo_id)
             # validate package
@@ -1358,11 +1359,15 @@ class CalculatorsMixin:
                 new_mydeps = set()
                 for mydep, m_repo_id in mydeps:
                     m_repo_db = self.open_repository(m_repo_id)
-                    if m_repo_db.isSystemPackage(mydep):
-                        continue
-                    if m_repo_db is self._installed_repository:
-                        if self._is_installed_idpackage_in_system_mask(mydep):
+
+                    if system_packages:
+                        if m_repo_db.isSystemPackage(mydep):
                             continue
+                        if m_repo_db is self._installed_repository:
+                            if self._is_installed_idpackage_in_system_mask(
+                                mydep):
+                                continue
+
                     new_mydeps.add((mydep, m_repo_id,))
                 mydeps = new_mydeps
 
@@ -1933,7 +1938,7 @@ class CalculatorsMixin:
         return masks
 
     def get_removal_queue(self, package_identifiers, deep = False,
-        recursive = True, empty = False):
+        recursive = True, empty = False, system_packages = True):
         """
         Return removal queue (list of installed packages identifiers).
 
@@ -1949,17 +1954,23 @@ class CalculatorsMixin:
         @keyword empty: when used with "deep", includes more reverse
             dependencies, especially useful for the removal of virtual packages.
         @type empty: bool
+        @keyword system_packages: exclude system packages from reverse
+            dependencies
+        @type system_packages: bool
+        @return: list of installed package identifiers
+        @rtype: list
         """
         _idpackages = [(x, etpConst['clientdbid']) for x in package_identifiers]
         treeview = self._generate_reverse_dependency_tree(_idpackages,
-            deep = deep, recursive = recursive, empty = empty)
+            deep = deep, recursive = recursive, empty = empty,
+            system_packages = system_packages)
         queue = []
         for x in sorted(treeview, reverse = True):
             queue.extend(treeview[x])
         return [x for x, y in queue]
 
     def get_reverse_queue(self, package_matches, deep = False,
-        recursive = False, empty = False):
+        recursive = False, empty = False, system_packages = True):
         """
         Return a list of reverse dependecies for given package matches.
         This method works for every repository, not just the installed packages
@@ -1972,11 +1983,15 @@ class CalculatorsMixin:
         @keyword empty: when used with "deep", includes more reverse
             dependencies, especially useful for the removal of virtual packages.
         @type empty: bool
+        @keyword system_packages: exclude system packages from reverse
+            dependencies
+        @type system_packages: bool
         @return: list of package matches
         @rtype: list
         """
         treeview = self._generate_reverse_dependency_tree(package_matches,
-            deep = deep, recursive = recursive, empty = empty)
+            deep = deep, recursive = recursive, empty = empty,
+            system_packages = system_packages)
         queue = []
         for x in sorted(treeview, reverse = True):
             queue.extend(treeview[x])
