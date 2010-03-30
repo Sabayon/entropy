@@ -2116,6 +2116,23 @@ def compare_versions(ver1, ver2):
         r2 = 0
     return r1 - r2
 
+tag_regexp = re.compile("^([A-Za-z0-9+_.-]+)?$")
+def is_valid_package_tag(dep):
+    """
+    docstring_title
+
+    @param dep: 
+    @type dep: 
+    @return: 
+    @rtype: 
+    """
+    match = tag_regexp.match(dep)
+    if not match:
+        return False
+    if not match.groups():
+        return False
+    return True
+
 def entropy_compare_package_tags(tag_a, tag_b):
     """
     Compare two Entropy package tags using builtin cmp().

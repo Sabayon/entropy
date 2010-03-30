@@ -113,6 +113,14 @@ class ToolsTest(unittest.TestCase):
         self.assert_(not et.is_valid_ascii(non_valid))
 
 
+    def test_valid_package_tag(self):
+        valid = "ciao"
+        invalids = ["òpl", "hello,hello", "#hello"]
+        self.assert_(et.is_valid_package_tag(valid))
+        for invalid in invalids:
+            self.assert_(not et.is_valid_package_tag(invalid))
+
+
     def test_is_valid_unicode(self):
         valid = "ciao"
         valid2 = const_convert_to_unicode("òèàò", 'utf-8')
