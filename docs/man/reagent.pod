@@ -198,6 +198,14 @@ flush back old branches packages to current branch
 
 remove the provided atoms from the current repository database
 
+=over
+
+=item B<--nodeps>
+
+do not include reverse dependencies
+
+=back
+
 =item B<multiremove>
 
 remove the provided injected atoms (all if no atom specified)

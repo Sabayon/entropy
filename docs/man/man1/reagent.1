@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2010-02-26" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2010-03-30" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -276,6 +276,13 @@ flush back old branches packages to current branch
 .IP "\fBremove\fR" 4
 .IX Item "remove"
 remove the provided atoms from the current repository database
+.RS 4
+.IP "\fB\-\-nodeps\fR" 4
+.IX Item "--nodeps"
+do not include reverse dependencies
+.RE
+.RS 4
+.RE
 .IP "\fBmultiremove\fR" 4
 .IX Item "multiremove"
 remove the provided injected atoms (all if no atom specified)

@@ -53,6 +53,7 @@ def repositories(options):
     invalid_repos = False
     request_noask = False
     request_sync = False
+    request_nodeps = False
 
     if not options:
         cmd = ""
@@ -65,6 +66,8 @@ def repositories(options):
             request_sync = True
         elif opt == "--noask":
             request_noask = True
+        elif opt == "--nodeps":
+            request_nodeps = True
         elif cmd in ["enable", "disable"]:
             if opt not in valid_repos:
                 invalid_repos = True
@@ -354,25 +357,33 @@ def repositories(options):
             print_error(brown(" * ")+red(_("Not enough parameters")))
             return 1
 
-        dbconn = Entropy.open_server_repository(read_only = True,
-            no_upload = True)
+        def_repo = Entropy.default_repository
+        dbconn = Entropy.open_repository(def_repo)
         pkglist = set()
         for atom in myopts:
             pkg = dbconn.atomMatch(atom, multiMatch = True)
             for idpackage in pkg[0]:
                 pkglist.add(idpackage)
 
-        if not pkglist:
+        pkg_matches = [(x, def_repo) for x in pkglist]
+        if not request_nodeps:
+            # Entropy.default_repository
+            pkg_matches = Entropy.get_reverse_queue(pkg_matches)
+
+        if not pkg_matches:
             print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
             return 2
 
         print_info(darkgreen(" * ") + \
             red("%s:" % (_("These are the packages that would be removed from the database"),) ))
-        for idpackage in pkglist:
-            pkgatom = dbconn.retrieveAtom(idpackage)
-            branch = dbconn.retrieveBranch(idpackage)
-            print_info(red("   # ")+blue("[")+red(branch)+blue("] ")+bold(pkgatom))
-
+        repo_map = {}
+        for idpackage, repo_id in pkg_matches:
+            repo_db = Entropy.open_repository(repo_id)
+            pkgatom = repo_db.retrieveAtom(idpackage)
+            print_info(red("   # ") + blue("[") + red(repo_id) + blue("] ") + \
+                bold(pkgatom))
+            obj = repo_map.setdefault(repo_id, [])
+            obj.append(idpackage)
 
         rc = Entropy.ask_question(_("Would you like to continue ?"))
         if rc == _("No"):
@@ -380,7 +391,8 @@ def repositories(options):
 
         print_info(darkgreen(" * ") + \
             red("%s..." % (_("Removing selected packages"),) ))
-        Entropy.remove_packages(pkglist)
+        for repo_id, idpackages in repo_map.items():
+            Entropy.remove_packages(idpackages, repo = repo_id)
         print_info(darkgreen(" * ") + \
             red(_("Packages removed. To remove binary packages, run activator.")))
 
