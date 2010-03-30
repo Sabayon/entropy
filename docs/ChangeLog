@@ -1,3 +1,173 @@
+commit c78985335c8a4922185aa9e2a2094662206a5478
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 20:59:12 2010 +0200
+
+    [po] update translations
+
+commit 6a5fc7fb326193d65e7024b3226b1b247aac63a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 20:40:18 2010 +0200
+
+    [reagent] implement "reagent spm new"
+
+commit 1b855c18ccd8eee34326a155b6251c71a9064092
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 20:10:31 2010 +0200
+
+    [entropy.server] use Server.get_reverse_queue() for calculating reverse dependencies of packages
+
+commit 9f288c33d85af43873afe2cf5fe7fc8c31bac947
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 20:09:56 2010 +0200
+
+    [entropy.client.interfaces.dep] get_removal_queue() and get_reverse_queue(): add system_packages argument
+
+commit 236800699a6888176d75aca9f23e85bae76bd144
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 19:55:28 2010 +0200
+
+    [reagent] tweak reagent repo remove colors
+
+commit 3708b46d76a69f93cd940e1381921a44bd7c04d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 19:43:56 2010 +0200
+
+    [reagent] always calculate reverse dependencies when removing packages from repos if --nodeps is not passed
+
+commit 2386d4dd0cee53004247a454404f6d49c615ac9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 19:35:50 2010 +0200
+
+    [entropy.client.interfaces.dep] add get_reverse_queue() method
+    
+    This public method makes possible to calculate reverse dependencies
+    for packages in repositories.
+
+commit 7dfa62718808ffad940f918e3accc5912dc740ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 19:32:28 2010 +0200
+
+    [equo/reagent/sulfur] use Client.shutdown() instead of Client.destroy()
+
+commit 8fef0bce04e84d41fbe9e42ce87f6f9a076405e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 19:27:01 2010 +0200
+
+    [entropy.client.interfaces.client] add shutdown() method
+
+commit 970fbdecc91608572a6bfa81d91673a19ebde235
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 14:50:03 2010 +0200
+
+    [todo] update TODO
+
+commit d74381b7b974459c2ff2b03a5010fda53ec0ae7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 14:49:15 2010 +0200
+
+    [entropy.spm] PortagePlugin: keep original slot information when overwriting it with tag, this improves Portage support
+
+commit da336b053398a7d40b584ac0d6e031797b8ddfd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 14:28:32 2010 +0200
+
+    [entropy.spm] PortagePlugin: add missing entropy.output.TextInterface attributes setup
+
+commit a17aa4830feeb20d7f1b4bf7df4d5be92371e12b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 14:27:53 2010 +0200
+
+    [entropy.tools] add is_valid_package_tag function
+
+commit 622c53435089bd6159357320d3f0f7f7ab3626ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 22:07:58 2010 +0200
+
+    [entropy.tools] make dep_get_match_in_repos() working with weird dep strings (containing @ in use deps)
+
+commit fc6f8ee2bded28af6777f863ee3c0ce6c4326d49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 18:22:17 2010 +0200
+
+    [todo] update TODO
+
+commit 21faf38121954711d28db81b8375635a9dd52946
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 18:15:41 2010 +0200
+
+    [entropy.db/entropy.spm] complete per-package mimetype support
+    
+    Per package file association info are now stored inside the
+    repository database. This allows for instance, to query a
+    mimetype and get a list of applications able to handle it, or
+    to get a list of mimetypes a package is aware of.
+
+commit dd330af3da8ac140926ccd7aa225f471d8223886
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 17:33:36 2010 +0200
+
+    [entropy.db] EntropyRepository: add SQL index for packagedesktopmime table
+
+commit 528f159d6a58f295578762f688e70f9af7325607
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 24 18:02:00 2010 +0100
+
+    [todo] update TODO
+
+commit 49bcec947624ad44e8deea4ee25ad39306786ca0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 15:37:00 2010 +0200
+
+    [po] update translations
+
+commit af792fcc1ff52a2567f2ddc430fcbb36853bf677
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 15:36:39 2010 +0200
+
+    [todo] update TODO
+
+commit 2f6b40eab75abe4a163999fcda65ecefb7c71be7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 15:36:03 2010 +0200
+
+    [entropy.db/entropy.spm] implement per-package file association metadata collection/handling
+
+commit f321ecb4c6f8d72edee5cf165b289c16ec82af88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 29 13:59:36 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix os.path.join call in _extract_pkg_metadata_provided_libs
+
+commit 520e522c3c77afd48107ee033d3231535e887466
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 28 22:53:00 2010 +0200
+
+    [todo] update TODO
+
+commit 9b25177b229df803d4c2d0caf92ae1beaf058588
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 28 22:51:58 2010 +0200
+
+    [tests] db: fix EntropyCacher status handling
+
+commit e2ad2b35bfdda6b8dea6963893089d7213cdd5ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 28 17:37:03 2010 +0200
+
+    [todo] update TODO
+
+commit 4f15fedf1a41fe01449eb83aabd603ff2d17c601
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 28 17:36:46 2010 +0200
+
+    [entropy.spm] disable chost default fallback (error prone)
+
+commit 51b531f56effe133cc3a6e48b0dd2d3b831e25fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 26 17:25:03 2010 +0100
+
+    Tagging Entropy version 0.99.39
+
 commit 571d98e9d560c070bad8a0b2943e5c93c874f40d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 26 16:27:14 2010 +0100
