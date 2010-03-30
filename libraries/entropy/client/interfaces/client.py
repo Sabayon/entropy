@@ -721,6 +721,15 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         self.close_repositories(mask_clear = False)
 
+    def shutdown(self):
+        """
+        This method should be called when the whole process is going to be
+        killed. It calls destroy() and stops any running thread
+        """
+        self.destroy()
+        self._cacher.stop()
+        entropy.tools.kill_threads()
+
     def repository_packages_spm_sync(self, repository_identifier, repo_db,
         force = False):
         """
