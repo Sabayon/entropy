@@ -5682,6 +5682,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: list of package indentifiers owning given mimetype.
         @rtype: list
         """
+        if not self._doesTableExist("provided_mime"):
+            return []
         cur = self._cursor().execute("""
         SELECT provided_mime.idpackage FROM provided_mime, baseinfo
         WHERE provided_mime.mimetype = (?)
