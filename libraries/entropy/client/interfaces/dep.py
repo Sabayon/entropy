@@ -1958,6 +1958,30 @@ class CalculatorsMixin:
             queue.extend(treeview[x])
         return [x for x, y in queue]
 
+    def get_reverse_queue(self, package_matches, deep = False,
+        recursive = False, empty = False):
+        """
+        Return a list of reverse dependecies for given package matches.
+        This method works for every repository, not just the installed packages
+        one.
+
+        @type deep: bool
+        @keyword recursive: scan inverse dependencies recursively, building
+            a complete dependency graph
+        @type recursive: bool
+        @keyword empty: when used with "deep", includes more reverse
+            dependencies, especially useful for the removal of virtual packages.
+        @type empty: bool
+        @return: list of package matches
+        @rtype: list
+        """
+        treeview = self._generate_reverse_dependency_tree(package_matches,
+            deep = deep, recursive = recursive, empty = empty)
+        queue = []
+        for x in sorted(treeview, reverse = True):
+            queue.extend(treeview[x])
+        return queue
+
     def get_install_queue(self, package_matches, empty, deep,
         relaxed = False, build = False, quiet = False, recursive = True):
         """
