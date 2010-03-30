@@ -126,7 +126,7 @@ def database(options):
             return _getinfo(etp_client)
 
     finally:
-        etp_client.destroy()
+        etp_client.shutdown()
 
     return -10
 

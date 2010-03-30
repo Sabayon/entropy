@@ -94,7 +94,7 @@ def repositories(options):
         else:
             rc = -10
     finally:
-        entropy_client.destroy()
+        entropy_client.shutdown()
 
     return rc
 

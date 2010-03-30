@@ -60,7 +60,7 @@ class ManagerApplication:
             raise SystemExit(1)
 
     def destroy(self):
-        self._entropy.destroy()
+        self._entropy.shutdown()
 
     def dummy_func(self, *args, **kwargs):
         pass
@@ -80,14 +80,14 @@ if __name__ == "__main__":
         gtk.main()
         gtk.gdk.threads_leave()
         from sulfur.entropyapi import Equo
-        Equo().destroy()
+        Equo().shutdown()
     except SystemExit:
         print("Quit by User")
-        main_app.destroy()
+        main_app.shutdown()
         raise SystemExit(0)
     except KeyboardInterrupt:
         print("Quit by User (KeyboardInterrupt)")
-        main_app.destroy()
+        main_app.shutdown()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
         my = ExceptionDialog()

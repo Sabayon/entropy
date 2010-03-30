@@ -53,7 +53,7 @@ def configurator(options):
         else:
             rc = -10
     finally:
-        etp_client.destroy()
+        etp_client.shutdown()
 
     return rc
 

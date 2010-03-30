@@ -105,7 +105,7 @@ def key(myopts):
             rc = _export_key(entropy_srv, False, repos[0], repos[1])
 
     finally:
-        entropy_srv.destroy()
+        entropy_srv.shutdown()
 
     del entropy_srv
     return rc

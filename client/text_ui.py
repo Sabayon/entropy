@@ -262,7 +262,7 @@ def package(options):
             show_config_files_to_update(entropy_client)
 
     finally:
-        entropy_client.destroy()
+        entropy_client.shutdown()
 
     return rc
 

@@ -55,7 +55,7 @@ def ugc(options):
             if options:
                 rc = _ugc_votes(entropy_client, options)
     finally:
-        entropy_client.destroy()
+        entropy_client.shutdown()
 
     return rc
 
