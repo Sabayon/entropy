@@ -590,8 +590,6 @@ class Package:
 
     def _match_checksum(self, repository, checksum, download, signatures):
 
-        self._error_on_not_prepared()
-
         sys_settings = self._settings
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -2270,7 +2268,6 @@ class Package:
         return True
 
     def _sources_fetch_step(self):
-        self._error_on_not_prepared()
 
         down_data = self.pkgmeta['download']
         down_keys = list(down_data.keys())
@@ -2373,7 +2370,6 @@ class Package:
         return rc
 
     def _fetch_step(self):
-        self._error_on_not_prepared()
 
         mytxt = "%s: %s" % (blue(_("Downloading archive")),
             red(os.path.basename(self.pkgmeta['download'])),)
@@ -2413,7 +2409,6 @@ class Package:
         return rc
 
     def _multi_fetch_step(self):
-        self._error_on_not_prepared()
 
         m_fetch_len = len(self.pkgmeta['multi_fetch_list'])
         mytxt = "%s: %s %s" % (
@@ -2482,17 +2477,14 @@ class Package:
         return 0
 
     def _checksum_step(self):
-        self._error_on_not_prepared()
         return self._match_checksum(self.pkgmeta['repository'],
             self.pkgmeta['checksum'], self.pkgmeta['download'],
             self.pkgmeta['signatures'])
 
     def _multi_checksum_step(self):
-        self._error_on_not_prepared()
         return self.multi_match_checksum()
 
     def _unpack_step(self):
-        self._error_on_not_prepared()
 
         if not self.pkgmeta['merge_from']:
             mytxt = "%s: %s" % (
@@ -2541,7 +2533,6 @@ class Package:
         return rc
 
     def _install_step(self):
-        self._error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Installing package")),
             red(self.pkgmeta['atom']),
@@ -2578,7 +2569,6 @@ class Package:
         return rc
 
     def _remove_step(self):
-        self._error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Removing data")),
             red(self.pkgmeta['removeatom']),
@@ -2607,7 +2597,6 @@ class Package:
         return rc
 
     def _cleanup_step(self):
-        self._error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Cleaning")),
             red(self.pkgmeta['atom']),
@@ -2628,7 +2617,6 @@ class Package:
         return 0
 
     def _post_install_step(self):
-        self._error_on_not_prepared()
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
             trigger = self._entropy.Triggers('postinstall', pkgdata, self._action)
@@ -2640,7 +2628,6 @@ class Package:
         return 0
 
     def _pre_install_step(self):
-        self._error_on_not_prepared()
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
 
@@ -2666,7 +2653,6 @@ class Package:
         return 0
 
     def _pre_remove_step(self):
-        self._error_on_not_prepared()
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
             trigger = self._entropy.Triggers('preremove', remdata, self._action)
@@ -2678,7 +2664,6 @@ class Package:
         return 0
 
     def _post_remove_step(self):
-        self._error_on_not_prepared()
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
 
@@ -2705,7 +2690,6 @@ class Package:
         return 0
 
     def _removeconflict_step(self):
-        self._error_on_not_prepared()
 
         for idpackage in self.pkgmeta['conflicts']:
             if not self._entropy.installed_repository().isIdpackageAvailable(idpackage):
@@ -2723,7 +2707,6 @@ class Package:
         return 0
 
     def _config_step(self):
-        self._error_on_not_prepared()
 
         mytxt = "%s: %s" % (
             blue(_("Configuring package")),
