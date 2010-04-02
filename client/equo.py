@@ -745,6 +745,7 @@ if bashcomp_enabled:
 
 if "help" in options:
     options.insert(0, "--help")
+    options = [x for x in options if x != "help"]
 
 # print help
 if (not options) or ("--help" in options):
