@@ -15,6 +15,8 @@ from entropy.misc import RSS
 from entropy.dump import loadobj as dump_loadobj, dumpobj as dump_dumpobj
 from entropy.exceptions import RepositoryError
 
+import entropy.tools
+
 class NoticeBoardMixin:
 
     """
@@ -147,7 +149,7 @@ class NoticeBoardMixin:
                 continue
             mystr += elem
 
-        return self.entropyTools.md5string(mystr)
+        return entropy.tools.md5string(mystr)
 
     def mark_noticeboard_items_as_read(self, repoid):
         """

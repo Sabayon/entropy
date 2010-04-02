@@ -18,11 +18,12 @@ from entropy.const import etpConst, const_setup_perms
 from entropy.output import TextInterface
 from entropy.misc import ParallelTask
 
+import entropy.dump
+import entropy.tools
+
 class TaskExecutor:
 
     def __init__(self, SystemInterface, Entropy):
-        import entropy.tools as entropyTools
-        self.entropyTools = entropyTools
         self.Entropy = Entropy
         self.SystemInterface = SystemInterface
         self.available_commands = {}
@@ -50,7 +51,8 @@ class TaskExecutor:
         t.start()
         killed = False
         while True:
-            if not t.isAlive(): break
+            if not t.isAlive():
+                break
             time.sleep(2)
             live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
             if isinstance(live_item, dict) and (key == "processing") and (not killed):
@@ -94,10 +96,8 @@ class Server(SocketHost):
         from entropy.misc import TimeScheduled
         self.TimeScheduled = TimeScheduled
 
-        import entropy.tools as entropyTools
-        import entropy.dump as dumpTools
         import threading
-        self.entropyTools, self.dumpTools, self.threading = entropyTools, dumpTools, threading
+        self.threading = threading
         from datetime import datetime
         self.datetime = datetime
         import copy
@@ -197,10 +197,10 @@ class Server(SocketHost):
         return False
 
     def get_stored_pinboard(self):
-        return self.dumpTools.loadobj(self.pinboard_file)
+        return entropy.dump.loadobj(self.pinboard_file)
 
     def store_pinboard(self):
-        self.dumpTools.dumpobj(self.pinboard_file, self.PinboardData)
+        entropy.dump.dumpobj(self.pinboard_file, self.PinboardData)
 
     def add_to_pinboard(self, note, extended_text):
         with self.PinboardLock:
@@ -247,7 +247,7 @@ class Server(SocketHost):
         self.QueueProcessor.start()
 
     def get_stored_queue(self):
-        return self.dumpTools.loadobj(self.queue_file)
+        return entropy.dump.loadobj(self.queue_file)
 
     def load_queue(self):
         obj = self.get_stored_queue()
@@ -257,16 +257,16 @@ class Server(SocketHost):
         return False
 
     def store_queue(self):
-        self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
+        entropy.dump.dumpobj(self.queue_file, self.ManagerQueue)
 
     def load_queue_ext_rc(self, queue_id):
-        return self.dumpTools.loadobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)))
+        return entropy.dump.loadobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)))
 
     def store_queue_ext_rc(self, queue_id, rc):
-        return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)), rc)
+        return entropy.dump.dumpobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)), rc)
 
     def remove_queue_ext_rc(self, queue_id):
-        return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)))
+        return entropy.dump.removeobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)))
 
     def get_ts(self):
         return self.datetime.fromtimestamp(time.time())
@@ -421,7 +421,7 @@ class Server(SocketHost):
                 queue_id = self.ManagerQueue['queue_order'].pop(0)
                 return self.ManagerQueue['queue'].pop(queue_id), queue_id
         except (IndexError, KeyError,):
-            self.entropyTools.print_traceback()
+            entropy.tools.print_traceback()
         return None, None
 
     def _queue_copy_obj(self, obj):
@@ -471,7 +471,7 @@ class Server(SocketHost):
             done, result = self.SystemExecutor.execute_task(command_data)
         except Exception as e:
             if self.QueueLock.locked(): self.QueueLock.release()
-            self.entropyTools.print_traceback()
+            entropy.tools.print_traceback()
             done = False
             result = (False, str(e),)
 

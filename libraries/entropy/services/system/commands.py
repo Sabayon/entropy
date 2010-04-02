@@ -14,9 +14,11 @@ import os
 from entropy.services.skel import SocketCommands
 from entropy.const import etpConst
 
+import entropy.dump
+import entropy.tools
+
 class Base(SocketCommands):
 
-    import entropy.tools as entropyTools
     def __init__(self, HostInterface):
 
         import copy
@@ -321,7 +323,7 @@ class Base(SocketCommands):
 
         xml_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
 
@@ -410,8 +412,6 @@ class Base(SocketCommands):
 
 class Repository(SocketCommands):
 
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
     def __init__(self, HostInterface):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "srvrepo")
@@ -738,7 +738,7 @@ class Repository(SocketCommands):
         xml_string = ' '.join(myargs)
 
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
 
@@ -809,7 +809,7 @@ class Repository(SocketCommands):
         xml_string = ' '.join(myargs)
 
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
 
@@ -872,7 +872,7 @@ class Repository(SocketCommands):
 
         xml_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('atoms' in mydict and 'useflags' in mydict):
@@ -897,7 +897,7 @@ class Repository(SocketCommands):
 
         xml_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('atoms' in mydict and 'useflags' in mydict):
@@ -1154,7 +1154,7 @@ class Repository(SocketCommands):
 
         serialized_string = '\n'.join(myargs)
         try:
-            mydict = self.dumpTools.unserialize_string(serialized_string)
+            mydict = entropy.dump.unserialize_string(serialized_string)
         except Exception as e:
             return False, 'cannot parse data: %s' % (e,)
 
@@ -1344,7 +1344,7 @@ class Repository(SocketCommands):
 
         xml_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('repoid' in mydict and 'title' in mydict and \

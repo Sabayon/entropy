@@ -13,8 +13,6 @@ from entropy.services.skel import SocketCommands
 
 class Test(SocketCommands):
 
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
     def __init__(self, HostInterface):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "test-commands")

@@ -17,10 +17,10 @@ from entropy.const import etpConst, const_get_stringtype
 from entropy.services.ugc.interfaces import Server
 from entropy.misc import EmailSender
 
+import entropy.tools
+
 class UGC(SocketCommands):
 
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
     def __init__(self, HostInterface, connection_data, store_path, store_url):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "ugc-commands")
@@ -285,7 +285,7 @@ class UGC(SocketCommands):
 
         xml_string = ' '.join(myargs[1:])
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('doc_type' in mydict \
@@ -355,7 +355,7 @@ class UGC(SocketCommands):
         pkgkey = myargs[0]
         xml_string = ' '.join(myargs[1:])
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('comment' in mydict and 'title' in mydict and 'keywords' in mydict):
@@ -422,7 +422,7 @@ class UGC(SocketCommands):
 
         xml_string = ' '.join(myargs[1:])
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('comment' in mydict and 'title' in mydict and 'keywords' in mydict):
@@ -571,7 +571,7 @@ class UGC(SocketCommands):
 
         xml_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = entropy.tools.dict_from_xml(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
         if not ('branch' in mydict and \
@@ -755,14 +755,14 @@ class UGC(SocketCommands):
         comp_xml_string = ' '.join(myargs)
         try:
             xml_string = zlib.decompress(comp_xml_string)
-            mydict = self.entropyTools.dict_from_xml_extended(xml_string)
+            mydict = entropy.tools.dict_from_xml_extended(xml_string)
         except Exception as e:
             return None, "error: %s" % (e,)
 
         subject = 'Entropy Error Reporting Handler'
         destination_email = 'website@sabayon.org'
         sender_email = mydict.get('email', 'www-data@sabayon.org')
-        if not self.entropyTools.is_valid_email(sender_email):
+        if not entropy.tools.is_valid_email(sender_email):
             sender_email = 'www-data@sabayon.org'
         keys_to_file = ['errordata', 'processes', 'lspci', 'dmesg', 'locale',
             'lsof']

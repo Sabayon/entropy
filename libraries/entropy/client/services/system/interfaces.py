@@ -45,8 +45,7 @@ class Client:
 
         self.ClientCommandsInterface = ClientCommandsInterface
         import socket, struct
-        import entropy.tools as entropyTools
-        self.socket, self.struct, self.entropyTools = socket, struct, entropyTools
+        self.socket, self.struct = socket, struct
         from datetime import datetime
         self.datetime = datetime
         import threading

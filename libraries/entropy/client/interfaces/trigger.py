@@ -17,13 +17,13 @@ from entropy.client.interfaces.client import Client
 from entropy.const import etpConst, const_isunicode, etpSys, etpUi
 from entropy.output import brown, bold, darkred, red
 from entropy.i18n import _
+
 import entropy.tools
 
 class Trigger:
 
     VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
 
-    import entropy.tools as entropyTools
     def __init__(self, entropy_client, phase, pkgdata, package_action = None):
 
         if not isinstance(entropy_client, Client):
@@ -42,7 +42,7 @@ class Trigger:
             Spm = self.Entropy.Spm()
             self.Spm = Spm
         except Exception as e:
-            self.entropyTools.print_traceback()
+            entropy.tools.print_traceback()
             mytxt = darkred("%s, %s: %s, %s !") % (
                 _("Source Package Manager interface can't be loaded"),
                 _("Error"),
@@ -190,7 +190,7 @@ class Trigger:
             return self.do_trigger_call_ext_generic()
         except Exception as e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
-            tb = self.entropyTools.get_traceback()
+            tb = entropy.tools.get_traceback()
             self.Entropy.output(tb, importance = 0, type = "error")
             self.Entropy.clientLog.write(tb)
             self.Entropy.clientLog.log(
@@ -216,8 +216,6 @@ class Trigger:
 
         def __init__(self, Entropy):
             self.Entropy = Entropy
-            import entropy.tools as entropyTools
-            self.entropyTools = entropyTools
 
         def __env_setup(self, stage, pkgdata):
 
@@ -234,7 +232,7 @@ class Trigger:
             if const_isunicode(pv):
                 pv = pv.encode('utf-8')
 
-            pr = self.entropyTools.dep_get_spm_revision(pv)
+            pr = entropy.tools.dep_get_spm_revision(pv)
             pvr = pv
             if pr == "r0": pvr += "-%s" % (pr,)
 
@@ -255,7 +253,7 @@ class Trigger:
                 slot = slot.encode('utf-8')
 
             pkgatom = pkgdata.get('atom')
-            pkgkey = self.entropyTools.dep_getkey(pkgatom)
+            pkgkey = entropy.tools.dep_getkey(pkgatom)
             pvrte = pkgatom[len(pkgkey)+1:]
             if const_isunicode(pvrte):
                 pvrte = pvrte.encode('utf-8')

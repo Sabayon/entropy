@@ -14,6 +14,9 @@ import os
 import select
 import shutil
 import time
+
+import entropy.dump
+import entropy.tools
 from entropy.const import etpConst, const_setup_perms, const_isstring, \
     const_get_stringtype, const_convert_to_rawstring, etpUi, const_debug_write
 from entropy.exceptions import *
@@ -21,6 +24,7 @@ from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
 from entropy.output import blue, red, darkgreen, darkred, darkblue, brown, \
     purple
+
 try:
     import SocketServer as socketserver
 except ImportError: # Python 3.x
@@ -33,8 +37,6 @@ class SocketHost:
     from threading import Thread
 
     class BasicPamAuthenticator(SocketAuthenticator):
-
-        import entropy.tools as entropyTools
 
         def __init__(self, HostInterface, *args, **kwargs):
             self.valid_auth_types = [ "plain", "shadow", "md5" ]
@@ -60,7 +62,7 @@ class SocketHost:
 
             uid = udata[2]
             # check if user is in the Entropy group
-            if not self.entropyTools.is_user_in_entropy_group(uid):
+            if not entropy.tools.is_user_in_entropy_group(uid):
                 return False, user, uid, 'user not in %s group' % (etpConst['sysgroup'],)
 
             # now validate password
@@ -175,7 +177,6 @@ class SocketHost:
             def __getattr__(self, function) :
                 return getattr(self.connection, function)
 
-        import entropy.tools as entropyTools
         import socket as socket_mod
         # This means the main server will not do the equivalent of a
         # pthread_join() on the new threads.  With this set, Ctrl-C will
@@ -313,7 +314,7 @@ class SocketHost:
                             max_conn_per_ip_barrier,
                         )
                     )
-                    rnd_num = self.entropyTools.get_random_number()
+                    rnd_num = entropy.tools.get_random_number()
                     time.sleep(times[abs(hash(rnd_num))%len(times)])
 
             return True
@@ -367,7 +368,6 @@ class SocketHost:
 
         import select
         import socket
-        import entropy.tools as entropyTools
         import gc
         timed_out = False
 
@@ -376,7 +376,7 @@ class SocketHost:
             # pre-init attribues
             self.__DEBUG = False
             self.__buffered_data = None
-            self.__inst_token = self.entropyTools.get_random_number()
+            self.__inst_token = entropy.tools.get_random_number()
             self.server = None
             self.request = None
             self.client_address = None
@@ -479,7 +479,7 @@ class SocketHost:
 
                     self.__data_counter = None
                 except ValueError:
-                    tb = self.entropyTools.get_traceback()
+                    tb = entropy.tools.get_traceback()
                     print(tb)
                     self.server.processor.HostInterface.socketLog.write(tb)
                     self.server.processor.HostInterface.socketLog.write(repr(data))
@@ -615,7 +615,7 @@ class SocketHost:
                     self.fork_lock_release()
             else:
                 self.do_handle()
-            #self.entropyTools.spawn_function(self.do_handle)
+            #entropy.tools.spawn_function(self.do_handle)
 
         def do_handle(self):
 
@@ -653,7 +653,7 @@ class SocketHost:
                         )
                     )
                     # print exception
-                    tb = self.entropyTools.get_traceback()
+                    tb = entropy.tools.get_traceback()
                     print(tb)
                     self.server.processor.HostInterface.socketLog.write(tb)
                     break
@@ -667,7 +667,6 @@ class SocketHost:
 
     class CommandProcessor:
 
-        import entropy.tools as entropyTools
         import socket
         import gc
 
@@ -798,7 +797,7 @@ class SocketHost:
                             e,
                         )
                     )
-                    tb = self.entropyTools.get_traceback()
+                    tb = entropy.tools.get_traceback()
                     print(tb)
                     self.HostInterface.socketLog.write(tb)
                     return "close"
@@ -809,7 +808,7 @@ class SocketHost:
                             e,
                         )
                     )
-                    tb = self.entropyTools.get_traceback()
+                    tb = entropy.tools.get_traceback()
                     print(tb)
                     self.HostInterface.socketLog.write(tb)
                     return "close"
@@ -906,7 +905,7 @@ class SocketHost:
                     return "close"
                 except Exception as e:
                     # write to self.HostInterface.socketLog
-                    tb = self.entropyTools.get_traceback()
+                    tb = entropy.tools.get_traceback()
                     print(tb)
                     self.HostInterface.socketLog.write(tb)
                     # store error
@@ -1054,7 +1053,7 @@ class SocketHost:
                 if logged_in != None:
                     uid = logged_in
                     gid = etpConst['entropygid']
-            return self.entropyTools.spawn_function(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
+            return entropy.tools.spawn_function(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
 
         def _do_fork(self, f, authenticator, uid, gid, *args, **kwargs):
             authenticator.set_exc_permissions(uid, gid)
@@ -1063,7 +1062,6 @@ class SocketHost:
 
     class BuiltInCommands(SocketCommands):
 
-        import entropy.dump as dumpTools
         import zlib
 
         def __init__(self, HostInterface):
@@ -1463,7 +1461,7 @@ class SocketHost:
         def docmd_rc(self, transmitter, session):
             rc = self.HostInterface.get_rc(session)
             comp = self.HostInterface.sessions[session]['compression']
-            myserialized = self.dumpTools.serialize_string(rc)
+            myserialized = entropy.dump.serialize_string(rc)
             if comp == "zlib": # new shiny zlib
                 myserialized = self.zlib.compress(myserialized, 7) # compression level 1-9
             elif comp == "gzip": # old and burried
@@ -1473,7 +1471,7 @@ class SocketHost:
                 except ImportError:
                     import io as stringio
                 f = stringio.StringIO()
-                self.dumpTools.serialize(rc, f)
+                entropy.dump.serialize(rc, f)
                 myf = stringio.StringIO()
                 mygz = gzip.GzipFile(
                     mode = 'wb',
@@ -1501,10 +1499,8 @@ class SocketHost:
         self.gc = gc
         import threading
         self.threading = threading
-        import entropy.tools as entropyTools
         from entropy.misc import TimeScheduled
         self.TimeScheduled = TimeScheduled
-        self.entropyTools = entropyTools
         self.Server = None
         self.Gc = None
         self.PythonGarbageCollector = None
@@ -1893,7 +1889,7 @@ class SocketHost:
             self.sessions[rng]['compression'] = None
             self.sessions[rng]['stream_mode'] = False
             try:
-                self.sessions[rng]['stream_path'] = self.entropyTools.get_random_temp_file()
+                self.sessions[rng]['stream_path'] = entropy.tools.get_random_temp_file()
             except (IOError, OSError,):
                 self.sessions[rng]['stream_path'] = ''
             self.sessions[rng]['t'] = time.time()

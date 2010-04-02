@@ -17,14 +17,17 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import sys
 import time
 
 from entropy.i18n import _
-from entropy.const import *
-from entropy.exceptions import *
+from entropy.const import etpConst, const_debug_write, const_get_stringtype
+from entropy.exceptions import DependenciesNotFound, RepositoryError, \
+    SystemDatabaseError, SystemDatabaseError
 from entropy.output import print_generic
 from entropy.graph import Graph
 from entropy.db.exceptions import OperationalError
+import entropy.tools
 
 from sulfur.setup import SulfurConf, cleanMarkupString, const
 from sulfur.package import EntropyPackage, DummyEntropyPackage
@@ -484,7 +487,7 @@ class Queue:
                     else:
                         size = abs(size)
                         bottom_text = _("Freed disk space")
-                    size = self.Entropy.entropyTools.bytes_into_human(size)
+                    size = entropy.tools.bytes_into_human(size)
                     confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                         install_todo+remove_todo,
                         top_text = _("These are the packages that would be installed/updated"),
@@ -566,7 +569,7 @@ class Queue:
                     else:
                         size = abs(size)
                         bottom_text = _("Needed space")
-                    size = self.Entropy.entropyTools.bytes_into_human(size)
+                    size = entropy.tools.bytes_into_human(size)
                     confirmDialog = self.dialogs.ConfirmationDialog(
                         self.ui.main,
                         todo,

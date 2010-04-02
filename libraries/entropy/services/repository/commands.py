@@ -13,11 +13,10 @@
 import os
 from entropy.services.skel import SocketCommands
 from entropy.const import etpConst
+import entropy.tools
 
 class Repository(SocketCommands):
 
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
 
     def __init__(self, HostInterface):
 
@@ -316,7 +315,7 @@ class Repository(SocketCommands):
                     get_content = False, get_changelog = False
                 )
             except:
-                tb = self.entropyTools.get_traceback()
+                tb = entropy.tools.get_traceback()
                 print(tb)
                 self.HostInterface.socketLog.write(tb)
                 dbconn.closeDB()

@@ -9,7 +9,7 @@
 
 """
 import os
-import entropy.dump as dumpTools
+import entropy.dump
 
 # Paths
 PIXMAPS_PATH = "/usr/share/pixmaps/magneto"
@@ -55,11 +55,11 @@ def save_settings(settings):
     try:
         if not os.path.isdir(os.path.dirname(SETTINGS_FILE)):
             os.makedirs(os.path.dirname(SETTINGS_FILE))
-        dumpTools.dumpobj(SETTINGS_FILE, settings, complete_path = True)
+        entropy.dump.dumpobj(SETTINGS_FILE, settings, complete_path = True)
     except:
         pass
 
-settings = dumpTools.loadobj(SETTINGS_FILE, complete_path = True)
+settings = entropy.dump.loadobj(SETTINGS_FILE, complete_path = True)
 if settings == None:
     settings = {}
 

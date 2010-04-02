@@ -11,12 +11,13 @@
 """
 
 from entropy.const import etpConst
+import entropy.dump
+import entropy.tools
 from entropy.client.services.ugc.commands import Base
 
 
 class Client(Base):
 
-    import entropy.dump as dumpTools
     def __init__(self, *args, **kwargs):
         Base.__init__(self, *args, **kwargs)
 
@@ -135,7 +136,7 @@ class Client(Base):
             'note': note,
             'extended_text': extended_text,
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.tools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
@@ -173,8 +174,6 @@ class Client(Base):
         return self.do_generic_handler(cmd, session_id)
 
 class Repository(Client):
-
-    import entropy.dump as dumpTools
 
     def sync_spm(self, session_id):
 
@@ -215,7 +214,7 @@ class Repository(Client):
             'ldflags': ldflags,
             'cflags': cflags,
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.tools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
@@ -238,7 +237,7 @@ class Repository(Client):
             'verbose': s_verbose,
             'nocolor': s_nocolor,
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.tools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
@@ -271,7 +270,7 @@ class Repository(Client):
             'atoms': ' '.join(atoms),
             'useflags': ' '.join(useflags),
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.tools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
@@ -286,7 +285,7 @@ class Repository(Client):
             'atoms': ' '.join(atoms),
             'useflags': ' '.join(useflags),
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.tools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,
@@ -453,7 +452,7 @@ class Repository(Client):
 
     def run_entropy_mirror_updates(self, session_id, repository_data):
 
-        serialized_string = self.dumpTools.serialize_string(repository_data)
+        serialized_string = entropy.dump.serialize_string(repository_data)
         cmd = "%s %s %s" % (
             session_id,
             'srvrepo:run_entropy_mirror_updates',
@@ -498,7 +497,7 @@ class Repository(Client):
             'notice_text': notice_text,
             'link': link,
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.tools.xml_from_dict(mydict)
 
         cmd = "%s %s %s" % (
             session_id,

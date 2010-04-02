@@ -19,7 +19,6 @@ from entropy.exceptions import *
 # Authenticator that can be used by SocketHostInterface based instances
 class phpBB3(phpBB3Auth, SocketAuthenticator):
 
-    import entropy.tools as entropyTools
     def __init__(self, HostInterface, *args, **kwargs):
         SocketAuthenticator.__init__(self, HostInterface)
         phpBB3Auth.__init__(self)
@@ -35,7 +34,11 @@ class phpBB3(phpBB3Auth, SocketAuthenticator):
         if auth_id:
             self.logged_in = True
             # fill login_data with fake information
-            self.login_data = {'username': self.FAKE_USERNAME, 'password': 'look elsewhere, this is not a password', 'user_id': auth_id}
+            self.login_data = {
+                'username': self.FAKE_USERNAME,
+                'password': 'look elsewhere, this is not a password',
+                'user_id': auth_id
+            }
             ip_address = session_data.get('ip_address')
             if ip_address and self.do_update_session_table:
                 self._update_session_table(auth_id, ip_address)

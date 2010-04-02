@@ -35,6 +35,7 @@ from entropy.output import print_generic
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.client.mirrors import StatusInterface
+import entropy.dump
 
 from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
@@ -587,14 +588,14 @@ class SulfurApplicationEventsMixin:
             pkgdata = self.queue.get().copy()
             for key in list(pkgdata.keys()):
                 if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
-            self._entropy.dumpTools.dumpobj(fn, pkgdata, True)
+            entropy.dump.dumpobj(fn, pkgdata, True)
 
     def on_queueOpen_clicked( self, widget ):
         fn = FileChooser()
         if fn:
 
             try:
-                pkgdata = self._entropy.dumpTools.loadobj(fn, complete_path = True)
+                pkgdata = entropy.dump.loadobj(fn, complete_path = True)
             except:
                 return
 

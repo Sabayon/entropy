@@ -17,6 +17,8 @@ from entropy.const import etpConst, const_get_stringtype, const_debug_write, \
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
+import entropy.tools
+import entropy.dump
 
 class Base:
 
@@ -35,10 +37,7 @@ class Base:
                 "entropy.services.ugc.interfaces.Client needed")
 
         import socket, zlib, struct
-        import entropy.tools as entropyTools
-        import entropy.dump as dumpTools
-        self.entropyTools, self.socket, self.zlib, self.struct, \
-            self.dumpTools = entropyTools, socket, zlib, struct, dumpTools
+        self.socket, self.zlib, self.struct = socket, zlib, struct
         self.Output = OutputInterface
         self.Service = Service
         self.output_header = ''
@@ -150,7 +149,7 @@ class Base:
             data = self.Service.receive()
             return data
         except:
-            self.entropyTools.print_traceback()
+            entropy.dump.print_traceback()
             return None
 
     def convert_stream_to_object(self, data, gzipped, repository = None,
@@ -160,8 +159,8 @@ class Base:
         error = False
         try:
             data = self.Service.stream_to_object(data, gzipped)
-        except (EOFError, IOError, self.zlib.error, self.dumpTools.pickle.UnpicklingError,):
-            const_debug_write(__name__, self.entropyTools.get_traceback())
+        except (EOFError, IOError, self.zlib.error, entropy.dump.pickle.UnpicklingError,):
+            const_debug_write(__name__, entropy.dump.get_traceback())
             mytxt = _("cannot convert stream into object")
             self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
@@ -425,7 +424,7 @@ class Client(Base):
 
     def ugc_do_download_stats(self, session_id, package_names):
 
-        sub_lists = self.entropyTools.split_indexable_into_chunks(
+        sub_lists = entropy.dump.split_indexable_into_chunks(
             package_names, 100)
 
         last_srv_rc_data = None
@@ -447,7 +446,7 @@ class Client(Base):
                 'hw_hash': hw_hash,
                 'pkgkeys': ' '.join(pkgkeys),
             }
-            xml_string = self.entropyTools.xml_from_dict(mydict)
+            xml_string = entropy.dump.xml_from_dict(mydict)
 
             cmd = "%s %s %s" % (
                 const_convert_to_rawstring(session_id),
@@ -530,7 +529,7 @@ class Client(Base):
             'title': title,
             'keywords': keywords,
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.dump.xml_from_dict(mydict)
 
         cmd = "%s %s %s %s" % (
             const_convert_to_rawstring(session_id),
@@ -548,7 +547,7 @@ class Client(Base):
             'title': new_title,
             'keywords': new_keywords,
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.dump.xml_from_dict(mydict)
 
         cmd = "%s %s %s %s" % (
             const_convert_to_rawstring(session_id),
@@ -656,7 +655,7 @@ class Client(Base):
         chunk = f.read(8192)
         base_path = os.path.basename(file_path)
         transferred = len(chunk)
-        max_size = self.entropyTools.get_file_size(file_path)
+        max_size = entropy.dump.get_file_size(file_path)
         while chunk:
 
             if (not self.Service.quiet) or self.Service.show_progress:
@@ -720,7 +719,7 @@ class Client(Base):
             'file_name': os.path.join(pkgkey, os.path.basename(file_path)),
             'real_filename': os.path.basename(file_path),
         }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+        xml_string = entropy.dump.xml_from_dict(mydict)
 
         cmd = "%s %s %s %s" % (
             const_convert_to_rawstring(session_id),
@@ -733,7 +732,7 @@ class Client(Base):
     def report_error(self, session_id, error_data):
 
         import zlib
-        xml_string = self.entropyTools.xml_from_dict_extended(error_data)
+        xml_string = entropy.dump.xml_from_dict_extended(error_data)
         xml_comp_string = zlib.compress(xml_string)
 
         cmd = "%s %s %s" % (

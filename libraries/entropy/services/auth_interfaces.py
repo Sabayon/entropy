@@ -18,9 +18,10 @@ from entropy.exceptions import *
 from entropy.const import etpConst, const_isstring, const_convert_to_unicode
 from entropy.i18n import _
 
+import entropy.tools
+
 class phpBB3Auth(Authenticator, RemoteDatabase):
 
-    from entropy import tools as entropyTools
     def __init__(self):
         Authenticator.__init__(self)
         RemoteDatabase.__init__(self)
@@ -147,7 +148,7 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
             return False, 'Username not in range'
         if len(password) not in self.PASSWORD_LENGTH_RANGE:
             return False, 'Password not in range'
-        valid = self.entropyTools.is_valid_email(email)
+        valid = entropy.tools.is_valid_email(email)
         if not valid:
             return False, 'Invalid email'
 

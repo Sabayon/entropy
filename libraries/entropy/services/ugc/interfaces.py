@@ -16,6 +16,9 @@ import select
 import time
 import subprocess
 import shutil
+
+import entropy.dump
+import entropy.tools
 from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst, etpUi, const_setup_perms, \
@@ -179,11 +182,8 @@ class Server(RemoteDatabase):
             dev-python/gdata
     '''
     def __init__(self, connection_data, store_path, store_url = ''):
-        import entropy.dump as dumpTools
-        import entropy.tools as entropyTools
         from entropy.misc import EntropyGeoIP
         self.EntropyGeoIP = EntropyGeoIP
-        self.entropyTools, self.dumpTools = entropyTools, dumpTools
         self.store_url = store_url
         self.FLOOD_INTERVAL = 30
         self.DOC_TYPES = etpConst['ugc_doctypes'].copy()
@@ -229,7 +229,7 @@ class Server(RemoteDatabase):
             func, args, kwargs, exp_time = fdata
             key = self.get_cache_item_key(cache_item)
             r = func(*args,**kwargs)
-            self.dumpTools.dumpobj(key, r)
+            entropy.dump.dumpobj(key, r)
 
     def get_cache_item_key(self, cache_item):
         return os.path.join(Server.CACHE_ID, cache_item)
@@ -237,7 +237,7 @@ class Server(RemoteDatabase):
     def cache_result(self, cache_item, r):
         if not self.cached_results.get(cache_item): return None
         key = self.get_cache_item_key(cache_item)
-        self.dumpTools.dumpobj(key, r)
+        entropy.dump.dumpobj(key, r)
 
     def _get_geoip_data_from_ip_address(self, ip_address):
         geoip_dbpath = self.connection_data.get('geoip_dbpath', '')
@@ -256,11 +256,11 @@ class Server(RemoteDatabase):
 
         key = self.get_cache_item_key(cache_item)
         cur_time = self.get_current_time()
-        cache_time = self.dumpTools.getobjmtime(key)
+        cache_time = entropy.dump.getobjmtime(key)
         if (cache_time + exp_time) < cur_time:
             # expired
             return None
-        return self.dumpTools.loadobj(key)
+        return entropy.dump.loadobj(key)
 
     def setup_store_path(self, path):
         path = os.path.realpath(path)
@@ -511,7 +511,7 @@ class Server(RemoteDatabase):
             mypath = os.path.join(self.STORE_PATH, myfilename)
             if os.path.isfile(mypath) and os.access(mypath, os.R_OK):
                 try:
-                    mydict['size'] = self.entropyTools.get_file_size(mypath)
+                    mydict['size'] = entropy.tools.get_file_size(mypath)
                 except OSError:
                     pass
             mydict['store_url'] = os.path.join(self.store_url, myfilename)
@@ -1473,7 +1473,7 @@ class Server(RemoteDatabase):
         if doc_type == self.DOC_TYPES['image']:
             valid = False
             if os.path.isfile(file_path) and os.access(file_path, os.R_OK):
-                valid = self.entropyTools.is_supported_image_file(file_path)
+                valid = entropy.tools.is_supported_image_file(file_path)
             if not valid:
                 return False, 'not a valid image'
 
@@ -1715,8 +1715,6 @@ class Server(RemoteDatabase):
 class Client:
 
     import socket
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
     import zlib
     def __init__(self, OutputInterface, ClientCommandsClass, quiet = False,
         show_progress = True, output_header = '', ssl = False,
@@ -1897,7 +1895,7 @@ class Client:
 
         if gzipped:
             data = self.zlib.decompress(data)
-        obj = self.dumpTools.unserialize_string(data)
+        obj = entropy.dump.unserialize_string(data)
 
         return obj
 
@@ -1964,7 +1962,7 @@ class Client:
             data = self.receive()
         except self.socket.error as e:
             if etpUi['debug']:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 import pdb
                 pdb.set_trace()
             if e[0] == 32: # broken pipe
@@ -2073,7 +2071,7 @@ class Client:
                                 header = self.output_header
                             )
                         if etpUi['debug']:
-                            self.entropyTools.print_traceback()
+                            entropy.tools.print_traceback()
                             import pdb
                             pdb.set_trace()
                         return None

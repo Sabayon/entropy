@@ -613,11 +613,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # class init
         LoadersMixin.__init__(self)
 
-        # modules import
-        # FIXME: backward compatibility
-        self.dumpTools = entropy.dump
-        self.entropyTools = entropy.tools
-
         self.clientLog = LogFile(
             level = self.SystemSettings['system']['log_level'],
             filename = etpConst['equologfile'], header = "[client]")

@@ -24,7 +24,8 @@ else:
 
 from entropy.exceptions import InterruptError
 from entropy.tools import print_traceback, get_file_size, \
-    convert_seconds_to_fancy_output, bytes_into_human, spliturl
+    convert_seconds_to_fancy_output, bytes_into_human, spliturl, \
+    add_proxy_opener, md5sum
 from entropy.const import etpConst, const_isfileobj
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red
@@ -32,7 +33,6 @@ from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
-
 
 class UrlFetcher:
 
@@ -47,9 +47,8 @@ class UrlFetcher:
             speed_limit = \
                 self.__system_settings['repositories']['transfer_limit']
 
-        import entropy.tools as entropyTools
         import socket
-        self.entropyTools, self.socket = entropyTools, socket
+        self.socket = socket
         self.__timeout = \
             self.__system_settings['repositories']['timeout']
         self.__th_id = 0
@@ -149,7 +148,7 @@ class UrlFetcher:
         if mydict:
             mydict['username'] = proxy_data['username']
             mydict['password'] = proxy_data['password']
-            self.entropyTools.add_proxy_opener(urlmod, mydict)
+            add_proxy_opener(urlmod, mydict)
         else:
             # unset
             urlmod._opener = None
@@ -320,7 +319,7 @@ class UrlFetcher:
 
     def __prepare_return(self):
         if self.__checksum:
-            self.__status = self.entropyTools.md5sum(self.__path_to_save)
+            self.__status = md5sum(self.__path_to_save)
             return self.__status
         self.__status = "-2"
         return self.__status
@@ -454,7 +453,6 @@ class UrlFetcher:
 
 class MultipleUrlFetcher:
 
-    import entropy.tools as entropyTools
     def __init__(self, url_path_list, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,

@@ -18,9 +18,9 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import os, sys
-import entropy.tools as entropyTools
-from entropy.const import *
+from entropy.const import etpConst
 from entropy.i18n import _
+import entropy.tools
 
 class const:
 
@@ -266,7 +266,7 @@ class SulfurConf:
         def do_save():
             if not os.path.isdir(os.path.dirname(const.SETTINGS_FILE)):
                 os.makedirs(os.path.dirname(const.SETTINGS_FILE), 0o755)
-            myxml = entropyTools.xml_from_dict_extended(SulfurConf.getconf())
+            myxml = entropy.tools.xml_from_dict_extended(SulfurConf.getconf())
             try:
                 f = open(const.SETTINGS_FILE, "w")
             except (IOError, OSError,) as e:
@@ -279,7 +279,7 @@ class SulfurConf:
         try:
             return do_save()
         except Exception as e:
-            entropyTools.print_traceback()
+            entropy.tools.print_traceback()
             return False, e
         return True, None
 
@@ -291,12 +291,12 @@ class SulfurConf:
                 f = open(const.SETTINGS_FILE, "r")
                 xml_string = f.read()
                 f.close()
-                return entropyTools.dict_from_xml_extended(xml_string)
+                return entropy.tools.dict_from_xml_extended(xml_string)
 
         try:
             return do_read()
         except:
-            entropyTools.print_traceback()
+            entropy.tools.print_traceback()
             return None
 
     @staticmethod
@@ -371,7 +371,7 @@ class fakeoutfile:
     def write(self, s):
         if self.external_writer is None:
             os.write(self.fn, s)
-        else:
+        elif hasattr(self.external_writer, '__call__'):
             self.external_writer(s)
 
     def write_line(self, s):
