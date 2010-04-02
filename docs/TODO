@@ -2,17 +2,17 @@
   0.99.50:
 
     - "reagent spm orphans" doesn't seem to play nice with overlays
+    - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
     - type argument in updateProgress
-
     - Client.SystemSettings vs Client.Settings()
+
     - entropy.fetchers API docs
     - entropy.server API docs
     - entropy.client API docs
-    - entropy.server/entropy.spm: enable OR deps
     - sulfur: make use of provided_mime (and desktop_mime) metadata
 
-    - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
     - add splitdebug support?
+    - entropy.server/entropy.spm: enable OR deps
 
   1.0_beta1:
 
