@@ -2000,7 +2000,7 @@ class EntropyPackageView:
             try:
                 mydata = getattr( obj, property )
                 cell.set_property('markup', mydata)
-            except ProgrammingError:
+            except (ProgrammingError, OperationalError,):
                 self.do_refresh_view = True
             if obj.color:
                 self.set_line_status(obj, cell)
