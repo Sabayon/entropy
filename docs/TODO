@@ -2,21 +2,17 @@
   0.99.50:
 
     - "reagent spm orphans" doesn't seem to play nice with overlays
-    - entropy.client/entropy.server: subclass EntropyRepository and remove
-        etpConst usage (for repo type identification)
-    - entropy support for signalling spm<->entropy db out-of-sync
+    - type argument in updateProgress
 
     - Client.SystemSettings vs Client.Settings()
     - entropy.fetchers API docs
     - entropy.server API docs
     - entropy.client API docs
-    - entropy.server: enable OR deps
+    - entropy.server/entropy.spm: enable OR deps
     - sulfur: make use of provided_mime (and desktop_mime) metadata
 
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
     - add splitdebug support?
-    - Spm.extract_package_metadata, define metadata format (to make easier
-        for 3rd party implementations to define it)
 
   1.0_beta1:
 
@@ -25,31 +21,9 @@
     - entropy package metadata .dtd specs
     - complete API documentation
 
-  1.0 - deprecations:
-
-    - ditch entropyTools, dumpTools
-    - type argument in updateProgress
-
   2.0:
 
     - PackageKit replacement
     - UGC based on XML requests (all the commands into one string)
 
-  Portage split install project (backward compat):
-
-   app-office/openoffice example:
-    - define ETARGETS="core kde gnome templates java"
-      => this will install:
-         ${CATEGORY}/${PN}-core-${PV}
-         ${CATEGORY}/${PN}-kde-${PV}
-         ${CATEGORY}/${PN}-gnome-${PV}
-         ${CATEGORY}/${PN}-templates-${PV}
-         ${CATEGORY}/${PN}-java-${PV}
-     - for every ETARGETS entry there must be a defined etarget_${ETARGET}_${PHASE},
-            if not: look for ${PHASE}, if not: die
-     - every ETARGETS entry must feature RDEPEND/DEPEND/PDEPEND separate entries, for example:
-         => ETARGET_${ETARGET}_{R,P}DEPEND
-     - ${R,P}DEPEND must be always set and contain common deps, if any.
-     - every ETARGET entry automatically depends on =app-office/openoffice-${PV}
-     - there is an etargets eclass which exports "old" style phases
 
