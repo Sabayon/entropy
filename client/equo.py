@@ -775,7 +775,7 @@ def readerrorstatus():
         status = int(f.readline().strip())
         f.close()
         return status
-    except (IOError, OSError,):
+    except (IOError, OSError, ValueError):
         writeerrorstatus(0)
         return 0
 
