@@ -1355,7 +1355,11 @@ def install_packages(entropy_client,
             print_info(red(" @@ ")+mytxt)
             # check for disk space and print a warning
             ## unpackSize
-            size_match = entropy.tools.check_required_space(etpConst['entropyunpackdir'], neededSize)
+            target_dir = etpConst['entropyunpackdir']
+            while not os.path.isdir(target_dir):
+                target_dir = os.path.dirname(target_dir)
+            size_match = entropy.tools.check_required_space(target_dir,
+                neededSize)
             if not size_match:
                 mytxt = "%s: %s" % (
                     _("You don't have enough space for the installation. Free some space into"),
