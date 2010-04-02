@@ -1283,7 +1283,11 @@ class MiscMixin:
             wl = repo_sys_data['license_whitelist'].get(repo_id)
             if not wl:
                 continue
-            keys = dbconn.retrieveLicensedataKeys(pkg_id)
+            try:
+                keys = dbconn.retrieveLicensedataKeys(pkg_id)
+            except OperationalError:
+                # it has to be fault-tolerant, cope with missing tables
+                continue
             keys = [x for x in keys if x not in lic_accepted]
             for key in keys:
                 if key in wl:
