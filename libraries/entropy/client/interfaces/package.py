@@ -52,6 +52,17 @@ class Package:
         self._action = None
         self._xterm_title = ''
 
+    def __repr__(self):
+        return "<%s.Package at %s | metadata: %s | action: %s, prepared: %s>" \
+            % (__name__, hex(id(self)), self.pkgmeta, self._action,
+                self.__prepared)
+
+    def __str__(self):
+        return repr(self)
+
+    def __unicode__(self):
+        return unicode(repr(self))
+
     def kill(self):
         self.pkgmeta.clear()
 
