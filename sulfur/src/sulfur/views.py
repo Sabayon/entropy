@@ -186,9 +186,12 @@ class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
         for po in packages:
             try:
-                myinitial = po.onlyname.lower()[0]
+                name = po.onlyname
+                if not name:
+                    continue
             except DbError:
                 continue
+            myinitial = name.lower()[0]
             objs = categories.setdefault(myinitial, [])
             objs.append(po)
 
