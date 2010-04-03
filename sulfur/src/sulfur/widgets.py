@@ -59,7 +59,10 @@ class CellRendererStars(gtk.GenericCellRenderer):
             xt = widget.style.xthickness
             empty = gtk.Image()
             empty.set_from_file(const.empty_background)
-            empty_buf = empty.get_pixbuf()
+            try:
+                empty_buf = empty.get_pixbuf()
+            except ValueError:
+                return
 
             if self.value_voted:
                 star = gtk.Image()
