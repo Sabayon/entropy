@@ -7112,16 +7112,19 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def _createNeededIndex(self):
         if self.indexing:
-            self._cursor().executescript("""
-                CREATE INDEX IF NOT EXISTS neededindex ON neededreference
-                    ( library );
-                CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed
-                    ( idneeded );
-                CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed
-                    ( idpackage );
-                CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed
-                    ( elfclass );
-            """)
+            try:
+                self._cursor().executescript("""
+                    CREATE INDEX IF NOT EXISTS neededindex ON neededreference
+                        ( library );
+                    CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed
+                        ( idneeded );
+                    CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed
+                        ( idpackage );
+                    CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed
+                        ( elfclass );
+                """)
+            except OperationalError:
+                pass
 
     def _createMessagesIndex(self):
         if self.indexing:
