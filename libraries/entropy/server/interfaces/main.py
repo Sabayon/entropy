@@ -201,6 +201,24 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # atomic !
             os.rename(tmp_revision_file, revision_file)
 
+            # auto-update package sets
+            self._server.output(
+                "[repo:%s|%s] %s" % (
+                        blue(repo),
+                        red(_("database")),
+                        blue(_("syncing package sets")),
+                    ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ ")
+            )
+            cur_sets = entropy_repository_instance.retrievePackageSets()
+            sys_sets = self._entropy._get_configured_package_sets(repo)
+            if cur_sets != sys_sets:
+                self._entropy._update_database_package_sets(repo,
+                    dbconn = entropy_repository_instance)
+            entropy_repository_instance.commitChanges(no_plugins = True)
+
         return 0
 
     def _get_category_description_from_disk(self, category):
@@ -3736,6 +3754,7 @@ class ServerRepositoryMixin:
                 header = brown(" @@ ")
             )
             conn.createAllIndexes()
+            conn.commitChanges(no_plugins = True)
 
         if do_cache:
             # !!! also cache just_reading otherwise there will be
@@ -3743,14 +3762,6 @@ class ServerRepositoryMixin:
             self._server_dbcache[
                 (repo, etpConst['systemroot'], local_dbfile, read_only,
                 no_upload, just_reading, use_branch, lock_remote,)] = conn
-
-        # auto-update package sets
-        if (not read_only) and (not is_new):
-            cur_sets = conn.retrievePackageSets()
-            sys_sets = self._get_configured_package_sets(repo)
-            if cur_sets != sys_sets:
-                self._update_database_package_sets(repo, dbconn = conn)
-            conn.commitChanges()
 
         return conn
 
