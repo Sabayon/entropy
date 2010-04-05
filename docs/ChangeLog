@@ -1,3 +1,15 @@
+commit 1bf893e0274dfc7cf705523186d2ea31052b135a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 5 14:53:14 2010 +0200
+
+    [entropy.client.interfaces.services.ugc] fix typo in entropy.tools function calls
+
+commit ea496de6a825a20dff48c47877ed44443965cddc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 5 11:36:47 2010 +0200
+
+    Tagging Entropy version 0.99.40.1
+
 commit 1e01434e28b5b15648d006ae9703651d9ac03945
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Apr 3 19:41:41 2010 +0200
