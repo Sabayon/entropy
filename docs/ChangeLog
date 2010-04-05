@@ -1,3 +1,93 @@
+commit 1e01434e28b5b15648d006ae9703651d9ac03945
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 3 19:41:41 2010 +0200
+
+    [sulfur] CellRendererStars: catch get_pixbuf() exceptions
+
+commit eb2b2128983ccaeb822d7cd7be7c3b110e05b8d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 23:00:55 2010 +0200
+
+    [entropy.client.interfaces.package] add __repr__, __str__, __unicode__ to Package class
+
+commit 7af13daecbd0ed61ea52b6184a4345988a8427de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 19:16:51 2010 +0200
+
+    [equo] readerrorstatus: catch ValueError exception
+
+commit e2c52cc58a7cf20e07a10a974afbf9f0d086cbd0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 19:15:56 2010 +0200
+
+    [sulfur] NameSortPackageViewModelInjector: make sure that EntropyPackage.onlyname value is valid
+
+commit 12514730f85e5cf3fc71992dfbe194def3c771c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 19:11:34 2010 +0200
+
+    [entropy.client.interfaces.package] remove unused function calls
+
+commit 17a3b0bb584454fc1d45dff0331c78871f8b95d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 19:11:21 2010 +0200
+
+    [equo] fix "equo help"
+
+commit 472c12b0a6d3024abcc22f091810ccff8a2f0c66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 14:37:27 2010 +0200
+
+    [todo] update TODO
+
+commit 9e3e49ee56b574cddd9d1180deade981669921bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 14:31:30 2010 +0200
+
+    [entropy.client.interfaces.methods] Client.get_licenses_to_accept: cope with broken EntropyRepository instances
+
+commit 73621dfe3974a0c9079b995a9040879b288de459
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 14:28:20 2010 +0200
+
+    [equo] call entropy.tools.check_required_space passing a valid directory path
+
+commit 00160a892c402b05ef418aa96f0c1745fe3f3b01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 14:22:19 2010 +0200
+
+    [sulfur] catch OperationalError when querying EntropyPackage
+
+commit febafa8a8d554d38a230d6b508fa999f93b627a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 14:20:22 2010 +0200
+
+    [todo] update TODO
+
+commit 877f769fb37cd77cbd55871070bdf3ad51f06e60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 2 14:16:29 2010 +0200
+
+    [entropy] properly import entropy.tools and entropy.dump
+
+commit 7d3663dec3625a1ec66945dd5e2b816f9d7afcaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 21:25:40 2010 +0200
+
+    [todo] update TODO
+
+commit fd24c89d150d2cd0d948d1fa6426d40ba1921115
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 21:25:22 2010 +0200
+
+    [entropy.db] always make sure that provided_mime table is available before querying it
+
+commit c3b390bc66d9efbdcdd9b5d0f37f71317e50b719
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 30 20:59:54 2010 +0200
+
+    Tagging Entropy version 0.99.40
+
 commit c78985335c8a4922185aa9e2a2094662206a5478
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 30 20:59:12 2010 +0200
