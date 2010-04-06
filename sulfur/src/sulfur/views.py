@@ -2053,7 +2053,7 @@ class EntropyPackageView:
         try:
             repoid = pkg.repoid_clean
             key = pkg.key
-        except ProgrammingError:
+        except (ProgrammingError, OperationalError,):
             return
 
         #const_debug_write(__name__, "_get_cached_pkg_ugc_icon called")
