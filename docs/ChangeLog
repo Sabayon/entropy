@@ -1,3 +1,33 @@
+commit 4d2e85d9bc55bd34e8543ec59700286443c4c344
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 11:15:33 2010 +0200
+
+    [entropy.spm] PortagePlugin, fix function definition for __remove_kernel_tag_from_slot
+
+commit c92998cae7386e65fc11540af90a4943a5e56fe6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 6 11:18:12 2010 +0200
+
+    [sulfur] EntropyPackageView: catch OperationalError exception in new_ugc_pixbuf
+
+commit ac26bb678323b9411afcaf3a5f10fa9d5e456272
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 5 22:04:25 2010 +0200
+
+    [entropy.db] EntropyRepository: catch OperationalError on _createNeededIndex(), column elfclass can be unavailable
+
+commit 06f721ba96f1f4cca647a5b867ce13c010fef98f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 5 21:59:55 2010 +0200
+
+    [entropy.server] move package sets metadata update inside server-side EntropyRepository commit_hook, improve speed
+
+commit 34716dcb522b356049c7b2d1b000020c547a31b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 5 14:54:13 2010 +0200
+
+    Tagging Entropy version 0.99.40.2
+
 commit 95e7237297af0fbaf1d605f2eccad398d85a80fc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 5 14:53:54 2010 +0200
