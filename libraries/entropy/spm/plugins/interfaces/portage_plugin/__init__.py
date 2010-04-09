@@ -2473,7 +2473,7 @@ class PortagePlugin(SpmPlugin):
 
         vartree.dbapi._bump_mtime(portage_cpv)
 
-    def __remove_kernel_tag_from_slot(slot):
+    def __remove_kernel_tag_from_slot(self, slot):
         return slot[::-1].split(",", 1)[-1][::-1]
 
     def add_installed_package(self, package_metadata):
