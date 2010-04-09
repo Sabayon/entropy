@@ -2465,13 +2465,15 @@ class PortagePlugin(SpmPlugin):
         root = etpConst['systemroot'] + os.path.sep
         vartree = self._get_portage_vartree(root = root)
         portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
-        vartree.dbapi._bump_mtime(portage_cpv)
+        if hasattr(vartree.dbapi, '_bump_mtime'):
+            vartree.dbapi._bump_mtime(portage_cpv)
 
         with open(cont_path, "wb") as cont_f:
             write_contents(content_meta, root, cont_f)
             cont_f.flush()
 
-        vartree.dbapi._bump_mtime(portage_cpv)
+        if hasattr(vartree.dbapi, '_bump_mtime'):
+            vartree.dbapi._bump_mtime(portage_cpv)
 
     def __remove_kernel_tag_from_slot(self, slot):
         return slot[::-1].split(",", 1)[-1][::-1]
