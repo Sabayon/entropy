@@ -213,9 +213,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 header = brown(" @@ ")
             )
             cur_sets = entropy_repository_instance.retrievePackageSets()
-            sys_sets = self._entropy._get_configured_package_sets(repo)
+            sys_sets = self._server._get_configured_package_sets(repo)
             if cur_sets != sys_sets:
-                self._entropy._update_database_package_sets(repo,
+                self._server._update_database_package_sets(repo,
                     dbconn = entropy_repository_instance)
             entropy_repository_instance.commitChanges(no_plugins = True)
 
