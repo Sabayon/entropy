@@ -1,3 +1,15 @@
+commit 589579339f2be6bbce7fe6ad99a6bdd4164ba5a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 12:42:18 2010 +0200
+
+    [entropy.server] fix invalid Server instance reference
+
+commit 19c88efe4b710e7f8527f0c0b72cd894e7f15def
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 11:16:18 2010 +0200
+
+    Tagging Entropy version 0.99.40.3
+
 commit 4d2e85d9bc55bd34e8543ec59700286443c4c344
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 9 11:15:33 2010 +0200
