@@ -4116,6 +4116,12 @@ class ServerRepositoryMixin:
         # reinit depends table
         self.generate_reverse_dependencies_metadata(repo)
 
+        # make sure packages are really available, it can happen
+        # after a previous failure to have garbage here
+        dbconn = self.open_server_repository(just_reading = True, repo = repo)
+        idpackages_added = set((x for x in idpackages_added if \
+            dbconn.isIdpackageAvailable(x)))
+
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo)
