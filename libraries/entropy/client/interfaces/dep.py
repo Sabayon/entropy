@@ -179,6 +179,8 @@ class CalculatorsMixin:
                 # ((14479, '4.4.2', '', 0), 'sabayonlinux.org')
                 m_id, m_repo = cached_obj[0][0], cached_obj[1]
             m_db = self.open_repository(m_repo)
+            if not const_isnumber(m_id):
+                return None
             if not m_db.isIdpackageAvailable(m_id):
                 return None
 
