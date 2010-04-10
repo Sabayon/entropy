@@ -2307,6 +2307,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @param metadata: list of dict() containing file association metadata
         @type metadata: list
         """
+        # FIXME: remove this before 2010-12-31
+        if not self._doesTableExist("packagedesktopmime"):
+            self._createPackageDesktopMimeTable()
         mime_data = [(idpackage, x['name'], x['mimetype'], x['executable'],
             x['icon']) for x in metadata]
         self._cursor().executemany("""
