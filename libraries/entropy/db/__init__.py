@@ -498,7 +498,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             try:
                 conn = self.__connection_cache.pop((th_id, pid))
                 if not self.readOnly:
-                    conn.commit()
+                    try:
+                        conn.commit()
+                    except OperationalError:
+                        # no transaction is active can cause this, bleh!
+                        pass
                 try:
                     conn.close()
                 except OperationalError:
