@@ -1443,7 +1443,11 @@ class CalculatorsMixin:
                     )
                 # get key + slot
                 try:
-                    key, slot = dbconn.retrieveKeySlot(idpackage)
+                    key_slot = dbconn.retrieveKeySlot(idpackage)
+                    if key_slot is None:
+                        # mmh... invalid entry, ignore
+                        continue
+                    key, slot = key_slot
                     matches = self._installed_repository.searchKeySlot(key, slot)
                 except (DatabaseError, IntegrityError, OperationalError,):
 
