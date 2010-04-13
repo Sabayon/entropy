@@ -18,6 +18,7 @@ import os
 import shutil
 
 from entropy.exceptions import SystemDatabaseError
+from entropy.db.exceptions import OperationalError
 from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     darkblue, purple, print_error, print_info, print_warning, writechar, \
@@ -1740,12 +1741,14 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         print_warning(mytxt)
         etpUi['pretend'] = True
 
+    installed_repo = entropy_client.installed_repository()
+
     if not resume:
 
         found_pkg_atoms = []
         if atomsdata:
             for idpackage in atomsdata:
-                if not entropy_client.installed_repository().isIdpackageAvailable(idpackage):
+                if not installed_repo.isIdpackageAvailable(idpackage):
                     continue
                 found_pkg_atoms.append(idpackage)
         else:
@@ -1754,7 +1757,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             packages = entropy_client.packages_expand(packages)
 
             for package in packages:
-                idpackage, result = entropy_client.installed_repository().atomMatch(package)
+                idpackage, result = installed_repo.atomMatch(package)
                 if idpackage == -1:
                     mytxt = "## %s: %s %s." % (
                         red(_("ATTENTION")),
@@ -1783,7 +1786,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             atomscounter += 1
 
             # get needed info
-            pkgatom = entropy_client.installed_repository().retrieveAtom(idpackage)
+            pkgatom = installed_repo.retrieveAtom(idpackage)
             if not pkgatom:
                 continue
 
@@ -1804,12 +1807,12 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
             plain_removal_queue.append(idpackage)
 
-            installedfrom = entropy_client.installed_repository().getInstalledPackageRepository(
+            installedfrom = installed_repo.getInstalledPackageRepository(
                 idpackage)
             if installedfrom is None:
                 installedfrom = _("Not available")
-            on_disk_size = entropy_client.installed_repository().retrieveOnDiskSize(idpackage)
-            pkg_size = entropy_client.installed_repository().retrieveSize(idpackage)
+            on_disk_size = installed_repo.retrieveOnDiskSize(idpackage)
+            pkg_size = installed_repo.retrieveSize(idpackage)
             disksize = entropy.tools.bytes_into_human(on_disk_size)
             disksizeinfo = " [%s]" % (bold(str(disksize)),)
 
@@ -1844,9 +1847,20 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         removal_queue = []
 
         if look_for_orphaned_packages:
-            removal_queue += entropy_client.get_removal_queue(
-                plain_removal_queue, deep = deep, recursive = recursive,
-                empty = empty)
+            try:
+                removal_queue += entropy_client.get_removal_queue(
+                    plain_removal_queue, deep = deep, recursive = recursive,
+                    empty = empty)
+            except OperationalError:
+                if entropy.tools.is_root():
+                    raise
+                # otherwise we need to deny the request
+                print_error("%s: %s." % (
+                    purple(_("Cannot calculate dependencies")),
+                    blue(_("please run equo as superuser")),
+                    )
+                )
+                return 128, -1
 
         removal_queue += [x for x in plain_removal_queue if x \
             not in removal_queue]
@@ -1863,9 +1877,8 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         total_pkg_size = 0
 
         for idpackage in set(removal_queue):
-            c_repo = entropy_client.installed_repository()
-            on_disk_size = c_repo.retrieveOnDiskSize(idpackage)
-            pkg_size = c_repo.retrieveSize(idpackage)
+            on_disk_size = installed_repo.retrieveOnDiskSize(idpackage)
+            pkg_size = installed_repo.retrieveSize(idpackage)
             if on_disk_size is not None:
                 total_removal_size += on_disk_size
             if pkg_size is not None:
@@ -1939,7 +1952,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
     invalid = set()
     for idpackage in removal_queue:
         try:
-            entropy_client.installed_repository().retrieveAtom(idpackage)
+            installed_repo.retrieveAtom(idpackage)
         except TypeError:
             invalid.add(idpackage)
     removal_queue = [x for x in removal_queue if x not in invalid]
@@ -1966,6 +1979,9 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
             rc = Package.run(xterm_header = xterm_header)
             if rc != 0:
+                # generate reverse dependencies metadata now that's done
+                # so we have fresh meat when queried with user privs
+                installed_repo.generateReverseDependenciesMetadata()
                 return -1, rc
 
         # update resume cache
@@ -1979,6 +1995,10 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         Package.kill()
         del metaopts
         del Package
+
+    # generate reverse dependencies metadata now that's done
+    # so we have fresh meat when queried with user privs
+    installed_repo.generateReverseDependenciesMetadata()
 
     print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
     return 0, 0
