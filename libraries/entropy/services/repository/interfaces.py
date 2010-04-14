@@ -51,8 +51,8 @@ class Server(SocketHost):
 
         # setup System Settings
         from entropy.core.settings.base import SystemSettings
-        self.SystemSettings = SystemSettings()
-        self.SystemSettings['socket_service']['max_connections'] = 5000
+        self._settings = SystemSettings()
+        self._settings['socket_service']['max_connections'] = 5000
 
         etpConst['socketloglevel'] = 1
         if 'external_cmd_classes' not in kwargs:

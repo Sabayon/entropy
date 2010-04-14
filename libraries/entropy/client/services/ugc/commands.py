@@ -41,7 +41,7 @@ class Base:
         self.Output = OutputInterface
         self.Service = Service
         self.output_header = ''
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.standard_answers_map = {
             'all_fine': 0,
             'not_supported_remotely': 1,
@@ -342,7 +342,7 @@ class Client(Base):
             const_convert_to_rawstring(arch),
             const_convert_to_rawstring(product),
             const_convert_to_rawstring(
-                self.SystemSettings['repositories']['branch']),
+                self._settings['repositories']['branch']),
             myidlist,
         )
 
@@ -366,7 +366,7 @@ class Client(Base):
             const_convert_to_rawstring(arch),
             const_convert_to_rawstring(product),
             const_convert_to_rawstring(
-                self.SystemSettings['repositories']['branch']),
+                self._settings['repositories']['branch']),
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
@@ -379,7 +379,7 @@ class Client(Base):
             const_convert_to_rawstring(arch),
             const_convert_to_rawstring(product),
             const_convert_to_rawstring(
-                self.SystemSettings['repositories']['branch']),
+                self._settings['repositories']['branch']),
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
@@ -393,7 +393,7 @@ class Client(Base):
             const_convert_to_rawstring(arch),
             const_convert_to_rawstring(product),
             const_convert_to_rawstring(
-                self.SystemSettings['repositories']['branch']),
+                self._settings['repositories']['branch']),
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
@@ -408,7 +408,7 @@ class Client(Base):
             const_convert_to_rawstring(arch),
             const_convert_to_rawstring(product),
             const_convert_to_rawstring(
-                self.SystemSettings['repositories']['branch']),
+                self._settings['repositories']['branch']),
             const_convert_to_rawstring(' '.join([str(x) for x in idpackages])),
         )
 
@@ -436,12 +436,12 @@ class Client(Base):
                 with open(rel_file, "r") as f:
                     release_string = f.read(512)
 
-            hw_hash = self.SystemSettings['hw_hash']
+            hw_hash = self._settings['hw_hash']
             if not hw_hash:
                 hw_hash = ''
 
             mydict = {
-                'branch': self.SystemSettings['repositories']['branch'],
+                'branch': self._settings['repositories']['branch'],
                 'release_string': release_string,
                 'hw_hash': hw_hash,
                 'pkgkeys': ' '.join(pkgkeys),

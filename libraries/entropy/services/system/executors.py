@@ -12,6 +12,7 @@
 import os
 import sys
 import subprocess
+from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
 from entropy.output import blue, red
 from entropy.exceptions import InvalidAtom
@@ -526,6 +527,7 @@ class Base:
 
         stdout_err = open(queue_data['stdout'], "a+")
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
+        sys_settings = SystemSettings()
 
         def myfunc():
             sys.stdout = stdout_err
@@ -591,7 +593,7 @@ class Base:
 
                     Entropy.output( "[%s|%s] %s" % (
                             repoid,
-                            Entropy.SystemSettings['repositories']['branch'],
+                            sys_settings['repositories']['branch'],
                             _("Adding packages"),
                         )
                     )
@@ -784,6 +786,7 @@ class Base:
         stdout_err = open(queue_data['stdout'], "a+")
         import socket
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
+        sys_settings = SystemSettings()
 
         def myfunc():
             sys.stdout = stdout_err
@@ -820,7 +823,7 @@ class Base:
                                 download_queue,
                                 removal_queue,
                                 remote_packages_data,
-                                Entropy.SystemSettings['repositories']['branch'],
+                                sys_settings['repositories']['branch'],
                                 repoid
                             )
                             if len(upload)+len(download)+len(removal)+len(copy):
@@ -873,6 +876,7 @@ class Base:
 
         stdout_err = open(queue_data['stdout'], "a+")
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
+        sys_settings = SystemSettings()
 
         def sync_remote_databases(repoid, pretend):
 
@@ -952,7 +956,7 @@ class Base:
 
                     if (not mirrors_errors) and repository_data[repoid]['db']:
 
-                        if mirrors_tainted and Entropy.SystemSettings[sys_settings_srv_plugin_id]['server']['rss']['enabled']:
+                        if mirrors_tainted and sys_settings[sys_settings_srv_plugin_id]['server']['rss']['enabled']:
                             commit_msg = repository_data[repoid]['commit_msg']
                             if not commit_msg: commit_msg = "Autodriven update"
                             ServerRssMetadata()['commitmessage'] = commit_msg

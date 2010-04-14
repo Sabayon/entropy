@@ -222,7 +222,7 @@ class CalculatorsMixin:
             repos_ck,
             atom, k_ms, mask_filter,
             hash(tuple(self._enabled_repos)),
-            hash(tuple(self.SystemSettings['repositories']['available'])),
+            hash(tuple(self._settings['repositories']['available'])),
             multi_match, multi_repo, extended_results, u_hash,
         )
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
@@ -346,7 +346,7 @@ class CalculatorsMixin:
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None):
 
-        cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
@@ -369,9 +369,9 @@ class CalculatorsMixin:
         # satisfied dependencies filter support
         # package.satisfied file support
         satisfied_kw = '__%s__satisfied_ids' % (__name__,)
-        satisfied_data = self.SystemSettings.get(satisfied_kw)
+        satisfied_data = self._settings.get(satisfied_kw)
         if satisfied_data is None:
-            satisfied_list = self.SystemSettings['satisfied']
+            satisfied_list = self._settings['satisfied']
             tmp_satisfied_data = set()
             for atom in satisfied_list:
                 matches, m_res = self.atom_match(atom, multi_match = True,
@@ -379,7 +379,7 @@ class CalculatorsMixin:
                 if m_res == 0:
                     tmp_satisfied_data |= matches
             satisfied_data = tmp_satisfied_data
-            self.SystemSettings[satisfied_kw] = satisfied_data
+            self._settings[satisfied_kw] = satisfied_data
 
         etp_cmp = entropy.tools.entropy_compare_versions
         etp_get_rev = entropy.tools.dep_get_entropy_revision
@@ -885,7 +885,7 @@ class CalculatorsMixin:
 
     def _lookup_system_mask_repository_deps(self):
 
-        client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        client_settings = self._settings[self.sys_settings_client_plugin_id]
         data = client_settings['repositories']['system_mask']
 
         if not data:
@@ -1101,7 +1101,7 @@ class CalculatorsMixin:
             matched_deps.add(depmatch)
 
         matched_repos = [x for x in \
-            self.SystemSettings['repositories']['order'] if x in matched_repos]
+            self._settings['repositories']['order'] if x in matched_repos]
         found_matches = set()
         for needed in repodata:
             for myrepo in matched_repos:
@@ -1161,7 +1161,7 @@ class CalculatorsMixin:
                 self._installed_repository.checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
-                self.SystemSettings['repositories']['branch'],
+                self._settings['repositories']['branch'],
         )),)
         if self.xcache:
             cached = self._cacher.pop(c_hash)
@@ -1478,7 +1478,7 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        client_settings = self._settings[self.sys_settings_client_plugin_id]
         critical_data = client_settings['repositories']['critical_updates']
 
         atoms = set()
@@ -1572,7 +1572,7 @@ class CalculatorsMixin:
         @rtype: tuple
         """
 
-        cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
         update = []
         remove = []
@@ -1897,7 +1897,7 @@ class CalculatorsMixin:
         pkgatom = dbconn.retrieveAtom(package_id)
         pkgkey = entropy.tools.dep_getkey(pkgatom)
         cl_set_plg = self.sys_settings_client_plugin_id
-        mask_data = self.SystemSettings[cl_set_plg]['system_mask']
+        mask_data = self._settings[cl_set_plg]['system_mask']
         mask_installed_keys = mask_data['repos_installed_keys']
 
         # cannot check this for pkgs not coming from installed pkgs repo

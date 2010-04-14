@@ -510,7 +510,7 @@ def search_belongs(files, dbconn = None, Equo = None):
 
     results = {}
     flatresults = {}
-    reverse_symlink_map = Equo.SystemSettings['system_rev_symlinks']
+    reverse_symlink_map = Equo.Settings()['system_rev_symlinks']
     for xfile in files:
         like = False
         if xfile.find("*") != -1:
@@ -593,7 +593,7 @@ def search_changelog(atoms, dbconn = None, Equo = None):
 
     if not etpUi['quiet']:
         # check developer repo mode
-        dev_repo = Equo.SystemSettings['repositories']['developer_repo']
+        dev_repo = Equo.Settings()['repositories']['developer_repo']
         if not dev_repo:
             print_warning(bold(" !!! ") + \
                 brown("%s ! [%s]" % (
@@ -668,7 +668,7 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
                 masking_reason = ''
                 if repoMasked:
                     masking_reason = ", %s" % (
-                        Equo.SystemSettings['pkg_masking_reasons'].get(
+                        Equo.Settings()['pkg_masking_reasons'].get(
                             idmasking_reason),
                     )
                 print_info(blue(" %s: " % (_("Masked"),) ) + \
@@ -832,7 +832,7 @@ def search_orphaned_files(Equo = None):
     clientDbconn = Equo.installed_repository()
 
     # start to list all files on the system:
-    dirs = Equo.SystemSettings['system_dirs']
+    dirs = Equo.Settings()['system_dirs']
     filepath = entropy.tools.get_random_temp_file()
     if os.path.isfile(filepath):
         os.remove(filepath)
@@ -841,11 +841,11 @@ def search_orphaned_files(Equo = None):
     tdbconn.dropAllIndexes()
 
     import re
-    reverse_symlink_map = Equo.SystemSettings['system_rev_symlinks']
-    system_dirs_mask = [x for x in Equo.SystemSettings['system_dirs_mask'] \
+    reverse_symlink_map = Equo.Settings()['system_rev_symlinks']
+    system_dirs_mask = [x for x in Equo.Settings()['system_dirs_mask'] \
         if entropy.tools.is_valid_path(x)]
     system_dirs_mask_regexp = []
-    for mask in Equo.SystemSettings['system_dirs_mask']:
+    for mask in Equo.Settings()['system_dirs_mask']:
         reg_mask = re.compile(mask)
         system_dirs_mask_regexp.append(reg_mask)
 
@@ -908,9 +908,9 @@ def search_orphaned_files(Equo = None):
 
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (_("Analyzed directories"),) )+ \
-            ' '.join(Equo.SystemSettings['system_dirs']))
+            ' '.join(Equo.Settings()['system_dirs']))
         print_info(red(" @@ ") + blue("%s: " % (_("Masked directories"),) ) + \
-            ' '.join(Equo.SystemSettings['system_dirs_mask']))
+            ' '.join(Equo.Settings()['system_dirs_mask']))
         print_info(red(" @@ ")+blue("%s: " % (
             _("Number of files collected on the filesystem"),) ) + \
             bold(str(totalfiles)))
@@ -1169,7 +1169,7 @@ def search_package(packages, Equo = None, get_results = False,
 
             if not etpUi['quiet'] and not get_results:
                 print_info(blue("  #" + str(repo_number)) + \
-                    bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+                    bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
             dbconn = Equo.open_repository(repo)
             my_found = do_search(dbconn)
@@ -1256,7 +1256,7 @@ def search_slotted_packages(slots, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #"+str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
         for slot in slots:
@@ -1331,7 +1331,7 @@ def search_tagged_packages(tags, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
         for tag in tags:
@@ -1401,7 +1401,7 @@ def search_licenses(licenses, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
 
@@ -1443,7 +1443,7 @@ def search_description(descriptions, Equo = None):
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
         descdata = search_descriptions(descriptions, dbconn, Equo = Equo)
@@ -1551,7 +1551,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         if idpackage_masked == -1:
             pkgmasked = True
             masking_reason = ", %s" % (
-                Equo.SystemSettings['pkg_masking_reasons'].get(
+                Equo.Settings()['pkg_masking_reasons'].get(
                     idmasking_reason),)
 
         print_info(darkgreen("       %s:\t\t" % (_("Masked"),) ) + \

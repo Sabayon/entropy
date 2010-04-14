@@ -193,7 +193,7 @@ def common_flate(entropy_client, mytbz2s, action, savedir = None):
 
 def inflate_handler(entropy_client, mytbz2s, savedir):
 
-    branch = entropy_client.SystemSettings['repositories']['branch']
+    branch = entropy_client.Settings()['repositories']['branch']
     print_info(brown(" %s: " % (_("Using branch"),))+bold(branch))
 
     Spm = entropy_client.Spm()

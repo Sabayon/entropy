@@ -607,14 +607,16 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.openclientdb = True
 
         # setup package settings (masking and other stuff)
+        # TODO: kept for backward compatibility, will be removed
         self.SystemSettings = SystemSettings()
+        self._settings = self.SystemSettings
         const_debug_write(__name__, "SystemSettings loaded")
 
         # class init
         LoadersMixin.__init__(self)
 
         self.clientLog = LogFile(
-            level = self.SystemSettings['system']['log_level'],
+            level = self._settings['system']['log_level'],
             filename = etpConst['equologfile'], header = "[client]")
 
         self.MultipleUrlFetcher = multiple_url_fetcher
@@ -680,12 +682,11 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if self.repo_validation:
             self._validate_repositories()
         else:
-            self._enabled_repos.extend(
-                self.SystemSettings['repositories']['order'])
+            self._enabled_repos.extend(self._settings['repositories']['order'])
 
         # add our SystemSettings plugin
         # Make sure we connect Entropy Client plugin AFTER client db init
-        self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
+        self._settings.add_plugin(self.sys_settings_client_plugin)
 
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
@@ -704,12 +705,12 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                 self._installed_repository.closeDB()
         if hasattr(self, 'clientLog'):
             self.clientLog.close()
-        if hasattr(self, 'SystemSettings') and \
+        if hasattr(self, '_settings') and \
             hasattr(self, 'sys_settings_client_plugin_id') and \
-            hasattr(self.SystemSettings, 'remove_plugin'):
+            hasattr(self._settings, 'remove_plugin'):
 
             try:
-                self.SystemSettings.remove_plugin(
+                self._settings.remove_plugin(
                     self.sys_settings_client_plugin_id)
             except KeyError:
                 pass
@@ -810,7 +811,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                 stored_digest)
             # store new actions
             self._installed_repository.addRepositoryUpdatesActions(etpConst['clientdbid'],
-                update_actions, self.SystemSettings['repositories']['branch'])
+                update_actions, self._settings['repositories']['branch'])
             self._installed_repository.commitChanges()
             # clear client cache
             self._installed_repository.clearCache()

@@ -44,10 +44,10 @@ class TransceiverServerHandler:
         else:
             self.myfiles = sorted([x for x in files_to_upload])
 
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
 
         # server-side speed limit
         self.speed_limit = srv_set['sync_speed_limit']
@@ -61,7 +61,7 @@ class TransceiverServerHandler:
 
         if not txc_basedir:
             # default to database directory
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
             my_path = os.path.join(
                 self.Entropy._get_remote_database_relative_path(repo), branch)
             self.txc_basedir = my_path

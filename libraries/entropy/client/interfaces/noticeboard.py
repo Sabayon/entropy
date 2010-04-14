@@ -38,7 +38,7 @@ class NoticeBoardMixin:
         @rtype: dict
         @raise KeyError: if given repository identifier is not available
         """
-        repo_data = self.SystemSettings['repositories']['available'][repoid]
+        repo_data = self._settings['repositories']['available'][repoid]
         nb_path = repo_data['local_notice_board']
 
         if not os.access(nb_path, os.R_OK) and os.path.isfile(nb_path):
@@ -64,7 +64,7 @@ class NoticeBoardMixin:
         @rtype: dict
         @raise KeyError: if given repository identifier is not available
         """
-        repo_data = self.SystemSettings['repositories']['available'][repoid]
+        repo_data = self._settings['repositories']['available'][repoid]
         nb_path = repo_data['local_notice_board_userdata']
 
         if not os.access(nb_path, os.R_OK) and os.path.isfile(nb_path):
@@ -85,7 +85,7 @@ class NoticeBoardMixin:
         @raise KeyError: if given repository identifier is not available
         @raise RepositoryError: if given repository directory is not available
         """
-        repo_data = self.SystemSettings['repositories']['available'][repoid]
+        repo_data = self._settings['repositories']['available'][repoid]
         nb_path = repo_data['local_notice_board_userdata']
 
         # check availability

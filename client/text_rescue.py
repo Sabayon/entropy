@@ -317,7 +317,7 @@ def _database_resurrect(entropy_client):
     atoms = {}
     pkgsfound = set()
 
-    repos_data = entropy_client.SystemSettings['repositories']
+    repos_data = entropy_client.Settings()['repositories']
 
     for repo in repos_data['order']:
         mytxt = red("  %s: %s") % (_("Matching in repository"),

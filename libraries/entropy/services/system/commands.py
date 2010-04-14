@@ -11,6 +11,7 @@
 """
 
 import os
+from entropy.core.settings.base import SystemSettings
 from entropy.services.skel import SocketCommands
 from entropy.const import etpConst
 
@@ -965,12 +966,13 @@ class Repository(SocketCommands):
 
     def docmd_get_available_repositories(self):
         data = {}
+        sys_settings = SystemSettings()
         data['available'] = self.HostInterface.Entropy.get_available_repositories()
         if etpConst['clientserverrepoid'] in data['available']:
             data['available'].pop(etpConst['clientserverrepoid'])
         data['community_mode'] = self.HostInterface.Entropy.community_repo
         data['current'] = self.HostInterface.Entropy.default_repository
-        data['branch'] = self.HostInterface.Entropy.SystemSettings['repositories']['branch']
+        data['branch'] = sys_settings['repositories']['branch']
         return True, data
 
     def docmd_set_default_repository(self, myargs):

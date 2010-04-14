@@ -435,7 +435,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         EntropyRepositoryPluginStore.__init__(self)
 
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.dbMatchCacheKey = EntropyCacher.CACHE_IDS['db_match']
         self.client_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -1264,7 +1264,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         srv_ss_fs_plg = \
             etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
 
-        srv_plug_settings = self.SystemSettings.get(srv_ss_plg)
+        srv_plug_settings = self._settings.get(srv_ss_plg)
         if srv_plug_settings is not None:
             if srv_plug_settings['server']['exp_based_scope']:
                 # in case support is enabled, return an empty set
@@ -1272,7 +1272,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if filter_similar:
             # filter out packages in the same scope that are allowed to stay
-            idpkgs = self.SystemSettings[srv_ss_fs_plg]['repos'].get(
+            idpkgs = self._settings[srv_ss_fs_plg]['repos'].get(
                 self.dbname)
             if idpkgs:
                 if -1 in idpkgs:
@@ -2632,7 +2632,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @param spm_package_uid: Source package Manager unique package identifier
         @type spm_package_uid: int
         """
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         self._cursor().execute("""
         DELETE FROM counters WHERE (counter = (?) OR
@@ -7870,43 +7870,43 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def _idpackageValidator_live(self, idpackage, reponame):
 
-        ref = self.SystemSettings['pkg_masking_reference']
+        ref = self._settings['pkg_masking_reference']
         if (idpackage, reponame) in \
-            self.SystemSettings['live_packagemasking']['mask_matches']:
+            self._settings['live_packagemasking']['mask_matches']:
 
             # do not cache this
             return -1, ref['user_live_mask']
 
         elif (idpackage, reponame) in \
-            self.SystemSettings['live_packagemasking']['unmask_matches']:
+            self._settings['live_packagemasking']['unmask_matches']:
 
             return idpackage, ref['user_live_unmask']
 
     def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
 
         mykw = "%smask_ids" % (reponame,)
-        user_package_mask_ids = self.SystemSettings.get(mykw)
+        user_package_mask_ids = self._settings.get(mykw)
 
         if not isinstance(user_package_mask_ids, (list, set)):
             user_package_mask_ids = set()
 
-            for atom in self.SystemSettings['mask']:
+            for atom in self._settings['mask']:
                 matches, r = self.atomMatch(atom, multiMatch = True,
                     packagesFilter = False)
                 if r != 0:
                     continue
                 user_package_mask_ids |= set(matches)
 
-            self.SystemSettings[mykw] = user_package_mask_ids
+            self._settings[mykw] = user_package_mask_ids
 
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            ref = self.SystemSettings['pkg_masking_reference']
+            ref = self._settings['pkg_masking_reference']
             myr = ref['user_package_mask']
 
             try:
 
-                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                cl_data = self._settings[self.client_settings_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = -1, myr
 
@@ -7919,29 +7919,29 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         live):
 
         # see if we can unmask by just lookin into user
-        # package.unmask stuff -> self.SystemSettings['unmask']
+        # package.unmask stuff -> self._settings['unmask']
         mykw = "%sunmask_ids" % (reponame,)
-        user_package_unmask_ids = self.SystemSettings.get(mykw)
+        user_package_unmask_ids = self._settings.get(mykw)
 
         if not isinstance(user_package_unmask_ids, (list, set)):
 
             user_package_unmask_ids = set()
-            for atom in self.SystemSettings['unmask']:
+            for atom in self._settings['unmask']:
                 matches, r = self.atomMatch(atom, multiMatch = True,
                     packagesFilter = False)
                 if r != 0:
                     continue
                 user_package_unmask_ids |= set(matches)
 
-            self.SystemSettings[mykw] = user_package_unmask_ids
+            self._settings[mykw] = user_package_unmask_ids
 
         if idpackage in user_package_unmask_ids:
 
-            ref = self.SystemSettings['pkg_masking_reference']
+            ref = self._settings['pkg_masking_reference']
             myr = ref['user_package_unmask']
             try:
 
-                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                cl_data = self._settings[self.client_settings_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = idpackage, myr
 
@@ -7955,7 +7955,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # check if repository packages.db.mask needs it masked
         repos_mask = {}
         client_plg_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        client_settings = self.SystemSettings.get(client_plg_id, {})
+        client_settings = self._settings.get(client_plg_id, {})
         if client_settings:
             repos_mask = client_settings['repositories']['mask']
 
@@ -7979,13 +7979,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
             if idpackage in repomask_ids:
 
-                ref = self.SystemSettings['pkg_masking_reference']
+                ref = self._settings['pkg_masking_reference']
                 myr = ref['repository_packages_db_mask']
 
                 try:
 
                     plg_id = self.client_settings_plugin_id
-                    cl_data = self.SystemSettings[plg_id]
+                    cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
                     validator_cache[(idpackage, reponame, live)] = -1, myr
 
@@ -7997,22 +7997,22 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     def _idpackageValidator_package_license_mask(self, idpackage, reponame,
         live):
 
-        if not self.SystemSettings['license_mask']:
+        if not self._settings['license_mask']:
             return
 
         mylicenses = self.retrieveLicense(idpackage)
         mylicenses = mylicenses.strip().split()
-        lic_mask = self.SystemSettings['license_mask']
+        lic_mask = self._settings['license_mask']
         for mylicense in mylicenses:
 
             if mylicense not in lic_mask:
                 continue
 
-            ref = self.SystemSettings['pkg_masking_reference']
+            ref = self._settings['pkg_masking_reference']
             myr = ref['user_license_mask']
             try:
 
-                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                cl_data = self._settings[self.client_settings_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = -1, myr
 
@@ -8027,7 +8027,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # ** is fine then
         mykeywords = self.retrieveKeywords(idpackage) or set([''])
 
-        mask_ref = self.SystemSettings['pkg_masking_reference']
+        mask_ref = self._settings['pkg_masking_reference']
 
         # firstly, check if package keywords are in etpConst['keywords']
         # (universal keywords have been merged from package.keywords)
@@ -8036,7 +8036,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             myr = mask_ref['system_keyword']
             try:
 
-                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                cl_data = self._settings[self.client_settings_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = idpackage, myr
 
@@ -8047,9 +8047,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # if we get here, it means we didn't find mykeywords
         # in etpConst['keywords']
-        # we need to seek self.SystemSettings['keywords']
+        # we need to seek self._settings['keywords']
         # seek in repository first
-        keyword_repo = self.SystemSettings['keywords']['repositories']
+        keyword_repo = self._settings['keywords']['repositories']
 
         for keyword in list(keyword_repo.get(reponame, {}).keys()):
 
@@ -8066,7 +8066,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 try:
 
                     plg_id = self.client_settings_plugin_id
-                    cl_data = self.SystemSettings[plg_id]
+                    cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
                     validator_cache[(idpackage, reponame, live)] = \
                         idpackage, myr
@@ -8096,7 +8096,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 try:
 
                     plg_id = self.client_settings_plugin_id
-                    cl_data = self.SystemSettings[plg_id]
+                    cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
                     validator_cache[(idpackage, reponame, live)] = \
                         idpackage, myr
@@ -8105,7 +8105,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     pass
                 return idpackage, myr
 
-        keyword_pkg = self.SystemSettings['keywords']['packages']
+        keyword_pkg = self._settings['keywords']['packages']
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
@@ -8142,7 +8142,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 try:
 
                     plg_id = self.client_settings_plugin_id
-                    cl_data = self.SystemSettings[plg_id]
+                    cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
                     validator_cache[(idpackage, reponame, live)] = \
                         idpackage, myr
@@ -8159,7 +8159,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # check if repository contains keyword unmasking data
 
         plg_id = self.client_settings_plugin_id
-        cl_data = self.SystemSettings.get(plg_id)
+        cl_data = self._settings.get(plg_id)
         if cl_data is None:
             # SystemSettings Entropy Client plugin not available
             return
@@ -8244,7 +8244,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         reponame = self.dbname[len(etpConst['dbnamerepoprefix']):]
         try:
-            cl_data = self.SystemSettings[self.client_settings_plugin_id]
+            cl_data = self._settings[self.client_settings_plugin_id]
             validator_cache = cl_data['masking_validation']['cache']
         except KeyError: # plugin does not exist
             validator_cache = {} # fake
@@ -8288,7 +8288,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return data
 
         # holy crap, can't validate
-        myr = self.SystemSettings['pkg_masking_reference']['completely_masked']
+        myr = self._settings['pkg_masking_reference']['completely_masked']
         validator_cache[(idpackage, reponame, live)] = -1, myr
         return -1, myr
 

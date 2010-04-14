@@ -21,7 +21,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.default_repo = "foo"
         etpConst['defaultserverrepositoryid'] = self.default_repo
         etpConst['uid'] = 0
-        self.SystemSettings = SystemSettings()
 
         # create fake server repo
         self.Server = Server(fake_default_repo_id = self.default_repo,

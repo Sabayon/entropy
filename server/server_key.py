@@ -37,7 +37,7 @@ def key(myopts):
 
     rc = -10
     entropy_srv = Server()
-    sys_set = entropy_srv.SystemSettings[entropy_srv.sys_settings_plugin_id]['server']
+    sys_set = entropy_srv.Settings()[entropy_srv.sys_settings_plugin_id]['server']
     avail_repos = sys_set['repositories']
 
     def validate_repos(repos, entropy_srv):

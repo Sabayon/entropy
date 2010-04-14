@@ -2802,7 +2802,8 @@ class PortagePlugin(SpmPlugin):
         ## WARNING: it doesn't handle multi-line variables, yet. remember this.
         system_make_conf = PortagePlugin._config_files_map['global_make_conf']
 
-        avail_data = entropy_client.SystemSettings['repositories']['available']
+        sys_settings = SystemSettings()
+        avail_data = sys_settings['repositories']['available']
         repo_dbpath = avail_data[repo]['dbpath']
         repo_make_conf = os.path.join(repo_dbpath,
             os.path.basename(system_make_conf))
@@ -2922,7 +2923,8 @@ class PortagePlugin(SpmPlugin):
     @staticmethod
     def _config_updates_make_profile(entropy_client, repo):
 
-        avail_data = entropy_client.SystemSettings['repositories']['available']
+        sys_settings = SystemSettings()
+        avail_data = sys_settings['repositories']['available']
         repo_dbpath = avail_data[repo]['dbpath']
         profile_link = PortagePlugin._config_files_map['global_make_profile']
         profile_link_name = os.path.basename(profile_link)
@@ -2988,8 +2990,8 @@ class PortagePlugin(SpmPlugin):
             )
             return 0
 
-        default_repo = \
-            entropy_client.SystemSettings['repositories']['default_repository']
+        sys_settings = SystemSettings()
+        default_repo = sys_settings['repositories']['default_repository']
 
         if default_repo == entropy_repository_id:
             PortagePlugin._config_updates_make_conf(entropy_client,

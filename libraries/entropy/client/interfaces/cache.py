@@ -25,17 +25,17 @@ class CacheMixin:
     def _validate_repositories_cache(self):
         # is the list of repos changed?
         cached = self._cacher.pop(CacheMixin.REPO_LIST_CACHE_ID)
-        if cached != self.SystemSettings['repositories']['order']:
+        if cached != self._settings['repositories']['order']:
             # invalidate matching cache
             try:
-                self.SystemSettings._clear_repository_cache(repoid = None)
+                self._settings._clear_repository_cache(repoid = None)
             except IOError:
                 pass
             self._store_repository_list_cache()
 
     def _store_repository_list_cache(self):
         self._cacher.push(CacheMixin.REPO_LIST_CACHE_ID,
-            self.SystemSettings['repositories']['order'],
+            self._settings['repositories']['order'],
             async = False)
 
     def clear_cache(self):
@@ -97,7 +97,7 @@ class CacheMixin:
             self._enabled_repos,
             # needed when users do bogus things like editing config files
             # manually (branch setting)
-            self.SystemSettings['repositories']['branch'],
+            self._settings['repositories']['branch'],
             )
         ))
 
@@ -122,7 +122,7 @@ class CacheMixin:
 
     def _get_updates_cache(self, empty_deps, db_digest = None):
 
-        misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
+        misc_settings = self._settings[self.sys_settings_client_plugin_id]['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
         if self.xcache:
@@ -142,11 +142,11 @@ class CacheMixin:
 
         c_hash = str(hash("%s|%s|%s|%s|%s|%s" % (
             db_digest, empty_deps, self._enabled_repos,
-            self.SystemSettings['repositories']['order'],
+            self._settings['repositories']['order'],
             ignore_spm_downgrades,
             # needed when users do bogus things like editing config files
             # manually (branch setting)
-            self.SystemSettings['repositories']['branch'],
+            self._settings['repositories']['branch'],
         )))
         return "%s%s" % (EntropyCacher.CACHE_IDS['world_update'], c_hash,)
 
@@ -164,8 +164,8 @@ class CacheMixin:
 
         return str(hash("%s|%s|%s|%s" % (
             db_digest, self._enabled_repos,
-            self.SystemSettings['repositories']['order'],
+            self._settings['repositories']['order'],
             # needed when users do bogus things like editing config files
             # manually (branch setting)
-            self.SystemSettings['repositories']['branch'],
+            self._settings['repositories']['branch'],
         )))

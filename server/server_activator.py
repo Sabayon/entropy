@@ -50,7 +50,7 @@ def sync(options, just_tidy = False):
 
     sys_settings_plugin_id = \
         etpConst['system_settings_plugins_ids']['server_plugin']
-    srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+    srv_data = Entropy.Settings()[sys_settings_plugin_id]['server']
 
     repos = [Entropy.default_repository]
     if sync_all:
@@ -162,7 +162,7 @@ def packages(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+            srv_data = Entropy.Settings()[sys_settings_plugin_id]['server']
             repos = sorted(srv_data['repositories'].keys())
 
         rc = 0
@@ -418,7 +418,7 @@ def repo(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+            srv_data = Entropy.Settings()[sys_settings_plugin_id]['server']
             repos = sorted(srv_data['repositories'].keys())
 
         problems = 0

@@ -13,6 +13,7 @@
 import os
 import shutil
 from entropy.core import Singleton
+from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import SSLError, TimeoutError, RepositoryError, \
     ConnectionError, PermissionDenied
 from entropy.const import etpConst, const_setup_file, const_setup_perms
@@ -43,10 +44,11 @@ class Client:
 
     def connect_to_service(self, repository, timeout = None):
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        sys_settings = SystemSettings()
+        avail_data = sys_settings['repositories']['available']
         # also try excluded repos
         if repository not in avail_data:
-            avail_data = self.Entropy.SystemSettings['repositories']['excluded']
+            avail_data = sys_settings['repositories']['excluded']
         if repository not in avail_data:
             raise RepositoryError('repository is not available')
 

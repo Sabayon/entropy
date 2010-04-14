@@ -63,7 +63,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         """
         EntropyRepositoryPlugin.__init__(self)
         self.Cacher = EntropyCacher()
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.srv_sys_settings_plugin = \
             etpConst['system_settings_plugins_ids']['server_plugin']
         self._server = server_interface
@@ -330,7 +330,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         # handle server-side repo RSS support
         sys_set_plug = self.srv_sys_settings_plugin
-        if self.SystemSettings[sys_set_plug]['server']['rss']['enabled']:
+        if self._settings[sys_set_plug]['server']['rss']['enabled']:
             self._write_rss_for_added_package(entropy_repository_instance,
                 package_data)
 
@@ -354,7 +354,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         # handle server-side repo RSS support
         sys_set_plug = self.srv_sys_settings_plugin
-        if self.SystemSettings[sys_set_plug]['server']['rss']['enabled'] \
+        if self._settings[sys_set_plug]['server']['rss']['enabled'] \
             and (not from_add_package):
 
             # store addPackage action
@@ -860,7 +860,7 @@ class ServerSettingsMixin:
             etpConst['packagesrelativepath_basedir_restricted']]
 
     def _get_remote_database_relative_path(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['database_relative_path']
@@ -872,19 +872,19 @@ class ServerSettingsMixin:
             etpConst['etpdatabasefile'])
 
     def _get_local_store_directory(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['store_dir']
 
     def _get_local_upload_directory(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['upload_basedir']
 
     def _get_local_repository_base_directory(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['repo_basedir']
@@ -946,7 +946,7 @@ class ServerSettingsMixin:
             etpConst['etpdatabaselicwhitelistfile'])
 
     def _get_local_database_rss_file(self, repo = None, branch = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return os.path.join(self._get_local_database_dir(repo, branch),
@@ -1048,21 +1048,21 @@ class ServerSettingsMixin:
             etpConst['etpdatabasekeywordsfile'])
 
     def _get_local_database_dir(self, repo = None, branch = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         return os.path.join(srv_set['repositories'][repo]['database_dir'],
             branch)
 
     def _get_missing_dependencies_blacklist_file(self, repo = None,
         branch = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         return os.path.join(srv_set['repositories'][repo]['database_dir'],
             branch, etpConst['etpdatabasemissingdepsblfile'])
 
@@ -1111,28 +1111,28 @@ class ServerSettingsMixin:
             os.remove(lock_file)
 
     def complete_remote_package_relative_path(self, pkg_rel_url, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return os.path.join(
             srv_set['repositories'][repo]['remote_repo_basedir'], pkg_rel_url)
 
     def complete_local_upload_package_path(self, pkg_rel_url, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return os.path.join(srv_set['repositories'][repo]['upload_basedir'],
             pkg_rel_url)
 
     def complete_local_package_path(self, pkg_rel_url, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return os.path.join(srv_set['repositories'][repo]['repo_basedir'],
             pkg_rel_url)
 
     def get_remote_mirrors(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['mirrors'][:]
@@ -1186,7 +1186,7 @@ class ServerSettingsMixin:
         @return: list of available Entropy Server repositories
         @rtype: list
         """
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         return sorted(srv_set['repositories'])
 
 
@@ -1399,7 +1399,7 @@ class ServerPackagesHandlingMixin:
         status = True
         if repo is None:
             repo = self.default_repository
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         if branch in from_branches:
             from_branches = [x for x in from_branches if x != branch]
@@ -1763,7 +1763,7 @@ class ServerPackagesHandlingMixin:
             no_upload = True, repo = to_repo)
 
         my_qa = self.QA()
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
         pull_deps_matches = []
         for idpackage, repo in my_matches:
             dbconn = self.open_server_repository(read_only = True,
@@ -1903,7 +1903,7 @@ class ServerPackagesHandlingMixin:
             # license check callback. It has to be done here because
             # we need the new path.
             updated_package_rel_path = package_rel_path
-            srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+            srv_set = self._settings[self.sys_settings_plugin_id]['server']
 
             def _package_injector_check_license(pkg_data):
                 licenses = pkg_data['license'].split()
@@ -2211,7 +2211,7 @@ class ServerPackagesHandlingMixin:
         idpackages, world = self.match_packages(packages)
         dbconn = self.open_server_repository(read_only = True, no_upload = True,
             repo = repo)
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         if world:
             self.output(
@@ -2879,7 +2879,7 @@ class ServerPackagesHandlingMixin:
         if repo is None:
             repo = self.default_repository
 
-        if to_branch != self.SystemSettings['repositories']['branch']:
+        if to_branch != self._settings['repositories']['branch']:
             mytxt = "%s: %s %s" % (
                 blue(_("Please setup your branch to")),
                 bold(to_branch),
@@ -3074,7 +3074,7 @@ class ServerQAMixin:
 
     def _deps_tester(self, default_repo = None):
 
-        sys_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        sys_set = self._settings[self.sys_settings_plugin_id]['server']
         server_repos = list(sys_set['repositories'].keys())
         installed_packages = set()
         # if a default repository is passed, we will just test against it
@@ -3129,7 +3129,7 @@ class ServerQAMixin:
             header = red(" @@ ")
         )
 
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         server_repos = list(srv_set['repositories'].keys())
         deps_not_matched = self._deps_tester(repo)
 
@@ -3320,7 +3320,7 @@ class ServerRepositoryMixin:
                 pass
         self._server_dbcache.clear()
         if mask_clear:
-            self.SystemSettings.clear()
+            self._settings.clear()
 
     def close_repository(self, dbinstance):
         found = None
@@ -3333,7 +3333,7 @@ class ServerRepositoryMixin:
             instance.closeDB()
 
     def get_available_repositories(self):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         return srv_set['repositories'].copy()
 
     def switch_default_repository(self, repoid, save = None,
@@ -3342,7 +3342,7 @@ class ServerRepositoryMixin:
         # avoid setting __default__ as default server repo
         if repoid == etpConst['clientserverrepoid']:
             return
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
 
         if save is None:
             save = self._save_repository
@@ -3365,7 +3365,7 @@ class ServerRepositoryMixin:
             self._handle_uninitialized_repository(repoid)
 
     def _setup_community_repositories_settings(self):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if self.community_repo:
             for repoid in srv_set['repositories']:
                 srv_set['repositories'][repoid]['community'] = True
@@ -3475,7 +3475,7 @@ class ServerRepositoryMixin:
         shutil.move(tmpfile, etpConst['serverconf'])
         if status:
             self.close_repositories()
-            self.SystemSettings.clear()
+            self._settings.clear()
             self._setup_services()
             self._show_interface_status()
         return status
@@ -3773,7 +3773,7 @@ class ServerRepositoryMixin:
         and Entropy repositories must be kept in sync.
         """
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         if repo is None:
             repo = self.default_repository
         self._treeupdates_repos.add(repo)
@@ -3860,7 +3860,7 @@ class ServerRepositoryMixin:
 
         # check if nonfree directory support is enabled, if not,
         # always return True.
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if not srv_set['nonfree_packages_dir_support']:
             return True
 
@@ -3880,7 +3880,7 @@ class ServerRepositoryMixin:
 
         if repo is None:
             repo = self.default_repository
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
 
         def _package_injector_check_license(pkg_data):
             licenses = pkg_data['license'].split()
@@ -4189,7 +4189,7 @@ class ServerMiscMixin:
         self.Mirrors = MirrorsServer(self)
 
     def _setup_entropy_settings(self, repo = None):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
@@ -4216,7 +4216,7 @@ class ServerMiscMixin:
                     mytxt,
                     red(self.default_repository),
                     _("current branch"),
-                    darkgreen(self.SystemSettings['repositories']['branch']),
+                    darkgreen(self._settings['repositories']['branch']),
                     purple(_("type")),
                     bold(type_txt),
                 )
@@ -4225,7 +4225,7 @@ class ServerMiscMixin:
             level = "info",
             header = red(" @@ ")
         )
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         repos = list(srv_set['repositories'].keys())
         mytxt = blue("%s:") % (_("Currently configured repositories"),)
         self.output(
@@ -4247,7 +4247,7 @@ class ServerMiscMixin:
             if isinstance(setting, const_get_stringtype()):
                 self._backup_constant(setting)
             elif isinstance(setting, dict):
-                self.SystemSettings.set_persistent_setting(setting)
+                self._settings.set_persistent_setting(setting)
 
     def generate_reverse_dependencies_metadata(self, repo = None):
         dbconn = self.open_server_repository(read_only = False,
@@ -4330,7 +4330,7 @@ class ServerMiscMixin:
         if repo is None:
             repo = self.default_repository
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         wl_file = self._get_missing_dependencies_blacklist_file(repo, branch)
         wl_data = []
         if os.path.isfile(wl_file) and os.access(wl_file, os.R_OK):
@@ -4346,7 +4346,7 @@ class ServerMiscMixin:
         if repo is None:
             repo = self.default_repository
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         wl_file = self._get_missing_dependencies_blacklist_file(repo, branch)
         wl_dir = os.path.dirname(wl_file)
         if not (os.path.isdir(wl_dir) and os.access(wl_dir, os.W_OK)):
@@ -4396,7 +4396,7 @@ class ServerMiscMixin:
         to_be_added = set()
         to_be_removed = set()
         to_be_injected = set()
-        my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        my_settings = self._settings[self.sys_settings_plugin_id]['server']
         exp_based_scope = my_settings['exp_based_scope']
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
 
@@ -4494,7 +4494,7 @@ class ServerMiscMixin:
 
                         # check if support for this is set
                         plg_id = self.sys_settings_fatscope_plugin_id
-                        exp_data = self.SystemSettings[plg_id]['repos'].get(
+                        exp_data = self._settings[plg_id]['repos'].get(
                             xrepo, set())
 
                         # only some packages are set, check if our is
@@ -4526,7 +4526,7 @@ class ServerMiscMixin:
         idpackage, repoid = match
         dbconn = self.open_server_repository(repo = repoid, just_reading = True)
         # 3600 * 24 = 86400
-        my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        my_settings = self._settings[self.sys_settings_plugin_id]['server']
         pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
         cur_unix_time = time.time()
         # if packages removal is triggered by expiration
@@ -4540,7 +4540,7 @@ class ServerMiscMixin:
         return False
 
     def _is_spm_uid_trashed(self, counter):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         server_repos = list(srv_set['repositories'].keys())
         for repo in server_repos:
             dbconn = self.open_server_repository(read_only = True,
@@ -4571,7 +4571,7 @@ class ServerMiscMixin:
     def _get_entropy_sets(self, repo = None, branch = None):
 
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         if repo is None:
             repo = self.default_repository
 
@@ -4591,7 +4591,7 @@ class ServerMiscMixin:
             if not (os.path.isfile(item_path) and \
                 os.access(item_path, os.R_OK)):
                 continue
-            item_elements = self.SystemSettings._extract_packages_from_set_file(
+            item_elements = self._settings._extract_packages_from_set_file(
                 item_path)
             if item_elements:
                 mydata[item_clean] = item_elements.copy()
@@ -4602,7 +4602,7 @@ class ServerMiscMixin:
         validate = True):
 
         if branch is None:
-            branch = self.SystemSettings['repositories']['branch']
+            branch = self._settings['repositories']['branch']
         if repo is None:
             repo = self.default_repository
 
@@ -4666,7 +4666,7 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
         self._memory_db_srv_instances = {}
         self._treeupdates_repos = set()
         self._server_dbcache = {}
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.community_repo = community_repo
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
@@ -4688,17 +4688,17 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
         # create our SystemSettings plugin
         self.sys_settings_plugin = ServerSystemSettingsPlugin(
             self.sys_settings_plugin_id, self)
-        self.SystemSettings.add_plugin(self.sys_settings_plugin)
+        self._settings.add_plugin(self.sys_settings_plugin)
 
         # Fatscope support SystemSettings plugin
         self.sys_settings_fatscope_plugin = ServerFatscopeSystemSettingsPlugin(
             self.sys_settings_fatscope_plugin_id, self)
-        self.SystemSettings.add_plugin(self.sys_settings_fatscope_plugin)
+        self._settings.add_plugin(self.sys_settings_fatscope_plugin)
 
         # Fatscope support SystemSettings plugin
         self.sys_settings_fake_cli_plugin = ServerFakeClientSystemSettingsPlugin(
             self.sys_settings_fake_cli_plugin_id, self)
-        self.SystemSettings.add_plugin(self.sys_settings_fake_cli_plugin)
+        self._settings.add_plugin(self.sys_settings_fake_cli_plugin)
 
         # setup fake repository
         if fake_default_repo:
@@ -4706,7 +4706,7 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
             self._init_generic_memory_server_repository(fake_default_repo_id,
                 fake_default_repo_desc, set_as_default = True)
 
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         self.default_repository = default_repository
         if self.default_repository is None:
             self.default_repository = srv_set['default_repository_id']
@@ -4749,9 +4749,9 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
         for plug in plugs:
             if plug is None:
                 continue
-            if not self.SystemSettings.has_plugin(plug):
+            if not self._settings.has_plugin(plug):
                 continue
-            self.SystemSettings.remove_plugin(plug)
+            self._settings.remove_plugin(plug)
 
         self.close_repositories()
 

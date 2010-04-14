@@ -71,7 +71,7 @@ class LoadersMixin:
 
     def Repositories(self, *args, **kwargs):
         cl_id = self.sys_settings_client_plugin_id
-        client_data = self.SystemSettings[cl_id]['misc']
+        client_data = self._settings[cl_id]['misc']
         kwargs['gpg'] = client_data['gpg']
         return self.__RepositoryLoader(self, *args, **kwargs)
 
@@ -97,4 +97,4 @@ class LoadersMixin:
         """
         Return SystemSettings instance
         """
-        return self.SystemSettings
+        return self._settings

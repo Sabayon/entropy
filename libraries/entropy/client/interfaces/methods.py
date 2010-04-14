@@ -48,13 +48,13 @@ class RepositoryMixin:
 
         # clear live masking validation cache, if exists
         cl_id = self.sys_settings_client_plugin_id
-        client_metadata = self.SystemSettings.get(cl_id, {})
+        client_metadata = self._settings.get(cl_id, {})
         if "masking_validation" in client_metadata:
             client_metadata['masking_validation']['cache'].clear()
 
         # valid repositories
         del self._enabled_repos[:]
-        for repoid in self.SystemSettings['repositories']['order']:
+        for repoid in self._settings['repositories']['order']:
             # open database
             try:
 
@@ -112,7 +112,7 @@ class RepositoryMixin:
         repo_key = self.__get_repository_cache_key(repoid)
         self._memory_db_instances[repo_key] = dbc
 
-        # add to self.SystemSettings['repositories']['available']
+        # add to self._settings['repositories']['available']
         repodata = {
             'repoid': repoid,
             '__temporary__': True,
@@ -143,7 +143,7 @@ class RepositoryMixin:
         old_value = self._can_run_sys_set_hooks
         self._can_run_sys_set_hooks = False
         if mask_clear:
-            self.SystemSettings.clear()
+            self._settings.clear()
         self._can_run_sys_set_hooks = old_value
 
     def open_repository(self, repoid):
@@ -173,7 +173,7 @@ class RepositoryMixin:
             if repoid.endswith(etpConst['packagesext']):
                 xcache = False
 
-        repo_data = self.SystemSettings['repositories']['available']
+        repo_data = self._settings['repositories']['available']
         if repoid not in repo_data:
             t = "%s: %s" % (_("bad repository id specified"), repoid,)
             if repoid not in self._repo_error_messages_cache:
@@ -229,7 +229,7 @@ class RepositoryMixin:
 
     def get_repository_revision(self, reponame):
 
-        db_data = self.SystemSettings['repositories']['available'][reponame]
+        db_data = self._settings['repositories']['available'][reponame]
         fname = os.path.join(db_data['dbpath'],
             etpConst['etpdatabaserevisionfile'])
         revision = -1
@@ -245,9 +245,9 @@ class RepositoryMixin:
 
     def add_repository(self, repodata):
 
-        product = self.SystemSettings['repositories']['product']
-        branch = self.SystemSettings['repositories']['branch']
-        avail_data = self.SystemSettings['repositories']['available']
+        product = self._settings['repositories']['product']
+        branch = self._settings['repositories']['branch']
+        avail_data = self._settings['repositories']['available']
         repoid = repodata['repoid']
 
         avail_data[repoid] = {}
@@ -268,27 +268,27 @@ class RepositoryMixin:
             avail_data[repoid]['pkgpath'] = repodata.get('pkgpath')
             avail_data[repoid]['__temporary__'] = repodata.get('__temporary__')
             # put at top priority, shift others
-            self.SystemSettings['repositories']['order'].insert(0, repoid)
+            self._settings['repositories']['order'].insert(0, repoid)
 
         else:
 
             self.__save_repository_settings(repodata)
-            self.SystemSettings._clear_repository_cache(repoid = repoid)
+            self._settings._clear_repository_cache(repoid = repoid)
             self.close_repositories()
             self.clear_cache()
-            self.SystemSettings.clear()
+            self._settings.clear()
 
         self._validate_repositories()
 
     def remove_repository(self, repoid, disable = False):
 
         done = False
-        if repoid in self.SystemSettings['repositories']['available']:
-            del self.SystemSettings['repositories']['available'][repoid]
+        if repoid in self._settings['repositories']['available']:
+            del self._settings['repositories']['available'][repoid]
             done = True
 
-        if repoid in self.SystemSettings['repositories']['excluded']:
-            del self.SystemSettings['repositories']['excluded'][repoid]
+        if repoid in self._settings['repositories']['excluded']:
+            del self._settings['repositories']['excluded'][repoid]
             done = True
 
         # also early remove from validRepositories to avoid
@@ -305,18 +305,18 @@ class RepositoryMixin:
 
         if done:
 
-            if repoid in self.SystemSettings['repositories']['order']:
-                self.SystemSettings['repositories']['order'].remove(repoid)
+            if repoid in self._settings['repositories']['order']:
+                self._settings['repositories']['order'].remove(repoid)
 
-            self.SystemSettings._clear_repository_cache(repoid = repoid)
-            # save new self.SystemSettings['repositories']['available'] to file
+            self._settings._clear_repository_cache(repoid = repoid)
+            # save new self._settings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
             if disable:
                 self.__save_repository_settings(repodata, disable = True)
             else:
                 self.__save_repository_settings(repodata, remove = True)
-            self.SystemSettings.clear()
+            self._settings.clear()
 
         repo_mem_key = self.__get_repository_cache_key(repoid)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
@@ -445,49 +445,49 @@ class RepositoryMixin:
         os.rename(tmp_repo_conf, repo_conf)
 
     def shift_repository(self, repoid, toidx):
-        # update self.SystemSettings['repositories']['order']
-        self.SystemSettings['repositories']['order'].remove(repoid)
-        self.SystemSettings['repositories']['order'].insert(toidx, repoid)
+        # update self._settings['repositories']['order']
+        self._settings['repositories']['order'].remove(repoid)
+        self._settings['repositories']['order'].insert(toidx, repoid)
         self.__write_ordered_repositories_entries(
-            self.SystemSettings['repositories']['order'])
-        self.SystemSettings.clear()
+            self._settings['repositories']['order'])
+        self._settings.clear()
         self.close_repositories()
-        self.SystemSettings._clear_repository_cache(repoid = repoid)
+        self._settings._clear_repository_cache(repoid = repoid)
         self._validate_repositories()
 
     def enable_repository(self, repoid):
-        self.SystemSettings._clear_repository_cache(repoid = repoid)
-        # save new self.SystemSettings['repositories']['available'] to file
+        self._settings._clear_repository_cache(repoid = repoid)
+        # save new self._settings['repositories']['available'] to file
         repodata = {}
         repodata['repoid'] = repoid
         self.__save_repository_settings(repodata, enable = True)
-        self.SystemSettings.clear()
+        self._settings.clear()
         self.close_repositories()
         self._validate_repositories()
 
     def disable_repository(self, repoid):
-        # update self.SystemSettings['repositories']['available']
+        # update self._settings['repositories']['available']
         done = False
         try:
-            del self.SystemSettings['repositories']['available'][repoid]
+            del self._settings['repositories']['available'][repoid]
             done = True
         except:
             pass
 
         if done:
             try:
-                self.SystemSettings['repositories']['order'].remove(repoid)
+                self._settings['repositories']['order'].remove(repoid)
             except (IndexError,):
                 pass
             # it's not vital to reset
-            # self.SystemSettings['repositories']['order'] counters
+            # self._settings['repositories']['order'] counters
 
-            self.SystemSettings._clear_repository_cache(repoid = repoid)
-            # save new self.SystemSettings['repositories']['available'] to file
+            self._settings._clear_repository_cache(repoid = repoid)
+            # save new self._settings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
             self.__save_repository_settings(repodata, disable = True)
-            self.SystemSettings.clear()
+            self._settings.clear()
 
         self.close_repositories()
         self._validate_repositories()
@@ -629,7 +629,7 @@ class RepositoryMixin:
         self._installed_repository.closeDB()
         self._open_installed_repository()
         # make sure settings are in sync
-        self.SystemSettings.clear()
+        self._settings.clear()
 
     def open_generic_repository(self, dbfile, dbname = None, xcache = None,
             readOnly = False, indexing_override = None, skipChecks = False):
@@ -833,8 +833,8 @@ class RepositoryMixin:
             return hooks_ran, True
 
         errors = False
-        repo_data = self.SystemSettings['repositories']['available']
-        repo_data_excl = self.SystemSettings['repositories']['available']
+        repo_data = self._settings['repositories']['available']
+        repo_data_excl = self._settings['repositories']['available']
         all_repos = sorted(set(list(repo_data.keys()) + list(repo_data_excl.keys())))
 
         for repoid in all_repos:
@@ -947,8 +947,8 @@ class RepositoryMixin:
         if client_dbconn is None:
             return hooks_ran, True
 
-        repo_data = self.SystemSettings['repositories']['available']
-        branch = self.SystemSettings['repositories']['branch']
+        repo_data = self._settings['repositories']['available']
+        branch = self._settings['repositories']['branch']
         errors = False
 
         for repoid in self._enabled_repos:
@@ -1071,7 +1071,7 @@ class MiscMixin:
 
     def _reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
-        self.SystemSettings.clear()
+        self._settings.clear()
 
     def setup_file_permissions(self, file_path):
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
@@ -1245,7 +1245,7 @@ class MiscMixin:
 
     def _is_installed_idpackage_in_system_mask(self, idpackage):
         client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        cl_set = self.SystemSettings[client_plugin_id]
+        cl_set = self._settings[client_plugin_id]
         mask_installed = cl_set['system_mask']['repos_installed']
         if idpackage in mask_installed:
             return True
@@ -1257,7 +1257,7 @@ class MiscMixin:
         (as in freedom) package.
         """
         cl_id = self.sys_settings_client_plugin_id
-        repo_sys_data = self.SystemSettings[cl_id]['repositories']
+        repo_sys_data = self._settings[cl_id]['repositories']
 
         dbconn = self.open_repository(repo_id)
 
@@ -1274,8 +1274,8 @@ class MiscMixin:
     def get_licenses_to_accept(self, install_queue):
 
         cl_id = self.sys_settings_client_plugin_id
-        repo_sys_data = self.SystemSettings[cl_id]['repositories']
-        lic_accepted = self.SystemSettings['license_accept']
+        repo_sys_data = self._settings[cl_id]['repositories']
+        lic_accepted = self._settings['license_accept']
 
         licenses = {}
         for pkg_id, repo_id in install_queue:
@@ -1327,7 +1327,7 @@ class MiscMixin:
             "branch", branch)
         # there are no valid repos atm
         del self._enabled_repos[:]
-        self.SystemSettings.clear()
+        self._settings.clear()
 
         # reset treeupdatesactions
         self.reopen_installed_repository()
@@ -1539,7 +1539,7 @@ class MatchMixin:
         if idpackage != -1:
             return False
 
-        myr = self.SystemSettings['pkg_masking_reference']
+        myr = self._settings['pkg_masking_reference']
         user_masks = [myr['user_package_mask'], myr['user_license_mask'],
             myr['user_live_mask']]
         if idreason in user_masks:
@@ -1556,7 +1556,7 @@ class MatchMixin:
         if idpackage == -1:
             return False
 
-        myr = self.SystemSettings['pkg_masking_reference']
+        myr = self._settings['pkg_masking_reference']
         user_masks = [
             myr['user_package_unmask'], myr['user_live_unmask'],
             myr['user_package_keywords'], myr['user_repo_package_keywords_all'],
@@ -1576,7 +1576,7 @@ class MatchMixin:
         rc = self._mask_unmask_package(package_match, method, methods,
             dry_run = dry_run)
         if dry_run: # inject if done "live"
-            lpm = self.SystemSettings['live_packagemasking']
+            lpm = self._settings['live_packagemasking']
             lpm['unmask_matches'].discard(package_match)
             lpm['mask_matches'].add(package_match)
         return rc
@@ -1591,7 +1591,7 @@ class MatchMixin:
         rc = self._mask_unmask_package(package_match, method, methods,
             dry_run = dry_run)
         if dry_run: # inject if done "live"
-            lpm = self.SystemSettings['live_packagemasking']
+            lpm = self._settings['live_packagemasking']
             lpm['unmask_matches'].add(package_match)
             lpm['mask_matches'].discard(package_match)
         return rc
@@ -1605,13 +1605,13 @@ class MatchMixin:
                 _("not a valid method"), method,) )
 
         self._cacher.discard()
-        self.SystemSettings._clear_repository_cache(package_match[1])
+        self._settings._clear_repository_cache(package_match[1])
         done = f(package_match, dry_run)
         if done and not dry_run:
-            self.SystemSettings.clear()
+            self._settings.clear()
 
         cl_id = self.sys_settings_client_plugin_id
-        self.SystemSettings[cl_id]['masking_validation']['cache'].clear()
+        self._settings[cl_id]['masking_validation']['cache'].clear()
         return done
 
     def _unmask_package_by_atom(self, package_match, dry_run = False):
@@ -1644,13 +1644,13 @@ class MatchMixin:
 
     def unmask_package_generic(self, package_match, keyword, dry_run = False):
         self._clear_package_mask(package_match, dry_run)
-        m_file = self.SystemSettings.get_setting_files_data()['unmask']
+        m_file = self._settings.get_setting_files_data()['unmask']
         return self._mask_unmask_package_generic(keyword, m_file,
             dry_run = dry_run)
 
     def mask_package_generic(self, package_match, keyword, dry_run = False):
         self._clear_package_mask(package_match, dry_run)
-        m_file = self.SystemSettings.get_setting_files_data()['mask']
+        m_file = self._settings.get_setting_files_data()['mask']
         return self._mask_unmask_package_generic(keyword, m_file,
             dry_run = dry_run)
 
@@ -1687,7 +1687,7 @@ class MatchMixin:
         return True
 
     def _clear_package_mask(self, package_match, dry_run = False):
-        setting_data = self.SystemSettings.get_setting_files_data()
+        setting_data = self._settings.get_setting_files_data()
         masking_list = [setting_data['mask'], setting_data['unmask']]
         return self._clear_match_generic(package_match,
             masking_list = masking_list, dry_run = dry_run)
@@ -1700,9 +1700,9 @@ class MatchMixin:
         if masking_list is None:
             masking_list = []
 
-        self.SystemSettings['live_packagemasking']['unmask_matches'].discard(
+        self._settings['live_packagemasking']['unmask_matches'].discard(
             match)
-        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+        self._settings['live_packagemasking']['mask_matches'].discard(
             match)
 
         new_mask_list = [x for x in masking_list if os.path.isfile(x) \

@@ -31,7 +31,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client._installed_repository = self.Client.open_temp_repository(
             dbname = etpConst['clientdbid'], temp_file = ":memory:")
         self.Spm = self.Client.Spm()
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
         self.test_pkgs = [_misc.get_entrofoo_test_package()]
 
     def tearDown(self):
@@ -89,24 +89,24 @@ class EntropyRepositoryTest(unittest.TestCase):
             key1: val1,
             key2: val2,
         }
-        self.SystemSettings.update(foo_data)
-        self.SystemSettings.set_persistent_setting(foo_data)
-        self.SystemSettings.clear()
-        self.assertEqual(True, key1 in self.SystemSettings)
-        self.assertEqual(True, key2 in self.SystemSettings)
-        self.assertEqual(val1, self.SystemSettings.get(key1))
-        self.assertEqual(val2, self.SystemSettings.get(key2))
+        self._settings.update(foo_data)
+        self._settings.set_persistent_setting(foo_data)
+        self._settings.clear()
+        self.assertEqual(True, key1 in self._settings)
+        self.assertEqual(True, key2 in self._settings)
+        self.assertEqual(val1, self._settings.get(key1))
+        self.assertEqual(val2, self._settings.get(key2))
 
         # now remove
-        self.SystemSettings.unset_persistent_setting(key1)
-        self.SystemSettings.clear()
-        self.assertEqual(False, key1 in self.SystemSettings)
-        self.assertEqual(True, key2 in self.SystemSettings)
+        self._settings.unset_persistent_setting(key1)
+        self._settings.clear()
+        self.assertEqual(False, key1 in self._settings)
+        self.assertEqual(True, key2 in self._settings)
 
-        self.SystemSettings.unset_persistent_setting(key2)
-        self.SystemSettings.clear()
-        self.assertEqual(False, key1 in self.SystemSettings)
-        self.assertEqual(False, key2 in self.SystemSettings)
+        self._settings.unset_persistent_setting(key2)
+        self._settings.clear()
+        self.assertEqual(False, key1 in self._settings)
+        self.assertEqual(False, key2 in self._settings)
 
     def test_memory_repository(self):
         dbconn = self.Client._init_generic_temp_repository(

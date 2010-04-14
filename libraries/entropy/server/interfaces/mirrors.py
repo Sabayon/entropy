@@ -193,10 +193,10 @@ class ServerNoticeBoardMixin:
 
     def update_notice_board(self, title, notice_text, link = None, repo = None):
 
-        rss_title = "%s Notice Board" % (self.SystemSettings['system']['name'],)
+        rss_title = "%s Notice Board" % (self._settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if not link:
             link = srv_set['rss']['website_url']
 
@@ -225,7 +225,7 @@ class ServerNoticeBoardMixin:
     def remove_from_notice_board(self, identifier, repo = None):
 
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
-        rss_title = "%s Notice Board" % (self.SystemSettings['system']['name'],)
+        rss_title = "%s Notice Board" % (self._settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
             return 0
@@ -250,7 +250,7 @@ class Server(ServerNoticeBoardMixin):
         self.Cacher = EntropyCacher()
         self.sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
 
         mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
         self._entropy.output(
@@ -384,7 +384,7 @@ class Server(ServerNoticeBoardMixin):
 
             base_path = os.path.join(
                 self._entropy._get_remote_database_relative_path(repo),
-                self.SystemSettings['repositories']['branch'])
+                self._settings['repositories']['branch'])
             lock_file = os.path.join(base_path,
                 etpConst['etpdatabaselockfile'])
 
@@ -476,7 +476,7 @@ class Server(ServerNoticeBoardMixin):
             lock_file = etpConst['etpdatabasedownloadlockfile']
             my_path = os.path.join(
                 self._entropy._get_remote_database_relative_path(repo),
-                self.SystemSettings['repositories']['branch'])
+                self._settings['repositories']['branch'])
             lock_file = os.path.join(my_path, lock_file)
 
             txc = self._entropy.Transceiver(uri)
@@ -528,7 +528,7 @@ class Server(ServerNoticeBoardMixin):
 
         my_path = os.path.join(
             self._entropy._get_remote_database_relative_path(repo),
-            self.SystemSettings['repositories']['branch'])
+            self._settings['repositories']['branch'])
 
         # create path to lock file if it doesn't exist
         if not txc_handler.is_dir(my_path):
@@ -587,7 +587,7 @@ class Server(ServerNoticeBoardMixin):
 
         my_path = os.path.join(
             self._entropy._get_remote_database_relative_path(repo),
-            self.SystemSettings['repositories']['branch'])
+            self._settings['repositories']['branch'])
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -787,14 +787,14 @@ class Server(ServerNoticeBoardMixin):
 
     def _get_remote_db_status(self, uri, repo):
 
-        sys_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        sys_set = self._settings[self.sys_settings_plugin_id]['server']
         db_format = sys_set['database_file_format']
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
             raise AttributeError("Wrong database compression method passed")
         remote_dir = os.path.join(
             self._entropy._get_remote_database_relative_path(repo),
-            self.SystemSettings['repositories']['branch'])
+            self._settings['repositories']['branch'])
 
         # let raise exception if connection is impossible
         txc = self._entropy.Transceiver(uri)
@@ -903,7 +903,7 @@ class Server(ServerNoticeBoardMixin):
         dbstatus = []
         remote_dir = os.path.join(
             self._entropy._get_remote_database_relative_path(repo),
-            self.SystemSettings['repositories']['branch'])
+            self._settings['repositories']['branch'])
         lock_file = os.path.join(remote_dir, etpConst['etpdatabaselockfile'])
         down_lock_file = os.path.join(remote_dir,
             etpConst['etpdatabasedownloadlockfile'])
@@ -929,7 +929,7 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self._entropy.default_repository
 
-        product = self.SystemSettings['repositories']['product']
+        product = self._settings['repositories']['product']
         #db_dir = self._entropy._get_local_database_dir(repo)
         rss_path = self._entropy._get_local_database_rss_file(repo)
         rss_light_path = self._entropy._get_local_database_rsslight_file(repo)
@@ -937,12 +937,12 @@ class Server(ServerNoticeBoardMixin):
         db_revision_path = self._entropy._get_local_database_revision_file(repo)
 
         rss_title = "%s Online Repository Status" % (
-            self.SystemSettings['system']['name'],)
+            self._settings['system']['name'],)
         rss_description = \
             "Keep you updated on what's going on in the %s Repository." % (
-                self.SystemSettings['system']['name'],)
+                self._settings['system']['name'],)
 
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
 
         rss_main = RSS(rss_path, rss_title, rss_description,
             maxentries = srv_set['rss']['max_entries'])
@@ -961,9 +961,9 @@ class Server(ServerNoticeBoardMixin):
                 commitmessage = ' :: ' + \
                     ServerRssMetadata()['commitmessage']
 
-            title = ": " + self.SystemSettings['system']['name'] + " " + \
+            title = ": " + self._settings['system']['name'] + " " + \
                 product[0].upper() + product[1:] + " " + \
-                self.SystemSettings['repositories']['branch'] + \
+                self._settings['repositories']['branch'] + \
                 " :: Revision: " + revision + commitmessage
 
             link = srv_set['rss']['base_url']
@@ -1525,7 +1525,7 @@ class Server(ServerNoticeBoardMixin):
 
         remote_dir = os.path.join(
             self._entropy._get_remote_database_relative_path(repo),
-            self.SystemSettings['repositories']['branch'])
+            self._settings['repositories']['branch'])
         remote_lock_file = os.path.join(remote_dir, lock_filename)
 
         txc = self._entropy.Transceiver(uri)
@@ -1607,7 +1607,7 @@ class Server(ServerNoticeBoardMixin):
         dbconn = self._entropy.open_server_repository(read_only = False,
             no_upload = True, repo = repo, do_treeupdates = False)
         # grab treeupdates from other databases and inject
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         server_repos = list(srv_set['repositories'].keys())
         all_actions = set()
         for myrepo in server_repos:
@@ -1668,7 +1668,7 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self._entropy.default_repository
 
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         if srv_set['rss']['enabled']:
             self._update_rss_feed(repo = repo)
 
@@ -1892,7 +1892,7 @@ class Server(ServerNoticeBoardMixin):
         download_errors = False
         broken_uris = set()
         fine_uris = set()
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         disabled_eapis = sorted(srv_set['disabled_eapis'])
 
         for uri in uris:
@@ -2120,7 +2120,7 @@ class Server(ServerNoticeBoardMixin):
             # XXX QA checks,
             # please group them into entropy.qa
 
-            srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+            srv_set = self._settings[self.sys_settings_plugin_id]['server']
             base_repo = srv_set['base_repository_id']
             if base_repo is None:
                 base_repo = repo
@@ -2205,7 +2205,7 @@ class Server(ServerNoticeBoardMixin):
         if not os.path.isdir(upload_dir):
             return upload_files, upload_packages
 
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
         upload_pkgs = self._entropy._get_basedir_pkg_listing(upload_dir,
             repo = repo, branch = branch)
 
@@ -2229,7 +2229,7 @@ class Server(ServerNoticeBoardMixin):
         if not os.path.isdir(base_dir):
             return local_files, local_packages
 
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
         pkg_files = self._entropy._get_basedir_pkg_listing(base_dir,
             repo = repo, branch = branch)
 
@@ -2278,7 +2278,7 @@ class Server(ServerNoticeBoardMixin):
 
     def _show_sync_queues(self, upload, download, removal, copy, metainfo):
 
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         # show stats
         for package, rel_pkg, size in upload:
@@ -2402,7 +2402,7 @@ class Server(ServerNoticeBoardMixin):
         remote_files = 0
         remote_packages_data = {}
         remote_packages = []
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         pkgs_dir_types = self._entropy._get_pkg_dir_names()
         for pkg_dir_type in pkgs_dir_types:
@@ -2489,7 +2489,7 @@ class Server(ServerNoticeBoardMixin):
         download_queue = set()
         removal_queue = set()
         fine_queue = set()
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         for local_package in upload_packages:
 
@@ -2658,7 +2658,7 @@ class Server(ServerNoticeBoardMixin):
 
         if repo is None:
             repo = self._entropy.default_repository
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         for remove_filepath, rel_path, size in removal_queue:
 
@@ -2706,7 +2706,7 @@ class Server(ServerNoticeBoardMixin):
 
         if repo is None:
             repo = self._entropy.default_repository
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         for from_file, rel_file, size in copy_queue:
             from_file_hash = from_file + etpConst['packagesmd5fileext']
@@ -2742,7 +2742,7 @@ class Server(ServerNoticeBoardMixin):
 
         if repo is None:
             repo = self._entropy.default_repository
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
         queue_map = {}
@@ -2813,7 +2813,7 @@ class Server(ServerNoticeBoardMixin):
 
         if repo is None:
             repo = self._entropy.default_repository
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -2925,7 +2925,7 @@ class Server(ServerNoticeBoardMixin):
                 self._entropy.output(
                     "[repo:%s|branch:%s] %s: %s" % (
                         brown(repo),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         red(_("faulty package file, please fix")),
                         blue(os.path.basename(qa_faulty_pkg)),
                     ),
@@ -2973,7 +2973,7 @@ class Server(ServerNoticeBoardMixin):
                 "[repo:%s|%s|branch:%s] %s: %s" % (
                     repo,
                     red(_("sync")),
-                    brown(self.SystemSettings['repositories']['branch']),
+                    brown(self._settings['repositories']['branch']),
                     blue(_("packages sync")),
                     bold(crippled_uri),
                 ),
@@ -2991,7 +2991,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
                         repo,
                         red(_("sync")),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         darkred(_("socket error")),
                         err,
                         darkred(_("on")),
@@ -3009,7 +3009,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s|branch:%s] %s: %s" % (
                         repo,
                         red(_("sync")),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         darkgreen(_("nothing to do on")),
                         crippled_uri,
                     ),
@@ -3040,7 +3040,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s|branch:%s] %s %s" % (
                         self._entropy.default_repository,
                         red(_("sync")),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         blue(_("nothing to sync for")),
                         crippled_uri,
                     ),
@@ -3106,7 +3106,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s|branch:%s] %s" % (
                         repo,
                         red(_("sync")),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         darkgreen(_("keyboard interrupt !")),
                     ),
                     importance = 1,
@@ -3125,7 +3125,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
                         repo,
                         red(_("sync")),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         darkred(_("you must package them again")),
                         EntropyPackageException,
                         _("error"),
@@ -3147,7 +3147,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
                         repo,
                         red(_("sync")),
-                        self.SystemSettings['repositories']['branch'],
+                        self._settings['repositories']['branch'],
                         darkred(_("exception caught")),
                         Exception,
                         _("error"),
@@ -3173,7 +3173,7 @@ class Server(ServerNoticeBoardMixin):
                         "[repo:%s|%s|branch:%s] %s" % (
                             repo,
                             red(_("sync")),
-                            self.SystemSettings['repositories']['branch'],
+                            self._settings['repositories']['branch'],
                             darkred(
                                 _("at least one mirror synced properly!")),
                         ),
@@ -3230,7 +3230,7 @@ class Server(ServerNoticeBoardMixin):
         if not os.path.isfile(pkg_path):
             return False
 
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[self.sys_settings_plugin_id]['server']
         mtime = os.path.getmtime(pkg_path)
         days = srv_set['packages_expiration_days']
         delta = int(days)*24*3600
@@ -3281,7 +3281,7 @@ class Server(ServerNoticeBoardMixin):
             "[repo:%s|%s|branch:%s] %s" % (
                 brown(repo),
                 red(_("tidy")),
-                blue(self.SystemSettings['repositories']['branch']),
+                blue(self._settings['repositories']['branch']),
                 blue(_("collecting expired packages")),
             ),
             importance = 1,
@@ -3292,7 +3292,7 @@ class Server(ServerNoticeBoardMixin):
         branch_data = {}
         errors = False
         branch_data['errors'] = False
-        branch = self.SystemSettings['repositories']['branch']
+        branch = self._settings['repositories']['branch']
 
         self._entropy.output(
             "[branch:%s] %s" % (

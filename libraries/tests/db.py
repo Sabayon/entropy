@@ -28,7 +28,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.test_db = self.__open_test_db(":memory:")
         self.test_db2 = self.__open_test_db(":memory:")
-        self.SystemSettings = SystemSettings()
+        self._settings = SystemSettings()
 
     def tearDown(self):
         """
@@ -225,16 +225,16 @@ class EntropyRepositoryTest(unittest.TestCase):
         # test package masking
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
-            self.SystemSettings[plug_id]['masking_validation']['cache']
+            self._settings[plug_id]['masking_validation']['cache']
         f_match_mask = (1, 
             self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+        self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
         self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+        self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
         self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
@@ -283,16 +283,16 @@ class EntropyRepositoryTest(unittest.TestCase):
         # test package masking
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
-            self.SystemSettings[plug_id]['masking_validation']['cache']
+            self._settings[plug_id]['masking_validation']['cache']
         f_match_mask = (1, 
             self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+        self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
         self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+        self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
         self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
@@ -320,16 +320,16 @@ class EntropyRepositoryTest(unittest.TestCase):
         # test package masking
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
-            self.SystemSettings[plug_id]['masking_validation']['cache']
+            self._settings[plug_id]['masking_validation']['cache']
         f_match_mask = (1, 
             self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+        self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
         self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+        self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
         self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
@@ -366,16 +366,16 @@ class EntropyRepositoryTest(unittest.TestCase):
         # test package masking
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
-            self.SystemSettings[plug_id]['masking_validation']['cache']
+            self._settings[plug_id]['masking_validation']['cache']
         f_match_mask = (1, 
             self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].add(
+        self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
         self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
-        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+        self._settings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
         self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
