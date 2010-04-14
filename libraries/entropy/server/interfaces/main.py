@@ -145,7 +145,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 self._server.output(
                     u_msg,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = brown(" * ")
                 )
                 # avoid spamming
@@ -209,7 +209,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                         blue(_("syncing package sets")),
                     ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
             cur_sets = entropy_repository_instance.retrievePackageSets()
@@ -379,7 +379,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             self._server.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" * ")
             )
         return 0
@@ -1160,7 +1160,7 @@ class ServerSettingsMixin:
                         blue(_("defaulting to 0")),
                     ),
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = darkred(" !!! ")
             )
             rev = 0
@@ -1273,7 +1273,7 @@ class ServerPackageDepsMixin:
                     self.output(
                         mytxt,
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = darkred(" !!! ")
                     )
             return idpackages, False
@@ -1290,7 +1290,7 @@ class ServerPackagesHandlingMixin:
         mytxt = red("%s ...") % (_("Initializing Entropy database"),)
         self.output(
             mytxt, importance = 1,
-            type = "info", header = darkgreen(" * "),
+            level = "info", header = darkgreen(" * "),
             back = True
         )
 
@@ -1310,7 +1310,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred(" !!! ")
                 )
 
@@ -1344,7 +1344,7 @@ class ServerPackagesHandlingMixin:
                     blue(_("Invalid tag specified")),
                     package_tag,
                 ),
-                importance = 1, type = "error", header = darkred(" !! ")
+                importance = 1, level = "error", header = darkred(" !! ")
             )
             return 1, package_tag
 
@@ -1366,7 +1366,7 @@ class ServerPackagesHandlingMixin:
                     blue(_("Packages already tagged, action aborted")),
                     ', '.join([darkred(str(x)) for x in invalid_atoms]),
                 ),
-                importance = 1, type = "error", header = darkred(" !! ")
+                importance = 1, level = "error", header = darkred(" !! ")
             )
             return 2, invalid_atoms
 
@@ -1412,7 +1412,7 @@ class ServerPackagesHandlingMixin:
                 blue(_("flushing back selected packages from branches")),
             ),
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -1438,7 +1438,7 @@ class ServerPackagesHandlingMixin:
                     blue(_("nothing to do")),
                 ),
                 importance = 0,
-                type = "warning",
+                level = "warning",
                 header = blue(" @@ ")
             )
             return status
@@ -1461,7 +1461,7 @@ class ServerPackagesHandlingMixin:
                     brown(_("these are the packages that will be flushed")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
 
@@ -1476,7 +1476,7 @@ class ServerPackagesHandlingMixin:
                         purple(atom),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = blue("  # ")
                 )
                 pkg_fp = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
@@ -1547,7 +1547,7 @@ class ServerPackagesHandlingMixin:
                                 darkgreen(os.path.basename(downloaded_path)),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = brown("   "),
                             back = True
                         )
@@ -1566,7 +1566,7 @@ class ServerPackagesHandlingMixin:
                                     darkgreen(os.path.basename(downloaded_path)),
                                 ),
                                 importance = 0,
-                                type = "error",
+                                level = "error",
                                 header = brown("   ")
                             )
                             continue
@@ -1589,7 +1589,7 @@ class ServerPackagesHandlingMixin:
                             reason,
                         ),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                     # continuing if possible
@@ -1606,7 +1606,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(crippled_uri),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" * ")
                 )
 
@@ -1619,7 +1619,7 @@ class ServerPackagesHandlingMixin:
                     blue(_("error downloading packages from mirrors")),
                 ),
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = darkred(" !!! ")
             )
             return False
@@ -1635,7 +1635,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(from_branch),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
 
@@ -1651,7 +1651,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(os.path.basename(package_path)),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = brown("   "),
                     back = True
                 )
@@ -1689,7 +1689,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(os.path.basename(package_path)),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = brown("   ")
                 )
 
@@ -1716,7 +1716,7 @@ class ServerPackagesHandlingMixin:
                     blue(_("Cannot touch system database")),
                     red(etpConst['clientserverrepoid']),
                 ),
-                importance = 2, type = "warning", header = darkred(" @@ ")
+                importance = 2, level = "warning", header = darkred(" @@ ")
             )
             return switched
 
@@ -1737,7 +1737,7 @@ class ServerPackagesHandlingMixin:
                 red(to_repo),
             ),
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         self.output(
@@ -1747,7 +1747,7 @@ class ServerPackagesHandlingMixin:
                     "removed from destination repo unless injected")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -1776,7 +1776,7 @@ class ServerPackagesHandlingMixin:
                         blue(dbconn.retrieveAtom(idpackage)),
                 ) + new_tag_string,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = brown("    # ")
             )
 
@@ -1797,7 +1797,7 @@ class ServerPackagesHandlingMixin:
                             blue(todbconn.retrieveAtom(to_rm_idpackage)),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = purple("    # ")
                 )
 
@@ -1830,7 +1830,7 @@ class ServerPackagesHandlingMixin:
                                 teal(dep_atom),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = purple("    >> ")
                         )
                     else:
@@ -1841,7 +1841,7 @@ class ServerPackagesHandlingMixin:
                                 purple(dep_atom),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = purple("    >> ")
                         )
 
@@ -1872,7 +1872,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(match_atom),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red(" @@ "),
                 back = True
             )
@@ -1893,7 +1893,7 @@ class ServerPackagesHandlingMixin:
                         red(from_file),
                     ),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred(" !!! ")
                 )
                 continue
@@ -1963,7 +1963,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(os.path.basename(from_item)),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = red(" @@ "),
                     back = True
                 )
@@ -1979,7 +1979,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(repo),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red(" @@ "),
                 back = True
             )
@@ -2008,7 +2008,7 @@ class ServerPackagesHandlingMixin:
                             err,
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = bold(" !!! ")
                     )
                 repo_sec = None
@@ -2026,7 +2026,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(to_repo),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red(" @@ "),
                 back = True
             )
@@ -2044,7 +2044,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(repo),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = red(" @@ "),
                     back = True
                 )
@@ -2062,7 +2062,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(match_atom),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             switched.add((idpackage, repo,))
@@ -2088,7 +2088,7 @@ class ServerPackagesHandlingMixin:
                 blue(_("Injecting entropy metadata into built packages")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -2105,7 +2105,7 @@ class ServerPackagesHandlingMixin:
                     err,
                 ),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = red(" @@ ")
             )
             repo_sec = None # gnupg not found, perhaps report it
@@ -2119,7 +2119,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(os.path.basename(package_path)),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 back = True
             )
@@ -2157,7 +2157,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(os.path.basename(package_path)),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
             dbconn.commitChanges()
@@ -2178,7 +2178,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(atom),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
             dbconn.removePackage(idpackage)
@@ -2189,7 +2189,7 @@ class ServerPackagesHandlingMixin:
                 blue(_("removal complete")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = brown(" @@ ")
         )
 
@@ -2204,7 +2204,7 @@ class ServerPackagesHandlingMixin:
                 blue(_("Integrity verification of the selected packages")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -2218,7 +2218,7 @@ class ServerPackagesHandlingMixin:
                 blue(
                     _("All the packages in repository will be checked.")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "    "
             )
         else:
@@ -2227,7 +2227,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "    "
             )
             for idpackage in idpackages:
@@ -2237,7 +2237,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     red(pkgatom) + " -> " + bold(os.path.join(branch, pkgfile)),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen("   - ")
                 )
 
@@ -2261,7 +2261,7 @@ class ServerPackagesHandlingMixin:
                     brown(crippled_uri),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
 
@@ -2288,7 +2288,7 @@ class ServerPackagesHandlingMixin:
                             darkgreen(pkgfile),
                         ),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = blue(" @@ "),
                         back = True,
                         count = (currentcounter, totalcounter,)
@@ -2304,7 +2304,7 @@ class ServerPackagesHandlingMixin:
                                 blue(_("not supported")),
                             ),
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = blue(" @@ "),
                             count = (currentcounter, totalcounter,)
                         )
@@ -2322,7 +2322,7 @@ class ServerPackagesHandlingMixin:
                                 red(_("NOT healthy")),
                             ),
                             importance = 1,
-                            type = "warning",
+                            level = "warning",
                             header = darkred(" !!! "),
                             count = (currentcounter, totalcounter,)
                         )
@@ -2336,7 +2336,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = red(" * ")
                 )
                 for mirror in list(broken_packages.keys()):
@@ -2347,14 +2347,14 @@ class ServerPackagesHandlingMixin:
                     self.output(
                         mytxt,
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = red("   <> ")
                     )
                     for broken_package in broken_packages[mirror]:
                         self.output(
                             blue(broken_package),
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = red("      - ")
                         )
 
@@ -2363,7 +2363,7 @@ class ServerPackagesHandlingMixin:
                     blue(_("Statistics")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
             self.output(
@@ -2373,7 +2373,7 @@ class ServerPackagesHandlingMixin:
                     brown(str(len(match) + len(not_match))),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                header = brown("   # ")
             )
             self.output(
@@ -2383,7 +2383,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(str(len(match))),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                header = brown("   # ")
             )
             self.output(
@@ -2393,7 +2393,7 @@ class ServerPackagesHandlingMixin:
                     darkred(str(len(not_match))),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown("   # ")
             )
 
@@ -2410,7 +2410,7 @@ class ServerPackagesHandlingMixin:
                 blue(_("Integrity verification of the selected packages")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
 
@@ -2422,7 +2422,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 blue(_("All the packages in repository will be checked.")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "    "
             )
 
@@ -2449,7 +2449,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(pkg_path),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "   ",
                 back = True,
                 count = (currentcounter, totalcounter,)
@@ -2471,7 +2471,7 @@ class ServerPackagesHandlingMixin:
                             brown(storedmd5),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = "   ",
                     count = (currentcounter, totalcounter,)
                 )
@@ -2481,7 +2481,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header =  darkred("  # ")
             )
             for idpackage in failed:
@@ -2490,7 +2490,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                         blue("[atom:%s] %s" % (atom, down_p,)),
                         importance = 0,
-                        type = "warning",
+                        level = "warning",
                         header =  brown("    # ")
                 )
 
@@ -2498,7 +2498,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             red("Statistics:"),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" * ")
         )
         self.output(
@@ -2508,7 +2508,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2518,7 +2518,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2528,7 +2528,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2538,7 +2538,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2548,7 +2548,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
 
@@ -2574,7 +2574,7 @@ class ServerPackagesHandlingMixin:
                 repo,
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" @@ ")
         )
 
@@ -2584,7 +2584,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             blue(_("All the missing packages in repository will be downloaded.")),
             importance = 1,
-            type = "info",
+            level = "info",
             header = "    "
         )
 
@@ -2601,7 +2601,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(_("GnuPG not available")),
                     err,
                 ),
-                type = "error"
+                level = "error"
             )
             return False, 0, 0
 
@@ -2619,7 +2619,7 @@ class ServerPackagesHandlingMixin:
                         darkred(_("Keys for repository are expired")),
                         bold(repo),
                     ),
-                    type = "warning",
+                    level = "warning",
                     header = bold(" !!! ")
                 )
         elif not kp_avail:
@@ -2627,7 +2627,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(_("Keys not available for")),
                     bold(repo),
                 ),
-                type = "error"
+                level = "error"
             )
             return False, 0, 0
 
@@ -2659,7 +2659,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(os.path.basename(pkg_path)),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "   ",
                 back = True,
                 count = (currentcounter, totalcounter,)
@@ -2673,7 +2673,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(os.path.basename(pkg_path)),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = "   ",
                     count = (currentcounter, totalcounter,)
                 )
@@ -2691,7 +2691,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             red("Statistics:"),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" * ")
         )
         self.output(
@@ -2701,7 +2701,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2711,7 +2711,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2721,7 +2721,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
         self.output(
@@ -2731,7 +2731,7 @@ class ServerPackagesHandlingMixin:
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("   # ")
         )
 
@@ -2765,7 +2765,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(pkg_path),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = darkgreen("   # ")
                 )
                 available.add(idpackage)
@@ -2777,7 +2777,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(pkg_path),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = darkgreen("   # ")
                 )
             else:
@@ -2788,7 +2788,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(pkg_path),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = darkgreen("   # ")
                 )
                 to_download.add((idpackage, pkg_path,))
@@ -2811,7 +2811,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = "   "
         )
         for uri in self.get_remote_mirrors(repo):
@@ -2822,7 +2822,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = "   "
                 )
                 to_download = not_downloaded.copy()
@@ -2841,7 +2841,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     red(_("Binary packages downloaded successfully.")),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = "   "
                 )
                 break
@@ -2852,7 +2852,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "   "
             )
             for pkg_path in not_downloaded:
@@ -2860,7 +2860,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                         brown(pkg_path),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = red("    * ")
                 )
             downloaded_errors |= not_downloaded
@@ -2868,7 +2868,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "   "
             )
 
@@ -2888,7 +2888,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" !! ")
             )
             return None
@@ -2897,7 +2897,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" @@ ")
         )
         branch_dbdir = self._get_local_database_dir(repo)
@@ -2929,7 +2929,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" @@ ")
         )
 
@@ -2967,7 +2967,7 @@ class ServerPackagesHandlingMixin:
                         )
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" @@ "),
                     count = (count, maxcount,)
                 )
@@ -2981,7 +2981,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(atom),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = darkgreen(" @@ "),
                 back = True,
                 count = (count, maxcount,)
@@ -3004,7 +3004,7 @@ class ServerPackagesHandlingMixin:
                     mytxt,
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
 
@@ -3020,7 +3020,7 @@ class ServerQAMixin:
         self.output(
             mytxt,
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         installed_packages = self.Spm().get_installed_packages()
@@ -3034,7 +3034,7 @@ class ServerQAMixin:
                     darkgreen(_("Scanning package")),
                     brown(installed_package),),
                 importance = 0,
-                type = "info",
+                level = "info",
                 back = True,
                 count = (count, length),
                 header = darkred(" @@ ")
@@ -3052,7 +3052,7 @@ class ServerQAMixin:
                         darkred(_("not found anymore")),
                     ),
                     importance = 0,
-                    type = "warning",
+                    level = "warning",
                     count = (count, length),
                     header = darkred(" @@ ")
                 )
@@ -3065,7 +3065,7 @@ class ServerQAMixin:
                         not_found_list,
                     ),
                 importance = 0,
-                type = "warning",
+                level = "warning",
                 count = (count, length),
                 header = darkred(" @@ ")
             )
@@ -3103,7 +3103,7 @@ class ServerQAMixin:
                 self.output(
                     darkgreen(mytxt)+" "+bold(atom),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     back = True,
                     count = (count, length),
                     header = darkred(" @@  ")
@@ -3125,7 +3125,7 @@ class ServerQAMixin:
         self.output(
             mytxt,
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -3154,7 +3154,7 @@ class ServerQAMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
             mytxt = "%s:" % (_("Needed by"),)
@@ -3162,14 +3162,14 @@ class ServerQAMixin:
                 self.output(
                     red(atom),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = blue("   # ")
                 )
                 if atom in crying_atoms:
                     self.output(
                         red(mytxt),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = blue("      # ")
                     )
                     for my_dep, myrepo in crying_atoms[atom]:
@@ -3180,7 +3180,7 @@ class ServerQAMixin:
                                 darkgreen(my_dep),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = blue("      # ")
                         )
         else:
@@ -3189,7 +3189,7 @@ class ServerQAMixin:
             self.output(
                 mytxt,
                 importance = 2,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
 
@@ -3209,7 +3209,7 @@ class ServerQAMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             for txt, path in dmp_data:
@@ -3217,7 +3217,7 @@ class ServerQAMixin:
                 self.output(
                     mytxt,
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = darkgreen("   ## ")
                 )
 
@@ -3239,7 +3239,7 @@ class ServerQAMixin:
             self.output(
                 blue(mytxt),
                 importance = 2,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
             return 0, None
@@ -3248,7 +3248,7 @@ class ServerQAMixin:
         self.output(
             blue(mytxt),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -3262,7 +3262,7 @@ class ServerQAMixin:
             self.output(
                 red(mytxt),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
             for my_atom, my_elf_id in packages:
@@ -3273,14 +3273,14 @@ class ServerQAMixin:
                         darkgreen(str(my_elf_id)),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = red("     # ")
                 )
                 for filename in sorted(packages[package_slot]):
                     self.output(
                         darkgreen(filename),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = brown("       => ")
                     )
 
@@ -3297,14 +3297,14 @@ class ServerQAMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
         else:
             self.output(
                 red(_("No matched packages")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
 
@@ -3384,7 +3384,7 @@ class ServerRepositoryMixin:
                 mytxt,
             ),
             importance = 1,
-            type = "warning",
+            level = "warning",
             header = darkred(" !!! ")
         )
         answer = self.ask_question(
@@ -3399,7 +3399,7 @@ class ServerRepositoryMixin:
                     mytxt,
                 ),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" !!! ")
             )
         else:
@@ -3509,7 +3509,7 @@ class ServerRepositoryMixin:
             self.output(
                 red(_("Entropy database is already locked by you :-)")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" * ")
             )
         else:
@@ -3518,7 +3518,7 @@ class ServerRepositoryMixin:
             self.output(
                 red(mytxt),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" * "),
                 back = True
             )
@@ -3532,7 +3532,7 @@ class ServerRepositoryMixin:
                     self.output(
                         darkgreen(mytxt),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = brown(" * ")
                     )
                     dbstatus = self.Mirrors.get_mirrors_lock(repo = repo)
@@ -3554,7 +3554,7 @@ class ServerRepositoryMixin:
                                 db_st2_info,
                             ),
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = "\t"
                         )
 
@@ -3737,7 +3737,7 @@ class ServerRepositoryMixin:
                 self.output(
                     darkred(mytxt),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = bold(" !!! ")
                 )
 
@@ -3750,7 +3750,7 @@ class ServerRepositoryMixin:
                         blue(_("indexing database")),
                     ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
             conn.createAllIndexes()
@@ -3792,7 +3792,7 @@ class ServerRepositoryMixin:
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" * "),
             back = True
         )
@@ -3808,7 +3808,7 @@ class ServerRepositoryMixin:
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
 
@@ -3903,7 +3903,7 @@ class ServerRepositoryMixin:
                 )
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = brown(" * "),
             back = True
         )
@@ -3976,7 +3976,7 @@ class ServerRepositoryMixin:
                     bold(str(revision)),
                 ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -3989,14 +3989,14 @@ class ServerRepositoryMixin:
                         darkgreen(atom),
                     ),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkgreen("   ## ")
             )
             for m_dep in manual_deps:
                 self.output(
                     brown(m_dep),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred("    # ")
                 )
 
@@ -4057,7 +4057,7 @@ class ServerRepositoryMixin:
                     darkgreen(os.path.basename(package_filepath)),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 count = (mycount, maxcount,)
             )
@@ -4080,7 +4080,7 @@ class ServerRepositoryMixin:
                         darkgreen(str(err)),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = bold(" !!! "),
                     count = (mycount, maxcount,)
                 )
@@ -4222,7 +4222,7 @@ class ServerMiscMixin:
                 )
             ),
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -4231,14 +4231,14 @@ class ServerMiscMixin:
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         for repo in repos:
             self.output(
                 darkgreen(repo),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = brown("   # ")
             )
 
@@ -4269,7 +4269,7 @@ class ServerMiscMixin:
                     darkred(_("please frigging fix")),
                 ),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = bold(" !!! ")
             )
             return None
@@ -4282,7 +4282,7 @@ class ServerMiscMixin:
                     darkred(_("skipping")),
                 ),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = red(" @@ ")
             )
             return None
@@ -4299,7 +4299,7 @@ class ServerMiscMixin:
                 blue(_("checking system")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ "),
             back = True
         )
@@ -4312,7 +4312,7 @@ class ServerMiscMixin:
                     blue(_("there are configuration files not updated yet")),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" @@ ")
             )
             for key in scandata:
@@ -4320,7 +4320,7 @@ class ServerMiscMixin:
                     "%s" % (brown(etpConst['systemroot'] + \
                         scandata[key]['destination'])),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = "\t"
                 )
             return True

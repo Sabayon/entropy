@@ -421,7 +421,7 @@ class Entropy(Client):
         nocolor()
 
     def output(self, text, header = "", footer = "", back = False,
-            importance = 0, type = "info", count = [], percent = False):
+            importance = 0, level = "info", count = [], percent = False):
 
         count_str = ""
         if count:

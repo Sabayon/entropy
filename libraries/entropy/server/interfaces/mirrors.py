@@ -49,7 +49,7 @@ class ServerNoticeBoardMixin:
                 red(rss_path),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -71,7 +71,7 @@ class ServerNoticeBoardMixin:
                         red(crippled_uri),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = blue(" @@ ")
                 )
                 downloaded = True
@@ -98,7 +98,7 @@ class ServerNoticeBoardMixin:
                     red(rss_file),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -122,7 +122,7 @@ class ServerNoticeBoardMixin:
                         red(', '.join(m_broken_uris)),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             return False
@@ -132,7 +132,7 @@ class ServerNoticeBoardMixin:
                     blue(_("notice board removal success")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
         return True
@@ -152,7 +152,7 @@ class ServerNoticeBoardMixin:
                     red(rss_path),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -175,7 +175,7 @@ class ServerNoticeBoardMixin:
                         red(', '.join(m_broken_uris)),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             return False
@@ -185,7 +185,7 @@ class ServerNoticeBoardMixin:
                     blue(_("notice board upload success")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
         return True
@@ -256,7 +256,7 @@ class Server(ServerNoticeBoardMixin):
         self._entropy.output(
             mytxt,
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         mytxt = _("mirror")
@@ -265,7 +265,7 @@ class Server(ServerNoticeBoardMixin):
             self._entropy.output(
                 blue("%s: %s") % (mytxt, darkgreen(mirror),),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = brown("   # ")
             )
 
@@ -304,7 +304,7 @@ class Server(ServerNoticeBoardMixin):
                     filename,
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
 
@@ -377,7 +377,7 @@ class Server(ServerNoticeBoardMixin):
                     blue("%s...") % (_("mirror"),),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = brown(" * "),
                 back = True
             )
@@ -401,7 +401,7 @@ class Server(ServerNoticeBoardMixin):
                                 blue(_("mirror already locked")),
                         ),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = darkgreen(" * ")
                     )
                     continue
@@ -414,7 +414,7 @@ class Server(ServerNoticeBoardMixin):
                                 blue(_("mirror already unlocked")),
                         ),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = darkgreen(" * ")
                     )
                     continue
@@ -468,7 +468,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("mirror for download")),
                     ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ "),
                 back = True
             )
@@ -492,7 +492,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("mirror already locked for download")),
                         ),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = red(" @@ ")
                     )
                     continue
@@ -505,7 +505,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("mirror already unlocked for download")),
                         ),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = red(" @@ ")
                     )
                     continue
@@ -558,7 +558,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(lock_string),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
         else:
@@ -572,7 +572,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(lock_string),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" * ")
             )
             self._entropy._remove_local_database_lockfile(repo)
@@ -608,7 +608,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("mirror successfully unlocked")),
                     ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = darkgreen(" * ")
             )
             if dblock:
@@ -625,7 +625,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("mirror not unlocked")),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" * ")
             )
 
@@ -655,7 +655,7 @@ class Server(ServerNoticeBoardMixin):
                         darkgreen(pkg_relative_path),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" * "),
                     back = True
                 )
@@ -677,7 +677,7 @@ class Server(ServerNoticeBoardMixin):
                         darkgreen(remote_path),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" * ")
                 )
 
@@ -697,7 +697,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("does not exist")),
                         ),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                     return rc_download
@@ -716,7 +716,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("is not listed in the repository !")),
                         ),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                     return False
@@ -731,7 +731,7 @@ class Server(ServerNoticeBoardMixin):
                         darkgreen(pkg_relative_path),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" * "),
                     back = True
                 )
@@ -748,7 +748,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("downloaded successfully")),
                         ),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = darkgreen(" * ")
                     )
                     return True
@@ -763,7 +763,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("checksum does not match. re-downloading...")),
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = darkred(" * ")
                     )
                     if os.path.isfile(download_path):
@@ -780,7 +780,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("seems broken. Consider to re-package it. Giving up!")),
             ),
             importance = 1,
-            type = "error",
+            level = "error",
             header = darkred(" !!! ")
         )
         return False
@@ -841,7 +841,7 @@ class Server(ServerNoticeBoardMixin):
                             bold(revision),
                         ),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                     revision = 0
@@ -856,7 +856,7 @@ class Server(ServerNoticeBoardMixin):
                         bold(revision),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
                 revision = 0
@@ -870,7 +870,7 @@ class Server(ServerNoticeBoardMixin):
                         bold(revision),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
                 revision = 0
@@ -1283,7 +1283,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("configured package sets")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
         sets_data = self._entropy.sets_available(matchRepo = [repo])
@@ -1291,7 +1291,7 @@ class Server(ServerNoticeBoardMixin):
             self._entropy.output(
                 "%s" % (_("None configured"),),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = brown("    # ")
             )
             return
@@ -1299,7 +1299,7 @@ class Server(ServerNoticeBoardMixin):
             self._entropy.output(
                 blue("%s" % (s_name,)),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = brown("    # ")
             )
 
@@ -1314,13 +1314,13 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("preparing uncompressed database for the upload")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
         self._entropy.output(
             "%s: %s" % (_("database path"), blue(database_path),),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
 
@@ -1339,13 +1339,13 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("creating compressed database dump + checksum")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
         self._entropy.output(
             "%s: %s" % (_("database path"), blue(database_path),),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
@@ -1354,7 +1354,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(upload_data['dump_path_light']),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
@@ -1363,14 +1363,14 @@ class Server(ServerNoticeBoardMixin):
                 blue(upload_data['dump_path_digest_light']),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
 
         self._entropy.output(
             "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
 
@@ -1386,14 +1386,14 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("compressing database + checksum")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = darkgreen(" * "),
             back = True
         )
         self._entropy.output(
             "%s: %s" % (_("database path"), blue(database_path),),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
@@ -1402,7 +1402,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(upload_data['compressed_database_path']),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
@@ -1411,7 +1411,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(upload_data['database_path_digest']),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
@@ -1420,13 +1420,13 @@ class Server(ServerNoticeBoardMixin):
                 blue(upload_data['compressed_database_path_digest']),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
             "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown("    # ")
         )
 
@@ -1440,7 +1440,7 @@ class Server(ServerNoticeBoardMixin):
                     darkred(_("Keys for repository are expired")),
                     bold(repo),
                 ),
-                type = "warning",
+                level = "warning",
                 header = bold(" !!! ")
             )
         except RepositorySecurity.GPGError:
@@ -1544,7 +1544,7 @@ class Server(ServerNoticeBoardMixin):
                         blue(_("waiting up to 2 minutes before giving up")),
                     ),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = brown(" * "),
                     back = True
                 )
@@ -1564,7 +1564,7 @@ class Server(ServerNoticeBoardMixin):
                                 )
                             ),
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = darkgreen(" * ")
                         )
                         unlocked = True
@@ -1639,7 +1639,7 @@ class Server(ServerNoticeBoardMixin):
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning"
+                level = "warning"
             )
             # restore previous data
             dbconn.bumpTreeUpdatesActions(backed_up_entries)
@@ -1698,7 +1698,7 @@ class Server(ServerNoticeBoardMixin):
                         bold(', '.join([str(x) for x in disabled_eapis])),
                     ),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkgreen(" * ")
                 )
 
@@ -1728,7 +1728,7 @@ class Server(ServerNoticeBoardMixin):
                     darkgreen(_("preparing to upload database to mirror")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = darkgreen(" * ")
             )
 
@@ -1850,7 +1850,7 @@ class Server(ServerNoticeBoardMixin):
                             _("upload failed, not unlocking and continuing"),
                         ),
                         importance = 0,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                     # get reason
@@ -1858,7 +1858,7 @@ class Server(ServerNoticeBoardMixin):
                     self._entropy.output(
                         blue("%s: %s" % (_("reason"), reason,)),
                         importance = 0,
-                        type = "error",
+                        level = "error",
                         header = blue("    # ")
                     )
                     upload_errors = True
@@ -1919,7 +1919,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("preparing to download database from mirror")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = darkgreen(" * ")
             )
             files_to_sync = sorted(download_data.keys())
@@ -1930,7 +1930,7 @@ class Server(ServerNoticeBoardMixin):
                         brown(download_data[myfile]),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = brown("    # ")
                 )
 
@@ -1965,7 +1965,7 @@ class Server(ServerNoticeBoardMixin):
                             blue(_("failed to download from mirror")),
                         ),
                         importance = 0,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                     # get reason
@@ -1973,7 +1973,7 @@ class Server(ServerNoticeBoardMixin):
                     self._entropy.output(
                         blue("%s: %s" % (_("reason"), reason,)),
                         importance = 0,
-                        type = "error",
+                        level = "error",
                         header = blue("    # ")
                     )
                     download_errors = True
@@ -2090,7 +2090,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("database already in sync")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             return 0, set(), set()
@@ -2110,7 +2110,7 @@ class Server(ServerNoticeBoardMixin):
                         red(_("download issues")),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
                 return 1, fine_uris, broken_uris
@@ -2142,7 +2142,7 @@ class Server(ServerNoticeBoardMixin):
                         red(_("dependencies_test() reported errors")),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
                 return 3, set(), set()
@@ -2158,7 +2158,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("no configuration files to commit. All fine.")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 back = True
             )
@@ -2175,7 +2175,7 @@ class Server(ServerNoticeBoardMixin):
                         red(_("upload issues")),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
                 return 2, fine_uris, broken_uris
@@ -2188,7 +2188,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("database sync completed successfully")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
 
@@ -2250,7 +2250,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("Local statistics")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         self._entropy.output(
@@ -2261,7 +2261,7 @@ class Server(ServerNoticeBoardMixin):
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         self._entropy.output(
@@ -2272,7 +2272,7 @@ class Server(ServerNoticeBoardMixin):
                 )
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -2292,7 +2292,7 @@ class Server(ServerNoticeBoardMixin):
                     size,
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red("    # ")
             )
         for package, rel_pkg, size in download:
@@ -2306,7 +2306,7 @@ class Server(ServerNoticeBoardMixin):
                     size,
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red("    # ")
             )
         for package, rel_pkg, size in copy:
@@ -2320,7 +2320,7 @@ class Server(ServerNoticeBoardMixin):
                     size,
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red("    # ")
             )
         for package, rel_pkg, size in removal:
@@ -2334,7 +2334,7 @@ class Server(ServerNoticeBoardMixin):
                     size,
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red("    # ")
             )
 
@@ -2344,7 +2344,7 @@ class Server(ServerNoticeBoardMixin):
                 darkred(str(len(removal))),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
         self._entropy.output(
@@ -2353,7 +2353,7 @@ class Server(ServerNoticeBoardMixin):
                 darkgreen(str(len(copy))),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
         self._entropy.output(
@@ -2362,7 +2362,7 @@ class Server(ServerNoticeBoardMixin):
                 bold(str(len(upload))),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -2374,7 +2374,7 @@ class Server(ServerNoticeBoardMixin):
                 ),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -2384,7 +2384,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(entropy.tools.bytes_into_human(metainfo['upload'])),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
         self._entropy.output(
@@ -2393,7 +2393,7 @@ class Server(ServerNoticeBoardMixin):
                 brown(entropy.tools.bytes_into_human(metainfo['download'])),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -2446,7 +2446,7 @@ class Server(ServerNoticeBoardMixin):
         self._entropy.output(
             "%s: %s" % (blue(_("Remote statistics for")), red(crippled_uri),),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -2462,7 +2462,7 @@ class Server(ServerNoticeBoardMixin):
                 red(_("files stored")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -2472,7 +2472,7 @@ class Server(ServerNoticeBoardMixin):
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -2678,7 +2678,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(entropy.tools.bytes_into_human(size)),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = darkred(" * ")
             )
 
@@ -2697,7 +2697,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("removal complete")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = darkred(" * ")
         )
 
@@ -2724,7 +2724,7 @@ class Server(ServerNoticeBoardMixin):
                     darkgreen(from_file),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = darkred(" * ")
             )
             self._entropy._ensure_dir_path(os.path.dirname(to_file))
@@ -2791,7 +2791,7 @@ class Server(ServerNoticeBoardMixin):
                     darkgreen(repr(reason)),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" !!! ")
             )
             return errors, m_fine_uris, m_broken_uris
@@ -2803,7 +2803,7 @@ class Server(ServerNoticeBoardMixin):
                 red(crippled_uri),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
         return errors, m_fine_uris, m_broken_uris
@@ -2869,7 +2869,7 @@ class Server(ServerNoticeBoardMixin):
                     reason,
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" !!! ")
             )
             return errors, m_fine_uris, m_broken_uris
@@ -2883,7 +2883,7 @@ class Server(ServerNoticeBoardMixin):
                 darkgreen(crippled_uri),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = darkgreen(" * ")
         )
         return errors, m_fine_uris, m_broken_uris
@@ -2908,7 +2908,7 @@ class Server(ServerNoticeBoardMixin):
                     darkgreen(os.path.basename(upload_package)),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = purple(" @@ "),
                 back = True,
                 count = (qa_count, qa_total,)
@@ -2930,7 +2930,7 @@ class Server(ServerNoticeBoardMixin):
                         blue(os.path.basename(qa_faulty_pkg)),
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" @@ ")
                 )
             raise EntropyPackageException(
@@ -2950,7 +2950,7 @@ class Server(ServerNoticeBoardMixin):
                 darkgreen(_("starting packages sync")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ "),
             back = True
         )
@@ -2978,7 +2978,7 @@ class Server(ServerNoticeBoardMixin):
                     bold(crippled_uri),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
 
@@ -2998,7 +2998,7 @@ class Server(ServerNoticeBoardMixin):
                         crippled_uri,
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkgreen(" * ")
                 )
                 continue
@@ -3014,7 +3014,7 @@ class Server(ServerNoticeBoardMixin):
                         crippled_uri,
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" * ")
                 )
                 successfull_mirrors.add(uri)
@@ -3023,7 +3023,7 @@ class Server(ServerNoticeBoardMixin):
             self._entropy.output(
                 "%s:" % (blue(_("Expanding queues")),),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" ** ")
             )
 
@@ -3045,7 +3045,7 @@ class Server(ServerNoticeBoardMixin):
                         crippled_uri,
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" @@ ")
                 )
 
@@ -3110,7 +3110,7 @@ class Server(ServerNoticeBoardMixin):
                         darkgreen(_("keyboard interrupt !")),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkgreen(" * ")
                 )
                 continue
@@ -3132,7 +3132,7 @@ class Server(ServerNoticeBoardMixin):
                         err,
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
                 return mirrors_tainted, mirrors_errors, successfull_mirrors, \
@@ -3154,7 +3154,7 @@ class Server(ServerNoticeBoardMixin):
                         err,
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = darkred(" !!! ")
                 )
 
@@ -3164,7 +3164,7 @@ class Server(ServerNoticeBoardMixin):
                     self._entropy.output(
                         repr(line),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(":  ")
                     )
 
@@ -3178,7 +3178,7 @@ class Server(ServerNoticeBoardMixin):
                                 _("at least one mirror synced properly!")),
                         ),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
                 continue
@@ -3285,7 +3285,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("collecting expired packages")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -3300,7 +3300,7 @@ class Server(ServerNoticeBoardMixin):
                 blue(_("collecting expired packages in the selected branches")),
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue(" @@ ")
         )
 
@@ -3342,7 +3342,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("nothing to remove on this branch")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             return errors, branch_data
@@ -3353,7 +3353,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("these are the expired packages")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             for package in removal:
@@ -3364,7 +3364,7 @@ class Server(ServerNoticeBoardMixin):
                             darkgreen(package),
                         ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = brown("    # ")
                 )
 
@@ -3405,7 +3405,7 @@ class Server(ServerNoticeBoardMixin):
                         blue(_("removing packages remotely")),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = blue(" @@ ")
                 )
 
@@ -3440,7 +3440,7 @@ class Server(ServerNoticeBoardMixin):
                         reason,
                     ),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = brown(" !!! ")
                 )
                 branch_data['errors'] = True
@@ -3452,7 +3452,7 @@ class Server(ServerNoticeBoardMixin):
                     blue(_("removing packages locally")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
 
@@ -3482,7 +3482,7 @@ class Server(ServerNoticeBoardMixin):
                                 darkgreen(myfile),
                             ),
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = brown(" @@ ")
                         )
                         os.remove(myfile)

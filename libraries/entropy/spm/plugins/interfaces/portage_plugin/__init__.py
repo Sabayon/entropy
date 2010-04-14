@@ -2038,7 +2038,7 @@ class PortagePlugin(SpmPlugin):
                 darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
                     str(e) + darkred(" - ignoring"),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = red("   ## ")
             )
             return 0
@@ -2049,7 +2049,7 @@ class PortagePlugin(SpmPlugin):
                 darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
                     str(e) + darkred(" - ignoring"),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = red("   ## ")
             )
             return 0
@@ -2191,7 +2191,7 @@ class PortagePlugin(SpmPlugin):
             self.output(
                 red("%s: " % (_("repackaging"),) )+blue(myatom),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = blue("  # ")
             )
             mydest = entropy_server._get_local_store_directory(repo = repo)
@@ -2213,7 +2213,7 @@ class PortagePlugin(SpmPlugin):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred(" * ")
                 )
                 continue
@@ -2232,7 +2232,7 @@ class PortagePlugin(SpmPlugin):
             self.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" * ")
             )
 
@@ -2327,7 +2327,7 @@ class PortagePlugin(SpmPlugin):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = brown(" * ")
                 )
                 # lock database
@@ -2364,7 +2364,7 @@ class PortagePlugin(SpmPlugin):
                         self.output(
                             mytxt,
                             importance = 1,
-                            type = "warning",
+                            level = "warning",
                             header = darkred(" * ")
                         )
                     entropy_repository.commitChanges()
@@ -2436,7 +2436,7 @@ class PortagePlugin(SpmPlugin):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred("   ## ")
                 )
                 continue
@@ -2542,7 +2542,7 @@ class PortagePlugin(SpmPlugin):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred("   ## ")
                 )
 
@@ -2564,7 +2564,7 @@ class PortagePlugin(SpmPlugin):
                     self.output(
                         red("QA: ") + mytxt,
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = darkred("   ## ")
                     )
                     counter = -1
@@ -2624,7 +2624,7 @@ class PortagePlugin(SpmPlugin):
             self.output(
                 red("QA: ") + mytxt + ": " + repr(e),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred("   ## ")
             )
 
@@ -2820,7 +2820,7 @@ class PortagePlugin(SpmPlugin):
                     blue(_("does not exist")), blue(_("Overwriting")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             if os.path.lexists(system_make_conf):
@@ -2868,7 +2868,7 @@ class PortagePlugin(SpmPlugin):
                                 blue(_("variable differs")), red(_("Updating")),
                             ),
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = blue(" @@ ")
                         )
                         differences[setting] = repo_data[setting]
@@ -2883,7 +2883,7 @@ class PortagePlugin(SpmPlugin):
                         blue(_("updating critical variables")),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = blue(" @@ ")
                 )
                 # backup user make.conf
@@ -2896,7 +2896,7 @@ class PortagePlugin(SpmPlugin):
                         darkgreen("writing changes to disk"),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = blue(" @@ ")
                 )
                 # write to disk, safely
@@ -2954,7 +2954,7 @@ class PortagePlugin(SpmPlugin):
                     blue(_("differs")), red(_("Updating")),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             merge_sfx = ".entropy_merge"
@@ -2969,7 +2969,7 @@ class PortagePlugin(SpmPlugin):
                         blue(_("does not exist")), red(_("Reverting")),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = blue(" @@ ")
                 )
                 os.remove(system_make_profile+merge_sfx)
@@ -2983,7 +2983,7 @@ class PortagePlugin(SpmPlugin):
             entropy_client.output(
                 brown(_("Skipping configuration files update, you are not root.")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             return 0
@@ -3455,7 +3455,7 @@ class PortagePlugin(SpmPlugin):
                         e,
                     ),
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = red(" !!! ")
                 )
                 deps = ''
@@ -3690,7 +3690,7 @@ class PortagePlugin(SpmPlugin):
                         self.output(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
-                            type = "error",
+                            level = "error",
                             header = bold(" !!! ")
                         )
                         warned = 1
@@ -3699,7 +3699,7 @@ class PortagePlugin(SpmPlugin):
                         self.output(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
-                            type = "error",
+                            level = "error",
                             header = bold(" !!! ")
                         )
                         warned = 1
@@ -3707,7 +3707,7 @@ class PortagePlugin(SpmPlugin):
                         self.output(
                             darkred("PortagePlugin._use_reduce(): "+" ".join(map(str, [head]+newdeparray))),
                             importance = 0,
-                            type = "error",
+                            level = "error",
                             header = bold(" !!! ")
                         )
 
@@ -4090,7 +4090,7 @@ class PortagePlugin(SpmPlugin):
             except IOError as err:
                 self.output("%s: %s => %s" % (
                     _("IOError while reading"), unpack_obj, repr(err),),
-                    type = "warning")
+                    level = "warning")
                 continue
 
             provided_libs.add((obj_name, obj, elf_class,))

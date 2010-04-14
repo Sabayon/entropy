@@ -2014,7 +2014,7 @@ class Client:
                             e,
                     ),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = self.output_header
                 )
 
@@ -2053,7 +2053,7 @@ class Client:
                                         blue(mytxt),
                                 ),
                                 importance = 1,
-                                type = "warning",
+                                level = "warning",
                                 header = self.output_header
                             )
                         return None
@@ -2067,7 +2067,7 @@ class Client:
                                         blue(mytxt),
                                 ),
                                 importance = 1,
-                                type = "warning",
+                                level = "warning",
                                 header = self.output_header
                             )
                         if etpUi['debug']:
@@ -2109,7 +2109,7 @@ class Client:
                                 e,
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = self.output_header
                     )
                 return None
@@ -2124,7 +2124,7 @@ class Client:
                                 e,
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = self.output_header
                     )
                 return None
@@ -2167,7 +2167,7 @@ class Client:
                                 e,
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = self.output_header
                     )
                 return None
@@ -2189,7 +2189,7 @@ class Client:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = self.output_header
             )
         self.connect(self.hostname, self.hostport)
@@ -2234,7 +2234,7 @@ class Client:
                                 blue(mytxt),
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = self.output_header
                     )
                     mytxt = _("Service issuer")
@@ -2246,7 +2246,7 @@ class Client:
                                 self.sock_conn.issuer()
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = self.output_header
                     )
         except self.socket.error as e:
@@ -2279,7 +2279,7 @@ class Client:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = self.output_header
             )
 
@@ -2319,7 +2319,7 @@ class Client:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = self.output_header
             )
 

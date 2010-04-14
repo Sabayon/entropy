@@ -338,7 +338,7 @@ class Equo(Client):
         self.progress.set_progress(frac, text = text)
 
     def output(self, text, header = "", footer = "", back = False,
-            importance = 0, type = "info", count = [], percent = False):
+            importance = 0, level = "info", count = [], percent = False):
 
         count_str = ""
         if self.progress:

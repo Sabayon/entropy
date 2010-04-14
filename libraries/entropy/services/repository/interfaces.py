@@ -139,7 +139,7 @@ class Server(SocketHost):
                         mytxt,
                 ),
                 importance = 1,
-                type = "info"
+                level = "info"
             )
 
             # now unpack and unlock
@@ -163,7 +163,7 @@ class Server(SocketHost):
                             mytxt,
                     ),
                     importance = 1,
-                    type = "warning"
+                    level = "warning"
                 )
                 self.syscache['dbs_not_available'].add(x)
                 do_clear.add(repository)
@@ -182,7 +182,7 @@ class Server(SocketHost):
                         mytxt,
                 ),
                 importance = 1,
-                type = "info"
+                level = "info"
             )
 
             # now unpack compressed db in place
@@ -204,7 +204,7 @@ class Server(SocketHost):
                         mytxt,
                 ),
                 importance = 1,
-                type = "info"
+                level = "info"
             )
             # woohoo, got unlocked eventually
             mydb = self.open_db(db_path, docache = False)
@@ -214,7 +214,7 @@ class Server(SocketHost):
             self.output(
                 darkgreen(str(db_ck)),
                 importance = 1,
-                type = "info"
+                level = "info"
             )
             mydb.closeDB()
             self.__cacher.discard()

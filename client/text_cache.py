@@ -26,14 +26,14 @@ def cache(options):
         if cmd == "clean":
             entropy_client.output(
                 blue(_("Cleaning Entropy cache, please wait ...")),
-                type = "info",
+                level = "info",
                 header = brown(" @@ "),
                 back = True
             )
             entropy_client.clear_cache()
             entropy_client.output(
                 darkgreen(_("Entropy cache cleaned.")),
-                type = "info",
+                level = "info",
                 header = brown(" @@ ")
             )
         else:

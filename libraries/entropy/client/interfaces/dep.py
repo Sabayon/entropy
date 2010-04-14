@@ -42,7 +42,7 @@ class CalculatorsMixin:
                 self.output(
                     darkgreen(_("Checking %s") % (bold(atom),)),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     back = True,
                     count = (count, length),
                     header = darkred(" @@ ")
@@ -1199,7 +1199,7 @@ class CalculatorsMixin:
                 count += 1
                 if (count%10 == 0) or (count == atomlen) or (count == 1):
                     self.output(sort_dep_text, importance = 0,
-                        type = "info", back = True, header = ":: ",
+                        level = "info", back = True, header = ":: ",
                         footer = " ::", percent = True,
                         count = (count, atomlen)
                     )
@@ -1330,7 +1330,7 @@ class CalculatorsMixin:
             self.output(
                 blue(rem_dep_text + " %s" % (purple(p_atom),)),
                 importance = 0,
-                type = "info",
+                level = "info",
                 back = True,
                 header = '|/-\\'[count%4]+" "
             )
@@ -1434,7 +1434,7 @@ class CalculatorsMixin:
                     self.output(
                         avail_dep_text + " %s" % (repo,),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         back = True,
                         header = "::",
                         count = (count, maxlen),
@@ -1616,7 +1616,7 @@ class CalculatorsMixin:
                 self.output(
                     mytxt,
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     back = True,
                     header = ":: ",
                     count = (count, maxlen),

@@ -174,7 +174,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 scan_msg,
             ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -196,7 +196,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     scan_msg,
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 back = True,
                 count = (count, maxcount,)
@@ -214,7 +214,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         darkred(myatom),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = blue(" @@ "),
                     back = True,
                     count = (count, maxcount,)
@@ -232,7 +232,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         bold(_("broken libraries detected")),
                     ),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = purple(" @@ "),
                     count = (count, maxcount,)
                 )
@@ -243,7 +243,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             red(_("needs")),
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = brown("   ## ")
                     )
                     for needed in mybreakages[mylib]:
@@ -252,7 +252,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                                 red(needed),
                             ),
                             importance = 1,
-                            type = "warning",
+                            level = "warning",
                             header = purple("     # ")
                         )
         return broken
@@ -305,7 +305,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         scan_msg,
                     ),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         scan_msg = blue(_("scanning for missing RDEPENDs"))
@@ -323,7 +323,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             darkgreen(atom),
                         ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 back = True,
                 count = (count, maxcount,)
@@ -350,7 +350,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             darkred(_("blacklisted dependencies !!!")),
                         ),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = bold(" @@ "),
                         count = (count, maxcount,)
                     )
@@ -358,7 +358,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     self.output(
                             "%s" % (bold(dep),),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = blue("     # ")
                     )
 
@@ -373,7 +373,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             blue(_("is missing the following dependencies")),
                         ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ "),
                 count = (count, maxcount,)
             )
@@ -381,14 +381,14 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 self.output(
                         "%s:" % (brown(repr(missing_data)),),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = purple("   ## ")
                 )
                 for dependency in missing_extended[missing_data]:
                     self.output(
                             "%s" % (darkred(dependency),),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = blue("     # ")
                     )
             if ask:
@@ -407,7 +407,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                                     blue(dependency),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = blue(" @@ ")
                         )
                         rc_ask = self.ask_question(_("Want to add?"))
@@ -434,7 +434,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         blue(_("missing dependencies added")),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = red(" @@ "),
                     count = (count, maxcount,)
                 )
@@ -471,7 +471,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         self.output(
             blue(_("Libraries test")),
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -491,7 +491,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
             for txt, path in dmp_data:
@@ -499,7 +499,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 self.output(
                     mytxt,
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = darkgreen("   ## ")
                 )
 
@@ -516,7 +516,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             self.output(
                 blue(_("Cannot find "))+red(ld_conf),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red(" @@ ")
             )
             return {}, set(), -1
@@ -576,7 +576,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             purple(sym),
                         ),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = darkgreen(" @@ ")
                     )
                     break
@@ -593,7 +593,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             self.output(
                 blue("Tree: ")+red(etpConst['systemroot'] + ldpath),
                 importance = 0,
-                type = "info",
+                level = "info",
                 count = (count, total),
                 back = True,
                 percent = True,
@@ -627,7 +627,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         self.output(
             blue(_("Collecting broken executables")),
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
         t = red(_("Attention")) + ": " + \
@@ -635,7 +635,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         self.output(
             t,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -662,7 +662,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 self.output(
                     scan_txt,
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     count = (count, total),
                     back = True,
                     percent = True,
@@ -746,7 +746,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 self.output(
                     red(real_exec_path)+" [ "+alllibs+" ]",
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     percent = True,
                     count = (count, total),
                     header = "  "
@@ -765,7 +765,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 self.output(
                     red(real_exec_path)+" { "+allsyms+" }",
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     percent = True,
                     count = (count, total),
                     header = "  "
@@ -797,7 +797,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             self.output(
                 blue(_("Matching broken libraries/executables")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red(" @@ ")
             )
             matched = set()

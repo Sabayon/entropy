@@ -594,7 +594,7 @@ class MultipleUrlFetcher:
                 darkblue(_("items")),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = purple("  ## ")
         )
         for url, save_path in pl:
@@ -608,7 +608,7 @@ class MultipleUrlFetcher:
                     blue(fname),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = brown("   # ")
             )
 

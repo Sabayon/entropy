@@ -93,7 +93,7 @@ class TransceiverServerHandler:
                 blue(os.path.basename(local_filepath)),
             ),
             importance = 0,
-            type = "info",
+            level = "info",
             header = red(" @@ "),
             back = True
         )
@@ -117,7 +117,7 @@ class TransceiverServerHandler:
                         darkgreen(_("so far, so good!")),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = red(" @@ ")
                 )
                 return True
@@ -135,7 +135,7 @@ class TransceiverServerHandler:
                         bold(_("malformed md5 provided to function")),
                     ),
                     importance = 0,
-                    type = "warning",
+                    level = "warning",
                     header = brown(" @@ ")
                 )
             else: # it's really bad!
@@ -150,7 +150,7 @@ class TransceiverServerHandler:
                         bold(_("remote md5 is invalid")),
                     ),
                     importance = 0,
-                    type = "warning",
+                    level = "warning",
                     header = brown(" @@ ")
                 )
                 valid_remote_md5 = False
@@ -226,7 +226,7 @@ class TransceiverServerHandler:
                             red(os.path.basename(mypath)),
                         ),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = red(" @@ ")
                     )
                     rc = syncer(*myargs)
@@ -246,7 +246,7 @@ class TransceiverServerHandler:
                                         red(os.path.basename(mypath)),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = darkgreen(" @@ ")
                         )
                         done = True
@@ -264,7 +264,7 @@ class TransceiverServerHandler:
                                         red(os.path.basename(mypath)),
                                 ),
                             importance = 0,
-                            type = "warning",
+                            level = "warning",
                             header = brown(" @@ ")
                         )
                         lastrc = rc
@@ -284,7 +284,7 @@ class TransceiverServerHandler:
                                 lastrc,
                         ),
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = darkred(" !!! ")
                     )
 
@@ -299,7 +299,7 @@ class TransceiverServerHandler:
                                 blue(_("continuing")),
                             ),
                             importance = 1,
-                            type = "warning",
+                            level = "warning",
                             header = brown(" @@ ")
                         )
                         continue
@@ -333,7 +333,7 @@ class TransceiverServerHandler:
                     blue(_("connecting to mirror")),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
 
@@ -345,7 +345,7 @@ class TransceiverServerHandler:
                     darkgreen(self.txc_basedir),
                 ),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
 

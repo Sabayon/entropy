@@ -165,7 +165,7 @@ class FileUpdates:
                                         darkgreen(etpConst['systemroot'] + mydict['source']),
                                     ),
                                     importance = 0,
-                                    type = "info"
+                                    level = "info"
                                 )
                             if os.path.isfile(etpConst['systemroot']+mydict['source']):
                                 try:
@@ -183,7 +183,7 @@ class FileUpdates:
                                         self._entropy.output(
                                             mytxt,
                                             importance = 1,
-                                            type = "warning"
+                                            level = "warning"
                                         )
                             continue
                         else:
@@ -198,7 +198,7 @@ class FileUpdates:
                                     os.path.dirname(filepath) + "/" + \
                                     os.path.basename(filepath)[10:],
                                     importance = 1,
-                                    type = "info"
+                                    level = "info"
                                 )
                             except (UnicodeEncodeError, UnicodeDecodeError):
                                 pass # possible encoding issues

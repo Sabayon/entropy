@@ -621,7 +621,7 @@ class TextInterface:
     """
 
     def output(self, text, header = "", footer = "", back = False,
-        importance = 0, type = "info", count = None, percent = False):
+        importance = 0, level = "info", count = None, percent = False):
 
         """
         Text output print function. By default text is written to stdout.
@@ -637,9 +637,9 @@ class TextInterface:
         @keyword importance: message importance (default valid values:
             0, 1, 2, 3
         @type importance: int
-        @keyword type: message type (default valid values: "info", "warning",
+        @keyword level: message type (default valid values: "info", "warning",
             "error")
-        @type type: string
+        @type level: string
         @keyword count: tuple of lengh 2, containing count information to make
             function print something like "(10/100) doing stuff". In this case
             tuple would be: (10, 100,)
@@ -658,9 +658,9 @@ class TextInterface:
         _flush_stdouterr()
 
         myfunc = print_info
-        if type == "warning":
+        if level == "warning":
             myfunc = print_warning
-        elif type == "error":
+        elif level == "error":
             myfunc = print_error
 
         count_str = ""
@@ -841,10 +841,10 @@ class TextInterface:
                         show_current_list()
                     action = int(sel_action)
                 except (ValueError, TypeError,):
-                    self.output(_("You don't have typed a number."), type = "warning")
+                    self.output(_("You don't have typed a number."), level = "warning")
                     continue
                 if action not in valid_actions:
-                    self.output(_("Invalid action."), type = "warning")
+                    self.output(_("Invalid action."), level = "warning")
                     continue
                 if action == -1:
                     raise KeyboardInterrupt()
@@ -864,7 +864,7 @@ class TextInterface:
                             mydict[counter] = s_el
                             counter += 1
                         except (ValueError,):
-                            self.output(_("Invalid string."), type = "warning")
+                            self.output(_("Invalid string."), level = "warning")
                             continue
                         break
                     show_current_list()
@@ -891,7 +891,7 @@ class TextInterface:
                                 raise ValueError()
                             mydict[s_el] = new_s_val[:]
                         except (ValueError, TypeError,):
-                            self.output(_("Invalid element."), type = "warning")
+                            self.output(_("Invalid element."), level = "warning")
                             continue
                         break
                     show_current_list()
@@ -909,7 +909,7 @@ class TextInterface:
                                 raise ValueError()
                             del mydict[s_el]
                         except (ValueError, TypeError,):
-                            self.output(_("Invalid element."), type = "warning")
+                            self.output(_("Invalid element."), level = "warning")
                             continue
                         break
                     show_current_list()

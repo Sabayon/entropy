@@ -733,7 +733,7 @@ def _database_check(entropy_client):
         entropy_client.output(
             darkred(_("Sanity Check") + ": " + _("system database")),
             importance = 2,
-            type = "warning"
+            level = "warning"
         )
         idpkgs = entropy_client.installed_repository().listAllIdpackages()
         length = len(idpkgs)
@@ -745,7 +745,7 @@ def _database_check(entropy_client):
             entropy_client.output(
                 darkgreen(scanning_txt),
                 importance = 0,
-                type = "info",
+                level = "info",
                 back = True,
                 count = (count, length),
                 percent = True
@@ -758,7 +758,7 @@ def _database_check(entropy_client):
                 entropy_client.output(
                     darkred(_("Errors on idpackage %s, error: %s")) % (x, e),
                     importance = 0,
-                    type = "warning"
+                    level = "warning"
                 )
 
         if not errors:
@@ -766,7 +766,7 @@ def _database_check(entropy_client):
             entropy_client.output(
                 darkred(t),
                 importance = 2,
-                type = "warning"
+                level = "warning"
             )
             return 0
         else:
@@ -774,7 +774,7 @@ def _database_check(entropy_client):
             entropy_client.output(
                 darkred(t),
                 importance = 2,
-                type = "warning"
+                level = "warning"
             )
             return -1
 

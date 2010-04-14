@@ -74,13 +74,13 @@ class RepositoryMixin:
                 self.output(
                     darkred(t),
                     importance = 1,
-                    type = "warning"
+                    level = "warning"
                 )
                 self.output(
                     purple(t2),
                     header = bold("!!! "),
                     importance = 1,
-                    type = "warning"
+                    level = "warning"
                 )
                 continue # repo not available
             except (OperationalError, DatabaseError, SystemDatabaseError,):
@@ -93,7 +93,7 @@ class RepositoryMixin:
                 self.output(
                                     darkred(t),
                                     importance = 1,
-                                    type = "warning"
+                                    level = "warning"
                                    )
                 continue
 
@@ -180,7 +180,7 @@ class RepositoryMixin:
                 self.output(
                     darkred(t),
                     importance = 2,
-                    type = "warning"
+                    level = "warning"
                 )
                 self._repo_error_messages_cache.add(repoid)
             raise RepositoryError("RepositoryError: %s" % (t,))
@@ -197,7 +197,7 @@ class RepositoryMixin:
                     self.output(
                         darkred(t),
                         importance = 2,
-                        type = "warning"
+                        level = "warning"
                     )
                     self._repo_error_messages_cache.add(repoid)
                 raise RepositoryError("RepositoryError: %s" % (t,))
@@ -581,7 +581,7 @@ class RepositoryMixin:
             self.output(
                 darkred(mytxt),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = bold(" !!! "),
             )
             m_conn = self.open_temp_repository(dbname = etpConst['clientdbid'])
@@ -694,7 +694,7 @@ class RepositoryMixin:
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "error",
+                    level = "error",
                     header = red(" @@ ")
                 )
             return False, mytxt
@@ -714,7 +714,7 @@ class RepositoryMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 back = True
             )
@@ -734,7 +734,7 @@ class RepositoryMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
         return True, _("All fine")
@@ -756,7 +756,7 @@ class RepositoryMixin:
                     self.output(
                         mytxt,
                         importance = 1,
-                        type = "error",
+                        level = "error",
                         header = red(" @@ ")
                     )
                 return False, mytxt
@@ -770,7 +770,7 @@ class RepositoryMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ "),
                 back = True
             )
@@ -791,7 +791,7 @@ class RepositoryMixin:
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = blue(" @@ ")
             )
         self.clear_cache()
@@ -1178,7 +1178,7 @@ class MiscMixin:
                     self.output(
                         blue(_("Resources unlocked, let's go!")),
                         importance = 1,
-                        type = "info",
+                        level = "info",
                         header = darkred(" @@ ")
                     )
                     # wait for other process to exit
@@ -1191,7 +1191,7 @@ class MiscMixin:
                     blue(_("Resources still locked after %s minutes, giving up!")) % (
                         mycalc,),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred(" @@ ")
                 )
                 return True # gave up
@@ -1203,7 +1203,7 @@ class MiscMixin:
                         max_lock_count,
                 ),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" @@ "),
                 back = True
             )

@@ -191,7 +191,7 @@ class Trigger:
         except Exception as e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
             tb = entropy.tools.get_traceback()
-            self.Entropy.output(tb, importance = 0, type = "error")
+            self.Entropy.output(tb, importance = 0, level = "error")
             self.Entropy.clientLog.write(tb)
             self.Entropy.clientLog.log(
                 "[Trigger]",

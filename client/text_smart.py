@@ -209,7 +209,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         entropy_client.output(
             red(info_package + _("Extracting package metadata") + " ..."),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown(" * "),
             back = True
         )
@@ -217,7 +217,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         entropy_client.output(
             red(info_package + _("Package extraction complete")),
             importance = 0,
-            type = "info",
+            level = "info",
             header = brown(" * "),
             back = True
         )

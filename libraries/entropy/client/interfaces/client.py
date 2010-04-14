@@ -789,7 +789,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkred(" * ")
                 )
                 mytxt = "%s %s." % (
@@ -799,7 +799,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = darkred(" * ")
                 )
                 # run stuff

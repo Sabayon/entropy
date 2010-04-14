@@ -45,7 +45,7 @@ def key(myopts):
             if repo not in avail_repos:
                 entropy_srv.output("'%s' %s" % (
                     blue(repo), _("repository not available"),),
-                    type = "error")
+                    level = "error")
                 return 1
         return 0
 
@@ -65,7 +65,7 @@ def key(myopts):
         except Repository.GPGError as err:
             entropy_srv.output("%s: %s" % (
                 _("GnuPG not available"), err,),
-                    type = "error")
+                    level = "error")
             return 1
 
         if cmd == "create" and repos:
@@ -122,7 +122,7 @@ def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
                 blue(_("Another keypair already exists for repository")),
                 purple(repo),
             ),
-            type = "error"
+            level = "error"
         )
         return 1
 
@@ -134,13 +134,13 @@ def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
             darkgreen(_("Imported GPG key with fingerprint")),
             bold(finger_print),
         ),
-        type = "info"
+        level = "info"
     )
     entropy_srv.output("%s: %s" % (
             darkgreen(_("Now you should sign all the packages in it")),
             blue(repo),
         ),
-        type = "warning"
+        level = "warning"
     )
 
     return 0
@@ -161,7 +161,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
                     blue(_("No keypair available for repository")),
                     purple(repo),
                 ),
-                type = "error"
+                level = "error"
             )
             return 1
     except repo_sec.KeyExpired:
@@ -169,7 +169,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
                 darkred(_("Keypair is EXPIRED for repository")),
                 purple(repo),
             ),
-            type = "error"
+            level = "error"
         )
         return 1
 
@@ -190,7 +190,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
                 bold(repo),
                 err,
             ),
-            type = "error"
+            level = "error"
         )
         return 1
 
@@ -199,7 +199,7 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
             bold(repo),
             brown(store_path),
         ),
-        type = "info"
+        level = "info"
     )
 
     return 0
@@ -215,7 +215,7 @@ def _create_keys(entropy_srv, repo):
                 blue(_("Another key already exists for repository")),
                 purple(repo),
             ),
-            type = "warning"
+            level = "warning"
         )
         answer = entropy_srv.ask_question(_("Would you like to continue?"))
         if answer == _("No"):
@@ -261,27 +261,27 @@ def _create_keys(entropy_srv, repo):
             darkgreen(_("Produced GPG key with fingerprint")),
             bold(key_fp),
         ),
-        type = "info"
+        level = "info"
     )
     entropy_srv.output("%s: %s" % (
             darkgreen(_("Now you should sign all the packages in it")),
             blue(repo),
         ),
-        type = "warning"
+        level = "warning"
     )
     entropy_srv.output(
         darkgreen(_("Make friggin' sure to generate a revoke key and store it in a very safe place.")),
-        type = "warning"
+        level = "warning"
     )
     entropy_srv.output(
         "# gpg --homedir '%s' --armor --output revoke.asc --gen-revoke '%s'" % (
             Repository.GPG_HOME, key_fp),
-        type = "info"
+        level = "info"
     )
     entropy_srv.output("%s" % (
             darkgreen(_("You may also want to send your keys to a key server")),
         ),
-        type = "info"
+        level = "info"
     )
 
     # remove signatures from repository database
@@ -300,7 +300,7 @@ def _delete_keys(entropy_srv, repo):
                 blue(_("No keys available for given repository")),
                 purple(repo),
             ),
-            type = "warning"
+            level = "warning"
         )
         return 0
 
@@ -315,7 +315,7 @@ def _delete_keys(entropy_srv, repo):
                 darkgreen(_("Keys metadata not available for")),
                 bold(repo),
             ),
-            type = "error"
+            level = "error"
         )
         return 1
 
@@ -328,7 +328,7 @@ def _delete_keys(entropy_srv, repo):
             darkgreen(_("Deleted GPG key with fingerprint")),
             bold(key_meta['fingerprint']),
         ),
-        type = "info"
+        level = "info"
     )
     return 0
 
@@ -342,7 +342,7 @@ def _show_status(entropy_srv, repo):
                 darkgreen(_("Keys metadata not available for")),
                 bold(repo),
             ),
-            type = "error"
+            level = "error"
         )
         return 1
 
@@ -350,7 +350,7 @@ def _show_status(entropy_srv, repo):
             brown(_("GPG information for repository")),
             bold(repo),
         ),
-        type = "info"
+        level = "info"
     )
 
     def just_print(mystr):

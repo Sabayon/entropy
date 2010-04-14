@@ -214,7 +214,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = red("   ## ")
             )
 
@@ -240,7 +240,7 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = red("   ## ")
                 )
 
@@ -256,7 +256,7 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = red("   ## ")
                 )
             mytxt = " %s: %s%s%s" % (
@@ -268,7 +268,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
             )
 
@@ -298,7 +298,7 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red("   ## ")
                 )
 
@@ -418,7 +418,7 @@ class Package:
                 self._entropy.output(
                     "fetch_file:",
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red("   ## ")
                 )
                 entropy.tools.print_traceback()
@@ -476,7 +476,7 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red("   ## ")
                 )
 
@@ -506,7 +506,7 @@ class Package:
                     self._entropy.output(
                         mytxt,
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = red("   ## ")
                     )
                     rc, data_transfer, resumed = self.__fetch_file(
@@ -528,7 +528,7 @@ class Package:
                         self._entropy.output(
                             mytxt,
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = red("   ## ")
                         )
 
@@ -577,7 +577,7 @@ class Package:
                         self._entropy.output(
                             error_message,
                             importance = 1,
-                            type = "warning",
+                            level = "warning",
                             header = red("   ## ")
                         )
                         if rc == -4: # timeout
@@ -675,7 +675,7 @@ class Package:
                         err_msg,
                     ),
                     importance = 0,
-                    type = "error",
+                    level = "error",
                     header = darkred("   ## ")
                 )
             return False
@@ -705,7 +705,7 @@ class Package:
                                 darkgreen(_("disabled")),
                             ),
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = "      : "
                         )
                         continue
@@ -718,7 +718,7 @@ class Package:
                         "%s: %s" % (blue(_("Checking package signature")),
                             purple(hash_type.upper()),),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = red("   ## "),
                         back = True
                     )
@@ -731,7 +731,7 @@ class Package:
                                 darkred(_("temporarily unavailable")),
                             ),
                             importance = 0,
-                            type = "warning",
+                            level = "warning",
                             header = darkred("   ## ")
                         )
                         continue
@@ -743,7 +743,7 @@ class Package:
                                 darkred(_("does not match the recorded one")),
                             ),
                             importance = 0,
-                            type = "error",
+                            level = "error",
                             header = darkred("   ## ")
                         )
                         return 1
@@ -753,7 +753,7 @@ class Package:
                             darkgreen(_("matches")),
                         ),
                         importance = 0,
-                        type = "info",
+                        level = "info",
                         header = "      : "
                     )
             return 0
@@ -766,7 +766,7 @@ class Package:
             self._entropy.output(
                 blue(_("Checking package checksum...")),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red("   ## "),
                 back = True
             )
@@ -781,7 +781,7 @@ class Package:
                         darkgreen(basef),
                     ),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = red("   ## ")
                 )
 
@@ -804,7 +804,7 @@ class Package:
                 self._entropy.output(
                     darkred(mytxt),
                     importance = 0,
-                    type = "warning",
+                    level = "warning",
                     header = darkred("   ## ")
                 )
                 fetch = self._download_package( 
@@ -817,7 +817,7 @@ class Package:
                     self._entropy.output(
                         blue(_("Cannot properly fetch package! Quitting.")),
                         importance = 0,
-                        type = "error",
+                        level = "error",
                         header = darkred("   ## ")
                     )
                     return fetch
@@ -833,7 +833,7 @@ class Package:
                 self._entropy.output(
                     "%s." % (blue(txt),),
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = red("   ## ")
                 )
             return 1
@@ -994,7 +994,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         automerge_metadata = \
@@ -1131,7 +1131,7 @@ class Package:
                         self._entropy.output(
                             mytxt,
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = red("   ## ")
                         )
                         protected = False
@@ -1152,7 +1152,7 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red("   ## ")
                 )
                 continue
@@ -1170,7 +1170,7 @@ class Package:
                 self._entropy.output(
                     red("QA: ")+mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred("   ## ")
                 )
                 continue # file has a really bad encoding
@@ -1221,7 +1221,7 @@ class Package:
             self._entropy.output(
                 "%s:" % (_("Collision found during removal of"),),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = red("   ## ")
             )
 
@@ -1229,7 +1229,7 @@ class Package:
             self._entropy.output(
                 purple(path),
                 importance = 0,
-                type = "warning",
+                level = "warning",
                 header = red("   ## ")
             )
             self._entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
@@ -1322,7 +1322,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         idpackage = self._add_installed_package()
@@ -1340,7 +1340,7 @@ class Package:
             self._entropy.output(
                 blue(_("Cleaning previously installed information...")),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
             )
 
@@ -1712,7 +1712,7 @@ class Package:
                 self._entropy.output(
                     red("QA: ")+mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red(" !!! ")
                 )
                 os.remove(rootdir)
@@ -1739,7 +1739,7 @@ class Package:
                         self._entropy.output(
                             darkred("QA: ") + darkred(txt),
                             importance = 1,
-                            type = "warning",
+                            level = "warning",
                             header = red(" !!! ")
                         )
 
@@ -1859,7 +1859,7 @@ class Package:
                         self._entropy.output(
                             mytxt,
                             importance = 1,
-                            type = "info",
+                            level = "info",
                             header = red("   ## ")
                         )
                         protected = False
@@ -1886,7 +1886,7 @@ class Package:
                 self._entropy.output(
                     darkred("QA: ") + darkred(mytxt),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red(" !!! ")
                 )
                 from_r_path = fromfile
@@ -1908,7 +1908,7 @@ class Package:
                 self._entropy.output(
                     darkred("QA: ") + darkred(mytxt),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red(" !!! ")
                 )
                 to_r_path = tofile
@@ -1950,7 +1950,7 @@ class Package:
                     self._entropy.output(
                         darkred("QA: ") + darkred(txt),
                         importance = 1,
-                        type = "warning",
+                        level = "warning",
                         header = red(" !!! ")
                     )
 
@@ -2004,7 +2004,7 @@ class Package:
                 self._entropy.output(
                     red("QA: ")+darkred(mytxt),
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red(" !!! ")
                 )
                 return 4
@@ -2204,7 +2204,7 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred("   ## ")
                 )
             do_continue = True
@@ -2244,7 +2244,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred("   ## ")
             )
 
@@ -2265,7 +2265,7 @@ class Package:
             self._entropy.output(
                 red("QA: ")+mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred("   ## ")
             )
             self._entropy.clientLog.log(
@@ -2325,7 +2325,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
             )
 
@@ -2343,13 +2343,13 @@ class Package:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = red("   ## ")
                 )
                 self._entropy.output(
                     "%s: %s" % (blue(_("Local path")), brown(dest_file),),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = red("      # ")
                 )
             else:
@@ -2371,7 +2371,7 @@ class Package:
                 self._entropy.output(
                     error_message,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red("   ## ")
                 )
 
@@ -2387,7 +2387,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         pkg_disk_path = self.__get_fetch_disk_path(self.pkgmeta['download'])
@@ -2413,7 +2413,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "error",
+            level = "error",
             header = darkred("   ## ")
         )
 
@@ -2431,7 +2431,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         rc, err_list = self._download_packages(
@@ -2449,13 +2449,13 @@ class Package:
             self._entropy.output(
                 "%s." % (darkred(txt),),
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
             )
         self._entropy.output(
             mytxt3,
             importance = 0,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
 
@@ -2463,7 +2463,7 @@ class Package:
             self._entropy.output(
                 "[%s|%s] %s" % (blue(repo), darkgreen(cksum), darkred(fname),),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred("    # ")
             )
 
@@ -2473,7 +2473,7 @@ class Package:
         self._entropy.output(
             blue(_("Package cannot be downloaded, unknown error.")),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         return 0
@@ -2482,7 +2482,7 @@ class Package:
         self._entropy.output(
             blue(_("Installed package in queue vanished, skipping.")),
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         return 0
@@ -2505,7 +2505,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
         )
         else:
@@ -2516,7 +2516,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
             )
         rc = self.__unpack_package()
@@ -2538,7 +2538,7 @@ class Package:
             self._entropy.output(
                 errormsg,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
         return rc
@@ -2551,7 +2551,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         if self.pkgmeta.get('description'):
@@ -2559,7 +2559,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   ## ")
             )
 
@@ -2574,7 +2574,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
         return rc
@@ -2587,7 +2587,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
 
@@ -2602,7 +2602,7 @@ class Package:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
         return rc
@@ -2615,7 +2615,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
         self._cleanup_package(self.pkgmeta['unpackdir'])
@@ -2726,7 +2726,7 @@ class Package:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   ## ")
         )
 
@@ -2741,13 +2741,13 @@ class Package:
             self._entropy.output(
                 darkred(mytxt),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             self._entropy.output(
                 mytxt2,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
 
@@ -2761,13 +2761,13 @@ class Package:
             self._entropy.output(
                 darkred(mytxt),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             self._entropy.output(
                 mytxt2,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
 
@@ -2948,7 +2948,7 @@ class Package:
             self._entropy.output(
                 red(_("Another Entropy is currently running.")),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" @@ ")
             )
             return 21
@@ -2959,7 +2959,7 @@ class Package:
             self._entropy.output(
                 blue(_("Cannot acquire Entropy resources lock.")),
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = darkred("   ## ")
             )
             return 4 # app locked during lock acquire
@@ -2972,7 +2972,7 @@ class Package:
             self._entropy.output(
                 blue(_("An error occured. Action aborted.")),
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = darkred("   ## ")
             )
         return rc

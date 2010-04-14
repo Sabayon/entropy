@@ -158,7 +158,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = darkgreen(" * ")
             )
         try:
@@ -173,7 +173,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),
                 ),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = darkgreen(" * ")
             )
         # create dirs if they don't exist
@@ -226,7 +226,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),
                     mytxt, blue(mydir),),
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = darkgreen(" * ")
             )
         try:
@@ -384,7 +384,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = "  "
                     )
                 self._reconnect() # reconnect
@@ -445,7 +445,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = "  "
                     )
                 self._reconnect() # reconnect

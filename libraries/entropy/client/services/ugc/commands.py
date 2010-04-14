@@ -71,7 +71,7 @@ class Base:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = self.output_header
             )
             do_skip = True
@@ -89,7 +89,7 @@ class Base:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = self.output_header
             )
             do_skip = True
@@ -108,7 +108,7 @@ class Base:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = self.output_header
             )
             do_skip = True
@@ -133,7 +133,7 @@ class Base:
                         repr(data),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = self.output_header
             )
             do_skip = True
@@ -173,7 +173,7 @@ class Base:
                         blue(mytxt),
                 ),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = self.output_header
             )
             data = None
@@ -666,7 +666,7 @@ class Client(Base):
                         darkred(base_path),
                     ),
                     importance = 1,
-                    type = "info",
+                    level = "info",
                     header = brown(" @@ "),
                     back = True,
                     count = (transferred, max_size,),

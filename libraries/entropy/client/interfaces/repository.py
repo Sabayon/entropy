@@ -512,7 +512,7 @@ class Repository:
             mytxt,
             importance = 0,
             back = True,
-            type = "info",
+            level = "info",
             header = "\t"
         )
         db_status = self.__verify_database_checksum(repo, cmethod)
@@ -524,7 +524,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
         elif db_status:
@@ -535,7 +535,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "\t"
             )
         else:
@@ -546,7 +546,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = "\t"
             )
             mytxt = "%s. %s" % (
@@ -556,7 +556,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = "\t"
             )
             return 1
@@ -590,7 +590,7 @@ class Repository:
         self._entropy.output(
             bold("%s") % ( repo_data['description'] ),
             importance = 2,
-            type = "info",
+            level = "info",
             count = count_info,
             header = blue("  # ")
         )
@@ -599,7 +599,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = blue("  # ")
         )
         mytxt = "%s: %s" % (red(_("Database local path")),
@@ -607,7 +607,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue("  # ")
         )
         mytxt = "%s: %s" % (red(_("Database EAPI")),
@@ -615,7 +615,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 0,
-            type = "info",
+            level = "info",
             header = blue("  # ")
         )
 
@@ -711,7 +711,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue("  # "),
             )
             return None
@@ -728,7 +728,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue("  # "),
             )
             mydbconn.closeDB()
@@ -757,7 +757,7 @@ class Repository:
             count += 1
             mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
             self._entropy.output(
-                mytxt, importance = 0, type = "info",
+                mytxt, importance = 0, level = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
             fetch_count = 0
@@ -780,7 +780,7 @@ class Repository:
                     mytxt = "%s: %s" % ( blue(_("Fetch error on segment")),
                         darkred(str(segment)),)
                     self._entropy.output(
-                        mytxt, importance = 1, type = "warning",
+                        mytxt, importance = 1, level = "warning",
                         header = "\t", count = (count, maxcount,)
                     )
                     continue
@@ -790,7 +790,7 @@ class Repository:
                         darkred("remote database suddenly locked"),
                     )
                     self._entropy.output(
-                        mytxt, importance = 1, type = "info",
+                        mytxt, importance = 1, level = "info",
                         header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
@@ -803,7 +803,7 @@ class Repository:
                         darkred("Error processing the command"),
                     )
                     self._entropy.output(
-                        mytxt, importance = 1, type = "info",
+                        mytxt, importance = 1, level = "info",
                         header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
@@ -824,7 +824,7 @@ class Repository:
                         e,
                     )
                     self._entropy.output(
-                        mytxt, importance = 1, type = "info",
+                        mytxt, importance = 1, level = "info",
                         header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
@@ -850,7 +850,7 @@ class Repository:
                 self._entropy.output(
                     mytxt,
                     importance = 0,
-                    type = "info",
+                    level = "info",
                     header = blue("  # "),
                 )
                 return None
@@ -871,7 +871,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue("  # "),
             )
             return None
@@ -890,7 +890,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = blue("  # "),
             )
             return None
@@ -912,7 +912,7 @@ class Repository:
                     darkred(str(segment)),
                 )
                 self._entropy.output(
-                    mytxt, importance = 1, type = "warning",
+                    mytxt, importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
                 mydbconn.closeDB()
@@ -923,7 +923,7 @@ class Repository:
                 darkgreen(mydata['atom']),
             )
             self._entropy.output(
-                mytxt, importance = 0, type = "info",
+                mytxt, importance = 0, level = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
             try:
@@ -938,7 +938,7 @@ class Repository:
                 self._entropy.output("%s: %s" % (
                     blue(_("repository error while adding packages")),
                     err,),
-                    importance = 1, type = "warning",
+                    importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
                 mydbconn.closeDB()
@@ -946,7 +946,7 @@ class Repository:
 
         self._entropy.output(
             blue(_("Packages injection complete")), importance = 0,
-            type = "info", header = "\t",
+            level = "info", header = "\t",
         )
 
         # now remove
@@ -961,7 +961,7 @@ class Repository:
                 blue(_("Removing package")),
                 darkred(str(myatom)),)
             self._entropy.output(
-                mytxt, importance = 0, type = "info",
+                mytxt, importance = 0, level = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
             try:
@@ -970,7 +970,7 @@ class Repository:
             except (Error,):
                 self._entropy.output(
                     blue(_("repository error while removing packages")),
-                    importance = 1, type = "warning",
+                    importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
                 mydbconn.closeDB()
@@ -978,7 +978,7 @@ class Repository:
 
         self._entropy.output(
             blue(_("Packages removal complete")),
-            importance = 0, type = "info",
+            importance = 0, level = "info",
             header = "\t",
         )
 
@@ -993,17 +993,17 @@ class Repository:
         else:
             self._entropy.output(
                 blue(_("Database checksum doesn't match remote.")),
-                importance = 0, type = "info", header = "\t",
+                importance = 0, level = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('local'), mychecksum,)
             self._entropy.output(
                 mytxt, importance = 0,
-                type = "info", header = "\t",
+                level = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('remote'), secure_checksum,)
             self._entropy.output(
                 mytxt, importance = 0,
-                type = "info", header = "\t",
+                level = "info", header = "\t",
             )
 
         mydbconn.closeDB()
@@ -1052,7 +1052,7 @@ class Repository:
             mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
             self._entropy.output(
                 mytxt + ":",
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
@@ -1060,7 +1060,7 @@ class Repository:
             )
             self._entropy.output(
                 "$ " + mytxt,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
 
@@ -1072,13 +1072,13 @@ class Repository:
             )
             self._entropy.output(
                 mytxt,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
             mytxt = purple(_("you may want to install GnuPG to take advantage of this feature"))
             self._entropy.output(
                 mytxt,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
             return False # GPG not available
@@ -1112,7 +1112,7 @@ class Repository:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "warning",
+                    level = "warning",
                     header = "\t"
                 )
                 mytxt = "[%s => %s]" % (
@@ -1121,7 +1121,7 @@ class Repository:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "warning",
+                    level = "warning",
                     header = "\t"
                 )
                 do_warn_user(downloaded_key_fp)
@@ -1132,7 +1132,7 @@ class Repository:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "info",
+                    level = "info",
                     header = "\t"
                 )
                 do_warn_user(fingerprint)
@@ -1145,7 +1145,7 @@ class Repository:
             )
             self._entropy.output(
                 mytxt,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
 
@@ -1157,7 +1157,7 @@ class Repository:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = "\t",
             back = True
         )
@@ -1170,7 +1170,7 @@ class Repository:
             )
             self._entropy.output(
                 mytxt,
-                type = "error",
+                level = "error",
                 header = "\t"
             )
             return False
@@ -1181,7 +1181,7 @@ class Repository:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = "\t"
         )
         mytxt = "%s: %s" % (
@@ -1190,7 +1190,7 @@ class Repository:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = "\t"
         )
         do_warn_user(fingerprint)
@@ -1228,7 +1228,7 @@ class Repository:
             )
             self._entropy.output(
                 mytxt,
-                type = "info",
+                level = "info",
                 header = blue("\t@@ "),
                 back = True
             )
@@ -1242,7 +1242,7 @@ class Repository:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "info",
+                    level = "info",
                     header = blue("\t@@ ")
                 )
             else:
@@ -1252,7 +1252,7 @@ class Repository:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "error",
+                    level = "error",
                     header = "\t%s " % (bold("!!!"),)
                 )
                 mytxt = "%s: %s" % (
@@ -1261,7 +1261,7 @@ class Repository:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "error",
+                    level = "error",
                     header = "\t%s " % (bold("!!!"),)
                 )
                 gpg_rc = 1
@@ -1353,7 +1353,7 @@ class Repository:
                         self._entropy.output(
                             mytxt,
                             importance = 0,
-                            type = "info",
+                            level = "info",
                             header = blue("  # "),
                         )
                     except:
@@ -1507,7 +1507,7 @@ class Repository:
                     err,
                 )
                 self._entropy.output(mytxt, importance = 0,
-                    type = "info", header = blue("  # "),)
+                    level = "info", header = blue("  # "),)
 
             # execute post update repo hook
             self._run_post_update_repository_hook(repo)
@@ -1548,7 +1548,7 @@ class Repository:
             self._entropy.output(
                 red(_("Something bad happened. Please have a look.")),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" @@ ")
             )
             self.sync_errors = True
@@ -1577,7 +1577,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = bold(" !!! ")
             )
 
@@ -1594,7 +1594,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 0,
-            type = "info",
+            level = "info",
             header = "\t"
         )
 
@@ -1611,7 +1611,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
             return False, myitem
@@ -1636,7 +1636,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 0,
-            type = "info",
+            level = "info",
             header = "\t"
         )
 
@@ -1659,7 +1659,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
         return db_down_status
@@ -1697,7 +1697,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
 
@@ -1706,7 +1706,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = "\t"
         )
 
@@ -1766,7 +1766,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
 
@@ -1782,7 +1782,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = "\t"
             )
             return True
@@ -1800,7 +1800,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = "\t"
             )
             return True
@@ -1837,7 +1837,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 0,
-            type = "info",
+            level = "info",
             header = "\t"
         )
         dbconn = self._entropy.open_generic_repository(dbfile,
@@ -1857,7 +1857,7 @@ class Repository:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" @@ ")
             )
 
@@ -1909,7 +1909,7 @@ class Repository:
             self._entropy.output(
                 txt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = "\t",
                 back = True
             )
@@ -1918,7 +1918,7 @@ class Repository:
             self._entropy.output(
                 message,
                 importance = 0,
-                type = mytype,
+                level = mytype,
                 header = "\t"
             )
 
@@ -2035,7 +2035,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = "\t"
         )
 
@@ -2054,7 +2054,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = "\t"
         )
         dbconn = self._entropy.open_repository(repo)
@@ -2081,7 +2081,7 @@ class Repository:
         self._entropy.output(
             mytxt,
             importance = 2,
-            type = "info",
+            level = "info",
             header = darkred(" @@ ")
         )
 
@@ -2094,7 +2094,7 @@ class Repository:
             self._entropy.output(
                 red(_("Another Entropy is currently running.")),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" @@ ")
             )
             return 4

@@ -796,7 +796,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.output(
             mytxt,
             importance = 1,
-            type = "warning",
+            level = "warning",
             header = darkred(" * ")
         )
         try:
@@ -817,7 +817,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.output(
                 mytxt,
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = darkred(" * ")
             )
             if command[0] == "move":
@@ -835,7 +835,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = purple(" @@ ")
             )
 
@@ -858,7 +858,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = brown(" @@ ")
         )
 
@@ -1078,7 +1078,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = darkred(" * ")
                 )
                 if os.path.isdir(to_path):
@@ -6459,7 +6459,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = output_header,
             back = True
         )
@@ -6475,7 +6475,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.output(
                 mytxt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = output_header,
                 back = True,
                 count = (mycount, maxcount)
@@ -6494,7 +6494,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.output(
                 mytxt,
                 importance = 0,
-                type = "info",
+                level = "info",
                 header = output_header,
                 back = True,
                 count = (mycount, maxcount)
@@ -6535,13 +6535,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.output(
                 red(_("Repository EAPI > Entropy EAPI.")),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = " * ! * ! * ! * "
             )
             self.output(
                 red(_("Please update Equo/Entropy as soon as possible !")),
                 importance = 1,
-                type = "warning",
+                level = "warning",
                 header = " * ! * ! * ! * "
             )
 
@@ -6591,7 +6591,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     _("Exporting database table"),
                 ) ) + "["+blue(str(name))+"]",
                 importance = 0,
-                type = "info",
+                level = "info",
                 back = True,
                 header = "   "
             )
@@ -6632,7 +6632,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.output(
             red(_("Database Export complete.")),
             importance = 0,
-            type = "info",
+            level = "info",
             header = "   "
         )
         # remember to close the file
@@ -7338,7 +7338,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self.output(
                         mytxt,
                         importance = 1,
-                        type = "warning"
+                        level = "warning"
                     )
                 continue
 
@@ -7352,7 +7352,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     self.output(
                         mytxt,
                         importance = 1,
-                        type = "warning"
+                        level = "warning"
                     )
                 continue
 
@@ -7429,7 +7429,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.output(
                     mytxt,
                     importance = 1,
-                    type = "warning"
+                    level = "warning"
                 )
 
             done_something = True
@@ -7527,7 +7527,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.output(
             mytxt,
             importance = 1,
-            type = "warning"
+            level = "warning"
         )
 
         try:
@@ -7541,7 +7541,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.output(
                 mytxt,
                 importance = 1,
-                type = "warning"
+                level = "warning"
             )
             do_create()
 
@@ -7760,7 +7760,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if verbose and ((count == 0) or (count % 150 == 0) or \
                 (count == total)):
                 self.output( red("Resolving %s") % (atom,), importance = 0,
-                    type = "info", back = True, count = (count, total))
+                    level = "info", back = True, count = (count, total))
 
             # not safe to use cache here, people messing with multiple
             # instances can make this crash

@@ -277,7 +277,7 @@ class System:
             mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
             self._entropy.output(
                 mytxt + ":",
-                type = "warning",
+                level = "warning",
                 header = red("   # ")
             )
             mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
@@ -285,7 +285,7 @@ class System:
             )
             self._entropy.output(
                 "$ " + mytxt,
-                type = "warning",
+                level = "warning",
                 header = red("   # ")
             )
 
@@ -315,7 +315,7 @@ class System:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "warning",
+                    level = "warning",
                     header = red("   # ")
                 )
                 mytxt = "[%s => %s]" % (
@@ -324,7 +324,7 @@ class System:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "warning",
+                    level = "warning",
                     header = red("   # ")
                 )
             else:
@@ -334,7 +334,7 @@ class System:
                 )
                 self._entropy.output(
                     mytxt,
-                    type = "info",
+                    level = "info",
                     header = red("   # ")
                 )
             do_warn_user(fingerprint)
@@ -347,7 +347,7 @@ class System:
             )
             self._entropy.output(
                 mytxt,
-                type = "warning",
+                level = "warning",
                 header = red("   # ")
             )
 
@@ -358,7 +358,7 @@ class System:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = red("   # "),
             back = True
         )
@@ -372,7 +372,7 @@ class System:
             )
             self._entropy.output(
                 mytxt,
-                type = "error",
+                level = "error",
                 header = red("   # ")
             )
             return False
@@ -383,7 +383,7 @@ class System:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = red("   # ")
         )
         mytxt = "%s: %s" % (
@@ -392,7 +392,7 @@ class System:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = red("   # ")
         )
         do_warn_user(fingerprint)
@@ -417,7 +417,7 @@ class System:
             )
             self._entropy.output(
                 mytxt,
-                type = "error",
+                level = "error",
                 header = red("   # ") + bold(" !!! ")
             )
             mytxt = "%s: %s" % (
@@ -426,7 +426,7 @@ class System:
             )
             self._entropy.output(
                 mytxt,
-                type = "error",
+                level = "error",
                 header = red("   # ") + bold(" !!! ")
             )
             return False
@@ -437,7 +437,7 @@ class System:
         )
         self._entropy.output(
             mytxt,
-            type = "info",
+            level = "info",
             header = red("   # ")
         )
 
@@ -620,7 +620,7 @@ class System:
             if not etpUi['quiet']:
                 self._entropy.output(":: " + \
                     str(round((float(count)/maxlen)*100, 1)) + "% ::",
-                    importance = 0, type = "info", back = True)
+                    importance = 0, level = "info", back = True)
 
             xml_metadata = None
             exc_string = ""
@@ -646,7 +646,7 @@ class System:
                 self._entropy.output(
                     mytxt,
                     importance = 1,
-                    type = "warning",
+                    level = "warning",
                     header = red(" !!! ")
                 )
                 continue
@@ -994,7 +994,7 @@ class System:
         self._entropy.output(
             mytxt,
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ "),
             footer = red(" ...")
         )
@@ -1007,7 +1007,7 @@ class System:
         self._entropy.output(
             mytxt,
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -1020,7 +1020,7 @@ class System:
             self._entropy.output(
                 red(_("Another Entropy is currently running.")),
                 importance = 1,
-                type = "error",
+                level = "error",
                 header = darkred(" @@ ")
             )
             return 4
@@ -1053,7 +1053,7 @@ class System:
         self._entropy.output(
             advtext,
             importance = 2,
-            type = "info",
+            level = "info",
             header = red(" @@ ")
         )
 
@@ -1073,7 +1073,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             return 2
@@ -1096,7 +1096,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             return 1
@@ -1109,7 +1109,7 @@ class System:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   # "),
             back = True
         )
@@ -1125,7 +1125,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             return 3
@@ -1137,7 +1137,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             return 4
@@ -1149,7 +1149,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             return 5
@@ -1161,7 +1161,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 1,
-                type = "info",
+                level = "info",
                 header = red("   # ")
             )
         else:
@@ -1181,7 +1181,7 @@ class System:
                     )
                     self._entropy.output(
                         mytxt,
-                        type = "info",
+                        level = "info",
                         header = red("   # ")
                     )
                 elif not verify_sts:
@@ -1208,7 +1208,7 @@ class System:
             self._entropy.output(
                 mytxt,
                 importance = 2,
-                type = "error",
+                level = "error",
                 header = red("   ## ")
             )
             return 6
@@ -1221,7 +1221,7 @@ class System:
         self._entropy.output(
             mytxt,
             importance = 1,
-            type = "info",
+            level = "info",
             header = red("   # ")
         )
 
