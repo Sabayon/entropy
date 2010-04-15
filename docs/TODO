@@ -1,19 +1,18 @@
 
   0.99.50:
 
+    - sulfur: make use of provided_mime (and desktop_mime) metadata
     - "equo repo add-mirror/remove-mirror"
+    - entropy.server/entropy.spm: enable OR deps
     - "reagent spm orphans" doesn't seem to play nice with overlays
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
-    - type argument in updateProgress
-    - Client.SystemSettings vs Client.Settings()
+        http://ginstrom.com/scribbles/2007/09/04/pretty-printing-a-table-in-python/
 
     - entropy.fetchers API docs
     - entropy.server API docs
     - entropy.client API docs
-    - sulfur: make use of provided_mime (and desktop_mime) metadata
 
     - add splitdebug support?
-    - entropy.server/entropy.spm: enable OR deps
 
   1.0_beta1:
 
