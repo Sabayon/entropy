@@ -18,6 +18,7 @@ from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
     DatabaseError, InterfaceError
+from entropy.db import EntropyRepository
 
 import entropy.tools
 
@@ -492,6 +493,25 @@ class CalculatorsMixin:
                 const_debug_write(__name__, "...")
                 push_to_cache(dependency, False)
                 continue
+
+            # WARN: unfortunately, need to deal with Portage (and other
+            # backends) old-style PROVIDE metadata
+            if entropy.tools.dep_getcat(dependency) == \
+                EntropyRepository.VIRTUAL_META_PACKAGE_CATEGORY:
+                provide_stop = False
+                for c_id in c_ids:
+                    # optimize speed with a trick
+                    _provide = dict(self._installed_repository.retrieveProvide(c_id))
+                    if dependency in _provide:
+                        const_debug_write(__name__,
+                            "_get_unsatisfied_dependencies old-style provide, satisfied => %s" % (
+                                dependency,))
+                        const_debug_write(__name__, "...")
+                        push_to_cache(dependency, False)
+                        provide_stop = True
+                        break
+                if provide_stop:
+                    continue
 
             r_id, r_repo = self.atom_match(dependency)
             if r_id == -1:
