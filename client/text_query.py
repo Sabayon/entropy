@@ -1215,7 +1215,11 @@ def match_package(packages, multiMatch = False, multiRepo = False,
             if inst_rc != 0:
                 match = (-1, 1)
             else:
-                match = (inst_pkg_id, etpConst['clientdbid'])
+                if multiMatch:
+                    match = ([(x, etpConst['clientdbid']) for x in inst_pkg_id],
+                        0)
+                else:
+                    match = (inst_pkg_id, etpConst['clientdbid'])
         else:
             match = Equo.atom_match(package, multi_match = multiMatch,
                 multi_repo = multiRepo, mask_filter = False)
