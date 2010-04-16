@@ -75,6 +75,7 @@ help_opts = [
     (1, 'search', 2, _('search packages in repositories'), ),
     (1, 'match', 2, _('match a package in repositories')),
     (2, '--multimatch', 1, _('return all the possible matches')),
+    (2, '--installed', 1, _('match inside installed packages repository')),
     (2, '--multirepo', 1, _('return matches from every repository')),
     (2, '--showrepo', 1, _('print repository information (w/--quiet)')),
     (2, '--showdesc', 1, _('print description too (w/--quiet)')),

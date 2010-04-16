@@ -36,6 +36,7 @@ def query(options):
     show_repo = False
     show_desc = False
     complete_graph = False
+    match_installed = False
 
     myopts = []
     first_opt = None
@@ -54,6 +55,8 @@ def query(options):
             multi_match = True
         elif (opt == "--multirepo") and (first_opt == "match"):
             multi_repo = True
+        elif (opt == "--installed") and (first_opt == "match"):
+            match_installed = True
         elif (opt == "--showrepo") and (first_opt == "match"):
             show_repo = True
         elif (opt == "--showdesc") and (first_opt == "match"):
@@ -74,7 +77,8 @@ def query(options):
             multiMatch = multi_match,
             multiRepo = multi_repo,
             showRepo = show_repo,
-            showDesc = show_desc)
+            showDesc = show_desc,
+            installed = match_installed)
 
     elif myopts[0] == "search":
         rc_status = search_package(myopts[1:])
@@ -1188,7 +1192,8 @@ def search_package(packages, Equo = None, get_results = False,
     return 0
 
 def match_package(packages, multiMatch = False, multiRepo = False,
-    showRepo = False, showDesc = False, Equo = None, get_results = False):
+    showRepo = False, showDesc = False, Equo = None, get_results = False,
+    installed = False):
 
     if Equo is None:
         Equo = EquoInterface()
@@ -1204,8 +1209,16 @@ def match_package(packages, multiMatch = False, multiRepo = False,
         if not etpUi['quiet'] and not get_results:
             print_info("%s: %s" % (blue("  # "), bold(package),))
 
-        match = Equo.atom_match(package, multi_match = multiMatch,
-            multi_repo = multiRepo, mask_filter = False)
+        if installed:
+            inst_pkg_id, inst_rc = Equo.installed_repository().atomMatch(
+                package, multiMatch = multiMatch)
+            if inst_rc != 0:
+                match = (-1, 1)
+            else:
+                match = (inst_pkg_id, etpConst['clientdbid'])
+        else:
+            match = Equo.atom_match(package, multi_match = multiMatch,
+                multi_repo = multiRepo, mask_filter = False)
         if match[1] != 1:
 
             if not multiMatch:

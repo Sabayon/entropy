@@ -102,6 +102,10 @@ match a package in repositories
 
 return all the possible matches
 
+=item B<--installed>
+
+match inside installed packages repository
+
 =item B<--multirepo>
 
 return matches from every repository
