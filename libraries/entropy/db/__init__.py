@@ -75,6 +75,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     """
 
     SETTING_KEYS = [ "arch", "on_delete_cascade" ]
+    VIRTUAL_META_PACKAGE_CATEGORY = "virtual"
 
     class Schema:
 
@@ -8621,7 +8622,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         old_style_virtuals = None
         # if it's a PROVIDE, search with searchProvide
         # there's no package with that name
-        if (not results) and (pkgcat == "virtual"):
+        if (not results) and (pkgcat == self.VIRTUAL_META_PACKAGE_CATEGORY):
 
             # look for default old-style virtual
             virtuals = self.searchProvide(pkgkey, just_id = True,
@@ -8659,15 +8660,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             for idpackage in results:
                 cat = self.retrieveCategory(idpackage)
                 cats.add(cat)
-                if (cat == pkgcat) or ((pkgcat == "virtual") and \
-                    (cat == pkgcat)):
+                if (cat == pkgcat) or \
+                    ((pkgcat == self.VIRTUAL_META_PACKAGE_CATEGORY) and \
+                        (cat == pkgcat)):
                     # in case of virtual packages only
                     # (that they're not stored as provide)
                     found_cat = cat
 
             # if we found something at least...
             if (not found_cat) and (len(cats) == 1) and \
-                (pkgcat in ("virtual", "null")):
+                (pkgcat in (self.VIRTUAL_META_PACKAGE_CATEGORY, "null")):
                 found_cat = sorted(cats)[0]
 
             if not found_cat:
@@ -8694,7 +8696,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         idpackage = results[0]
         # if pkgcat is virtual, it can be forced
-        if (pkgcat == "virtual") and (old_style_virtuals is not None):
+        if (pkgcat == self.VIRTUAL_META_PACKAGE_CATEGORY) and \
+            (old_style_virtuals is not None):
             # in case of virtual packages only
             # (that they're not stored as provide)
             pkgcat, pkgname = self.retrieveKeySplit(idpackage)
