@@ -4222,7 +4222,11 @@ class PortagePlugin(SpmPlugin):
 
     def _extract_pkg_metadata_ebuild_entropy_tag(self, ebuild):
         search_tag = PortagePlugin._ebuild_entries['ebuild_pkg_tag_var']
-        ebuild_tag = ''
+        # search inside build environment
+        ebuild_tag = os.getenv(search_tag, "")
+        if ebuild_tag:
+            return ebuild_tag
+
         # open in unicode fmt
         f = open(ebuild, "r")
         tags = [const_convert_to_unicode(x.strip()) for x in f.readlines() \
