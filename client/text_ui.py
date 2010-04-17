@@ -440,19 +440,22 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         do_run = True
         if not etpUi['pretend']:
 
-            rm_options = [_("Yes"), _("No"), _("Selective")]
-            def fake_callback(s):
-                return s
+            rc = 1
+            if not os.getenv("ETP_NONINTERACTIVE"):
+                rm_options = [_("Yes"), _("No"), _("Selective")]
+                def fake_callback(s):
+                    return s
 
-            input_params = [('answer', ('combo', (_('Repository'), rm_options),),
-                fake_callback, False)]
-            data = entropy_client.input_box(
-                _('Would you like to remove them?'),
-                input_params
-            )
-            if data is None:
-                return 0, 0
-            rc = data.get('answer', 2)[0]
+                input_params = [('answer',
+                    ('combo', (_('Repository'), rm_options),),
+                        fake_callback, False)]
+                data = entropy_client.input_box(
+                    _('Would you like to remove them?'),
+                    input_params
+                )
+                if data is None:
+                    return 0, 0
+                rc = data.get('answer', 2)[0]
 
             if rc == 2: # no
                 do_run = False
@@ -1451,15 +1454,17 @@ def install_packages(entropy_client,
         action = readtext("       %s: " % (_("Your choice (type a number and press enter)"),) )
         return action
 
-    ### Before even starting the fetch, make sure that the user accepts their licenses
-    licenses = entropy_client.get_licenses_to_accept(run_queue)
-    # is there ACCEPT_LICENSE in ENV?
-    myaccept_license = os.getenv("ACCEPT_LICENSE")
-    if myaccept_license:
-        myaccept_license = myaccept_license.split()
-        for mylic in myaccept_license:
-            if mylic in licenses:
-                licenses.pop(mylic)
+    licenses = {}
+    if not os.getenv("ETP_NONINTERACTIVE"):
+        ### Before even starting the fetch, make sure that the user accepts their licenses
+        licenses = entropy_client.get_licenses_to_accept(run_queue)
+        # is there ACCEPT_LICENSE in ENV?
+        myaccept_license = os.getenv("ACCEPT_LICENSE")
+        if myaccept_license:
+            myaccept_license = myaccept_license.split()
+            for mylic in myaccept_license:
+                if mylic in licenses:
+                    licenses.pop(mylic)
 
     def get_text_license(license_name, repoid):
         dbconn = entropy_client.open_repository(repoid)
