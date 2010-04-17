@@ -182,7 +182,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
+      <span class="summary-type">tuple</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -668,9 +668,10 @@
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a href="entropy.const-module.html#ETP_ARCH_MAP" class="summary-name">ETP_ARCH_MAP</a> = <code title="{('i386', 'i486', 'i586', 'i686'): 'x86',
+ ('mips', 'mips64'): 'mips',
  ('ppc'): None,
  ('sun4u'): None,
- ('x86_64'): 'amd64'}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">ppc</code><code class="variable-ellipsis">...</code></code>
+ ('x86_64'): 'amd64'}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">mip</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -714,15 +715,15 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="entropy.const-module.html#etpConst" class="summary-name">etpConst</a> = <code title="{'applicationlock': False,
- 'backed_up': {},
+        <a href="entropy.const-module.html#etpConst" class="summary-name">etpConst</a> = <code title="{'backed_up': {},
  'branch': '4',
  'cachedumpext': '.dmp',
  'clientconf': '/etc/entropy/client.conf',
- 'clientdbid': '__client__',
+ 'clientdbid': '__system__',
  'clientserverrepoid': '__system__',
- 'cmdline': ['root=/dev/ram0', 'ramdisk=8192', 'real_root=UUID=19da6ea\
-..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">applicationlock</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">branch</code><code class="variable-ellipsis">...</code></code>
+ 'cmdline': ['root=/dev/ram0',
+             'ramdisk=8192',
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">branch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">4</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cachedumpext</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">.</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -904,15 +905,16 @@
   have no effect. If just_read is specified, this function will only try to
   read the current pid string in the Entropy pid file 
   (etpConst['pidfile']). If any other entropy istance is currently owning 
-  the contained pid, etpConst['applicationlock'] becomes True.</p>
+  the contained pid, the second bool of the tuple is True.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>just_read</code></strong> (bool) - only read the current pid file, if any and if possible</li>
         <li><strong class="pname"><code>force_handling</code></strong> (bool) - force pid handling even if &quot;--no-pid-handling&quot; is given</li>
     </ul></dd>
-    <dt>Returns: bool</dt>
-        <dd>if pid lock file has been acquired</dd>
+    <dt>Returns: tuple</dt>
+        <dd>tuple composed by two bools, (if pid lock file has been acquired,
+          locked resources)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1442,6 +1444,7 @@
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
 <code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">mips</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">mips64</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">mips</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">ppc</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">sun4u</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
  <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">x86_64</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-group">}</code>
@@ -1514,14 +1517,14 @@
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">applicationlock</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">,</code>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">branch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">4</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">cachedumpext</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">.dmp</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">clientconf</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">/etc/entropy/client.conf</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">clientdbid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">__client__</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">clientdbid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">__system__</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">clientserverrepoid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">__system__</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">cmdline</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">root=/dev/ram0</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">ramdisk=8192</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">real_root=UUID=19da6ea</code><span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+ <code class="variable-quote">'</code><code class="variable-string">cmdline</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">root=/dev/ram0</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+             <code class="variable-quote">'</code><code class="variable-string">ramdisk=8192</code><code class="variable-quote">'</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -1560,7 +1563,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb  5 07:33:29 2010
+    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:32 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

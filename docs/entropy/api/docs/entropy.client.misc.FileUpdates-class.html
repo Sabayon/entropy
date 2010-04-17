@@ -72,7 +72,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">EquoInstance</span>)</span></td>
+        <span class="summary-sig-arg">entropy_client</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.__init__">source&nbsp;code</a></span>
             
@@ -88,10 +88,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="merge_file"></a><span class="summary-sig-name">merge_file</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="merge"></a><span class="summary-sig-name">merge</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">key</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.merge_file">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.merge">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -105,10 +105,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="remove_file"></a><span class="summary-sig-name">remove_file</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="remove"></a><span class="summary-sig-name">remove</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">key</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.remove_file">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.remove">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -122,28 +122,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="do_backup"></a><span class="summary-sig-name">do_backup</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">key</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.do_backup">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="scanfs"></a><span class="summary-sig-name">scanfs</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="scan"></a><span class="summary-sig-name">scan</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">dcache</span>=<span class="summary-sig-default">True</span>,
         <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.scanfs">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.scan">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -157,27 +140,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="load_cache"></a><span class="summary-sig-name">load_cache</span>(<span class="summary-sig-arg">self</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.load_cache">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="add_to_cache"></a><span class="summary-sig-name">add_to_cache</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="add"></a><span class="summary-sig-name">add</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">filepath</span>,
         <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.add_to_cache">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.add">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -191,27 +158,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="remove_from_cache"></a><span class="summary-sig-name">remove_from_cache</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a name="ignore"></a><span class="summary-sig-name">ignore</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">key</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.remove_from_cache">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="generate_dict"></a><span class="summary-sig-name">generate_dict</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">filepath</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.generate_dict">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.client.misc-pysrc.html#FileUpdates.ignore">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -267,7 +217,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb  5 07:33:32 2010
+    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:34 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

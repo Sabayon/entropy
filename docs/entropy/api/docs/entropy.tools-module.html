@@ -1444,6 +1444,23 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#is_valid_package_tag" class="summary-sig-name">is_valid_package_tag</a>(<span class="summary-sig-arg">dep</span>)</span><br />
+      docstring_title</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.tools-pysrc.html#is_valid_package_tag">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#entropy_compare_package_tags" class="summary-sig-name">entropy_compare_package_tags</a>(<span class="summary-sig-arg">tag_a</span>,
         <span class="summary-sig-arg">tag_b</span>)</span><br />
       Compare two Entropy package tags using builtin cmp().</td>
@@ -1483,23 +1500,6 @@
         <span class="summary-sig-arg">listB</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#entropy_compare_versions">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="g_n_w_cmp"></a><span class="summary-sig-name">g_n_w_cmp</span>(<span class="summary-sig-arg">a</span>,
-        <span class="summary-sig-arg">b</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#g_n_w_cmp">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -2100,7 +2100,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#create_package_dirpath" class="summary-sig-name">create_package_dirpath</a>(<span class="summary-sig-arg">branch</span>,
-        <span class="summary-sig-arg">nonfree</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">nonfree</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">restricted</span>=<span class="summary-sig-default">False</span>)</span><br />
       Create Entropy package relative directory path used for building 
       EntropyRepository &quot;download&quot; metadatum and for handling 
       package file life by Entropy Server.</td>
@@ -2190,6 +2191,13 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a name="dep_revmatch"></a><span class="summary-name">dep_revmatch</span> = <code title="re.compile(r'^r[0-9]')">re.compile(r'^r<code class="re-group">[</code>0<code class="re-op">-</code>9<code class="re-group">]</code>')</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="tag_regexp"></a><span class="summary-name">tag_regexp</span> = <code title="re.compile(r'^([A-Za-z0-9\+_\.-]+)?$')">re.compile(r'^<code class="re-group">(</code><code class="re-group">[</code>A<code class="re-op">-</code>Za<code class="re-op">-</code>z0<code class="re-op">-</code>9\+_\.-<code class="re-group">]</code><code class="re-op">+</code><code class="re-group">)</code><code class="re-op">?</code>$')</code>
     </td>
   </tr>
 <tr>
@@ -4186,6 +4194,29 @@ Removes dep components from the right side of an atom:
   </dl>
 </td></tr></table>
 </div>
+<a name="is_valid_package_tag"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_valid_package_tag</span>(<span class="sig-arg">dep</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.tools-pysrc.html#is_valid_package_tag">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>docstring_title</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dep</code></strong> ()</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="entropy_compare_package_tags"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -5106,7 +5137,8 @@ rtype: int
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">create_package_dirpath</span>(<span class="sig-arg">branch</span>,
-        <span class="sig-arg">nonfree</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">nonfree</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">restricted</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.tools-pysrc.html#create_package_dirpath">source&nbsp;code</a></span>&nbsp;
@@ -5228,7 +5260,7 @@ d<code class="re-op">*</code><code class="re-group">)</code><code class="re-op">
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb  5 07:33:30 2010
+    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:32 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

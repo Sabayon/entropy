@@ -57,19 +57,20 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropyPluginStore</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__23" name="uml_class_diagram_for_entropy__23">
-<area shape="rect" id="node56" href="entropy.core.EntropyPluginStore-class.html#__init__" title="entropy.core.EntropyPluginStore.__init__" alt="" coords="292,39,552,57"/>
-<area shape="rect" id="node56" href="entropy.core.EntropyPluginStore-class.html#get_plugins" title="Return a copy of the internal dictionary that contains the currently stored plugins map." alt="" coords="292,57,552,76"/>
-<area shape="rect" id="node56" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="292,76,552,95"/>
-<area shape="rect" id="node56" href="entropy.core.EntropyPluginStore-class.html#add_plugin" title="This method lets you add a plugin to the store." alt="" coords="292,95,552,113"/>
-<area shape="rect" id="node56" href="entropy.core.EntropyPluginStore-class.html#remove_plugin" title="This method lets you remove previously added plugin objects via &#160;identifiers." alt="" coords="292,113,552,132"/>
-<area shape="rect" id="node1" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="280,6,563,138"/>
-<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,158,328,197"/>
-<area shape="rect" id="node4" href="entropy.qa.QAInterface-class.html" title="Entropy QA interface." alt="" coords="357,158,488,197"/>
-<area shape="rect" id="node5" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="517,158,736,197"/>
-<area shape="rect" id="node3" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="81,217,252,255"/>
+<center>  <map id="uml_class_diagram_for_entropy__22" name="uml_class_diagram_for_entropy__22">
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#__init__" title="entropy.core.EntropyPluginStore.__init__" alt="" coords="336,39,596,57"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#get_plugins" title="Return a copy of the internal dictionary that contains the currently stored plugins map." alt="" coords="336,57,596,76"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="336,76,596,95"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#add_plugin" title="This method lets you add a plugin to the store." alt="" coords="336,95,596,113"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#remove_plugin" title="This method lets you remove previously added plugin objects via &#160;identifiers." alt="" coords="336,113,596,132"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="336,132,596,151"/>
+<area shape="rect" id="node1" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="324,6,607,157"/>
+<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,177,328,215"/>
+<area shape="rect" id="node4" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="357,177,576,215"/>
+<area shape="rect" id="node5" href="entropy.qa.QAInterface-class.html" title="Entropy QA interface." alt="" coords="605,177,736,215"/>
+<area shape="rect" id="node3" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="81,235,252,274"/>
 </map>
-  <img src="uml_class_diagram_for_entropy__23.gif" alt='' usemap="#uml_class_diagram_for_entropy__23" ismap="ismap" class="graph-without-title" />
+  <img src="uml_class_diagram_for_entropy__22.gif" alt='' usemap="#uml_class_diagram_for_entropy__22" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
@@ -166,6 +167,25 @@
       identifiers.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.remove_plugin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="has_plugin"></a><span class="summary-sig-name">has_plugin</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>)</span><br />
+      Return whether EntropyPluginStore instance contains the given plugin 
+      id.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.has_plugin">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -288,7 +308,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb  5 07:33:33 2010
+    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:35 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -86,6 +86,7 @@
     <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.factory-module.html">entropy.transceivers.uri_handlers.plugins.factory</a></strong>    </li>
     <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces-module.html">entropy.transceivers.uri_handlers.plugins.interfaces</a></strong>
     <ul>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.file_plugin-module.html">entropy.transceivers.uri_handlers.plugins.interfaces.file_plugin</a></strong>    </li>
     <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin-module.html">entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin</a></strong>    </li>
     <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-module.html">entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin</a></strong>    </li>
     </ul>
@@ -127,10 +128,12 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="entropy.transceivers-module.html#available_plugins" class="summary-name">available_plugins</a> = <code title="{'ftp': &lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.f\
+        <a href="entropy.transceivers-module.html#available_plugins" class="summary-name">available_plugins</a> = <code title="{'file': &lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.\
+file_plugin.EntropyFileUriHandler'&gt;,
+ 'ftp': &lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.f\
 tp_plugin.EntropyFtpUriHandler'&gt;,
  'ssh': &lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.s\
-sh_plugin.EntropySshUriHandler'&gt;}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ftp</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_h<code class="variable-ellipsis">...</code></code>
+sh_plugin.EntropySshUriHandler'&gt;}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">file</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -144,7 +147,7 @@ sh_plugin.EntropySshUriHandler'&gt;}"><code class="variable-group">{</code><code
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="plug_id"></a><span class="summary-name">plug_id</span> = <code title="'ssh'"><code class="variable-quote">'</code><code class="variable-string">ssh</code><code class="variable-quote">'</code></code>
+        <a name="plug_id"></a><span class="summary-name">plug_id</span> = <code title="'file'"><code class="variable-quote">'</code><code class="variable-string">file</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
@@ -169,7 +172,9 @@ sh_plugin.EntropySshUriHandler'&gt;}"><code class="variable-group">{</code><code
   <dl class="fields">
     <dt>Value:</dt>
       <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ftp</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.f<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">file</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+file_plugin.EntropyFileUriHandler'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ftp</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.f<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
 tp_plugin.EntropyFtpUriHandler'&gt;<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">ssh</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.s<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
 sh_plugin.EntropySshUriHandler'&gt;<code class="variable-group">}</code>
@@ -210,7 +215,7 @@ sh_plugin.EntropySshUriHandler'&gt;<code class="variable-group">}</code>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Feb  5 07:33:30 2010
+    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:32 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
