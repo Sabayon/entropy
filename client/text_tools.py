@@ -195,6 +195,39 @@ def print_menu(data, args = None):
                 print_generic(desc, end = "")
             writechar("\n")
 
+def print_table(lines_data, cell_spacing = 2, cell_padding = 0):
+    """
+    Print a table composed by len(lines_data[i]) columns and len(lines_data)
+    rows.
+
+    @param lines_data: list of row data
+    @type lines_data: list
+    """
+    column_sizes = {}
+    padding_side = cell_padding / 2
+    for cols in lines_data:
+        col_n = 0
+        for cell in cols:
+            cell_len = len(" "*padding_side + cell + " "*padding_side)
+            cur_len = column_sizes.get(col_n)
+            if cur_len is None:
+                column_sizes[col_n] = cell_len
+            elif cur_len < cell_len:
+                column_sizes[col_n] = cell_len
+            col_n += 1
+
+    # now actually print
+    for cols in lines_data:
+        col_n = 0
+        for cell in cols:
+            max_len = column_sizes[col_n]
+            cell = " "*padding_side + cell + " "*padding_side
+            delta_len = max_len - len(cell) + cell_spacing
+            print_generic(cell, end = " "*delta_len)
+            col_n += 1
+        writechar("\n")
+
+
 def countdown(secs = 5, what = "Counting...", back = False):
     """
     Print countdown.
