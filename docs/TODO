@@ -6,7 +6,7 @@
     - entropy.server/entropy.spm: enable OR deps
     - "reagent spm orphans" doesn't seem to play nice with overlays
     - reagent/equo/activator, don't use \t\t\t but proper tabs, diff lang compat
-        http://ginstrom.com/scribbles/2007/09/04/pretty-printing-a-table-in-python/
+        (use print_table)
 
     - entropy.fetchers API docs
     - entropy.server API docs
