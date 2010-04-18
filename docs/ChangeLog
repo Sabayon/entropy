@@ -1,3 +1,143 @@
+commit dc30f71337dc519068a54c41b05b231ad0d9e842
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 17 19:25:54 2010 +0200
+
+    [todo] update TODO
+
+commit 5b36cfc43f1b7be84f0078bf2d9340f86d0b4430
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 17 19:24:47 2010 +0200
+
+    [equo] add ETP_NONINTERACTIVE env support for upgrade and install functions
+
+commit d5aacf9f66439883423c28ef20ed557cfcdd301d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 17 13:53:22 2010 +0200
+
+    [client] text_tools: implement print_table function
+
+commit f3bb74707316825a5f6bb5fe7cbba74570e8dc82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 17 12:40:54 2010 +0200
+
+    [docs] update API documentation
+
+commit a90a1dbce8e4766086e585b199e6ac5c8393c8d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 16 20:07:56 2010 +0200
+
+    [entropy.spm] PortagePlugin: when extracting ENTROPY_PROJECT_TAG from ebuild, also look at env()
+
+commit 68343488ff29907e5f3dabd6404d8d787cb8b3c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 16 17:17:13 2010 +0200
+
+    [entropy.client.interfaces.dep] fix old-style virtual packages handling in dependency calculation
+
+commit 012a86698149b24166d7b53f10cbd7afc6e044f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 16 17:16:40 2010 +0200
+
+    [entropy.db] move virtual packages category name to a EntropyRepository static variable
+
+commit 09a8b07b1b8f0623dfcaa2ca705baad0d99653f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 16 12:50:47 2010 +0200
+
+    [equo] fix "equo match --installed" when used with "--multimatch"
+
+commit 87f153187690926fcc39b8b90b9ded4be26af16b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 16 12:08:20 2010 +0200
+
+    [equo] add support for "equo match --installed"
+
+commit 7f1516382e4d1adce9abff1fbddcd9febe8a9e39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 15 11:07:25 2010 +0200
+
+    [todo] update TODO
+
+commit 37fb97de015608b58efe697104799d5d2f1032dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 14 14:56:17 2010 +0200
+
+    [entropy*] kill SystemSettings attribute of Entropy Client and Entropy Server instances
+
+commit ff2eb4f444c90d6f8469c0ec92526ce43f2172c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 14 14:30:51 2010 +0200
+
+    [entropy.output/API] rename "type" argument of TextInterface.output to "level"
+
+commit 054c9789d86846c15f7602bbc886591b81613adf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 13 19:34:32 2010 +0200
+
+    [todo] update TODO
+
+commit e70a7851aade3429ce8c89df5228efec724f17c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 13 19:32:49 2010 +0200
+
+    [equo] always try to generate reverse dependencies metadata when done removing (and catch OperationalError)
+
+commit bac8adc2b295dab569df797b6810ab5e8997ee79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 12 10:33:33 2010 +0200
+
+    [entropy.client.interfaces.dep] calculate_available_packages: ignore package entry if retrieveKeySlot returns None
+
+commit acd966053cab5046e25f20b72f84720298215a8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 11 16:33:58 2010 +0200
+
+    [entropy.db] when calling commit() on sqlite3 connection objects, catch OperationalError
+    
+    OperationalError can be thrown when no transaction is active, bleh
+
+commit 1f8a3c24625607682bc8e6502ab6ff3dd6cff97b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 11 10:35:51 2010 +0200
+
+    [conf] trivial update
+
+commit 776373db69c8052183365d654452cffe8626d5f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 10 12:53:03 2010 +0200
+
+    [conf] add new mirror to mirror list (RNL Universidade Técnica de Lisboa, 1Gbit uplink)
+
+commit de40fe6c2b6526e382944cf10b47dc6e7280bddf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 10 08:00:50 2010 +0200
+
+    [entropy.db] EntropyRepository: _insertDesktopMime: create packagedesktopmime table if not found
+
+commit 5c849a8cb9a3d57debfca8e1a222c8ceab50d5da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 19:28:24 2010 +0200
+
+    [entropy.client.interfaces.dep] when validating cache, make sure that m_id is int type
+
+commit 573ae2f6843b1a8b31b55f1ea99a60e550e942f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 19:21:46 2010 +0200
+
+    [entropy.spm] PortagePlugin: make sure that vartree.dbapi exposes _bump_mtime() method
+
+commit 801f986cf1ed75933b3ae138311c30df70212300
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 13:02:01 2010 +0200
+
+    [entropy.server] make sure that packages are really available before checking missing runtime dependencies
+
+commit 9c75e62b963733c604264f217a3b993d7c6cbbb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 9 12:42:54 2010 +0200
+
+    Tagging Entropy version 0.99.40.4
+
 commit 589579339f2be6bbce7fe6ad99a6bdd4164ba5a7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 9 12:42:18 2010 +0200
