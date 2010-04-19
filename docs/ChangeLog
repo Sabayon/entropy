@@ -1,3 +1,15 @@
+commit e3b1c511bee6f6bf3459f7ec1dc758b5c0dd88aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 19 17:08:34 2010 +0200
+
+    [entropy.server] Server.move_packages: fix wrong download metadata generation
+
+commit 24ea83044ec63b5c9219c69e7c997001a4659750
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 18 13:42:38 2010 +0200
+
+    Tagging Entropy version 0.99.41
+
 commit dc30f71337dc519068a54c41b05b231ad0d9e842
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Apr 17 19:25:54 2010 +0200
