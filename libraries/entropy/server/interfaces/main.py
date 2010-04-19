@@ -1902,7 +1902,6 @@ class ServerPackagesHandlingMixin:
             # and grab the new "download" metadatum value using our
             # license check callback. It has to be done here because
             # we need the new path.
-            updated_package_rel_path = package_rel_path
             srv_set = self._settings[self.sys_settings_plugin_id]['server']
 
             def _package_injector_check_license(pkg_data):
@@ -1922,7 +1921,11 @@ class ServerPackagesHandlingMixin:
             tmp_data = self.Spm().extract_package_metadata(from_file,
                 license_callback = _package_injector_check_license,
                 restricted_callback = _package_injector_check_restricted)
-            updated_package_rel_path = tmp_data['download'][:]
+            # XXX: since ~0.tbz2 << revision is lost, we need to trick
+            # the logic.
+            updated_package_rel_path = os.path.join(
+                os.path.dirname(tmp_data['download']),
+                os.path.basename(package_rel_path))
             del tmp_data
 
             to_file = self.complete_local_upload_package_path(
