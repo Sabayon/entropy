@@ -143,30 +143,42 @@ class SulfurApplicationEventsMixin:
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        self._entropy.FileUpdates.remove(identifier)
+        try:
+            self._entropy.FileUpdates.remove(identifier)
+        except KeyError:
+            pass # cope with multithreading requests
         self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_filesMerge_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        self._entropy.FileUpdates.merge(identifier)
+        try:
+            self._entropy.FileUpdates.merge(identifier)
+        except KeyError:
+            pass # code with multithreaded requests
         self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_mergeFiles_clicked( self, widget ):
         self._entropy.FileUpdates.scan(dcache = True)
         keys = list(self._entropy.FileUpdates.scan().keys())
         for key in keys:
-            self._entropy.FileUpdates.merge(key)
-            # it's cool watching it runtime
+            try:
+                self._entropy.FileUpdates.merge(key)
+                # it's cool watching it runtime
+            except KeyError:
+                pass
         self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_deleteFiles_clicked( self, widget ):
         self._entropy.FileUpdates.scan(dcache = True)
         keys = list(self._entropy.FileUpdates.scan().keys())
         for key in keys:
-            self._entropy.FileUpdates.remove(key)
-            # it's cool watching it runtime
+            try:
+                self._entropy.FileUpdates.remove(key)
+                # it's cool watching it runtime
+            except KeyError:
+                pass
         self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_filesEdit_clicked( self, widget ):
