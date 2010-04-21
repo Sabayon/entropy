@@ -1219,7 +1219,7 @@ def install_packages(entropy_client,
                         installedRepo = _("Not available")
                     onDiskFreedSize += entropy_client.installed_repository().retrieveOnDiskSize(idx)
 
-                if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
+                if etpUi['quiet']:
                     continue
 
                 inst_meta = (installedVer, installedTag, installedRev,)
