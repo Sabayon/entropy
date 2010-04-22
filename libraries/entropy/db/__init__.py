@@ -4961,6 +4961,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.live_cache[c_tup] = True
             if not self._isDependsTableSane(): # is empty, need generation
                 self.generateReverseDependenciesMetadata(verbose = False)
+                # always force commit, if possible, otherwise this, for
+                # read-only repos will be called over and over.
+                self.commitChanges(force = True)
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo 
@@ -6861,15 +6864,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (idpackage,))
 
-    def _removePackageFromDependsTable(self, idpackage):
-        try:
-            self._cursor().execute("""
-            DELETE FROM dependstable WHERE idpackage = (?)
-            """, (idpackage,))
-            return 0
-        except (OperationalError,):
-            return 1 # need reinit
-
     def _createDependsTable(self):
         self._cursor().executescript("""
         CREATE TABLE IF NOT EXISTS dependstable
@@ -6902,14 +6896,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if status:
             return False
 
-        cur = self._cursor().execute("SELECT count(*) FROM dependstable")
-        try:
-            dependstable_count = cur.fetchone()[0]
-        except IndexError:
-            dependstable_count = 0
-        if dependstable_count < 2:
-            return False
-        return True
+        cur = self._cursor().execute("""
+        SELECT count(iddependency) FROM dependstable
+        """)
+        data = cur.fetchone()
+        count = 0
+        if data:
+            count = data[0]
+
+        return count > 1
 
     def storeXpakMetadata(self, idpackage, blob):
         """
@@ -7725,22 +7720,43 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # since this is not bulletproof (because user can mess with this
         # stuff via SPM), we need to IGNORE IntegrityError exceptions
         # caused by foreign constraint violation
-        self._cursor().executemany("""
-            INSERT or IGNORE into dependstable VALUES (?,?)""",
-                iterable)
+        try:
+            self._cursor().executemany("""
+                INSERT or REPLACE into dependstable VALUES (?,?)""",
+                    iterable)
+        except IntegrityError:
+            # ouch, need to cope with that and execute each insert manually
+            for iddep, idpackage in iterable:
+                try:
+                    self._cursor().execute("""
+                        INSERT or REPLACE into dependstable VALUES (?,?)""",
+                            (iddep, idpackage,))
+                except IntegrityError:
+                    continue
+
+        # prune old iddependencies
+        # NOTE: maybe use ON DELETE CASCADE + foreign key reference?
+        cur = self._cursor().execute("SELECT iddependency from dependstable")
+        cur_iddeps = self._cur2set(cur)
+        my_iddeps = set(x for x, y in iterable)
+        to_be_pruned = cur_iddeps - my_iddeps
+        if to_be_pruned:
+            self._cursor().executemany("""
+            DELETE FROM dependstable WHERE iddependency = (?)
+            """, to_be_pruned)
 
     def taintReverseDependenciesMetadata(self):
         """
         Taint reverse (or inverse) dependencies metadata so that will be
         generated during the next request.
         """
-        # FIXME: backward compatibility
-        if not self._doesTableExist("dependstable"):
+        try:
+            self._cursor().executescript("""
+            INSERT or IGNORE INTO dependstable VALUES (-1,NULL);
+            """)
+        except (OperationalError):
+            # FIXME: backward compatibility
             return
-        self._cursor().executescript("""
-            DELETE FROM dependstable;
-            INSERT INTO dependstable VALUES (-1,NULL);
-        """)
 
     def generateReverseDependenciesMetadata(self, verbose = True):
         """
@@ -7757,6 +7773,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.commitChanges()
         for iddep, atom in depends:
             count += 1
+            if iddep == -1:
+                continue
 
             if verbose and ((count == 0) or (count % 150 == 0) or \
                 (count == total)):
@@ -7766,17 +7784,17 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             # not safe to use cache here, people messing with multiple
             # instances can make this crash
             idpackage, rc = self.atomMatch(atom, useCache = False)
-            if idpackage == -1:
-                continue
-            if iddep == -1:
-                continue
-            mydata.add((iddep, idpackage,))
+            if idpackage != -1:
+                mydata.add((iddep, idpackage,))
 
+        # after this step, it'll be sane for sure
         if mydata:
+            # NOTE: no need to call _sanitizeDependsTable()
+            # _addDependsRelationToDependsTable() already removes
+            # iddependency = -1
             self._addDependsRelationToDependsTable(mydata)
-
-        # now validate dependstable
-        self._sanitizeDependsTable()
+        else:
+            self._sanitizeDependsTable()
 
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):
