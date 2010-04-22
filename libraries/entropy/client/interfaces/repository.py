@@ -352,6 +352,8 @@ class Repository:
     def __verify_file_checksum(self, file_path, md5_checksum_path):
         with open(md5_checksum_path, "r") as ck_f:
             md5hash = ck_f.readline().strip()
+            if not md5hash: # invalid !! => [] would cause IndexError
+                return False
             md5hash = md5hash.split()[0]
         return entropy.tools.compare_md5(file_path, md5hash)
 
