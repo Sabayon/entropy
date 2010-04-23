@@ -7754,7 +7754,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self._cursor().executescript("""
             INSERT or IGNORE INTO dependstable VALUES (-1,NULL);
             """)
-        except (OperationalError):
+        except (OperationalError,):
             # FIXME: backward compatibility
             return
 
