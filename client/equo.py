@@ -25,7 +25,7 @@ from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
 from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
     is_stdout_a_tty, bold, purple, blue
-from text_tools import print_menu, print_bascomp, read_equo_release
+from text_tools import print_menu, print_bashcomp, read_equo_release
 from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 import entropy.tools
 try:
@@ -741,7 +741,7 @@ for opt in options:
 options = _options
 
 if bashcomp_enabled:
-    print_bascomp(help_opts + help_opts_extended, options, BASHCOMP_MAP)
+    print_bashcomp(help_opts + help_opts_extended, options, BASHCOMP_MAP)
     raise SystemExit(0)
 
 if "help" in options:

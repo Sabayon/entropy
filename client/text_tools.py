@@ -41,7 +41,7 @@ def cleanup(directories = None):
         _("Cleaned"), counter, _("files and directories"),))
     return 0
 
-def print_bascomp(data, cmdline, cb_map):
+def print_bashcomp(data, cmdline, cb_map):
     """
     Print bash completion string for readline consumption using Entropy
     menu declaration format.
