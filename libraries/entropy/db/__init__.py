@@ -7743,7 +7743,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if to_be_pruned:
             self._cursor().executemany("""
             DELETE FROM dependstable WHERE iddependency = (?)
-            """, to_be_pruned)
+            """, list(to_be_pruned))
 
     def taintReverseDependenciesMetadata(self):
         """
