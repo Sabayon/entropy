@@ -195,17 +195,27 @@ def print_menu(data, args = None):
                 print_generic(desc, end = "")
             writechar("\n")
 
-def print_table(lines_data, cell_spacing = 2, cell_padding = 0):
+def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
+    side_color = darkgreen):
     """
     Print a table composed by len(lines_data[i]) columns and len(lines_data)
     rows.
 
     @param lines_data: list of row data
     @type lines_data: list
+    @keyword cell_spacing: cell spacing
+    @type cell_spacing: int
+    @keyword cell_padding: cell padding
+    @type cell_padding: int
+    @keyword side_color: colorization callback function
+    @type side_color: callable
     """
     column_sizes = {}
     padding_side = cell_padding / 2
     for cols in lines_data:
+        if not isinstance(cols, (list, tuple)):
+            # can be a plain string
+            continue
         col_n = 0
         for cell in cols:
             cell_len = len(" "*padding_side + cell + " "*padding_side)
@@ -219,12 +229,16 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0):
     # now actually print
     for cols in lines_data:
         col_n = 0
-        for cell in cols:
-            max_len = column_sizes[col_n]
-            cell = " "*padding_side + cell + " "*padding_side
-            delta_len = max_len - len(cell) + cell_spacing
-            print_generic(cell, end = " "*delta_len)
-            col_n += 1
+        writechar(side_color(">>") + " ")
+        if isinstance(cols, (list, tuple)):
+            for cell in cols:
+                max_len = column_sizes[col_n]
+                cell = " "*padding_side + cell + " "*padding_side
+                delta_len = max_len - len(cell) + cell_spacing
+                print_generic(cell, end = " "*delta_len)
+                col_n += 1
+        else:
+            print_generic(cols, end = " ")
         writechar("\n")
 
 
