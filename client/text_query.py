@@ -22,6 +22,7 @@ from entropy.i18n import _
 import entropy.tools
 from entropy.db.exceptions import DatabaseError
 
+from text_tools import print_table
 
 def query(options):
 
@@ -298,13 +299,19 @@ def _show_graph_legend():
 
     print_generic("="*40)
 
-def _show_dependencies_legend(indent = ''):
+def _show_dependencies_legend(indent = '', get_data = False):
+    data = []
     for dep_id, dep_val in sorted(etpConst['dependency_type_ids'].items(),
         key = lambda x: x[0], reverse = True):
 
         dep_desc = etpConst['dependency_type_ids_desc'].get(dep_id, _("N/A"))
         txt = '%s%s%s%s %s' % (indent, teal("{"), dep_val, teal("}"), dep_desc,)
-        print_info(txt)
+        if get_data:
+            data.append(txt)
+        else:
+            print_info(txt)
+    if get_data:
+        return data
 
 def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
 
@@ -1547,16 +1554,18 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         except:
             clientSearch = True
 
+    toc = []
+
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
         ", [" + purple(str(dbconn.dbname)) + "] ")
     if not strictOutput and extended:
         pkgname = dbconn.retrieveName(idpackage)
         pkgcat = dbconn.retrieveCategory(idpackage)
-        print_info(darkgreen("       %s:\t\t" % (_("Category"),) ) + \
-            blue(pkgcat))
-        print_info(darkgreen("       %s:\t\t\t" % (_("Name"),) ) + \
-            blue(pkgname))
+        toc.append((darkgreen("       %s:" % (_("Category"),)),
+            blue(pkgcat)))
+        toc.append((darkgreen("       %s:" % (_("Name"),)),
+            blue(pkgname)))
 
     if extended:
 
@@ -1571,127 +1580,156 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 Equo.Settings()['pkg_masking_reasons'].get(
                     idmasking_reason),)
 
-        print_info(darkgreen("       %s:\t\t" % (_("Masked"),) ) + \
-            blue(str(pkgmasked)) + masking_reason)
+        toc.append((darkgreen("       %s:" % (_("Masked"),)),
+            blue(str(pkgmasked)) + masking_reason,))
 
     avail_str = _("Available")
     if clientSearch:
         avail_str = _("Installed")
-    print_info(darkgreen("       %s:\t\t" % (avail_str,) ) + \
+    toc.append((
+        darkgreen("       %s:" % (avail_str,)),
         blue("%s: " % (_("version"),) ) + bold(pkgver) + blue(" ~ tag: ") + \
-        bold(pkgtag) + blue(" ~ %s: " % (_("revision"),) ) + bold(str(pkgrev)))
+        bold(pkgtag) + blue(" ~ %s: " % (_("revision"),) ) + bold(str(pkgrev)),)
+    )
 
     if not clientSearch:
-        print_info(darkgreen("       %s:\t\t" % (_("Installed"),) ) + \
+        toc.append((darkgreen("       %s:" % (_("Installed"),) ),
             blue("%s: " % (_("version"),) ) + bold(installedVer) + \
             blue(" ~ tag: ") + bold(installedTag) + \
-            blue(" ~ %s: " % (_("revision"),) ) + bold(str(installedRev)))
+            blue(" ~ %s: " % (_("revision"),) ) + bold(str(installedRev)),))
 
     if not strictOutput:
-        print_info(darkgreen("       %s:\t\t\t" % (_("Slot"),) ) + \
-            blue(str(pkgslot)))
+        toc.append((darkgreen("       %s:" % (_("Slot"),) ),
+            blue(str(pkgslot)),))
 
         if extended:
             pkgsize = dbconn.retrieveSize(idpackage)
             pkgsize = entropy.tools.bytes_into_human(pkgsize)
-
-            print_info(darkgreen("       %s:\t\t\t" % (_("Size"),) ) + \
-                blue(str(pkgsize)))
-
             pkgbin = dbconn.retrieveDownloadURL(idpackage)
-            print_info(darkgreen("       %s:\t\t" % (_("Download"),) ) + \
-                brown(str(pkgbin)))
-
             pkgdigest = dbconn.retrieveDigest(idpackage)
-            print_info(darkgreen("       %s:\t\t" % (_("Checksum"),) ) + \
-                brown(str(pkgdigest)))
-
             pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
             pkgconflicts = dbconn.retrieveConflicts(idpackage)
             depsorter = lambda x: entropy.tools.dep_getcpv(x[0])
 
+            toc.append((darkgreen("       %s:" % (_("Size"),) ),
+                blue(str(pkgsize)),))
+
+            toc.append((darkgreen("       %s:" % (_("Download"),) ),
+                brown(str(pkgbin)),))
+
+            toc.append((darkgreen("       %s:" % (_("Checksum"),) ),
+                brown(str(pkgdigest)),))
+
             if pkgdeps:
-                print_info(darkred("       ##") + \
-                    darkgreen(" %s:" % (_("Dependencies"),) ))
+                toc.append(darkred("       ##") + " " + \
+                    darkgreen("%s:" % (_("Dependencies"),) ))
+
                 for pdep, p_id in sorted(pkgdeps, key = depsorter):
-                    print_info(darkred("       ## \t\t\t") + "%s%s%s " % (
-                        blue("["), p_id, blue("]"),) + brown(pdep))
+                    toc.append(("       %s    " % (brown("##"),),
+                        "%s%s%s %s" % (blue("["), p_id, blue("]"),
+                        brown(pdep),)))
+
                 # show legend
-                print_info(brown("       ## \t\t\t") + \
-                    blue("%s:" % (_("Legend"),) ))
-                _show_dependencies_legend(indent = brown('       ## \t\t\t'))
+                len_txt = "       %s" % (brown("##"),)
+                toc.append((len_txt, "%s:" % (blue(_("Legend")),),))
+                dep_leg = _show_dependencies_legend(
+                    indent = "", get_data = True)
+                toc.extend([(len_txt, x) for x in dep_leg])
 
 
             if pkgconflicts:
-                print_info(darkred("       ##") + \
-                    darkgreen(" %s:" % (_("Conflicts"),) ))
+                toc.append(darkred("       ##") + " " + \
+                    darkgreen("%s:" % (_("Conflicts"),) ))
                 for conflict in sorted(pkgconflicts, key = depsorter):
-                    print_info(darkred("       ## \t\t\t") + brown(conflict))
+                    toc.append(("       %s" % (darkred("##"),),
+                        brown(conflict),))
 
-    home_txt = darkgreen("       %s:\t\t" % (_("Homepage"),) )
-    _my_formatted_print(pkghome, home_txt, "\t\t\t\t", color = brown,
-        min_chars = 15)
+    home_txt = "       %s:" % (_("Homepage"),)
+    home_lines = _my_formatted_print(pkghome, "", "", color = brown,
+        min_chars = 15, get_data = True)
+    for home_line in home_lines:
+        toc.append((darkgreen(home_txt), home_line,))
+        home_txt = " "*len(home_txt)
 
     if not strictOutput:
 
-        desc_txt = darkgreen("       %s:\t\t" % (_("Description"),) )
-        _my_formatted_print(pkgdesc, desc_txt, "\t\t\t\t")
+        desc_txt = "       %s:" % (_("Description"),)
+        desc_lines = _my_formatted_print(pkgdesc, "", "", get_data = True)
+        for desc_line in desc_lines:
+            toc.append((darkgreen(desc_txt), purple(desc_line)))
+            desc_txt = " "*len(desc_txt)
 
         if extended:
             pkguseflags = dbconn.retrieveUseflags(idpackage)
-            use_txt = darkgreen("       %s:\t\t" % (_("USE flags"),) )
-            _my_formatted_print(pkguseflags, use_txt, "\t\t\t\t", color = red)
+            use_txt = "       %s:" % (_("USE flags"),)
+            use_lines = _my_formatted_print(pkguseflags, "", "", color = teal,
+                get_data = True)
+            for use_line in use_lines:
+                toc.append((darkgreen(use_txt), use_line))
+                use_txt = " "*len(use_txt)
 
     if not strictOutput:
 
         if extended:
 
-            pkgflags = dbconn.retrieveCompileFlags(idpackage)
-            print_info(darkgreen("       %s:\t\t" % (_("CHOST"),) ) + \
-                blue(pkgflags[0]))
-            print_info(darkgreen("       %s:\t\t" % (_("CFLAGS"),) ) + \
-                red(pkgflags[1]))
-            print_info(darkgreen("       %s:\t\t" % (_("CXXFLAGS"),) ) + \
-                blue(pkgflags[2]))
-
+            chost, cflags, cxxflags = dbconn.retrieveCompileFlags(idpackage)
             sources = dbconn.retrieveSources(idpackage)
             eclasses = dbconn.retrieveEclasses(idpackage)
             etpapi = dbconn.retrieveApi(idpackage)
 
-            eclass_txt = "       %s:\t" % (_("Portage eclasses"),)
-            _my_formatted_print(eclasses, darkgreen(eclass_txt), "\t\t\t\t",
-                color = red)
+            toc.append((darkgreen("       %s:" % (_("CHOST"),)),
+                blue(chost)))
+            toc.append((darkgreen("       %s:" % (_("CFLAGS"),)),
+                blue(cflags)))
+            toc.append((darkgreen("       %s:" % (_("CXXFLAGS"),)),
+                blue(cxxflags)))
+
+            eclass_txt = "       %s:" % (_("Portage eclasses"),)
+            eclass_lines = _my_formatted_print(eclasses, "", "", color = red,
+                get_data = True)
+            for eclass_line in eclass_lines:
+                toc.append((darkgreen(eclass_txt), eclass_line))
+                eclass_txt = " "*len(eclass_txt)
 
             if sources:
-                print_info(darkgreen("       %s:" % (_("Sources"),) ))
+                sources_txt = "       %s:" % (_("Sources"),)
+                toc.append(darkgreen(sources_txt))
                 for source in sources:
-                    print_info(darkred("         # %s: " % (_("Source"),) ) + \
-                        blue(source))
+                    toc.append((" "*len(sources_txt),
+                        blue(source),))
 
-            print_info(darkgreen("       %s:\t\t" % (_("Entry API"),) ) + \
-                red(str(etpapi)))
+            toc.append((darkgreen("       %s:" % (_("Entry API"),)),
+                purple(str(etpapi))))
+            toc.append((darkgreen("       %s:" % (_("Compiled with"),)),
+                blue(cflags)))
 
-            print_info(darkgreen("       %s:\t" % (_("Compiled with"),) ) + \
-                blue(pkgflags[1]))
-
-            pkgkeywords = dbconn.retrieveKeywords(idpackage)
-            print_info(darkgreen("       %s:\t\t" % (_("Keywords"),) ) + \
-                red(' '.join(pkgkeywords)))
+            pkgkeywords = ' '.join(sorted(dbconn.retrieveKeywords(idpackage)))
+            keyword_txt = "       %s:" % (_("Keywords"),)
+            keyword_lines = _my_formatted_print(pkgkeywords, "", "",
+                color = brown, get_data = True)
+            for keyword_line in keyword_lines:
+                toc.append((darkgreen(keyword_txt), brown(keyword_line)))
+                keyword_txt = " "*len(keyword_txt)
 
             mydate = dbconn.retrieveCreationDate(idpackage)
             pkgcreatedate = "N/A"
             if mydate:
                 pkgcreatedate = entropy.tools.convert_unix_time_to_human_time(
                     float(mydate))
-            print_info(darkgreen("       %s:\t\t" % (_("Created"),) ) + \
-                pkgcreatedate)
+
+            toc.append((darkgreen("       %s:" % (_("Created"),)),
+                purple(pkgcreatedate)))
 
         pkglic = dbconn.retrieveLicense(idpackage)
-        print_info(darkgreen("       %s:\t\t" % (_("License"),) ) + \
-            red(pkglic))
+        toc.append((darkgreen("       %s:" % (_("License"),)),
+            teal(pkglic)))
+
+    print_table(toc, cell_spacing = 5)
 
 def _my_formatted_print(data, header, reset_columns, min_chars = 25,
-    color = None):
+    color = None, get_data = False):
+
+    out_data = []
 
     if isinstance(data, set):
         mydata = list(data)
@@ -1710,8 +1748,17 @@ def _my_formatted_print(data, header, reset_columns, min_chars = 25,
             desc_text += item+" "
         if fcount > min_chars:
             fcount = 0
-            print_info(desc_text)
+            if get_data:
+                out_data.append(desc_text)
+            else:
+                print_info(desc_text)
             desc_text = reset_columns
 
     if fcount > 0:
-        print_info(desc_text)
+        if get_data:
+            out_data.append(desc_text)
+        else:
+            print_info(desc_text)
+
+    if get_data:
+        return out_data
