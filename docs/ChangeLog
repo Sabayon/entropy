@@ -1,3 +1,81 @@
+commit 0f16b4003006d65d2993f14d9218d914e1b2682e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 26 23:17:45 2010 +0200
+
+    [todo] update TODO
+
+commit 9e66587102b289d2277835b4c664fe63b90a7303
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 26 23:14:19 2010 +0200
+
+    [equo] make print_package_info output localization independent
+
+commit fc0d7174773e6280092ce7f03def7f89c6f3e6af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 26 23:13:38 2010 +0200
+
+    [equo] improve text_tools.print_table, allow row spanning
+
+commit b669290152d14bd5051dcce899f974cd519290e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 26 11:28:08 2010 +0200
+
+    [entropy.db] fix SQL query in EntropyRepository._addDependsRelationToDependsTable()
+
+commit 1df71c7559354c65d4102adbcd50fd51fd065bb6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 25 22:20:03 2010 +0200
+
+    [equo] fix typo in function name, print_bashcomp
+
+commit 6adb9576bf5295a953a5b034aa04e7792411b7af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 25 09:25:27 2010 +0200
+
+    [entropy.db] _addDependsRelationToDependsTable: fix SQL DELETE statement, use list
+
+commit 083b38b3bb78b7991f79d2e385378abc763b4006
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 23 11:47:11 2010 +0200
+
+    [entropy.db] fix minor syntax error
+
+commit aec87af04db42723c7a1d458282b9d84244515f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 22 19:17:52 2010 +0200
+
+    [entropy.client.interfaces.repository] __verify_file_checksum: catch invalid md5 file content
+
+commit de4e3943df24b9bc1a49f992adbe37ce52ae8510
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 22 19:14:47 2010 +0200
+
+    [entropy.db] EntropyRepository: improve reliability of reverse dependencies mapping
+
+commit 9bf812b0ae48eae39470431dd1fa5f5e7366f7b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 21 21:26:58 2010 +0200
+
+    [equo] always show installation queue when calling "equo install" or "equo upgrade"
+
+commit 50a97503df35284c2a633c3b60a8562c6366350f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 20 16:12:19 2010 +0200
+
+    [sulfur] catch SSLError exception when calling UGC.add_download_stats()
+
+commit 1d51388de47918753b290fdf68f469b248820521
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 20 16:09:43 2010 +0200
+
+    [sulfur] when using FileUpdates.{merge,remove,}() catch KeyError exception
+
+commit 8365d3fa94c40e619dd3c2fe3c33ea9272358f13
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 19 17:10:22 2010 +0200
+
+    Tagging Entropy version 0.99.41.1
+
 commit e3b1c511bee6f6bf3459f7ec1dc758b5c0dd88aa
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 19 17:08:34 2010 +0200
