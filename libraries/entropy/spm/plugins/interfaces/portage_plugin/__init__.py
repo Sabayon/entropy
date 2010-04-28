@@ -3823,30 +3823,24 @@ class PortagePlugin(SpmPlugin):
         return newlist
 
     def _dep_or_select(self, or_list):
-        do_skip = False
-        for idx in range(len(or_list)):
-            if do_skip:
-                do_skip = False
-                continue
-            x = or_list[idx]
-            if x == "||": # or
-                x = self._dep_or_select(or_list[idx+1])
-                do_skip = True
-            elif isinstance(x, list): # and
-                x = self._dep_and_select(x)
-                if not x:
-                    continue
-                # found
-                return x
+
+        deps = []
+        idx = 0
+        for item in or_list:
+            if item == "||":
+                deps += self._dep_or_select(or_list[idx+1])
+            elif isinstance(item, list):
+                dep = self._dep_and_select(item)
+                if not dep:
+                    # holy! add the whole dep as string (so it will fail)
+                    dep = '&'.join(item)
+                deps.append(dep)
             else:
-                x = [x]
+                deps.append(item)
 
-            for y in x:
-                match = self.match_installed_package(y)
-                if match:
-                    return [y]
-
-        return []
+        or_dep = etpConst['entropyordepsep'].join(deps) + \
+            etpConst['entropyordepquestion']
+        return [or_dep]
 
     def _paren_license_choose(self, dep_list):
 
