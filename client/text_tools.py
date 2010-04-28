@@ -16,7 +16,7 @@ import subprocess
 
 from entropy.const import etpConst
 from entropy.output import print_info, print_generic, writechar, blue, red, \
-    brown, darkblue, purple, teal, darkgreen
+    brown, darkblue, purple, teal, darkgreen, decolorize
 from entropy.i18n import _
 
 import entropy.tools
@@ -218,7 +218,8 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
             continue
         col_n = 0
         for cell in cols:
-            cell_len = len(" "*padding_side + cell + " "*padding_side)
+            cell_len = len(" "*padding_side + decolorize(cell.split("\n")[0]) \
+                 + " "*padding_side)
             cur_len = column_sizes.get(col_n)
             if cur_len is None:
                 column_sizes[col_n] = cell_len
@@ -228,19 +229,19 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
 
     # now actually print
     for cols in lines_data:
-        col_n = 0
-        writechar(side_color(">>") + " ")
+        print_generic(side_color(">>") + " ", end = " ")
         if isinstance(cols, (list, tuple)):
+            col_n = 0
             for cell in cols:
                 max_len = column_sizes[col_n]
                 cell = " "*padding_side + cell + " "*padding_side
-                delta_len = max_len - len(cell) + cell_spacing
+                delta_len = max_len - len(decolorize(cell.split("\n")[0])) + \
+                    cell_spacing
                 print_generic(cell, end = " "*delta_len)
                 col_n += 1
         else:
-            print_generic(cols, end = " ")
-        writechar("\n")
-
+            print_generic(cols, end = " ") 
+        print_generic()
 
 def countdown(secs = 5, what = "Counting...", back = False):
     """
