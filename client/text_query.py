@@ -1649,7 +1649,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         min_chars = 15, get_data = True)
     for home_line in home_lines:
         toc.append((darkgreen(home_txt), home_line,))
-        home_txt = " "*len(home_txt)
+        home_txt = " "
 
     if not strictOutput:
 
@@ -1657,7 +1657,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         desc_lines = _my_formatted_print(pkgdesc, "", "", get_data = True)
         for desc_line in desc_lines:
             toc.append((darkgreen(desc_txt), purple(desc_line)))
-            desc_txt = " "*len(desc_txt)
+            desc_txt = " "
 
         if extended:
             pkguseflags = dbconn.retrieveUseflags(idpackage)
@@ -1666,7 +1666,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 get_data = True)
             for use_line in use_lines:
                 toc.append((darkgreen(use_txt), use_line))
-                use_txt = " "*len(use_txt)
+                use_txt = " "
 
     if not strictOutput:
 
@@ -1689,14 +1689,13 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 get_data = True)
             for eclass_line in eclass_lines:
                 toc.append((darkgreen(eclass_txt), eclass_line))
-                eclass_txt = " "*len(eclass_txt)
+                eclass_txt = " "
 
             if sources:
                 sources_txt = "       %s:" % (_("Sources"),)
                 toc.append(darkgreen(sources_txt))
                 for source in sources:
-                    toc.append((" "*len(sources_txt),
-                        blue(source),))
+                    toc.append((" ", source,))
 
             toc.append((darkgreen("       %s:" % (_("Entry API"),)),
                 purple(str(etpapi))))
@@ -1709,7 +1708,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 color = brown, get_data = True)
             for keyword_line in keyword_lines:
                 toc.append((darkgreen(keyword_txt), brown(keyword_line)))
-                keyword_txt = " "*len(keyword_txt)
+                keyword_txt = " "
 
             mydate = dbconn.retrieveCreationDate(idpackage)
             pkgcreatedate = "N/A"
@@ -1724,7 +1723,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         toc.append((darkgreen("       %s:" % (_("License"),)),
             teal(pkglic)))
 
-    print_table(toc, cell_spacing = 5)
+    print_table(toc, cell_spacing = 3)
 
 def _my_formatted_print(data, header, reset_columns, min_chars = 25,
     color = None, get_data = False):
