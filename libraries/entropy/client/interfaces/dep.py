@@ -516,11 +516,10 @@ class CalculatorsMixin:
             r_id, r_repo = self.atom_match(dependency)
             if r_id == -1:
                 const_debug_write(__name__,
-                    "_get_unsatisfied_dependencies repository match not found for => %s" % (
-                        dependency,))
+                    "_get_unsatisfied_dependencies repository match "
+                    "not found for => %s, CONSIDER SATISFIED !" % (dependency,))
                 const_debug_write(__name__, "...")
-                unsatisfied.add(dependency)
-                push_to_cache(dependency, True)
+                push_to_cache(dependency, False)
                 continue
 
             # satisfied dependencies filter support
