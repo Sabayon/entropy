@@ -2432,7 +2432,7 @@ class PortagePlugin(SpmPlugin):
             if not os.path.lexists(path):
                 mytxt = "%s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot stat path")),
-                    purple(path_orig),)
+                    purple(repr(path_orig)),)
                 self.output(
                     mytxt,
                     importance = 1,
@@ -4027,7 +4027,9 @@ class PortagePlugin(SpmPlugin):
             # we have to use the unpacked package file and generate content dict
             tmpdir_len = len(pkg_dir)
             for currentdir, subdirs, files in os.walk(pkg_dir):
-                pkg_content[currentdir[tmpdir_len:]] = dir_t
+                cur_dir = currentdir[tmpdir_len:]
+                if cur_dir: # ignore "" entries
+                    pkg_content[cur_dir] = dir_t
                 for item in files:
                     item = currentdir + os.path.sep + item
                     if os.path.islink(item):
