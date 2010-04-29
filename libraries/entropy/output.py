@@ -224,6 +224,12 @@ def nocolor():
     global havecolor
     havecolor=0
 
+def getcolor():
+    """
+    Return color status
+    """
+    return havecolor
+
 nc = os.getenv("ETP_NO_COLOR")
 if nc:
     nocolor()
