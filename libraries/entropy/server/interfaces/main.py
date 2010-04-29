@@ -841,8 +841,8 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                     self._server.output(darkred("~"*40), level = "warning")
                     time.sleep(10)
         finally:
-            os.remove(tmp_f)
             dbc.closeDB()
+            os.remove(tmp_f)
 
     def get_tests(self):
         return [self.__check_package_using_spm,
