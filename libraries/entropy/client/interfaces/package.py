@@ -2253,8 +2253,8 @@ class Package:
 
     def _handle_install_collision_protect(self, tofile, todbfile):
 
-        avail = self._entropy.installed_repository().isFileAvailable(todbfile,
-            get_id = True)
+        avail = self._entropy.installed_repository().isFileAvailable(
+            const_convert_to_unicode(todbfile), get_id = True)
 
         if (self.pkgmeta['removeidpackage'] not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
