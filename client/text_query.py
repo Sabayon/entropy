@@ -209,10 +209,11 @@ def search_installed_packages(packages, dbconn = None, Equo = None):
                 Equo = Equo, extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
-            print_info(blue(" %s: " % (_("Keyword"),) ) + bold("\t"+package))
-            print_info(blue(" %s:   " % (_("Found"),) ) + \
-                bold("\t" + str(len(idpackages))) + \
-                red(" %s" % (_("entries"),)))
+            toc = []
+            toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(idpackages), brown(_("entries")),)))
+            print_table(toc)
 
     return 0
 
@@ -563,9 +564,11 @@ def search_belongs(files, dbconn = None, Equo = None):
                         clientSearch = True, Equo = Equo,
                         extended = etpUi['verbose'])
             if not etpUi['quiet']:
-                print_info(blue(" %s: " % (_("Keyword"),) ) + bold("\t"+xfile))
-                print_info(blue(" %s:   " % (_("Found"),) ) + \
-                    bold("\t" + str(len(result))) + red(" entries"))
+                toc = []
+                toc.append(("%s:" % (blue(_("Keyword")),), purple(xfile)))
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                    len(result), brown(_("entries")),)))
+                print_table(toc)
 
     return 0
 
@@ -592,8 +595,10 @@ def search_changelog(atoms, dbconn = None, Equo = None):
             dbconn = Equo.open_repository(r_id)
 
         db_atom = dbconn.retrieveAtom(idpackage)
-        if etpUi['quiet']: print_generic("%s :" % (db_atom,))
-        else: print_info(blue(" %s: " % (_("Atom"),) ) + bold("\t"+db_atom))
+        if etpUi['quiet']:
+            print_generic("%s :" % (db_atom,))
+        else:
+            print_info(blue(" %s: " % (_("Atom"),) ) + bold(db_atom))
 
         changelog = dbconn.retrieveChangelog(idpackage)
         if not changelog:
@@ -672,9 +677,6 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
             # print info
             if not etpUi['quiet']:
-                print_info(blue(" %s: " % (_("Keyword"),) ) + bold("\t"+atom))
-                print_info(blue(" %s: " % (_("Matched"),) ) + \
-                    bold("\t"+found_atom))
 
                 masking_reason = ''
                 if repoMasked:
@@ -682,17 +684,22 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
                         Equo.Settings()['pkg_masking_reasons'].get(
                             idmasking_reason),
                     )
-                print_info(blue(" %s: " % (_("Masked"),) ) + \
-                    bold("\t"+str(repoMasked)) + masking_reason)
+                mask_str = bold(str(repoMasked)) + masking_reason
+
+                toc = []
+                toc.append(("%s:" % (blue(_("Keyword")),), purple(atom)))
+                toc.append(("%s:" % (blue(_("Matched")),), teal(found_atom)))
+                toc.append(("%s:" % (blue(_("Masked")),), mask_str))
 
                 if matchInRepo:
-                    where = " %s %s" % (_("from repository"), result[1],)
+                    where = "%s %s" % (_("from repository"), result[1],)
                 else:
-                    where = " %s" % (_("from installed packages database"),)
+                    where = _("from installed packages database")
 
-                print_info( blue(" %s:   " % (_("Found"),) ) + \
-                    bold("\t"+str(len(searchResults))) + \
-                    red(" %s" % (_("entries"),)) + where)
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s %s" % (
+                    len(searchResults), brown(_("entries")), where,)))
+
+                print_table(toc)
 
     return 0
 
@@ -721,10 +728,11 @@ def search_needed_libraries(atoms, dbconn = None, Equo = None):
                 else:
                     print_info(blue("       # ") + red(str(needed)))
             if not etpUi['quiet']:
-                print_info(blue("     %s: " % (_("Atom"),)) + bold("\t"+myatom))
-                print_info(blue(" %s:   " % (_("Found"),)) + \
-                    bold("\t"+str(len(myneeded))) + \
-                    red(" %s" % (_("libraries"),)))
+                toc = []
+                toc.append(("%s:" % (blue(_("Package")),), purple(myatom)))
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                    len(myneeded), brown(_("libraries")),)))
+                print_table(toc)
 
     return 0
 
@@ -756,9 +764,11 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
                 extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
-            print_info(blue(" %s: " % (_("Library"),)) + bold("\t"+library))
-            print_info(blue(" %s:   " % (_("Found"),) ) + \
-                bold("\t"+str(len(results))) + red(" %s" % (_("packages"),) ))
+            toc = []
+            toc.append(("%s:" % (blue(_("Library")),), purple(library)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(results), brown(_("packages")),)))
+            print_table(toc)
 
     return 0
 
@@ -790,8 +800,10 @@ def search_eclass(eclasses, dbconn = None, Equo = None):
                 strictOutput = not etpUi['verbose'])
 
         if not etpUi['quiet']:
-            print_info(blue(" %s:   " % (_("Found"),)) + \
-                bold("\t"+str(len(matches))) + red(" %s" % (_("packages"),) ))
+            toc = []
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(matches), brown(_("packages")),)))
+            print_table(toc)
 
     return 0
 
@@ -823,9 +835,11 @@ def search_files(atoms, dbconn = None, Equo = None):
                 print_info(blue(" ### ") + red(xfile))
 
         if not etpUi['quiet']:
-            print_info(blue(" %s: " % (_("Package"),)) + bold("\t"+atom))
-            print_info(blue(" %s:   " % (_("Found"),)) + \
-                bold("\t"+str(len(files))) + red(" %s" % (_("files"),)))
+            toc = []
+            toc.append(("%s:" % (blue(_("Package")),), purple(atom)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(files), brown(_("files")),)))
+            print_table(toc)
 
     return 0
 
@@ -1162,12 +1176,11 @@ def search_package(packages, Equo = None, get_results = False,
                                     clientSearch = from_client)
 
                     if not etpUi['quiet'] and not get_results:
-                        found_len = len(result)
-                        print_info(blue(" %s: " % (_("Keyword"),) ) + \
-                            bold("\t"+package))
-                        print_info(blue(" %s:   " % (_("Found"),) ) + \
-                            bold("\t" + str(found_len)) + \
-                            red(" %s" % (_("entries"),) ))
+                        toc = []
+                        toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
+                        toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                            len(result), brown(_("entries")),)))
+                        print_table(toc)
 
             except DatabaseError:
                 continue
@@ -1252,10 +1265,11 @@ def match_package(packages, multiMatch = False, multiRepo = False,
                 found = True
 
             if not etpUi['quiet'] and not get_results:
-                print_info(blue(" %s: " % (
-                    _("Keyword"),) ) + bold("\t"+package))
-                print_info(blue(" %s:   " % (_("Found"),) ) + \
-                    bold("\t"+str(len(matches)))+red(" %s" % (_("entries"),) ))
+                toc = []
+                toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                    len(matches), brown(_("entries")),)))
+                print_table(toc)
 
     if not etpUi['quiet'] and not found and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1292,10 +1306,11 @@ def search_slotted_packages(slots, Equo = None):
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
-                print_info(blue(" %s: " % (_("Keyword"),) ) + bold("\t"+slot))
-                print_info(blue(" %s:   " % (_("Found"),) ) + \
-                    bold("\t" + str(len(results))) + \
-                    red(" %s" % (_("entries"),) ))
+                toc = []
+                toc.append(("%s:" % (blue(_("Keyword")),), purple(slot)))
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                    len(results), brown(_("entries")),)))
+                print_table(toc)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1331,9 +1346,11 @@ def search_package_sets(items, Equo = None):
                     print_info(brown("    "+element))
 
         if not etpUi['quiet']:
-            print_info(blue(" %s: " % (_("Keyword"),)) + bold("\t"+item))
-            print_info(blue(" %s:   " % (_("Found"),)) + \
-                bold("\t" + str(matchNumber)) + red(" %s" % (_("entries"),)))
+            toc = []
+            toc.append(("%s:" % (blue(_("Keyword")),), purple(item)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                matchNumber, brown(_("entries")),)))
+            print_table(toc)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1366,11 +1383,11 @@ def search_tagged_packages(tags, Equo = None):
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
-                print_info(blue(" %s: " % (_("Keyword"),)) + \
-                    bold("\t"+tag))
-                print_info(blue(" %s:   " % (_("Found"),)) + \
-                    bold("\t" + str(len(results))) + \
-                    red(" %s" % (_("entries"),)))
+                toc = []
+                toc.append(("%s:" % (blue(_("Keyword")),), purple(tag)))
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                    len(results), brown(_("entries")),)))
+                print_table(toc)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1397,11 +1414,11 @@ def search_rev_packages(revisions, Equo = None):
                 clientSearch = True)
 
         if not etpUi['quiet']:
-            print_info(blue(" %s: " % (_("Keyword"),)) + \
-                bold("\t"+revision))
-            print_info(blue(" %s:   " % (_("Found"),)) + \
-                bold("\t" + str(len(results))) + \
-                red(" %s" % (_("entries"),)))
+            toc = []
+            toc.append(("%s:" % (blue(_("Keyword")),), purple(revision)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(results), brown(_("entries")),)))
+            print_table(toc)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1440,11 +1457,11 @@ def search_licenses(licenses, Equo = None):
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
-                print_info(blue(" %s: " % (_("Keyword"),)) + bold("\t" + \
-                    mylicense))
-                print_info(blue(" %s:   " % (_("Found"),)) + \
-                    bold("\t" + str(len(results))) + \
-                    red(" %s" % (_("entries"),) ))
+                toc = []
+                toc.append(("%s:" % (blue(_("Keyword")),), purple(mylicense)))
+                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                    len(results), brown(_("entries")),)))
+                print_table(toc)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1498,10 +1515,11 @@ def search_descriptions(descriptions, dbconn, Equo = None):
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
         if not etpUi['quiet']:
-            print_info(blue(" %s: " % (_("Keyword"),) ) + bold("\t"+desc))
-            print_info(blue(" %s:   " % (_("Found"),) ) + \
-                bold("\t" + str(len(mydescdata[desc]))) + \
-                red(" %s" % (_("entries"),) ))
+            toc = []
+            toc.append(("%s:" % (blue(_("Keyword")),), purple(desc)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(mydescdata[desc]), brown(_("entries")),)))
+            print_table(toc)
 
     return mydescdata
 
