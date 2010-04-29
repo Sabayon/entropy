@@ -23,7 +23,7 @@ from entropy.const import etpConst, etpUi, const_get_stringtype, \
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
-    bold, blue
+    bold, blue, getcolor
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
@@ -294,6 +294,11 @@ class PortagePlugin(SpmPlugin):
             return dest
 
     def init_singleton(self, OutputInterface):
+
+        # setup color status
+        if not getcolor():
+            # Entropy color output is disable, disable Portage
+            os.environ['NOCOLOR'] = "yes"
 
         mytxt = _("OutputInterface does not have an output method")
         if not hasattr(OutputInterface, 'output'):
