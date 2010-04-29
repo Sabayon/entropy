@@ -805,6 +805,9 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
 
 class ServerQAInterfacePlugin(QAInterfacePlugin):
 
+    def __init__(self, entropy_server_instance):
+        self._server = entropy_server_instance
+
     def __check_package_using_spm(self, package_path):
 
         spm_class = get_spm_class()
@@ -816,8 +819,34 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         sys.stderr.flush()
         return False
 
+    def __extract_edb_analyze_metadata(self, package_path):
+        tmp_f, tmp_fd = tempfile.mkstemp()
+        os.close(tmp_fd)
+
+        try:
+            found_edb = entropy.tools.dump_entropy_metadata(package_path, tmp_f)
+            if not found_edb:
+                return False
+            dbc = self._server._open_temp_repository("test", temp_file = tmp_f)
+            for package_id in dbc.listAllIdpackages():
+                keywords = dbc.retrieveKeywords(package_id)
+                if not keywords:
+                    atom = dbc.retrieveAtom(package_id)
+                    # bit PHAT warning !!
+                    self._server.output(darkred("~"*40), level = "warning")
+                    self._server.output("[%s, %s] %s" % (
+                         brown(os.path.basename(package_path)), teal(atom),
+                         purple(_("package has no keyword set, it will be masked !"))),
+                        level = "warning", header = darkred(" !!! "))
+                    self._server.output(darkred("~"*40), level = "warning")
+                    time.sleep(10)
+        finally:
+            os.remove(tmp_f)
+            dbc.closeDB()
+
     def get_tests(self):
-        return [self.__check_package_using_spm]
+        return [self.__check_package_using_spm,
+            self.__extract_edb_analyze_metadata]
 
     def get_id(self):
         return SERVER_QA_PLUGIN
@@ -1199,7 +1228,7 @@ class ServerLoadersMixin:
         @return: Entropy QA Interface instance
         @rtype: entropy.qa.QAInterface instance
         """
-        qa_plugin = ServerQAInterfacePlugin()
+        qa_plugin = ServerQAInterfacePlugin(self)
         qa = _Client.QA(self)
         qa.add_plugin(qa_plugin)
         return qa
