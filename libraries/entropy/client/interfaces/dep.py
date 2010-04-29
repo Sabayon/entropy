@@ -486,7 +486,7 @@ class CalculatorsMixin:
             # force_unsatisfied is another way to see "deep_deps".
             # in this case, we are going to consider valid any dep that
             # matches something in installed packages repo.
-            if c_ids and (not deep_deps) and (not do_rev_deep) and (relaxed_deps):
+            if (not deep_deps) and (not do_rev_deep) and (relaxed_deps):
                 const_debug_write(__name__,
                     "_get_unsatisfied_dependencies (force unsat) SATISFIED => %s" % (
                         dependency,))
