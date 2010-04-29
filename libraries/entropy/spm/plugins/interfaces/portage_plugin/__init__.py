@@ -299,6 +299,8 @@ class PortagePlugin(SpmPlugin):
         if not getcolor():
             # Entropy color output is disable, disable Portage
             os.environ['NOCOLOR'] = "yes"
+        elif "NOCOLOR" in os.environ:
+            del os.environ['NOCOLOR']
 
         mytxt = _("OutputInterface does not have an output method")
         if not hasattr(OutputInterface, 'output'):
