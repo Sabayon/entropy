@@ -464,7 +464,8 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n'):
     if not back:
         setcols()
     reset_cursor()
-    if is_stdout_a_tty():
+    is_tty = is_stdout_a_tty()
+    if is_tty:
         writechar("\r")
     if back:
         msg = color_func(">>") + " " + msg
@@ -472,6 +473,9 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n'):
         msg = color_func(">>") + " " + msg + end
 
     _stdout_write(msg)
+    if back and (not is_tty):
+        # in this way files are properly written
+        writechar("\n")
     if flush:
         _flush_stdouterr()
 
