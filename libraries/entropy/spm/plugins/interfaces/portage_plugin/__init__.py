@@ -3825,11 +3825,16 @@ class PortagePlugin(SpmPlugin):
     def _dep_or_select(self, or_list):
 
         deps = []
-        idx = 0
+        or_selection = False
         for item in or_list:
-            if item == "||":
-                deps += self._dep_or_select(or_list[idx+1])
-            elif isinstance(item, list):
+            if or_selection:
+                deps += self._dep_or_select(item)
+                or_selection = False
+            elif item == "||":
+                or_selection = True
+                continue
+            elif not isinstance(item, const_get_stringtype()):
+                # list
                 dep = self._dep_and_select(item)
                 if not dep:
                     # holy! add the whole dep as string (so it will fail)
