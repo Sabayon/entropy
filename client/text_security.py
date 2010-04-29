@@ -12,6 +12,7 @@
 from entropy.const import etpConst
 from entropy.output import red, darkred, blue, brown, darkgreen, darkblue, \
     bold, purple, green, print_error, print_warning, print_info
+from text_tools import print_table
 from entropy.i18n import _
 import entropy.tools
 
@@ -85,119 +86,126 @@ def show_advisories_info(security_intf, advisories):
 
 def print_advisory_information(advisory_data, key):
 
+    toc = []
+
     # print advisory code
-    print_info(blue(" @@ ")+red("%s " % (_("GLSA Identifier"),))+bold(key) + \
+    toc.append(blue(" @@ ")+red("%s " % (_("GLSA Identifier"),))+bold(key) + \
         red(" | ")+blue(advisory_data['url']))
 
     # title
-    print_info("\t"+darkgreen("%s:\t\t" % (_("Title"),)) + \
-        darkred(advisory_data['title']))
+    toc.append((darkgreen("    %s:" % (_("Title"),)),
+        darkred(advisory_data['title'])))
 
     # description
     description = advisory_data['description'].split("\n")
-    desc_text = "\t"+darkgreen("%s:\t" % (_("Description"),) )
+    desc_text = darkgreen("    %s:" % (_("Description"),) )
     for x in description:
-        print_info(desc_text+x.strip())
-        desc_text = "\t\t\t"
+        toc.append((desc_text, x.strip()))
+        desc_text = " "
 
     for item in advisory_data['description_items']:
-        desc_text = "\t\t\t %s " % (darkred("(*)"),)
+        desc_text = " %s " % (darkred("(*)"),)
         count = 8
         mystr = []
         for word in item.split():
             count -= 1
             mystr.append(word)
             if count < 1:
-                print_info(desc_text+' '.join(mystr))
-                desc_text = "\t\t\t   "
+                toc.append((" ", desc_text+' '.join(mystr)))
+                desc_text = "   "
                 mystr = []
                 count = 8
         if count < 8:
-            print_info(desc_text+' '.join(mystr))
+            toc.append((" ", desc_text+' '.join(mystr)))
 
     # background
     if advisory_data['background']:
         background = advisory_data['background'].split("\n")
-        bg_text = "\t"+darkgreen("%s:\t" % (_("Background"),))
+        bg_text = darkgreen("    %s:" % (_("Background"),))
         for x in background:
-            print_info(bg_text+purple(x.strip()))
-            bg_text = "\t\t\t"
+            toc.append((bg_text, purple(x.strip())))
+            bg_text = " "
 
     # access
     if advisory_data['access']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Exploitable"),)) + \
-            bold(advisory_data['access']))
+        toc.append((darkgreen("    %s:" % (_("Exploitable"),)),
+            bold(advisory_data['access'])))
 
     # impact
     if advisory_data['impact']:
         impact = advisory_data['impact'].split("\n")
-        imp_text = "\t"+darkgreen("%s:\t\t" % (_("Impact"),))
+        imp_text = darkgreen("    %s:" % (_("Impact"),))
         for x in impact:
-            print_info(imp_text+brown(x.strip()))
-            imp_text = "\t\t\t"
+            toc.append((imp_text, brown(x.strip())))
+            imp_text = " "
 
     # impact type
     if advisory_data['impacttype']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Impact type"),)) + \
-            bold(advisory_data['impacttype']))
+        toc.append((darkgreen("    %s:" % (_("Impact type"),)),
+            bold(advisory_data['impacttype'])))
 
     # revised
     if advisory_data['revised']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Revised"),)) + \
-            brown(advisory_data['revised']))
+        toc.append((darkgreen("    %s:" % (_("Revised"),)),
+            brown(advisory_data['revised'])))
 
     # announced
     if advisory_data['announced']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Announced"),)) + \
-            brown(advisory_data['announced']))
+        toc.append((darkgreen("    %s:" % (_("Announced"),)),
+            brown(advisory_data['announced'])))
 
     # synopsis
     synopsis = advisory_data['synopsis'].split("\n")
-    syn_text = "\t"+darkgreen("%s:\t" % (_("Synopsis"),))
+    syn_text = darkgreen("    %s:" % (_("Synopsis"),))
     for x in synopsis:
-        print_info(syn_text+x.strip())
-        syn_text = "\t\t\t"
+        toc.append((syn_text, x.strip()))
+        syn_text = " "
 
     # references
     if advisory_data['references']:
-        print_info("\t"+darkgreen("%s:" % (_("References"),)))
+        toc.append(darkgreen("    %s:" % (_("References"),)))
         for reference in advisory_data['references']:
-            print_info("\t\t\t"+darkblue(reference))
+            toc.append((" ", darkblue(reference)))
 
     # gentoo bugs
     if advisory_data['bugs']:
-        print_info("\t"+darkgreen("%s:" % (_("Upstream bugs"),)))
+        toc.append(darkgreen("    %s:" % (_("Upstream bugs"),)))
         for bug in advisory_data['bugs']:
-            print_info("\t\t\t"+darkblue(bug))
+            toc.append((" ", darkblue(bug)))
 
     # affected
     if advisory_data['affected']:
-        print_info("\t"+darkgreen("%s:" % (_("Affected"),)))
+        toc.append(darkgreen("    %s:" % (_("Affected"),)))
         for key in advisory_data['affected']:
-            print_info("\t\t\t"+darkred(key))
+            toc.append((" ", darkred(key)))
             affected_data = advisory_data['affected'][key][0]
             vul_vers = affected_data['vul_vers']
             unaff_vers = affected_data['unaff_vers']
             if vul_vers:
-                print_info("\t\t\t  "+brown("%s: " % (
-                    _("vulnerable versions"),))+", ".join(vul_vers))
+                toc.append((" ", brown("%s: " % (
+                    _("vulnerable versions"),))+", ".join(vul_vers)))
             if unaff_vers:
-                print_info("\t\t\t  "+brown("%s: " % (
-                    _("unaffected versions"),))+", ".join(unaff_vers))
+                toc.append((" ", brown("%s: " % (
+                    _("unaffected versions"),))+", ".join(unaff_vers)))
 
     # workaround
+    workaround = advisory_data['workaround'].split("\n")
     if advisory_data['workaround']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Workaround"),)) + \
-            darkred(advisory_data['workaround']))
+        work_text = darkgreen("    %s:" % (_("Workaround"),))
+        for x in workaround:
+            toc.append((work_text, darkred(x.strip())))
+            work_text = " "
 
     # resolution
     if advisory_data['resolution']:
-        res_text = "\t"+darkgreen("%s:\t" % (_("Resolution"),))
+        res_text = darkgreen("    %s:" % (_("Resolution"),))
         resolutions = advisory_data['resolution']
         for resolution in resolutions:
             for x in resolution.split("\n"):
-                print_info(res_text+x.strip())
-                res_text = "\t\t\t"
+                toc.append((res_text, x.strip()))
+                res_text = " "
+
+    print_table(toc, cell_spacing = 3)
 
 def list_advisories(security_intf, only_affected = False,
     only_unaffected = False):
