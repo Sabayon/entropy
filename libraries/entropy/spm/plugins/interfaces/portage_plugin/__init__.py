@@ -3873,8 +3873,8 @@ class PortagePlugin(SpmPlugin):
                 dep = self._dep_and_select(item)
                 if not dep:
                     # holy! add the whole dep as string (so it will fail)
-                    dep = '&'.join(item)
-                deps.append(dep)
+                    dep = ['&'.join(item)]
+                deps += dep
             else:
                 deps.append(item)
 
