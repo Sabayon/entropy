@@ -4510,6 +4510,7 @@ class ServerMiscMixin:
                     # search into portage then
                     try:
                         key, slot = dbconn.retrieveKeySlot(idpackage)
+                        slot = slot.split(",")[0]
                         trashed = self.Spm().match_installed_package(
                             key+":"+slot)
                     except TypeError: # referred to retrieveKeySlot
