@@ -1196,7 +1196,7 @@ class Base:
             else:
                 data['slot'] = spm.get_package_metadata(matched_atom, "SLOT")
                 data['use'] = spm.get_package_compile_options(matched_atom)
-                data['installed_atom'] = spm.match_installed_package("%s:%s" % (data['key'], data['slot'],))
+                data['installed_atom'] = spm.match_installed_package("%s:%s" % (data['key'], data['slot'].split(",")[0],))
                 data['description'] = spm.get_package_metadata(matched_atom, "DESCRIPTION")
         except KeyError:
             pass
