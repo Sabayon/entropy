@@ -10,8 +10,6 @@
     - entropy.server API docs
     - entropy.client API docs
 
-    - add splitdebug support?
-
   1.0_beta1:
 
     - entropy.db: make several methods protected
