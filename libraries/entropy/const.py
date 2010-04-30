@@ -373,7 +373,8 @@ def const_default_settings(rootdir):
         'rss-notice-board': "notice.rss",
         # File containing user data related to repository notice board
         'rss-notice-board-userdata': "notice.rss.userdata",
-
+        # default Entropy Client GPG support bit
+        'client_gpg': True,
         # "or" dependencies support
         # app-foo/foo;app-foo/abc?
         'entropyordepsep': ";",
@@ -459,7 +460,7 @@ def const_default_settings(rootdir):
         'supportedarchs': etpSys['archs'],
 
         # default choosen branch (overridden by setting in repositories.conf)
-        'branch': "4",
+        'branch': "5",
          # default allowed package keywords
         'keywords': etpSys['keywords'].copy(),
         # allow multiple packages in single scope server-side?

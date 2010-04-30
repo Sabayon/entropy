@@ -453,7 +453,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'filesbackup': etpConst['filesbackup'],
             'forcedupdates': etpConst['forcedupdates'],
             'packagehashes': etpConst['packagehashes'],
-            'gpg': True,
+            'gpg': etpConst['client_gpg'],
             'ignore_spm_downgrades': False,
             'multifetch': 1,
             'collisionprotect': etpConst['collisionprotect'],
