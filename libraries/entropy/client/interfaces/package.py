@@ -1550,32 +1550,53 @@ class Package:
         if "changelog" in data:
             del data['changelog']
 
-        idpackage, rev, x = self._entropy.installed_repository().handlePackage(
-            data, forcedRevision = data['revision'], formattedContent = True)
+        # if splitdebug is disabled, filter out splitdebug paths from content
+        # XXX: we make the assumption that in splitdebug dirs can be stored
+        # only splitdebug related files, files that are not vital for
+        # the functionality of the package
+        if not self.pkgmeta['splitdebug']:
+            self.__filter_out_splitdebug_from_content(data,
+                self.pkgmeta['splitdebug_dirs'])
+
+        inst_repo = self._entropy.installed_repository()
+
+        idpackage, rev, x = inst_repo.handlePackage(data,
+            forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
         ctime = time.time()
-        self._entropy.installed_repository().setCreationDate(idpackage, str(ctime))
+        inst_repo.setCreationDate(idpackage, str(ctime))
 
         # TODO: remove this in future, drop changelog table
-        self._entropy.installed_repository().dropChangelog()
+        inst_repo.dropChangelog()
 
         # add idpk to the installedtable
-        self._entropy.installed_repository().dropInstalledPackageFromStore(idpackage)
-        self._entropy.installed_repository().storeInstalledPackage(idpackage,
+        inst_repo.dropInstalledPackageFromStore(idpackage)
+        inst_repo.storeInstalledPackage(idpackage,
             self.pkgmeta['repository'], self.pkgmeta['install_source'])
 
         automerge_data = self.pkgmeta.get('configprotect_data')
         if automerge_data:
-            self._entropy.installed_repository().insertAutomergefiles(idpackage,
-                automerge_data)
+            inst_repo.insertAutomergefiles(idpackage, automerge_data)
 
         # clear depends table, this will make clientdb dependstable to be
         # regenerated during the next request (retrieveReverseDependencies)
-        self._entropy.installed_repository().taintReverseDependenciesMetadata()
+        inst_repo.taintReverseDependenciesMetadata()
         return idpackage
 
-    def __fill_image_dir(self, mergeFrom, image_dir):
+    def __filter_out_splitdebug_from_content(self, pkg_data, splitdebug_dirs):
+
+        # CONTENT metadata getting here is always already formatted
+        # for EntropyRepository insertion
+        def filter_splitdebug(content_item):
+            pkg_id, pkg_path, path_type = content_item
+            for split_dir in splitdebug_dirs:
+                if pkg_path.startswith(split_dir):
+                    return False
+            return True
+        pkg_data['content'] = filter(filter_splitdebug, pkg_data['content'])
+
+    def __fill_image_dir(self, merge_from, image_dir):
 
         dbconn = self._entropy.open_repository(self.pkgmeta['repository'])
         # this is triggered by merge_from pkgmeta metadata
@@ -1589,7 +1610,7 @@ class Package:
         for path in contents:
             # convert back to filesystem str
             encoded_path = path
-            path = os.path.join(mergeFrom, encoded_path[1:])
+            path = os.path.join(merge_from, encoded_path[1:])
             topath = os.path.join(image_dir, encoded_path[1:])
             path = path.encode('raw_unicode_escape')
             topath = topath.encode('raw_unicode_escape')
@@ -1679,6 +1700,8 @@ class Package:
             etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[sys_set_plg_id]['misc']
         col_protect = misc_data['collisionprotect']
+        splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
+            self.pkgmeta['splitdebug_dirs']
         items_installed = set()
 
         # setup image_dir properly
@@ -1691,6 +1714,14 @@ class Package:
 
             imagepath_dir = os.path.join(currentdir, subdir)
             rootdir = sys_root + imagepath_dir[len(image_dir):]
+
+            # splitdebug (.debug files) support
+            # If splitdebug is not enabled, do not create splitdebug directories
+            # and move on instead (return)
+            if not splitdebug:
+                for split_dir in splitdebug_dirs:
+                    if rootdir.startswith(split_dir):
+                        return
 
             # handle broken symlinks
             if os.path.islink(rootdir) and not os.path.exists(rootdir):
@@ -1802,6 +1833,14 @@ class Package:
 
             fromfile = os.path.join(currentdir, item)
             tofile = sys_root + fromfile[len(image_dir):]
+
+            # splitdebug (.debug files) support
+            # If splitdebug is not enabled, do not create
+            # splitdebug directories and move on instead (return)
+            if not splitdebug:
+                for split_dir in splitdebug_dirs:
+                    if tofile.startswith(split_dir):
+                        return
 
             if col_protect > 1:
                 todbfile = fromfile[len(image_dir):]
@@ -2992,10 +3031,28 @@ class Package:
         # generate metadata dictionary
         self._generate_metadata()
 
+    def _setup_base_metadata(self, action):
+
+        def get_splitdebug_data():
+            sys_set_plg_id = \
+                etpConst['system_settings_plugins_ids']['client_plugin']
+            misc_data = self._settings[sys_set_plg_id]['misc']
+            splitdebug = misc_data['splitdebug']
+            splitdebug_dirs = misc_data['splitdebug_dirs']
+            return splitdebug, splitdebug_dirs
+
+        splitdebug, splitdebug_dirs = get_splitdebug_data()
+        self.pkgmeta.update({
+            'splitdebug': splitdebug,
+            'splitdebug_dirs': splitdebug_dirs,
+        })
+
     def _generate_metadata(self):
         self._error_on_prepared()
 
         self._check_action_validity(self._action)
+        self.pkgmeta.clear()
+        self._setup_base_metadata(self._action)
 
         if self._action == "fetch":
             self.__generate_fetch_metadata()
@@ -3014,7 +3071,6 @@ class Package:
 
     def __generate_remove_metadata(self):
 
-        self.pkgmeta.clear()
         idpackage = self._package_match[0]
 
         if not self._entropy.installed_repository().isIdpackageAvailable(
@@ -3055,14 +3111,11 @@ class Package:
 
         self.pkgmeta['triggers']['remove']['accept_license'] = pkg_license
 
-        self.pkgmeta['steps'] = [
-            "preremove", "remove", "postremove"
-        ]
+        self.pkgmeta['steps'] = ["preremove", "remove", "postremove"]
 
         return 0
 
     def __generate_config_metadata(self):
-        self.pkgmeta.clear()
         idpackage = self._package_match[0]
 
         self.pkgmeta['atom'] = \
@@ -3110,7 +3163,6 @@ class Package:
         return found_conflicts
 
     def __generate_install_metadata(self):
-        self.pkgmeta.clear()
 
         idpackage, repository = self._package_match
         self.pkgmeta['idpackage'] = idpackage
@@ -3209,7 +3261,6 @@ class Package:
                 arch_fine = True # sorry, old db, cannot check
 
             if not arch_fine:
-                self.pkgmeta.clear()
                 self.__prepared = False
                 return -1
 
@@ -3294,7 +3345,6 @@ class Package:
         return spm_class.entropy_install_setup_hook(self._entropy, self.pkgmeta)
 
     def __generate_fetch_metadata(self, sources = False):
-        self.pkgmeta.clear()
 
         idpackage, repository = self._package_match
         dochecksum = True
@@ -3388,7 +3438,6 @@ class Package:
         return 0
 
     def __generate_multi_fetch_metadata(self):
-        self.pkgmeta.clear()
 
         if not isinstance(self._package_match, list):
             raise AttributeError(

@@ -195,6 +195,7 @@ class PortagePlugin(SpmPlugin):
         'defined_phases': "DEFINED_PHASES",
         'repository': "repository",
         'pf': "PF",
+        'features': "FEATURES",
     }
 
     _ebuild_entries = {
@@ -2414,6 +2415,27 @@ class PortagePlugin(SpmPlugin):
         }
         return phase_calls[portage_phase](package_metadata)
 
+    def _bump_vartree_mtime(self, portage_cpv):
+        root = etpConst['systemroot'] + os.path.sep
+        vartree = self._get_portage_vartree(root = root)
+        if hasattr(vartree.dbapi, '_bump_mtime'):
+            vartree.dbapi._bump_mtime(portage_cpv)
+
+    def __update_features_file(self, features_path):
+
+        with open(features_path, "r") as feat_f:
+            feat_content = feat_f.read().split(" ")
+
+        if "splitdebug" in feat_content:
+
+            feat_content.remove("splitdebug")
+
+            with open(features_path+".tmp", "w") as feat_f:
+                feat_f.write(" ".join(feat_content) + "\n")
+                feat_f.flush()
+
+            os.rename(features_path+".tmp", features_path)
+
     def _create_contents_file_if_not_available(self, pkg_dir,
         entropy_package_metadata):
 
@@ -2470,17 +2492,14 @@ class PortagePlugin(SpmPlugin):
                         content_meta[path] = (dev_t,)
 
         root = etpConst['systemroot'] + os.path.sep
-        vartree = self._get_portage_vartree(root = root)
         portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
-        if hasattr(vartree.dbapi, '_bump_mtime'):
-            vartree.dbapi._bump_mtime(portage_cpv)
+        self._bump_vartree_mtime(portage_cpv)
 
         with open(cont_path, "wb") as cont_f:
             write_contents(content_meta, root, cont_f)
             cont_f.flush()
 
-        if hasattr(vartree.dbapi, '_bump_mtime'):
-            vartree.dbapi._bump_mtime(portage_cpv)
+        self._bump_vartree_mtime(portage_cpv)
 
     def __remove_kernel_tag_from_slot(self, slot):
         return slot[::-1].split(",", 1)[-1][::-1]
@@ -2540,6 +2559,12 @@ class PortagePlugin(SpmPlugin):
             if os.path.isdir(pkg_dir):
                 shutil.rmtree(pkg_dir)
 
+            splitdebug = package_metadata.get("splitdebug", False)
+            if splitdebug:
+                features_path = os.path.join(copypath,
+                    PortagePlugin.xpak_entries['features'])
+                self.__update_features_file(features_path)
+
             try:
                 shutil.copytree(copypath, pkg_dir)
             except (IOError,) as e:
@@ -2575,6 +2600,9 @@ class PortagePlugin(SpmPlugin):
                         header = darkred("   ## ")
                     )
                     counter = -1
+
+            # from this point, every vardb change has to be committed
+            self._bump_vartree_mtime(spm_package)
 
         user_inst_source = etpConst['install_sources']['user']
         if package_metadata['install_source'] != user_inst_source:

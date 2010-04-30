@@ -455,6 +455,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'packagehashes': etpConst['packagehashes'],
             'gpg': etpConst['client_gpg'],
             'ignore_spm_downgrades': False,
+            'splitdebug': etpConst['splitdebug'],
+            'splitdebug_dirs': etpConst['splitdebug_dirs'],
             'multifetch': 1,
             'collisionprotect': etpConst['collisionprotect'],
             'configprotect': etpConst['configprotect'][:],
@@ -527,6 +529,15 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 compatopt = split_line[1].strip().lower()
                 if compatopt in ("enable", "enabled", "true", "1", "yes"):
                     data['ignore_spm_downgrades'] = True
+
+            elif line.startswith("splitdebug|") and \
+                (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("enable", "enabled", "true", "1", "yes"):
+                    data['splitdebug'] = True
+                else:
+                    data['splitdebug'] = False 
 
             elif line.startswith("collisionprotect|") and (split_line_len == 2):
 

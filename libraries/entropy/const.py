@@ -478,6 +478,10 @@ def const_default_settings(rootdir):
         # option to keep a backup of config files after
         # being overwritten by equo conf update
         'filesbackup': True,
+        # option to enable Entropy Client splitdebug support
+        'splitdebug': False,
+        # directories where debug symbols are stored
+        'splitdebug_dirs': ("/usr/lib/debug",),
         # option to enable forced installation of critical updates
         'forcedupdates': True,
         # collision protection option, see client.conf for more info
