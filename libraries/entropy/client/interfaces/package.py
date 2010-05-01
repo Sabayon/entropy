@@ -1840,7 +1840,7 @@ class Package:
             if not splitdebug:
                 for split_dir in splitdebug_dirs:
                     if tofile.startswith(split_dir):
-                        return
+                        return 0
 
             if col_protect > 1:
                 todbfile = fromfile[len(image_dir):]
