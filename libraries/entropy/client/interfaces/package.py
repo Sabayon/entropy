@@ -22,7 +22,7 @@ from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
-    darkblue, red, purple, darkred
+    darkblue, red, purple, darkred, teal
 from entropy.misc import TimeScheduled
 from entropy.db import EntropyRepository
 from entropy.client.interfaces.client import Client
@@ -1529,6 +1529,9 @@ class Package:
 
             pkg_dbconn.closeDB()
 
+        # filter out files not installed from content metadata
+        self.__filter_out_items_not_installed_from_content(data)
+
         # this is needed to make postinstall trigger to work properly
         trigger_content = set((x[1] for x in data['content']))
         self.pkgmeta['triggers']['install']['content'] = trigger_content
@@ -1549,14 +1552,6 @@ class Package:
         # there is no need to store changelog data into db
         if "changelog" in data:
             del data['changelog']
-
-        # if splitdebug is disabled, filter out splitdebug paths from content
-        # XXX: we make the assumption that in splitdebug dirs can be stored
-        # only splitdebug related files, files that are not vital for
-        # the functionality of the package
-        if not self.pkgmeta['splitdebug']:
-            self.__filter_out_splitdebug_from_content(data,
-                self.pkgmeta['splitdebug_dirs'])
 
         inst_repo = self._entropy.installed_repository()
 
@@ -1584,17 +1579,17 @@ class Package:
         inst_repo.taintReverseDependenciesMetadata()
         return idpackage
 
-    def __filter_out_splitdebug_from_content(self, pkg_data, splitdebug_dirs):
+    def __filter_out_items_not_installed_from_content(self, pkg_data):
+
+        items_not_installed = self.pkgmeta.get('items_not_installed', set())
 
         # CONTENT metadata getting here is always already formatted
         # for EntropyRepository insertion
-        def filter_splitdebug(content_item):
+        def filter_content(content_item):
             pkg_id, pkg_path, path_type = content_item
-            for split_dir in splitdebug_dirs:
-                if pkg_path.startswith(split_dir):
-                    return False
-            return True
-        pkg_data['content'] = filter(filter_splitdebug, pkg_data['content'])
+            return pkg_path not in items_not_installed
+
+        pkg_data['content'] = filter(filter_content, pkg_data['content'])
 
     def __fill_image_dir(self, merge_from, image_dir):
 
@@ -1703,6 +1698,7 @@ class Package:
         splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
             self.pkgmeta['splitdebug_dirs']
         items_installed = set()
+        self.pkgmeta['items_not_installed'] = set()
 
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir'][:]
@@ -1721,6 +1717,10 @@ class Package:
             if not splitdebug:
                 for split_dir in splitdebug_dirs:
                     if rootdir.startswith(split_dir):
+                        # also drop item from content metadata. In this way
+                        # SPM has in sync information on what the package
+                        # content really is.
+                        self.pkgmeta['items_not_installed'].add(rootdir)
                         return
 
             # handle broken symlinks
@@ -1840,6 +1840,10 @@ class Package:
             if not splitdebug:
                 for split_dir in splitdebug_dirs:
                     if tofile.startswith(split_dir):
+                        # also drop item from content metadata. In this way
+                        # SPM has in sync information on what the package
+                        # content really is.
+                        self.pkgmeta['items_not_installed'].add(tofile)
                         return 0
 
             if col_protect > 1:
@@ -2595,6 +2599,14 @@ class Package:
         )
         if self.pkgmeta.get('description'):
             mytxt = "[%s]" % (purple(self.pkgmeta.get('description')),)
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = red("   ## ")
+            )
+        if self.pkgmeta['splitdebug']:
+            mytxt = "[%s]" % (teal(_("<3 debug files installation enabled <3")),)
             self._entropy.output(
                 mytxt,
                 importance = 1,
