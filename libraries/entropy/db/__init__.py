@@ -6380,12 +6380,28 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         @raise SystemDatabaseError: when repository is not reliable
         """
+        live_cache_id = ("validateDatabase",)
+        cached = self.live_cache.get(live_cache_id)
+        if cached is not None:
+            return
+        self.live_cache[live_cache_id] = True
+
+        # use sqlite3 pragma
+        cur = self._cursor().execute("PRAGMA quick_check")
+        try:
+            check_data = cur.fetchone()[0]
+            if check_data != "ok":
+                raise ValueError()
+        except (IndexError, ValueError, TypeError,):
+            mytxt = "sqlite3 reports database being corrupted"
+            raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
+
         self._cursor().execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = (?) AND name = (?)
         """, ("table", "baseinfo"))
         rslt = self._cursor().fetchone()
         if rslt is None:
-            mytxt = _("baseinfo error. Either does not exist or corrupted.")
+            mytxt = "baseinfo error. Either does not exist or corrupted."
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
         self._cursor().execute("""
@@ -6393,7 +6409,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """, ("table", "extrainfo"))
         rslt = self._cursor().fetchone()
         if rslt is None:
-            mytxt = _("extrainfo error. Either does not exist or corrupted.")
+            mytxt = "extrainfo error. Either does not exist or corrupted."
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
     def getIdpackagesDifferences(self, foreign_idpackages):
