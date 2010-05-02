@@ -476,8 +476,8 @@ class EntropyPackageView:
 
     ROW_HEIGHT = 35
 
-    def __init__( self, treeview, queue, ui, etpbase, main_window,
-        application = None ):
+    def __init__(self, treeview, queue, ui, etpbase, main_window,
+        application = None):
 
         self._entropy = Equo()
         self.Sulfur = application
@@ -875,7 +875,8 @@ class EntropyPackageView:
                     self.run_set_menu_stuff(set_categories)
                 elif len(pkgsets) == objs_len:
                     pfx_len = len(etpConst['packagesetprefix'])
-                    new_objs = [self.dummyCats.get(obj.name[pfx_len:]) for obj in objs if self.dummyCats.get(obj.name[pfx_len:])]
+                    new_objs = [self.dummyCats.get(obj.name[pfx_len:]) for obj \
+                        in objs if self.dummyCats.get(obj.name[pfx_len:])]
                     self.run_set_menu_stuff(new_objs)
                 elif len(installed_objs) == objs_len: # installed packages listing
                     self.run_installed_menu_stuff(installed_objs)
@@ -1299,9 +1300,11 @@ class EntropyPackageView:
         selected_sets = set()
         if not add:
             sets_categories = [x.set_category for x in items]
-            selected_sets = [self.dummyCats.get(x) for x in self.dummyCats if x not in sets_categories]
+            selected_sets = [self.dummyCats.get(x) for x in self.dummyCats if x \
+                not in sets_categories]
             selected_sets = set([x.set_category for x in selected_sets])
-            selected_sets = set(["%s%s" % (etpConst['packagesetprefix'], x,) for x in selected_sets])
+            selected_sets = set(["%s%s" % (etpConst['packagesetprefix'], x,) \
+                for x in selected_sets])
         pkgsets.update(selected_sets)
 
         exp_atoms = set()
@@ -2005,9 +2008,12 @@ class EntropyPackageView:
                 cell.set_property('markup', mydata)
             except (ProgrammingError, OperationalError,):
                 self.do_refresh_view = True
+
+            self.set_line_status(obj, cell)
             if obj.color:
-                self.set_line_status(obj, cell)
                 cell.set_property('foreground', obj.color)
+            else:
+                cell.set_property('foreground', None)
 
     def _ugc_queue_run(self):
 
