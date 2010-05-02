@@ -570,6 +570,18 @@ list installed packages
 
 =back
 
+=item B<mimetype>
+
+search packages able to handle given mimetypes
+
+=over
+
+=item B<--installed>
+
+search inside installed packages
+
+=back
+
 =item B<needed>
 
 show runtime libraries needed by the provided atoms

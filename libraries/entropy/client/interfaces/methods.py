@@ -1731,3 +1731,32 @@ class MatchMixin:
             except OSError:
                 shutil.copy2(tmp_path, mask_file)
                 os.remove(tmp_path)
+
+    def search_installed_mimetype(self, mimetype):
+        """
+        Given a mimetype, return list of installed package identifiers
+        belonging to packages that can handle it.
+
+        @param mimetype: mimetype string
+        @type mimetype: string
+        @return: list of installed package identifiers
+        @rtype: list
+        """
+        return self._installed_repository.searchProvidedMime(mimetype)
+
+    def search_available_mimetype(self, mimetype):
+        """
+        Given a mimetype, return list of available package matches
+        belonging to packages that can handle it.
+
+        @param mimetype: mimetype string
+        @type mimetype: string
+        @return: list of available package matches
+        @rtype: list
+        """
+        packages = []
+        for repo in self._enabled_repos:
+            repo_db = self.open_repository(repo)
+            packages += [(x, repo) for x in \
+                repo_db.searchProvidedMime(mimetype)]
+        return packages
