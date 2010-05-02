@@ -3111,6 +3111,9 @@ class Package:
             self._entropy.installed_repository().retrieveContent(idpackage)
         self.pkgmeta['triggers']['remove'] = \
             self._entropy.installed_repository().getTriggerInfo(idpackage)
+        if self.pkgmeta['triggers']['remove'] is None:
+            self.pkgmeta['remove_installed_vanished'] = True
+            return 0
         self.pkgmeta['triggers']['remove']['removecontent'] = \
             self.pkgmeta['removecontent']
 
@@ -3177,6 +3180,7 @@ class Package:
     def __generate_install_metadata(self):
 
         idpackage, repository = self._package_match
+        inst_repo = self._entropy.installed_repository()
         self.pkgmeta['idpackage'] = idpackage
         self.pkgmeta['repository'] = repository
 
@@ -3244,18 +3248,18 @@ class Package:
         self.pkgmeta['removeconfig'] = removeConfig
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
-        inst_idpackage, inst_rc = self._entropy.installed_repository().atomMatch(
-            pkgkey, matchSlot = self.pkgmeta['slot'])
+        inst_idpackage, inst_rc = inst_repo.atomMatch(pkgkey,
+            matchSlot = self.pkgmeta['slot'])
 
         # filled later...
         self.pkgmeta['removecontent'] = set()
         self.pkgmeta['removeidpackage'] = inst_idpackage
 
         if self.pkgmeta['removeidpackage'] != -1:
-            avail = self._entropy.installed_repository().isIdpackageAvailable(
+            avail = inst_repo.isIdpackageAvailable(
                 self.pkgmeta['removeidpackage'])
             if avail:
-                inst_atom = self._entropy.installed_repository().retrieveAtom(
+                inst_atom = inst_repo.retrieveAtom(
                     self.pkgmeta['removeidpackage'])
                 self.pkgmeta['removeatom'] = inst_atom
             else:
@@ -3298,28 +3302,31 @@ class Package:
         # compare both versions and if they match, disable removeidpackage
         if self.pkgmeta['removeidpackage'] != -1:
 
-            # differential remove list
-            self.pkgmeta['diffremoval'] = True
-            self.pkgmeta['removeatom'] = \
-                self._entropy.installed_repository().retrieveAtom(
-                    self.pkgmeta['removeidpackage'])
-
-            self.pkgmeta['triggers']['remove'] = \
-                self._entropy.installed_repository().getTriggerInfo(
-                    self.pkgmeta['removeidpackage']
-                )
-            self.pkgmeta['triggers']['remove']['removecontent'] = \
-                self.pkgmeta['removecontent'] # pass reference, not copy! nevva!
-
-            pkg_rm_license = \
-                self._entropy.installed_repository().retrieveLicense(
-                    self.pkgmeta['removeidpackage'])
-            if pkg_rm_license is None:
-                pkg_rm_license = set()
+            trigger_data = inst_repo.getTriggerInfo(
+                self.pkgmeta['removeidpackage'])
+            if trigger_data is None:
+                # installed repository entry is corrupted
+                self.pkgmeta['removeidpackage'] = -1
             else:
-                pkg_rm_license = set(pkg_rm_license.split())
-            self.pkgmeta['triggers']['remove']['accept_license'] = \
-                pkg_rm_license
+
+                # differential remove list
+                self.pkgmeta['diffremoval'] = True
+                self.pkgmeta['removeatom'] = inst_repo.retrieveAtom(
+                    self.pkgmeta['removeidpackage'])
+
+                self.pkgmeta['triggers']['remove'] = trigger_data
+                # pass reference, not copy! nevva!
+                self.pkgmeta['triggers']['remove']['removecontent'] = \
+                    self.pkgmeta['removecontent']
+
+                pkg_rm_license = inst_repo.retrieveLicense(
+                    self.pkgmeta['removeidpackage'])
+                if pkg_rm_license is None:
+                    pkg_rm_license = set()
+                else:
+                    pkg_rm_license = set(pkg_rm_license.split())
+                self.pkgmeta['triggers']['remove']['accept_license'] = \
+                    pkg_rm_license
 
         # set steps
         self.pkgmeta['steps'] = []
@@ -3340,6 +3347,9 @@ class Package:
         self.pkgmeta['steps'].append("cleanup")
 
         self.pkgmeta['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
+        if self.pkgmeta['triggers']['install'] is None:
+            # wtf!?
+            return 1
         pkg_license = dbconn.retrieveLicense(idpackage)
         if pkg_license is None:
             pkg_license = set()
