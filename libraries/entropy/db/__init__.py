@@ -3137,12 +3137,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 'spm_phases': self.retrieveSpmPhases(idpackage),
             }
 
-        @rtype: dict
+        @rtype: dict or None
         """
 
+        scope_data = self.getScopeData(idpackage)
+        if scope_data is None:
+            return
         atom, category, name, \
         version, slot, versiontag, \
-        revision, branch, etpapi = self.getScopeData(idpackage)
+        revision, branch, etpapi = scope_data
         chost, cflags, cxxflags = self.retrieveCompileFlags(idpackage)
 
         pkg_content = set()
