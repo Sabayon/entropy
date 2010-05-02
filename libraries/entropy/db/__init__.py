@@ -2331,6 +2331,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @param mimetypes: list of mimetypes supported by package
         @type mimetypes: list
         """
+        # FIXME: remove this before 2010-12-31
+        if not self._doesTableExist("provided_mime"):
+            self._createProvidedMimeTable()
         self._cursor().executemany("""
         INSERT INTO provided_mime VALUES (?,?)""",
             [(x, idpackage) for x in mimetypes])
