@@ -2153,7 +2153,7 @@ class EntropyPackageView:
         try:
             repoid = pkg.repoid
             sync_item = (pkg.key, repoid)
-        except ProgrammingError:
+        except (ProgrammingError, OperationalError):
             return
         if sync_item in self._ugc_metadata_sync_exec_cache:
             return
