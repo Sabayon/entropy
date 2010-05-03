@@ -321,7 +321,14 @@ def showdiff(fromfile, tofile):
 
     print("")
     args = ["less", "--no-init", "--QUIT-AT-EOF", tmp_path]
-    subprocess.call(args)
+    try:
+        subprocess.call(args)
+    except OSError as err:
+        if err.errno != 2:
+            raise
+        args = ["cat", tmp_path]
+        subprocess.call(args)
+        
     os.remove(tmp_path)
 
     if output == ['']:
