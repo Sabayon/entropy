@@ -23,7 +23,7 @@ import time
 from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, const_get_stringtype
 from entropy.exceptions import DependenciesNotFound, RepositoryError, \
-    SystemDatabaseError, SystemDatabaseError
+    SystemDatabaseError, SystemDatabaseError, DependenciesNotRemovable
 from entropy.output import print_generic
 from entropy.graph import Graph
 from entropy.db.exceptions import OperationalError
@@ -530,7 +530,23 @@ class Queue:
             return x.matched_atom[0]
 
         r_cache = set(map(r_cache_map, self.packages['r']))
-        removalQueue = self.Entropy.get_removal_queue(mylist)
+        try:
+            removalQueue = self.Entropy.get_removal_queue(mylist)
+        except DependenciesNotRemovable as err:
+            c_repo = self.Entropy.installed_repository()
+            non_rm_pkg = sorted([c_repo.retrieveAtom(x[0]) for x in err.value],
+                key = lambda x: c_repo.retrieveAtom(x))
+            confirmDialog = self.dialogs.ConfirmationDialog(self.ui.main,
+                non_rm_pkg,
+                top_text = _("Cannot remove packages"),
+                sub_text = _("Some dependencies couldn't be removed because they are vital."),
+                bottom_text = "",
+                cancel = False,
+                simpleList = True
+            )
+            confirmDialog.run()
+            confirmDialog.destroy()
+            return -10
 
         a_cache = []
 

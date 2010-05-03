@@ -1297,6 +1297,11 @@ class CalculatorsMixin:
     def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
         recursive = True, empty = False, system_packages = True):
 
+        """
+        @raise DependenciesNotRemovable: if at least one dependencies is
+        considered vital for the system.
+        """
+
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
                 hash("%s|%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
@@ -1315,6 +1320,7 @@ class CalculatorsMixin:
         match_cache = set()
         stack = Lifo()
         graph = Graph()
+        not_removable_deps = set()
 
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
@@ -1337,6 +1343,7 @@ class CalculatorsMixin:
 
                 if system_pkg:
                     # this is a system package, removal forbidden
+                    not_removable_deps.add((idpackage, repo_id))
                     continue
 
             repo_db = self.open_repository(repo_id)
@@ -1412,6 +1419,9 @@ class CalculatorsMixin:
 
 
         del stack
+        if not_removable_deps:
+            raise DependenciesNotRemovable(not_removable_deps)
+
         deptree = graph.solve()
         del graph
 
@@ -1984,6 +1994,10 @@ class CalculatorsMixin:
         @type system_packages: bool
         @return: list of installed package identifiers
         @rtype: list
+        @raise DependenciesNotRemovable: if at least one reverse dependency
+            is a system package and cannot be removed. The exception instance
+            contains a "value" attribute providing a list of system package
+            matches.
         """
         _idpackages = [(x, etpConst['clientdbid']) for x in package_identifiers]
         treeview = self._generate_reverse_dependency_tree(_idpackages,
@@ -2013,6 +2027,10 @@ class CalculatorsMixin:
         @type system_packages: bool
         @return: list of package matches
         @rtype: list
+        @raise DependenciesNotRemovable: if at least one reverse dependency
+            is a system package and cannot be removed. The exception instance
+            contains a "value" attribute providing a list of system package
+            matches.
         """
         treeview = self._generate_reverse_dependency_tree(package_matches,
             deep = deep, recursive = recursive, empty = empty,

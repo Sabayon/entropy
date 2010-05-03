@@ -47,6 +47,12 @@ class DependenciesNotFound(EntropyException):
     list (set) of missing dependencies are in the .value attribute
     """
 
+class DependenciesNotRemovable(EntropyException):
+    """
+    During dependencies calculation, dependencies got considered
+    vital for system health.
+    """
+
 class InvalidVersionString(EntropyException):
     """An invalid version string has been encountered"""
 

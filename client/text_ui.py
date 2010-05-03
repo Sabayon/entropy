@@ -17,11 +17,11 @@
 import os
 import shutil
 
-from entropy.exceptions import SystemDatabaseError
+from entropy.exceptions import SystemDatabaseError, DependenciesNotRemovable
 from entropy.db.exceptions import OperationalError
 from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
-    darkblue, purple, print_error, print_info, print_warning, writechar, \
+    darkblue, purple, teal, print_error, print_info, print_warning, writechar, \
     readtext, print_generic
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package as ClientPkg
@@ -1856,6 +1856,23 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
                 removal_queue += entropy_client.get_removal_queue(
                     plain_removal_queue, deep = deep, recursive = recursive,
                     empty = empty)
+            except DependenciesNotRemovable as err:
+                non_rm_pkg_ids = sorted([x[0] for x in err.value],
+                    key = lambda x: \
+                    entropy_client.installed_repository().retrieveAtom(x))
+                # otherwise we need to deny the request
+                print_error("")
+                print_error("  %s, %s:" % (
+                    purple(_("Ouch!")),
+                    brown(_("the following system packages were pulled in")),
+                    )
+                )
+                for pkg_in in non_rm_pkg_ids:
+                    pkg_name = entropy_client.installed_repository().retrieveAtom(pkg_in)
+                    print_error("    %s %s" % (purple("#"), teal(pkg_name),))
+                print_error("")
+                return 128, -1
+
             except OperationalError:
                 if entropy.tools.is_root():
                     raise

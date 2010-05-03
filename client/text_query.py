@@ -1061,7 +1061,8 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s..." % (
             _("Calculating removal dependencies, please wait"),) ), back = True)
-    treeview = Equo._generate_reverse_dependency_tree(found_atoms, deep = deep)
+    treeview = Equo._generate_reverse_dependency_tree(found_atoms, deep = deep,
+        system_packages = True)
     for dep_lev in sorted(treeview, reverse = True):
         for dep_sub_el in treeview[dep_lev]:
             removal_queue.append(dep_sub_el)
