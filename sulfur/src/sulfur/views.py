@@ -1802,8 +1802,7 @@ class EntropyPackageView:
         if not obj:
             return
 
-        if obj.color:
-            self.set_line_status(obj, cell)
+        self.set_line_status(obj, cell)
 
         try:
             voted = obj.voted
