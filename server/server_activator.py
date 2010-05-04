@@ -454,12 +454,12 @@ def sync_remote_databases():
 
     for dbstat in remote_db_status:
         host = EntropyTransceiver.get_uri_name(dbstat[0])
-        print_info(green("\t %s:\t" % (_("Host"),) )+bold(host))
-        print_info(red("\t  * %s: " % (_("Database revision"),) ) + \
+        print_info(green("    %s: " % (_("Host"),) )+bold(host))
+        print_info(red("     * %s: " % (_("Database revision"),) ) + \
             blue(str(dbstat[1])))
 
     local_revision = Entropy.get_local_repository_revision()
-    print_info(red("\t  * %s: " % (
+    print_info(red("      * %s: " % (
         _("Database local revision currently at"),) ) + \
             blue(str(local_revision)))
 
@@ -470,8 +470,8 @@ def sync_remote_databases():
         _("Remote Entropy Database Repository Status"),) ))
     for dbstat in remote_status:
         host = EntropyTransceiver.get_uri_name(dbstat[0])
-        print_info(darkgreen("\t %s:\t" % (_("Host"),) )+bold(host))
-        print_info(red("\t  * %s: " % (_("Database revision"),) ) + \
+        print_info(darkgreen("    %s: " % (_("Host"),) )+bold(host))
+        print_info(red("      * %s: " % (_("Database revision"),) ) + \
             blue(str(dbstat[1])))
 
     return errors, fine_uris, broken_uris

@@ -786,7 +786,7 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
                 bold(pkgatom),
             )
             print_info(mytxt)
-            mytxt = "\t%s:\t %s / %s / %s %s %s / %s / %s" % (
+            mytxt = "    %s: %s / %s / %s %s %s / %s / %s" % (
                 red(_("Versions")),
                 blue(installedVer),
                 blue(installedTag),

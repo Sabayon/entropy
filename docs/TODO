@@ -4,7 +4,6 @@
     - sulfur: make use of provided_mime (and desktop_mime) metadata
     - "equo repo add-mirror/remove-mirror"
     - "reagent spm orphans" doesn't seem to play nice with overlays
-    - remove \t usage (reagent, activator)
 
     - entropy.fetchers API docs
     - entropy.server API docs

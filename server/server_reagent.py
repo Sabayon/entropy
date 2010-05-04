@@ -14,6 +14,7 @@ import subprocess
 from entropy.const import etpConst, etpUi
 from entropy.output import red, bold, brown, purple, darkgreen, darkred, blue, \
     green, print_info, print_warning, print_error, print_generic, teal
+from text_tools import print_table
 from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
 from entropy.core.settings.base import SystemSettings
@@ -864,27 +865,30 @@ def status():
         local_files, local_packages = \
             Entropy.Mirrors._calculate_local_package_files(repo = repo_id)
 
-        print_info("[%s] %s" % (purple(repo_id),
-            brown(repo_data['description']),))
+        toc = []
 
-        print_info("  %s:\t\t\t%s" % (
-            blue(_("local revision")), repo_rev,))
-        print_info("  %s:\t\t\t%s" % (
-            darkgreen(_("local packages")), local_files,))
+        toc.append("[%s] %s" % (purple(repo_id),
+            brown(repo_data['description']),))
+        toc.append(("  %s:" % (blue(_("local revision")),),
+            str(repo_rev),))
+        toc.append(("  %s:" % (darkgreen(_("local packages")),),
+            str(local_files),))
 
         store_pkgs = []
         if os.path.isdir(store_dir):
             store_pkgs = os.listdir(store_dir)
-        print_info("  %s:\t\t\t%s" % (
-            darkgreen(_("stored packages")), len(store_pkgs),))
+
+        toc.append(("  %s:" % (darkgreen(_("stored packages")),),
+            str(len(store_pkgs)),))
         for pkg_rel in sorted(store_pkgs):
-            print_info("\t%s" % (brown(pkg_rel),))
+            toc.append((" ", brown(pkg_rel)))
 
-        print_info("  %s:\t\t\t%s" % (
-            teal(_("upload packages")), upload_files,))
+        toc.append(("  %s:" % (darkgreen(_("upload packages")),),
+            str(upload_files),))
         for pkg_rel in sorted(upload_packages):
-            print_info("\t%s" % (brown(pkg_rel),))
+            toc.append((" ", brown(pkg_rel)))
 
+        print_table(toc)
 
 def spm(options):
 
