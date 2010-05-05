@@ -637,11 +637,11 @@ class PortagePlugin(SpmPlugin):
         if match_type is None:
             match_type = "bestmatch-visible"
         elif match_type not in PortagePlugin.SUPPORTED_MATCH_TYPES:
-            raise KeyError
+            raise KeyError()
         try:
             return self.portage.portdb.xmatch(match_type, package)
         except self.portage.exception.PortageException:
-            raise InvalidAtom(package)
+            raise KeyError()
 
     def match_installed_package(self, package, match_all = False, root = None):
         """
