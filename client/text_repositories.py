@@ -22,6 +22,7 @@ from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
     print_info, print_warning, print_error, purple, teal
 from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.i18n import _
+from text_tools import print_table
 import entropy.tools
 SystemSettings = SysSet()
 
@@ -78,6 +79,10 @@ def repositories(options):
                     rc = _enable_repositories(entropy_client, myopts)
                 elif repo_opt == "disable":
                     rc = _disable_repositories(entropy_client, myopts)
+                elif repo_opt == "add":
+                    rc = _add_repository(entropy_client, myopts)
+                elif repo_opt == "remove":
+                    rc = _remove_repository(entropy_client, myopts)
                 else:
                     rc = -10
 
@@ -98,6 +103,64 @@ def repositories(options):
 
     return rc
 
+def _add_repository(entropy_client, repo_strings):
+
+    current_branch = SystemSettings['repositories']['branch']
+    current_product = SystemSettings['repositories']['product']
+    available_repos = SystemSettings['repositories']['available']
+
+    for repo_string in repo_strings:
+        if not repo_string:
+            print_warning("[%s] %s" % (
+                purple(repo_string), blue(_("invalid data, skipping")),))
+            continue
+        if not ((repo_string.startswith("repository|")) and \
+            (len(repo_string.split("|")) == 5)):
+            print_warning("[%s] %s" % (
+                purple(repo_string),
+                blue(_("invalid repository string, skipping")),)
+            )
+            continue
+
+        print_info("%s: %s" % (
+            teal(_("Adding repository string")), blue(repo_string),))
+
+        repoid, repodata = SystemSettings._analyze_client_repo_string(
+            repo_string, current_branch, current_product)
+
+        # print some info
+        toc = []
+        toc.append((purple(_("Repository id:")), teal(repoid)))
+        toc.append((darkgreen(_("Description:")), teal(repodata['description'])))
+        toc.append((purple(_("Repository format:")), darkgreen(repodata['dbcformat'])))
+        toc.append((brown(_("Service port:")), teal(str(repodata['service_port']))))
+        toc.append((brown(_("Service port (SSL):")), teal(str(repodata['ssl_service_port']))))
+        for pkg_url in repodata['plain_packages']:
+            toc.append((purple(_("Packages URL:")), pkg_url))
+        db_url = repodata['plain_database']
+        if not db_url:
+            db_url = _("None given")
+        toc.append((purple(_("Repository URL:")), darkgreen(db_url)))
+        toc.append(" ")
+        print_table(toc)
+        entropy_client.add_repository(repodata)
+        print_info("[%s] %s" % (
+            purple(repoid), blue(_("repository added succesfully")),))
+
+def _remove_repository(entropy_client, repo_ids):
+
+    excluded_repos = SystemSettings['repositories']['excluded']
+    available_repos = SystemSettings['repositories']['available']
+    repos = set(list(excluded_repos.keys()) + list(available_repos.keys()))
+    for repo_id in repo_ids:
+        if repo_id not in repos:
+            print_warning("[%s] %s" % (
+                purple(repo_id), blue(_("repository id not available")),))
+            continue
+
+        entropy_client.remove_repository(repo_id)
+        print_info("[%s] %s" % (
+            purple(repo_id), blue(_("repository removed succesfully")),))
 
 def _enable_repositories(entropy_client, repos):
     excluded_repos = SystemSettings['repositories']['excluded']

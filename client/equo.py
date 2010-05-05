@@ -69,6 +69,8 @@ help_opts = [
     (1, 'repo', 1, _('manage your repositories')),
         (2, 'enable', 2, _('enable given repository')),
         (2, 'disable', 1, _('disable given repository')),
+        (2, 'add <string>', 1, _('add repository (pass repository string)')),
+        (2, 'remove <id>', 1, _('remove repository')),
     (1, 'notice [repos]', 1, _('repository notice board reader')),
     (1, 'status', 2, _('show respositories status')),
     None,
@@ -685,6 +687,10 @@ def _repo_enable_disable_bashcomp(cmdline):
         return sorted(sys_settings['repositories']['excluded'].keys())
     elif action == "disable":
         return sorted(sys_settings['repositories']['available'].keys())
+    elif action == "remove":
+        avail = list(sys_settings['repositories']['available'].keys())
+        excl = list(sys_settings['repositories']['excluded'].keys())
+        return sorted(set(avail+excl))
     return []
 
 BASHCOMP_MAP = {

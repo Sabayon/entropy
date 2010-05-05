@@ -78,6 +78,14 @@ enable given repository
 
 disable given repository
 
+=item B<add <string>>
+
+add repository (pass repository string)
+
+=item B<remove <id>>
+
+remove repository
+
 =back
 
 =item B<notice [repos]>
