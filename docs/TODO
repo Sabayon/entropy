@@ -2,7 +2,6 @@
   0.99.50:
 
     - sulfur: make use of provided_mime (and desktop_mime) metadata
-    - "reagent spm orphans" doesn't seem to play nice with overlays
 
     - entropy.fetchers API docs
     - entropy.server API docs
@@ -14,6 +13,7 @@
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - complete API documentation
+    - move repository sync() code inside EntropyRepository? (makes sense)
 
   2.0:
 
