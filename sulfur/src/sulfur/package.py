@@ -271,7 +271,7 @@ class EntropyPackage:
         if self.masked:
             t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (
                 SulfurConf.color_title2,
-                ENTROPY.SystemSettings['pkg_masking_reasons'][self.masked],)
+                ENTROPY.Settings()['pkg_masking_reasons'][self.masked],)
 
         desc = self.get_description(markup = False)
         if not desc:
@@ -570,7 +570,7 @@ class EntropyPackage:
 
     def get_release(self):
         if self.pkgset:
-            return ENTROPY.SystemSettings['repositories']['branch']
+            return ENTROPY.Settings()['repositories']['branch']
         return self.dbconn.retrieveBranch(self.matched_id)
 
     def get_ugc_package_vote(self):

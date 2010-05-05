@@ -173,7 +173,7 @@ class AddRepositoryWindow(MenuSkel):
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
 
-        if repodata['repoid'] and repodata['repoid'] in self._entropy.SystemSettings['repositories']['available']:
+        if repodata['repoid'] and repodata['repoid'] in self._entropy.Settings()['repositories']['available']:
             if not edit:
                 errors.append(_('Duplicated Repository Identifier'))
 
@@ -264,10 +264,10 @@ class AddRepositoryWindow(MenuSkel):
             _("Insert Repository identification string")+"   ")
         if text:
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                current_branch = self._entropy.SystemSettings['repositories']['branch']
-                current_product = self._entropy.SystemSettings['repositories']['product']
+                current_branch = self._entropy.Settings()['repositories']['branch']
+                current_product = self._entropy.Settings()['repositories']['product']
                 repoid, repodata = \
-                    self._entropy.SystemSettings._analyze_client_repo_string(text,
+                    self._entropy.Settings()._analyze_client_repo_string(text,
                         current_branch, current_product)
                 self._load_repo_data(repodata)
             else:
@@ -300,7 +300,7 @@ class AddRepositoryWindow(MenuSkel):
             return True
         else:
             disable = False
-            repo_excluded = self._entropy.SystemSettings['repositories']['excluded']
+            repo_excluded = self._entropy.Settings()['repositories']['excluded']
             if repodata['repoid'] in repo_excluded:
                 disable = True
             self._entropy.remove_repository(repodata['repoid'], disable = disable)
@@ -442,7 +442,7 @@ class NoticeBoardWindow(MenuSkel):
     def show_data(self):
         self.model.clear()
         colors = ["#CDEEFF", "#AFCBDA"]
-        avail_repos = self.Entropy.SystemSettings['repositories']['available']
+        avail_repos = self.Entropy.Settings()['repositories']['available']
         for repoid in self.repoids:
 
             items = self.Entropy.get_noticeboard(repoid).copy()
@@ -1312,7 +1312,7 @@ class PkgInfoMenu(MenuSkel):
             item.set_markup("<b>%s</b>" % (t,))
 
         repo = pkg.matched_atom[1]
-        avail_repos = self.Entropy.SystemSettings['repositories']['available']
+        avail_repos = self.Entropy.Settings()['repositories']['available']
         if repo == 0:
             repo = pkg.repoid
 
@@ -1360,7 +1360,7 @@ class PkgInfoMenu(MenuSkel):
         masked = _("No")
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
         if idpackage_masked == -1:
-            masked = '%s, %s' % (_("Yes"), self.Entropy.SystemSettings['pkg_masking_reasons'][idmasking_reason],)
+            masked = '%s, %s' % (_("Yes"), self.Entropy.Settings()['pkg_masking_reasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
 
         # package changelog

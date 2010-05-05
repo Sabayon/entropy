@@ -2770,7 +2770,7 @@ class EntropyRepoView:
             myiter = self.store.get_iter( path )
             state = self.store.get_value(myiter, 0)
             repoid = self.store.get_value(myiter, 3)
-            if repoid != self._entropy.SystemSettings['repositories']['default_repository']:
+            if repoid != self._entropy.Settings()['repositories']['default_repository']:
                 self.store.set_value(myiter, 0, not state)
                 self.Sulfur.gtk_loop()
                 if state:
@@ -2842,12 +2842,12 @@ class EntropyRepoView:
     def populate(self):
 
         self.store.clear()
-        for repo in self._entropy.SystemSettings['repositories']['order']:
-            repodata = self._entropy.SystemSettings['repositories']['available'][repo]
+        for repo in self._entropy.Settings()['repositories']['order']:
+            repodata = self._entropy.Settings()['repositories']['available'][repo]
             self.store.append([1, 1, repodata['dbrevision'], repo,
                 repodata['description']])
         # excluded ones
-        repo_excluded = self._entropy.SystemSettings['repositories']['excluded']
+        repo_excluded = self._entropy.Settings()['repositories']['excluded']
         for repo in repo_excluded:
             repodata = repo_excluded[repo]
             self.store.append([0, 0, repodata['dbrevision'], repo,

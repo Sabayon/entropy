@@ -985,7 +985,7 @@ class EntropyPackages:
         my_set_from = _('Set from')
         set_from_desc = _('Unknown')
         if set_from in self.Entropy.repositories():
-            avail_repos = self.Entropy.SystemSettings['repositories']['available']
+            avail_repos = self.Entropy.Settings()['repositories']['available']
             set_from_desc = avail_repos[set_from]['description']
         elif set_from == etpConst['userpackagesetsid']:
             set_from_desc = _("User configuration")
@@ -1197,7 +1197,7 @@ class EntropyPackages:
             maskdata += [x for x in map(fm, repodata) if not isinstance(x, int)]
 
         # add live unmasked elements too
-        unmasks = self.Entropy.SystemSettings['live_packagemasking']['unmask_matches']
+        unmasks = self.Entropy.Settings()['live_packagemasking']['unmask_matches']
         live_idreason = etpConst['pkg_masking_reference']['user_live_unmask']
         for idpackage, repoid in unmasks:
             match_data = ((idpackage, repoid), live_idreason,)
