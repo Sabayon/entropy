@@ -3075,9 +3075,13 @@ class ServerQAMixin:
             key, slot = (entropy.tools.dep_getkey(installed_package),
                 self.Spm().get_installed_package_metadata(installed_package,
                     "SLOT"),)
-            pkg_atom = "%s%s%s" % (key, etpConst['entropyslotprefix'], slot,)
-            tree_atom = self.Spm().match_package(pkg_atom)
-            if not tree_atom:
+            pkg_atom = "%s%s%s" % (key, ":", slot,)
+            try:
+                tree_atoms = self.Spm().match_package(pkg_atom,
+                    match_type = "match-all")
+            except (KeyError,):
+                tree_atoms = None # ouch!
+            if not tree_atoms:
                 not_found[installed_package] = pkg_atom
                 self.output(
                     "%s: %s" % (
