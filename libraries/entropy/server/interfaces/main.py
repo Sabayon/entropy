@@ -3057,6 +3057,7 @@ class ServerQAMixin:
         )
         installed_packages = self.Spm().get_installed_packages()
         length = len(installed_packages)
+        installed_packages.sort()
         not_found = {}
         count = 0
         for installed_package in installed_packages:
