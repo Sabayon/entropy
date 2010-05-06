@@ -847,6 +847,8 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
             except OSError:
                 pass
 
+        return True
+
     def get_tests(self):
         return [self.__check_package_using_spm,
             self.__extract_edb_analyze_metadata]
