@@ -1924,6 +1924,17 @@ def dep_get_entropy_revision(mydep):
         return myrev
     return None
 
+def dep_get_split_or_deps(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
+    dep = mydep.rstrip(etpConst['entropyordepquestion'])
+    return dep.split(etpConst['entropyordepsep'])
 
 dep_revmatch = re.compile('^r[0-9]')
 def dep_get_spm_revision(mydep):
