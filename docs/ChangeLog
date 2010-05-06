@@ -1,3 +1,39 @@
+commit 6da07668dac91ff3d4e7c09880f5ccdc6642ec82
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 21:07:13 2010 +0200
+
+    [entropy.spm] PortagePlugin._usedeps_reduce: fix undefined reference
+
+commit 7f10d3577e1eaf1a38bd070bbe535415966f1709
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 21:05:02 2010 +0200
+
+    [entropy.spm] PortagePlugin: remove ill-conceived checks in _dep_and_select
+
+commit 7bca986e47ae3db44f598b3bb363fd04de2c6195
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 21:03:31 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix _usedeps_reduce
+
+commit 3233e4cb98b2c380cedf49862a88fcfdb093fb6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 20:49:50 2010 +0200
+
+    [entropy.tools] implement dep_get_split_or_deps
+
+commit 04d14ebb26e4aafb5ccc9b2ede873fc4136f8548
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 20:41:10 2010 +0200
+
+    [entropy.tools] improve remove_usedeps
+
+commit c5de169ccc54084456b4e9cf61483ffd0eb24c72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 20:18:19 2010 +0200
+
+    Tagging Entropy version 0.99.45.3
+
 commit dc8da76bf010d07fa02ff6a963b7952f971851d4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 6 20:17:54 2010 +0200
