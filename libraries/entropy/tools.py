@@ -1826,16 +1826,18 @@ def remove_usedeps(depend):
     @return: 
     @rtype: 
     """
-    mydepend = depend[:]
+    new_depend = ""
+    skip = 0
+    for char in depend:
+        if char == "[":
+            skip += 1
+        elif char == "]":
+            skip -= 1
+            continue
+        if skip == 0:
+            new_depend += char
 
-    close_bracket = mydepend.find(']')
-    after_closebracket = ''
-    if close_bracket != -1: after_closebracket = mydepend[close_bracket+1:]
-
-    open_bracket = mydepend.find('[')
-    if open_bracket != -1: mydepend = mydepend[:open_bracket]
-
-    return mydepend+after_closebracket
+    return new_depend
 
 def remove_slot(mydep):
     """
