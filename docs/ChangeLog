@@ -1,3 +1,302 @@
+commit 35564bc3b1323fc4e75251a05724435b6fad53f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 22:30:35 2010 +0200
+
+    [todo] update TODO
+
+commit 144b3bd61a80a4e77dfa64235ab95f6aa0f1e961
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 22:29:55 2010 +0200
+
+    [entropy.server] Server.orphaned_spm_packages_test: fix matching of masked packages
+
+commit 8892ef5be698592a541c49020efe520bea942de7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 22:29:25 2010 +0200
+
+    [entropy.spm] PortagePlugin.match_package: only raise KeyError exception
+
+commit a4547429730f71fa1dba1607910d89ff7a627cc8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 20:49:50 2010 +0200
+
+    [entropy.server] Server.orphaned_spm_packages_test: sort list of packages retrieved by Spm
+
+commit f5be04438cb32cc3baafb24c5aa5bc5cf6c89392
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 17:01:47 2010 +0200
+
+    [todo] update TODO
+
+commit 7ae0a7eb07e1613271e77814afde372bcb0a8079
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 17:01:16 2010 +0200
+
+    [equo] add "equo repo add/remove" tools
+
+commit ef881cc62e0a4b53b7995604b24ef6c7f68f1c6b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 5 13:18:43 2010 +0200
+
+    [sulfur] replace Client.SystemSettings with Client.Settings()
+
+commit e854555db96b8ade3932d0af94bea50576359129
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 4 14:21:58 2010 +0200
+
+    [equo/reagent/activator] remove \t usage
+
+commit 34722f1e9b918bfc54eb44714033e54f314ad7c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 3 18:37:21 2010 +0200
+
+    [po] update Italian translation
+
+commit a4013a2057e52a46c11c1d649bbf324812d57a06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 3 18:30:05 2010 +0200
+
+    [po] update translations
+
+commit 216904c8c7911bd220452aee92635e0046dd0c50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 3 18:26:51 2010 +0200
+
+    [entropy.client] fix reverse dependencies calculation in case of system packages
+
+commit fc6022ebaec1563709e978b76d3efbcdb5c00f71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 3 11:12:24 2010 +0200
+
+    [sulfur] fix EntropyPackageView.get_stars_rating CellRenderer redraw callback
+
+commit b257b88627caece19022bd25c17155107d599902
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 3 10:34:11 2010 +0200
+
+    [text_configuration] when "less" is not available, fallback to "cat"
+
+commit 1337917b2a5e76896bb5e8d193bec8e67930a00d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 3 10:28:26 2010 +0200
+
+    [sulfur] EntropyPackageView.__new_ugc_pixbuf_stash_fetch: catch OperationalError exception
+
+commit c9790ce36acdc6ed9e705aeaf4e2950bfb504372
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 2 23:49:44 2010 +0200
+
+    [entropy.client/equo] add "equo query mimetype" support
+    
+    User can now search for packages providing a specific mimetype,
+    which means, telling the user what application can be used to
+    open his/her files.
+    Add two now entropy.client.interfaces.Client methods:
+      - list search_installed_mimetype(string mimetype)
+      - list search_available_mimetype(string mimetype)
+
+commit 85ba650101c44be0e50f3197dcc64d5965043887
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 2 22:33:35 2010 +0200
+
+    [sulfur] fix cell rendering under certain circumstances
+
+commit 7edbce99b390832d78fd9fe029934de4f2fac80b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 2 17:32:20 2010 +0200
+
+    [entropy.db] EntropyRepository._insertProvidedMime(): create provided_mime table if it doesn't exist
+
+commit e1325bdeae241b70a45e4631f7da20fd5f99002f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 2 17:10:51 2010 +0200
+
+    [entropy.db] EntropyRepository.validateDatabase: cache execution and tell sqlite3 to check for db file validity
+
+commit 0bd57ef274ba00cacda6ff3d2b9c8a85746f740f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 2 08:54:18 2010 +0200
+
+    [entropy.client.interfaces.package] EntropyRepository.getTriggerInfo() can return None
+
+commit 93c96ccafdf8b87d4e6aea48da3bf58ac0e070b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 2 08:53:53 2010 +0200
+
+    [entropy.db] EntropyRepository.getTriggerInfo can return None
+
+commit 108701c980460517061d66447ea228cdc60fc363
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 1 16:43:32 2010 +0200
+
+    [entropy.client.interfaces.package] complete Entropy Client "splitdebug" support
+
+commit 96c3107dfdeaa8dbb90ea737d0a36466687de6ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 1 16:23:02 2010 +0200
+
+    [entropy.client.interfaces.package] fix Package._move_image_to_system.workout_file return value
+
+commit cc939df1eba2d95912a9df1a3a14256d91083f3b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 21:27:27 2010 +0200
+
+    [entropy.services.system.executors] filter out Entropy SLOT extension if any
+
+commit 15f3d35c5617243eb4cff1d322285457bd89b4a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 21:24:41 2010 +0200
+
+    [entropy.server] filter out Entropy SLOT extension if any
+
+commit a4eaa88e3804a57df9d57f88ceb3b7d66695f526
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 15:27:50 2010 +0200
+
+    [entropy.spm] PortagePlugin._dep_or_select() fix regression
+
+commit d3d29edf9f0e850a557bcdfe08954ff2f8a0eb5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 15:15:57 2010 +0200
+
+    [todo] update TODO
+
+commit 8e0f44b6877a1e68b3fb19fa0c5a7295e9b26ea0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 15:15:35 2010 +0200
+
+    [conf] update information regarding how splitdebug works in Entropy
+
+commit 44fec70c142c6388cc54ee1845ee00e1cfc10887
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 15:12:09 2010 +0200
+
+    [entropy.client/entropy.spm] implement splitdebug support client-side
+
+commit bfb065675852676b12b1641ece078f2bab9176e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 30 08:50:52 2010 +0200
+
+    [entropy.client] inherit GPG support bool from etpConst, update branch
+
+commit 297ae7f28440504f9ce19bfe9f7ce859ff53b0f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 20:34:20 2010 +0200
+
+    [entropy.spm] PortagePlugin: if getcolor() returns True, unset NOCOLOR if set
+
+commit 57b8a3448d00623b88c12b26cad5780682560d5a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 20:30:45 2010 +0200
+
+    [entropy.server] ServerQAInterfacePlugin.__extract_edb_analyze_metadata: close EntropyRepository, then remove (not the other way around)
+
+commit d445351dc87c16fbf3a3817b4ab8a89e45407a2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 20:24:03 2010 +0200
+
+    [entropy.server] add new server-side QA test checking keywords metadata
+
+commit 8cefd0359b662841f667761154c5354a026610d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 16:54:17 2010 +0200
+
+    [entropy.spm] PortagePlugin: disable Portage colorized output when entropy.output.getcolor() returns False
+
+commit 5fef396321ddc889db89ae93d85fc4ac37c7007e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 16:49:32 2010 +0200
+
+    [entropy.output] add getcolor()
+
+commit 9980f7c437077d20438be84978bb6c66968e3e63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 16:48:57 2010 +0200
+
+    [entropy.output] fix _print_prio when writing to non-tty devices
+
+commit b7ad933a56e7cdd5ba82fc40a7b8758e344e2761
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 16:14:30 2010 +0200
+
+    [equo] text_query: remove every \t evidence
+
+commit 0c9d9baef73db74de7495769565b799b5d8fdb2e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 15:53:03 2010 +0200
+
+    [entropy.client.interfaces.package] EntropyPackage.isFileAvailable() requires unicode, not str
+
+commit a296dc63e31294b61555a308db1bff5d72c416d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 09:58:21 2010 +0200
+
+    [todo] update TODO
+
+commit 4cfb851ec27a788067e13255db46988647a8d931
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 09:49:40 2010 +0200
+
+    [equo] text_security: use print_table instead of \t\t
+
+commit b8b651d34a3c540597574b6f6f5b9dc20abd7e02
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 08:43:32 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix _dep_or_select logic
+
+commit 5a2052488e090085d0472db87e3f59d2893eca8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 29 08:20:13 2010 +0200
+
+    [entropy.client.interfaces.dep] _get_unsatisfied_dependencies(): trivial speed improvement
+
+commit f14642d6ae82c70c7558db56113f02d36590fe30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 28 23:06:26 2010 +0200
+
+    [todo] update TODO
+
+commit 4d63ac40ae86892927d404e4bb79ae2a12de5072
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 28 23:05:49 2010 +0200
+
+    [entropy.spm] PortagePlugin: add "or dependencies" support (providing Entropy-style or dep strings)
+
+commit 3aa5003471e2f5b32be56511b4f6476048bce52b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 28 22:00:10 2010 +0200
+
+    [entropy.client.interfaces.dep] properly handle unavailable packages (already installed)
+    
+    When a package is referencing another that has been removed but
+    is still installed and given dependency is satisfied, consider
+    the whole dependency request as satisfied.
+
+commit e5141698ab194753b4e3f6f6d717fd631a65e0d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 28 21:40:16 2010 +0200
+
+    [entropy.spm] PortagePlugin: when manually generating CONTENT metadata, ignore "" directory entry
+
+commit 0d4131645ea171230eb2bf18875a4fdddc708644
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 28 18:53:13 2010 +0200
+
+    [equo] cleanup text_query.print_package_info()
+
+commit f0d28f3de1fb3a0378ba92ee74fc0310b2dd840e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 28 18:52:52 2010 +0200
+
+    [equo] improve reliability of text_tools.print_table()
+
+commit 8e114c823d70376026087825069d0f0eb0863638
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 26 23:26:51 2010 +0200
+
+    Tagging Entropy version 0.99.41.2
+
 commit 0f16b4003006d65d2993f14d9218d914e1b2682e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 26 23:17:45 2010 +0200
