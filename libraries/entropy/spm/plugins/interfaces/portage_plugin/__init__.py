@@ -3570,7 +3570,7 @@ class PortagePlugin(SpmPlugin):
 
         for raw_dependency in dependencies:
 
-            split_deps = entropy.tools.dep_split_or_deps(depstring)
+            split_deps = entropy.tools.dep_split_or_deps(raw_dependency)
             filtered_deps = []
             for depstring in split_deps:
 
