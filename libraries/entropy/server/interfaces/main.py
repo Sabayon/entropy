@@ -820,7 +820,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         return False
 
     def __extract_edb_analyze_metadata(self, package_path):
-        tmp_f, tmp_fd = tempfile.mkstemp()
+        tmp_fd, tmp_f = tempfile.mkstemp()
         os.close(tmp_fd)
 
         try:
