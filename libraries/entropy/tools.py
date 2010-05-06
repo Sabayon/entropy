@@ -1963,19 +1963,15 @@ def dep_get_match_in_repos(mydep):
     @return: 
     @rtype: 
     """
-    dep = remove_usedeps(mydep)
-    use_deps = ','.join(dep_getusedeps(mydep))
-    if use_deps:
-        use_deps = "[%s]" % (use_deps,)
-    colon = dep.rfind("@")
+    colon = mydep.rfind("@")
     if colon != -1:
-        mydata = dep[colon+1:]
+        mydata = mydep[colon+1:]
         mydata = mydata.split(",")
         if not mydata:
             mydata = None
-        return dep[:colon]+use_deps, mydata
+        return mydep[:colon], mydata
     else:
-        return dep+use_deps, None
+        return mydep, None
 
 def dep_gettag(mydep):
 
