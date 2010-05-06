@@ -1,3 +1,15 @@
+commit 7fa224a094d058069b04a1bc7254b535c91b0ced
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 21:42:19 2010 +0200
+
+    [entropy.tools] fix dep_get_match_in_repos (do not mess use deps)
+
+commit 5f1d2b500968cab41106ed9d106acf5f31d772d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 21:08:32 2010 +0200
+
+    Tagging Entropy version 0.99.45.5
+
 commit 6da07668dac91ff3d4e7c09880f5ccdc6642ec82
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 6 21:07:13 2010 +0200
