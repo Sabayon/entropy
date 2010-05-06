@@ -1,3 +1,15 @@
+commit dc8da76bf010d07fa02ff6a963b7952f971851d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 20:17:54 2010 +0200
+
+    [entropy.server] ServerQAInterfacePlugin.__extract_edb_analyze_metadata fix return value
+
+commit 786bb624b00d6af6113c56b2f2670d05b250963c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 19:17:59 2010 +0200
+
+    Tagging Entropy version 0.99.45.2
+
 commit 5748babbd637d340ed9fac61a221ffc2c2aad8d6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 6 19:17:22 2010 +0200
