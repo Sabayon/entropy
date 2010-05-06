@@ -3525,58 +3525,78 @@ class PortagePlugin(SpmPlugin):
                 myuse = myuse[:-1]
             return myuse
 
-        for dependency in dependencies:
-            use_deps = entropy.tools.dep_getusedeps(dependency)
-            if use_deps:
-                new_use_deps = []
-                for use in use_deps:
-                    """
-                    explicitly support only specific types
-                    """
-                    if (use[0] == "!") and (use[-1] not in ("=", "?",)):
-                        # this does not exist atm
+        def filter_use_deps(dependency):
+            new_use_deps = []
+            for use in use_deps:
+                """
+                explicitly support only specific types
+                """
+                if (use[0] == "!") and (use[-1] not in ("=", "?",)):
+                    # this does not exist atm
+                    continue
+                elif use[-1] == "=":
+                    if use[0] == "!":
+                        # foo[!bar=] means bar? ( foo[-bar] ) !bar? ( foo[bar] )
+                        s_use = strip_use(use)
+                        if s_use in enabled_useflags:
+                            new_use_deps.append("-%s" % (s_use,))
+                        else:
+                            new_use_deps.append(s_use)
                         continue
-                    elif use[-1] == "=":
-                        if use[0] == "!":
-                            # foo[!bar=] means bar? ( foo[-bar] ) !bar? ( foo[bar] )
-                            s_use = strip_use(use)
-                            if s_use in enabled_useflags:
-                                new_use_deps.append("-%s" % (s_use,))
-                            else:
-                                new_use_deps.append(s_use)
-                            continue
+                    else:
+                        # foo[bar=] means bar? ( foo[bar] ) !bar? ( foo[-bar] )
+                        s_use = strip_use(use)
+                        if s_use in enabled_useflags:
+                            new_use_deps.append(s_use)
                         else:
-                            # foo[bar=] means bar? ( foo[bar] ) !bar? ( foo[-bar] )
-                            s_use = strip_use(use)
-                            if s_use in enabled_useflags:
-                                new_use_deps.append(s_use)
-                            else:
-                                new_use_deps.append("-%s" % (s_use,))
-                            continue
-                    elif use[-1] == "?":
-                        if use[0] == "!":
-                            # foo[!bar?] means bar? ( foo ) !bar? ( foo[-bar] )
-                            s_use = strip_use(use)
-                            if s_use not in enabled_useflags:
-                                new_use_deps.append("-%s" % (s_use,))
-                            continue
-                        else:
-                            # foo[bar?] means bar? ( foo[bar] ) !bar? ( foo )
-                            s_use = strip_use(use)
-                            if s_use in enabled_useflags:
-                                new_use_deps.append(s_use)
-                            continue
-                    new_use_deps.append(use)
+                            new_use_deps.append("-%s" % (s_use,))
+                        continue
+                elif use[-1] == "?":
+                    if use[0] == "!":
+                        # foo[!bar?] means bar? ( foo ) !bar? ( foo[-bar] )
+                        s_use = strip_use(use)
+                        if s_use not in enabled_useflags:
+                            new_use_deps.append("-%s" % (s_use,))
+                        continue
+                    else:
+                        # foo[bar?] means bar? ( foo[bar] ) !bar? ( foo )
+                        s_use = strip_use(use)
+                        if s_use in enabled_useflags:
+                            new_use_deps.append(s_use)
+                        continue
+                new_use_deps.append(use)
+            return new_use_deps
 
-                if new_use_deps:
-                    dependency = "%s[%s]" % (
-                        entropy.tools.remove_usedeps(dependency),
-                        ','.join(new_use_deps),
-                    )
-                else:
-                    dependency = entropy.tools.remove_usedeps(dependency)
 
-            newlist.append(dependency)
+        for raw_dependency in dependencies:
+
+            split_deps = entropy.tools.dep_split_or_deps(depstring)
+            filtered_deps = []
+            for depstring in split_deps:
+
+                use_deps = entropy.tools.dep_getusedeps(depstring)
+                if use_deps:
+
+                    new_use_deps = filter_use_deps(depstring)
+
+                    if new_use_deps:
+                        depstring = "%s[%s]" % (
+                            entropy.tools.remove_usedeps(depstring),
+                            ','.join(new_use_deps),
+                        )
+                    else:
+                        depstring = entropy.tools.remove_usedeps(depstring)
+
+                filtered_deps.append(depstring)
+
+            if len(filtered_deps) > 1:
+                or_dep = etpConst['entropyordepsep']
+                raw_dependency = or_dep.join(filtered_deps) + \
+                    etpConst['entropyordepquestion']
+            else:
+                raw_dependency = filtered_deps[0]
+            newlist.append(raw_dependency)
+
         return newlist
 
     def _paren_reduce(self, mystr):

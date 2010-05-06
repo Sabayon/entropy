@@ -1924,7 +1924,7 @@ def dep_get_entropy_revision(mydep):
         return myrev
     return None
 
-def dep_get_split_or_deps(mydep):
+def dep_split_or_deps(mydep):
     """
     docstring_title
 
