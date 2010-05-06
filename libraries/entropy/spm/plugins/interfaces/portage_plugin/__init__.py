@@ -3869,12 +3869,6 @@ class PortagePlugin(SpmPlugin):
             else:
                 newlist.append(x)
 
-        # now verify if all are satisfied
-        for x in newlist:
-            match = self.match_installed_package(x)
-            if not match:
-                return []
-
         return newlist
 
     def _dep_or_select(self, or_list):
