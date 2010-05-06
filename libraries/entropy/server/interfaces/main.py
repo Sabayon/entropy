@@ -842,7 +842,10 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                     time.sleep(10)
         finally:
             dbc.closeDB()
-            os.remove(tmp_f)
+            try:
+                os.remove(tmp_f)
+            except OSError:
+                pass
 
     def get_tests(self):
         return [self.__check_package_using_spm,
