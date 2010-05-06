@@ -1,3 +1,15 @@
+commit d22a2a28802d250e14ca010cfa1144504fe3a58c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 19:00:35 2010 +0200
+
+    [entropy.server] fix typo in tempfile.mkstemp() call
+
+commit dc922b2c4efa0698ec801691d0c2396c0333cd06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 17:31:02 2010 +0200
+
+    Tagging Entropy version 0.99.45
+
 commit 35564bc3b1323fc4e75251a05724435b6fad53f3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed May 5 22:30:35 2010 +0200
