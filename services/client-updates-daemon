@@ -35,6 +35,10 @@ sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
 
+from entropy.cache import EntropyCacher
+# update default writeback timeout
+EntropyCacher.WRITEBACK_TIMEOUT = 120
+
 from entropy.misc import LogFile
 from entropy.i18n import _
 from entropy.exceptions import PermissionDenied, RepositoryError, \
@@ -178,7 +182,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__oncall_updater = gobject.timeout_add(
             1000, self.run_oncall_fetcher)
         self.__quit_service_wd = gobject.timeout_add(
-            10000, self.quit_service_watchdog)
+            60*1000, self.quit_service_watchdog)
         self.__system_changes_checker = gobject.timeout_add(
             120*1000, self.check_system_changes)
         if "--disable-timer" not in sys.argv:
