@@ -48,6 +48,9 @@ class EntropyCacher(Singleton):
     # Max number of cache objects written at once
     _OBJS_WRITTEN_AT_ONCE = 250
 
+    # Number of seconds between cache writeback to disk
+    WRITEBACK_TIMEOUT = 2
+
     """
     Entropy asynchronous and synchronous cache writer
     and reader. This class is a Singleton and contains
@@ -148,6 +151,9 @@ class EntropyCacher(Singleton):
         thread-safe. It just loops over and over until
         __alive becomes False.
         """
+        # make sure our set delay is respected
+        self.__cache_writer.set_delay(EntropyCacher.WRITEBACK_TIMEOUT)
+
         while self.__alive or run_until_empty:
 
             if etpUi['debug']:
@@ -214,7 +220,8 @@ class EntropyCacher(Singleton):
         @return: None
         """
         self.__cache_buffer.clear()
-        self.__cache_writer = TimeScheduled(2, self.__cacher)
+        self.__cache_writer = TimeScheduled(EntropyCacher.WRITEBACK_TIMEOUT,
+            self.__cacher)
         self.__cache_writer.setName("EntropyCacher")
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
