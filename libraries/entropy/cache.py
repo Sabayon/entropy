@@ -152,7 +152,11 @@ class EntropyCacher(Singleton):
         __alive becomes False.
         """
         # make sure our set delay is respected
-        self.__cache_writer.set_delay(EntropyCacher.WRITEBACK_TIMEOUT)
+        try:
+            self.__cache_writer.set_delay(EntropyCacher.WRITEBACK_TIMEOUT)
+        except AttributeError:
+            # can be None
+            pass
 
         while self.__alive or run_until_empty:
 
