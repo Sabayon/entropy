@@ -5683,6 +5683,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @rtype: set
 
         """
+        # FIXME: remove this before 31-12-2011
+        if not self._doesTableExist("packagesets"):
+            return set()
         cur = self._cursor().execute("""
         SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)
         """, ("%"+keyword+"%",))
@@ -5699,6 +5702,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: list of package indentifiers owning given mimetype.
         @rtype: list
         """
+        # FIXME: remove this before 31-12-2011
         if not self._doesTableExist("provided_mime"):
             return []
         cur = self._cursor().execute("""
