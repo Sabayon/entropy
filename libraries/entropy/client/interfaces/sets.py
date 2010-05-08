@@ -71,77 +71,60 @@ class Sets:
 
         return mylist
 
-    def available(self, server_repos = None, serverInstance = None,
-        matchRepo = None):
-        return self.match('', matchRepo = matchRepo,
-            server_repos = server_repos, serverInstance = serverInstance,
-            search = True)[0]
+    def available(self, match_repo = None):
+        return self.match('', match_repo = match_repo, search = True)[0]
 
-    def search(self, package_set, server_repos = None, serverInstance = None,
-        matchRepo = None):
+    def search(self, package_set, match_repo = None):
         # search support
         if package_set == '*':
             package_set = ''
-        return self.match(package_set, matchRepo = matchRepo,
-            server_repos = server_repos, serverInstance = serverInstance,
-            search = True)[0]
+        return self.match(package_set, match_repo = match_repo, search = True)[0]
 
-    def __match_open_db(self, repoid, server_inst):
-        if server_inst is not None:
-            return server_inst.open_server_repository(just_reading = True,
-                repo = repoid)
-        return self._entropy.open_repository(repoid)
-
-    def match(self, package_set, multiMatch = False,
-        matchRepo = None, server_repos = None, serverInstance = None,
+    def match(self, package_set, multi_match = False, match_repo = None,
         search = False):
 
         # support match in repository from shell
         # set@repo1,repo2,repo3
         package_set, repos = entropy.tools.dep_get_match_in_repos(
             package_set)
-        if (matchRepo is None) and (repos is not None):
-            matchRepo = repos
+        if (match_repo is None) and (repos is not None):
+            match_repo = repos
 
-        if server_repos is not None:
-            if not serverInstance:
-                raise AttributeError("server_repos needs serverInstance")
-            valid_repos = server_repos[:]
-        else:
-            valid_repos = self._entropy.repositories()
+        valid_repos = self._entropy.repositories()
 
-        if matchRepo and (type(matchRepo) in (list, tuple, set)):
-            valid_repos = list(matchRepo)
+        if match_repo and (type(match_repo) in (list, tuple, set)):
+            valid_repos = list(match_repo)
 
         # if we search, we return all the matches available
         if search:
-            multiMatch = True
+            multi_match = True
 
         set_data = []
 
         while True:
 
             # check inside SystemSettings
-            if not server_repos:
-                sys_pkgsets = self._settings['system_package_sets']
-                if search:
-                    mysets = [x for x in list(sys_pkgsets.keys()) if \
-                        (x.find(package_set) != -1)]
-                    for myset in mysets:
-                        mydata = sys_pkgsets.get(myset)
-                        set_data.append((etpConst['userpackagesetsid'],
-                            const_convert_to_unicode(myset), mydata.copy(),))
-                else:
-                    mydata = sys_pkgsets.get(package_set)
-                    if mydata is not None:
-                        set_data.append((etpConst['userpackagesetsid'],
-                            const_convert_to_unicode(package_set), mydata,))
-                        if not multiMatch:
-                            break
+            # XXX: remove this in future
+            # ALLOW server-side caller to match sets in /etc/entropy/sets
+            # if not server_repos:
+            sys_pkgsets = self._settings['system_package_sets']
+            if search:
+                mysets = [x for x in list(sys_pkgsets.keys()) if \
+                    (x.find(package_set) != -1)]
+                for myset in mysets:
+                    mydata = sys_pkgsets.get(myset)
+                    set_data.append((etpConst['userpackagesetsid'],
+                        const_convert_to_unicode(myset), mydata.copy(),))
+            else:
+                mydata = sys_pkgsets.get(package_set)
+                if mydata is not None:
+                    set_data.append((etpConst['userpackagesetsid'],
+                        const_convert_to_unicode(package_set), mydata,))
+                    if not multi_match:
+                        break
 
             for repoid in valid_repos:
-                dbconn = self.__match_open_db(repoid,
-                    serverInstance)
+                dbconn = self._entropy.open_repository(repoid)
                 if search:
                     mysets = dbconn.searchSets(package_set)
                     for myset in mysets:
@@ -151,7 +134,7 @@ class Sets:
                     mydata = dbconn.retrievePackageSet(package_set)
                     if mydata:
                         set_data.append((repoid, package_set, mydata,))
-                    if not multiMatch:
+                    if not multi_match:
                         break
 
             break
@@ -159,7 +142,7 @@ class Sets:
         if not set_data:
             return (), False
 
-        if multiMatch:
+        if multi_match:
             return set_data, True
 
         return set_data.pop(0), True
