@@ -76,6 +76,23 @@ help_opts = [
 
 options = sys.argv[1:]
 
+def handle_exception(exc_class, exc_instance, exc_tb):
+
+    # restore original exception handler, to avoid loops
+    uninstall_exception_handler()
+    entropy.tools.kill_threads()
+
+    if exc_class is KeyboardInterrupt:
+        raise SystemExit(1)
+
+    raise exc_instance
+
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
 # print version
 if ("--version" in options) or ("-V" in options):
     print_generic("activator: "+etpConst['entropyversion'])
@@ -119,6 +136,7 @@ if not entropy.tools.is_root():
     rc = 2
 
 main_cmd = options.pop(0)
+install_exception_handler()
 
 if main_cmd == "sync":
     import server_activator
@@ -145,5 +163,6 @@ if rc == -10:
     print_menu(help_opts)
     print_error(red(" %s." % (_("Wrong parameters"),) ))
 
+uninstall_exception_handler()
 const_kill_threads()
 raise SystemExit(rc)

@@ -129,6 +129,23 @@ help_opts = [
     None,
 ]
 
+def handle_exception(exc_class, exc_instance, exc_tb):
+
+    # restore original exception handler, to avoid loops
+    uninstall_exception_handler()
+    entropy.tools.kill_threads()
+
+    if exc_class is KeyboardInterrupt:
+        raise SystemExit(1)
+
+    raise exc_instance
+
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
 options = sys.argv[1:]
 
 # print version
@@ -172,6 +189,7 @@ rc = -10
 if not entropy.tools.is_root():
     print_error("you must be root in order to run "+sys.argv[0])
 
+install_exception_handler()
 main_cmd = options.pop(0)
 
 if main_cmd == "update":
@@ -245,5 +263,6 @@ if rc == -10:
     print_menu(help_opts)
     print_error(red(" %s." % (_("Wrong parameters"),) ))
 
-const_kill_threads()
+uninstall_exception_handler()
+entropy.tools.kill_threads()
 raise SystemExit(rc)
