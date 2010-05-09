@@ -8501,8 +8501,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         pkgversion = ''
         stripped_atom = ''
         found_ids = []
-        default_idpackage = None
-        dbpkginfo = set()
+        default_idpackages = None
 
         if scan_atom:
 
@@ -8533,8 +8532,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
 
             # IDs found in the database that match our search
-            found_ids, default_idpackages = self.__generate_found_ids_match(
-                pkgkey, pkgname, pkgcat, multiMatch)
+            try:
+                found_ids, default_idpackages = self.__generate_found_ids_match(
+                    pkgkey, pkgname, pkgcat, multiMatch)
+            except OperationalError:
+                # we are fault tolerant, cannot crash because
+                # tables are not available and validateDatabase()
+                # hasn't run
+                # found_ids = []
+                # default_idpackages = None
+                pass
 
         ### FILTERING
         # filter slot and tag
@@ -8546,6 +8553,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         ### END FILTERING
 
+        dbpkginfo = set()
         if found_ids:
             dbpkginfo = self.__handle_found_ids_match(found_ids, direction,
                 matchTag, matchRevision, justname, stripped_atom, pkgversion)
