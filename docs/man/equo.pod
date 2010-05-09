@@ -1336,6 +1336,7 @@ remove downloaded packages and clean temp. directories
 
 show system information
 
+=back
 
 =head1 ENVIRONMENT
 
