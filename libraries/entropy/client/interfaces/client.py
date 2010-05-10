@@ -248,14 +248,13 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 if m_r != 0:
                     continue
                 mykey = entropy.tools.dep_getkey(atom)
-                if mykey not in mask_installed_keys:
-                    mask_installed_keys[mykey] = set()
+                obj = mask_installed_keys.setdefault(mykey, set())
                 for m_id in m_ids:
                     if m_id in mc_cache:
                         continue
                     mc_cache.add(m_id)
                     mask_installed.append(m_id)
-                    mask_installed_keys[mykey].add(m_id)
+                    obj.add(m_id)
             break
 
         parser_data.update({
