@@ -6419,6 +6419,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             mytxt = "extrainfo error. Either does not exist or corrupted."
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
+        try:
+            self.checksum()
+        except (DatabaseError,) as err:
+            raise SystemDatabaseError("SystemDatabaseError: checksum => %s" % (
+                err,))
+
     def getIdpackagesDifferences(self, foreign_idpackages):
         """
         Return differences between in-repository package identifiers and
