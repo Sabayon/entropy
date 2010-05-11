@@ -68,7 +68,7 @@ class SystemSettingsPlugin(object):
         for method in sorted(dir(self)):
             if method == "add_parser":
                 continue
-            elif method.startswith("__"):
+            elif method.startswith("_"):
                 # private method
                 continue
             elif method.endswith(parser_postfix) and (method != parser_postfix):
