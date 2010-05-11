@@ -726,6 +726,11 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
     def repos_parser(self, sys_set):
 
+        try:
+            return self._repos_data
+        except AttributeError:
+            pass
+
         data = {}
         srv_plug_id = etpConst['system_settings_plugins_ids']['server_plugin']
         # if support is not enabled, don't waste time scanning files
@@ -760,6 +765,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
             data[repoid] = idpackages
 
+        self._repos_data = data
         return data
 
 class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
@@ -4729,19 +4735,22 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
             etpConst['system_settings_plugins_ids']['server_plugin']
 
         # create our SystemSettings plugin
-        self.sys_settings_plugin = ServerSystemSettingsPlugin(
-            self.sys_settings_plugin_id, self)
-        self._settings.add_plugin(self.sys_settings_plugin)
+        with self._settings:
+            self.sys_settings_plugin = ServerSystemSettingsPlugin(
+                self.sys_settings_plugin_id, self)
+            self._settings.add_plugin(self.sys_settings_plugin)
 
-        # Fatscope support SystemSettings plugin
-        self.sys_settings_fatscope_plugin = ServerFatscopeSystemSettingsPlugin(
-            self.sys_settings_fatscope_plugin_id, self)
-        self._settings.add_plugin(self.sys_settings_fatscope_plugin)
+            # Fatscope support SystemSettings plugin
+            self.sys_settings_fatscope_plugin = \
+                ServerFatscopeSystemSettingsPlugin(
+                    self.sys_settings_fatscope_plugin_id, self)
+            self._settings.add_plugin(self.sys_settings_fatscope_plugin)
 
-        # Fatscope support SystemSettings plugin
-        self.sys_settings_fake_cli_plugin = ServerFakeClientSystemSettingsPlugin(
-            self.sys_settings_fake_cli_plugin_id, self)
-        self._settings.add_plugin(self.sys_settings_fake_cli_plugin)
+            # Fatscope support SystemSettings plugin
+            self.sys_settings_fake_cli_plugin = \
+                ServerFakeClientSystemSettingsPlugin(
+                    self.sys_settings_fake_cli_plugin_id, self)
+            self._settings.add_plugin(self.sys_settings_fake_cli_plugin)
 
         # setup fake repository
         if fake_default_repo:
