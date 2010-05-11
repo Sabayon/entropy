@@ -68,6 +68,9 @@ class SystemSettingsPlugin(object):
         for method in sorted(dir(self)):
             if method == "add_parser":
                 continue
+            elif method.startswith("__"):
+                # private method
+                continue
             elif method.endswith(parser_postfix) and (method != parser_postfix):
                 parser_id = method[:len(parser_postfix)*-1]
                 self.__parsers.append((parser_id, getattr(self, method),))
