@@ -65,6 +65,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__cacher = EntropyCacher()
         self.__data = {}
         self.__is_destroyed = False
+        self.__inside_with_stmt = 0
         self.__mutex = RLock() # reentrant lock on purpose
 
         self.__external_plugins = {}
@@ -85,6 +86,21 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         self.__setup_const()
         self.__scan()
+
+    def __enter__(self):
+        """
+        Make possible to add plugins without triggering parse() every time.
+        """
+        self.__inside_with_stmt += 1
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Make possible to add plugins without triggering parse() every time.
+        Reload SystemSettings on exit
+        """
+        self.__inside_with_stmt -= 1
+        if self.__inside_with_stmt == 0:
+            self.clear()
 
     def destroy(self):
         """
@@ -118,7 +134,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     "SystemSettingsPlugin instance")
         with self.__mutex:
             EntropyPluginStore.add_plugin(self, inst.get_id(), inst)
-            self.clear()
+            if self.__inside_with_stmt == 0:
+                self.clear()
 
     def remove_plugin(self, plugin_id):
         """
