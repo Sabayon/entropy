@@ -2254,7 +2254,7 @@ class Server(ServerNoticeBoardMixin):
             header = red(" @@ ")
         )
         self._entropy.output(
-            red("%s:\t\t%s %s" % (
+            red("%s: %s %s" % (
                     blue(_("upload directory")),
                     bold(str(upload_files)),
                     red(_("files ready")),
@@ -2265,7 +2265,7 @@ class Server(ServerNoticeBoardMixin):
             header = red(" @@ ")
         )
         self._entropy.output(
-            red("%s:\t\t%s %s" % (
+            red("%s: %s %s" % (
                     blue(_("packages directory")),
                     bold(str(local_files)),
                     red(_("files ready")),
@@ -2339,7 +2339,7 @@ class Server(ServerNoticeBoardMixin):
             )
 
         self._entropy.output(
-            "%s:\t\t\t%s" % (
+            "%s:  %s" % (
                 blue(_("Packages to be removed")),
                 darkred(str(len(removal))),
             ),
@@ -2348,7 +2348,7 @@ class Server(ServerNoticeBoardMixin):
             header = blue(" @@ ")
         )
         self._entropy.output(
-            "%s:\t\t%s" % (
+            "%s:  %s" % (
                 darkgreen(_("Packages to be moved locally")),
                 darkgreen(str(len(copy))),
             ),
@@ -2357,7 +2357,7 @@ class Server(ServerNoticeBoardMixin):
             header = blue(" @@ ")
         )
         self._entropy.output(
-            "%s:\t\t\t%s" % (
+            "%s:  %s" % (
                 bold(_("Packages to be uploaded")),
                 bold(str(len(upload))),
             ),
@@ -2367,7 +2367,7 @@ class Server(ServerNoticeBoardMixin):
         )
 
         self._entropy.output(
-            "%s:\t\t\t%s" % (
+            "%s:  %s" % (
                 darkred(_("Total removal size")),
                 darkred(
                     entropy.tools.bytes_into_human(metainfo['removal'])
@@ -2379,7 +2379,7 @@ class Server(ServerNoticeBoardMixin):
         )
 
         self._entropy.output(
-            "%s:\t\t\t%s" % (
+            "%s:  %s" % (
                 blue(_("Total upload size")),
                 blue(entropy.tools.bytes_into_human(metainfo['upload'])),
             ),
@@ -2388,7 +2388,7 @@ class Server(ServerNoticeBoardMixin):
             header = blue(" @@ ")
         )
         self._entropy.output(
-            "%s:\t\t\t%s" % (
+            "%s:  %s" % (
                 brown(_("Total download size")),
                 brown(entropy.tools.bytes_into_human(metainfo['download'])),
             ),
@@ -2456,7 +2456,7 @@ class Server(ServerNoticeBoardMixin):
                 self._calculate_remote_package_files(uri, handler, repo = repo)
 
         self._entropy.output(
-            "%s:\t\t\t%s %s" % (
+            "%s:  %s %s" % (
                 blue(_("remote packages")),
                 bold(str(remote_files)),
                 red(_("files stored")),

@@ -2455,7 +2455,7 @@ class ServerPackagesHandlingMixin:
                 header = red(" @@ ")
             )
             self.output(
-                "[%s] %s:\t%s" % (
+                "[%s] %s: %s" % (
                     red(crippled_uri),
                     brown(_("Number of checked packages")),
                     brown(str(len(match) + len(not_match))),
@@ -2465,7 +2465,7 @@ class ServerPackagesHandlingMixin:
                header = brown("   # ")
             )
             self.output(
-                "[%s] %s:\t%s" % (
+                "[%s] %s: %s" % (
                     red(crippled_uri),
                     darkgreen(_("Number of healthy packages")),
                     darkgreen(str(len(match))),
@@ -2475,7 +2475,7 @@ class ServerPackagesHandlingMixin:
                header = brown("   # ")
             )
             self.output(
-                "[%s] %s:\t%s" % (
+                "[%s] %s: %s" % (
                     red(crippled_uri),
                     darkred(_("Number of broken packages")),
                     darkred(str(len(not_match))),
