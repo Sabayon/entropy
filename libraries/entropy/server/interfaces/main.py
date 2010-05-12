@@ -4730,17 +4730,28 @@ class ServerMiscMixin:
                         compiled_pattern.subn(replace, dep_string)
                     if number_of_subs_made:
                         dep_string_matched = True
-                        pkg_meta['dependencies'][new_dep_string] = dep_value
-                        self.output(
-                            "%s: %s => %s" % (
-                                teal(_("replaced")),
-                                brown(dep_string),
-                                purple(new_dep_string),
-                            ),
-                            importance = 1,
-                            level = "info",
-                            header = purple("   ! ")
-                        )
+                        if new_dep_string:
+                            pkg_meta['dependencies'][new_dep_string] = dep_value
+                            self.output(
+                                "%s: %s => %s" % (
+                                    teal(_("replaced")),
+                                    brown(dep_string),
+                                    purple(new_dep_string),
+                                ),
+                                importance = 1,
+                                level = "info",
+                                header = purple("   ! ")
+                            )
+                        else:
+                            self.output(
+                                "%s: %s => X" % (
+                                    teal(_("removed")),
+                                    brown(dep_string),
+                                ),
+                                importance = 1,
+                                level = "info",
+                                header = purple("   ! ")
+                            )
 
                     else:
                         self.output(
