@@ -59,6 +59,19 @@ class EntropyRepositoryTest(unittest.TestCase):
         dbconn = self.Server.open_server_repository()
         self.assertNotEqual(None, dbconn.retrieveAtom(1))
 
+    def test_package_injection2(self):
+        test_pkg = _misc.get_test_entropy_package5()
+        tmp_test_pkg = test_pkg+".tmp"
+        shutil.copy2(test_pkg, tmp_test_pkg)
+        added = self.Server.add_packages_to_repository([(tmp_test_pkg, False,)],
+            ask = False)
+        self.assertEqual(set([1]), added)
+        def do_stat():
+            os.stat(tmp_test_pkg)
+        self.assertRaises(OSError, do_stat)
+        dbconn = self.Server.open_server_repository()
+        self.assertNotEqual(None, dbconn.retrieveAtom(1))
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")

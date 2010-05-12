@@ -55,6 +55,10 @@ def get_test_entropy_package4():
     test_pkg = "x11-base:xorg-server-1.5.3-r6~1.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_entropy_package5():
+    test_pkg = "media-gfx:pdf2svg-0.2.1~3.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_entropy_package_provide():
     test_pkg = "mail-mta:ssmtp-2.62-r7~0.tbz2"
     return get_test_generic_package(test_pkg)
