@@ -1,3 +1,15 @@
+commit 10e048da34eee3ed1ba495a12e610feb31cb597a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 16:16:09 2010 +0200
+
+    [entropy.server] fix sets_available arguments
+
+commit ad8d7b6d4b4c3839e5b8b4aa319c724d57d23993
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 14:25:19 2010 +0200
+
+    Tagging Entropy version 0.99.46
+
 commit 8fdaf399e19d412bc9dd31b574b420d38686fef4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed May 12 14:24:07 2010 +0200
