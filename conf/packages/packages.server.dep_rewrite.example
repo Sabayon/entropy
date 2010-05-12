@@ -1,0 +1,20 @@
+# Server side packages.server.dep_rewrite file (this has to stay in /etc/entropy/packages)
+# Using this file, you can apply arbitrary transformations to
+# package dependencies via regular expressions.
+# It can be used in case of Source Package Managers not properly
+# splitting packages (and thus, dependencies), making possible to
+# rewrite dependency strings without forking packages.
+
+# LINE CONSTRUCTION:
+# <::pkg::> <::dep_pattern::> <::dep_replace_1::> [<::dep_replace_2::> ...]
+# ::pkg:: = package containing dependency to match
+# ::dep_pattern:: = regexp of dependency to match
+# ::dep_replace_1:: = replacement regexp
+# ::dep_replace_n:: = additional replacement regexps (producing more deps out
+#                     of one initially available)
+# This is the function used for dependency rewrite:
+# http://docs.python.org/library/re.html#re.sub
+# See examples below
+
+# EXAMPLES:
+# media-gfx/foo media-sound/bar media-sound/baz
