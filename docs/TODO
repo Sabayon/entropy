@@ -9,7 +9,6 @@
 
   1.0_beta1:
 
-    - entropy.db: make several methods protected
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - complete API documentation
