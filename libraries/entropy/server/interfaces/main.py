@@ -15,6 +15,7 @@ import shutil
 import copy
 import tempfile
 import time
+import re
 
 from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
@@ -456,6 +457,46 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         return repoid, mydata
 
+    def __generic_parser(self, filepath):
+        """
+        Internal method. This is the generic file parser here.
+
+        @param filepath: valid path
+        @type filepath: string
+        @return: raw text extracted from file
+        @rtype: list
+        """
+        lines = entropy.tools.generic_file_content_parser(filepath)
+        # filter out non-ASCII lines
+        lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
+        return lines
+
+    def dep_rewrite_parser(self, sys_set):
+
+        cached = getattr(self, '_mod_rewrite_data', None)
+        if cached is not None:
+            return cached
+
+        rewrite_file = etpConst['etpdatabasedeprewritefile']
+        rewrite_content = self.__generic_parser(rewrite_file)
+
+        data = {}
+        for line in rewrite_content:
+            params = line.split()
+            if len(params) < 3:
+                continue
+            pkg_match, pattern, replaces = params[0], params[1], params[2:]
+            try:
+                compiled_pattern = re.compile(pattern)
+            except re.error:
+                # invalid pattern
+                continue
+            # use this key to make sure to not overwrite similar entries
+            data[(pkg_match, pattern)] = (compiled_pattern, replaces)
+
+        self._mod_rewrite_data = data
+        return data
+
     def server_parser(self, sys_set):
 
         """
@@ -726,10 +767,9 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
     def repos_parser(self, sys_set):
 
-        try:
-            return self._repos_data
-        except AttributeError:
-            pass
+        cached = getattr(self, '_repos_data', None)
+        if cached is not None:
+            return cached
 
         data = {}
         srv_plug_id = etpConst['system_settings_plugins_ids']['server_plugin']
@@ -979,11 +1019,16 @@ class ServerSettingsMixin:
 
     def _get_local_database_licensewhitelist_file(self, repo = None,
         branch = None):
-
         if repo is None:
             repo = self.default_repository
         return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabaselicwhitelistfile'])
+
+    def _get_local_database_dep_rewrite_file(self, repo = None, branch = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self._get_local_database_dir(repo, branch),
+            etpConst['etpdatabasedeprewritefile'])
 
     def _get_local_database_rss_file(self, repo = None, branch = None):
         srv_set = self._settings[self.sys_settings_plugin_id]['server']
@@ -4616,6 +4661,113 @@ class ServerMiscMixin:
         # empty default. Real GPG signature will be written inside
         # _inject_database_into_packages()
         pkg_meta['signatures']['gpg'] = None
+
+        # rewrite dependency strings using dep_rewrite metadata
+        self.__handle_dep_rewrite(pkg_meta, repo)
+
+    def __handle_dep_rewrite(self, pkg_meta, repo):
+
+        dep_rewrite = self._settings[self.sys_settings_plugin_id]['dep_rewrite']
+
+        # NOTE: to be able to match the package, we need to add it
+        # to a temp repo
+        tmp_repo = self._open_temp_repository("dep_rewrite_temp",
+            temp_file = ":memory:")
+        new_idpackage, new_revision, new_data = tmp_repo.handlePackage(pkg_meta)
+        del new_revision
+        del new_data
+        pkg_atom = tmp_repo.retrieveAtom(new_idpackage)
+
+        rewrites_enabled = []
+        for dep_string_rewrite, dep_pattern in dep_rewrite:
+            pkg_id, rc = tmp_repo.atomMatch(dep_string_rewrite)
+            if rc == 0:
+                rewrites_enabled.append((dep_string_rewrite, dep_pattern))
+        tmp_repo.closeDB()
+
+        if not rewrites_enabled:
+            return
+
+        self.output(
+            "[repo:%s|%s] %s:" % (
+                    blue(repo),
+                    brown(pkg_atom),
+                    teal(_("found available dep_rewrites for this package")),
+                ),
+            importance = 1,
+            level = "info",
+            header = brown(" @@ ")
+        )
+        for dep_string_rewrite, dep_pattern in rewrites_enabled:
+            compiled_pattern, replaces = \
+                dep_rewrite[(dep_string_rewrite, dep_pattern)]
+            self.output(
+                "%s => %s" % (
+                    purple(dep_pattern),
+                    ', '.join(replaces),
+                ),
+                importance = 1,
+                level = "info",
+                header = teal("   # ")
+            )
+
+        for dep_string, dep_value in pkg_meta['dependencies'].items():
+
+            dep_string_matched = False
+            matched_pattern = False
+
+            for key in rewrites_enabled:
+
+                compiled_pattern, replaces = dep_rewrite[key]
+
+                if not compiled_pattern.match(dep_string):
+                    # dep_string not matched, skipping
+                    continue
+                matched_pattern = True
+
+                for replace in replaces:
+                    new_dep_string, number_of_subs_made = \
+                        compiled_pattern.subn(replace, dep_string)
+                    if number_of_subs_made:
+                        dep_string_matched = True
+                        pkg_meta['dependencies'][new_dep_string] = dep_value
+                        self.output(
+                            "%s: %s => %s" % (
+                                teal(_("replaced")),
+                                brown(dep_string),
+                                purple(new_dep_string),
+                            ),
+                            importance = 1,
+                            level = "info",
+                            header = purple("   ! ")
+                        )
+
+                    else:
+                        self.output(
+                            "%s: %s + %s" % (
+                                darkred(_("No dependency rewrite made for")),
+                                brown(dep_string),
+                                purple(replace),
+                            ),
+                            importance = 1,
+                            level = "warning",
+                            header = darkred("   !!! ")
+                        )
+
+            if dep_string_matched:
+                del pkg_meta['dependencies'][dep_string]
+            elif (not dep_string_matched) and matched_pattern:
+                self.output(
+                    "%s: %s :: %s" % (
+                        darkred(_("No dependency rewrite made for")),
+                        brown(pkg_atom),
+                        purple(dep_string),
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = darkred("   !x!x!x! ")
+                )
+
 
     def _get_entropy_sets(self, repo = None, branch = None):
 
