@@ -1,3 +1,141 @@
+commit 8fdaf399e19d412bc9dd31b574b420d38686fef4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 14:24:07 2010 +0200
+
+    [todo] update TODO
+
+commit cf7997a9da22024a1ee88e2fc040788797e23d7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 14:00:22 2010 +0200
+
+    [conf] add dependency rewrite configuration file example
+
+commit a661ffa92a1ffe6290560666fccbcb92252ad72f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 13:59:58 2010 +0200
+
+    [todo] update TODO
+
+commit 60683be2a454aefcac019c5a92ec521702ea772c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 13:59:30 2010 +0200
+
+    [entropy.server] remove \t usage
+
+commit d5fc2a43bac146950ace921bf84da8245def6f05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 13:08:27 2010 +0200
+
+    [entropy.server] implement dependency rewrite support
+
+commit 942b8f804f0d5a5c2982fed1617e739af79b70e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 08:38:50 2010 +0200
+
+    [tests] add another package test to server mode
+
+commit 9332e9fcd501a5fd520c27496d5db8ebbac47347
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 00:35:45 2010 +0200
+
+    [entropy.server.interfaces] improve SystemSettings parsers speed (add some caching)
+
+commit 5d8d18ffc14a7e738810b7e0897cfcb574256863
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 00:24:22 2010 +0200
+
+    [entropy.cose.settings.base] add "with" statement support to SystemSettings (improving multiple add_plugin() speed)
+
+commit 5d45591940223dbd0d773e9d5ca506598046e5a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 00:09:43 2010 +0200
+
+    [entropy.core.settings.plugins.skel] filter out SystemSettingsPlugin protected subclasses methods
+
+commit 4b5f072d1d05e1fab14e0a24141e70f484664b7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 11 23:58:17 2010 +0200
+
+    [entropy.core.settings.plugins.skel] SystemSettingsPlugin: filter out private methods from callback parsing
+
+commit e261321fb47c4cc80b1bdc13a7ad5a13373153c6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 11 10:54:56 2010 +0200
+
+    [entropy.db] EntropyRepository.validateDatabase: sometimes checksum() is required to spot issues
+
+commit 958be3592200328ddc99ee27be2353cb58ea32bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 10 12:01:45 2010 +0200
+
+    [equo] call EntropyRepository.generateReverseDependenciesMetadata() with verbose=False
+
+commit f388bc5751dc6a4800b0a2c6f3ececeb50a5f314
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 10 12:01:31 2010 +0200
+
+    [entropy.client.interfaces.client] small code style update
+
+commit b9c413e688694867ec002744196e749aa2ecfcdd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 9 17:24:29 2010 +0200
+
+    [docs] update equo man page
+
+commit e6fb7d325ff6d1fee0f6f9d3308b6afd712d6341
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 9 17:06:28 2010 +0200
+
+    [entropy.db] EntropyRepository.atomMatch: catch OperationalError exceptions
+
+commit c414f02250ea63d69050404f74b9d304f4f62b5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 9 16:46:21 2010 +0200
+
+    [reagent/activator] implement simple exception handler (catching KeyboardInterrupt)
+
+commit ce012502d176e01aa4b16fa0d9d5f2bd0e4aa095
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 8 18:46:54 2010 +0200
+
+    [sulfur] reduce tarball support to .tbz2 for now
+
+commit 3eba983fe2ef1cc6f705b75a165bf7e4837ecc90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 8 18:45:10 2010 +0200
+
+    [entropy.client.interfaces.sets] cleanup code, change API
+
+commit 4cea0400312a853d4616fbf8093c0bd71387d4e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 8 18:05:57 2010 +0200
+
+    [entropy.db] EntropyRepository.searchSets: make sure that packagesets table exists
+
+commit e173c8084fbe81dee73fe76cc8f7383d44fbe306
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 7 17:10:58 2010 +0200
+
+    [entropy.cache] catch AttributeError, variable can be None
+
+commit ff0af58109c806d8259f338aaf450845a6ad9f93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 7 14:58:07 2010 +0200
+
+    [entropy.services] client-updates-daemon: tweak timings
+
+commit 50e688a61c0d16499d77613ee9a05f7645bb207b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 7 14:57:37 2010 +0200
+
+    [entropy.cache] EntropyCacher: make possible to change writeback cycle length (in seconds)
+
+commit 1b37af54dcfc6c56e5d4acff41d7420416e66ce2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 6 21:42:43 2010 +0200
+
+    Tagging Entropy version 0.99.45.6
+
 commit 7fa224a094d058069b04a1bc7254b535c91b0ced
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 6 21:42:19 2010 +0200
