@@ -228,6 +228,8 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
             col_n += 1
 
     # now actually print
+    if col_n > 0:
+        column_sizes[col_n - 1] = 0
     for cols in lines_data:
         print_generic(side_color(">>") + " ", end = " ")
         if isinstance(cols, (list, tuple)):
@@ -237,11 +239,13 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
                 cell = " "*padding_side + cell + " "*padding_side
                 delta_len = max_len - len(decolorize(cell.split("\n")[0])) + \
                     cell_spacing
-                print_generic(cell, end = " "*delta_len)
+                if col_n == (len(cols) - 1):
+                    print_generic(cell)
+                else:
+                    print_generic(cell, end = " "*delta_len)
                 col_n += 1
         else:
-            print_generic(cols, end = " ") 
-        print_generic()
+            print_generic(cols)
 
 def countdown(secs = 5, what = "Counting...", back = False):
     """
