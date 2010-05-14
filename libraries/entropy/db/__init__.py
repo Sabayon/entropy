@@ -54,7 +54,8 @@ from entropy.cache import EntropyCacher
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.plugin_store import EntropyRepositoryPluginStore
-from entropy.db.exceptions import IntegrityError, Error, OperationalError
+from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
+    DatabaseError
 
 import entropy.tools
 import entropy.dump
@@ -70,8 +71,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     Every Entropy repository storage interface MUST inherit from this base
     class.
-
-    @todo: refactoring and generalization needed
     """
 
     SETTING_KEYS = [ "arch", "on_delete_cascade" ]
