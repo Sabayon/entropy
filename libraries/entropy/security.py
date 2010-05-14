@@ -17,6 +17,7 @@ import shutil
 import subprocess
 import datetime
 import tempfile
+import time
 
 from entropy.exceptions import EntropyException
 from entropy.misc import LogFile
@@ -614,13 +615,17 @@ class System:
         xmls = self._get_advisories_list()
         maxlen = len(xmls)
         count = 0
+        t_up = time.time()
         for xml in xmls:
 
             count += 1
             if not etpUi['quiet']:
-                self._entropy.output(":: " + \
-                    str(round((float(count)/maxlen)*100, 1)) + "% ::",
-                    importance = 0, level = "info", back = True)
+                cur_t = time.time()
+                if ((cur_t - t_up()) > 1):
+                    t_up = cur_t
+                    self._entropy.output(":: " + \
+                        str(round((float(count)/maxlen)*100, 1)) + "% ::",
+                        importance = 0, level = "info", back = True)
 
             xml_metadata = None
             exc_string = ""
