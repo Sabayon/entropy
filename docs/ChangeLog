@@ -1,3 +1,33 @@
+commit 1d1eafbdc403bbf9e03a0e657a441b2dc2354aba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 14 21:33:42 2010 +0200
+
+    [entropy.db] import missing exception
+
+commit f6af43f8a76a152d08c34e918e966b5275ffe451
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 14 07:34:47 2010 +0200
+
+    [entropy.security] do not flood stdout with metadata installation updates
+
+commit 6c95b35d8064f62679d74c9225b4f9b3e6286f53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 13 20:55:50 2010 +0200
+
+    [client/text_tools] print_table: eliminate trailing blank lines, thanks Scott Bertilson for reporting, closing #1443
+
+commit cc061f710882714cd54734b1911fcebeb728aa72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 22:39:57 2010 +0200
+
+    [entropy.server] if dep_rewrite regexp returns an empty string, consider it a removal action
+
+commit d0a600a7aebf5be69e9e9accc278ac57d6eec716
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 12 16:16:40 2010 +0200
+
+    Tagging Entropy version 0.99.46.1
+
 commit 10e048da34eee3ed1ba495a12e610feb31cb597a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed May 12 16:16:09 2010 +0200
