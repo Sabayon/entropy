@@ -1,3 +1,15 @@
+commit bf678e1441c28002611b85be93814088fb7d8c6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 15 02:53:37 2010 +0200
+
+    [entropy.security] fix typo
+
+commit 510f82e80329adc24d46e74fc4317306074c0eca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 14 21:34:43 2010 +0200
+
+    Tagging Entropy version 0.99.46.2
+
 commit 1d1eafbdc403bbf9e03a0e657a441b2dc2354aba
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri May 14 21:33:42 2010 +0200
