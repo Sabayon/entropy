@@ -621,7 +621,7 @@ class System:
             count += 1
             if not etpUi['quiet']:
                 cur_t = time.time()
-                if ((cur_t - t_up()) > 1):
+                if ((cur_t - t_up) > 1):
                     t_up = cur_t
                     self._entropy.output(":: " + \
                         str(round((float(count)/maxlen)*100, 1)) + "% ::",
