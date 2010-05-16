@@ -163,8 +163,8 @@ class EntropyPluginFactory:
         and classes are loaded via this infrastructure.
         NOTE: if egg_entry_point_group is set, you NEED the setuptools package.
 
-        @param base_plugin_class: Base EntropyPlugin-based class that valid
-            plugin classes must inherit from.
+        @param base_plugin_class: Base class that valid plugin classes must
+            inherit from.
         @type base_plugin_class: class
         @param plugin_package_module: every plugin repository must work as
             Python package, the value of this argument must be a valid
@@ -340,7 +340,7 @@ class EntropyPluginFactory:
 
     def get_available_plugins(self):
         """
-        Return currently available EntropyPlugin plugin classes.
+        Return currently available plugin classes.
         Note: Entropy plugins can either be Python packages or modules and
         their name MUST end with PluginFactory._PLUGIN_SUFFIX ("_plugin").
 
@@ -364,7 +364,7 @@ class EntropyPluginFactory:
         Return currently configured Entropy Plugin class.
 
         @return: Entropy plugin class
-        @rtype: entropy.core.EntropyPlugin
+        @rtype: default plugin class given
         @raise KeyError: if default plugin is not set or not found
         """
         available = self.get_available_plugins()
