@@ -8,6 +8,8 @@ BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
 DESTDIR =
 
+all:
+
 magneto-core-install:
 
 	mkdir -p $(DESTDIR)$(PREFIX)/share/pixmaps/magneto
@@ -46,12 +48,4 @@ magneto-kde-install:
 
 
 install: magneto-core-install magneto-loader-install magneto-gtk-install magneto-kde-install
-
-
-
-
-
-
-
-
-
+	

@@ -1,6 +1,6 @@
 PKGNAME = entropy
 PYTHON = python2
-SUBDIRS = client conf docs libraries misc/po misc server sulfur
+SUBDIRS = magneto misc/po sulfur
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon repository-services-daemon.example server_query.py
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
@@ -46,8 +46,6 @@ entropy-install:
 	install -m 644 misc/05entropy.envd $(DESTDIR)/etc/env.d/05entropy
 
 	install -m 644 docs/COPYING $(DESTDIR)/$(LIBDIR)/entropy/
-
-	make DESTDIR="$(DESTDIR)" -C misc/po install
 
 entropy-server-install:
 
@@ -101,28 +99,5 @@ updates-daemon-install:
 	install -m 644 misc/dbus/system-services/org.entropy.Client.service $(DESTDIR)$(PREFIX)/share/dbus-1/system-services/
 	install -m 644 misc/dbus/interfaces/org.entropy.Client.xml $(DESTDIR)$(PREFIX)/share/dbus-1/interfaces/
 
-magneto-core-install:
-
-	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-core-install
-
-magneto-loader-install:
-
-	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-loader-install
-
-magneto-gtk-install:
-
-	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-gtk-install
-
-magneto-kde-install:
-
-	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-kde-install
-
-sulfur-install:
-
-	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C sulfur install
-
-pycompile-all:
-
-	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)/$(LIBDIR)/entropy', force = True, quiet = True)"
-
-install: entropy-install entropy-server-install equo-install sulfur-install updates-daemon-install magneto-core-install magneto-loader-install magneto-gtk-install magneto-kde-install
+install: all entropy-install entropy-server-install equo-install updates-daemon-install
+	for d in $(SUBDIRS); do make -C $$d install; done
