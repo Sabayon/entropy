@@ -590,6 +590,18 @@ search inside installed packages
 
 =back
 
+=item B<associate>
+
+associate given file paths to applications able to read them
+
+=over
+
+=item B<--installed>
+
+search inside installed packages
+
+=back
+
 =item B<needed>
 
 show runtime libraries needed by the provided atoms

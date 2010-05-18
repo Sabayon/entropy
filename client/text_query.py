@@ -22,7 +22,7 @@ from entropy.i18n import _
 import entropy.tools
 from entropy.db.exceptions import DatabaseError
 
-from text_tools import print_table
+from text_tools import print_table, get_file_mime
 
 def query(options):
 
@@ -56,7 +56,7 @@ def query(options):
             multi_match = True
         elif (opt == "--multirepo") and (first_opt == "match"):
             multi_repo = True
-        elif (opt == "--installed") and (first_opt in ("match", "mimetype",)):
+        elif (opt == "--installed") and (first_opt in ("match", "mimetype", "associate",)):
             match_installed = True
         elif (opt == "--showrepo") and (first_opt == "match"):
             show_repo = True
@@ -108,8 +108,10 @@ def query(options):
     elif myopts[0] == "needed":
         rc_status = search_needed_libraries(myopts[1:])
 
-    elif myopts[0] == "mimetype":
-        rc_status = search_mimetype(myopts[1:], installed = match_installed)
+    elif myopts[0] in ("mimetype", "associate"):
+        associate = myopts[0] == "associate"
+        rc_status = search_mimetype(myopts[1:], installed = match_installed,
+            associate = associate)
 
     elif myopts[0] == "required":
         rc_status = search_required_libraries(myopts[1:])
@@ -1215,17 +1217,24 @@ def search_package(packages, Equo = None, get_results = False,
         return rc_results
     return 0
 
-def search_mimetype(mimetypes, Equo = None, installed = False):
+def search_mimetype(mimetypes, Equo = None, installed = False,
+    associate = False):
 
     if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
-        print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Searching mimetype"),) ),
-            back = True)
+        print_info(darkred(" @@ ") + darkgreen("%s..." % (
+            _("Searching mimetype"),) ), back = True)
     found = False
 
     for mimetype in mimetypes:
+
+        if associate:
+            # consider mimetype a file path
+            mimetype = get_file_mime(mimetype)
+            if mimetype is None:
+                continue
 
         if not etpUi['quiet']:
             print_info("%s: %s" % (blue("  # "), bold(mimetype),))

@@ -325,3 +325,18 @@ def read_equo_release():
             return myrev
 
     return "0"
+
+def get_file_mime(file_path):
+    if not os.path.isfile(file_path):
+        return None
+    try:
+        import magic
+    except ImportError:
+        return None
+    handle = magic.open(magic.MAGIC_MIME)
+    handle.load()
+    mime = handle.file(file_path)
+    handle.close()
+    if mime:
+        mime = mime.split(";")[0]
+    return mime

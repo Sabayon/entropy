@@ -196,6 +196,8 @@ help_opts = [
             (3, 'available [repos]', 1, _('list available packages')),
         (2, 'mimetype', 2, _('search packages able to handle given mimetypes')),
             (3, '--installed', 2, _('search among installed packages')),
+        (2, 'associate', 2, _('associate given file paths to applications able to read them')),
+            (3, '--installed', 2, _('search among installed packages')),
         (2, 'needed', 2, _('show runtime libraries needed by the provided atoms')),
         (2, 'orphans', 1, _('search files that do not belong to any package')),
         (2, 'removal', 1, _('show the removal tree for the specified atoms')),
