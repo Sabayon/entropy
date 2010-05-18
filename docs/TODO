@@ -2,6 +2,11 @@
   0.99.50:
 
     - sulfur: make use of provided_mime (and desktop_mime) metadata
+        import magic
+        handle = magic.open(magic.MAGIC_MIME)
+        handle.load()
+        handle.file("/path")
+        handle.close()
     - move repository sync() code inside EntropyRepository? (makes sense)
     - entropy.fetchers API docs
     - entropy.server API docs
