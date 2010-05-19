@@ -7879,7 +7879,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             hash_str = self.__atomMatch_gen_hash_str(args)
             self.Cacher.push("%s/%s/%s_%s" % (
                 self.dbMatchCacheKey, self.dbname, ck_sum, hash(hash_str),),
-                kwargs.get('result')
+                kwargs.get('result'), async = False
             )
 
     def __atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
