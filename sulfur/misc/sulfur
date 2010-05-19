@@ -24,11 +24,12 @@ def setup_env():
     os.environ['PATH'] = pathenv
 
     de_session = os.getenv('DESKTOP_SESSION')
+    kde_session = os.getenv('KDE_FULL_SESSION')
     if de_session == None: de_session = ''
     path = os.getenv('PATH').split(":")
-    if de_session.lower().find("kde") != -1:
+    if (de_session.lower().find("kde") != -1) or kde_session:
         for item in path:
-            itempath = os.path.join(item,'kdesu')
+            itempath = os.path.join(item, 'kdesu')
             if os.access(itempath,os.X_OK):
                 su_cmd = itempath+' "'+sulfur_path+'"'
                 break
