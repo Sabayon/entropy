@@ -49,7 +49,7 @@ class EntropyCacher(Singleton):
     _OBJS_WRITTEN_AT_ONCE = 250
 
     # Number of seconds between cache writeback to disk
-    WRITEBACK_TIMEOUT = 2
+    WRITEBACK_TIMEOUT = 5
 
     """
     Entropy asynchronous and synchronous cache writer
