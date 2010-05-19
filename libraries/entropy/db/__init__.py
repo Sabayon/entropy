@@ -6393,7 +6393,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.live_cache[live_cache_id] = True
 
         # use sqlite3 pragma
-        cur = self._cursor().execute("PRAGMA quick_check")
+        cur = self._cursor().execute("PRAGMA quick_check(1)")
         try:
             check_data = cur.fetchone()[0]
             if check_data != "ok":
