@@ -50,7 +50,7 @@ from entropy.exceptions import InvalidAtom, \
 from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
-from entropy.cache import EntropyCacher
+from entropy.cache import EntropyCacher, MtimePingus
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.plugin_store import EntropyRepositoryPluginStore
@@ -6393,14 +6393,21 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.live_cache[live_cache_id] = True
 
         # use sqlite3 pragma
-        cur = self._cursor().execute("PRAGMA quick_check(1)")
-        try:
-            check_data = cur.fetchone()[0]
-            if check_data != "ok":
-                raise ValueError()
-        except (IndexError, ValueError, TypeError,):
-            mytxt = "sqlite3 reports database being corrupted"
-            raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
+        pingus = MtimePingus()
+        # since quick_check is slow, run it every 72 hours
+        action_str = "EntropyRepository.validateDatabase(%s)" % (
+            self.dbname,)
+        passed = pingus.hours_passed(action_str, 72)
+        if passed:
+            cur = self._cursor().execute("PRAGMA quick_check(1)")
+            try:
+                check_data = cur.fetchone()[0]
+                if check_data != "ok":
+                    raise ValueError()
+            except (IndexError, ValueError, TypeError,):
+                mytxt = "sqlite3 reports database being corrupted"
+                raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
+            pingus.ping(action_str)
 
         self._cursor().execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = (?) AND name = (?)
