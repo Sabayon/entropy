@@ -187,7 +187,12 @@ class EntropyPackage:
     def get_name(self):
         if self.pkgset:
             return self.matched_atom
-        return self.dbconn.retrieveAtom(self.matched_id)
+        cached = self.__cache.get('get_name')
+        if cached:
+            return cached
+        cached = self.dbconn.retrieveAtom(self.matched_id)
+        self.__cache['get_name'] = cached
+        return cached
 
     def is_masked(self):
 
@@ -430,7 +435,12 @@ class EntropyPackage:
     def get_category(self):
         if self.pkgset:
             return self.cat
-        return self.dbconn.retrieveCategory(self.matched_id)
+        cached = self.__cache.get('get_category')
+        if cached:
+            return cached
+        cached = self.dbconn.retrieveCategory(self.matched_id)
+        self.__cache['get_category'] = cached
+        return cached
 
     def get_api(self):
         if self.pkgset:
