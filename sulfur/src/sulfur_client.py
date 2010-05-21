@@ -94,12 +94,16 @@ try:
 except gobject.GError:
     pass
 
-MAIN_APP = SulfurApplication()
-MAIN_APP.init()
-gobject.threads_init()
-gtk.gdk.threads_enter()
-gtk.main()
-gtk.gdk.threads_leave()
-kill_threads()
-MAIN_APP.quit()
-raise SystemExit(0)
+def startup():
+    MAIN_APP = SulfurApplication()
+    MAIN_APP.init()
+    gobject.threads_init()
+    gtk.gdk.threads_enter()
+    gtk.main()
+    gtk.gdk.threads_leave()
+    kill_threads()
+    MAIN_APP.quit()
+
+if __name__ == "__main__":
+    startup()
+    raise SystemExit(0)
