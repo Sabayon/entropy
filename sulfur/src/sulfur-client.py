@@ -78,7 +78,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     my.show(errmsg = t_back, exc_data = exc_data)
     kill_threads()
     if MAIN_APP is not None:
-        MAIN_APP.quit(sysexit = False)
+        MAIN_APP.quit(sysexit = -1)
     raise SystemExit(1)
 
 def install_exception_handler():
