@@ -135,7 +135,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             do_kill(pid)
 
         if hasattr(self, '_entropy'):
-            self._entropy.destroy()
+            self._entropy.shutdown()
 
         if sysexit != -1:
             self.exit_now()
@@ -281,7 +281,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.lastPkgPB = "updates"
         self._entropy.connect_to_gui(self)
         self.setup_editor()
-
         self.switch_notebook_page("packages")
 
         # setup Repositories
@@ -1621,8 +1620,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def set_status_ticker( self, text ):
         ''' Write Message to Statusbar'''
-        context_id = self.ui.status.get_context_id( "Status" )
-        self.ui.status.push( context_id, text )
+        def do_set(text):
+            context_id = self.ui.status.get_context_id( "Status" )
+            self.ui.status.push( context_id, text )
+            return False
+        gobject.timeout_add(0, do_set, text)
 
     def progress_log(self, msg, extra = None):
         self.progress.set_subLabel( msg )
