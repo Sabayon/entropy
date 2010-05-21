@@ -3253,9 +3253,6 @@ class LicenseDialog:
 
 class ExceptionDialog:
 
-    def __init__(self):
-        pass
-
     def show(self, errmsg = None, exc_data = None):
 
         if errmsg is None:
@@ -3288,4 +3285,3 @@ class ExceptionDialog:
                 okDialog(None, _("Your report has been submitted successfully! Thanks a lot."))
             else:
                 okDialog(None, _("Cannot submit your report. Not connected to Internet?"))
-        raise SystemExit(1)
