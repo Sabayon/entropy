@@ -19,7 +19,6 @@
 """
 import os
 import sys
-from threading import RLock
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
@@ -66,7 +65,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__data = {}
         self.__is_destroyed = False
         self.__inside_with_stmt = 0
-        self.__mutex = RLock() # reentrant lock on purpose
 
         self.__external_plugins = {}
         self.__setting_files_order = []
@@ -110,8 +108,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-        with self.__mutex:
-            self.__is_destroyed = True
+        self.__is_destroyed = True
 
     def add_plugin(self, system_settings_plugin_instance):
         """
@@ -132,10 +129,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         if not isinstance(inst, SystemSettingsPlugin):
             raise AttributeError("SystemSettings: expected valid " + \
                     "SystemSettingsPlugin instance")
-        with self.__mutex:
-            EntropyPluginStore.add_plugin(self, inst.get_id(), inst)
-            if self.__inside_with_stmt == 0:
-                self.clear()
+        EntropyPluginStore.add_plugin(self, inst.get_id(), inst)
+        if self.__inside_with_stmt == 0:
+            self.clear()
 
     def remove_plugin(self, plugin_id):
         """
@@ -150,9 +146,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-        with self.__mutex:
-            EntropyPluginStore.remove_plugin(self, plugin_id)
-            self.clear()
+        EntropyPluginStore.remove_plugin(self, plugin_id)
+        self.clear()
 
     def __setup_const(self):
 
@@ -256,137 +251,118 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            # backup here too
-            if mykey in self.__persistent_settings:
-                self.__persistent_settings[mykey] = myvalue
-            self.__data[mykey] = myvalue
+        # backup here too
+        if mykey in self.__persistent_settings:
+            self.__persistent_settings[mykey] = myvalue
+        self.__data[mykey] = myvalue
 
     def __getitem__(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data[mykey]
+        return self.__data[mykey]
 
     def __delitem__(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            del self.__data[mykey]
+        del self.__data[mykey]
 
     def __iter__(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return iter(self.__data)
+        return iter(self.__data)
 
     def __contains__(self, item):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return item in self.__data
+        return item in self.__data
 
     def __hash__(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return hash(self.__data)
+        return hash(self.__data)
 
     def __len__(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return len(self.__data)
+        return len(self.__data)
 
     def get(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.get(*args, **kwargs)
+        return self.__data.get(*args, **kwargs)
 
     def copy(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.copy()
+        return self.__data.copy()
 
     def fromkeys(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.fromkeys(*args, **kwargs)
+        return self.__data.fromkeys(*args, **kwargs)
 
     def items(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.items()
+        return self.__data.items()
 
     def iteritems(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.iteritems()
+        return self.__data.iteritems()
 
     def iterkeys(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.iterkeys()
+        return self.__data.iterkeys()
 
     def keys(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.keys()
+        return self.__data.keys()
 
     def pop(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.pop(*args, **kwargs)
+        return self.__data.pop(*args, **kwargs)
 
     def popitem(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.popitem()
+        return self.__data.popitem()
 
     def setdefault(self, *args, **kwargs):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.setdefault(*args, **kwargs)
+        return self.__data.setdefault(*args, **kwargs)
 
     def update(self, kwargs):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.update(kwargs)
+        return self.__data.update(kwargs)
 
     def values(self):
         """
         dict method. See Python dict API reference.
         """
-        with self.__mutex:
-            return self.__data.values()
+        return self.__data.values()
 
     def clear(self):
         """
@@ -395,10 +371,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         @return None
         """
-        with self.__mutex:
-            self.__data.clear()
-            self.__setup_const()
-            self.__scan()
+        self.__data.clear()
+        self.__setup_const()
+        self.__scan()
 
     def set_persistent_setting(self, persistent_dict):
         """
@@ -411,8 +386,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-        with self.__mutex:
-            self.__persistent_settings.update(persistent_dict)
+        self.__persistent_settings.update(persistent_dict)
 
     def unset_persistent_setting(self, persistent_key):
         """
@@ -424,9 +398,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-        with self.__mutex:
-            del self.__persistent_settings[persistent_key]
-            del self.__data[persistent_key]
+        del self.__persistent_settings[persistent_key]
+        del self.__data[persistent_key]
 
     def __setup_package_sets_vars(self):
 
@@ -496,8 +469,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: dict __setting_files
         @rtype: dict
         """
-        with self.__mutex:
-            return self.__setting_files.copy()
+        return self.__setting_files.copy()
 
     def _keywords_parser(self):
         """
