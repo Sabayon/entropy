@@ -98,3 +98,10 @@ class LoadersMixin:
         Return SystemSettings instance
         """
         return self._settings
+
+    def Cacher(self):
+        """
+        Return EntropyCacher instance
+        """
+        return self._cacher
+
