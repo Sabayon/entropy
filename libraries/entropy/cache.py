@@ -100,8 +100,22 @@ class EntropyCacher(Singleton):
         self.__alive = False
         self.__cache_writer = None
         self.__cache_buffer = Lifo()
+        self.__stashing_cache = {}
+        self.__inside_with_stmt = 0
         self.__proc_pids = set()
         self.__proc_pids_lock = threading.Lock()
+
+    def __enter__(self):
+        """
+        When used with the with statement, pause cacher on-disk writes.
+        """
+        self.__inside_with_stmt += 1
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        When used with the with statement, pause cacher on-disk writes.
+        """
+        self.__inside_with_stmt -= 1
 
     def __copy_obj(self, obj):
         """
@@ -151,6 +165,13 @@ class EntropyCacher(Singleton):
         thread-safe. It just loops over and over until
         __alive becomes False.
         """
+        try:
+            if self.__inside_with_stmt != 0:
+                return
+        except AttributeError:
+            # interpreter shutdown
+            pass
+
         # make sure our set delay is respected
         try:
             self.__cache_writer.set_delay(EntropyCacher.WRITEBACK_TIMEOUT)
@@ -208,6 +229,11 @@ class EntropyCacher(Singleton):
                     except OSError as err:
                         if err.errno != 10:
                             raise
+                for (key, cache_dir), data in massive_data:
+                    try:
+                        del self.__stashing_cache[(key, cache_dir)]
+                    except (AttributeError, KeyError,):
+                        continue
                 del massive_data[:]
                 del massive_data
 
@@ -302,8 +328,9 @@ class EntropyCacher(Singleton):
 
         if async:
             try:
-                self.__cache_buffer.push(((key, cache_dir,),
-                    self.__copy_obj(data),))
+                obj_copy = self.__copy_obj(data)
+                self.__cache_buffer.push(((key, cache_dir,), obj_copy,))
+                self.__stashing_cache[(key, cache_dir)] = obj_copy
             except TypeError:
                 # sometimes, very rarely, copy.deepcopy() is unable
                 # to properly copy an object (blame Python bug)
@@ -336,6 +363,11 @@ class EntropyCacher(Singleton):
         """
         if cache_dir is None:
             cache_dir = entropy.dump.D_DIR
+
+        # object is being saved on disk, it's in RAM atm
+        ram_obj = self.__stashing_cache.get((key, cache_dir))
+        if ram_obj is not None:
+            return ram_obj
 
         l_o = entropy.dump.loadobj
         if not l_o:
