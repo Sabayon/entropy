@@ -99,7 +99,7 @@ class Magneto(MagnetoCore):
             return
 
         def _do_check():
-            self.send_check_updates_signal()
+            self.send_check_updates_signal(startup_check=True)
             return False
 
         if self._dbus_service_available:

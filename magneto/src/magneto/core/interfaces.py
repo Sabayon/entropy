@@ -293,7 +293,7 @@ class MagnetoCore(MagnetoCoreUI):
                 self._entropy_dbus_object, dbus_interface="org.entropy.Client")
             iface.client_ping()
 
-    def send_check_updates_signal(self, widget=None):
+    def send_check_updates_signal(self, widget=None, startup_check=False):
 
         # enable applet if disabled
         skip_tc = False
@@ -311,7 +311,10 @@ class MagnetoCore(MagnetoCoreUI):
         if self._dbus_service_available:
             iface = dbus.Interface(
                 self._entropy_dbus_object, dbus_interface="org.entropy.Client")
-            iface.trigger_check()
+            if startup_check:
+                iface.trigger_check()
+            else:
+                iface.trigger_startup_check()
             self.manual_check_triggered = True
 
     def set_state(self, new_state, use_busy_icon = 0):
