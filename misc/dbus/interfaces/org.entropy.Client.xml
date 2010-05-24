@@ -4,6 +4,7 @@
      <method name="notifier"/>
      <method name="get_repo_status"/>
      <method name="trigger_check"/>
+     <method name="trigger_startup_check"/>
      <method name="get_updates"/>
      <method name="get_updates_atoms"/>
      <method name="is_system_changed"/>

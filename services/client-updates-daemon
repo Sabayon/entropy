@@ -154,6 +154,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__quit_service_wd = None
         self.__quit_service_trigger = False
         self.__trigger_oncall_updater = False
+        self.__trigger_startup_check = False
         self.__fetch_mutex = Lock()
         self.__updates = []
         self.__updates_atoms = None
@@ -180,7 +181,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__updater = gobject.timeout_add(
             CHECK_DELAY_SECS*1000, self.run_fetcher)
         self.__oncall_updater = gobject.timeout_add(
-            1000, self.run_oncall_fetcher)
+            3000, self.run_oncall_fetcher)
         self.__quit_service_wd = gobject.timeout_add(
             60*1000, self.quit_service_watchdog)
         self.__system_changes_checker = gobject.timeout_add(
@@ -260,8 +261,9 @@ class UpdatesDaemon(dbus.service.Object):
 
     def quit_service_watchdog(self):
         if self.__quit_service_trigger:
-            self.__alive = False
+            self.stop()
             with self.__is_working_mutex:
+                entropy.tools.kill_threads()
                 raise SystemExit(0)
         return self.__alive
 
@@ -375,14 +377,21 @@ class UpdatesDaemon(dbus.service.Object):
                         urgency = 'critical'
                     )
 
-                    gobject.timeout_add(0, self.signal_updating)
-                    repos = repos_to_up.keys()
-                    rc_fetch = self.__run_sync(repos, entropy)
-                    if rc_fetch != 0:
-                        return rc_fetch
-                    if DAEMON_DEBUG:
-                        write_output("__run_fetcher: sync closed, rc: %s" % (
-                            rc_fetch,))
+                    if not self.__trigger_startup_check:
+                        gobject.timeout_add(0, self.signal_updating)
+                        repos = repos_to_up.keys()
+                        rc_fetch = self.__run_sync(repos, entropy)
+                        if rc_fetch != 0:
+                            return rc_fetch
+                        if DAEMON_DEBUG:
+                            write_output("__run_fetcher: sync closed, rc: %s" % (
+                                rc_fetch,))
+                    else:
+                        self.__trigger_startup_check = False
+                        if DAEMON_DEBUG:
+                            write_output("__run_fetcher: not syncing atm, "
+                                "trigger startup check is ON, waiting next "
+                                "round, repos: %s" % (repos_to_up,))
 
                 try:
                     update, remove, fine, spm_fine = \
@@ -479,6 +488,12 @@ class UpdatesDaemon(dbus.service.Object):
         out_signature = '')
     def trigger_check(self):
         self.__trigger_oncall_updater = True
+
+    @dbus.service.method ( "org.entropy.Client", in_signature = '',
+        out_signature = '')
+    def trigger_startup_check(self):
+        self.__trigger_oncall_updater = True
+        self.__trigger_startup_check = True
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'av')
