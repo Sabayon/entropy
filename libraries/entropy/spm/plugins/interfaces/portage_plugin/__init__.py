@@ -1514,7 +1514,12 @@ class PortagePlugin(SpmPlugin):
             for pkg_set in builtin_pkg_sets:
                 mysets.pop(pkg_set)
 
-        return dict((x, y.getAtoms(),) for x, y in list(mysets.items()))
+        set_data = {}
+        for k, obj in mysets.items():
+            pset = obj.getAtoms()
+            pset |= obj.getNonAtoms()
+            set_data[k] = pset
+        return set_data
 
     def convert_from_entropy_package_name(self, entropy_package_name):
         """
