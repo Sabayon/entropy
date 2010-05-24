@@ -1,3 +1,128 @@
+commit e8d7db127c5dc5c5908a252a12bc880bea85ed1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 24 11:34:44 2010 +0200
+
+    [magneto] call trigger_startup_check() on startup instead of trigger_check()
+
+commit 0a0cc78a5adb527785e27ab38f4ce5627ecfdb74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 24 11:32:55 2010 +0200
+
+    [client-updates-daemon] add new method "trigger_startup_check"
+    
+    It tells the daemon to not update repos but just return the updates list
+
+commit 8fcea39441b2af0634cc4e2dcdc10bdcbbb92a52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 23 16:00:03 2010 +0200
+
+    [entropy.client.interfaces.loaders] add Cacher() method, returning EntropyCacher instance used by Entropy Client
+
+commit e51061cd5de00f7c6f9522453134312e9ba9aa7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 23 15:55:41 2010 +0200
+
+    [entropy.cache] add with statement support to EntropyCacher (to pause caching writes to disk)
+
+commit 3948ecf615b93203346eb6c682ecab63468ccf3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 22 16:33:17 2010 +0200
+
+    [entropy.core.settings.base] remove expensive thread-safety from SystemSettings
+
+commit 53771231f2cfbc4d2db67e2b0999f504a0ec9e98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 21 22:06:18 2010 +0200
+
+    [sulfur] minor code updates
+
+commit cd273b69baf8ba4bfb04597e951dac177b66af5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 21 22:05:38 2010 +0200
+
+    [sulfur] EntropyPackage: add more caching
+
+commit 401bed0b9cf5009de0add1f1f48e12cbb27c76ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 21 20:35:26 2010 +0200
+
+    [sulfur] rename sulfur-client to sulfur_client
+
+commit 7bb31da3cbfc97a298661e0668f2f2caf8abbe4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 21 20:04:52 2010 +0200
+
+    [sulfur] make ExceptionDialog not freeze UI on exit
+
+commit 3bb640b03e617a24c541d9f8c9f9764a6cfb73ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 21 20:04:19 2010 +0200
+
+    [sulfur] fix SulfurApplication.quit()
+
+commit 0a172501e640c4840bf256f46ba0bbcdbba22761
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 19 16:25:18 2010 +0200
+
+    [sulfur] fix KDE detection (properly use kdesu when in KDE)
+
+commit a031e74ff44e899849ec58b1595a0563e9e4a036
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 19 14:44:10 2010 +0200
+
+    [entropy.db] EntropyRepository.validateDatabase: execute quick_check only every 72 hours
+
+commit b8036a79cdfc319e00541e2cde3da3643436a008
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 19 14:36:23 2010 +0200
+
+    [entropy.db] EntropyRepository.validateDatabase: call quick_check(1)
+
+commit f45c11ae1bc184411a42263993c6aa1e335ecc8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 19 08:33:37 2010 +0200
+
+    [entropy.db] EntropyRepository.atomMatch: write cache synchronously
+
+commit 63af402439a64dd7b912eb221cd0328ee981a768
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 19 08:33:11 2010 +0200
+
+    [entropy.cache] increase EntropyCacher writeback timeout
+
+commit bdcd37772da2d44a104509736ad0502d83607afb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 18 20:10:02 2010 +0200
+
+    [equo] add new tool "equo query associate"
+    
+    Given a file path (or multiple file paths) search applications able
+    to read mimetype belonging to it
+
+commit 96b4f234689ff23638d1692afc40f44ec6b937b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 18 10:40:52 2010 +0200
+
+    [todo] update TODO
+
+commit 5c198a742a56868975b48f22be4a171945a49113
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 16 15:50:58 2010 +0200
+
+    [entropy.core] update docstrings
+
+commit e9e77c543a6411a214103760a851bf65fed9a748
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 16 15:17:53 2010 +0200
+
+    [Makefile] cleanup Makefile, remove unused targets
+
+commit f570aa52f1163ed00ebf18d1ddce752408fae584
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 15 02:53:56 2010 +0200
+
+    Tagging Entropy version 0.99.46.3
+
 commit bf678e1441c28002611b85be93814088fb7d8c6e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat May 15 02:53:37 2010 +0200
