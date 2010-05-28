@@ -1529,6 +1529,12 @@ class Package:
 
             pkg_dbconn.closeDB()
 
+        # fix removecontent, need to check if we just installed files
+        # that resolves at the same directory path (different symlink)
+        my_remove_content = self.__filter_out_files_installed_on_diff_path(
+            self.pkgmeta['removecontent'], self.pkgmeta['__items_installed'])
+        self.pkgmeta['removecontent'] -= my_remove_content
+
         # filter out files not installed from content metadata
         self.__filter_out_items_not_installed_from_content(data)
 
@@ -1682,6 +1688,10 @@ class Package:
 
         return sorted(config_protect)
 
+    def __get_sys_root(self):
+        return self.pkgmeta.get('unittest_root', '') + \
+            etpConst['systemroot']
+
     def _move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
@@ -1689,8 +1699,7 @@ class Package:
         mask = self.__get_package_match_config_protect(mask = True)
 
         # support for unit testing settings
-        sys_root = self.pkgmeta.get('unittest_root', '') + \
-            etpConst['systemroot']
+        sys_root = self.__get_sys_root()
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self._settings[sys_set_plg_id]['misc']
@@ -2081,23 +2090,39 @@ class Package:
         # EntropyRepository.contentDiff for obvious reasons
         # (think about stuff in /usr/lib and /usr/lib64,
         # where the latter is just a symlink to the former)
+        self.pkgmeta['__items_installed'] = items_installed
         if self.pkgmeta.get('removecontent'):
-            my_remove_content = set()
-            for mypath in self.pkgmeta['removecontent']:
-
-                if not mypath:
-                    continue # empty?
-
-                item_dir = os.path.dirname("%s%s" % (sys_root, mypath,))
-                item = os.path.join(os.path.realpath(item_dir),
-                    os.path.basename(mypath))
-
-                if item in items_installed:
-                    my_remove_content.add(item)
-
+            my_remove_content = self.__filter_out_files_installed_on_diff_path(
+                self.pkgmeta['removecontent'],
+                self.pkgmeta['__items_installed'])
             self.pkgmeta['removecontent'] -= my_remove_content
 
         return 0
+
+    def __filter_out_files_installed_on_diff_path(self, remove_content,
+        installed_content):
+        """
+        Use case: if a package provided files in /lib then, a new version
+        of that package moved the same files under /lib64, we need to check
+        if both directory paths solve to the same inode and if so, add to our
+        set that we're going to return.
+        """
+        sys_root = self.__get_sys_root()
+        my_remove_content = set()
+        for mypath in remove_content:
+
+            if not mypath:
+                continue # empty?
+
+            item_dir = os.path.dirname("%s%s" % (sys_root, mypath,))
+            item = os.path.join(os.path.realpath(item_dir),
+                os.path.basename(mypath))
+
+            if item in installed_content:
+                my_remove_content.add(item)
+                my_remove_content.add(mypath)
+
+        return my_remove_content
 
     def __allocate_masked_file(self, maskfile, fromfile):
 
