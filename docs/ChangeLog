@@ -1,3 +1,19 @@
+commit b1db741e8a10bb38d10dde7538616bdeec42f03b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 28 19:54:36 2010 +0200
+
+    [entropy.client.interfaces.package] fix critical bug on pkg update
+    
+    Files just installed were removed due to being added to a different
+    symlinked path. Use os.path.realpath to determine if two paths
+    point to the same file object.
+
+commit 54de3756901d185eb5dfe343f881023ab31a62d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 28 11:51:31 2010 +0200
+
+    Tagging Entropy version 0.99.46.5
+
 commit c8ec61377effcaee452d5af87cff151378e6aa60
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri May 28 11:50:26 2010 +0200
