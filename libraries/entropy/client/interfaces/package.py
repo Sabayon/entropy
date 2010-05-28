@@ -1568,9 +1568,6 @@ class Package:
         ctime = time.time()
         inst_repo.setCreationDate(idpackage, str(ctime))
 
-        # TODO: remove this in future, drop changelog table
-        inst_repo.dropChangelog()
-
         # add idpk to the installedtable
         inst_repo.dropInstalledPackageFromStore(idpackage)
         inst_repo.storeInstalledPackage(idpackage,
