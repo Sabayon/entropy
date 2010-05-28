@@ -11,6 +11,7 @@
 """
 import os
 import bz2
+import shlex
 import sys
 import shutil
 import stat
@@ -810,6 +811,27 @@ class PortagePlugin(SpmPlugin):
         if defaults:
             return defaults[0]
 
+    def __source_env_get_var(self, env_file, env_var):
+        bash_exec = ""
+        cmd = "/bin/bash -c \"source " + env_file + \
+            " && echo ${" + env_var + "}\""
+        tmp_fd, tmp_file = tempfile.mkstemp()
+        os.close(tmp_fd)
+        std_f = open(tmp_file, "w")
+
+        proc = subprocess.Popen(shlex.split(cmd), stdout = std_f, stderr = std_f)
+        sts = proc.wait()
+        std_f.flush()
+        std_f.close()
+
+        std_f = open(tmp_file, "r")
+        output = std_f.read()
+        std_f.close()
+        if sts != 0:
+            raise IOError("cannot source %s and get %s => %s" % (env_file,
+                env_var, repr(output)))
+        return output.strip()
+
     def extract_package_metadata(self, package_file, license_callback = None,
         restricted_callback = None):
         """
@@ -875,6 +897,13 @@ class PortagePlugin(SpmPlugin):
 
         if not data['spm_repository']: # make sure it's set to None
             data['spm_repository'] = None
+
+        if not data['sources']:
+            env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
+            uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
+            # unfortunately upstream dropped SRC_URI file support
+            data['sources'] = self.__source_env_get_var(uncompressed_env_file,
+                "SRC_URI")
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
@@ -4005,7 +4034,7 @@ class PortagePlugin(SpmPlugin):
             },
             'sources': {
                 'path': PortagePlugin.xpak_entries['src_uri'],
-                'critical': False,
+                'critical': False, # we deal with it afterwards
             },
             'eclasses': {
                 'path': PortagePlugin.xpak_entries['inherited'],
