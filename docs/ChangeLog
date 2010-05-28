@@ -1,3 +1,21 @@
+commit c8ec61377effcaee452d5af87cff151378e6aa60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 28 11:50:26 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix "sources" metadatum extraction (upstream dropped SRC_URI)
+
+commit 12d9260956122e44948d151aaff32610c47e63a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 24 21:33:27 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix get_package_sets(), include sets themselves
+
+commit 98e315378e001689fb3eec44e1dae2d624273a8a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 24 11:35:47 2010 +0200
+
+    Tagging Entropy version 0.99.46.4
+
 commit e8d7db127c5dc5c5908a252a12bc880bea85ed1d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 24 11:34:44 2010 +0200
