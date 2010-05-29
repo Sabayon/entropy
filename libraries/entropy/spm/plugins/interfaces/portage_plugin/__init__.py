@@ -1736,6 +1736,9 @@ class PortagePlugin(SpmPlugin):
         # if some other hook fails for other reasons, it's because
         # it may miss env variable here.
         mysettings['LICENSE'] = str(' '.join(licenses))
+        old_accept_license = os.environ.get('ACCEPT_LICENSE', "")
+        os.environ['ACCEPT_LICENSE'] = mysettings['LICENSE']
+
         if licenses:
             # we already do this early
             mysettings["ACCEPT_LICENSE"] = mysettings['LICENSE']
@@ -1852,6 +1855,8 @@ class PortagePlugin(SpmPlugin):
             # for security !
             mysettings["PORTDIR"] = old_portdir
             mysettings.backup_changes("PORTDIR")
+            # set ACCEPT_LICENSE back
+            os.environ['ACCEPT_LICENSE'] = old_accept_license
 
             del mydbapi
             del metadata
