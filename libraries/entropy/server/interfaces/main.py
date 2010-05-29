@@ -4828,6 +4828,9 @@ class ServerMiscMixin:
             for setname in sets_data:
                 good = True
                 for atom in sets_data[setname]:
+                    if atom.startswith(etpConst['packagesetprefix']):
+                        # ignore nested package sets
+                        continue
                     dbconn = self.open_server_repository(just_reading = True,
                         repo = repo)
                     match = dbconn.atomMatch(atom)
