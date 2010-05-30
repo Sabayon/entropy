@@ -1,3 +1,39 @@
+commit eedeff78fe473de3e9741154d4df9b91c85f2363
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 30 08:15:39 2010 +0200
+
+    [entropy.spm] PortagePlugin._portage_doebuild: cleanup unneeded license settings tweaks (thanks to zmedico)
+
+commit 38eb28e455f529bb92f290d9868b9581d6b59ebc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 30 08:01:47 2010 +0200
+
+    [entropy.spm] PortagePlugin._portage_doebuild: tweak portage.settings._accept_license to disable any interactive license check
+
+commit 1f59619da57e357fc02ecdc63b91428fc1bca036
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 29 22:29:50 2010 +0200
+
+    [entropy.spm] PortagePlugin: _portage_doebuild, set ACCEPT_LICENSE in environment
+
+commit f15dd69ed327f7e9cdd258a372b5e4504891e784
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 29 03:06:41 2010 +0200
+
+    [entropy.server] when collecting valid system package sets, ignore nested sets
+
+commit d1712ff39c217e33673503917e5a38136d6dc8a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 28 19:56:48 2010 +0200
+
+    [entropy.client.interfaces.package] remove deprecated dropChangelog call
+
+commit 0d06fade5ff0fd9c32bbf1e7d1d87c9196d46bc9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 28 19:56:30 2010 +0200
+
+    Tagging Entropy version 0.99.46.7
+
 commit b1db741e8a10bb38d10dde7538616bdeec42f03b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri May 28 19:54:36 2010 +0200
