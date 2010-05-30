@@ -1730,23 +1730,10 @@ class PortagePlugin(SpmPlugin):
         mysettings['EBUILD_PHASE'] = mydo
         mysettings['EMERGE_FROM'] = "binary"
 
-        # crappy, broken, ebuilds, put accept_license eutils call
-        # in pkg_setup, when environment variables are not setup yet
-        # WARNING WARNING WARNING:
-        # if some other hook fails for other reasons, it's because
-        # it may miss env variable here.
-        mysettings['LICENSE'] = str(' '.join(licenses))
-        old_accept_license = os.environ.get('ACCEPT_LICENSE', "")
-        os.environ['ACCEPT_LICENSE'] = mysettings['LICENSE']
-        if hasattr(mysettings, '_accept_license'):
-            old_settings_accept_license = mysettings._accept_license[:]
-            if mysettings['LICENSE'] not in mysettings._accept_license:
-                mysettings._accept_license += (mysettings['LICENSE'],)
-
-        if licenses:
-            # we already do this early
-            mysettings["ACCEPT_LICENSE"] = mysettings['LICENSE']
-            mysettings.backup_changes("ACCEPT_LICENSE")
+        # we already do this early
+        mysettings["ACCEPT_LICENSE"] = str(' '.join(licenses))
+        mysettings.backup_changes("ACCEPT_LICENSE")
+        mysettings.regenerate()
 
         mysettings['EAPI'] = "0"
         if 'EAPI' in metadata:
@@ -1859,10 +1846,6 @@ class PortagePlugin(SpmPlugin):
             # for security !
             mysettings["PORTDIR"] = old_portdir
             mysettings.backup_changes("PORTDIR")
-            # set ACCEPT_LICENSE back
-            os.environ['ACCEPT_LICENSE'] = old_accept_license
-            if hasattr(mysettings, '_accept_license'):
-                mysettings._accept_license = old_settings_accept_license
 
             del mydbapi
             del metadata
