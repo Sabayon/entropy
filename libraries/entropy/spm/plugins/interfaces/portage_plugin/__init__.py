@@ -1744,7 +1744,6 @@ class PortagePlugin(SpmPlugin):
         mysettings['CD_ROOT'] = "/tmp"
 
         mysettings.backup_changes("EAPI")
-        mysettings.backup_changes("LICENSE")
         mysettings.backup_changes("EBUILD_PHASE")
         mysettings.backup_changes("EMERGE_FROM")
         mysettings.backup_changes("ROOT")
