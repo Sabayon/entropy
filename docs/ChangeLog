@@ -1,3 +1,15 @@
+commit 1ab58e12b18d8732662a6760c64c39faf75484a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 30 08:24:25 2010 +0200
+
+    [entropy.spm] PortagePlugin._portage_doebuild: remove unwanted backup_changes()
+
+commit 62bd7ff91c100d1fa858fd145198da31ef6d38af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 30 08:22:54 2010 +0200
+
+    Tagging Entropy version 0.99.46.8
+
 commit eedeff78fe473de3e9741154d4df9b91c85f2363
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun May 30 08:15:39 2010 +0200
