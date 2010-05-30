@@ -1738,6 +1738,10 @@ class PortagePlugin(SpmPlugin):
         mysettings['LICENSE'] = str(' '.join(licenses))
         old_accept_license = os.environ.get('ACCEPT_LICENSE', "")
         os.environ['ACCEPT_LICENSE'] = mysettings['LICENSE']
+        if hasattr(mysettings, '_accept_license'):
+            old_settings_accept_license = mysettings._accept_license[:]
+            if mysettings['LICENSE'] not in mysettings._accept_license:
+                mysettings._accept_license += (mysettings['LICENSE'],)
 
         if licenses:
             # we already do this early
@@ -1760,13 +1764,13 @@ class PortagePlugin(SpmPlugin):
         mysettings.backup_changes("CD_ROOT")
 
         try: # this is a >portage-2.1.4_rc11 feature
-            mysettings._environ_whitelist = set(mysettings._environ_whitelist)
+            env_wl = set(mysettings._environ_whitelist)
             # put our vars into whitelist
-            mysettings._environ_whitelist.add("SKIP_EQUO_SYNC")
-            mysettings._environ_whitelist.add("ACCEPT_LICENSE")
-            mysettings._environ_whitelist.add("CD_ROOT")
-            mysettings._environ_whitelist.add("ROOT")
-            mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
+            env_wl.add("SKIP_EQUO_SYNC")
+            env_wl.add("ACCEPT_LICENSE")
+            env_wl.add("CD_ROOT")
+            env_wl.add("ROOT")
+            mysettings._environ_whitelist = frozenset(env_wl)
         except (AttributeError,):
             self.log_message(entropy.tools.get_traceback())
 
@@ -1857,6 +1861,8 @@ class PortagePlugin(SpmPlugin):
             mysettings.backup_changes("PORTDIR")
             # set ACCEPT_LICENSE back
             os.environ['ACCEPT_LICENSE'] = old_accept_license
+            if hasattr(mysettings, '_accept_license'):
+                mysettings._accept_license = old_settings_accept_license
 
             del mydbapi
             del metadata
