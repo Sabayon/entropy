@@ -1116,11 +1116,8 @@ class PortagePlugin(SpmPlugin):
         data['config_protect_mask'] = ' '.join(
             self.get_merge_protected_paths_mask())
 
-        log_dir = etpConst['logdir']+"/elog"
-        if not os.path.isdir(log_dir):
-            os.makedirs(log_dir)
-        data['messages'] = self._extract_pkg_metadata_messages(log_dir,
-            data['category'], data['name'], data['version'])
+        # kept for backward compatibility, remove in late 2011
+        data['messages'] = []
 
         # etpapi must be int, as returned by entropy.db.getPackageData
         data['etpapi'] = int(etpConst['etpapi'])
@@ -4175,31 +4172,6 @@ class PortagePlugin(SpmPlugin):
             provided_libs.add((obj_name, obj, elf_class,))
 
         return provided_libs
-
-    def _extract_pkg_metadata_messages(self, log_dir, category, name, version):
-
-        pkg_messages = []
-        if not os.path.isdir(log_dir):
-            return pkg_messages
-
-        elogfiles = os.listdir(log_dir)
-        myelogfile = "%s:%s-%s" % (category, name, version,)
-        foundfiles = [x for x in elogfiles if x.startswith(myelogfile)]
-        if foundfiles:
-            elogfile = foundfiles[0]
-            if len(foundfiles) > 1:
-                # get the latest
-                mtimes = []
-                for item in foundfiles: mtimes.append(
-                    (os.path.getmtime(os.path.join(log_dir, item)), item))
-                mtimes = sorted(mtimes)
-                elogfile = mtimes[-1][1]
-            messages = self._extract_elog(os.path.join(log_dir, elogfile))
-            for message in messages:
-                message = message.replace("emerge", "install")
-                pkg_messages.append(const_convert_to_unicode(message))
-
-        return pkg_messages
 
     def _extract_pkg_metadata_desktop_mime(self, pkg_dir, content):
 

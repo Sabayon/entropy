@@ -1485,7 +1485,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         else:
             self.insertProvide(idpackage, pkg_data['provide_extended'])
 
-        self.insertMessages(idpackage, pkg_data['messages'])
         self.insertConfigProtect(idpackage, idprotect)
         self.insertConfigProtect(idpackage, idprotect_mask, mask = True)
         # injected?
@@ -2408,19 +2407,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self._cursor().executemany("""
         INSERT into conflicts VALUES (?,?)
         """, [(idpackage, x,) for x in conflicts])
-
-    def insertMessages(self, idpackage, messages):
-        """
-        Insert user messages for package.
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param messages: list of messages
-        @type messages: list
-        """
-        self._cursor().executemany("""
-        INSERT into messages VALUES (?,?)
-        """, [(idpackage, x,) for x in messages])
 
     def insertProvide(self, idpackage, provides):
         """
