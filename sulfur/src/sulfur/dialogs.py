@@ -1301,7 +1301,6 @@ class PkgInfoMenu(MenuSkel):
                         self.pkginfo_ui.cflagsLabel,
                         self.pkginfo_ui.cxxflagsLabel,
                         self.pkginfo_ui.maskedLabel,
-                        self.pkginfo_ui.messagesLabel,
                         self.pkginfo_ui.triggerLabel,
                         self.pkginfo_ui.configProtectLabel,
                         self.pkginfo_ui.ugcTitleLabel,
@@ -1351,11 +1350,6 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
         self.pkginfo_ui.cxxflags.set_markup( "%s" % (cxxflags,) )
         self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
-        # messages
-        messages = pkg.messages
-        mbuffer = gtk.TextBuffer()
-        mbuffer.set_text('\n'.join(messages))
-        self.pkginfo_ui.messagesTextView.set_buffer(mbuffer)
         # masked ?
         masked = _("No")
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])

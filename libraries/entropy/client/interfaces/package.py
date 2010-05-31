@@ -2695,11 +2695,6 @@ class Package:
         # we don't care if cleanupPackage fails since it's not critical
         return 0
 
-    def _logmessages_step(self):
-        for msg in self.pkgmeta['messages']:
-            self._entropy.clientLog.write(">>>  "+msg)
-        return 0
-
     def _post_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
@@ -2930,9 +2925,6 @@ class Package:
             self._entropy.set_title(self._xterm_title)
             return self._remove_step()
 
-        def do_logmessages():
-            return self._logmessages_step()
-
         def do_cleanup():
             self._xterm_title += ' %s: %s' % (
                 _("Cleaning"),
@@ -2991,7 +2983,6 @@ class Package:
             "remove_conflicts": do_remove_conflicts,
             "install": do_install,
             "remove": do_remove,
-            "logmessages": do_logmessages,
             "cleanup": do_cleanup,
             "postinstall": do_postinstall,
             "preinstall": do_preinstall,
@@ -3230,7 +3221,6 @@ class Package:
         self.pkgmeta['category'] = dbconn.retrieveCategory(idpackage)
         self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
         self.pkgmeta['name'] = dbconn.retrieveName(idpackage)
-        self.pkgmeta['messages'] = dbconn.retrieveMessages(idpackage)
         self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
         sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
         signatures = {
@@ -3365,7 +3355,6 @@ class Package:
         if (self.pkgmeta['removeidpackage'] != -1):
             self.pkgmeta['steps'].append("postremove")
         self.pkgmeta['steps'].append("postinstall")
-        self.pkgmeta['steps'].append("logmessages")
         self.pkgmeta['steps'].append("cleanup")
 
         self.pkgmeta['triggers']['install'] = dbconn.getTriggerInfo(idpackage)

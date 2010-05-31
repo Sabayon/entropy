@@ -498,11 +498,6 @@ class EntropyPackage:
             return ""
         return self.dbconn.retrieveHomepage(self.matched_id)
 
-    def get_messages(self):
-        if self.pkgset:
-            return []
-        return self.dbconn.retrieveMessages(self.matched_id)
-
     def get_key_slot(self):
         if self.pkgset:
             return self.set_name, "0"
@@ -705,7 +700,6 @@ class EntropyPackage:
     keywords = property(fget=get_keywords)
     useflags = property(fget=get_useflags)
     homepage = property(fget=get_homepage)
-    messages = property(fget=get_messages)
     protect = property(fget=get_config_protect)
     protect_mask = property(fget=get_config_protect_mask)
     trigger = property(fget=get_trigger)

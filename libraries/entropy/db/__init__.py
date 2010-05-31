@@ -3313,7 +3313,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'revision': revision,
             # risky to add to the sql above, still
             'counter': self.retrieveSpmUid(idpackage),
-            'messages': self.retrieveMessages(idpackage),
+            'messages': [],
             'trigger': self.retrieveTrigger(idpackage,
                 get_unicode = trigger_unicode),
             'disksize': self.retrieveOnDiskSize(idpackage),
@@ -3763,6 +3763,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def retrieveMessages(self, idpackage):
         """
+        @deprecated
+        FIXME: will be removed by 2010-12-31 (keeping 'messages' metadatum
+            in getPackageData)
         Return "messages" metadatum for given package identifier.
 
         @param idpackage: package indentifier
