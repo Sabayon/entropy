@@ -2295,7 +2295,9 @@ class Server(ServerNoticeBoardMixin):
                 level = "info",
                 header = red("    # ")
             )
-        for package, rel_pkg, size in download:
+        key_sorter = lambda (pkg, rel, size): rel
+
+        for package, rel_pkg, size in sorted(download, key = key_sorter):
             package = darkred(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self._entropy.output(
@@ -2309,7 +2311,7 @@ class Server(ServerNoticeBoardMixin):
                 level = "info",
                 header = red("    # ")
             )
-        for package, rel_pkg, size in copy:
+        for package, rel_pkg, size in sorted(copy, key = key_sorter):
             package = darkblue(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self._entropy.output(
@@ -2323,7 +2325,7 @@ class Server(ServerNoticeBoardMixin):
                 level = "info",
                 header = red("    # ")
             )
-        for package, rel_pkg, size in removal:
+        for package, rel_pkg, size in sorted(removal, key = key_sorter):
             package = brown(rel_pkg)
             size = blue(entropy.tools.bytes_into_human(size))
             self._entropy.output(
