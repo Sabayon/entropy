@@ -704,7 +704,7 @@ class Server(ServerNoticeBoardMixin):
 
                 dbconn = self._entropy.open_server_repository(read_only = True,
                     no_upload = True, repo = repo)
-                idpackage = dbconn.getIdpackageFromDownload(pkg_relative_path)
+                idpackage = dbconn.getPackageIdFromDownload(pkg_relative_path)
                 if idpackage == -1:
                     self._entropy.output(
                         "[repo:%s|%s|#%s] %s: %s %s" % (
@@ -1014,7 +1014,7 @@ class Server(ServerNoticeBoardMixin):
         f_out = opener(destination_path, "wb")
         dbconn = self._entropy.open_server_repository(db_path,
             just_reading = True, repo = repo, do_treeupdates = False)
-        dbconn.doDatabaseExport(f_out, exclude_tables = exclude_tables)
+        dbconn.exportRepository(f_out, exclude_tables = exclude_tables)
         self._entropy.close_repository(dbconn)
         f_out.close()
 
@@ -1579,7 +1579,7 @@ class Server(ServerNoticeBoardMixin):
         dbconn = self._entropy.open_server_repository(read_only = False,
             no_upload = True, repo = repo, indexing = False,
             do_treeupdates = False)
-        dbconn.doCleanups()
+        dbconn.clean()
         dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.vacuum()

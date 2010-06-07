@@ -100,16 +100,13 @@ class RepositoryMixin:
         # to avoid having zillions of open files when loading a lot of EquoInterfaces
         self.close_repositories(mask_clear = False)
 
-    def __get_repository_cache_key(self, repoid):
-        return (repoid, etpConst['systemroot'],)
-
     def _init_generic_temp_repository(self, repoid, description,
         package_mirrors = None, temp_file = None):
         if package_mirrors is None:
             package_mirrors = []
 
         dbc = self.open_temp_repository(dbname = repoid, temp_file = temp_file)
-        repo_key = self.__get_repository_cache_key(repoid)
+        repo_key = (repoid, etpConst['systemroot'],)
         self._memory_db_instances[repo_key] = dbc
 
         # add to self._settings['repositories']['available']
@@ -118,7 +115,7 @@ class RepositoryMixin:
             '__temporary__': True,
             'description': description,
             'packages': package_mirrors,
-            'dbpath': dbc.dbFile,
+            'dbpath': temp_file,
         }
         self.add_repository(repodata)
         return dbc
@@ -153,19 +150,16 @@ class RepositoryMixin:
         if repoid == etpConst['clientdbid']:
             return self._installed_repository
 
-        key = self.__get_repository_cache_key(repoid)
-        if key not in self._repodb_cache:
-            dbconn = self._load_repository_database(repoid,
-                xcache = self.xcache, indexing = self.indexing)
-            try:
-                dbconn.checkDatabaseApi()
-            except (OperationalError, TypeError,):
-                pass
+        key = (repoid, etpConst['systemroot'],)
+        cached = self._repodb_cache.get(key)
+        if cached is not None:
+            return cached
 
-            self._repodb_cache[key] = dbconn
-            return dbconn
+        dbconn = self._load_repository_database(repoid,
+            xcache = self.xcache, indexing = self.indexing)
 
-        return self._repodb_cache.get(key)
+        self._repodb_cache[key] = dbconn
+        return dbconn
 
     def _load_repository_database(self, repoid, xcache = True, indexing = True):
 
@@ -186,7 +180,7 @@ class RepositoryMixin:
             raise RepositoryError("RepositoryError: %s" % (t,))
 
         if repo_data[repoid].get('__temporary__'):
-            repo_key = self.__get_repository_cache_key(repoid)
+            repo_key = (repoid, etpConst['systemroot'],)
             conn = self._memory_db_instances.get(repo_key)
         else:
             dbfile = os.path.join(repo_data[repoid]['dbpath'],
@@ -318,7 +312,7 @@ class RepositoryMixin:
                 self.__save_repository_settings(repodata, remove = True)
             self._settings.clear()
 
-        repo_mem_key = self.__get_repository_cache_key(repoid)
+        repo_mem_key = (repoid, etpConst['systemroot'],)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
         if isinstance(mem_inst, EntropyRepository):
             mem_inst.closeDB()
@@ -515,7 +509,7 @@ class RepositoryMixin:
         # read all idpackages
         try:
             # all branches admitted from external files
-            myidpackages = mydbconn.listAllIdpackages()
+            myidpackages = mydbconn.listAllPackageIds()
         except (AttributeError, DatabaseError, IntegrityError,
             OperationalError,):
             return -2, atoms_contained
@@ -668,7 +662,7 @@ class RepositoryMixin:
             temporary = True
         )
         self._add_plugin_to_client_repository(dbc, dbname)
-        dbc.initializeDatabase()
+        dbc.initializeRepository()
         return dbc
 
     def backup_repository(self, dbpath, backup_dir = None, silent = False,
@@ -1265,7 +1259,7 @@ class MiscMixin:
         if not wl: # no whitelist available
             return True
 
-        keys = dbconn.retrieveLicensedataKeys(pkg_id)
+        keys = dbconn.retrieveLicenseDataKeys(pkg_id)
         keys = [x for x in keys if x not in wl]
         if keys:
             return False
@@ -1284,7 +1278,7 @@ class MiscMixin:
             if not wl:
                 continue
             try:
-                keys = dbconn.retrieveLicensedataKeys(pkg_id)
+                keys = dbconn.retrieveLicenseDataKeys(pkg_id)
             except OperationalError:
                 # it has to be fault-tolerant, cope with missing tables
                 continue
@@ -1405,7 +1399,7 @@ class MiscMixin:
         tmp_fd, tmp_path = tempfile.mkstemp()
         os.close(tmp_fd)
         dbconn = self.open_generic_repository(tmp_path)
-        dbconn.initializeDatabase()
+        dbconn.initializeRepository()
         dbconn.addPackage(data, revision = data['revision'])
         if treeupdates_actions != None:
             dbconn.bumpTreeUpdatesActions(treeupdates_actions)
@@ -1524,7 +1518,7 @@ class MatchMixin:
     def is_package_masked(self, package_match, live_check = True):
         m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
-        idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
+        idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
         if idpackage != -1:
             return False
         return True
@@ -1535,7 +1529,7 @@ class MatchMixin:
         if m_repo not in self._enabled_repos:
             return False
         dbconn = self.open_repository(m_repo)
-        idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
+        idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
         if idpackage != -1:
             return False
 
@@ -1552,7 +1546,7 @@ class MatchMixin:
         if m_repo not in self._enabled_repos:
             return False
         dbconn = self.open_repository(m_repo)
-        idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
+        idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
         if idpackage == -1:
             return False
 

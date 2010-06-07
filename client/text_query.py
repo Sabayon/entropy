@@ -670,7 +670,7 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
             found_atom = dbconn.retrieveAtom(result[0])
             if repoMasked:
-                idpackage_masked, idmasking_reason = dbconn.idpackageValidator(
+                idpackage_masked, idmasking_reason = dbconn.maskFilter(
                     result[0])
 
             searchResults = dbconn.retrieveReverseDependencies(result[0],
@@ -855,7 +855,7 @@ def search_orphaned_files(Equo = None):
     if Equo is None:
         Equo = EquoInterface()
 
-    if (not etpUi['quiet']):
+    if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Orphans Search"),)))
 
@@ -863,12 +863,7 @@ def search_orphaned_files(Equo = None):
 
     # start to list all files on the system:
     dirs = Equo.Settings()['system_dirs']
-    filepath = entropy.tools.get_random_temp_file()
-    if os.path.isfile(filepath):
-        os.remove(filepath)
-    tdbconn = Equo.open_generic_repository(filepath)
-    tdbconn.initializeDatabase()
-    tdbconn.dropAllIndexes()
+    file_data = set()
 
     import re
     reverse_symlink_map = Equo.Settings()['system_rev_symlinks']
@@ -886,7 +881,7 @@ def search_orphaned_files(Equo = None):
         except RuntimeError: # maximum recursion?
             continue
         for currentdir, subdirs, files in wd:
-            foundFiles = {}
+            found_files = set()
             for filename in files:
 
                 filename = os.path.join(currentdir, filename)
@@ -922,19 +917,16 @@ def search_orphaned_files(Equo = None):
                         back = True
                     )
                 try:
-                    foundFiles[const_convert_to_unicode(filename)] = \
-                        const_convert_to_unicode("obj")
+                    found_files.add(const_convert_to_unicode(filename))
                 except (UnicodeDecodeError, UnicodeEncodeError,) as e:
                     if etpUi['quiet']:
                         continue
                     print_generic("!!! error on", filename, "skipping:", repr(e))
 
-            if foundFiles:
-                tdbconn.insertContent(None, foundFiles)
+            if found_files:
+                file_data |= found_files
 
-    tdbconn.commitChanges()
-    tdbconn._cursor().execute('select count(file) from content')
-    totalfiles = tdbconn._cursor().fetchone()[0]
+    totalfiles = len(file_data)
 
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (_("Analyzed directories"),) )+ \
@@ -948,13 +940,9 @@ def search_orphaned_files(Equo = None):
             _("Now looking into Installed Packages database"),)))
 
 
-    idpackages = clientDbconn.listAllIdpackages()
+    idpackages = clientDbconn.listAllPackageIds()
     length = str(len(idpackages))
     count = 0
-
-    # create index on content
-    tdbconn._cursor().execute(
-        "CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );")
 
     def gen_cont(idpackage):
         for path in clientDbconn.retrieveContent(idpackage):
@@ -962,10 +950,11 @@ def search_orphaned_files(Equo = None):
             for sym_dir in reverse_symlink_map:
                 if path.startswith(sym_dir):
                     for sym_child in reverse_symlink_map[sym_dir]:
-                        yield (sym_child+path[len(sym_dir):],)
+                        yield sym_child+path[len(sym_dir):]
             # real path also
-            yield (os.path.realpath(path),)
-            yield (path,)
+            dirname_real = os.path.realpath(os.path.dirname(path))
+            yield os.path.join(dirname_real, os.path.basename(path))
+            yield path
 
     for idpackage in idpackages:
 
@@ -977,13 +966,10 @@ def search_orphaned_files(Equo = None):
                 _("Intersecting with content of the package"),) ) + txt + \
                 bold(str(atom)), back = True)
 
-        # remove from foundFiles
-        tdbconn._cursor().executemany('delete from content where file = (?)',
-            gen_cont(idpackage))
+        # remove from file_data
+        file_data -= set(gen_cont(idpackage))
 
-    tdbconn.commitChanges()
-    tdbconn._cursor().execute('select count(file) from content')
-    orpanedfiles = tdbconn._cursor().fetchone()[0]
+    orpanedfiles = len(file_data)
 
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (
@@ -996,20 +982,19 @@ def search_orphaned_files(Equo = None):
         print_info(red(" @@ ") + blue("%s: " % (
             _("Number of orphaned files"),) ) + bold(str(orpanedfiles)))
 
-    tdbconn._cursor().execute('select file from content order by file desc')
+    fname = "/tmp/entropy-orphans.txt"
+    f_out = open(fname, "wb")
     if not etpUi['quiet']:
-        fname = "/tmp/equo-orphans.txt"
-        f_out = open(fname, "w")
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 
-    tdbconn._connection().text_factory = lambda x: const_convert_to_unicode(x)
-    myfile = tdbconn._cursor().fetchone()
-
     sizecount = 0
-    while myfile:
+    file_data = list(file_data)
+    file_data.sort(reverse = True)
 
-        myfile = const_convert_to_rawstring(myfile[0])
+    for myfile in file_data:
+
+        myfile = const_convert_to_rawstring(myfile)
         mysize = 0
         try:
             mysize += os.stat(myfile)[6]
@@ -1017,25 +1002,19 @@ def search_orphaned_files(Equo = None):
             mysize = 0
         sizecount += mysize
 
-        if not etpUi['quiet']:
-            f_out.write(myfile+"\n")
-        else:
+        f_out.write(myfile + const_convert_to_rawstring("\n"))
+        if etpUi['quiet']:
             print_generic(myfile)
 
-        myfile = tdbconn._cursor().fetchone()
+    f_out.flush()
+    f_out.close()
 
     humansize = entropy.tools.bytes_into_human(sizecount)
     if not etpUi['quiet']:
         print_info(red(" @@ ") + \
             blue("%s: " % (_("Total wasted space"),) ) + bold(humansize))
-        f_out.flush()
-        f_out.close()
     else:
         print_generic(humansize)
-
-    tdbconn.closeDB()
-    if os.path.isfile(filepath):
-        os.remove(filepath)
 
     return 0
 
@@ -1166,18 +1145,19 @@ def search_package(packages, Equo = None, get_results = False,
             try:
 
                 result = dbconn.searchPackages(package, slot = slot,
-                    tag = tag)
-                if not result: # look for provide
-                    result = dbconn.searchProvide(package, slot = slot,
-                        tag = tag)
+                    tag = tag, just_id = True)
+                if not result: # look for something else?
+                    pkg_id, rc = dbconn.atomMatch(package, matchSlot = slot)
+                    if pkg_id != -1:
+                        result = [pkg_id]
                 if result:
 
                     my_found = True
-                    for pkg in result:
+                    for pkg_id in result:
                         if get_results:
-                            rc_results.append(dbconn.retrieveAtom(pkg[1]))
+                            rc_results.append(dbconn.retrieveAtom(pkg_id))
                         else:
-                            print_package_info(pkg[1], dbconn, Equo = Equo,
+                            print_package_info(pkg_id, dbconn, Equo = Equo,
                                 extended = etpUi['verbose'],
                                     clientSearch = from_client)
 
@@ -1590,7 +1570,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         repoinfo = ''
         desc = ''
         if showRepoOnQuiet:
-            repoinfo = "[%s] " % (dbconn.dbname,)
+            repoinfo = "[%s] " % (dbconn.reponame,)
         if showDescOnQuiet:
             desc = ' %s' % (dbconn.retrieveDescription(idpackage),)
         print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
@@ -1630,7 +1610,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
 
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
-        ", [" + purple(str(dbconn.dbname)) + "] ")
+        ", [" + purple(str(dbconn.reponame)) + "] ")
     if not strictOutput and extended:
         pkgname = dbconn.retrieveName(idpackage)
         pkgcat = dbconn.retrieveCategory(idpackage)
@@ -1644,8 +1624,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         pkgmasked = False
         masking_reason = ''
         # check if it's masked
-        idpackage_masked, idmasking_reason = dbconn.idpackageValidator(
-            idpackage)
+        idpackage_masked, idmasking_reason = dbconn.maskFilter(idpackage)
         if idpackage_masked == -1:
             pkgmasked = True
             masking_reason = ", %s" % (

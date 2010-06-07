@@ -308,12 +308,13 @@ def show_config_files_to_update(entropy_client):
 def _upgrade_package_handle_calculation(entropy_client, resume, replay, onlyfetch):
     if not resume:
 
-        try:
-            update, remove, fine, spm_fine = entropy_client.calculate_updates(
-                empty = replay)
-        except SystemDatabaseError:
-            # handled in equo.py
-            raise
+        with entropy_client.Cacher():
+            try:
+                update, remove, fine, \
+                    spm_fine = entropy_client.calculate_updates(empty = replay)
+            except SystemDatabaseError:
+                # handled in equo.py
+                raise
 
         if etpUi['verbose'] or etpUi['pretend']:
             print_info(red(" @@ ") + "%s => %s" % (
@@ -416,7 +417,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
 
     # verify that client database idpackage still exist,
     # validate here before passing removePackage() wrong info
-    remove = [x for x in remove if entropy_client.installed_repository().isIdpackageAvailable(x)]
+    remove = [x for x in remove if entropy_client.installed_repository().isPackageIdAvailable(x)]
     # Filter out packages installed from unavailable repositories, this is
     # mainly required to allow 3rd party packages installation without
     # erroneously inform user about unavailability.
@@ -573,9 +574,9 @@ def _show_masked_pkg_info(entropy_client, package, from_user = True):
                 riddep = rdbconn.searchDependency(atom)
                 if riddep == -1:
                     continue
-                ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
+                ridpackages = rdbconn.searchPackageIdFromDependencyId(riddep)
                 for i in ridpackages:
-                    i, r = rdbconn.idpackageValidator(i)
+                    i, r = rdbconn.maskFilter(i)
                     if i == -1:
                         continue
                     iatom = rdbconn.retrieveAtom(i)
@@ -585,7 +586,7 @@ def _show_masked_pkg_info(entropy_client, package, from_user = True):
     def get_masked_package_reason(match):
         idpackage, repoid = match
         dbconn = entropy_client.open_repository(repoid)
-        idpackage, idreason = dbconn.idpackageValidator(idpackage)
+        idpackage, idreason = dbconn.maskFilter(idpackage)
         masked = False
         if idpackage == -1:
             masked = True
@@ -1753,7 +1754,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         found_pkg_atoms = []
         if atomsdata:
             for idpackage in atomsdata:
-                if not installed_repo.isIdpackageAvailable(idpackage):
+                if not installed_repo.isPackageIdAvailable(idpackage):
                     continue
                 found_pkg_atoms.append(idpackage)
         else:
@@ -2032,7 +2033,7 @@ def _unused_packages_test(entropy_client, do_size_sort = False):
 
     def unused_packages_test():
         inst_repo = entropy_client.installed_repository()
-        return [x for x in inst_repo.retrieveUnusedIdpackages() if \
+        return [x for x in inst_repo.retrieveUnusedPackageIds() if \
             entropy_client.validate_package_removal(x)]
 
     data = [(entropy_client.installed_repository().retrieveOnDiskSize(x), x, \
@@ -2066,7 +2067,7 @@ def _dependencies_test(entropy_client):
 
             riddep = inst_repo.searchDependency(dep)
             if riddep != -1:
-                ridpackages = inst_repo.searchIdpackageFromIddependency(riddep)
+                ridpackages = inst_repo.searchPackageIdFromDependencyId(riddep)
                 for i in ridpackages:
                     iatom = inst_repo.retrieveAtom(i)
                     if iatom:
@@ -2081,9 +2082,9 @@ def _dependencies_test(entropy_client):
                 iddep = inst_repo.searchDependency(dep)
                 if iddep == -1:
                     continue
-                c_idpackages = inst_repo.searchIdpackageFromIddependency(iddep)
+                c_idpackages = inst_repo.searchPackageIdFromDependencyId(iddep)
                 for c_idpackage in c_idpackages:
-                    if not inst_repo.isIdpackageAvailable(c_idpackage):
+                    if not inst_repo.isPackageIdAvailable(c_idpackage):
                         continue
                     key, slot = inst_repo.retrieveKeySlot(c_idpackage)
                     key_slot = "%s%s%s" % (key, etpConst['entropyslotprefix'],

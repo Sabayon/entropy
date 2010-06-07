@@ -61,7 +61,7 @@ class Singleton(object):
         """
         pass
 
-class EntropyPluginStore:
+class EntropyPluginStore(object):
 
     """
     This is a base class for handling a map of plugin objects by providing
@@ -69,6 +69,7 @@ class EntropyPluginStore:
     """
 
     def __init__(self):
+        object.__init__(self)
         self.__plugins = {}
 
     def get_plugins(self):

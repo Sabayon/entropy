@@ -1017,7 +1017,7 @@ class Package:
         # for other pkgs with same atom but different tag (which is an
         # entropy-only metadatum)
         test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
-        others_installed = self._entropy.installed_repository().getIdpackages(test_atom)
+        others_installed = self._entropy.installed_repository().getPackageIds(test_atom)
 
         # It's obvious that clientdb cannot have more than one idpackage
         # featuring the same "atom" value, but still, let's be fault-tolerant.
@@ -1509,7 +1509,7 @@ class Package:
 
             # it is safe to consider that package dbs coming from repos
             # contain only one entry
-            pkg_idpackage = sorted(pkg_dbconn.listAllIdpackages())[0]
+            pkg_idpackage = sorted(pkg_dbconn.listAllPackageIds())[0]
             content = pkg_dbconn.retrieveContent(
                 pkg_idpackage, extended = True,
                 formatted = True, insert_formatted = True
@@ -2771,7 +2771,7 @@ class Package:
     def _removeconflict_step(self):
 
         for idpackage in self.pkgmeta['conflicts']:
-            if not self._entropy.installed_repository().isIdpackageAvailable(idpackage):
+            if not self._entropy.installed_repository().isPackageIdAvailable(idpackage):
                 continue
 
             pkg = self._entropy.Package()
@@ -3098,7 +3098,7 @@ class Package:
 
         idpackage = self._package_match[0]
 
-        if not self._entropy.installed_repository().isIdpackageAvailable(
+        if not self._entropy.installed_repository().isPackageIdAvailable(
             idpackage):
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
@@ -3123,7 +3123,7 @@ class Package:
         self.pkgmeta['removecontent'] = \
             self._entropy.installed_repository().retrieveContent(idpackage)
         self.pkgmeta['triggers']['remove'] = \
-            self._entropy.installed_repository().getTriggerInfo(idpackage)
+            self._entropy.installed_repository().getTriggerData(idpackage)
         if self.pkgmeta['triggers']['remove'] is None:
             self.pkgmeta['remove_installed_vanished'] = True
             return 0
@@ -3268,7 +3268,7 @@ class Package:
         self.pkgmeta['removeidpackage'] = inst_idpackage
 
         if self.pkgmeta['removeidpackage'] != -1:
-            avail = inst_repo.isIdpackageAvailable(
+            avail = inst_repo.isPackageIdAvailable(
                 self.pkgmeta['removeidpackage'])
             if avail:
                 inst_atom = inst_repo.retrieveAtom(
@@ -3314,7 +3314,7 @@ class Package:
         # compare both versions and if they match, disable removeidpackage
         if self.pkgmeta['removeidpackage'] != -1:
 
-            trigger_data = inst_repo.getTriggerInfo(
+            trigger_data = inst_repo.getTriggerData(
                 self.pkgmeta['removeidpackage'])
             if trigger_data is None:
                 # installed repository entry is corrupted
@@ -3357,7 +3357,7 @@ class Package:
         self.pkgmeta['steps'].append("postinstall")
         self.pkgmeta['steps'].append("cleanup")
 
-        self.pkgmeta['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
+        self.pkgmeta['triggers']['install'] = dbconn.getTriggerData(idpackage)
         if self.pkgmeta['triggers']['install'] is None:
             # wtf!?
             return 1

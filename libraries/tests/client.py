@@ -40,7 +40,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
-        self.Client.destroy()
+        self.Client.shutdown()
 
     def test_another_instance(self):
         pid = os.fork()
@@ -57,13 +57,13 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_singleton(self):
         myclient = Client(noclientdb = 2)
         self.assert_(myclient is self.Client)
-        myclient.destroy()
+        myclient.shutdown()
         self.assert_(myclient.is_destroyed())
         self.assert_(self.Client.is_destroyed())
         myclient2 = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         self.assert_(myclient is not myclient2)
-        myclient2.destroy()
+        myclient2.shutdown()
         self.assert_(myclient2.is_destroyed())
 
     def test_constant_backup(self):
@@ -173,7 +173,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.assert_(rc == 0)
 
         # remove pkg
-        idpackages = self.Client.installed_repository().listAllIdpackages()
+        idpackages = self.Client.installed_repository().listAllPackageIds()
         for idpackage in idpackages:
             my_p = self.Client.Package()
             my_p.prepare((idpackage,), "remove", {})

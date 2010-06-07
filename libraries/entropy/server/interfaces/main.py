@@ -113,7 +113,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # better than having a completely broken db
             self._metadata['read_only'] = False
             entropy_repository_instance.readOnly = False
-            entropy_repository_instance.initializeDatabase()
+            entropy_repository_instance.initializeRepository()
             entropy_repository_instance.commitChanges()
 
         out_intf = self._metadata.get('output_interface')
@@ -234,12 +234,12 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         spm = self._server.Spm()
         return spm.get_package_category_description_metadata(category)
 
-    def _write_rss_for_removed_package(self, repo_db, idpackage):
+    def _write_rss_for_removed_package(self, repo_db, package_id):
 
         # setup variables we're going to use
         srv_repo = self._metadata['repo_name']
-        rss_revision = repo_db.retrieveRevision(idpackage)
-        rss_atom = "%s~%s" % (repo_db.retrieveAtom(idpackage), rss_revision,)
+        rss_revision = repo_db.retrieveRevision(package_id)
+        rss_atom = "%s~%s" % (repo_db.retrieveAtom(package_id), rss_revision,)
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
         rss_name = srv_repo + etpConst['rss-dump-name']
@@ -267,11 +267,11 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         # add metadata
         mydict = {}
         try:
-            mydict['description'] = repo_db.retrieveDescription(idpackage)
+            mydict['description'] = repo_db.retrieveDescription(package_id)
         except TypeError:
             mydict['description'] = "N/A"
         try:
-            mydict['homepage'] = repo_db.retrieveHomepage(idpackage)
+            mydict['homepage'] = repo_db.retrieveHomepage(package_id)
         except TypeError:
             mydict['homepage'] = ""
         srv_updates['removed'][rss_atom] = mydict
@@ -321,7 +321,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         self.Cacher.push(rss_name, srv_updates, async = False,
             cache_dir = Server.CACHE_DIR)
 
-    def add_package_hook(self, entropy_repository_instance, idpackage,
+    def add_package_hook(self, entropy_repository_instance, package_id,
         package_data):
 
         const_debug_write(__name__,
@@ -345,7 +345,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         return 0
 
-    def remove_package_hook(self, entropy_repository_instance, idpackage,
+    def remove_package_hook(self, entropy_repository_instance, package_id,
         from_add_package):
 
         const_debug_write(__name__,
@@ -360,15 +360,15 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
             # store addPackage action
             self._write_rss_for_removed_package(entropy_repository_instance,
-                idpackage)
+                package_id)
 
         return 0
 
     def treeupdates_move_action_hook(self, entropy_repository_instance,
-        idpackage):
+        package_id):
         # check for injection and warn the developer
-        injected = entropy_repository_instance.isInjected(idpackage)
-        new_atom = entropy_repository_instance.retrieveAtom(idpackage)
+        injected = entropy_repository_instance.isInjected(package_id)
+        new_atom = entropy_repository_instance.retrieveAtom(package_id)
         if injected:
             mytxt = "%s: %s %s. %s !!! %s." % (
                 bold(_("INJECT")),
@@ -386,9 +386,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         return 0
 
     def treeupdates_slot_move_action_hook(self, entropy_repository_instance,
-        idpackage):
+        package_id):
         return self.treeupdates_move_action_hook(entropy_repository_instance,
-            idpackage)
+            package_id)
 
     def reverse_dependencies_tree_generation_hook(self,
         entropy_repository_instance):
@@ -874,7 +874,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
             if not found_edb:
                 return False
             dbc = self._server._open_temp_repository("test", temp_file = tmp_f)
-            for package_id in dbc.listAllIdpackages():
+            for package_id in dbc.listAllPackageIds():
                 keywords = dbc.retrieveKeywords(package_id)
                 if not keywords:
                     atom = dbc.retrieveAtom(package_id)
@@ -1342,7 +1342,7 @@ class ServerPackageDepsMixin:
         dbconn = self.open_server_repository(read_only = True,
             no_upload = True, repo = repo)
         if ("world" in packages) or not packages:
-            return dbconn.listAllIdpackages(), True
+            return dbconn.listAllPackageIds(), True
         else:
             idpackages = set()
             for package in packages:
@@ -1408,7 +1408,7 @@ class ServerPackagesHandlingMixin:
         # initialize
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo, is_new = True)
-        dbconn.initializeDatabase()
+        dbconn.initializeRepository()
 
         dbconn.commitChanges()
         self.close_repositories()
@@ -1505,7 +1505,7 @@ class ServerPackagesHandlingMixin:
             no_upload = True, repo = repo)
 
         idpackage_map = dict(((x, [],) for x in from_branches))
-        idpackages = dbconn.listAllIdpackages(order_by = 'atom')
+        idpackages = dbconn.listAllPackageIds(order_by = 'atom')
         for idpackage in idpackages:
             download_url = dbconn.retrieveDownloadURL(idpackage)
             url_br = self._get_branch_from_download_relative_uri(
@@ -1810,7 +1810,7 @@ class ServerPackagesHandlingMixin:
                 no_upload = True, repo = from_repo)
             my_matches = set( \
                 [(x, from_repo) for x in \
-                    dbconn.listAllIdpackages()]
+                    dbconn.listAllPackageIds()]
             )
 
         mytxt = _("Preparing to move selected packages to")
@@ -1872,7 +1872,7 @@ class ServerPackagesHandlingMixin:
                 dbconn.retrieveCategory(idpackage), \
                 dbconn.retrieveSlot(idpackage), \
                 dbconn.isInjected(idpackage)
-            to_rm_idpackages = todbconn.retrieve_packages_to_remove(from_name,
+            to_rm_idpackages = todbconn.getPackagesToRemove(from_name,
                 from_category, from_slot, from_injected)
             for to_rm_idpackage in to_rm_idpackages:
                 self.output(
@@ -2157,7 +2157,7 @@ class ServerPackagesHandlingMixin:
 
         todbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = to_repo)
-        todbconn.doCleanups()
+        todbconn.clean()
 
         # just run this to make dev aware
         self.dependencies_test(to_repo)
@@ -2667,7 +2667,7 @@ class ServerPackagesHandlingMixin:
         )
 
         dbconn = self.open_server_repository(repo = repo, read_only = False)
-        idpackages = dbconn.listAllIdpackages()
+        idpackages = dbconn.listAllPackageIds()
 
         self.output(
             blue(_("All the missing packages in repository will be downloaded.")),
@@ -3030,7 +3030,7 @@ class ServerPackagesHandlingMixin:
             dbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo, lock_remote = False)
 
-        idpackages = dbconn.listAllIdpackages()
+        idpackages = dbconn.listAllPackageIds()
         already_switched = set()
         not_found = set()
         switched = set()
@@ -3178,7 +3178,7 @@ class ServerQAMixin:
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo, do_treeupdates = False)
             installed_packages |= set([(x, repo) for x in \
-                dbconn.listAllIdpackages()])
+                dbconn.listAllPackageIds()])
 
 
         deps_not_satisfied = set()
@@ -3236,7 +3236,7 @@ class ServerQAMixin:
                     riddep = dbconn.searchDependency(atom)
                     if riddep == -1:
                         continue
-                    ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
+                    ridpackages = dbconn.searchPackageIdFromDependencyId(riddep)
                     for i in ridpackages:
                         iatom = dbconn.retrieveAtom(i)
                         if atom not in crying_atoms:
@@ -3726,7 +3726,7 @@ class ServerRepositoryMixin:
             skipChecks = True,
             temporary = True
         )
-        conn.initializeDatabase()
+        conn.initializeRepository()
         return conn
 
     def open_repository(self, repoid):
@@ -3796,7 +3796,7 @@ class ServerRepositoryMixin:
             dbname = repo,
             xcache = False # always set to False, if you want to enable
             # you need to make sure that client-side and server-side caches
-            # don't collide due to sharing EntropyRepository.dbname
+            # don't collide due to sharing EntropyRepository.reponame
         )
         etp_repo_meta = {
             'lock_remote': lock_remote,
@@ -3890,7 +3890,7 @@ class ServerRepositoryMixin:
             back = True
         )
         dbconn = self.open_generic_repository(dbpath)
-        dbconn.initializeDatabase()
+        dbconn.initializeRepository()
         dbconn.commitChanges()
         dbconn.closeDB()
         mytxt = "%s %s %s." % (
@@ -4023,7 +4023,7 @@ class ServerRepositoryMixin:
             mydbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = myrepo)
 
-            myrepo_idpackages = mydbconn.getIdpackages(rev_test_atom)
+            myrepo_idpackages = mydbconn.getPackageIds(rev_test_atom)
             for myrepo_idpackage in myrepo_idpackages:
                 myrev = mydbconn.retrieveRevision(myrepo_idpackage)
                 if myrev > max_rev:
@@ -4043,7 +4043,7 @@ class ServerRepositoryMixin:
         for myrepo in myserver_repos:
             mydbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = myrepo)
-            mylist = mydbconn.retrieve_packages_to_remove(
+            mylist = mydbconn.getPackagesToRemove(
                     mydata['name'],
                     mydata['category'],
                     mydata['slot'],
@@ -4213,7 +4213,7 @@ class ServerRepositoryMixin:
         # after a previous failure to have garbage here
         dbconn = self.open_server_repository(just_reading = True, repo = repo)
         idpackages_added = set((x for x in idpackages_added if \
-            dbconn.isIdpackageAvailable(x)))
+            dbconn.isPackageIdAvailable(x)))
 
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
@@ -4646,7 +4646,7 @@ class ServerMiscMixin:
     def _transform_package_into_injected(self, idpackage, repo = None):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
-        counter = dbconn.getNewNegativeSpmUid()
+        counter = dbconn.getFakeSpmUid()
         dbconn.setSpmUid(idpackage, counter)
         dbconn.setInjected(idpackage)
 

@@ -197,7 +197,7 @@ def _database_counters(entropy_client):
         return rc
 
     print_info(red("  %s..." % (_("Regenerating counters table"),) ))
-    entropy_client.installed_repository().regenerateSpmUidTable(verbose = True)
+    entropy_client.installed_repository().regenerateSpmUidMapping()
     print_info(red("  %s" % (
         _("Counters table regenerated. Look above for errors."),) ))
     return 0
@@ -262,7 +262,7 @@ def _database_resurrect(entropy_client):
         os.remove(dbpath)
     dbc = entropy_client.open_generic_repository(dbpath,
         dbname = etpConst['clientdbid']) # don't do this at home
-    dbc.initializeDatabase()
+    dbc.initializeRepository()
     dbc.commitChanges()
     entropy_client._installed_repository = dbc
     mytxt = "  %s %s" % (
@@ -325,7 +325,7 @@ def _database_resurrect(entropy_client):
         print_info(mytxt)
         # get all idpackages
         dbconn = entropy_client.open_repository(repo)
-        idpackages = dbconn.listAllIdpackages()
+        idpackages = dbconn.listAllPackageIds()
         count = str(len(idpackages))
         cnt = 0
         for idpackage in idpackages:
@@ -575,7 +575,7 @@ def _database_spmsync(entropy_client):
                 mydata['name'], mydata['version'], mydata['versiontag'])
 
             # look for atom in client database
-            idpkgs = entropy_client.installed_repository().getIdpackages(myatom)
+            idpkgs = entropy_client.installed_repository().getPackageIds(myatom)
             oldidpackages = sorted(idpkgs)
             oldidpackage = None
             if oldidpackages:
@@ -627,7 +627,7 @@ def _database_generate(entropy_client):
     # try to collect current installed revisions if possible
     revisions_match = {}
     try:
-        myids = entropy_client.installed_repository().listAllIdpackages()
+        myids = entropy_client.installed_repository().listAllPackageIds()
         for myid in myids:
             myatom = entropy_client.installed_repository().retrieveAtom(myid)
             myrevision = entropy_client.installed_repository().retrieveRevision(myid)
@@ -652,12 +652,9 @@ def _database_generate(entropy_client):
     )
     print_info(mytxt, back = True)
     entropy_client.reopen_installed_repository()
-    dbfile = entropy_client.installed_repository().dbFile
     entropy_client.installed_repository().closeDB()
-    if os.path.isfile(dbfile):
-        os.remove(dbfile)
     entropy_client._open_installed_repository()
-    entropy_client.installed_repository().initializeDatabase()
+    entropy_client.installed_repository().initializeRepository()
     mytxt = darkred("  %s %s") % (
         _("Database reinitialized correctly at"),
         bold(etpConst['etpdatabaseclientfilepath']),
@@ -735,7 +732,7 @@ def _database_check(entropy_client):
             importance = 2,
             level = "warning"
         )
-        idpkgs = entropy_client.installed_repository().listAllIdpackages()
+        idpkgs = entropy_client.installed_repository().listAllPackageIds()
         length = len(idpkgs)
         count = 0
         errors = False
@@ -830,7 +827,7 @@ def _getinfo(entropy_client):
         # print db info
         info['Removal internal protected directories'] = cdbconn.listConfigProtectEntries()
         info['Removal internal protected directory masks'] = cdbconn.listConfigProtectEntries(mask = True)
-        info['Total installed packages'] = len(cdbconn.listAllIdpackages())
+        info['Total installed packages'] = len(cdbconn.listAllPackageIds())
 
     # repository databases info (if found on the system)
     info['Repository databases'] = {}
@@ -842,7 +839,7 @@ def _getinfo(entropy_client):
             info['Repository databases'][x] = {}
             info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectEntries()
             info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectEntries(mask = True)
-            info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
+            info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllPackageIds())
             info['Repository databases'][x]['Database revision'] = entropy_client.get_repository_revision(x)
 
     keys = sorted(info)

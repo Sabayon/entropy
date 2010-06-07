@@ -28,7 +28,7 @@ class SpmTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
-        self.Client.destroy()
+        self.Client.shutdown()
 
     def test_init(self):
         spm = self.Client.Spm()

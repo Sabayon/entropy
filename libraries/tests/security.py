@@ -39,7 +39,7 @@ class SecurityTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
-        self._entropy.destroy()
+        self._entropy.shutdown()
         del self._entropy
         del self._repository
         del self._system

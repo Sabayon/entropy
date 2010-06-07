@@ -411,7 +411,7 @@ def repositories(options):
 
         idpackages = set()
         if not myopts:
-            allidpackages = dbconn.listAllIdpackages()
+            allidpackages = dbconn.listAllPackageIds()
             for idpackage in allidpackages:
                 if dbconn.isInjected(idpackage):
                     idpackages.add(idpackage)
@@ -487,7 +487,7 @@ def repositories(options):
             dbconn_old = Entropy.open_server_repository(read_only = True,
                 no_upload = True, repo = repoid, use_branch = from_branch,
                 do_treeupdates = False)
-            pkglist = dbconn_old.listAllIdpackages()
+            pkglist = dbconn_old.listAllPackageIds()
 
             print_info(darkgreen(" * ")+"%s %s: %s %s" % (
                 blue(_("These are the packages that would be marked")),

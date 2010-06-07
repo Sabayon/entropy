@@ -690,7 +690,7 @@ class Repository:
             return False
 
         try:
-            myidpackages = mydbconn.listAllIdpackages()
+            myidpackages = mydbconn.listAllPackageIds()
         except (DatabaseError, IntegrityError, OperationalError,):
             mydbconn.closeDB()
             self.__eapi3_close(eapi3_interface, session)
@@ -931,7 +931,7 @@ class Repository:
             try:
                 mydbconn.addPackage(
                     mydata, revision = mydata['revision'],
-                    idpackage = idpackage, do_commit = False,
+                    package_id = idpackage, do_commit = False,
                     formatted_content = True
                 )
             except (Error,) as err:
@@ -1844,7 +1844,7 @@ class Repository:
         )
         dbconn = self._entropy.open_generic_repository(dbfile,
             xcache = False, indexing_override = False)
-        rc = dbconn.doDatabaseImport(dumpfile, dbfile)
+        rc = dbconn.importRepository(dumpfile, dbfile)
         dbconn.closeDB()
         return rc
 
@@ -2062,14 +2062,10 @@ class Repository:
         dbconn = self._entropy.open_repository(repo)
         dbconn.createAllIndexes()
         dbconn.commitChanges(force = True)
-        # get list of indexes
-        repo_indexes = dbconn.listAllIndexes()
         if self._entropy.installed_repository() is not None:
             try: # client db can be absent
-                client_indexes = self._entropy.installed_repository().listAllIndexes()
-                if repo_indexes != client_indexes:
-                    self._entropy.installed_repository().createAllIndexes()
-            except:
+                self._entropy.installed_repository().createAllIndexes()
+            except (OperationalError, IntegrityError,):
                 pass
         const_set_nice_level(old_prio)
 

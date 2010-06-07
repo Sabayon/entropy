@@ -1474,7 +1474,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 iddep = c_repo.searchDependency(dep)
                 if iddep == -1:
                     continue
-                c_idpackages = c_repo.searchIdpackageFromIddependency(
+                c_idpackages = c_repo.searchPackageIdFromDependencyId(
                     iddep)
                 for c_idpackage in c_idpackages:
                     key, slot = c_repo.retrieveKeySlot(

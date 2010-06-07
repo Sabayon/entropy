@@ -114,7 +114,7 @@ class Repository(SocketCommands):
                 strings = True)
             secure_checksum = dbconn.checksum(do_order = True, strict = False,
                 strings = True, include_signatures = True)
-            myids = dbconn.listAllIdpackages()
+            myids = dbconn.listAllPackageIds()
             cached = std_checksum, secure_checksum, myids
             self.HostInterface.set_dcache(
                 x + ('docmd_dbdiff', mtime, rev_id,), cached, repository)

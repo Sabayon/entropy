@@ -690,7 +690,7 @@ class SulfurApplicationEventsMixin:
                     dbconn = self._entropy.installed_repository()
                 else:
                     dbconn = self._entropy.open_repository(repoid)
-                if dbconn.isLicensedataKeyAvailable(license_identifier):
+                if dbconn.isLicenseDataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     found = True
             if found:

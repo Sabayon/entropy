@@ -1256,7 +1256,7 @@ class PkgInfoMenu(MenuSkel):
         dbconn = self.pkg.dbconn
         avail = False
         if dbconn:
-            avail = dbconn.isIdpackageAvailable(pkg.matched_atom[0])
+            avail = dbconn.isPackageIdAvailable(pkg.matched_atom[0])
         if not avail:
             return
         from_repo = True
@@ -1352,7 +1352,7 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
         # masked ?
         masked = _("No")
-        idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
+        idpackage_masked, idmasking_reason = dbconn.maskFilter(pkg.matched_atom[0])
         if idpackage_masked == -1:
             masked = '%s, %s' % (_("Yes"), self.Entropy.Settings()['pkg_masking_reasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
@@ -1378,7 +1378,7 @@ class PkgInfoMenu(MenuSkel):
         self.mirrorsReferenceModel.clear()
         self.mirrorsReferenceView.set_model(self.mirrorsReferenceModel)
         for mirror in mirrors:
-            mirrorinfo = dbconn.retrieveMirrorInfo(mirror)
+            mirrorinfo = dbconn.retrieveMirrorData(mirror)
             if mirrorinfo:
                 # add parent
                 parent = self.mirrorsReferenceModel.append(None, [mirror])
@@ -3203,7 +3203,7 @@ class LicenseDialog:
             for package in packages:
                 repoid = package[1]
                 dbconn = self.Entropy.open_repository(repoid)
-                if dbconn.isLicensedataKeyAvailable(license_identifier):
+                if dbconn.isLicenseDataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     break
 

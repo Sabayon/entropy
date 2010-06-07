@@ -1112,7 +1112,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         if valid:
             try:
-                for idpackage in dbc.listAllIdpackages():
+                for idpackage in dbc.listAllPackageIds():
                     dbc.retrieveContent(idpackage, extended = True,
                         formatted = True, insert_formatted = True)
             except Error:

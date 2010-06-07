@@ -199,7 +199,7 @@ class EntropyPackage:
         if self.pkgset:
             return False
 
-        idpackage, idmask = self.dbconn.idpackageValidator(self.matched_id)
+        idpackage, idmask = self.dbconn.maskFilter(self.matched_id)
         if idpackage != -1:
             return False
         return True

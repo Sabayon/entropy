@@ -235,7 +235,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
             dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
         # create
         mydbconn = entropy_client.open_generic_repository(dbpath)
-        mydbconn.initializeDatabase()
+        mydbconn.initializeRepository()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
         Qa.test_missing_dependencies([idpackage], mydbconn)
@@ -358,7 +358,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     # create master database
     dbfile = unpackdir+"/db/merged.db"
     mergeDbconn = entropy_client.open_generic_repository(dbfile, dbname = "client")
-    mergeDbconn.initializeDatabase()
+    mergeDbconn.initializeRepository()
     tmpdbfile = dbfile+"--readingdata"
     for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
@@ -367,7 +367,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
                 matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
         mydbconn = entropy_client.open_generic_repository(tmpdbfile)
-        idpackages = mydbconn.listAllIdpackages()
+        idpackages = mydbconn.listAllPackageIds()
 
         for myidpackage in idpackages:
             data = mydbconn.getPackageData(myidpackage)
@@ -376,11 +376,11 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
                 xpakdata = xpaktools.read_xpak(etpConst['entropyworkdir'] + \
                     os.path.sep + matchedAtoms[package]['download'])
             else:
-                xpakdata = mydbconn.retrieveXpakMetadata(myidpackage) # already a smart package
+                xpakdata = mydbconn.retrieveSpmMetadata(myidpackage) # already a smart package
             # add
             idpk, rev, y = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
             del y
-            mergeDbconn.storeXpakMetadata(idpk, xpakdata)
+            mergeDbconn.storeSpmMetadata(idpk, xpakdata)
         mydbconn.closeDB()
         os.remove(tmpdbfile)
 

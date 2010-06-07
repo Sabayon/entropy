@@ -722,8 +722,9 @@ class EntropyPackages:
         self.get_groups("installed")
         self.get_groups("reinstallable")
 
-        updates, remove, fine, spm_fine = self.Entropy.calculate_updates(
-                critical_updates = False)
+        with self.Entropy.Cacher():
+            updates, remove, fine, spm_fine = self.Entropy.calculate_updates(
+                    critical_updates = False)
         # Filter out packages installed from unavailable repositories, this is
         # mainly required to allow 3rd party packages installation without
         # erroneously inform user about unavailability.
@@ -735,7 +736,7 @@ class EntropyPackages:
 
     def _pkg_get_installed(self):
         return [x for x in map(self.__inst_pkg_setup,
-            self.Entropy.installed_repository().listAllIdpackages(order_by = 'atom')) if \
+            self.Entropy.installed_repository().listAllPackageIds(order_by = 'atom')) if \
                 not isinstance(x, int)]
 
     def _pkg_get_queued(self):
@@ -775,8 +776,9 @@ class EntropyPackages:
                 return 0
             yp.action = 'i'
             return yp
-        return [x for x in map(fm, self.Entropy.calculate_available_packages()) \
-            if not isinstance(x, int)]
+        with self.Entropy.Cacher():
+            return [x for x in map(fm, self.Entropy.calculate_available_packages()) \
+                if not isinstance(x, int)]
 
     def _pkg_get_updates_raw(self):
         return self._pkg_get_updates(critical_updates = False)
@@ -816,11 +818,13 @@ class EntropyPackages:
                 remove = []
                 fine = []
                 spm_fine = []
-                updates = self.Entropy.calculate_security_updates()
+                with self.Entropy.Cacher():
+                    updates = self.Entropy.calculate_security_updates()
             else:
-                updates, remove, fine, spm_fine = \
-                    self.Entropy.calculate_updates(
-                        critical_updates = critical_updates)
+                with self.Entropy.Cacher():
+                    updates, remove, fine, spm_fine = \
+                        self.Entropy.calculate_updates(
+                            critical_updates = critical_updates)
         except SystemDatabaseError:
             # broken client db
             return []
@@ -868,7 +872,7 @@ class EntropyPackages:
                 dbconn.validateDatabase()
             except (RepositoryError, SystemDatabaseError):
                 continue
-            idpackages = dbconn.listAllIdpackages()
+            idpackages = dbconn.listAllPackageIds()
             matches |= set(((x, repo) for x in idpackages if (x, repo) not in
                 already_in))
 
@@ -1187,9 +1191,9 @@ class EntropyPackages:
 
         for repoid in self.Entropy.repositories():
             dbconn = self.Entropy.open_repository(repoid)
-            repodata = dbconn.listAllIdpackages(order_by = 'atom')
+            repodata = dbconn.listAllPackageIds(order_by = 'atom')
             def fm(idpackage):
-                idpackage_filtered, idreason = dbconn.idpackageValidator(
+                idpackage_filtered, idreason = dbconn.maskFilter(
                     idpackage)
                 if idpackage_filtered == -1:
                     return ((idpackage, repoid,), idreason)
@@ -1255,7 +1259,7 @@ class EntropyPackages:
 
             def fm(item):
                 idpackage = mydata[item]
-                idpackage, idreason = dbconn.idpackageValidator(idpackage)
+                idpackage, idreason = dbconn.maskFilter(idpackage)
                 if idpackage != -1:
                     return (clientdata[item], (mydata[item], repoid,))
                 return 0

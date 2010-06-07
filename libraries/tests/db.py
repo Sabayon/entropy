@@ -38,7 +38,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.flush()
         self.test_db.closeDB()
         self.test_db2.closeDB()
-        self.Client.destroy()
+        self.Client.shutdown()
 
     def __open_test_db(self, tmp_path):
         return self.Client.open_temp_repository(dbname = self.test_db_name,
@@ -67,7 +67,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_db_creation(self):
         self.assert_(isinstance(self.test_db, EntropyRepository))
-        self.assertEqual(self.test_db_name, self.test_db.dbname)
+        self.assertEqual(self.test_db_name, self.test_db.reponame)
         self.assert_(self.test_db._doesTableExist('baseinfo'))
         self.assert_(self.test_db._doesTableExist('extrainfo'))
 
@@ -121,14 +121,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         orig_diff = [const_convert_to_unicode(x, 'utf-8') for x in orig_diff]
         self.assertEqual(orig_diff, py_diff)
 
-        # test package content match
-        self.assertEqual(self.test_db.getIdpackagesFromFile(orig_diff[3]),
-            [1])
-        category = self.test_db.retrieveCategory(idpackage)
-        idcategory = self.test_db.getIdcategory(category)
-        self.assertEqual(self.test_db.getCategory(idcategory),
-            new_data['category'])
-
         versioning_data = self.test_db.getVersioningData(idpackage)
         dbverdata = (self.test_db.retrieveVersion(idpackage),
             self.test_db.retrieveTag(idpackage),
@@ -155,14 +147,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         )
         self.assertEqual(scope_data, dbverdata)
 
-        trigger_info = self.test_db.getTriggerInfo(idpackage)
+        trigger_info = self.test_db.getTriggerData(idpackage)
         trigger_keys = ['version', 'eclasses', 'etpapi', 'cxxflags', 'cflags',
             'chost', 'atom', 'category', 'name', 'versiontag', 'content',
             'trigger', 'branch', 'spm_phases', 'revision']
         self.assertEqual(sorted(trigger_keys), sorted(trigger_info.keys()))
-
-        system_pkgs = self.test_db.retrieveSystemPackages()
-        self.assertEqual(system_pkgs, set([idpackage]))
 
     def test_db_insert_compare_match_provide(self):
         test_pkg = _misc.get_test_entropy_package_provide()
@@ -185,18 +174,18 @@ class EntropyRepositoryTest(unittest.TestCase):
         started = cacher.is_started()
         cacher.start()
 
-        cached = self.test_db._EntropyRepository__atomMatchFetchCache(
+        cached = self.test_db._EntropyRepositoryBase__atomMatchFetchCache(
             key, True, False, False, None, None, False, False, True)
         self.assert_(cached is None)
 
         # now store
-        self.test_db._EntropyRepository__atomMatchStoreCache(
+        self.test_db._EntropyRepositoryBase__atomMatchStoreCache(
             key, True, False, False, None, None, False, False, True,
             result = (123, 0)
         )
         cacher.sync()
 
-        cached = self.test_db._EntropyRepository__atomMatchFetchCache(
+        cached = self.test_db._EntropyRepositoryBase__atomMatchFetchCache(
             key, True, False, False, None, None, False, False, True)
         self.assertEqual(cached, (123, 0))
         if not started:
@@ -453,13 +442,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         fd, buf_file = tempfile.mkstemp()
         os.close(fd)
         buf = open(buf_file, "wb")
-        self.test_db.doDatabaseExport(buf)
+        self.test_db.exportRepository(buf)
         buf.flush()
         buf.close()
 
         fd, new_db_path = tempfile.mkstemp()
         os.close(fd)
-        self.test_db.doDatabaseImport(buf_file, new_db_path)
+        self.test_db.importRepository(buf_file, new_db_path)
         new_db = self.Client.open_generic_repository(new_db_path)
         new_db_data = new_db.getPackageData(idpackage)
         new_db.closeDB()
@@ -488,7 +477,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         lic_txt = const_convert_to_rawstring('[3]\xab foo\n\n', 'utf-8')
         lic_name = const_convert_to_unicode('CCPL-Attribution-2.0')
         lic_data = {lic_name: lic_txt}
-        self.test_db.insertLicenses(lic_data)
+        self.test_db._insertLicenses(lic_data)
         db_lic_txt = self.test_db.retrieveLicenseText(lic_name)
         self.assertEqual(db_lic_txt, lic_txt)
 

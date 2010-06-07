@@ -18,7 +18,7 @@ from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
     DatabaseError, InterfaceError
-from entropy.db import EntropyRepository
+from entropy.db.skel import EntropyRepositoryBase
 
 import entropy.tools
 
@@ -27,7 +27,7 @@ class CalculatorsMixin:
     def dependencies_test(self):
 
         # get all the installed packages
-        installed_packages = self._installed_repository.listAllIdpackages()
+        installed_packages = self._installed_repository.listAllPackageIds()
 
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
@@ -171,7 +171,7 @@ class CalculatorsMixin:
                 #if isinstance(m_id, tuple):
                 #    m_id = m_id[0]
                 m_db = self.open_repository(m_repo)
-                if not m_db.isIdpackageAvailable(m_id):
+                if not m_db.isPackageIdAvailable(m_id):
                     return None
         else:
             # (14479, 'sabayonlinux.org')
@@ -182,7 +182,7 @@ class CalculatorsMixin:
             m_db = self.open_repository(m_repo)
             if not const_isnumber(m_id):
                 return None
-            if not m_db.isIdpackageAvailable(m_id):
+            if not m_db.isPackageIdAvailable(m_id):
                 return None
 
         return cached_obj
@@ -254,7 +254,7 @@ class CalculatorsMixin:
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
                         matchSlot = match_slot,
-                        packagesFilter = mask_filter,
+                        maskFilter = mask_filter,
                         extendedResults = extended_results,
                         useCache = xuse_cache
                     )
@@ -312,7 +312,7 @@ class CalculatorsMixin:
                         query_data, query_rc = dbconn.atomMatch(
                             atom,
                             matchSlot = match_slot,
-                            packagesFilter = mask_filter,
+                            maskFilter = mask_filter,
                             multiMatch = True,
                             extendedResults = extended_results
                         )
@@ -329,7 +329,7 @@ class CalculatorsMixin:
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
                         matchSlot = match_slot,
-                        packagesFilter = mask_filter,
+                        maskFilter = mask_filter,
                         multiMatch = True,
                         extendedResults = extended_results
                     )
@@ -497,7 +497,7 @@ class CalculatorsMixin:
             # WARN: unfortunately, need to deal with Portage (and other
             # backends) old-style PROVIDE metadata
             if entropy.tools.dep_getcat(dependency) == \
-                EntropyRepository.VIRTUAL_META_PACKAGE_CATEGORY:
+                EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY:
                 provide_stop = False
                 for c_id in c_ids:
                     # optimize speed with a trick
@@ -840,7 +840,7 @@ class CalculatorsMixin:
                 first_element = False
                 # we need to check if first element is masked because of
                 # course, we don't trust function caller.
-                mask_pkg_id, idreason = repo_db.idpackageValidator(pkg_id)
+                mask_pkg_id, idreason = repo_db.maskFilter(pkg_id)
                 if mask_pkg_id == -1:
                     mask_atom = repo_db.retrieveAtom(pkg_id)
                     if mask_atom is None:
@@ -1348,7 +1348,7 @@ class CalculatorsMixin:
 
             repo_db = self.open_repository(repo_id)
             # validate package
-            if not repo_db.isIdpackageAvailable(idpackage):
+            if not repo_db.isPackageIdAvailable(idpackage):
                 continue
 
             count += 1
@@ -1447,8 +1447,8 @@ class CalculatorsMixin:
                 continue
             try:
                 # db may be corrupted, we cannot deal with it here
-                idpackages = [x for x in dbconn.listAllIdpackages(
-                    order_by = 'atom') if dbconn.idpackageValidator(x)[0] != -1]
+                idpackages = [x for x in dbconn.listAllPackageIds(
+                    order_by = 'atom') if dbconn.maskFilter(x)[0] != -1]
             except OperationalError:
                 continue
             count = 0
@@ -1628,7 +1628,7 @@ class CalculatorsMixin:
 
         # get all the installed packages
         try:
-            idpackages = self._installed_repository.listAllIdpackages(
+            idpackages = self._installed_repository.listAllPackageIds(
                 order_by = 'atom')
         except OperationalError:
             # client db is broken!
@@ -1782,7 +1782,7 @@ class CalculatorsMixin:
         match_id, match_repo = package_match
         mydbconn = self.open_repository(match_repo)
         myatom = mydbconn.retrieveAtom(match_id)
-        idpackage, idreason = mydbconn.idpackageValidator(match_id)
+        idpackage, idreason = mydbconn.maskFilter(match_id)
         if idpackage == -1:
             treelevel += 1
             if atoms:
@@ -1825,7 +1825,7 @@ class CalculatorsMixin:
 
             if idpackage != -1:
                 # doing even here because atomMatch with
-                # packagesFilter = False can pull something different
+                # maskFilter = False can pull something different
                 matchfilter.add((idpackage, repoid))
 
             # collect masked
@@ -1837,8 +1837,7 @@ class CalculatorsMixin:
                     if treelevel not in maskedtree and not flat:
                         maskedtree[treelevel] = {}
                     dbconn = self.open_repository(repoid)
-                    vidpackage, idreason = dbconn.idpackageValidator(
-                        idpackage)
+                    vidpackage, idreason = dbconn.maskFilter(idpackage)
                     if atoms:
                         mydict = {dbconn.retrieveAtom(idpackage): idreason}
                     else:
@@ -1978,7 +1977,7 @@ class CalculatorsMixin:
         Return removal queue (list of installed packages identifiers).
 
         @param package_identifiers: list of package identifiers proposed
-            for removal (returned by Client.installed_repository().listAllIdpackages())
+            for removal (returned by Client.installed_repository().listAllPackageIds())
         @type package_identifiers: list
         @keyword deep: deeply scan inverse dependencies to include unused
             packages

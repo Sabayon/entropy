@@ -1001,7 +1001,7 @@ class Repository(SocketCommands):
             return False, 'repository id not available'
 
         dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
-        idpackages = dbconn.listAllIdpackages(order_by = 'atom')
+        idpackages = dbconn.listAllPackageIds(order_by = 'atom')
         package_data = []
         package_data = {
             'ordered_idpackages': idpackages,

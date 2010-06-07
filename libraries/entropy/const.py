@@ -448,8 +448,7 @@ def const_default_settings(rootdir):
         'etpdatabaseclientfilepath': default_etp_dir + \
             default_etp_client_repodir + default_etp_dbdir + os.path.sep + \
             default_etp_dbclientfile,
-        # prefix of the name of self.dbname in
-        # entropy.db.LocalRepository class for the repositories
+        # prefix of the name of EntropyRepository.reponame
         'dbnamerepoprefix': "repo_",
         # prefix of database backups
         'dbbackupprefix': 'etp_backup_',
