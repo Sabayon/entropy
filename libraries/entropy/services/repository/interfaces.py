@@ -253,8 +253,8 @@ class Server(SocketHost):
         dbc = self.Entropy.open_generic_repository(
             dbpath,
             xcache = False,
-            readOnly = True,
-            skipChecks = True
+            read_only = True,
+            skip_checks = True
         )
         if docache:
             self.syscache['db'][dbpath] = dbc

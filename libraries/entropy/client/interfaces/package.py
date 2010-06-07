@@ -1503,8 +1503,8 @@ class Package:
             # and also no foreign keys update
             # readOnly = True: no need to open in write mode
             pkg_dbconn = self._entropy.open_generic_repository(
-                self.pkgmeta['pkgdbpath'], skipChecks = True,
-                indexing_override = False, readOnly = True,
+                self.pkgmeta['pkgdbpath'], skip_checks = True,
+                indexing_override = False, read_only = True,
                 xcache = False)
 
             # it is safe to consider that package dbs coming from repos

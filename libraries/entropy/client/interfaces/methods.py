@@ -626,7 +626,7 @@ class RepositoryMixin:
         self._settings.clear()
 
     def open_generic_repository(self, dbfile, dbname = None, xcache = None,
-            readOnly = False, indexing_override = None, skipChecks = False):
+            read_only = False, indexing_override = None, skip_checks = False):
         if xcache is None:
             xcache = self.xcache
         if indexing_override != None:
@@ -636,12 +636,12 @@ class RepositoryMixin:
         if dbname is None:
             dbname = etpConst['genericdbid']
         conn = EntropyRepository(
-            readOnly = readOnly,
+            readOnly = read_only,
             dbFile = dbfile,
             dbname = dbname,
             xcache = xcache,
             indexing = indexing,
-            skipChecks = skipChecks
+            skipChecks = skip_checks
         )
         self._add_plugin_to_client_repository(conn, dbname)
         return conn
