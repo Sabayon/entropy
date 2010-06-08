@@ -3406,7 +3406,7 @@ class ServerQAMixin:
 class ServerRepositoryMixin:
 
     def close_repositories(self, mask_clear = False):
-        for item in self._server_dbcache:
+        for item in self._server_dbcache.keys():
             try:
                 self._server_dbcache[item].closeDB()
             except ProgrammingError: # already closed?
