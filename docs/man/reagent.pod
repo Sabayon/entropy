@@ -218,9 +218,9 @@ create an empty repository database in the provided path
 
 switch to the specified branch the repository
 
-=item B<md5remote>
+=item B<md5remote [atoms]>
 
-verify remote integrity of the provided atoms (or world)
+verify remote integrity of the provided atoms
 
 =item B<backup>
 
