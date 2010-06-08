@@ -139,9 +139,9 @@
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.ugc.interfaces.Client-class.html">entropy.services.ugc.interfaces.Client</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html">entropy.services.interfaces.SocketHost.CommandProcessor</a></strong>
     </li>
@@ -158,27 +158,6 @@
     </li>
     <li> <strong class="uidlink"><a href="entropy.core.EntropyPluginFactory-class.html">entropy.core.EntropyPluginFactory</a></strong>:
       <em class="summary">Generic Entropy Components Plugin Factory (loader).</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.core.EntropyPluginStore-class.html">entropy.core.EntropyPluginStore</a></strong>:
-      <em class="summary">This is a base class for handling a map of plugin objects by 
-        providing generic add/remove functions.</em>
-    <ul>
-    <li> <strong class="uidlink"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html">entropy.db.plugin_store.EntropyRepositoryPluginStore</a></strong>:
-      <em class="summary">EntropyRepository plugin interface.</em>
-    <ul>
-    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
-      <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
-    </li>
-    </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
-      <em class="summary">Entropy QA interface.</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.core.settings.base.SystemSettings-class.html">entropy.core.settings.base.SystemSettings</a></strong>:
-      <em class="summary">This is the place where all the Entropy settings are stored if they
-        are not considered instance constants (etpConst).</em>
-    </li>
-    </ul>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyPySandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyPySandbox</a></strong>
     </li>
@@ -197,6 +176,8 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink"><a href="entropy.services.test.interfaces.Server.FakeServiceInterface-class.html">entropy.services.test.interfaces.Server.FakeServiceInterface</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server.FakeServiceInterface-class.html">entropy.services.system.interfaces.Server.FakeServiceInterface</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html">entropy.client.interfaces.fetch.FetchersMixin</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.misc.FileUpdates-class.html">entropy.client.misc.FileUpdates</a></strong>
     </li>
@@ -359,9 +340,9 @@ mechanism based on public-key authentication.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.BuiltInCommands-class.html">entropy.services.interfaces.SocketHost.BuiltInCommands</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.system.commands.Repository-class.html">entropy.services.system.commands.Repository</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.commands.Test-class.html">entropy.services.test.commands.Test</a></strong>
     </li>
@@ -375,9 +356,9 @@ mechanism based on public-key authentication.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server-class.html">entropy.services.system.interfaces.Server</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server-class.html">entropy.services.repository.interfaces.Server</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.interfaces.Server-class.html">entropy.services.test.interfaces.Server</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server-class.html">entropy.services.repository.interfaces.Server</a></strong>
     </li>
     </ul>
     </li>
@@ -396,8 +377,13 @@ mechanism based on public-key authentication.</em>
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.db.skel.EntropyRepositoryBase-class.html">entropy.db.skel.EntropyRepositoryBase</a></strong>:
+      <em class="summary">EntropyRepository interface base class.</em>
+    <ul>
     <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
       <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    </li>
+    </ul>
     </li>
     <li> <strong class="uidlink"><a href="entropy.transceivers.EntropyTransceiver-class.html">entropy.transceivers.EntropyTransceiver</a></strong>
     </li>
@@ -461,6 +447,10 @@ mechanism based on public-key authentication.</em>
     <li> <strong class="uidlink"><a href="entropy.exceptions.DependenciesNotFound-class.html">entropy.exceptions.DependenciesNotFound</a></strong>:
       <em class="summary">During dependencies calculation, dependencies were not found, list 
         (set) of missing dependencies are in the .value attribute</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.exceptions.DependenciesNotRemovable-class.html">entropy.exceptions.DependenciesNotRemovable</a></strong>:
+      <em class="summary">During dependencies calculation, dependencies got considered vital 
+        for system health.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.EntropyPackageException-class.html">entropy.exceptions.EntropyPackageException</a></strong>:
       <em class="summary">Malformed or missing package data</em>
@@ -577,6 +567,43 @@ mechanism based on public-key authentication.</em>
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.core.EntropyPluginStore-class.html">entropy.core.EntropyPluginStore</a></strong>:
+      <em class="summary">This is a base class for handling a map of plugin objects by 
+        providing generic add/remove functions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html">entropy.db.plugin_store.EntropyRepositoryPluginStore</a></strong>:
+      <em class="summary">EntropyRepository plugin interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.db.skel.EntropyRepositoryPluginStore-class.html">entropy.db.skel.EntropyRepositoryPluginStore</a></strong>:
+      <em class="summary">EntropyRepository plugin interface.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.db.skel.EntropyRepositoryBase-class.html">entropy.db.skel.EntropyRepositoryBase</a></strong>:
+      <em class="summary">EntropyRepository interface base class.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
+      <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
+      <em class="summary">Entropy QA interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.core.settings.base.SystemSettings-class.html">entropy.core.settings.base.SystemSettings</a></strong>:
+      <em class="summary">This is the place where all the Entropy settings are stored if they
+        are not considered instance constants (etpConst).</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.db.skel.EntropyRepositoryBase-class.html">entropy.db.skel.EntropyRepositoryBase</a></strong>:
+      <em class="summary">EntropyRepository interface base class.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
+      <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    </li>
+    </ul>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html">entropy.db.skel.EntropyRepositoryPlugin</a></strong>:
       <em class="summary">This is the base class for implementing EntropyRepository plugin hooks.</em>
     <ul>
@@ -669,7 +696,15 @@ mechanism based on public-key authentication.</em>
     </ul>
     </li>
     <li> <strong class="uidlink">dict</strong>:
-      <em class="summary">dict() -&gt; new empty dictionary.</em>
+      <em class="summary">dict() -&gt; new empty dictionary
+dict(mapping) -&gt; new dictionary initialized from a mapping object's
+    (key, value) pairs
+dict(iterable) -&gt; new dictionary initialized as if via:
+    d = {}
+    for k, v in iterable:
+        d[k] = v
+dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
+    in the keyword argument list.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups-class.html">entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups</a></strong>:
       <em class="summary">Entropy Package categories group representation</em>
@@ -681,8 +716,8 @@ mechanism based on public-key authentication.</em>
     </ul>
     </li>
     <li> <strong class="uidlink">list</strong>:
-      <em class="summary">list() -&gt; new list list(sequence) -&gt; new list initialized 
-        from sequence's items</em>
+      <em class="summary">list() -&gt; new empty list list(iterable) -&gt; new list 
+        initialized from iterable's items</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.debug.DebugList-class.html">entropy.debug.DebugList</a></strong>:
       <em class="summary">This class implements a list() object with debug prints using 
@@ -701,8 +736,6 @@ mechanism based on public-key authentication.</em>
     </ul>
     </li>
     <li> <strong class="uidlink"><a href="entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2-class.html">entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.xpak.tbz2-class.html">entropy.xpak.tbz2</a></strong>
     </li>
 </ul>
 <!-- ==================== NAVIGATION BAR ==================== -->
@@ -736,7 +769,7 @@ mechanism based on public-key authentication.</em>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:31 2010
+    Generated by Epydoc 3.0.1 on Tue Jun  8 13:11:59 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

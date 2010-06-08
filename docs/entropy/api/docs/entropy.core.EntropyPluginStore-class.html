@@ -58,17 +58,19 @@
 <h1 class="epydoc">Class EntropyPluginStore</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__22" name="uml_class_diagram_for_entropy__22">
-<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#__init__" title="entropy.core.EntropyPluginStore.__init__" alt="" coords="336,39,596,57"/>
-<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#get_plugins" title="Return a copy of the internal dictionary that contains the currently stored plugins map." alt="" coords="336,57,596,76"/>
-<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="336,76,596,95"/>
-<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#add_plugin" title="This method lets you add a plugin to the store." alt="" coords="336,95,596,113"/>
-<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#remove_plugin" title="This method lets you remove previously added plugin objects via &#160;identifiers." alt="" coords="336,113,596,132"/>
-<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="336,132,596,151"/>
-<area shape="rect" id="node1" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="324,6,607,157"/>
-<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,177,328,215"/>
-<area shape="rect" id="node4" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="357,177,576,215"/>
-<area shape="rect" id="node5" href="entropy.qa.QAInterface-class.html" title="Entropy QA interface." alt="" coords="605,177,736,215"/>
-<area shape="rect" id="node3" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="81,235,252,274"/>
+<area shape="rect" id="node1" href="entropy.qa.QAInterface-class.html" title="Entropy QA interface." alt="" coords="5,177,136,215"/>
+<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="165,177,488,215"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#__init__" title="x.__init__(...) initializes x; see x.__class__.__doc__ for signature" alt="" coords="345,39,605,57"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#get_plugins" title="Return a copy of the internal dictionary that contains the currently stored plugins map." alt="" coords="345,57,605,76"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="345,76,605,95"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#add_plugin" title="This method lets you add a plugin to the store." alt="" coords="345,95,605,113"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#remove_plugin" title="This method lets you remove previously added plugin objects via &#160;identifiers." alt="" coords="345,113,605,132"/>
+<area shape="rect" id="node62" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="345,132,605,151"/>
+<area shape="rect" id="node3" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="333,6,616,157"/>
+<area shape="rect" id="node4" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="517,177,736,215"/>
+<area shape="rect" id="node5" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="765,177,1037,215"/>
+<area shape="rect" id="node7" href="entropy.db.skel.EntropyRepositoryBase-class.html" title="EntropyRepository interface base class." alt="" coords="785,235,1017,274"/>
+<area shape="rect" id="node6" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="816,294,987,333"/>
 </map>
   <img src="uml_class_diagram_for_entropy__22.gif" alt='' usemap="#uml_class_diagram_for_entropy__22" ismap="ismap" class="graph-without-title" />
 </center>
@@ -91,7 +93,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.core.EntropyPluginStore-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.__init__">source&nbsp;code</a></span>
             
@@ -193,6 +196,40 @@
       
     </td>
   </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
 </table>
 <!-- ==================== METHOD DETAILS ==================== -->
 <a name="section-MethodDetails"></a>
@@ -203,6 +240,31 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="get_plugins"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -308,7 +370,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Apr 17 12:39:35 2010
+    Generated by Epydoc 3.0.1 on Tue Jun  8 13:12:01 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
