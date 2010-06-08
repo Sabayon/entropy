@@ -118,8 +118,10 @@ def search_tagged_packages(tags, dbconn, entropy):
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),) ))
         print_info(blue("  # ")+bold(entropy.default_repository))
 
+    key_sorter = lambda x: dbconn.retrieveAtom(x[1])
     for tag in tags:
-        results = dbconn.searchTaggedPackages(tag, atoms = True)
+        results = sorted(dbconn.searchTaggedPackages(tag, atoms = True),
+            key = key_sorter)
         for result in results:
             if etpUi['quiet']:
                 print_generic(dbconn.retrieveAtom(result[1]))

@@ -195,22 +195,22 @@ def search_installed_packages(packages, dbconn = None, Equo = None):
 
     if Equo is None:
         Equo = EquoInterface()
-    clientDbconn = dbconn
-    if not dbconn:
-        clientDbconn = Equo.installed_repository()
+    if dbconn is None:
+        dbconn = Equo.installed_repository()
 
     if not packages:
-        packages = [x[0] for x in \
-            clientDbconn.listAllPackages(order_by = "atom")]
+        packages = [dbconn.retrieveAtom(x) for x in \
+            dbconn.listAllPackageIds(order_by = "atom")]
 
     pkg_data, flat_data = get_installed_packages(packages, dbconn = dbconn,
         entropy_intf = Equo)
 
+    key_sorter = lambda x: dbconn.retrieveAtom(x)
     for package in sorted(pkg_data):
         idpackages = pkg_data[package]
 
-        for idpackage in idpackages:
-            print_package_info(idpackage, clientDbconn, clientSearch = True,
+        for idpackage in sorted(idpackages, key = key_sorter):
+            print_package_info(idpackage, dbconn, clientSearch = True,
                 Equo = Equo, extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -521,9 +521,8 @@ def search_belongs(files, dbconn = None, Equo = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Belong Search"),)))
 
-    clientDbconn = dbconn
-    if not dbconn:
-        clientDbconn = Equo.installed_repository()
+    if dbconn is None:
+        dbconn = Equo.installed_repository()
 
     results = {}
     flatresults = {}
@@ -534,10 +533,10 @@ def search_belongs(files, dbconn = None, Equo = None):
             xfile.replace("*", "%")
             like = True
         results[xfile] = set()
-        idpackages = clientDbconn.searchBelongs(xfile, like)
+        idpackages = dbconn.searchBelongs(xfile, like)
         if not idpackages:
             # try real path if possible
-            idpackages = clientDbconn.searchBelongs(
+            idpackages = dbconn.searchBelongs(
                 os.path.realpath(xfile), like)
         if not idpackages:
             # try using reverse symlink mapping
@@ -545,7 +544,7 @@ def search_belongs(files, dbconn = None, Equo = None):
                 if xfile.startswith(sym_dir):
                     for sym_child in reverse_symlink_map[sym_dir]:
                         my_file = sym_child+xfile[len(sym_dir):]
-                        idpackages = clientDbconn.searchBelongs(my_file, like)
+                        idpackages = dbconn.searchBelongs(my_file, like)
                         if idpackages:
                             break
 
@@ -555,17 +554,19 @@ def search_belongs(files, dbconn = None, Equo = None):
                 flatresults[idpackage] = True
 
     if results:
+
+        key_sorter = lambda x: dbconn.retrieveAtom(x)
         for result in results:
 
             # print info
             xfile = result
             result = results[result]
 
-            for idpackage in result:
+            for idpackage in sorted(result, key = key_sorter):
                 if etpUi['quiet']:
-                    print_generic(clientDbconn.retrieveAtom(idpackage))
+                    print_generic(dbconn.retrieveAtom(idpackage))
                 else:
-                    print_package_info(idpackage, clientDbconn,
+                    print_package_info(idpackage, dbconn,
                         clientSearch = True, Equo = Equo,
                         extended = etpUi['verbose'])
             if not etpUi['quiet']:
@@ -638,9 +639,8 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
     if not hasattr(Equo, 'atom_match'):
         match_repo = False
 
-    clientDbconn = dbconn
-    if not dbconn:
-        clientDbconn = Equo.installed_repository()
+    if dbconn is None:
+        dbconn = Equo.installed_repository()
 
     include_build_deps = False
     excluded_dep_types = None
@@ -649,34 +649,35 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
     for atom in atoms:
 
-        result = clientDbconn.atomMatch(atom)
-        matchInRepo = False
-        repoMasked = False
+        result = dbconn.atomMatch(atom)
+        match_in_repo = False
+        repo_masked = False
 
         if (result[0] == -1) and match_repo:
-            matchInRepo = True
+            match_in_repo = True
             result = Equo.atom_match(atom)
 
         if (result[0] == -1) and match_repo:
             result = Equo.atom_match(atom, mask_filter = False)
             if result[0] != -1:
-                repoMasked = True
+                repo_masked = True
 
-        if (result[0] != -1):
+        if result[0] != -1:
 
-            dbconn = clientDbconn
-            if matchInRepo:
-                dbconn = Equo.open_repository(result[1])
+            mdbconn = dbconn
+            if match_in_repo:
+                mdbconn = Equo.open_repository(result[1])
+            key_sorter = lambda x: mdbconn.retrieveAtom(x)
 
-            found_atom = dbconn.retrieveAtom(result[0])
-            if repoMasked:
-                idpackage_masked, idmasking_reason = dbconn.maskFilter(
+            found_atom = mdbconn.retrieveAtom(result[0])
+            if repo_masked:
+                idpackage_masked, idmasking_reason = mdbconn.maskFilter(
                     result[0])
 
-            searchResults = dbconn.retrieveReverseDependencies(result[0],
+            search_results = mdbconn.retrieveReverseDependencies(result[0],
                 exclude_deptypes = excluded_dep_types)
-            for idpackage in searchResults:
-                print_package_info(idpackage, dbconn, clientSearch = True,
+            for idpackage in sorted(search_results, key = key_sorter):
+                print_package_info(idpackage, mdbconn, clientSearch = True,
                     strictOutput = etpUi['quiet'], Equo = Equo,
                     extended = etpUi['verbose'])
 
@@ -684,25 +685,25 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
             if not etpUi['quiet']:
 
                 masking_reason = ''
-                if repoMasked:
+                if repo_masked:
                     masking_reason = ", %s" % (
                         Equo.Settings()['pkg_masking_reasons'].get(
                             idmasking_reason),
                     )
-                mask_str = bold(str(repoMasked)) + masking_reason
+                mask_str = bold(str(repo_masked)) + masking_reason
 
                 toc = []
                 toc.append(("%s:" % (blue(_("Keyword")),), purple(atom)))
                 toc.append(("%s:" % (blue(_("Matched")),), teal(found_atom)))
                 toc.append(("%s:" % (blue(_("Masked")),), mask_str))
 
-                if matchInRepo:
+                if match_in_repo:
                     where = "%s %s" % (_("from repository"), result[1],)
                 else:
                     where = _("from installed packages database")
 
                 toc.append(("%s:" % (blue(_("Found")),), "%s %s %s" % (
-                    len(searchResults), brown(_("entries")), where,)))
+                    len(search_results), brown(_("entries")), where,)))
 
                 print_table(toc)
 
@@ -717,16 +718,15 @@ def search_needed_libraries(atoms, dbconn = None, Equo = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Needed Search"),) ))
 
-    clientDbconn = dbconn
-    if not dbconn:
-        clientDbconn = Equo.installed_repository()
+    if dbconn is None:
+        dbconn = Equo.installed_repository()
 
     for atom in atoms:
-        match = clientDbconn.atomMatch(atom)
+        match = dbconn.atomMatch(atom)
         if match[0] != -1:
             # print info
-            myatom = clientDbconn.retrieveAtom(match[0])
-            myneeded = clientDbconn.retrieveNeeded(match[0])
+            myatom = dbconn.retrieveAtom(match[0])
+            myneeded = dbconn.retrieveNeeded(match[0])
             for needed in myneeded:
                 if etpUi['quiet']:
                     print_generic(needed)
@@ -751,20 +751,20 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Required Search"),)))
 
-    clientDbconn = dbconn
-    if not dbconn:
-        clientDbconn = Equo.installed_repository()
+    if dbconn is None:
+        dbconn = Equo.installed_repository()
+    key_sorter = lambda x: dbconn.retrieveAtom(x)
 
     for library in libraries:
         search_lib = library.replace("*", "%")
-        results = clientDbconn.searchNeeded(search_lib, like = True)
-        for result in results:
+        results = dbconn.searchNeeded(search_lib, like = True)
+        for pkg_id in sorted(results, key = key_sorter):
 
             if etpUi['quiet']:
-                print_generic(clientDbconn.retrieveAtom(result))
+                print_generic(dbconn.retrieveAtom(pkg_id))
                 continue
 
-            print_package_info(result, clientDbconn, clientSearch = True,
+            print_package_info(pkg_id, dbconn, clientSearch = True,
                 strictOutput = True, Equo = Equo,
                 extended = etpUi['verbose'])
 
@@ -786,13 +786,13 @@ def search_eclass(eclasses, dbconn = None, Equo = None):
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Eclass Search"),)))
 
-    clientDbconn = dbconn
-    if not dbconn:
-        clientDbconn = Equo.installed_repository()
+    if dbconn is None:
+        dbconn = Equo.installed_repository()
+    key_sorter = lambda x: dbconn.retrieveAtom(x[1])
 
     for eclass in eclasses:
-        matches = clientDbconn.searchEclassedPackages(eclass, atoms = True)
-        for match in matches:
+        matches = dbconn.searchEclassedPackages(eclass, atoms = True)
+        for match in sorted(matches, key = key_sorter):
             # print info
             myatom = match[0]
             idpackage = match[1]
@@ -800,7 +800,7 @@ def search_eclass(eclasses, dbconn = None, Equo = None):
                 print_generic(myatom)
                 continue
 
-            print_package_info(idpackage, clientDbconn, clientSearch = True,
+            print_package_info(idpackage, dbconn, clientSearch = True,
                 Equo = Equo, extended = etpUi['verbose'],
                 strictOutput = not etpUi['verbose'])
 
@@ -1129,13 +1129,8 @@ def search_package(packages, Equo = None, get_results = False,
     if not etpUi['quiet'] and not get_results:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
 
-    # search inside each available database
-    repo_number = 0
-    found = False
-    rc_results = []
-
-    def do_search(dbconn, from_client = False):
-        my_found = False
+    def do_adv_search(dbconn, from_client = False):
+        pkg_ids = set()
         for package in packages:
             slot = entropy.tools.dep_getslot(package)
             tag = entropy.tools.dep_gettag(package)
@@ -1143,58 +1138,56 @@ def search_package(packages, Equo = None, get_results = False,
             package = entropy.tools.remove_tag(package)
 
             try:
-
-                result = dbconn.searchPackages(package, slot = slot,
-                    tag = tag, just_id = True)
+                result = set(dbconn.searchPackages(package, slot = slot,
+                    tag = tag, just_id = True))
                 if not result: # look for something else?
                     pkg_id, rc = dbconn.atomMatch(package, matchSlot = slot)
                     if pkg_id != -1:
-                        result = [pkg_id]
-                if result:
-
-                    my_found = True
-                    for pkg_id in result:
-                        if get_results:
-                            rc_results.append(dbconn.retrieveAtom(pkg_id))
-                        else:
-                            print_package_info(pkg_id, dbconn, Equo = Equo,
-                                extended = etpUi['verbose'],
-                                    clientSearch = from_client)
-
-                    if not etpUi['quiet'] and not get_results:
-                        toc = []
-                        toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
-                        toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                            len(result), brown(_("entries")),)))
-                        print_table(toc)
-
+                        result = set([pkg_id])
+                pkg_ids |= result
             except DatabaseError:
                 continue
 
-        return my_found
+        return pkg_ids
+
+    search_data = set()
+    found = False
+    rc_results = []
 
     if not from_installed:
         for repo in Equo.repositories():
-            repo_number += 1
-
-            if not etpUi['quiet'] and not get_results:
-                print_info(blue("  #" + str(repo_number)) + \
-                    bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
             dbconn = Equo.open_repository(repo)
-            my_found = do_search(dbconn)
-            if my_found:
+            pkg_ids = do_adv_search(dbconn)
+            if pkg_ids:
                 found = True
+            search_data.update(((x, repo) for x in pkg_ids))
 
     # try to actually match something in installed packages db
     if not found and (Equo.installed_repository() is not None) and not ignore_installed:
-        do_search(Equo.installed_repository(), from_client = True)
-
-    if not etpUi['quiet'] and not found and not get_results:
-        print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
+        pkg_ids = do_adv_search(Equo.installed_repository(), from_client = True)
+        if pkg_ids:
+            found = True
+        search_data.update(((x, etpConst['clientdbid']) for x in pkg_ids))
 
     if get_results:
-        return rc_results
+        return sorted((Equo.open_repository(y).retrieveAtom(x) for x, y in \
+            search_data))
+
+    key_sorter = lambda (x, y): Equo.open_repository(y).retrieveAtom(x)
+    for pkg_id, pkg_repo in sorted(search_data, key = key_sorter):
+        dbconn = Equo.open_repository(pkg_repo)
+        from_client = pkg_repo == etpConst['clientdbid']
+        print_package_info(pkg_id, dbconn, Equo = Equo,
+            extended = etpUi['verbose'], clientSearch = from_client)
+
+    if not etpUi['quiet']:
+        toc = []
+        toc.append(("%s:" % (blue(_("Keywords")),), purple(', '.join(packages))))
+        toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+            len(search_data), brown(_("entries")),)))
+        print_table(toc)
+
     return 0
 
 def search_mimetype(mimetypes, Equo = None, installed = False,
@@ -1228,9 +1221,10 @@ def search_mimetype(mimetypes, Equo = None, installed = False,
         if matches:
             found = True
 
-        for match in matches:
-            dbconn = Equo.open_repository(match[1])
-            print_package_info(match[0], dbconn, Equo = Equo,
+        key_sorter = lambda (x, y): Equo.open_repository(y).retrieveAtom(x)
+        for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
+            dbconn = Equo.open_repository(pkg_repo)
+            print_package_info(pkg_id, dbconn, Equo = Equo,
                 extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -1287,12 +1281,13 @@ def match_package(packages, multiMatch = False, multiRepo = False,
             else:
                 matches = match[0]
 
-            for match in matches:
-                dbconn = Equo.open_repository(match[1])
+            key_sorter = lambda (x, y): Equo.open_repository(y).retrieveAtom(x)
+            for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
+                dbconn = Equo.open_repository(pkg_repo)
                 if get_results:
-                    rc_results.append(dbconn.retrieveAtom(match[0]))
+                    rc_results.append(dbconn.retrieveAtom(pkg_id))
                 else:
-                    print_package_info(match[0], dbconn,
+                    print_package_info(pkg_id, dbconn,
                         showRepoOnQuiet = showRepo,
                             showDescOnQuiet = showDesc, Equo = Equo,
                                 extended = etpUi['verbose'])
@@ -1334,7 +1329,8 @@ def search_slotted_packages(slots, Equo = None):
         for slot in slots:
 
             results = dbconn.searchSlotted(slot, just_id = True)
-            for idpackage in results:
+            key_sorter = lambda x: dbconn.retrieveAtom(x)
+            for idpackage in sorted(results, key = key_sorter):
                 found = True
                 print_package_info(idpackage, dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
@@ -1369,7 +1365,8 @@ def search_package_sets(items, Equo = None):
     matchNumber = 0
     for item in items:
         results = sets.search(item)
-        for repo, set_name, set_data in results:
+        key_sorter = lambda (x, y, z): y
+        for repo, set_name, set_data in sorted(results, key = key_sorter):
             matchNumber += 1
             found = True
             if not etpUi['quiet']:
@@ -1378,6 +1375,9 @@ def search_package_sets(items, Equo = None):
                 elements = sorted(set_data)
                 for element in elements:
                     print_info(brown("    "+element))
+            else:
+                for element in sorted(set_data):
+                    print_generic(element)
 
         if not etpUi['quiet']:
             toc = []
@@ -1409,10 +1409,11 @@ def search_tagged_packages(tags, Equo = None):
                 bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
+        key_sorter = lambda x: dbconn.retrieveAtom(x[1])
         for tag in tags:
             results = dbconn.searchTaggedPackages(tag, atoms = True)
             found = True
-            for result in results:
+            for result in sorted(results, key = key_sorter):
                 print_package_info(result[1], dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
@@ -1439,10 +1440,12 @@ def search_rev_packages(revisions, Equo = None):
         print_info(bold(_("Installed packages repository")))
 
     dbconn = Equo.installed_repository()
+    key_sorter = lambda x: dbconn.retrieveAtom(x)
+
     for revision in revisions:
         results = dbconn.searchRevisionedPackages(revision)
         found = True
-        for idpackage in results:
+        for idpackage in sorted(results, key = key_sorter):
             print_package_info(idpackage, dbconn, Equo = Equo,
                 extended = etpUi['verbose'], strictOutput = etpUi['quiet'],
                 clientSearch = True)
@@ -1479,6 +1482,7 @@ def search_licenses(licenses, Equo = None):
                 bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
 
         dbconn = Equo.open_repository(repo)
+        key_sorter = lambda x: dbconn.retrieveAtom(x)
 
         for mylicense in licenses:
 
@@ -1486,7 +1490,7 @@ def search_licenses(licenses, Equo = None):
             if not results:
                 continue
             found = True
-            for idpackage in results:
+            for idpackage in sorted(results, key = key_sorter):
                 print_package_info(idpackage, dbconn, Equo = Equo,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
@@ -1532,6 +1536,7 @@ def search_description(descriptions, Equo = None):
 
 def search_descriptions(descriptions, dbconn, Equo = None):
 
+    key_sorter = lambda x: dbconn.retrieveAtom(x[1])
     mydescdata = {}
     for desc in descriptions:
 
@@ -1540,7 +1545,7 @@ def search_descriptions(descriptions, dbconn, Equo = None):
             continue
 
         mydescdata[desc] = result
-        for pkg in mydescdata[desc]:
+        for pkg in sorted(mydescdata[desc], key = key_sorter):
             idpackage = pkg[1]
             if (etpUi['quiet']):
                 print_generic(dbconn.retrieveAtom(idpackage))

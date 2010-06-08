@@ -320,23 +320,20 @@ def repositories(options):
         # from repo: repoid
         # to repo: repoid_dest
         # atoms: myopts
-        if "world" not in myopts:
+        if myopts:
             # match
             for package in myopts:
-                match = Entropy.atom_match(package, match_repo = [repoid])
-                if match in matches:
-                    print_warning(  brown(" * ") + \
-                        red("%s: " % (_("Package"),) ) + bold(package) + \
-                        red(" %s " % (_("already pulled in"),))
-                    )
-                elif (match[1] == repoid):
-                    matches.append(match)
-                else:
+                p_matches, p_rc = Entropy.atom_match(package,
+                    match_repo = [repoid], multi_match = True)
+                if not p_matches:
                     print_warning(  brown(" * ") + \
                         red("%s: " % (_("Cannot match"),) )+bold(package) + \
                         red(" %s " % (_("in"),) )+bold(repoid) + \
                             red(" %s" % (_("repository"),) )
                     )
+                else:
+                    matches += [x for x in p_matches if (x not in matches)]
+
             if not matches:
                 return 1
         if cmd == "move":
