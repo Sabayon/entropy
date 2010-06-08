@@ -3909,7 +3909,7 @@ class EntropyRepository(EntropyRepositoryBase):
         provide.idpackage = baseinfo.idpackage""" % (get_def_string,),
             (keyword,))
 
-        return self._cur2list(cur)
+        return cur.fetchall()
 
     def searchDescription(self, keyword, just_id = False):
         """
