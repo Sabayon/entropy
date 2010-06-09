@@ -34,7 +34,7 @@ from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
 
-class UrlFetcher:
+class UrlFetcher(TextInterface):
 
     """
     Entropy single URL fetcher. It supports what Python's urllib2 supports,
@@ -439,6 +439,24 @@ class UrlFetcher:
         """
         return self.__datatransfer
 
+    def get_average(self):
+        """
+        Get current download percentage.
+
+        @return: download percentage
+        @rtype: float
+        """
+        return self.__average
+
+    def get_seconds_remaining(self):
+        """
+        Return remaining seconds to download completion.
+
+        @return: remaining download seconds
+        @rtype: int
+        """
+        return self.__time_remaining_secs
+
     def is_resumed(self):
         """
         Return whether given download has been resumed.
@@ -511,7 +529,7 @@ class UrlFetcher:
         if len(average) < 2:
             average = " "+average
         current_txt += " <->  "+average+"% "+bartext
-        self.__Output.output(current_txt, back = True)
+        TextInterface.output(self, current_txt, back = True)
 
     def output(self):
         """
@@ -525,23 +543,34 @@ class UrlFetcher:
             self._push_progress_to_output()
 
 
-class MultipleUrlFetcher:
+class MultipleUrlFetcher(TextInterface):
 
     def __init__(self, url_path_list, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
-            OutputInterface = None, UrlFetcherClass = None):
+            url_fetcher_class = None):
         """
-            @param url_path_list list [(url,path_to_save,),...]
-            @param checksum bool return checksum data
-            @param show_speed bool show transfer speed on the output
-            @param resume bool enable resume support
-            @param abort_check_func callable function that could
-                raise exception and stop transfer
-            @param disallow_redirect bool disable automatic HTTP redirect
-            @param OutputInterface TextInterface instance used to
-                print instance output through a common interface
-            @param UrlFetcherClass, urlFetcher instance/interface used
+        @param url_path_list: list of tuples composed by url and
+            path to save, for eg. [(url,path_to_save,),...]
+        @type url_path_list: list
+        @keyword checksum: return md5 hash instead of status code
+        @type checksum: bool
+        @keyword show_speed: show download speed
+        @type show_speed: bool
+        @keyword resume: enable resume support
+        @type resume: bool
+        @keyword abort_check_func: callback used to stop download, it has to
+            raise an exception that has to be caught by provider application.
+            This exception will be considered an "abort" request.
+        @type abort_check_func: callable
+        @keyword disallow_redirect: disallow automatic HTTP redirects
+        @type disallow_redirect: bool
+        @keyword thread_stop_func: callback used to stop download, it has to
+            raise an exception that has to be caught by provider application.
+            This exception will be considered a "stop" request.
+        @type thread_stop_func: callable
+        @param url_fetcher_class: UrlFetcher based class to use
+        @type url_fetcher_class: subclass of UrlFetcher
         """
         self.__system_settings = SystemSettings()
         self.__url_path_list = url_path_list
@@ -557,17 +586,7 @@ class MultipleUrlFetcher:
         self.__old_average = 0
         self.__time_remaining_sec = 0
 
-        self.__Output = OutputInterface
-        if self.__Output == None:
-            self.__Output = TextInterface()
-        elif not hasattr(self.__Output, 'output'):
-            mytxt = "Output interface passed doesn't have the output method"
-            raise AttributeError(mytxt)
-        elif not hasattr(self.__Output.output, '__call__'):
-            mytxt = "Output interface passed doesn't have the output method"
-            raise AttributeError(mytxt)
-
-        self.__url_fetcher = UrlFetcherClass
+        self.__url_fetcher = url_fetcher_class
         if self.__url_fetcher == None:
             self.__url_fetcher = UrlFetcher
 
@@ -591,6 +610,16 @@ class MultipleUrlFetcher:
         self.__startup_time = time.time()
 
     def download(self):
+        """
+        Start downloading URL given at construction time.
+
+        @return: dict containing:
+            download status in string format. "-3" or "-4" mean error.
+            "-2" means "ok but unable to calculate md5 of file.
+            Key is UrlFetcher.get_id() and value is UrlFetcher.download() return
+            code.
+        @rtype: dict
+        """
         self._init_vars()
 
         th_id = 0
@@ -636,7 +665,7 @@ class MultipleUrlFetcher:
             t.start()
 
         self._push_progress_to_output(force = True)
-        self.show_download_files_info()
+        self.__show_download_files_info()
         self.__show_progress = True
 
         while len(self.__url_path_list) != len(self.__download_statuses):
@@ -648,19 +677,37 @@ class MultipleUrlFetcher:
 
         return self.__download_statuses
 
-    def get_data_transfer(self):
+    def get_transfer_rate(self):
+        """
+        Return transfer rate, in kb/sec.
+
+        @return: transfer rate
+        @rtype: int
+        """
         return self.__data_transfer
 
     def get_average(self):
+        """
+        Get current download percentage.
+
+        @return: download percentage
+        @rtype: float
+        """
         return self.__average
 
     def get_seconds_remaining(self):
+        """
+        Return remaining seconds to download completion.
+
+        @return: remaining download seconds
+        @rtype: int
+        """
         return self.__time_remaining_sec
 
-    def show_download_files_info(self):
+    def __show_download_files_info(self):
         count = 0
         pl = self.__url_path_list[:]
-        self.__Output.output(
+        TextInterface.output(self,
             "%s: %s %s" % (
                 darkblue(_("Aggregated download")),
                 darkred(str(len(pl))),
@@ -674,7 +721,7 @@ class MultipleUrlFetcher:
             count += 1
             fname = os.path.basename(url)
             uri = spliturl(url)[1]
-            self.__Output.output(
+            TextInterface.output(self,
                 "[%s] %s => %s" % (
                     darkblue(str(count)),
                     darkgreen(uri),
@@ -688,6 +735,33 @@ class MultipleUrlFetcher:
     def handle_statistics(self, th_id, downloaded_size, total_size,
             average, old_average, update_step, show_speed, data_transfer,
             time_remaining, time_remaining_secs):
+        """
+        Reimplement this callback to gather information about data currently
+        downloaded.
+
+        @param th_id: instance identifier
+        @type th_id: int
+        @param downloaded_size: size downloaded up to now, in bytes
+        @type downloaded_size: int
+        @param total_size: total download size, in bytes
+        @type total_size: int
+        @param average: percentage of file downloaded up to now
+        @type average: float
+        @param old_average: old percentage of file downloaded
+        @type: float
+        @param update_step: currently configured update average delta
+        @type update_step: int
+        @param show_speed: if download speed should be shown for given instance
+        @type show_speed: bool
+        @param data_transfer: current data transfer, in kb/sec
+        @type data_transfer: int
+        @param time_remaining: currently hypothesized remaining download time,
+            in string format (showing hours, minutes, seconds).
+        @type time_remaining: string
+        @param time_remaining_secs: currently hypothesized remaining download time,
+            in seconds.
+        @type time_remaining_secs: int
+        """
         data = {
             'th_id': th_id,
             'downloaded_size': downloaded_size,
@@ -782,9 +856,13 @@ class MultipleUrlFetcher:
             if len(myavg) < 2:
                 myavg = " "+myavg
             current_txt += " <->  "+myavg+"% "+bartext+" "
-            self.__Output.output(current_txt, back = True)
+            TextInterface.output(self, current_txt, back = True)
 
         self.__old_average = average
 
     def output(self):
+        """
+        Main fetch progress callback. You can reimplement this to refresh
+        your output devices.
+        """
         return self._push_progress_to_output()

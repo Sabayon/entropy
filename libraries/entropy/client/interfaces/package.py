@@ -144,8 +144,7 @@ class Package:
         # load class
         fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
             resume = resume, abort_check_func = fetch_abort_function,
-            OutputInterface = self._entropy,
-            UrlFetcherClass = self._entropy.urlFetcher, checksum = checksum)
+            url_fetcher_class = self._entropy.urlFetcher, checksum = checksum)
         try:
             data = fetch_intf.download()
         except KeyboardInterrupt:
@@ -156,7 +155,7 @@ class Package:
             diff_map = dict((url_path_list[x-1][0], checksum_map.get(x)) \
                 for x in checksum_map if checksum_map.get(x) != data.get(x))
 
-        data_transfer = fetch_intf.get_data_transfer()
+        data_transfer = fetch_intf.get_transfer_rate()
         if diff_map:
             defval = -1
             for key, val in list(diff_map.items()):
@@ -399,8 +398,7 @@ class Package:
 
         # load class
         fetch_intf = self._entropy.urlFetcher(url, save_path, resume = resume,
-            abort_check_func = fetch_abort_function,
-            OutputInterface = self._entropy)
+            abort_check_func = fetch_abort_function)
 
         # start to download
         data_transfer = 0
