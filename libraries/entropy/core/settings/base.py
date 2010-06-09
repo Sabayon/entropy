@@ -60,6 +60,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         from entropy.core.settings.plugins.factory import get_available_plugins
         self.__get_external_plugins = get_available_plugins
 
+        from threading import RLock
+        self.__lock = RLock()
         from entropy.cache import EntropyCacher
         self.__cacher = EntropyCacher()
         self.__data = {}
@@ -260,13 +262,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data[mykey]
+        with self.__lock:
+            return self.__data[mykey]
 
     def __delitem__(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        del self.__data[mykey]
+        with self.__lock:
+            del self.__data[mykey]
 
     def __iter__(self):
         """
@@ -371,9 +375,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         @return None
         """
-        self.__data.clear()
-        self.__setup_const()
-        self.__scan()
+        with self.__lock:
+            self.__data.clear()
+            self.__setup_const()
+            self.__scan()
 
     def set_persistent_setting(self, persistent_dict):
         """
