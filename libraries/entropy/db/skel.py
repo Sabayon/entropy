@@ -2895,6 +2895,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """
         Search packages that need given NEEDED ELF entry (library name).
+        You must implement "*" wildcard support if like is True.
 
         @param needed: NEEDED ELF entry (shared object library name)
         @type needed: string

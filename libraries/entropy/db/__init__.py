@@ -3742,6 +3742,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        if like:
+            needed = needed.replace("*", "%")
         elfsearch = ''
         search_args = (needed,)
         if elfclass != -1:

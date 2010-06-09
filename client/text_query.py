@@ -756,7 +756,6 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
     key_sorter = lambda x: dbconn.retrieveAtom(x)
 
     for library in libraries:
-        search_lib = library.replace("*", "%")
         results = dbconn.searchNeeded(search_lib, like = True)
         for pkg_id in sorted(results, key = key_sorter):
 
