@@ -36,11 +36,43 @@ from entropy.core.settings.base import SystemSettings
 
 class UrlFetcher:
 
+    """
+    Entropy single URL fetcher. It supports what Python's urllib2 supports,
+    plus resuming, proxies and custom user agents. No external tools
+    dependencies are required (including wget).
+    """
+
     def __init__(self, url, path_to_save, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
-            thread_stop_func = None, speed_limit = None,
-            OutputInterface = None):
+            thread_stop_func = None, speed_limit = None):
+
+        """
+        Entropy URL downloader constructor.
+
+        @param url: download URL
+        @type url: string
+        @param path_to_save: file path where to save downloaded data
+        @type path_to_save: string
+        @keyword checksum: return md5 hash instead of status code
+        @type checksum: bool
+        @keyword show_speed: show download speed
+        @type show_speed: bool
+        @keyword resume: enable resume support
+        @type resume: bool
+        @keyword abort_check_func: callback used to stop download, it has to
+            raise an exception that has to be caught by provider application.
+            This exception will be considered an "abort" request.
+        @type abort_check_func: callable
+        @keyword disallow_redirect: disallow automatic HTTP redirects
+        @type disallow_redirect: bool
+        @keyword thread_stop_func: callback used to stop download, it has to
+            raise an exception that has to be caught by provider application.
+            This exception will be considered a "stop" request.
+        @type thread_stop_func: callable
+        @keyword speed_limit: speed limit in kb/sec
+        @type speed_limit: int
+        """
 
         self.__system_settings = SystemSettings()
         if speed_limit == None:
@@ -77,15 +109,6 @@ class UrlFetcher:
             uname[4],
             uname[2],
         )
-        self.__Output = OutputInterface
-        if self.__Output == None:
-            self.__Output = TextInterface()
-        elif not hasattr(self.__Output, 'output'):
-            mytxt = _("Output interface passed doesn't have the output method")
-            raise AttributeError(mytxt)
-        elif not hasattr(self.__Output.output, '__call__'):
-            mytxt = _("Output interface passed doesn't have the output method")
-            raise AttributeError(mytxt)
 
     def _init_vars(self):
         self.__resumed = False
@@ -163,9 +186,24 @@ class UrlFetcher:
         return url
 
     def set_id(self, th_id):
+        """
+        Set instance id (usually the thread identifier).
+        @param th_id: id to set
+        @type th_id: int
+        """
         self.__th_id = th_id
 
     def download(self):
+
+        """
+        Start downloading URL given at construction time.
+
+        @return: download status in string format. "-3" or "-4" mean error.
+        "-2" means "ok but unable to calculate md5 of file.
+        Otherwise returns md5 hash.
+        @rtype: string
+        @todo: improve return data
+        """
 
         self._init_vars()
 
@@ -393,14 +431,50 @@ class UrlFetcher:
                 convert_seconds_to_fancy_output(self.__time_remaining_secs)
 
     def get_transfer_rate(self):
+        """
+        Return transfer rate, in kb/sec.
+
+        @return: transfer rate
+        @rtype: int
+        """
         return self.__datatransfer
 
     def is_resumed(self):
+        """
+        Return whether given download has been resumed.
+        """
         return self.__resumed
 
     def handle_statistics(self, th_id, downloaded_size, total_size,
             average, old_average, update_step, show_speed, data_transfer,
             time_remaining, time_remaining_secs):
+        """
+        Reimplement this callback to gather information about data currently
+        downloaded.
+
+        @param th_id: instance identifier
+        @type th_id: int
+        @param downloaded_size: size downloaded up to now, in bytes
+        @type downloaded_size: int
+        @param total_size: total download size, in bytes
+        @type total_size: int
+        @param average: percentage of file downloaded up to now
+        @type average: float
+        @param old_average: old percentage of file downloaded
+        @type: float
+        @param update_step: currently configured update average delta
+        @type update_step: int
+        @param show_speed: if download speed should be shown for given instance
+        @type show_speed: bool
+        @param data_transfer: current data transfer, in kb/sec
+        @type data_transfer: int
+        @param time_remaining: currently hypothesized remaining download time,
+            in string format (showing hours, minutes, seconds).
+        @type time_remaining: string
+        @param time_remaining_secs: currently hypothesized remaining download time,
+            in seconds.
+        @type time_remaining_secs: int
+        """
         return
 
     def _push_progress_to_output(self):
@@ -549,8 +623,7 @@ class MultipleUrlFetcher:
                 abort_check_func = self.__abort_check_func,
                 disallow_redirect = self.__disallow_redirect,
                 thread_stop_func = self.__handle_threads_stop,
-                speed_limit = speed_limit,
-                OutputInterface = self.__Output
+                speed_limit = speed_limit
             )
             downloader.set_id(th_id)
 
