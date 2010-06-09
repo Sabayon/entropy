@@ -3,12 +3,12 @@
 
     - move repository sync() code inside EntropyRepository? (makes sense)
 
-    - entropy.fetchers API docs + OutputInterface
     - entropy.server API docs
     - entropy.client API docs
 
   1.0_beta1:
 
+    - Client.urlFetcher/MultipleUrlFetcher? ugly!
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - complete API documentation
