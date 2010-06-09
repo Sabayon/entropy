@@ -3,8 +3,7 @@
 
     - move repository sync() code inside EntropyRepository? (makes sense)
 
-    - sulfur: make use of provided_mime (and desktop_mime) metadata
-    - entropy.fetchers API docs
+    - entropy.fetchers API docs + OutputInterface
     - entropy.server API docs
     - entropy.client API docs
 
