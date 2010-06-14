@@ -5604,4 +5604,3 @@ class EntropyRepository(EntropyRepositoryBase):
         warnings.warn("deprecated call!")
         return self.maskFilter(*args, **kwargs)
 
-    def 
