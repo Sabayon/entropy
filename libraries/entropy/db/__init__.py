@@ -4051,6 +4051,32 @@ class EntropyRepository(EntropyRepositoryBase):
         """, (repository, from_branch, to_branch,))
         return cur.fetchone()
 
+    def listIdPackagesInIdcategory(self, *args, **kwargs):
+        """ @deprecated """
+        warnings.warn("deprecated call!")
+        return self.listPackageIdsInCategoryId(*args, **kwargs)
+
+    def listPackageIdsInCategoryId(self, category_id, order_by = None):
+        """
+        List package identifiers available in given category identifier.
+
+        @param category_id: cateogory identifier
+        @type category_id: int
+        @keyword order_by: order by "atom", "name", "version"
+        @type order_by: string
+        @return: list (set) of available package identifiers in category.
+        @rtype: set
+        """
+        order_by_string = ''
+        if order_by in ("atom", "name", "version",):
+            order_by_string = ' ORDER BY %s' % (order_by,)
+
+        cur = self._cursor().execute("""
+        SELECT idpackage FROM baseinfo where idcategory = (?)
+        """ + order_by_string, (idcategory,))
+
+        return self._cur2set(cur)
+
     def listAllPackages(self, get_scope = False, order_by = None):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -5577,3 +5603,5 @@ class EntropyRepository(EntropyRepositoryBase):
         """ @deprecated """
         warnings.warn("deprecated call!")
         return self.maskFilter(*args, **kwargs)
+
+    def 

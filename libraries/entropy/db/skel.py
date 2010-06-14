@@ -3133,6 +3133,19 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
+    def listPackageIdsInCategoryId(self, category_id, order_by = None):
+        """
+        List package identifiers available in given category identifier.
+
+        @param category_id: cateogory identifier
+        @type category_id: int
+        @keyword order_by: order by "atom", "name", "version"
+        @type order_by: string
+        @return: list (set) of available package identifiers in category.
+        @rtype: set
+        """
+        raise NotImplementedError()
+
     def listAllPackageIds(self, order_by = None):
         """
         List all package identifiers available in repository.
