@@ -53,26 +53,8 @@ class DependenciesNotRemovable(EntropyException):
     vital for system health.
     """
 
-class InvalidVersionString(EntropyException):
-    """An invalid version string has been encountered"""
-
-class SecurityViolation(EntropyException):
-    """An incorrect formatting was passed instead of the expected one"""
-
-class IncorrectParameter(EntropyException):
-    """A parameter of the wrong type was passed"""
-
-class MissingParameter(EntropyException):
-    """A parameter is required for the action requested but was not passed"""
-
-class ParseError(EntropyException):
-    """An error was generated while attempting to parse the request"""
-
 class RepositoryError(EntropyException):
     """Cannot open repository database"""
-
-class EntropyRepositoryError(EntropyException):
-    """ An Entropy-related error occured in EntropyRepository class methods """
 
 class RepositoryPluginError(EntropyException):
     """Error during EntropyRepositoryPlugin hook execution"""
@@ -104,22 +86,16 @@ class OnlineMirrorError(EntropyException):
 class QueueError(EntropyException):
     """Action queue issue"""
 
-class InvalidLocation(EntropyException):
-    """
-        Data was not found when it was expected to exist or
-        was specified incorrectly
-    """
-
 class InvalidAtom(EntropyException):
     """Atom not properly formatted"""
 
 class InvalidPackageSet(EntropyException):
     """Package set does not exist"""
 
-class FileNotFound(InvalidLocation):
+class FileNotFound(EntropyException):
     """A file was not found when it was expected to exist"""
 
-class DirectoryNotFound(InvalidLocation):
+class DirectoryNotFound(EntropyException):
     """A directory was not found when it was expected to exist"""
 
 class OperationNotPermitted(EntropyException):
@@ -128,12 +104,6 @@ class OperationNotPermitted(EntropyException):
 class PermissionDenied(EntropyException):
     """Permission denied"""
     from errno import EACCES as errno
-
-class ReadOnlyFileSystem(EntropyException):
-    """Read-only file system"""
-
-class CommandNotFound(EntropyException):
-    """A required binary was not available or executable"""
 
 class LibraryNotFound(EntropyException):
     """A required library was not available or executable"""
@@ -146,4 +116,3 @@ class TimeoutError(EntropyException):
 
 class EntropyPackageException(EntropyException):
     """Malformed or missing package data"""
-
