@@ -812,13 +812,9 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         matched.add(brokenlib)
                         continue
 
-                    cmpstat = client.get_package_action(mymatch)
-                    if cmpstat == 0:
-                        continue
-                    if brokenlib not in pkgs_matched:
-                        pkgs_matched[brokenlib] = set()
+                    obj = pkgs_matched.setdefault(brokenlib, set())
 
-                    pkgs_matched[brokenlib].add(mymatch)
+                    obj.add(mymatch)
                     matched.add(brokenlib)
 
             plain_brokenexecs -= matched
