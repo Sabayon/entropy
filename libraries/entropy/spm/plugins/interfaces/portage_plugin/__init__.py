@@ -819,6 +819,7 @@ class PortagePlugin(SpmPlugin):
         os.close(tmp_fd)
         std_f = open(tmp_file, "w")
 
+        cmd = const_convert_to_rawstring(cmd)
         proc = subprocess.Popen(shlex.split(cmd), stdout = std_f, stderr = std_f)
         sts = proc.wait()
         std_f.flush()
