@@ -1,0 +1,66 @@
+#!/usr/bin/python2
+import sys
+
+la_patterns = sys.argv[1:]
+if not la_patterns:
+    print sys.argv[0], "<.la files patterns>"
+    raise SystemExit(1)
+
+import os
+import re
+import tempfile
+import shutil
+from entropy.server.interfaces import Server
+import entropy.tools
+
+la_compiled_patterns = dict((x, re.compile(x)) for x in la_patterns)
+print la_compiled_patterns
+
+repo_id = os.getenv("ETP_REPO", "sabayonlinux.org")
+srv = Server()
+dbconn = srv.open_repository(repo_id)
+pkg_ids = dbconn.listAllIdpackages(order_by="atom")
+for pkg_id in pkg_ids:
+    # get pkg path
+    pkg_path = srv._get_package_path(repo_id, dbconn, pkg_id)
+    if not os.path.isfile(pkg_path):
+        print "WTF, not a package file =>", pkg_path
+        continue
+    # now extract
+    tmp_dir = tempfile.mkdtemp()
+    rc = entropy.tools.uncompress_tarball(pkg_path, extract_path = tmp_dir,
+        catch_empty = True)
+    if rc != 0:
+        print "WTF, cannot extract file", pkg_path, "at dir", tmp_dir
+        continue
+
+
+    la_paths = []
+    for cur_dir, subdirs, files in os.walk(tmp_dir):
+        for file in files:
+            path = os.path.join(cur_dir, file)
+            if path.endswith(".la") and os.path.isfile(path) and os.access(path, os.R_OK):
+                la_paths.append(path)
+
+    if not la_paths:
+        continue
+
+    # print "pkg:", dbconn.retrieveAtom(pkg_id), "la:", la_paths
+    found = False
+    for la_path in la_paths:
+        # apply regexps
+        la_f = open(la_path, "r")
+        la_content = la_f.read()
+        la_f.close()
+        for la_pattern, cm_pattern in la_compiled_patterns.items():
+            if cm_pattern.search(la_content):
+                found = True
+                break
+        if found:
+            print dbconn.retrieveKeySlotAggregated(pkg_id)
+            break
+
+    shutil.rmtree(tmp_dir, True)
+
+srv.shutdown()
+raise SystemExit(0)
