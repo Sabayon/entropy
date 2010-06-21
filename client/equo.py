@@ -806,6 +806,14 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     entropy.tools.kill_threads()
 
+    def try_to_kill_cacher():
+        try:
+            from entropy.cache import EntropyCacher
+        except ImportError:
+            return
+        EntropyCacher().stop()
+        entropy.tools.kill_threads()
+
     if exc_class is SystemDatabaseError:
         print_error(darkred(" * ") + \
             red(_("Installed packages repository corrupted. Please re-generate it")))
@@ -817,16 +825,20 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     if exc_class in generic_exc_classes:
         print_error("%s %s. %s." % (
             darkred(" * "), exc_instance, _("Cannot continue"),))
+        try_to_kill_cacher()
         raise SystemExit(1)
 
     if exc_class is SystemExit:
+        try_to_kill_cacher()
         raise exc_instance
 
     if exc_class is IOError:
         if exc_instance.errno != 32:
+            try_to_kill_cacher()
             raise exc_instance
 
     if exc_class is KeyboardInterrupt:
+        try_to_kill_cacher()
         raise SystemExit(1)
 
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
@@ -836,6 +848,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
             print_generic(t_back)
             print_error("%s %s. %s." % (darkred(" * "), exc_instance,
                 _("Your hard drive is full! Your fault!"),))
+            try_to_kill_cacher()
             raise SystemExit(5)
 
     Text = TextInterface()
@@ -851,6 +864,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         ferror = open(error_file, "wb")
     except (OSError, IOError,):
         print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
+        try_to_kill_cacher()
         raise SystemExit(1)
 
     exception_data = entropy.tools.print_exception(returndata = True,
@@ -871,6 +885,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     rc = Text.ask_question(_("Erm... Can I send the error, along with some information\nabout your hardware to my creators so they can fix me? (Your IP will be logged)"))
     if rc == _("No"):
         print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
+        try_to_kill_cacher()
         raise SystemExit(2)
 
     print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
@@ -898,6 +913,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
     else:
         print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayon.org.")))
+    try_to_kill_cacher()
     raise SystemExit(1)
 
 def install_exception_handler():
