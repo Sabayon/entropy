@@ -156,6 +156,10 @@ def resize_image(max_width, image_path, new_image_path):
         new_h = new_w*h/w
         img_buf = img_buf.scale_simple(int(new_w),
             int(new_h), gtk.gdk.INTERP_BILINEAR)
-        img_buf.save(new_image_path, "png")
+        try:
+            img_buf.save(new_image_path, "png")
+        except gobject.GError:
+            # libpng issue? try jpeg
+            img_buf.save(new_image_path, "jpeg")
         del img_buf
     del img
