@@ -29,6 +29,7 @@ def scan_match(pkg_id, repo_id):
 
     # now extract
     tmp_dir = tempfile.mkdtemp()
+    try:
         rc = entropy.tools.uncompress_tarball(pkg_path, extract_path = tmp_dir,
             catch_empty = True)
         if rc != 0:
