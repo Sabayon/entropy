@@ -16,51 +16,68 @@ import entropy.tools
 la_compiled_patterns = dict((x, re.compile(x)) for x in la_patterns)
 print la_compiled_patterns
 
-repo_id = os.getenv("ETP_REPO", "sabayonlinux.org")
 srv = Server()
-dbconn = srv.open_repository(repo_id)
-pkg_ids = dbconn.listAllIdpackages(order_by="atom")
-for pkg_id in pkg_ids:
+
+def scan_match(pkg_id, repo_id):
+
+    dbconn = srv.open_repository(repo_id)
     # get pkg path
     pkg_path = srv._get_package_path(repo_id, dbconn, pkg_id)
     if not os.path.isfile(pkg_path):
-        print "WTF, not a package file =>", pkg_path
-        continue
+        print "WTF, file not found =>", pkg_path
+        return True # if recursive, it will be pulled in, you nevvah know
+
     # now extract
     tmp_dir = tempfile.mkdtemp()
-    rc = entropy.tools.uncompress_tarball(pkg_path, extract_path = tmp_dir,
-        catch_empty = True)
-    if rc != 0:
-        print "WTF, cannot extract file", pkg_path, "at dir", tmp_dir
-        continue
+    try:
+        rc = entropy.tools.uncompress_tarball(pkg_path, extract_path = tmp_dir,
+            catch_empty = True)
+        if rc != 0:
+            print "WTF, cannot extract file", pkg_path, "at dir", tmp_dir
+            return False
 
 
-    la_paths = []
-    for cur_dir, subdirs, files in os.walk(tmp_dir):
-        for file in files:
-            path = os.path.join(cur_dir, file)
-            if path.endswith(".la") and os.path.isfile(path) and os.access(path, os.R_OK):
-                la_paths.append(path)
+        la_paths = []
+        for cur_dir, subdirs, files in os.walk(tmp_dir):
+            for file in files:
+                path = os.path.join(cur_dir, file)
+                if path.endswith(".la") and os.path.isfile(path) and os.access(path, os.R_OK):
+                    la_paths.append(path)
 
-    if not la_paths:
-        continue
+        if not la_paths:
+            return False
 
-    # print "pkg:", dbconn.retrieveAtom(pkg_id), "la:", la_paths
-    found = False
-    for la_path in la_paths:
-        # apply regexps
-        la_f = open(la_path, "r")
-        la_content = la_f.read()
-        la_f.close()
-        for la_pattern, cm_pattern in la_compiled_patterns.items():
-            if cm_pattern.search(la_content):
-                found = True
+        # print "pkg:", dbconn.retrieveAtom(pkg_id), "la:", la_paths
+        found = False
+        for la_path in la_paths:
+            # apply regexps
+            la_f = open(la_path, "r")
+            la_content = la_f.read()
+            la_f.close()
+            for la_pattern, cm_pattern in la_compiled_patterns.items():
+                if cm_pattern.search(la_content):
+                    found = True
+                    break
+            if found:
+                key_slot = dbconn.retrieveKeySlotAggregated(pkg_id)
+                f_pkg_id, f_repo_id = srv.atom_match(key_slot)
+                if repo_id != f_repo_id:
+                    found = scan_match(f_pkg_id, f_repo_id)
+            if found:
+                print dbconn.retrieveKeySlotAggregated(pkg_id)
                 break
-        if found:
-            print dbconn.retrieveKeySlotAggregated(pkg_id)
-            break
 
-    shutil.rmtree(tmp_dir, True)
+    finally:
+        shutil.rmtree(tmp_dir, True)
+
+    return found
+    
+
+repo_id = os.getenv("ETP_REPO", "sabayonlinux.org")
+dbconn = srv.open_repository(repo_id)
+pkg_ids = dbconn.listAllIdpackages(order_by="atom")
+for pkg_id in pkg_ids:
+    scan_match(pkg_id, repo_id)
 
 srv.shutdown()
 raise SystemExit(0)
