@@ -29,7 +29,6 @@ def scan_match(pkg_id, repo_id):
 
     # now extract
     tmp_dir = tempfile.mkdtemp()
-    try:
         rc = entropy.tools.uncompress_tarball(pkg_path, extract_path = tmp_dir,
             catch_empty = True)
         if rc != 0:
@@ -66,12 +65,11 @@ def scan_match(pkg_id, repo_id):
             if found:
                 print dbconn.retrieveKeySlotAggregated(pkg_id)
                 break
-
     finally:
         shutil.rmtree(tmp_dir, True)
 
     return found
-    
+
 
 repo_id = os.getenv("ETP_REPO", "sabayonlinux.org")
 dbconn = srv.open_repository(repo_id)
