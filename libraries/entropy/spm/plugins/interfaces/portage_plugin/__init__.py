@@ -1925,7 +1925,9 @@ class PortagePlugin(SpmPlugin):
         for item in items:
             myfrom = os.path.join(ebuild_dir, item)
             myto = os.path.join(dest_dir, item)
-            shutil.copy2(myfrom, myto)
+            if os.path.isfile(myfrom) and os.access(myfrom, os.R_OK):
+                # make sure it is readable before copying
+                shutil.copy2(myfrom, myto)
 
         newmyebuild = os.path.join(dest_dir, ebuild_file)
         if os.path.isfile(newmyebuild):
