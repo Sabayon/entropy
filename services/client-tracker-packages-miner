@@ -37,8 +37,7 @@ sys.path.insert(0,'../client')
 from entropy.cache import EntropyCacher
 from entropy.misc import LogFile
 from entropy.i18n import _
-from entropy.exceptions import PermissionDenied, RepositoryError, \
-    MissingParameter
+from entropy.exceptions import PermissionDenied, RepositoryError
 import entropy.tools as entropyTools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher

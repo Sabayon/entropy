@@ -377,12 +377,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
     VIRTUAL_META_PACKAGE_CATEGORY = "virtual"
 
-    def __init__(self, readOnly, xcache, temporary, reponame, indexing):
+    def __init__(self, readonly, xcache, temporary, reponame, indexing):
         """
         EntropyRepositoryBase constructor.
 
-        @param readOnly: readonly bit
-        @type readOnly: bool
+        @param readonly: readonly bit
+        @type readonly: bool
         @param xcache: xcache bit (enable on-disk cache?)
         @type xcache: bool
         @param temporary: is this repo a temporary (non persistent) one?
@@ -392,11 +392,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param indexing: enable metadata indexing (for faster retrieval)
         @type indexing: bool
         """
-        self.readOnly = readOnly
+        self.readonly = readonly
         self.xcache = xcache
         self.temporary = temporary
         self.indexing = indexing
         # XXX: backward compatibility
+        self.readOnly = readonly
         self.dbname = reponame
         self.reponame = reponame
         self._settings = SystemSettings()
@@ -414,7 +415,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         Attention: call this method from your subclass, otherwise
         EntropyRepositoryPlugins won't be notified of a repo close.
         """
-        if not self.readOnly:
+        if not self.readonly:
             self.commitChanges()
 
         plugins = self.get_plugins()
@@ -3495,6 +3496,70 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type to_branch: string
         @keyword from_branch: old branch string
         @type from_branch: string
+        """
+        raise NotImplementedError()
+
+    """
+    Update status flags, self explanatory.
+    """
+    REPOSITORY_ALREADY_UPTODATE = -1
+    REPOSITORY_NOT_AVAILABLE = -2
+    REPOSITORY_GENERIC_ERROR = -3
+    REPOSITORY_CHECKSUM_ERROR = -4
+    REPOSITORY_UPDATED_OK = 0
+
+    @staticmethod
+    def update(entropy_client, repository_id, force, gpg):
+        """
+        Update the content of this repository. Every subclass can implement
+        its own update way.
+        This method must return a status code that can be either
+        EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE or
+        EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE or
+        EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR or
+        EntropyRepositoryBase.REPOSITORY_CHECKSUM_ERROR or
+        EntropyRepositoryBase.REPOSITORY_UPDATED_OK
+        If your repository is not supposed to be remotely updated, just
+        ignore this method.
+
+        @param entropy_client: Entropy Client based object
+        @type entropy_client: entropy.client.interfaces.Client
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param force: force update anyway
+        @type force: bool
+        @param gpg: GPG feature enable
+        @type gpg: bool
+        @return: status code
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def revision(repository_id):
+        """
+        Returns the repository local revision in int format or None, if
+        no revision is available.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: repository revision
+        @rtype: int or None
+        @raise KeyError: if repository is not available
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def remote_revision(repository_id):
+        """
+        Returns the repository remote revision in int format or None, if
+        no revision is available.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: repository revision
+        @rtype: int or None
+        @raise KeyError: if repository is not available
         """
         raise NotImplementedError()
 

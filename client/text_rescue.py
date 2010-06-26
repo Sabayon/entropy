@@ -840,7 +840,7 @@ def _getinfo(entropy_client):
             info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectEntries()
             info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectEntries(mask = True)
             info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllPackageIds())
-            info['Repository databases'][x]['Database revision'] = entropy_client.get_repository_revision(x)
+            info['Repository databases'][x]['Database revision'] = entropy_client.get_repository(x).revision(x)
 
     keys = sorted(info)
     for x in keys:

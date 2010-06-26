@@ -41,8 +41,7 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 
 from entropy.misc import LogFile
 from entropy.i18n import _
-from entropy.exceptions import PermissionDenied, RepositoryError, \
-    MissingParameter
+from entropy.exceptions import PermissionDenied, RepositoryError
 import entropy.tools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
@@ -287,11 +286,6 @@ class UpdatesDaemon(dbus.service.Object):
                 entropy_updates_alert = True)
             if DAEMON_DEBUG:
                 write_output("__run_sync: repository interface loaded")
-        except MissingParameter, err:
-            if DAEMON_DEBUG:
-                write_output(
-                    "__run_sync: MissingParameter exception, error: %s" % (
-                        err,))
         except Exception, err:
             if DAEMON_DEBUG:
                 write_output(
@@ -367,7 +361,7 @@ class UpdatesDaemon(dbus.service.Object):
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: called %s" % (time.time(),))
 
-                repos_to_up = self.get_repo_status(entropy)
+                repos_to_up = self.get_repo_status()
 
                 if repos_to_up:
 
@@ -440,49 +434,29 @@ class UpdatesDaemon(dbus.service.Object):
     # compare repos status for updates
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'a{si}')
-    def get_repo_status(self, entropy = None):
+    def get_repo_status(self):
 
-        destroy = False
-        if entropy is None:
-            destroy = True
-            entropy = Entropy()
+        repos = {}
+        # now get remote
+        sys_set = SysSet()
+        for repoid in sys_set['repositories']['available']:
 
-        try:
+            repo_rev = Entropy.get_repository(repoid).revision(repoid)
+            online_rev = Entropy.get_repository(repoid).remote_revision(repoid)
+            if (online_rev == -1) or (repo_rev != online_rev):
 
-            repos = {}
-            try:
-                repo_conn = entropy.Repositories(
-                    entropy_updates_alert = True, fetch_security = False)
-            except MissingParameter:
-                return repos
-            except Exception, e:
-                return repos
+                if DAEMON_DEBUG:
+                    write_output(
+                        "get_repo_status: repo needs to be updated: %s" % (
+                            repoid,))
 
-            # now get remote
-            for repoid in entropy.SystemSettings['repositories']['available']:
+                sys_set._clear_repository_cache(repoid = repoid)
+                repos[repoid] = {
+                    'local': repo_rev,
+                    'remote': online_rev,
+                }
 
-                repo_rev = entropy.get_repository_revision(repoid)
-                online_rev = repo_conn.get_online_repository_revision(repoid)
-                if (online_rev == -1) or (repo_rev != online_rev):
-
-                    if DAEMON_DEBUG:
-                        write_output(
-                            "get_repo_status: repo needs to be updated: %s" % (
-                                repoid,))
-
-                    entropy.SystemSettings._clear_repository_cache(
-                        repoid = repoid)
-                    repos[repoid] = {
-                        'local': repo_rev,
-                        'remote': online_rev,
-                    }
-
-            del repo_conn
-            return repos
-
-        finally:
-            if destroy:
-                entropy.shutdown()
+        return repos
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = '')

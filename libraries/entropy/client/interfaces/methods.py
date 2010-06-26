@@ -30,7 +30,8 @@ from entropy.exceptions import RepositoryError, InvalidPackageSet,\
     SystemDatabaseError
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
-from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
+from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
+    InstalledPackagesRepository, AvailablePackagesRepository, GenericRepository
 from entropy.client.mirrors import StatusInterface
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
@@ -161,6 +162,25 @@ class RepositoryMixin:
         self._repodb_cache[key] = dbconn
         return dbconn
 
+    @staticmethod
+    def get_repository(repoid):
+        """
+        Given a repository identifier, returns the repository class associated
+        with it.
+        NOTE: stub. When more EntropyRepositoryBase classes will be available,
+        this method will start making more sense.
+        WARNING: do not use this to open a repository. Please use
+        Client.open_repository() instead.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        @return: EntropyRepositoryBase based class
+        @rtype: class object
+        """
+        if repoid == etpConst['clientdbid']:
+            return InstalledPackagesRepository
+        return AvailablePackagesRepository
+
     def _load_repository_database(self, repoid, xcache = True, indexing = True):
 
         if const_isstring(repoid):
@@ -196,7 +216,7 @@ class RepositoryMixin:
                     self._repo_error_messages_cache.add(repoid)
                 raise RepositoryError("RepositoryError: %s" % (t,))
 
-            conn = EntropyRepository(
+            conn = self.get_repository(repoid)(
                 readOnly = True,
                 dbFile = dbfile,
                 dbname = etpConst['dbnamerepoprefix']+repoid,
@@ -222,20 +242,11 @@ class RepositoryMixin:
         return conn
 
     def get_repository_revision(self, reponame):
-
-        db_data = self._settings['repositories']['available'][reponame]
-        fname = os.path.join(db_data['dbpath'],
-            etpConst['etpdatabaserevisionfile'])
-        revision = -1
-
-        if os.path.isfile(fname) and os.access(fname, os.R_OK):
-            with open(fname, "r") as f:
-                try:
-                    revision = int(f.readline().strip())
-                except (OSError, IOError, ValueError,):
-                    pass
-
-        return revision
+        """ @deprecated """
+        try:
+            return int(self.get_repository(reponame).revision(reponame))
+        except (ValueError, TypeError,):
+            return -1
 
     def add_repository(self, repodata):
 
@@ -593,7 +604,9 @@ class RepositoryMixin:
             entropy.tools.print_traceback(f = self.clientLog)
         else:
             try:
-                conn = EntropyRepository(readOnly = False, dbFile = db_path,
+                repo_class = self.get_repository(etpConst['clientdbid'])
+                conn = repo_class(readOnly = False,
+                    dbFile = db_path,
                     dbname = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing
                 )
@@ -635,7 +648,7 @@ class RepositoryMixin:
             indexing = self.indexing
         if dbname is None:
             dbname = etpConst['genericdbid']
-        conn = EntropyRepository(
+        conn = GenericRepository(
             readOnly = read_only,
             dbFile = dbfile,
             dbname = dbname,
@@ -652,7 +665,7 @@ class RepositoryMixin:
         if temp_file is None:
             temp_file = entropy.tools.get_random_temp_file()
 
-        dbc = EntropyRepository(
+        dbc = GenericRepository(
             readOnly = False,
             dbFile = temp_file,
             dbname = dbname,

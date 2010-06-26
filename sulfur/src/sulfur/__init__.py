@@ -589,7 +589,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         valid_repos = self._entropy.repositories()
         invalid_repos = [x for x in all_repos if x not in valid_repos]
         invalid_repos = [x for x in invalid_repos if \
-            (self._entropy.get_repository_revision(x) == -1)]
+            (self._entropy.get_repository(x).revision(x) == -1)]
         if invalid_repos:
             mydialog = ConfirmationDialog(self.ui.main, invalid_repos,
                 top_text = _("The repositories listed below are configured but not available. They should be downloaded."),

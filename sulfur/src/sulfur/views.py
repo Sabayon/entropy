@@ -2842,16 +2842,23 @@ class EntropyRepoView:
     def populate(self):
 
         self.store.clear()
+        cache = set()
         for repo in self._entropy.Settings()['repositories']['order']:
+            if repo in cache:
+                continue
             repodata = self._entropy.Settings()['repositories']['available'][repo]
             self.store.append([1, 1, repodata['dbrevision'], repo,
                 repodata['description']])
+            cache.add(repo)
         # excluded ones
         repo_excluded = self._entropy.Settings()['repositories']['excluded']
         for repo in repo_excluded:
+            if repo in cache:
+                continue
             repodata = repo_excluded[repo]
             self.store.append([0, 0, repodata['dbrevision'], repo,
                 repodata['description']])
+            cache.add(repo)
 
     def new_pixbuf( self, column, cell, model, myiter ):
         gpg = model.get_value( myiter, 3 )

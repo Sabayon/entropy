@@ -230,7 +230,7 @@ def _show_repository_info(entropy_client, reponame):
     print_info( red("\t%s: %s") % (_("Repository name"), bold(reponame),) )
     print_info( red("\t%s: %s") % (_("Repository database path"),
         blue(repo_data['dbpath']),) )
-    revision = entropy_client.get_repository_revision(reponame)
+    revision = entropy_client.get_repository(reponame).revision(reponame)
     print_info( red("\t%s: %s") % (_("Repository revision"),
         darkgreen(str(revision)),) )
 

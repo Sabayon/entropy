@@ -455,6 +455,8 @@ def const_default_settings(rootdir):
 
         # Entropy database API revision
         'etpapi': etpSys['api'],
+        # Entropy database API currently supported
+        'supportedapis': (1, 2, 3),
         # contains the current running architecture
         'currentarch': etpSys['arch'],
         # Entropy supported Archs

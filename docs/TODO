@@ -1,20 +1,27 @@
 
   0.99.50:
 
-    - move repository sync() code inside EntropyRepository? (makes sense)
+    EntropyRepositoryBase:
+    - 2. implement revision(), remote_revision() in Entropy server db classes.
+    - 3. move update() code to Entropy server db class (change semantic?)
 
-    - entropy.server API docs
+    - entropy.server: when repackaging pkgs due to slotmove/pkgmove, repackage
+      them in all the repos they are?
+    - entropy error reports: catch dmidecode data (to figure out if bug is related
+        to faulty virtual machines)
+
     - entropy.client API docs
 
-  1.0_beta1:
+  1.0:
 
+    - add ENTROPY_KNOWN_BROKEN_DEPS support into ebuild/PortagePlugin?
+    - implement system snapshots (as snapshots, sets).
     - Client.urlFetcher/MultipleUrlFetcher? ugly!
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
-    - complete API documentation
     - entropy.db: remove @deprecated methods
 
-  2.0:
+  1.1:
 
     - PackageKit replacement
     - UGC based on XML requests (all the commands into one string)

@@ -474,7 +474,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 pass
             try:
                 conn = self.__connection_cache.pop((th_id, pid))
-                if not self.readOnly:
+                if not self.readonly:
                     try:
                         conn.commit()
                     except OperationalError:
@@ -542,7 +542,7 @@ class EntropyRepository(EntropyRepositoryBase):
         first_part = "<EntropyRepository instance at %s, %s" % (
             hex(id(self)), self.__db_path,)
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
-            self.readOnly, self.xcache, self.indexing,)
+            self.readonly, self.xcache, self.indexing,)
         third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
             self.reponame, self.__skip_checks, self.__structure_update,)
         fourth_part = ", conn_cache: %s, cursor_cache: %s>" % (
@@ -612,7 +612,7 @@ class EntropyRepository(EntropyRepositoryBase):
         super(EntropyRepository, self).commitChanges(force = force,
             no_plugins = no_plugins)
 
-        if force or (not self.readOnly):
+        if force or (not self.readonly):
             try:
                 self._connection().commit()
             except Error:
@@ -4073,7 +4073,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo where idcategory = (?)
-        """ + order_by_string, (idcategory,))
+        """ + order_by_string, (category_id,))
 
         return self._cur2set(cur)
 
@@ -4231,8 +4231,8 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def _databaseStructureUpdates(self):
 
-        old_readonly = self.readOnly
-        self.readOnly = False
+        old_readonly = self.readonly
+        self.readonly = False
 
         if not self._doesTableExist("packagedesktopmime"):
             self._createPackageDesktopMimeTable()
@@ -4279,7 +4279,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         self._foreignKeySupport()
 
-        self.readOnly = old_readonly
+        self.readonly = old_readonly
         self._connection().commit()
 
     def validateDatabase(self):
@@ -5603,4 +5603,3 @@ class EntropyRepository(EntropyRepositoryBase):
         """ @deprecated """
         warnings.warn("deprecated call!")
         return self.maskFilter(*args, **kwargs)
-
