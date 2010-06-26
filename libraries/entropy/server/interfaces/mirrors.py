@@ -196,7 +196,7 @@ class ServerNoticeBoardMixin:
         rss_title = "%s Notice Board" % (self._settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
-        srv_set = self._settings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if not link:
             link = srv_set['rss']['website_url']
 
@@ -236,6 +236,8 @@ class ServerNoticeBoardMixin:
 
 class Server(ServerNoticeBoardMixin):
 
+    SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
+
     import socket
     def __init__(self, server, repo = None):
 
@@ -248,8 +250,6 @@ class Server(ServerNoticeBoardMixin):
         self._entropy = server
         self.TransceiverServerHandler = TransceiverServerHandler
         self.Cacher = EntropyCacher()
-        self.sys_settings_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
         self._settings = SystemSettings()
 
         mytxt = blue("%s:") % (_("Entropy Server Mirrors Interface loaded"),)
@@ -787,7 +787,7 @@ class Server(ServerNoticeBoardMixin):
 
     def _get_remote_db_status(self, uri, repo):
 
-        sys_set = self._settings[self.sys_settings_plugin_id]['server']
+        sys_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         db_format = sys_set['database_file_format']
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
@@ -942,7 +942,7 @@ class Server(ServerNoticeBoardMixin):
             "Keep you updated on what's going on in the %s Repository." % (
                 self._settings['system']['name'],)
 
-        srv_set = self._settings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
         rss_main = RSS(rss_path, rss_title, rss_description,
             maxentries = srv_set['rss']['max_entries'])
@@ -1607,7 +1607,7 @@ class Server(ServerNoticeBoardMixin):
         dbconn = self._entropy.open_server_repository(read_only = False,
             no_upload = True, repo = repo, do_treeupdates = False)
         # grab treeupdates from other databases and inject
-        srv_set = self._settings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(srv_set['repositories'].keys())
         all_actions = set()
         for myrepo in server_repos:
@@ -1668,7 +1668,7 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self._entropy.default_repository
 
-        srv_set = self._settings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if srv_set['rss']['enabled']:
             self._update_rss_feed(repo = repo)
 
@@ -1892,7 +1892,7 @@ class Server(ServerNoticeBoardMixin):
         download_errors = False
         broken_uris = set()
         fine_uris = set()
-        srv_set = self._settings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         disabled_eapis = sorted(srv_set['disabled_eapis'])
 
         for uri in uris:
@@ -2120,7 +2120,7 @@ class Server(ServerNoticeBoardMixin):
             # XXX QA checks,
             # please group them into entropy.qa
 
-            srv_set = self._settings[self.sys_settings_plugin_id]['server']
+            srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
             base_repo = srv_set['base_repository_id']
             if base_repo is None:
                 base_repo = repo
@@ -3232,7 +3232,7 @@ class Server(ServerNoticeBoardMixin):
         if not os.path.isfile(pkg_path):
             return False
 
-        srv_set = self._settings[self.sys_settings_plugin_id]['server']
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         mtime = os.path.getmtime(pkg_path)
         days = srv_set['packages_expiration_days']
         delta = int(days)*24*3600

@@ -2,7 +2,6 @@
   0.99.50:
 
     EntropyRepositoryBase:
-    - 2. implement revision(), remote_revision() in Entropy server db classes.
     - 3. move update() code to Entropy server db class (change semantic?)
 
     - entropy.server: when repackaging pkgs due to slotmove/pkgmove, repackage
