@@ -1251,12 +1251,6 @@ class ErrorReportInterface:
             with open(etpConst['repositoriesconf'], "r") as rc_f:
                 self.params['repositories.conf'] = rc_f.read()
 
-        self.params['server.conf'] = "---NA---"
-        if os.access(etpConst['serverconf'], os.R_OK) and \
-            os.path.isfile(etpConst['serverconf']):
-            with open(etpConst['serverconf'], "r") as rc_f:
-                self.params['server.conf'] = rc_f.read()
-
         self.params['client.conf'] = "---NA---"
         if os.access(etpConst['clientconf'], os.R_OK) and \
             os.path.isfile(etpConst['clientconf']):
