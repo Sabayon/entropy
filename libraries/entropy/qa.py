@@ -1234,16 +1234,34 @@ class ErrorReportInterface:
         self.params['arguments'] = ' '.join(sys.argv)
         self.params['uid'] = etpConst['uid']
         self.params['system_version'] = "N/A"
-        if os.access(etpConst['systemreleasefile'], os.R_OK):
-            f_rel = open(etpConst['systemreleasefile'], "r")
-            self.params['system_version'] = f_rel.readline().strip()
-            f_rel.close()
+        if os.access(etpConst['systemreleasefile'], os.R_OK) and \
+            os.path.isfile(etpConst['systemreleasefile']):
+            with open(etpConst['systemreleasefile'], "r") as f_rel:
+                self.params['system_version'] = f_rel.readline().strip()
 
         self.params['processes'] = getstatusoutput('ps auxf')[1]
         self.params['lsof'] = getstatusoutput('lsof -p %s' % (os.getpid(),))[1]
         self.params['lspci'] = getstatusoutput('/usr/sbin/lspci')[1]
         self.params['dmesg'] = getstatusoutput('dmesg')[1]
         self.params['locale'] = getstatusoutput('locale -v')[1]
+
+        self.params['repositories.conf'] = "---NA---"
+        if os.access(etpConst['repositoriesconf'], os.R_OK) and \
+            os.path.isfile(etpConst['repositoriesconf']):
+            with open(etpConst['repositoriesconf'], "r") as rc_f:
+                self.params['repositories.conf'] = rc_f.read()
+
+        self.params['server.conf'] = "---NA---"
+        if os.access(etpConst['serverconf'], os.R_OK) and \
+            os.path.isfile(etpConst['serverconf']):
+            with open(etpConst['serverconf'], "r") as rc_f:
+                self.params['server.conf'] = rc_f.read()
+
+        self.params['client.conf'] = "---NA---"
+        if os.access(etpConst['clientconf'], os.R_OK) and \
+            os.path.isfile(etpConst['clientconf']):
+            with open(etpConst['clientconf'], "r") as rc_f:
+                self.params['client.conf'] = rc_f.read()
 
         self.generated = True
 
