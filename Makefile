@@ -8,10 +8,10 @@ LIBDIR = $(PREFIX)/lib
 DESTDIR = 
 
 all:
-	for d in $(SUBDIRS); do make -C $$d; done
+	for d in $(SUBDIRS); do $(MAKE) -C $$d; done
 
 clean:
-	for d in $(SUBDIRS); do make -C $$d clean; done
+	for d in $(SUBDIRS); do $(MAKE) -C $$d clean; done
 
 entropy-install:
 
@@ -100,4 +100,4 @@ updates-daemon-install:
 	install -m 644 misc/dbus/interfaces/org.entropy.Client.xml $(DESTDIR)$(PREFIX)/share/dbus-1/interfaces/
 
 install: all entropy-install entropy-server-install equo-install updates-daemon-install
-	for d in $(SUBDIRS); do make -C $$d install; done
+	for d in $(SUBDIRS); do $(MAKE) -C $$d install; done
