@@ -1222,7 +1222,7 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
         if sys.hexversion >= 0x3000000:
             return "None"
         else:
-            return u"None"
+            return unicode("None")
 
     # int support
     if isinstance(obj, int):
