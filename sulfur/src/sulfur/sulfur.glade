@@ -641,7 +641,7 @@
                                 <property name="height_request">26</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">True</property>
-                                <property name="tooltip" translatable="yes">Filter currently shown items, or paste entropy::// action strings (for eg. entropy://amarok, to install Amarok!)</property>
+                                <property name="tooltip" translatable="yes">Filter currently shown items, or paste entropy:// action strings (for eg. entropy://amarok, to install Amarok!)</property>
                                 <property name="invisible_char">&#x25CF;</property>
                                 <property name="primary_icon_stock">gtk-find</property>
                                 <property name="primary_icon_sensitive">True</property>
