@@ -71,6 +71,7 @@ help_opts = [
         (2, 'disable', 1, _('disable given repository')),
         (2, 'add <string>', 1, _('add repository (pass repository string)')),
         (2, 'remove <id>', 1, _('remove repository')),
+        (2, 'mirrorsort <id>', 0, _('reorder mirrors basing on response time')),
     (1, 'notice [repos]', 1, _('repository notice board reader')),
     (1, 'status', 2, _('show respositories status')),
     None,

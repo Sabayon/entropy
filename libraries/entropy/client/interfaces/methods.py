@@ -33,7 +33,8 @@ from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
     InstalledPackagesRepository, AvailablePackagesRepository, GenericRepository
 from entropy.client.mirrors import StatusInterface
-from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
+from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
+    teal
 
 from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError
@@ -711,7 +712,8 @@ class RepositoryMixin:
             return "%s%s%s_%sh%sm%ss" % (ts.year, ts.month, ts.day, ts.hour,
                 ts.minute, ts.second)
 
-        comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'], dbname, get_ts(),)
+        comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'],
+            dbname, get_ts(),)
         comp_dbpath = os.path.join(backup_dir, comp_dbname)
         if not silent:
             mytxt = "%s: %s ..." % (
@@ -1306,6 +1308,83 @@ class MiscMixin:
                 obj.add((pkg_id, repo_id))
 
         return licenses
+
+    def reorder_mirrors(self, repository_id, dry_run = False):
+        """
+        Reorder mirror list for given repository using ping statistics.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword dry_run: do not actually change repository mirrors order
+        @type dry_run: bool
+        @raise KeyError: if repository_id is not available
+        @return: new repository metadata
+        @rtype: dict
+        """
+        repo_data = None
+        avail_data = self._settings['repositories']['available']
+        excluded_data = self._settings['repositories']['excluded']
+
+        if repository_id in avail_data:
+            repo_data = avail_data[repository_id]
+        elif repository_id in excluded_data:
+            repo_data = excluded_data[repository_id]
+
+        if repo_data is None:
+            raise KeyError("repository_id not found")
+
+        pkg_mirrors = repo_data['plain_packages']
+        mirror_stats = {}
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        os.close(tmp_fd)
+        retries = 3
+
+        for mirror in pkg_mirrors:
+
+            url_data = entropy.tools.spliturl(mirror)
+            mytxt = "%s: %s" % (
+                blue(_("Checking response time of")),
+                purple(url_data.hostname),
+            )
+            self.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = purple(" @@ "),
+                back = True
+            )
+
+            start_time = time.time()
+            for idx in range(retries):
+                fetcher = self.urlFetcher(mirror, tmp_path, resume = False,
+                    show_speed = False)
+                fetcher.download()
+            end_time = time.time()
+
+            result_time = (end_time - start_time)/retries
+            mirror_stats[mirror] = result_time
+
+            mytxt = "%s: %s, %s" % (
+                blue(_("Mirror response time")),
+                purple(url_data.hostname),
+                teal(str(result_time)),
+            )
+            self.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = brown(" @@ ")
+            )
+
+        os.remove(tmp_path)
+
+        # calculate new order
+        new_pkg_mirrors = sorted(mirror_stats.keys(),
+            key = lambda x: mirror_stats[x], reverse = True)
+        repo_data['plain_packages'] = new_pkg_mirrors
+        self.remove_repository(repository_id)
+        self.add_repository(repo_data)
+        return repo_data
 
     def set_branch(self, branch):
         """

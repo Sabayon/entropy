@@ -86,6 +86,10 @@ add repository (pass repository string)
 
 remove repository
 
+=item B<mirrorsort <id>>
+
+reorder mirrors basing on response time
+
 =back
 
 =item B<notice [repos]>

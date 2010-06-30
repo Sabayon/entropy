@@ -83,6 +83,8 @@ def repositories(options):
                     rc = _add_repository(entropy_client, myopts)
                 elif repo_opt == "remove":
                     rc = _remove_repository(entropy_client, myopts)
+                elif repo_opt == "mirrorsort":
+                    rc = _mirror_sort(entropy_client, myopts)
                 else:
                     rc = -10
 
@@ -200,6 +202,20 @@ def _disable_repositories(entropy_client, repos):
         print_info("[%s] %s" % (
             teal(repo), blue(_("repository disabled")),))
     return 0
+
+def _mirror_sort(entropy_client, repo_ids):
+
+    for repo_id in repo_ids:
+        try:
+            entropy_client.reorder_mirrors(repo_id, dry_run = etpUi['pretend'])
+        except KeyError:
+            print_warning("[%s] %s" % (
+                purple(repo_id), blue(_("repository not available")),))
+            continue
+        print_info("[%s] %s" % (
+            teal(repo_id), blue(_("mirrors sorted successfully")),))
+    return 0
+
 
 def _show_repository_info(entropy_client, reponame):
 
