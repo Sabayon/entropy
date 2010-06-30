@@ -1351,7 +1351,8 @@ def generic_file_content_parser(filepath, comment_tag = "#"):
 
     @param filepath: configuration file to parse
     @type filepath: string
-    @keyword comment_tag: default comment tag (column where comments starts)
+    @keyword comment_tag: default comment tag (column where comments starts) if
+        line already contains valid data (doesn't start with comment_tag)
     @type: string
     @return: list representing file content
     @rtype: list
@@ -1363,7 +1364,7 @@ def generic_file_content_parser(filepath, comment_tag = "#"):
         gen_f.close()
         # filter comments and white lines
         content = [x.strip().rsplit(comment_tag, 1)[0].strip() for x \
-            in content if not x.startswith(comment_tag) and x.strip()]
+            in content if not x.startswith("#") and x.strip()]
         for line in content:
             if line in data:
                 continue
