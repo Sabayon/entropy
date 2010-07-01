@@ -1991,6 +1991,10 @@ class MaskedPackagesDialog(MenuSkel):
 
     def __init__( self, Entropy, etpbase, parent, pkgs, top_text = None, sub_text = None ):
 
+        self.pkgs = pkgs
+        self.pkgcount = 0
+        self.maxcount = len(pkgs)
+
         self.Entropy = Entropy
         self.etpbase = etpbase
         self.parent = parent
@@ -2026,15 +2030,13 @@ class MaskedPackagesDialog(MenuSkel):
         tit = "<b><span foreground='%s' size='large'>%s</span></b>\n" % (SulfurConf.color_title, _("Some packages are masked"),)
         tit += top_text
         self.action.set_markup( tit )
-        if sub_text != None: self.subaction.set_markup( sub_text )
+        if sub_text != None:
+            self.subaction.set_markup( sub_text )
 
-        self.pkgs = pkgs
         # fill
         self.model = self.setup_view( self.pkg )
         self.show_data( self.model, self.pkgs )
         self.pkg.expand_all()
-        self.pkgcount = 0
-        self.maxcount = len(self.pkgs)
 
     def get_obj(self):
         model, myiter = self.pkg.get_selection().get_selected()
