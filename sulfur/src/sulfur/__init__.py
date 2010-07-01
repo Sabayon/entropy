@@ -1909,10 +1909,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # clear filter bar
         self.ui.pkgFilter.set_text("")
 
-        keyword = data['search_string']
-        fn = search_reference[data['search_type'][0]]
-        self.etpbase.set_search(fn, keyword)
-        self.show_packages()
+        keyword = data.get('search_string', "").strip()
+        if keyword:
+            fn = search_reference[data['search_type'][0]]
+            self.etpbase.set_search(fn, keyword)
+            self.show_packages()
 
     def check_restart_needed(self, to_be_installed_matches):
 
