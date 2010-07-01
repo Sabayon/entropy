@@ -137,11 +137,11 @@
     <li> <strong class="uidlink"><a href="entropy.misc.Callable-class.html">entropy.misc.Callable</a></strong>:
       <em class="summary">Fake class wrapping any callable object into a callable class.</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.ugc.interfaces.Client-class.html">entropy.services.ugc.interfaces.Client</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html">entropy.services.interfaces.SocketHost.CommandProcessor</a></strong>
     </li>
@@ -213,8 +213,6 @@ Content (UGC) infrastructure.</em>
     </ul>
     </li>
     </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.fetchers.MultipleUrlFetcher-class.html">entropy.fetchers.MultipleUrlFetcher</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html">entropy.client.interfaces.noticeboard.NoticeBoardMixin</a></strong>:
       <em class="summary">Main interface for handling Repository Notice Board user data, such
@@ -382,6 +380,24 @@ mechanism based on public-key authentication.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
       <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.AvailablePackagesRepository-class.html">entropy.client.interfaces.db.AvailablePackagesRepository</a></strong>:
+      <em class="summary">This class represents the available packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.GenericRepository-class.html">entropy.client.interfaces.db.GenericRepository</a></strong>:
+      <em class="summary">This class represents a generic packages repository and is a direct
+        subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.InstalledPackagesRepository-class.html">entropy.client.interfaces.db.InstalledPackagesRepository</a></strong>:
+      <em class="summary">This class represents the installed packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerPackagesRepository-class.html">entropy.server.interfaces.main.ServerPackagesRepository</a></strong>:
+      <em class="summary">This class represents the installed packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    </ul>
     </li>
     </ul>
     </li>
@@ -397,10 +413,15 @@ mechanism based on public-key authentication.</em>
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.fetchers.MultipleUrlFetcher-class.html">entropy.fetchers.MultipleUrlFetcher</a></strong>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
       <em class="summary">Entropy QA interface.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server.ServiceInterface-class.html">entropy.services.repository.interfaces.Server.ServiceInterface</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.fetchers.UrlFetcher-class.html">entropy.fetchers.UrlFetcher</a></strong>:
+      <em class="summary">Entropy single URL fetcher.</em>
     </li>
     </ul>
     </li>
@@ -414,8 +435,6 @@ mechanism based on public-key authentication.</em>
     <li> <strong class="uidlink"><a href="entropy.server.transceivers.TransceiverServerHandler-class.html">entropy.server.transceivers.TransceiverServerHandler</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger-class.html">entropy.client.interfaces.trigger.Trigger</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.fetchers.UrlFetcher-class.html">entropy.fetchers.UrlFetcher</a></strong>
     </li>
     <li> <strong class="uidlink">object</strong>:
       <em class="summary">The most base type</em>
@@ -435,9 +454,6 @@ mechanism based on public-key authentication.</em>
     <li> <strong class="uidlink"><a href="entropy.exceptions.CacheCorruptionError-class.html">entropy.exceptions.CacheCorruptionError</a></strong>:
       <em class="summary">On-Disk cache Corruption indication</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.CommandNotFound-class.html">entropy.exceptions.CommandNotFound</a></strong>:
-      <em class="summary">A required binary was not available or executable</em>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.ConnectionError-class.html">entropy.exceptions.ConnectionError</a></strong>:
       <em class="summary">Cannot connect to service</em>
     </li>
@@ -452,11 +468,14 @@ mechanism based on public-key authentication.</em>
       <em class="summary">During dependencies calculation, dependencies got considered vital 
         for system health.</em>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.exceptions.DirectoryNotFound-class.html">entropy.exceptions.DirectoryNotFound</a></strong>:
+      <em class="summary">A directory was not found when it was expected to exist</em>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.EntropyPackageException-class.html">entropy.exceptions.EntropyPackageException</a></strong>:
       <em class="summary">Malformed or missing package data</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.EntropyRepositoryError-class.html">entropy.exceptions.EntropyRepositoryError</a></strong>:
-      <em class="summary">An Entropy-related error occured in EntropyRepository class methods</em>
+    <li> <strong class="uidlink"><a href="entropy.exceptions.FileNotFound-class.html">entropy.exceptions.FileNotFound</a></strong>:
+      <em class="summary">A file was not found when it was expected to exist</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.security.Repository.GPGError-class.html">entropy.security.Repository.GPGError</a></strong>:
       <em class="summary">Errors during GPG commands execution</em>
@@ -475,9 +494,6 @@ mechanism based on public-key authentication.</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.IncorrectParameter-class.html">entropy.exceptions.IncorrectParameter</a></strong>:
-      <em class="summary">A parameter of the wrong type was passed</em>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.InterruptError-class.html">entropy.exceptions.InterruptError</a></strong>:
       <em class="summary">Raised to interrupt a thread or process</em>
     </li>
@@ -487,29 +503,11 @@ mechanism based on public-key authentication.</em>
     <li> <strong class="uidlink"><a href="entropy.exceptions.InvalidDependString-class.html">entropy.exceptions.InvalidDependString</a></strong>:
       <em class="summary">An invalid depend string has been encountered</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.InvalidLocation-class.html">entropy.exceptions.InvalidLocation</a></strong>:
-      <em class="summary">Data was not found when it was expected to exist or was specified 
-        incorrectly</em>
-    <ul>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.DirectoryNotFound-class.html">entropy.exceptions.DirectoryNotFound</a></strong>:
-      <em class="summary">A directory was not found when it was expected to exist</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.FileNotFound-class.html">entropy.exceptions.FileNotFound</a></strong>:
-      <em class="summary">A file was not found when it was expected to exist</em>
-    </li>
-    </ul>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.InvalidPackageSet-class.html">entropy.exceptions.InvalidPackageSet</a></strong>:
       <em class="summary">Package set does not exist</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.InvalidVersionString-class.html">entropy.exceptions.InvalidVersionString</a></strong>:
-      <em class="summary">An invalid version string has been encountered</em>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.LibraryNotFound-class.html">entropy.exceptions.LibraryNotFound</a></strong>:
       <em class="summary">A required library was not available or executable</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.MissingParameter-class.html">entropy.exceptions.MissingParameter</a></strong>:
-      <em class="summary">A parameter is required for the action requested but was not passed</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.OnlineMirrorError-class.html">entropy.exceptions.OnlineMirrorError</a></strong>:
       <em class="summary">Mirror issue</em>
@@ -517,17 +515,11 @@ mechanism based on public-key authentication.</em>
     <li> <strong class="uidlink"><a href="entropy.exceptions.OperationNotPermitted-class.html">entropy.exceptions.OperationNotPermitted</a></strong>:
       <em class="summary">An operation was not permitted operating system</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.ParseError-class.html">entropy.exceptions.ParseError</a></strong>:
-      <em class="summary">An error was generated while attempting to parse the request</em>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.PermissionDenied-class.html">entropy.exceptions.PermissionDenied</a></strong>:
       <em class="summary">Permission denied</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.QueueError-class.html">entropy.exceptions.QueueError</a></strong>:
       <em class="summary">Action queue issue</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.ReadOnlyFileSystem-class.html">entropy.exceptions.ReadOnlyFileSystem</a></strong>:
-      <em class="summary">Read-only file system</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.RepositoryError-class.html">entropy.exceptions.RepositoryError</a></strong>:
       <em class="summary">Cannot open repository database</em>
@@ -540,9 +532,6 @@ mechanism based on public-key authentication.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.SSLError-class.html">entropy.exceptions.SSLError</a></strong>:
       <em class="summary">SSL support is not available</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.exceptions.SecurityViolation-class.html">entropy.exceptions.SecurityViolation</a></strong>:
-      <em class="summary">An incorrect formatting was passed instead of the expected one</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.SystemDatabaseError-class.html">entropy.exceptions.SystemDatabaseError</a></strong>:
       <em class="summary">Cannot open system database</em>
@@ -571,9 +560,6 @@ mechanism based on public-key authentication.</em>
       <em class="summary">This is a base class for handling a map of plugin objects by 
         providing generic add/remove functions.</em>
     <ul>
-    <li> <strong class="uidlink"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html">entropy.db.plugin_store.EntropyRepositoryPluginStore</a></strong>:
-      <em class="summary">EntropyRepository plugin interface.</em>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.db.skel.EntropyRepositoryPluginStore-class.html">entropy.db.skel.EntropyRepositoryPluginStore</a></strong>:
       <em class="summary">EntropyRepository plugin interface.</em>
     <ul>
@@ -582,10 +568,31 @@ mechanism based on public-key authentication.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
       <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.AvailablePackagesRepository-class.html">entropy.client.interfaces.db.AvailablePackagesRepository</a></strong>:
+      <em class="summary">This class represents the available packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.GenericRepository-class.html">entropy.client.interfaces.db.GenericRepository</a></strong>:
+      <em class="summary">This class represents a generic packages repository and is a direct
+        subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.InstalledPackagesRepository-class.html">entropy.client.interfaces.db.InstalledPackagesRepository</a></strong>:
+      <em class="summary">This class represents the installed packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerPackagesRepository-class.html">entropy.server.interfaces.main.ServerPackagesRepository</a></strong>:
+      <em class="summary">This class represents the installed packages repository and is a 
+        direct subclass of EntropyRepository.</em>
     </li>
     </ul>
     </li>
     </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html">entropy.db.plugin_store.EntropyRepositoryPluginStore</a></strong>:
+      <em class="summary">EntropyRepository plugin interface.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
       <em class="summary">Entropy QA interface.</em>
@@ -601,6 +608,24 @@ mechanism based on public-key authentication.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
       <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.AvailablePackagesRepository-class.html">entropy.client.interfaces.db.AvailablePackagesRepository</a></strong>:
+      <em class="summary">This class represents the available packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.GenericRepository-class.html">entropy.client.interfaces.db.GenericRepository</a></strong>:
+      <em class="summary">This class represents a generic packages repository and is a direct
+        subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.InstalledPackagesRepository-class.html">entropy.client.interfaces.db.InstalledPackagesRepository</a></strong>:
+      <em class="summary">This class represents the installed packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerPackagesRepository-class.html">entropy.server.interfaces.main.ServerPackagesRepository</a></strong>:
+      <em class="summary">This class represents the installed packages repository and is a 
+        direct subclass of EntropyRepository.</em>
+    </li>
+    </ul>
     </li>
     </ul>
     </li>
@@ -769,7 +794,7 @@ dict(**kwargs) -&gt; new dictionary initialized with the name=value pairs
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Jun  8 13:11:59 2010
+    Generated by Epydoc 3.0.1 on Thu Jul  1 07:15:35 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
