@@ -33,6 +33,8 @@ from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.client.mirrors import StatusInterface
+from entropy.exceptions import RepositoryError
+from entropy.db.exceptions import OperationalError, IntegrityError
 
 import entropy.tools
 
