@@ -433,7 +433,8 @@ class ToolsTest(unittest.TestCase):
 
     def test_catpkgsplit(self):
         data = {
-            'app-foo/foo-1.2.3': ["app-foo", "foo", "1.2.3", "r0"],
+            'app-foo/foo-1.2.3': ("app-foo", "foo", "1.2.3", "r0"),
+            'www-apps/389-foo-1.2.3': ("www-apps", "389-foo", "1.2.3", "r0"),
         }
         for atom, split_data in data.items():
             pkgsplit = et.catpkgsplit(atom)

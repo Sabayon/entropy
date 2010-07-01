@@ -1372,12 +1372,32 @@ def generic_file_content_parser(filepath, comment_tag = "#"):
     return data
 
 # Imported from Gentoo portage_dep.py
-# Copyright 2003-2004 Gentoo Foundation
-# done to avoid the import of portage_dep here
-ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
+# Copyright 1999-2010 Gentoo Foundation
+
+# 2.1.1 A category name may contain any of the characters [A-Za-z0-9+_.-].
+# It must not begin with a hyphen or a dot.
+_cat = r'[\w+][\w+.-]*'
+
+# 2.1.2 A package name may contain any of the characters [A-Za-z0-9+_-].
+# It must not begin with a hyphen,
+# and must not end in a hyphen followed by one or more digits.
+_pkg = r'[\w+][\w+-]*?'
+
+_v = r'(cvs\.)?(\d+)((\.\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\d*)*)'
+_rev = r'\d+'
+_vr = _v + '(-r(' + _rev + '))?'
+
+_cp = '(' + _cat + '/' + _pkg + '(-' + _vr + ')?)'
+_cpv = '(' + _cp + '-' + _vr + ')'
+_pv = '(?P<pn>' + _pkg + '(?P<pn_inval>-' + _vr + ')?)' + '-(?P<ver>' + _v + ')(-r(?P<rev>' + _rev + '))?'
+
+ver_regexp = re.compile("^" + _vr + "$")
 suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
 suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
+
+valid_category = re.compile("^\w[\w-]*")
+invalid_atom_chars_regexp = re.compile("[()|@]")
 
 def isjustpkgname(mypkg):
     """
@@ -1416,12 +1436,6 @@ def ververify(myverx, silent = 1):
             print_generic("!!! syntax error in version: %s" % myver)
         return 0
 
-
-# Copyright 2003-2004 Gentoo Foundation
-# Distributed under the terms of the GNU General Public License v2
-# $Id: dep.py 11813 2008-11-06 04:56:17Z zmedico $
-valid_category = re.compile("^\w[\w-]*")
-invalid_atom_chars_regexp = re.compile("[()|@]")
 
 def isvalidatom(myatom, allow_blockers = True):
     """
@@ -1597,9 +1611,9 @@ def catpkgsplit(mydata, silent = 1):
     @type mydata: string 
     @param silent: suppress error messages
     @type silent: Boolean (integer)
-    @rype: list
+    @rype: tuple
     @return:
-        1.  If each exists, it returns [cat, pkgname, version, rev]
+        1.  If each exists, it returns (cat, pkgname, version, rev)
         2.  If cat is not specificed in mydata, cat will be "null"
         3.  if rev does not exist it will be '-r0'
     """
@@ -1608,68 +1622,38 @@ def catpkgsplit(mydata, silent = 1):
     mysplit = mydata.split("/")
     p_split = None
     if len(mysplit) == 1:
-        retval = ["null"]
-        p_split = pkgsplit(mydata, silent=silent)
+        retval = ("null",)
+        p_split = _pkgsplit(mydata)
     elif len(mysplit) == 2:
-        retval = [mysplit[0]]
-        p_split = pkgsplit(mysplit[1], silent=silent)
+        retval = (mysplit[0],)
+        p_split = _pkgsplit(mysplit[1])
     if not p_split:
         return None
-    retval.extend(p_split)
+    retval += p_split
     return retval
 
-def pkgsplit(mypkg, silent=1):
+_pv_re = re.compile('^' + _pv + '$', re.VERBOSE)
+def _pkgsplit(mypkg):
     """
-    docstring_title
-
-    @param mypkg: 
-    @type mypkg: 
-    @keyword silent=1: 
-    @type silent=1: 
-    @return: 
-    @rtype: 
+    @param mypkg: pv
+    @return:
+    1. None if input is invalid.
+    2. (pn, ver, rev) if input is pv
     """
-    myparts = mypkg.split("-")
-
-    if len(myparts) < 2:
-        if not silent:
-            print_generic("!!! Name error in", mypkg+": missing a version or name part.")
-            return None
-    for x in myparts:
-        if len(x) == 0:
-            if not silent:
-                print_generic("!!! Name error in", mypkg+": empty \"-\" part.")
-                return None
-
-    #verify rev
-    revok = 0
-    myrev = myparts[-1]
-
-    if len(myrev) and myrev[0] == "r":
-        try:
-            int(myrev[1:])
-            revok = 1
-        except ValueError: # from int()
-            pass
-    if revok:
-        verPos = -2
-        revision = myparts[-1]
-    else:
-        verPos = -1
-        revision = "r0"
-
-    if ververify(myparts[verPos]):
-        if len(myparts) == (-1*verPos):
-            return None
-        else:
-            for x in myparts[:verPos]:
-                if ververify(x):
-                    return None
-                    #names can't have versiony looking parts
-            myval = ["-".join(myparts[:verPos]), myparts[verPos], revision]
-            return myval
-    else:
+    m = _pv_re.match(mypkg)
+    if m is None:
         return None
+
+    if m.group('pn_inval') is not None:
+        # package name appears to have a version-like suffix
+        return None
+
+    rev = m.group('rev')
+    if rev is None:
+        rev = '0'
+    rev = 'r' + rev
+
+    return  (m.group('pn'), m.group('ver'), rev)
 
 def dep_getkey(mydepx):
     """
