@@ -13,6 +13,7 @@
 # LINE CONSTRUCTION:
 # <keyword> <atom||repo=repository id> <atom||repo=repository id>
 # See examples below
+# NOTE: for inline comments, please use "##" instead of "#"
 
 # UNIVERSAL UNMASKING:
 # Unmasking all packages with -* keyword means writing a like like this (without the # marker):

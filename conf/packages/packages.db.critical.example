@@ -4,6 +4,7 @@
 # LINE CONSTRUCTION:
 # <atom>
 # See examples below
+# NOTE: for inline comments, please use "##" instead of "#"
 
 # EXAMPLES:
 # sys-apps/entropy
