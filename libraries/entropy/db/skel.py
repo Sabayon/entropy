@@ -4234,6 +4234,25 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             versions.add(info_tuple)
             pkgdata[info_tuple] = x[0]
 
+        # if matchTag is not specified, and tagged and non-tagged packages
+        # are available, prefer non-tagged ones, excluding others.
+        if not matchTag:
+
+            non_tagged_available = False
+            tagged_available = False
+            for ver, tag, rev in versions:
+                if tag:
+                    tagged_available = True
+                else:
+                    non_tagged_available = True
+                if tagged_available and non_tagged_available:
+                    break
+
+            if tagged_available and non_tagged_available:
+                # filter out tagged
+                versions = set(((ver, tag, rev) for ver, tag, rev in versions \
+                    if not tag))
+
         newer = entropy.tools.get_entropy_newer_version(list(versions))[0]
         x = pkgdata[newer]
         if extendedResults:
