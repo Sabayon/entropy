@@ -485,7 +485,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         @return: raw text extracted from file
         @rtype: list
         """
-        lines = entropy.tools.generic_file_content_parser(filepath)
+        lines = entropy.tools.generic_file_content_parser(filepath,
+            comment_tag = "##")
         # filter out non-ASCII lines
         lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
         return lines
@@ -3942,7 +3943,8 @@ class ServerRepositoryMixin:
         rl_file = self._get_local_restricted_file(repo = repo)
         if not os.path.isfile(rl_file):
             return []
-        return entropy.tools.generic_file_content_parser(rl_file)
+        return entropy.tools.generic_file_content_parser(rl_file,
+            comment_tag = "##")
 
     def _is_pkg_restricted(self, pkg_atom, pkg_slot, repo = None):
 

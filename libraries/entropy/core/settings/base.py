@@ -67,6 +67,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__data = {}
         self.__is_destroyed = False
         self.__inside_with_stmt = 0
+        self.__pkg_comment_tag = "##"
 
         self.__external_plugins = {}
         self.__setting_files_order = []
@@ -496,7 +497,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.validate_entropy_cache(self.__setting_files['keywords'],
             self.__mtime_files['keywords_mtime'])
         content = [x.split() for x in \
-            self.__generic_parser(self.__setting_files['keywords']) \
+            self.__generic_parser(self.__setting_files['keywords'],
+            comment_tag = self.__pkg_comment_tag) \
             if len(x.split()) < 4]
         for keywordinfo in content:
             # skip wrong lines
@@ -570,7 +572,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         self.validate_entropy_cache(self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
-        return self.__generic_parser(self.__setting_files['unmask'])
+        return self.__generic_parser(self.__setting_files['unmask'],
+            comment_tag = self.__pkg_comment_tag)
 
     def _mask_parser(self):
         """
@@ -584,7 +587,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         self.validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
-        return self.__generic_parser(self.__setting_files['mask'])
+        return self.__generic_parser(self.__setting_files['mask'],
+            comment_tag = self.__pkg_comment_tag)
 
     def _satisfied_parser(self):
         """
@@ -598,7 +602,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         self.validate_entropy_cache(self.__setting_files['satisfied'],
             self.__mtime_files['satisfied_mtime'])
-        return self.__generic_parser(self.__setting_files['satisfied'])
+        return self.__generic_parser(self.__setting_files['satisfied'],
+            comment_tag = self.__pkg_comment_tag)
 
     def _system_mask_parser(self):
         """
@@ -613,7 +618,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         """
         self.validate_entropy_cache(self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
-        return self.__generic_parser(self.__setting_files['system_mask'])
+        return self.__generic_parser(self.__setting_files['system_mask'],
+            comment_tag = self.__pkg_comment_tag)
 
     def _license_mask_parser(self):
         """
@@ -1316,16 +1322,19 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 EntropyCacher.CACHE_IDS['db_match'],
                     etpConst['dbnamerepoprefix'], repoid,))
 
-    def __generic_parser(self, filepath):
+    def __generic_parser(self, filepath, comment_tag = "#"):
         """
         Internal method. This is the generic file parser here.
 
         @param filepath: valid path
         @type filepath: string
+        @keyword comment_tag: default comment tag (column where comments starts)
+        @type: string
         @return: raw text extracted from file
         @rtype: list
         """
-        lines = entropy.tools.generic_file_content_parser(filepath)
+        lines = entropy.tools.generic_file_content_parser(filepath,
+            comment_tag = comment_tag)
         # filter out non-ASCII lines
         lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
         return lines
