@@ -4096,8 +4096,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
             while True:
                 # check for direction
-                stripped_atom = entropy.tools.dep_getcpv(scan_atom)
-                if scan_atom[-1] == "*":
+                scan_cpv = entropy.tools.dep_getcpv(scan_atom)
+                stripped_atom = scan_cpv
+                if scan_atom.endswith("*"):
                     stripped_atom += "*"
                 direction = scan_atom[0:-len(stripped_atom)]
 
@@ -4105,7 +4106,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 pkgkey = stripped_atom
                 if justname == 0:
                     # get version
-                    data = entropy.tools.catpkgsplit(stripped_atom)
+                    data = entropy.tools.catpkgsplit(scan_cpv)
                     if data is None:
                         break # badly formatted
                     pkgversion = data[2]+"-"+data[3]
