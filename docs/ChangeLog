@@ -1,3 +1,20 @@
+commit 9490c85da50cf1f8cf8fcd40b87d74ed72c9283d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 15:04:44 2010 +0200
+
+    [entropy.spm.plugins] PortagePlugin: fix _create_contents_file_if_not_available
+    
+    Fix the following issues:
+    - incorrect symlinks handling when link pointed to file
+    - incorrect symlinks handling when link pointed to directory
+    - incorrect symlinks handling when link pointed to broken path
+
+commit a7397a0d47ec2f33b5fcfdc401ccb060b7d6ac17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 09:58:10 2010 +0200
+
+    Tagging Entropy version 0.99.47.2
+
 commit 406032e4539215f069cb470238832d13177362cb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 2 09:57:38 2010 +0200
