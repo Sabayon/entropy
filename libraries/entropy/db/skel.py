@@ -4109,7 +4109,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     data = entropy.tools.catpkgsplit(scan_cpv)
                     if data is None:
                         break # badly formatted
-                    pkgversion = data[2]+"-"+data[3]
+                    wildcard = ""
+                    if scan_atom.endswith("*"):
+                        wildcard = "*"
+                    pkgversion = data[2]+wildcard+"-"+data[3]
                     pkgkey = entropy.tools.dep_getkey(stripped_atom)
 
                 splitkey = pkgkey.split("/")
