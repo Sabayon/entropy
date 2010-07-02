@@ -18,6 +18,7 @@ import stat
 import tempfile
 import subprocess
 import tarfile
+import time
 
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms
@@ -2499,14 +2500,19 @@ class PortagePlugin(SpmPlugin):
                 )
                 continue
 
-            if os.path.isfile(path):
+            is_sym = os.path.islink(path)
+            if os.path.isfile(path) and not is_sym:
                 md5sum = entropy.tools.md5sum(path)
                 mtime = int(os.path.getmtime(path))
                 content_meta[path] = (obj_t, mtime, md5sum,)
-            elif os.path.isdir(path):
+            elif os.path.isdir(path) and not is_sym:
                 content_meta[path] = (dir_t,)
-            elif os.path.islink(path):
-                mtime = int(os.path.getmtime(path))
+            elif is_sym:
+                try:
+                    mtime = int(os.path.getmtime(path))
+                except OSError:
+                    # broken symlink!
+                    mtime = int(time.time())
                 content_meta[path] = (sym_t, mtime, os.readlink(path),)
             else:
                 try:
