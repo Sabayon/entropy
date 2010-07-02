@@ -379,11 +379,15 @@ class RepositoryMixin:
 
             if not disable and not enable: # so it's a add
 
-                line = "repository|%s|%s|%s|%s#%s#%s,%s" % (
+                service_uri = repodata.get('service_uri', '')
+                if service_uri:
+                    service_uri = ',%s' % (service_uri,)
+                line = "repository|%s|%s|%s|%s%s#%s#%s,%s" % (
                     repodata['repoid'],
                     repodata['description'],
                     ' '.join(repodata['plain_packages']),
                     repodata['plain_database'],
+                    service_uri,
                     repodata['dbcformat'],
                     repodata['service_port'],
                     repodata['ssl_service_port'],
