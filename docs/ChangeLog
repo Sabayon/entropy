@@ -1,3 +1,15 @@
+commit c75031300c133c05e79ec90208ae1aa52bf0266b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 09:07:31 2010 +0200
+
+    [entropy.db.skel] EntropyRepositoryBase.atomMatch(): fix catpkgsplit call
+
+commit 0169c04387e6f02b183cd53d4b7d64967f69cc32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 1 14:21:45 2010 +0200
+
+    Tagging Entropy version 0.99.47
+
 commit bda36cabbdfe903d42919f35957e2c218067e3a3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 1 14:17:59 2010 +0200
