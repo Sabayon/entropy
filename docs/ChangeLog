@@ -1,3 +1,15 @@
+commit 406032e4539215f069cb470238832d13177362cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 09:57:38 2010 +0200
+
+    [entropy.db.skel] EntropyRepositoryBase.atomMatch: fix dependency resolution, regression introduced by previous commits
+
+commit 9f54541127684419f1e9d6690973c4be8182bf11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 09:08:17 2010 +0200
+
+    Tagging Entropy version 0.99.47.1
+
 commit c75031300c133c05e79ec90208ae1aa52bf0266b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 2 09:07:31 2010 +0200
