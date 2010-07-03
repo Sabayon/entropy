@@ -2483,15 +2483,21 @@ class PortagePlugin(SpmPlugin):
         dir_t = const_convert_to_rawstring("dir")
         fif_t = const_convert_to_rawstring("fif")
         dev_t = const_convert_to_rawstring("dev")
+        utf_sys_root = etpConst['systemroot']
+        if utf_sys_root:
+            utf_sys_root += os.path.sep
+        sys_root = const_convert_to_rawstring(utf_sys_root)
+
         content_meta = {}
         for path_orig in sorted(entropy_content):
 
-            path = const_convert_to_rawstring(path_orig)
+            path_orig = const_convert_to_rawstring(path_orig)
+            path = sys_root + path_orig
 
             if not os.path.lexists(path):
                 mytxt = "%s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot stat path")),
-                    purple(repr(path_orig)),)
+                    purple(repr(path)),)
                 self.output(
                     mytxt,
                     importance = 1,
@@ -2526,12 +2532,12 @@ class PortagePlugin(SpmPlugin):
                         # device?
                         content_meta[path] = (dev_t,)
 
-        root = etpConst['systemroot'] + os.path.sep
         portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
         self._bump_vartree_mtime(portage_cpv)
 
         with open(cont_path, "wb") as cont_f:
-            write_contents(content_meta, root, cont_f)
+            # NOTE: content_meta contains paths with ROOT prefix, it's ok
+            write_contents(content_meta, utf_sys_root, cont_f)
             cont_f.flush()
 
         self._bump_vartree_mtime(portage_cpv)
