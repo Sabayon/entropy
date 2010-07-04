@@ -246,9 +246,6 @@ def repositories(options):
 
             def dep_check_cb(s):
 
-                if not entropy.tools.isvalidatom(s):
-                    return False
-
                 input_params = [
                     ('dep_type', ('combo', (_("Dependency type"), avail_dep_type_desc),),
                         pkg_dep_types_cb, False)

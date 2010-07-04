@@ -400,36 +400,14 @@ class ToolsTest(unittest.TestCase):
         os.remove(tmp_path)
         os.remove(sha_path)
 
-    def test_isjustpkgname(self):
-        self.assert_(et.isjustpkgname("foo"))
-        self.assert_(not et.isjustpkgname("app-misc/foo-1.2.3"))
-
-    def test_isvalidatom(self):
-        self.assert_(not et.isvalidatom('media-libs/test-3.0'))
-        self.assert_(et.isvalidatom('>=media-libs/test-3.0'))
-
     def test_md5string(self):
         mystring = "ciao"
         out_str = et.md5string(mystring)
         self.assertEqual(out_str, "6e6bc4e49dd477ebc98ef4046c067b5f")
 
-    def test_get_operator(self):
-        ops = {
-            '>=': "media-libs/foo",
-            '<': "media-libs/foo",
-            '<=': "media-libs/foo",
-            '~': "media-libs/foo",
-        }
-        for op, key in ops.items():
-            self.assertEqual(op, et.get_operator(op + key))
-
     def test_isjustname(self):
         self.assert_(not et.isjustname("app-foo/foo-1.2.3"))
         self.assert_(et.isjustname("app-foo/foo"))
-
-    def test_isspecific(self):
-        self.assert_(et.isspecific("app-foo/foo-1.2.3"))
-        self.assert_(not et.isspecific("app-foo/foo"))
 
     def test_catpkgsplit(self):
         data = {

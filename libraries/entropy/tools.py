@@ -1399,159 +1399,14 @@ endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 valid_category = re.compile("^\w[\w-]*")
 invalid_atom_chars_regexp = re.compile("[()|@]")
 
-def isjustpkgname(mypkg):
-    """
-    docstring_title
-
-    @param mypkg: 
-    @type mypkg: 
-    @return: 
-    @rtype: 
-    """
-    myparts = mypkg.split('-')
-    for x in myparts:
-        if ververify(x):
-            return 0
-    return 1
-
-def ververify(myverx, silent = 1):
-    """
-    docstring_title
-
-    @param myverx: 
-    @type myverx: 
-    @keyword silent: 
-    @type silent: 
-    @return: 
-    @rtype: 
-    """
-
-    myver = myverx[:]
+def _ververify(myver):
     if myver.endswith("*"):
-        myver = myver[:-1]
-    if ver_regexp.match(myver):
-        return 1
+        m = ver_regexp.match(myver[:-1])
     else:
-        if not silent:
-            print_generic("!!! syntax error in version: %s" % myver)
-        return 0
-
-
-def isvalidatom(myatom, allow_blockers = True):
-    """
-    Check to see if a depend atom is valid
-
-    Example usage:
-            >>> isvalidatom('media-libs/test-3.0')
-            0
-            >>> isvalidatom('>=media-libs/test-3.0')
-            1
-
-    @param atom: The depend atom to check against
-    @type atom: String
-    @rtype: Integer
-    @return: One of the following:
-            1) 0 if the atom is invalid
-            2) 1 if the atom is valid
-    """
-    atom = remove_tag(myatom)
-    atom = remove_usedeps(atom)
-    if invalid_atom_chars_regexp.search(atom):
-        return 0
-    if allow_blockers and atom[:1] == "!":
-        if atom[1:2] == "!":
-            atom = atom[2:]
-        else:
-            atom = atom[1:]
-
-    # media-sound/amarok/x ?
-    if atom.count("/") > 1:
-        return 0
-
-    cpv = dep_getcpv(atom)
-    cpv_catsplit = catsplit(cpv)
-    mycpv_cps = None
-    if cpv:
-        if len(cpv_catsplit) == 2:
-            if valid_category.match(cpv_catsplit[0]) is None:
-                return 0
-            if cpv_catsplit[0] == "null":
-                # "null" category is valid, missing category is not.
-                mycpv_cps = catpkgsplit(cpv.replace("null/", "cat/", 1))
-                if mycpv_cps:
-                    mycpv_cps = list(mycpv_cps)
-                    mycpv_cps[0] = "null"
-        if not mycpv_cps:
-            mycpv_cps = catpkgsplit(cpv)
-
-    operator = get_operator(atom)
-    if operator:
-        if operator[0] in "<>" and remove_slot(atom).endswith("*"):
-            return 0
-        if mycpv_cps:
-            if len(cpv_catsplit) == 2:
-                # >=cat/pkg-1.0
-                return 1
-            else:
-                return 0
-        else:
-            # >=cat/pkg or >=pkg-1.0 (no category)
-            return 0
-    if mycpv_cps:
-        # cat/pkg-1.0
-        return 0
-
-    if len(cpv_catsplit) == 2:
-        # cat/pkg
-        return 1
-    return 0
-
-def catsplit(mydep):
-    """
-    docstring_title
-
-    @param mydep: 
-    @type mydep: 
-    @return: 
-    @rtype: 
-    """
-    return mydep.split("/", 1)
-
-def get_operator(mydep):
-    """
-    Return the operator used in a depstring.
-
-    Example usage:
-            >>> from portage.dep import *
-            >>> get_operator(">=test-1.0")
-            '>='
-
-    @param mydep: The dep string to check
-    @type mydep: String
-    @rtype: String
-    @return: The operator. One of:
-            '~', '=', '>', '<', '=*', '>=', or '<='
-    """
-    if mydep:
-        mydep = remove_slot(mydep)
-    if not mydep:
-        return None
-    if mydep[0] == "~":
-        operator = "~"
-    elif mydep[0] == "=":
-        if mydep[-1] == "*":
-            operator = "=*"
-        else:
-            operator = "="
-    elif mydep[0] in "><":
-        if len(mydep) > 1 and mydep[1] == "=":
-            operator = mydep[0:2]
-        else:
-            operator = mydep[0]
-    else:
-        operator = None
-
-    return operator
+        m = ver_regexp.match(myver)
+    if m:
+        return True
+    return False
 
 def isjustname(mypkg):
     """
@@ -1567,28 +1422,24 @@ def isjustname(mypkg):
 
     @param mypkg: The package atom to check
     @param mypkg: String
-    @rtype: Integer
-    @return: One of the following:
-        1) 0 if the package string is not just the package name
-        2) 1 if it is
+    @rtype: int
+    @return: if the package string is not just the package name
     """
+    for chunk in mypkg.split('-'):
+        if _ververify(chunk):
+            return False
+    return True
 
-    myparts = mypkg.split('-')
-    for x in myparts:
-        if ververify(x):
-            return 0
-    return 1
-
-def isspecific(mypkg):
+def _isspecific(mypkg):
     """
     Checks to see if a package is in category/package-version or package-version format,
     possibly returning a cached result.
 
     Example usage:
-        >>> isspecific('media-libs/test')
-        0
-        >>> isspecific('media-libs/test-3.0')
-        1
+        >>> _isspecific('media-libs/test')
+        False
+        >>> _isspecific('media-libs/test-3.0')
+        True
 
     @param mypkg: The package depstring to check against
     @type mypkg: String
@@ -1599,18 +1450,16 @@ def isspecific(mypkg):
     """
     mysplit = mypkg.split("/")
     if not isjustname(mysplit[-1]):
-        return 1
-    return 0
+        return True
+    return False
 
 
-def catpkgsplit(mydata, silent = 1):
+def catpkgsplit(mydata):
     """
     Takes a Category/Package-Version-Rev and returns a list of each.
 
     @param mydata: Data to split
-    @type mydata: string 
-    @param silent: suppress error messages
-    @type silent: Boolean (integer)
+    @type mydata: string
     @rype: tuple
     @return:
         1.  If each exists, it returns (cat, pkgname, version, rev)
@@ -1675,7 +1524,7 @@ def dep_getkey(mydepx):
     mydep = remove_usedeps(mydep)
 
     mydep = dep_getcpv(mydep)
-    if mydep and isspecific(mydep):
+    if mydep and _isspecific(mydep):
         mysplit = catpkgsplit(mydep)
         if not mysplit:
             return mydep

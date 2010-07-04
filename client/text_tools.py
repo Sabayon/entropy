@@ -293,9 +293,7 @@ def enlightenatom(atom):
     clean_atom = entropy.tools.remove_entropy_revision(atom)
     clean_atom = entropy.tools.remove_tag(clean_atom)
     only_cpv = entropy.tools.dep_getcpv(clean_atom)
-    operator = entropy.tools.get_operator(clean_atom)
-    if operator is None:
-        operator = ''
+    operator = clean_atom[:len(clean_atom)-len(only_cpv)]
     cat, name, pv, rev = entropy.tools.catpkgsplit(only_cpv)
     if rev == "r0":
         rev = ''
