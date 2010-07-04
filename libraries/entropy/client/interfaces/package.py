@@ -2119,62 +2119,6 @@ class Package:
 
         return my_remove_content
 
-    def __allocate_masked_file(self, maskfile, fromfile):
-
-        # check if file and tofile are equal
-        if os.path.isfile(maskfile) and os.path.isfile(fromfile):
-            old = entropy.tools.md5sum(fromfile)
-            new = entropy.tools.md5sum(maskfile)
-            if old == new:
-                return maskfile, False
-
-        counter = -1
-        newfile = ""
-        previousfile = ""
-
-        while True:
-            counter += 1
-            txtcounter = str(counter)
-            oldtxtcounter = str(counter-1)
-            txtcounter_len = 4-len(txtcounter)
-            cnt = 0
-            while cnt < txtcounter_len:
-                txtcounter = "0"+txtcounter
-                oldtxtcounter = "0"+oldtxtcounter
-                cnt += 1
-            newfile = os.path.join(os.path.dirname(maskfile),
-                "._cfg" + txtcounter + "_" + os.path.basename(maskfile))
-            if counter > 0:
-                previousfile = os.path.join(os.path.dirname(maskfile),
-                    "._cfg" + oldtxtcounter + "_" + os.path.basename(maskfile))
-            else:
-                previousfile = os.path.join(os.path.dirname(maskfile),
-                    "._cfg0000_" + os.path.basename(maskfile))
-            if not os.path.exists(newfile):
-                break
-
-        if not newfile:
-            newfile = os.path.join(os.path.dirname(maskfile),
-                "._cfg0000_" + os.path.basename(maskfile))
-        else:
-
-            if os.path.exists(previousfile):
-
-                # compare fromfile with previousfile
-                new = entropy.tools.md5sum(fromfile)
-                old = entropy.tools.md5sum(previousfile)
-                if new == old:
-                    return previousfile, False
-
-                # compare old and new, if they match,
-                # suggest previousfile directly
-                new = entropy.tools.md5sum(maskfile)
-                old = entropy.tools.md5sum(previousfile)
-                if new == old:
-                    return previousfile, False
-
-        return newfile, True
-
     def _handle_config_protect(self, protect, mask, fromfile, tofile,
         do_allocation_check = True, do_quiet = False):
         """
@@ -2279,7 +2223,9 @@ class Package:
 
         prot_status = True
         if do_allocation_check:
-            tofile, prot_status = self.__allocate_masked_file(tofile, fromfile)
+            spm_class = self._entropy.Spm_class()
+            tofile, prot_status = spm_class.allocate_protected_file(fromfile,
+                tofile)
 
         if not prot_status:
             # a protected file with the same content

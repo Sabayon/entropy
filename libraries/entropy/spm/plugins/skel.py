@@ -10,10 +10,13 @@
     @todo: define SpmPlugin API
 
 """
+import os
 
 from entropy.const import etpConst
 from entropy.core import Singleton
 from entropy.misc import LogFile
+
+import entropy.tools
 
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
@@ -776,6 +779,92 @@ class SpmPlugin(Singleton):
         @raise KeyError: if phase is not available
         """
         raise NotImplementedError()
+
+    @staticmethod
+    def allocate_protected_file(package_file_path, destination_file_path):
+        """
+        Allocate a configuration protected file. This method returns a new
+        destination_file_path value that is used by Entropy Client code to
+        merge file at package_file_path to live system.
+        This method offers basic support for Entropy ability to protect user
+        configuration files against overwrites. Any subclass can hook code
+        here in order to trigger extra actions on every acknowledged
+        path modification.
+
+        @param package_file_path: a valid file path pointing to the file
+            that Entropy Client is going to move to destination_file_path
+        @type package_file_path: string
+        @param destination_file_path: the default destination path for given
+            package_file_path. It points to the live system.
+        @type destination_file_path: string
+        @return: Tuple (of length 2) composed by (1) a new destination file
+            path. Please note that it can be the same of the one passed
+            (destination_file_path) if no protection is taken (for eg. when
+            md5 of proposed_file_path and destination_file_path is the same)
+            and (2) a bool informing if the function actually protected the
+            destination file. Unfortunately, the bool bit is stil required
+            in order to provide a valid new destination_file_path in any case.
+        @rtype tuple
+        """
+        if os.path.isfile(destination_file_path) and \
+            os.path.isfile(package_file_path):
+            old = entropy.tools.md5sum(package_file_path)
+            new = entropy.tools.md5sum(destination_file_path)
+            if old == new:
+                return destination_file_path, False
+
+        dest_dirname = os.path.dirname(destination_file_path)
+        dest_basename = os.path.basename(destination_file_path)
+
+        counter = -1
+        newfile = ""
+        previousfile = ""
+        while True:
+
+            counter += 1
+            txtcounter = str(counter)
+            oldtxtcounter = str(counter-1)
+            txtcounter_len = 4-len(txtcounter)
+            cnt = 0
+
+            while cnt < txtcounter_len:
+                txtcounter = "0"+txtcounter
+                oldtxtcounter = "0"+oldtxtcounter
+                cnt += 1
+
+            newfile = os.path.join(dest_dirname,
+                "._cfg%s_%s" % (txtcounter, dest_basename,))
+            if counter > 0:
+                previousfile = os.path.join(dest_dirname,
+                    "._cfg%s_%s" % (oldtxtcounter, dest_basename,))
+            else:
+                previousfile = os.path.join(dest_dirname,
+                    "._cfg0000_%s" % (dest_basename,))
+
+            if not os.path.lexists(newfile):
+                break
+
+        if not newfile:
+            newfile = os.path.join(dest_dirname,
+                "._cfg0000_%s" % (dest_basename,))
+        else:
+
+            if os.path.exists(previousfile):
+
+                # compare package_file_path with previousfile
+                new = entropy.tools.md5sum(package_file_path)
+                old = entropy.tools.md5sum(previousfile)
+                if new == old:
+                    return previousfile, False
+
+                # compare old and new, if they match,
+                # suggest previousfile directly
+                new = entropy.tools.md5sum(destination_file_path)
+                old = entropy.tools.md5sum(previousfile)
+                if new == old:
+                    return previousfile, False
+
+        return newfile, True
 
     def add_installed_package(self, package_metadata):
         """
