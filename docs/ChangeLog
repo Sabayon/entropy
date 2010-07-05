@@ -1,3 +1,52 @@
+commit f6f7992a0b52495a7c721e86d18e9e19cac15514
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 5 18:06:50 2010 +0200
+
+    [entropy.client.interfaces.dep] improve orphaned direct dependencies removal
+    
+    During reverse dependencies calculation (with --deep, deep=True)
+    not every orphaned dependency was pulled in in the removal queue
+    due to the shallow checks the function did (for performance purposes).
+    This patch definitely makes --deep working at the expense of reduced
+    function speed. Thanks to Joost Ruis <joost.ruis@sabayon.org> for
+    reporting.
+
+commit 5ba2d5bcb03ce7c358d9c78e86fc1ccd209ba297
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 5 18:06:19 2010 +0200
+
+    [entropy.tools] trivial docstring update
+
+commit 5f09d66a1e341534342d6879ecd93eabe556b19f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 4 18:59:45 2010 +0200
+
+    [entropy.tools] remove unused functions
+
+commit fd3449d6ce17a0700aef644be42f376a5ee7c1c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 4 17:02:26 2010 +0200
+
+    [entropy.spm] move configuration protected file generator function into SpmPlugin class
+
+commit e961fb86e4db29bbfcceb8ddfd22e7049fc73733
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 3 08:01:44 2010 +0200
+
+    [entropy.spm] PortagePlugin: make _create_contents_file_if_not_available() working with any ROOT variable
+
+commit 4b228feba65bc656fc437648f326ea1923cb1415
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 19:20:03 2010 +0200
+
+    [entropy.client] Client.__save_repository_settings(): correctly write service_uri parameter
+
+commit d6931a2cff5a59cadf824110e82951f5c4ae6345
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 2 15:27:16 2010 +0200
+
+    Tagging Entropy version 0.99.47.3
+
 commit 9490c85da50cf1f8cf8fcd40b87d74ed72c9283d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 2 15:04:44 2010 +0200
