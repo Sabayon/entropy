@@ -1302,6 +1302,10 @@ class CalculatorsMixin:
         considered vital for the system.
         """
 
+        const_debug_write(__name__,
+            "_generate_reverse_dependency_tree [m:%s|d:%s|r:%s|e:%s|s:%s]" \
+                 % (matched_atoms, deep, recursive, empty, system_packages))
+
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
                 hash("%s|%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
@@ -1316,11 +1320,16 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
+        const_debug_write(__name__,
+            "_generate_reverse_dependency_tree [m:%s] not cached!" % (
+                matched_atoms,))
+
         count = 0
         match_cache = set()
         stack = Lifo()
         graph = Graph()
         not_removable_deps = set()
+        deep_dep_map = {}
 
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
@@ -1329,30 +1338,102 @@ class CalculatorsMixin:
         for match in matched_atoms:
             stack.push(match)
 
+        def get_deps(repo_db, d_deps):
+            deps = set()
+            for d_dep in d_deps:
+                if repo_db is self._installed_repository:
+                    m_idpackage, m_rc_x = repo_db.atomMatch(d_dep)
+                    m_rc = etpConst['clientdbid']
+                else:
+                    m_idpackage, m_rc = self.atom_match(d_dep)
+
+                if m_idpackage != -1:
+                    deps.add((m_idpackage, m_rc))
+
+            return deps
+
+        def get_direct_deps(repo_db, pkg_id):
+            return repo_db.retrieveDependencies(pkg_id,
+                exclude_deptypes = (bdepend_id,))
+
+        def filter_deps(raw_deps):
+            filtered_deps = set()
+            for mydep, m_repo_id in raw_deps:
+                m_repo_db = self.open_repository(m_repo_id)
+
+                if system_packages:
+                    if m_repo_db.isSystemPackage(mydep):
+                        const_debug_write(__name__,
+                            "_generate_reverse_dependency_tree [md:%s] "
+                                "cannot calculate, it's a system package" \
+                                % ((mydep, m_repo_id),))
+                        continue
+                    if m_repo_db is self._installed_repository:
+                        if self._is_installed_idpackage_in_system_mask(
+                            mydep):
+                            const_debug_write(__name__,
+                                "_generate_reverse_dependency_tree [md:%s] "
+                                    "cannot calculate, it's in sysmask" \
+                                    % ((mydep, m_repo_id),))
+                            continue
+
+                filtered_deps.add((mydep, m_repo_id,))
+            return filtered_deps
+
+        def get_revdeps(pkg_id, repo_id):
+            # obtain its inverse deps
+            reverse_deps = set([(x, repo_id) for x in \
+                repo_db.retrieveReverseDependencies(
+                    pkg_id, exclude_deptypes = (pdepend_id, bdepend_id,))])
+            if reverse_deps:
+                reverse_deps = self.__filter_depends_multimatched_atoms(
+                    pkg_id, repo_id, reverse_deps)
+            return reverse_deps
+
+        def setup_revdeps(filtered_deps):
+            for d_rev_dep, d_repo_id in filtered_deps:
+                d_repo_db = self.open_repository(d_repo_id)
+                mydepends = d_repo_db.retrieveReverseDependencies(
+                    d_rev_dep, exclude_deptypes = \
+                        (pdepend_id, bdepend_id,))
+                deep_dep_map[(d_rev_dep, d_repo_id)] = \
+                    set((x, d_repo_id) for x in mydepends)
+
+                const_debug_write(__name__,
+                    "_generate_reverse_dependency_tree [d_dep:%s] " \
+                        "reverse deps: %s" % ((d_rev_dep, d_repo_id),
+                        mydepends,))
+
         while stack.is_filled():
 
-            idpackage, repo_id = stack.pop()
-            if (idpackage, repo_id) in match_cache:
+            pkg_id, repo_id = stack.pop()
+            if (pkg_id, repo_id) in match_cache:
                 # already analyzed
                 continue
-            match_cache.add((idpackage, repo_id))
+            match_cache.add((pkg_id, repo_id))
 
             if system_packages:
-                system_pkg = not self.validate_package_removal(idpackage,
+                system_pkg = not self.validate_package_removal(pkg_id,
                     repo_id = repo_id)
 
                 if system_pkg:
                     # this is a system package, removal forbidden
-                    not_removable_deps.add((idpackage, repo_id))
+                    not_removable_deps.add((pkg_id, repo_id))
+                    const_debug_write(__name__,
+                        "_generate_reverse_dependency_tree %s is sys_pkg!" % (
+                        (pkg_id, repo_id),))
                     continue
 
             repo_db = self.open_repository(repo_id)
             # validate package
-            if not repo_db.isPackageIdAvailable(idpackage):
+            if not repo_db.isPackageIdAvailable(pkg_id):
+                const_debug_write(__name__,
+                    "_generate_reverse_dependency_tree %s not available!" % (
+                    (pkg_id, repo_id),))
                 continue
 
             count += 1
-            p_atom = repo_db.retrieveAtom(idpackage)
+            p_atom = repo_db.retrieveAtom(pkg_id)
             self.output(
                 blue(rem_dep_text + " %s" % (purple(p_atom),)),
                 importance = 0,
@@ -1361,53 +1442,38 @@ class CalculatorsMixin:
                 header = '|/-\\'[count%4]+" "
             )
 
-            # obtain its inverse deps
-            reverse_deps = set([(x, repo_id) for x in \
-                repo_db.retrieveReverseDependencies(
-                    idpackage, exclude_deptypes = (pdepend_id, bdepend_id,))])
-            if reverse_deps:
-                reverse_deps = self.__filter_depends_multimatched_atoms(
-                    idpackage, repo_id, reverse_deps)
+            reverse_deps = get_revdeps(pkg_id, repo_id)
+
+            const_debug_write(__name__,
+                "_generate_reverse_dependency_tree [m:%s] rev_deps: %s" % (
+                (pkg_id, repo_id), reverse_deps,))
 
             if deep:
 
-                mydeps = set()
-                for d_dep in repo_db.retrieveDependencies(idpackage,
-                    exclude_deptypes = (bdepend_id,)):
-
-                    if repo_db is self._installed_repository:
-                        m_idpackage, m_rc_x = repo_db.atomMatch(d_dep)
-                        m_rc = etpConst['clientdbid']
-                    else:
-                        m_idpackage, m_rc = self.atom_match(d_dep)
-                    if m_idpackage != -1:
-                        mydeps.add((m_idpackage, m_rc))
+                d_deps = get_direct_deps(repo_db, pkg_id)
+                const_debug_write(__name__,
+                    "_generate_reverse_dependency_tree [m:%s] d_deps: %s" % (
+                    (pkg_id, repo_id), d_deps,))
 
                 # now filter them
-                new_mydeps = set()
-                for mydep, m_repo_id in mydeps:
-                    m_repo_db = self.open_repository(m_repo_id)
+                mydeps = filter_deps(get_deps(repo_db, d_deps))
 
-                    if system_packages:
-                        if m_repo_db.isSystemPackage(mydep):
-                            continue
-                        if m_repo_db is self._installed_repository:
-                            if self._is_installed_idpackage_in_system_mask(
-                                mydep):
-                                continue
+                const_debug_write(__name__,
+                    "_generate_reverse_dependency_tree done filtering out" \
+                        " direct dependencies: %s" % (mydeps,))
 
-                    new_mydeps.add((mydep, m_repo_id,))
-                mydeps = new_mydeps
-
-                for d_rev_dep, d_repo_id in mydeps:
-                    d_repo_db = self.open_repository(d_repo_id)
-                    mydepends = set()
-                    if not empty:
-                        mydepends = d_repo_db.retrieveReverseDependencies(
-                            d_rev_dep, exclude_deptypes = \
-                                (pdepend_id, bdepend_id,))
-                    if not mydepends:
-                        reverse_deps.add((d_rev_dep, d_repo_id))
+                if empty:
+                    reverse_deps |= mydeps
+                    const_debug_write(__name__,
+                        "_generate_reverse_dependency_tree done empty=True," \
+                            " adding: %s" % (mydeps,))
+                else:
+                    # to properly pull in every direct dependency with no
+                    # reverse dependencies, we need to setup a dependency
+                    # map first, and then make sure there are no chained
+                    # package identifiers by removing direct dependencies
+                    # from the list of reverse dependencies
+                    setup_revdeps(mydeps)
 
                 if empty:
                     empty = False
@@ -1415,14 +1481,53 @@ class CalculatorsMixin:
             if recursive:
                 for rev_dep in reverse_deps:
                     stack.push(rev_dep)
-            graph.add((idpackage, repo_id), reverse_deps)
+            graph.add((pkg_id, repo_id), reverse_deps)
 
 
         del stack
         if not_removable_deps:
             raise DependenciesNotRemovable(not_removable_deps)
-
         deptree = graph.solve()
+
+        if deep:
+            # in order to catch unused reverse dependencies
+            # it is required to iterate over the direct dependencies
+            # every time a new direct dependency gets pulled in in
+            # the removal queue.
+            # in this way, every orphan package will be considered
+            # for removal automatically.
+
+            flat_dep_tree = set()
+            for r_deps in deptree.values():
+                flat_dep_tree.update(r_deps)
+
+            while True:
+                change = False
+                # now try to deeply remove unused packages
+                # iterate over a copy
+                for pkg_match in deep_dep_map.keys():
+                    deep_dep_map[pkg_match] -= flat_dep_tree
+                    if (not deep_dep_map[pkg_match]) and \
+                        (pkg_match not in flat_dep_tree):
+
+                        graph.add(pkg_match, set())
+                        flat_dep_tree.add(pkg_match)
+
+                        # get direct dependencies
+                        pkg_id, pkg_repo = pkg_match
+                        repo_db = self.open_repository(pkg_repo)
+                        pkg_d_deps = get_direct_deps(repo_db, pkg_id)
+                        pkg_d_matches = filter_deps(
+                            get_deps(repo_db, pkg_d_deps))
+                        setup_revdeps(pkg_d_matches)
+                        change = True
+
+                if not change:
+                    break
+
+            deptree = graph.solve()
+            del flat_dep_tree
+
         del graph
 
         if self.xcache:
