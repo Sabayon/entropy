@@ -1414,11 +1414,11 @@ def isjustname(mypkg):
 
     Example usage:
         >>> isjustname('media-libs/test-3.0')
-        0
+        False
         >>> isjustname('test')
-        1
+        True
         >>> isjustname('media-libs/test')
-        1
+        True
 
     @param mypkg: The package atom to check
     @param mypkg: String
