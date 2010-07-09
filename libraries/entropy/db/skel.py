@@ -1638,6 +1638,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         quickpkg_queue = set(quickpkg_queue)
         for package_id_owner in iddependencies:
             myatom = self.retrieveAtom(package_id_owner)
+            if myatom is None:
+                # reverse deps table out of sync
+                continue
             myatom = myatom.replace(key_from, key_to)
             quickpkg_queue.add(myatom)
         return quickpkg_queue
@@ -1717,6 +1720,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         self.commitChanges()
         for package_id_owner in iddependencies:
             myatom = self.retrieveAtom(package_id_owner)
+            if myatom is None:
+                # reverse deps table out of sync
+                continue
             quickpkg_queue.add(myatom)
         return quickpkg_queue
 
