@@ -803,7 +803,10 @@ class EntropyPackages:
                 yp, new = gp_call(match)
             except RepositoryError:
                 return None
-            key, slot = yp.keyslot
+            try:
+                key, slot = yp.keyslot
+            except OperationalError:
+                return None
             installed_match = cdb_atomMatch(key, matchSlot = slot)
             if installed_match[0] != -1:
                 yp.installed_match = installed_match
