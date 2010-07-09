@@ -2016,6 +2016,8 @@ class EntropyPackageView:
 
     def _ugc_queue_run(self):
 
+        const_debug_write(__name__, "_ugc_queue_run called")
+
         pkgs = set()
         queue = self._ugc_load_queue
 

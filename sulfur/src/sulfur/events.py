@@ -33,7 +33,7 @@ from entropy.const import etpConst, initconfig_entropy_constants, \
     const_isunicode, const_convert_to_unicode
 from entropy.output import print_generic
 from entropy.i18n import _
-from entropy.misc import TimeScheduled, ParallelTask
+from entropy.misc import ParallelTask
 from entropy.client.mirrors import StatusInterface
 import entropy.dump
 
