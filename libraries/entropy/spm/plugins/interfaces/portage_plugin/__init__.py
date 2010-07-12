@@ -834,6 +834,11 @@ class PortagePlugin(SpmPlugin):
                 env_var, repr(output)))
         return output.strip()
 
+    def __pkg_sources_filtering(self, sources):
+        sources.discard("->")
+        sources = set((x for x in sources if "/" in x))
+        return sources
+
     def extract_package_metadata(self, package_file, license_callback = None,
         restricted_callback = None):
         """
@@ -1029,6 +1034,7 @@ class PortagePlugin(SpmPlugin):
         data['useflags'] = set(data['useflags'])
         # sources must be a set, as returned by entropy.db.getPackageData
         data['sources'] = set(portage_metadata['SRC_URI'].split())
+        data['sources'] = self.__pkg_sources_filtering(data['sources'])
         data['dependencies'] = {}
 
         dep_keys = {
