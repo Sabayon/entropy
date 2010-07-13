@@ -1295,7 +1295,8 @@ class Server(ServerNoticeBoardMixin):
                 header = brown("    # ")
             )
             return
-        for s_repo, s_name, s_sets in sets_data:
+        sorter = lambda x, y, z: y
+        for s_repo, s_name, s_sets in sorted(sets_data, key = sorter):
             self._entropy.output(
                 blue("%s" % (s_name,)),
                 importance = 0,
