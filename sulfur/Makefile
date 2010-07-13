@@ -13,11 +13,11 @@ DESTDIR =
 all: subdirs
 	
 subdirs:
-	for d in $(SUBDIRS); do make -C $$d; [ $$? = 0 ] || exit 1 ; done
+	for d in $(SUBDIRS); do $(MAKE) -C $$d; [ $$? = 0 ] || exit 1 ; done
 
 clean:
 	@rm -fv *~ *.tar.gz *.list *.lang
-	for d in $(SUBDIRS); do make -C $$d clean ; done
+	for d in $(SUBDIRS); do $(MAKE) -C $$d clean ; done
 
 install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/sulfur/sulfur/misc
@@ -44,7 +44,7 @@ install:
 	install -m644 $(MISCDIR)/kde_x-sulfur.desktop $(DESTDIR)/usr/share/mimelnk/application/.
 	install -m644 $(MISCDIR)/entropy-mimetypes.xml $(DESTDIR)/usr/share/mime/packages/.
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.
-	for d in $(SUBDIRS); do make DESTDIR=`cd $(DESTDIR); pwd` LIBDIR=$(LIBDIR) -C $$d install; [ $$? = 0 ] || exit 1; done
+	for d in $(SUBDIRS); do $(MAKE) DESTDIR=`cd $(DESTDIR); pwd` LIBDIR=$(LIBDIR) -C $$d install; [ $$? = 0 ] || exit 1; done
 
 
 FORCE:
