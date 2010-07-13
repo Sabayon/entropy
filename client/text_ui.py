@@ -2166,13 +2166,14 @@ def _libraries_test(entropy_client, listfiles = False, dump = False):
             brokenlibs = sorted(brokenlibs)
             for lib in brokenlibs:
                 print_info(darkred("    => ")+red(lib))
-        print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
-        for mylib in pkgs_matched:
-            for idpackage, repoid in pkgs_matched[mylib]:
-                dbconn = entropy_client.open_repository(repoid)
-                myatom = dbconn.retrieveAtom(idpackage)
-                atomsdata.add((idpackage, repoid))
-                print_info("   "+red(mylib)+" => "+brown(myatom)+" ["+red(repoid)+"]")
+        if pkgs_matched:
+            print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
+            for mylib in pkgs_matched:
+                for idpackage, repoid in pkgs_matched[mylib]:
+                    dbconn = entropy_client.open_repository(repoid)
+                    myatom = dbconn.retrieveAtom(idpackage)
+                    atomsdata.add((idpackage, repoid))
+                    print_info("   "+red(mylib)+" => "+brown(myatom)+" ["+red(repoid)+"]")
     else:
         for mylib in pkgs_matched:
             for idpackage, repoid in pkgs_matched[mylib]:

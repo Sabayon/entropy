@@ -802,7 +802,14 @@ class QAInterface(TextInterface, EntropyPluginStore):
             )
             matched = set()
             for brokenlib in plain_brokenexecs:
-                idpackages = dbconn.searchBelongs(brokenlib) # test with /usr/lib
+                # test with /usr/lib
+                idpackages = dbconn.searchBelongs(brokenlib)
+                if not idpackages:
+                    # try with realpath
+                    # on multilib systems this resolves to /usr/lib64
+                    # which makes searchBelongs() happy
+                    idpackages = dbconn.searchBelongs(
+                        os.path.realpath(brokenlib))
 
                 for idpackage in idpackages:
 
