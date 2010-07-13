@@ -1566,8 +1566,10 @@ class MiscMixin:
         tar.close()
 
         # append SPM metadata
-        Spm = self.Spm()
-        Spm.append_metadata_to_package(pkgname, pkg_path)
+        spm = self.Spm()
+        pkgatom = entropy.tools.create_package_atom_string(pkgdata['category'],
+            pkgdata['name'], pkgdata['version'], pkgdata['versiontag'])
+        spm.append_metadata_to_package(pkgatom, pkg_path)
         if edb:
             self._inject_entropy_database_into_package(pkg_path, pkgdata)
 
