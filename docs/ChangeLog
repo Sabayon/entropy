@@ -1,3 +1,21 @@
+commit d9375f183aae9823ced5dd009a9e75da8049fe36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 13:39:57 2010 +0200
+
+    [entropy.server] fix _show_package_sets_messages
+
+commit 979083f0ca599a21b1047e6192462828c465cc6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 12:53:46 2010 +0200
+
+    [sulfur] use $(MAKE) instead of make
+
+commit 396fc1f528b87e76206855b22dc543fcaf6d2f0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 12:42:14 2010 +0200
+
+    Tagging Entropy version 0.99.47.5
+
 commit a6edadc9f386a266f27daf5f108e8c580c171911
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 13 12:41:23 2010 +0200
