@@ -1,3 +1,51 @@
+commit a6edadc9f386a266f27daf5f108e8c580c171911
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 12:41:23 2010 +0200
+
+    [entropy.client] fix regression in Entropy.quickpkg() function, not appending SPM metadata
+
+commit cc1f7cf6bfb97838796112e986df50caf5cb3578
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 11:57:30 2010 +0200
+
+    [entropy.client.interfaces.db] tweak repository update status message text
+
+commit dd12606df8b34ed2f95e6e706c249233361627cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 11:52:00 2010 +0200
+
+    [entropy.server] show available pkgsets ordered alphabetically
+
+commit cc558d25dddd599e39f99b368bf55a354e26ba66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 00:50:31 2010 +0200
+
+    [entropy.spm] PortagePlugin: properly filter SRC_URI when collecting pkg metadata
+
+commit bda2ceac84b214b1d2b90d9afad7e2cc859dc4fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 9 15:27:44 2010 +0200
+
+    [entropy.db.skel] make sure that retrieveAtom returned != None
+
+commit 9ff36efa3f50b2961c621690335859bbb79f6806
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 9 15:26:57 2010 +0200
+
+    [sulfur] catch OperationalError exception
+
+commit 516382b958fe1c2baea68f1f8a0ec59cdc8c47ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 9 14:39:16 2010 +0200
+
+    [sulfur] trivial changes
+
+commit 7ec19e6136c0dfd8d03d48b3f29f746fe973abc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 5 18:13:24 2010 +0200
+
+    Tagging Entropy version 0.99.47.4
+
 commit f6f7992a0b52495a7c721e86d18e9e19cac15514
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jul 5 18:06:50 2010 +0200
