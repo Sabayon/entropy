@@ -1761,7 +1761,7 @@ class AvailablePackagesRepositoryUpdater(object):
         if not self.__force:
             if not updatable:
                 mytxt = "%s: %s." % (bold(_("Attention")),
-                    red(_("database is already up to date")),)
+                    red(_("repository is already up to date")),)
                 self._entropy.output(
                     mytxt,
                     importance = 1,
