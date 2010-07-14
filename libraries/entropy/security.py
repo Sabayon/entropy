@@ -22,7 +22,7 @@ import time
 from entropy.exceptions import EntropyException
 from entropy.misc import LogFile
 from entropy.const import etpConst, etpUi, const_setup_perms, \
-    const_debug_write
+    const_debug_write, const_setup_file
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -255,7 +255,7 @@ class System:
         if rc_fetch in ("-1", "-2", "-3", "-4"):
             return False
         # setup permissions
-        self._entropy.setup_file_permissions(save_to)
+        const_setup_file(save_to, etpConst['entropygid'], 0o664)
         return True
 
     def __load_gpg(self):
@@ -1200,8 +1200,8 @@ class System:
             except OSError:
                 shutil.copy2(self.download_package_checksum,
                     self.old_download_package_checksum)
-            self._entropy.setup_file_permissions(
-                self.old_download_package_checksum)
+            const_setup_file(self.old_download_package_checksum,
+                etpConst['entropygid'], 0o664)
 
         # now unpack in place
         status = self.__unpack_advisories()

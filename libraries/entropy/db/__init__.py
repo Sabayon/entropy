@@ -423,8 +423,8 @@ class EntropyRepository(EntropyRepositoryBase):
         # FIXME: remove before 20101010, backward compatibility
         self.dbFile = dbFile
 
-        self.__db_path = dbFile
-        if self.__db_path is None:
+        self._db_path = dbFile
+        if self._db_path is None:
             raise AttributeError("valid database path needed")
 
         # setup service interface
@@ -442,7 +442,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 self.indexing = False
 
             try:
-                if os.access(self.__db_path, os.W_OK) and \
+                if os.access(self._db_path, os.W_OK) and \
                     self._doesTableExist('baseinfo') and \
                     self._doesTableExist('extrainfo'):
 
@@ -522,7 +522,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self.__cursor_cache[c_key] = cursor
             # memory databases are critical because every new cursor brings
             # up a totally empty repository. So, enforce initialization.
-            if self.__db_path == ":memory:":
+            if self._db_path == ":memory:":
                 self.initializeRepository()
         return cursor
 
@@ -533,14 +533,14 @@ class EntropyRepository(EntropyRepositoryBase):
         if conn is None:
             # check_same_thread still required for conn.close() called from
             # arbitrary thread
-            conn = dbapi2.connect(self.__db_path, timeout=300.0,
+            conn = dbapi2.connect(self._db_path, timeout=300.0,
                 check_same_thread = False)
             self.__connection_cache[c_key] = conn
         return conn
 
     def __show_info(self):
         first_part = "<EntropyRepository instance at %s, %s" % (
-            hex(id(self)), self.__db_path,)
+            hex(id(self)), self._db_path,)
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
             self.readonly, self.xcache, self.indexing,)
         third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
@@ -592,9 +592,9 @@ class EntropyRepository(EntropyRepositoryBase):
         super(EntropyRepository, self).closeDB()
 
         self._cleanup_stale_cur_conn(kill_all = True)
-        if self.temporary and os.path.isfile(self.__db_path):
+        if self.temporary and os.path.isfile(self._db_path):
             try:
-                os.remove(self.__db_path)
+                os.remove(self._db_path)
             except (OSError, IOError,):
                 pass
 

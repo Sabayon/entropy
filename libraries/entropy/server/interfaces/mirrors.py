@@ -18,7 +18,7 @@ from entropy.exceptions import OnlineMirrorError, ConnectionError, \
     EntropyPackageException, TransceiverError
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple
-from entropy.const import etpConst, const_setup_perms
+from entropy.const import etpConst, const_setup_perms, const_setup_file
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS
@@ -2002,7 +2002,7 @@ class Server(ServerNoticeBoardMixin):
                     fromfile = os.path.join(mytmpdir, myfile)
                     tofile = os.path.join(database_dir_path, myfile)
                     shutil.move(fromfile, tofile)
-                    self._entropy.setup_file_permissions(tofile)
+                    const_setup_file(tofile, etpConst['entropygid'], 0o664)
 
             if os.path.isdir(mytmpdir):
                 shutil.rmtree(mytmpdir)

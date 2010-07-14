@@ -1087,6 +1087,7 @@ class MiscMixin:
         self._settings.clear()
 
     def setup_file_permissions(self, file_path):
+        """ @deprecated """
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
     def lock_resources(self):

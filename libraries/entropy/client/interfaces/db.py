@@ -613,7 +613,7 @@ class AvailablePackagesRepositoryUpdater(object):
             raise AttributeError(mytxt)
 
         if rc == 0:
-            self._entropy.setup_file_permissions(path)
+            const_setup_file(path, etpConst['entropygid'], 0o664)
 
         return rc
 
@@ -838,7 +838,7 @@ class AvailablePackagesRepositoryUpdater(object):
         rc = fetcher.download()
         if rc in ("-1", "-2", "-3", "-4"):
             return False
-        self._entropy.setup_file_permissions(filepath)
+        const_setup_file(filepath, etpConst['entropygid'], 0o664)
         return True
 
     def _is_repository_unlocked(self):
@@ -1950,7 +1950,7 @@ class AvailablePackagesRepositoryUpdater(object):
             return EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR
 
         if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
-            self._entropy.setup_file_permissions(dbfile)
+            const_setup_file(dbfile, etpConst['entropygid'], 0o664)
 
         # remove garbage left around
         for path in files_to_remove:
