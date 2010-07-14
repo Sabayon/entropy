@@ -311,7 +311,7 @@ class AvailablePackagesRepositoryUpdater(object):
             level = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database URL")),
+        mytxt = "%s: %s" % (red(_("Repository URL")),
             darkgreen(repo_data['database']),)
         self._entropy.output(
             mytxt,
@@ -319,7 +319,7 @@ class AvailablePackagesRepositoryUpdater(object):
             level = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database local path")),
+        mytxt = "%s: %s" % (red(_("Repository local path")),
             darkgreen(repo_data['dbpath']),)
         self._entropy.output(
             mytxt,
@@ -327,7 +327,7 @@ class AvailablePackagesRepositoryUpdater(object):
             level = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database EAPI")),
+        mytxt = "%s: %s" % (red(_("Repository API")),
             darkgreen(str(self._repo_eapi)),)
         self._entropy.output(
             mytxt,
