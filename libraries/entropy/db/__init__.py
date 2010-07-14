@@ -4309,27 +4309,16 @@ class EntropyRepository(EntropyRepositoryBase):
                 raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
             pingus.ping(action_str)
 
+        mytxt = "Repository is corrupted, missing SQL tables!"
         self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER WHERE type = (?) AND name = (?)
-        """, ("table", "baseinfo"))
+        SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND (
+            name = "extrainfo" OR name = "baseinfo" OR name = "keywords" )
+        """)
         rslt = self._cursor().fetchone()
         if rslt is None:
-            mytxt = "baseinfo error. Either does not exist or corrupted."
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
-
-        self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER WHERE type = (?) AND name = (?)
-        """, ("table", "extrainfo"))
-        rslt = self._cursor().fetchone()
-        if rslt is None:
-            mytxt = "extrainfo error. Either does not exist or corrupted."
+        elif rslt[0] != 3:
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
-
-        try:
-            self.checksum()
-        except (DatabaseError,) as err:
-            raise SystemDatabaseError("SystemDatabaseError: checksum => %s" % (
-                err,))
 
     def _getIdpackagesDifferences(self, foreign_package_ids):
         """
