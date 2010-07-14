@@ -2243,7 +2243,7 @@ class Client:
                                 brown(str(self.hostname)),
                                 bold(str(self.hostport)),
                                 blue(mytxt),
-                                self.sock_conn.issuer()
+                                self.sock_conn,
                         ),
                         importance = 1,
                         level = "warning",
