@@ -18,7 +18,7 @@ import time
 import socket
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
-    etpUi, const_set_nice_level
+    etpUi, const_set_nice_level, const_setup_file
 from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold, \
     TextInterface
 from entropy.dump import dumpobj
@@ -90,6 +90,11 @@ class InstalledPackagesRepository(EntropyRepository):
     This class represents the installed packages repository and is a direct
     subclass of EntropyRepository.
     """
+    def __init__(self, *args, **kwargs):
+        EntropyRepository.__init__(self, *args, **kwargs)
+        # ensure proper repository file permissions
+        if entropy.tools.is_root() and os.path.isfile(self._db_path):
+            const_setup_file(self._db_path, etpConst['entropygid'], 0o644)
 
 
 class AvailablePackagesRepositoryUpdater(object):
