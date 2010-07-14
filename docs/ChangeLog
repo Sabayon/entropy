@@ -1,3 +1,63 @@
+commit 7900c00bd5b624198da0388038a62d42e61b0d80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 00:03:53 2010 +0200
+
+    [sulfur] catch OperationalError exception in _show_packages_group_caching()
+
+commit c8d392ea3bb002aa2ac4bf08faccc6f5cbc25988
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 23:48:39 2010 +0200
+
+    [entropy.db] improve EntropyRepository.validateDatabase() reliability
+
+commit c48e3e1a135f3ed27012ad265225f4d4c893d9db
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 23:32:53 2010 +0200
+
+    [entropy.services.ugc] python ssl module socket object doesn't have the issuer() method
+
+commit e841ef0a186e5e5a7d62dc341228d360eb403227
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 21:21:44 2010 +0200
+
+    [entropy.server.mirrors] download lock mirrors only when local data has been prepared
+
+commit 31102a8c3f4d0cfbb3ea2d05f7af9405b20a3f16
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 15:01:02 2010 +0200
+
+    [entropy.client] deprecate Client.setup_file_permissions()
+
+commit f54af278dac92f2f646b4ff039da391f52af121f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 14:59:50 2010 +0200
+
+    [entropy.client.interfaces.db] InstalledPackagesRepository: ensure proper db file permissions
+
+commit 81e00cf9e6784ef3b1ebafb880cd3e2f61b71229
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 11:28:24 2010 +0200
+
+    [po] update translations
+
+commit 8ed571b3c64574fa8a9fe07ffa5a2dd1ee9a7a65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 14 11:25:03 2010 +0200
+
+    [entropy.client.interfaces.db] rename some i18n strings
+
+commit 3cf73d5fa81d5fb5d3c8382109d6b834e01b0b64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 14:03:35 2010 +0200
+
+    [entropy.qa] resolve /usr/lib to /usr/lib64 when matching broken library file in repository
+
+commit 5b92c64fa3b667a4df651c9e0e23e65beae39f45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 13 13:40:20 2010 +0200
+
+    Tagging Entropy version 0.99.47.6
+
 commit d9375f183aae9823ced5dd009a9e75da8049fe36
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 13 13:39:57 2010 +0200
