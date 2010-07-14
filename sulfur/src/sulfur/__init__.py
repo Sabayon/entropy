@@ -1700,7 +1700,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             "user_unmasked", "downgrade"):
             try:
                 self.etpbase.get_groups(k)
-            except ProgrammingError:
+            except (ProgrammingError, OperationalError):
                 continue
 
     def show_packages(self, back_to_page = None, on_init = False):
