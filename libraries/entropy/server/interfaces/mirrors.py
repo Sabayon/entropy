@@ -1719,8 +1719,6 @@ class Server(ServerNoticeBoardMixin):
                     broken_uris.add(uri)
                     continue
 
-            self.lock_mirrors_for_download(True, [uri], repo = repo)
-
             self._entropy.output(
                 "[repo:%s|%s|%s] %s" % (
                     blue(repo),
@@ -1830,6 +1828,7 @@ class Server(ServerNoticeBoardMixin):
                 repo)
 
             if not pretend:
+                self.lock_mirrors_for_download(True, [uri], repo = repo)
                 # upload
                 uploader = self.TransceiverServerHandler(
                     self._entropy,
@@ -1874,9 +1873,9 @@ class Server(ServerNoticeBoardMixin):
                         os.remove(further_backup_dbpath)
                     shutil.copy2(old_dbpath, further_backup_dbpath)
                     shutil.move(backup_dbpath, old_dbpath)
+                # unlock
+                self.lock_mirrors_for_download(False, [uri], repo = repo)
 
-            # unlock
-            self.lock_mirrors_for_download(False, [uri], repo = repo)
             fine_uris |= m_fine_uris
 
         if not fine_uris:
