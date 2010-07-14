@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: French Entropy translation for Sabayon Linux 0.2\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-06-30 05:30+0200\n"
+"POT-Creation-Date: 2010-07-14 11:25+0200\n"
 "PO-Revision-Date: 2009-09-17 20:16-0500\n"
 "Last-Translator: Benjamin\n"
 "Language-Team: Benjamin Guay\n"
@@ -74,7 +74,7 @@ msgid "generating provided_libs metadata, please wait!"
 msgstr "Génération de métadonnées, veuillez patienter."
 
 #: ../../libraries/entropy/db/skel.py:1481
-#: ../../libraries/entropy/db/skel.py:1765
+#: ../../libraries/entropy/db/skel.py:1771
 msgid "SPM"
 msgstr "SPM"
 
@@ -101,7 +101,7 @@ msgid "package move actions complete"
 msgstr "actions de déplacement de paquet terminées"
 
 #: ../../libraries/entropy/db/skel.py:1536
-#: ../../libraries/entropy/server/interfaces/main.py:1410
+#: ../../libraries/entropy/server/interfaces/main.py:1411
 msgid "WARNING"
 msgstr "AVERTISSEMENT"
 
@@ -113,11 +113,11 @@ msgstr "Impossible d'exécuter le nettoyage SPM, erreur"
 msgid "package moves completed successfully"
 msgstr "déplacements de paquets complétés avec succès"
 
-#: ../../libraries/entropy/db/skel.py:1766
+#: ../../libraries/entropy/db/skel.py:1772
 msgid "Moving old entry"
 msgstr "Déplacement d'un vieil élément"
 
-#: ../../libraries/entropy/db/skel.py:1768
+#: ../../libraries/entropy/db/skel.py:1774
 #: ../../client/text_configuration.py:118
 msgid "to"
 msgstr "à"
@@ -380,9 +380,9 @@ msgid "failed, retrying"
 msgstr "échec, nouvelle tentative"
 
 #: ../../libraries/entropy/server/transceivers.py:283
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1635
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3133
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3155
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1636
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3134
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3156
 msgid "error"
 msgstr "erreur"
 
@@ -411,8 +411,8 @@ msgstr ""
 "synchroniser."
 
 #: ../../libraries/entropy/server/interfaces/main.py:228
-#: ../../libraries/entropy/server/interfaces/main.py:3663
-#: ../../libraries/entropy/server/interfaces/main.py:3861
+#: ../../libraries/entropy/server/interfaces/main.py:3664
+#: ../../libraries/entropy/server/interfaces/main.py:3862
 msgid "database"
 msgstr "base de données"
 
@@ -439,19 +439,19 @@ msgstr ""
 msgid "Repository database updated anyway"
 msgstr "Base de données du dépôt mise à jour quand même"
 
-#: ../../libraries/entropy/server/interfaces/main.py:904
+#: ../../libraries/entropy/server/interfaces/main.py:905
 msgid "package has no keyword set, it will be masked !"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:1262
+#: ../../libraries/entropy/server/interfaces/main.py:1263
 msgid "invalid database revision"
 msgstr "Révision de la base de données invalide"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1264
+#: ../../libraries/entropy/server/interfaces/main.py:1265
 msgid "defaulting to 0"
 msgstr "valeur par défaut définie à 0"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1373
+#: ../../libraries/entropy/server/interfaces/main.py:1374
 #: ../../libraries/entropy/client/interfaces/db.py:344
 #: ../../libraries/entropy/client/interfaces/db.py:416
 #: ../../libraries/entropy/client/interfaces/db.py:486
@@ -459,40 +459,40 @@ msgstr "valeur par défaut définie à 0"
 #: ../../libraries/entropy/qa.py:633 ../../client/text_rescue.py:285
 #: ../../client/text_rescue.py:298 ../../client/text_ui.py:1373
 #: ../../client/text_ui.py:1374 ../../client/text_ui.py:1376
-#: ../../client/text_ui.py:1377 ../../sulfur/src/sulfur/dialogs.py:2756
+#: ../../client/text_ui.py:1377 ../../sulfur/src/sulfur/dialogs.py:2758
 #: ../../sulfur/src/sulfur/__init__.py:1187
 #: ../../sulfur/src/sulfur/packages.py:100
 #: ../../sulfur/src/sulfur/packages.py:416
 msgid "Attention"
 msgstr "Attention"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1374
+#: ../../libraries/entropy/server/interfaces/main.py:1375
 msgid "cannot match"
 msgstr "ne correspond pas"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1394
+#: ../../libraries/entropy/server/interfaces/main.py:1395
 msgid "Initializing Entropy database"
 msgstr "Initialisation de la base de données Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1411
+#: ../../libraries/entropy/server/interfaces/main.py:1412
 msgid "database already exists"
 msgstr "la base de donnes existe déjà"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1421
+#: ../../libraries/entropy/server/interfaces/main.py:1422
 msgid "Do you want to continue ?"
 msgstr "Voulez-vous continuer ?"
 
 #. masked ?
-#: ../../libraries/entropy/server/interfaces/main.py:1422
-#: ../../libraries/entropy/server/interfaces/main.py:1601
-#: ../../libraries/entropy/server/interfaces/main.py:1959
-#: ../../libraries/entropy/server/interfaces/main.py:2354
-#: ../../libraries/entropy/server/interfaces/main.py:2905
-#: ../../libraries/entropy/server/interfaces/main.py:3504
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3064
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3379
+#: ../../libraries/entropy/server/interfaces/main.py:1423
+#: ../../libraries/entropy/server/interfaces/main.py:1602
+#: ../../libraries/entropy/server/interfaces/main.py:1960
+#: ../../libraries/entropy/server/interfaces/main.py:2355
+#: ../../libraries/entropy/server/interfaces/main.py:2906
+#: ../../libraries/entropy/server/interfaces/main.py:3505
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3065
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3380
 #: ../../libraries/entropy/output.py:707 ../../libraries/entropy/qa.py:396
-#: ../../client/equo.py:886 ../../client/text_configuration.py:113
+#: ../../client/equo.py:887 ../../client/text_configuration.py:113
 #: ../../client/text_configuration.py:141 ../../client/text_rescue.py:231
 #: ../../client/text_rescue.py:235 ../../client/text_rescue.py:239
 #: ../../client/text_rescue.py:475 ../../client/text_rescue.py:534
@@ -503,112 +503,112 @@ msgstr "Voulez-vous continuer ?"
 #: ../../client/text_ui.py:1381 ../../client/text_ui.py:1639
 #: ../../client/text_ui.py:1716 ../../client/text_ui.py:1848
 #: ../../client/text_ui.py:1934 ../../client/text_ui.py:2111
-#: ../../client/text_ui.py:2193 ../../server/server_activator.py:125
+#: ../../client/text_ui.py:2194 ../../server/server_activator.py:125
 #: ../../server/server_key.py:221 ../../server/server_key.py:308
-#: ../../server/server_reagent.py:291 ../../server/server_reagent.py:388
-#: ../../server/server_reagent.py:436 ../../server/server_reagent.py:494
-#: ../../server/server_reagent.py:810 ../../sulfur/src/sulfur/dialogs.py:1354
-#: ../../sulfur/src/sulfur/entropyapi.py:378
+#: ../../server/server_reagent.py:288 ../../server/server_reagent.py:385
+#: ../../server/server_reagent.py:433 ../../server/server_reagent.py:491
+#: ../../server/server_reagent.py:807 ../../sulfur/src/sulfur/dialogs.py:1354
+#: ../../sulfur/src/sulfur/entropyapi.py:380
 msgid "No"
 msgstr "Non"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1448
+#: ../../libraries/entropy/server/interfaces/main.py:1449
 msgid "Invalid tag specified"
 msgstr "Étiquette invalide spécifiée"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1470
+#: ../../libraries/entropy/server/interfaces/main.py:1471
 msgid "Packages already tagged, action aborted"
 msgstr "Paquets déjà étiquettés, action annulée"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1516
+#: ../../libraries/entropy/server/interfaces/main.py:1517
 msgid "flushing back selected packages from branches"
 msgstr "nettoyage des paquets sélectionnées des branches"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1542
+#: ../../libraries/entropy/server/interfaces/main.py:1543
 msgid "nothing to do"
 msgstr "rien à faire"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1565
+#: ../../libraries/entropy/server/interfaces/main.py:1566
 msgid "these are the packages that will be flushed"
 msgstr "voici les paquets qui seront purgés"
 
 #. ask to continue
-#: ../../libraries/entropy/server/interfaces/main.py:1600
-#: ../../libraries/entropy/server/interfaces/main.py:1958
-#: ../../libraries/entropy/server/interfaces/main.py:2353
-#: ../../libraries/entropy/server/interfaces/main.py:2904
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3378
-#: ../../client/text_ui.py:840 ../../server/server_reagent.py:387
-#: ../../server/server_reagent.py:435 ../../server/server_reagent.py:493
+#: ../../libraries/entropy/server/interfaces/main.py:1601
+#: ../../libraries/entropy/server/interfaces/main.py:1959
+#: ../../libraries/entropy/server/interfaces/main.py:2354
+#: ../../libraries/entropy/server/interfaces/main.py:2905
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3379
+#: ../../client/text_ui.py:840 ../../server/server_reagent.py:384
+#: ../../server/server_reagent.py:432 ../../server/server_reagent.py:490
 msgid "Would you like to continue ?"
 msgstr "Voulez-vous continuer ?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1650
+#: ../../libraries/entropy/server/interfaces/main.py:1651
 msgid "checking package hash"
 msgstr "vérification de la clé de hachage du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1669
+#: ../../libraries/entropy/server/interfaces/main.py:1670
 msgid "hash does not match for"
 msgstr "la clé de hachage ne correspond pas pour "
 
-#: ../../libraries/entropy/server/interfaces/main.py:1679
+#: ../../libraries/entropy/server/interfaces/main.py:1680
 msgid "wrong md5"
 msgstr "mauvais clé md5"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1691
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2868
+#: ../../libraries/entropy/server/interfaces/main.py:1692
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2869
 msgid "download errors"
 msgstr "erreurs de téléchargement"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1692
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1859
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1974
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2792
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2870
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3441
+#: ../../libraries/entropy/server/interfaces/main.py:1693
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1860
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1975
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2793
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2871
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3442
 msgid "reason"
 msgstr "raison"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1709
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2884
+#: ../../libraries/entropy/server/interfaces/main.py:1710
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2885
 msgid "download completed successfully"
 msgstr "téléchargement terminé avec succès"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1723
+#: ../../libraries/entropy/server/interfaces/main.py:1724
 msgid "error downloading packages from mirrors"
 msgstr "erreur au téléchargement des paquets du mirroir"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1738
+#: ../../libraries/entropy/server/interfaces/main.py:1739
 msgid "working on branch"
 msgstr "travail sur la branche"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1754
+#: ../../libraries/entropy/server/interfaces/main.py:1755
 msgid "updating package"
 msgstr "mise à jour du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1792
+#: ../../libraries/entropy/server/interfaces/main.py:1793
 msgid "package flushed"
 msgstr "paquet purgé"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1820
+#: ../../libraries/entropy/server/interfaces/main.py:1821
 msgid "Cannot touch system database"
 msgstr "Impossible de toucher la base de données système"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1835
+#: ../../libraries/entropy/server/interfaces/main.py:1836
 msgid "Preparing to move selected packages to"
 msgstr "Préparation au déplacement des paquets sélectionnés vers "
 
-#: ../../libraries/entropy/server/interfaces/main.py:1837
+#: ../../libraries/entropy/server/interfaces/main.py:1838
 msgid "Preparing to copy selected packages to"
 msgstr "Préparation à la copie des paquets sélectionnés vers"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1849
+#: ../../libraries/entropy/server/interfaces/main.py:1850
 #: ../../libraries/entropy/client/services/system/methods.py:89
 #: ../../sulfur/src/sulfur/sulfur.glade.h:139
 msgid "Note"
 msgstr "Note"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1850
+#: ../../libraries/entropy/server/interfaces/main.py:1851
 msgid ""
 "all old packages with conflicting scope will be removed from destination "
 "repo unless injected"
@@ -616,117 +616,117 @@ msgstr ""
 "tous les vieux paquets à portée conflictuelle seront supprimés du dépôt de "
 "destination à moins d'être injectés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1860
+#: ../../libraries/entropy/server/interfaces/main.py:1861
 msgid "new tag"
 msgstr "nouvelle étiquette"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1900
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2334
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3365
+#: ../../libraries/entropy/server/interfaces/main.py:1901
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2335
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3366
 #: ../../libraries/entropy/client/interfaces/package.py:1146
 #: ../../client/text_ui.py:1997
 msgid "remove"
 msgstr "suppression"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1933
+#: ../../libraries/entropy/server/interfaces/main.py:1934
 #, fuzzy
 msgid "reverse dependency"
 msgstr "Dépendances inverses"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1944
+#: ../../libraries/entropy/server/interfaces/main.py:1945
 msgid "dependency"
 msgstr "dépendance"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1975
+#: ../../libraries/entropy/server/interfaces/main.py:1976
 msgid "switching"
 msgstr "bascule"
 
-#: ../../libraries/entropy/server/interfaces/main.py:1995
+#: ../../libraries/entropy/server/interfaces/main.py:1996
 msgid "cannot switch, package not found, skipping"
 msgstr "impossible de basculer, paquet introuvable, saut"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2069
+#: ../../libraries/entropy/server/interfaces/main.py:2070
 msgid "moving file"
 msgstr "déplacement du fichier"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2085
+#: ../../libraries/entropy/server/interfaces/main.py:2086
 msgid "loading data from source database"
 msgstr "chargement des données de la base de données source"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2113
+#: ../../libraries/entropy/server/interfaces/main.py:2114
 #, fuzzy
 msgid "GPG key was available in"
 msgstr "pas disponible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2132
+#: ../../libraries/entropy/server/interfaces/main.py:2133
 msgid "injecting data to destination database"
 msgstr "injection des données dans la base de données cible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2150
+#: ../../libraries/entropy/server/interfaces/main.py:2151
 msgid "removing entry from source database"
 msgstr "Suppression de l'élément de la base de données source"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2168
+#: ../../libraries/entropy/server/interfaces/main.py:2169
 msgid "successfully handled atom"
 msgstr "manipulation de l'atome effectuée avec succès"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2195
+#: ../../libraries/entropy/server/interfaces/main.py:2196
 msgid "Injecting entropy metadata into built packages"
 msgstr "Injection de métadonnées Entropy dans les paquets compilés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2211
+#: ../../libraries/entropy/server/interfaces/main.py:2212
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2225
+#: ../../libraries/entropy/server/interfaces/main.py:2226
 msgid "injecting entropy metadata"
 msgstr "injection de métadonnées Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2263
+#: ../../libraries/entropy/server/interfaces/main.py:2264
 msgid "injection complete"
 msgstr "injection terminée"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2284
+#: ../../libraries/entropy/server/interfaces/main.py:2285
 msgid "removing package"
 msgstr "Suppression du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2296
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2699
+#: ../../libraries/entropy/server/interfaces/main.py:2297
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2700
 msgid "removal complete"
 msgstr "Suppression terminée"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2311
-#: ../../libraries/entropy/server/interfaces/main.py:2517
+#: ../../libraries/entropy/server/interfaces/main.py:2312
+#: ../../libraries/entropy/server/interfaces/main.py:2518
 msgid "Integrity verification of the selected packages"
 msgstr "Vérification d'intégrité sur les paquets sélectionnés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2326
-#: ../../libraries/entropy/server/interfaces/main.py:2530
+#: ../../libraries/entropy/server/interfaces/main.py:2327
+#: ../../libraries/entropy/server/interfaces/main.py:2531
 msgid "All the packages in repository will be checked."
 msgstr "Tous les paquets du dépôt seront vérifiés."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2333
+#: ../../libraries/entropy/server/interfaces/main.py:2334
 msgid "This is the list of the packages that would be checked"
 msgstr "Ceci est la liste des paquets qui seraient vérifiés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2367
+#: ../../libraries/entropy/server/interfaces/main.py:2368
 msgid "Working on mirror"
 msgstr "Travail sur le miroir"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2394
+#: ../../libraries/entropy/server/interfaces/main.py:2395
 msgid "checking hash"
 msgstr "Vérification de la clé de hachage"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2409
+#: ../../libraries/entropy/server/interfaces/main.py:2410
 msgid "digest verification of"
 msgstr "vérification de hachage sur"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2411
+#: ../../libraries/entropy/server/interfaces/main.py:2412
 msgid "not supported"
 msgstr "non supporté"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2427
-#: ../../libraries/entropy/server/interfaces/main.py:2575
+#: ../../libraries/entropy/server/interfaces/main.py:2428
+#: ../../libraries/entropy/server/interfaces/main.py:2576
 #: ../../libraries/entropy/server/interfaces/mirrors.py:695
 #: ../../libraries/entropy/server/interfaces/mirrors.py:714
 #: ../../libraries/entropy/server/interfaces/mirrors.py:746
@@ -735,420 +735,420 @@ msgstr "non supporté"
 msgid "package"
 msgstr "paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2429
+#: ../../libraries/entropy/server/interfaces/main.py:2430
 msgid "NOT healthy"
 msgstr "PAS en santé"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2442
-#: ../../libraries/entropy/server/interfaces/main.py:2587
+#: ../../libraries/entropy/server/interfaces/main.py:2443
+#: ../../libraries/entropy/server/interfaces/main.py:2588
 msgid "This is the list of broken packages"
 msgstr "Ceci est la liste des paquets endommagés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2451
+#: ../../libraries/entropy/server/interfaces/main.py:2452
 #: ../../libraries/entropy/client/interfaces/package.py:210
 #: ../../libraries/entropy/client/interfaces/package.py:471
 msgid "Mirror"
 msgstr "Miroir"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2470
-#: ../../server/server_reagent.py:845
+#: ../../libraries/entropy/server/interfaces/main.py:2471
+#: ../../server/server_reagent.py:842
 msgid "Statistics"
 msgstr "Statistiques"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2479
+#: ../../libraries/entropy/server/interfaces/main.py:2480
 msgid "Number of checked packages"
 msgstr "Nombre de paquets vérifiés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2489
+#: ../../libraries/entropy/server/interfaces/main.py:2490
 msgid "Number of healthy packages"
 msgstr "Nombre de paquets sains"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2499
+#: ../../libraries/entropy/server/interfaces/main.py:2500
 msgid "Number of broken packages"
 msgstr "Nombre de paquets endommagés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2516
-#: ../../libraries/entropy/server/interfaces/main.py:2679
+#: ../../libraries/entropy/server/interfaces/main.py:2517
+#: ../../libraries/entropy/server/interfaces/main.py:2680
 #: ../../libraries/entropy/client/interfaces/db.py:1664
 msgid "local"
 msgstr "local"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2555
+#: ../../libraries/entropy/server/interfaces/main.py:2556
 msgid "checking status of"
 msgstr "vérification de l'état de "
 
-#: ../../libraries/entropy/server/interfaces/main.py:2577
+#: ../../libraries/entropy/server/interfaces/main.py:2578
 msgid "is corrupted, stored checksum"
 msgstr "est corrompu, conservation de la somme de contrôle"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2614
+#: ../../libraries/entropy/server/interfaces/main.py:2615
 msgid "checked packages"
 msgstr "paquets vérifiés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2624
+#: ../../libraries/entropy/server/interfaces/main.py:2625
 msgid "healthy packages"
 msgstr "paquets sains"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2634
-#: ../../libraries/entropy/server/interfaces/main.py:2817
+#: ../../libraries/entropy/server/interfaces/main.py:2635
+#: ../../libraries/entropy/server/interfaces/main.py:2818
 msgid "broken packages"
 msgstr "paquets endommagés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2644
-#: ../../libraries/entropy/server/interfaces/main.py:2827
+#: ../../libraries/entropy/server/interfaces/main.py:2645
+#: ../../libraries/entropy/server/interfaces/main.py:2828
 msgid "downloaded packages"
 msgstr "Paquets téléchargés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2654
-#: ../../libraries/entropy/server/interfaces/main.py:2837
+#: ../../libraries/entropy/server/interfaces/main.py:2655
+#: ../../libraries/entropy/server/interfaces/main.py:2838
 msgid "failed downloads"
 msgstr "Téléchargements échoués"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2680
+#: ../../libraries/entropy/server/interfaces/main.py:2681
 #, fuzzy
 msgid "GPG signing packages for repository"
 msgstr "utilisation des paquets dans le dépôt"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2692
+#: ../../libraries/entropy/server/interfaces/main.py:2693
 #, fuzzy
 msgid "All the missing packages in repository will be downloaded."
 msgstr "Tous les paquets du dépôt seront vérifiés."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2708
+#: ../../libraries/entropy/server/interfaces/main.py:2709
 #: ../../server/server_key.py:67
 #, fuzzy
 msgid "GnuPG not available"
 msgstr "pas disponible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2726
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1440
+#: ../../libraries/entropy/server/interfaces/main.py:2727
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1441
 msgid "Keys for repository are expired"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2734
+#: ../../libraries/entropy/server/interfaces/main.py:2735
 #, fuzzy
 msgid "Keys not available for"
 msgstr "n'est pas disponible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2765
+#: ../../libraries/entropy/server/interfaces/main.py:2766
 #, fuzzy
 msgid "signing package"
 msgstr "Fusion du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2779
+#: ../../libraries/entropy/server/interfaces/main.py:2780
 #, fuzzy
 msgid "Unknown error signing package"
 msgstr "Fusion du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2807
+#: ../../libraries/entropy/server/interfaces/main.py:2808
 #, fuzzy
 msgid "signed packages"
 msgstr "Paquet masqué"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2870
+#: ../../libraries/entropy/server/interfaces/main.py:2871
 msgid "available"
 msgstr "disponible"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2882
+#: ../../libraries/entropy/server/interfaces/main.py:2883
 msgid "upload/ignored"
 msgstr "envoyé/ignoré"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2893
-#: ../../libraries/entropy/server/interfaces/main.py:3665
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1918
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2306
+#: ../../libraries/entropy/server/interfaces/main.py:2894
+#: ../../libraries/entropy/server/interfaces/main.py:3666
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1919
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2307
 msgid "download"
 msgstr "télécharger"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2917
+#: ../../libraries/entropy/server/interfaces/main.py:2918
 msgid "Starting to download missing files"
 msgstr "Début du téléchargement des fichiers manquants"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2928
+#: ../../libraries/entropy/server/interfaces/main.py:2929
 msgid "Searching missing/broken files on another mirror"
 msgstr "Recherche de fichiers manquants/endommagés sur un autre miroir"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2949
+#: ../../libraries/entropy/server/interfaces/main.py:2950
 msgid "Binary packages downloaded successfully."
 msgstr "Paquets binaires téléchargés avec succès"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2958
+#: ../../libraries/entropy/server/interfaces/main.py:2959
 msgid "These are the packages that cannot be found online"
 msgstr "Voici les paquets qui ne peuvent être trouvés en ligne"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2974
+#: ../../libraries/entropy/server/interfaces/main.py:2975
 msgid "They won't be checked"
 msgstr "Ils ne seront pas vérifiés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2991
+#: ../../libraries/entropy/server/interfaces/main.py:2992
 msgid "Please setup your branch to"
 msgstr "Veuillez configurer votre branche sur"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2993
+#: ../../libraries/entropy/server/interfaces/main.py:2994
 msgid "and retry"
 msgstr "et réessayez"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3003
+#: ../../libraries/entropy/server/interfaces/main.py:3004
 msgid "Copying database (if not exists)"
 msgstr "Copie de la base de données (si inexistante)"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3035
+#: ../../libraries/entropy/server/interfaces/main.py:3036
 msgid "Switching packages"
 msgstr "Basculer les paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3070
+#: ../../libraries/entropy/server/interfaces/main.py:3071
 msgid "Ignoring"
 msgstr "Saut"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3072
+#: ../../libraries/entropy/server/interfaces/main.py:3073
 msgid "already in branch"
 msgstr "déjà dans la branche"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3106
+#: ../../libraries/entropy/server/interfaces/main.py:3107
 msgid "migration loop completed"
 msgstr "boucle de migration complétée"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3126
+#: ../../libraries/entropy/server/interfaces/main.py:3127
 msgid "Running orphaned SPM packages test"
 msgstr "Exécution du test des paquets SPM orphelins"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3142
+#: ../../libraries/entropy/server/interfaces/main.py:3143
 msgid "Scanning package"
 msgstr "Vérification du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3164
+#: ../../libraries/entropy/server/interfaces/main.py:3165
 msgid "not found anymore"
 msgstr "n'est plus trouvable"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3176
-#: ../../libraries/entropy/server/interfaces/main.py:3408
+#: ../../libraries/entropy/server/interfaces/main.py:3177
+#: ../../libraries/entropy/server/interfaces/main.py:3409
 msgid "Packages string"
 msgstr "Chaîne de paquets"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3206
+#: ../../libraries/entropy/server/interfaces/main.py:3207
 msgid "Checking"
 msgstr "Vérification"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3236
+#: ../../libraries/entropy/server/interfaces/main.py:3237
 msgid "Running dependencies test"
 msgstr "Exécution d'un test de dépendances"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3265
+#: ../../libraries/entropy/server/interfaces/main.py:3266
 #: ../../client/text_ui.py:2101
 msgid "These are the dependencies not found"
 msgstr "Voici les dépendances introuvables"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3272
+#: ../../libraries/entropy/server/interfaces/main.py:3273
 #: ../../client/text_ui.py:2105
 msgid "Needed by"
 msgstr "Requis par"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3290
+#: ../../libraries/entropy/server/interfaces/main.py:3291
 msgid "by repo"
 msgstr "par dépôt"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3300
+#: ../../libraries/entropy/server/interfaces/main.py:3301
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "Chaque dépendance est satisfaite. Tout est OK."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3318
+#: ../../libraries/entropy/server/interfaces/main.py:3319
 msgid "Broken and matched packages list"
 msgstr "Liste de paquets endommagés et correspondants"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3320
+#: ../../libraries/entropy/server/interfaces/main.py:3321
 #: ../../libraries/entropy/qa.py:490
 msgid "Dumping results into these files"
 msgstr "Déversement des résultats dans ces fichiers"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3350
+#: ../../libraries/entropy/server/interfaces/main.py:3351
 #: ../../client/text_ui.py:2157
 msgid "System is healthy"
 msgstr "Le système est stable"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3359
+#: ../../libraries/entropy/server/interfaces/main.py:3360
 msgid "Matching libraries with Spm, please wait"
 msgstr "Vérifie les librairies avec Spm, merci de patienter"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3373
+#: ../../libraries/entropy/server/interfaces/main.py:3374
 msgid "These are the matched packages"
 msgstr "Voici les paquets correspondants"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3417
+#: ../../libraries/entropy/server/interfaces/main.py:3418
 msgid "No matched packages"
 msgstr "Aucun paquet correspondant"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3464
-#: ../../libraries/entropy/server/interfaces/main.py:4958
+#: ../../libraries/entropy/server/interfaces/main.py:3465
+#: ../../libraries/entropy/server/interfaces/main.py:4960
 msgid "repository not configured"
 msgstr "Dépôt non configuré"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3491
+#: ../../libraries/entropy/server/interfaces/main.py:3492
 msgid "Your default repository is not initialized"
 msgstr "Votre dépôt par défaut n'est pas initialisé"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3503
+#: ../../libraries/entropy/server/interfaces/main.py:3504
 msgid "Do you want to initialize your default repository ?"
 msgstr "Voulez-vous initialiser votre dépôt par défaut ?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3506
+#: ../../libraries/entropy/server/interfaces/main.py:3507
 msgid "Continuing with an uninitialized repository"
 msgstr "Poursuite avec un dépôt non initialisé"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3622
+#: ../../libraries/entropy/server/interfaces/main.py:3623
 msgid "Entropy database is already locked by you :-)"
 msgstr "Base de données Entropy déjà verrouillée par vous :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy/server/interfaces/main.py:3629
+#: ../../libraries/entropy/server/interfaces/main.py:3630
 msgid "Locking and Syncing Entropy database"
 msgstr "Verrouillage et synchro de la base de données Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3643
+#: ../../libraries/entropy/server/interfaces/main.py:3644
 #: ../../server/server_activator.py:397
 msgid "Mirrors status table"
 msgstr "Table d'état des mirroirs"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3652
-#: ../../libraries/entropy/server/interfaces/main.py:3655
+#: ../../libraries/entropy/server/interfaces/main.py:3653
+#: ../../libraries/entropy/server/interfaces/main.py:3656
 #: ../../server/server_activator.py:403 ../../server/server_activator.py:407
 msgid "Unlocked"
 msgstr "Déverrouillé"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3654
-#: ../../libraries/entropy/server/interfaces/main.py:3657
+#: ../../libraries/entropy/server/interfaces/main.py:3655
+#: ../../libraries/entropy/server/interfaces/main.py:3658
 #: ../../server/server_activator.py:401 ../../server/server_activator.py:405
 msgid "Locked"
 msgstr "Verrouillé"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3674
+#: ../../libraries/entropy/server/interfaces/main.py:3675
 msgid "cannot lock mirror"
 msgstr "Impossible de verrouiller le mirroir"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3848
+#: ../../libraries/entropy/server/interfaces/main.py:3849
 msgid "Entropy database is corrupted!"
 msgstr "La base de données Entropy est corrompue !"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3862
+#: ../../libraries/entropy/server/interfaces/main.py:3863
 msgid "indexing database"
 msgstr "Indexation de la base de données"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3903
+#: ../../libraries/entropy/server/interfaces/main.py:3904
 msgid "Initializing an empty database"
 msgstr "Initialisation d'une base de données vide"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3916
+#: ../../libraries/entropy/server/interfaces/main.py:3917
 msgid "Entropy database file"
 msgstr "Fichier de la base de données Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3918
+#: ../../libraries/entropy/server/interfaces/main.py:3919
 msgid "successfully initialized"
 msgstr "initialisé avec succès"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4013
-#: ../../libraries/entropy/server/interfaces/main.py:4168
+#: ../../libraries/entropy/server/interfaces/main.py:4015
+#: ../../libraries/entropy/server/interfaces/main.py:4170
 msgid "adding package"
 msgstr "ajout du paquet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4085
+#: ../../libraries/entropy/server/interfaces/main.py:4087
 msgid "added package"
 msgstr "paquet ajouté"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4087
+#: ../../libraries/entropy/server/interfaces/main.py:4089
 msgid "rev"
 msgstr "rév"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4100
+#: ../../libraries/entropy/server/interfaces/main.py:4102
 msgid "manual dependencies for"
 msgstr "dépendances manuelles pour"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4191
+#: ../../libraries/entropy/server/interfaces/main.py:4193
 msgid "Exception caught, closing tasks"
 msgstr "Exception trappée, fermeture des tâches"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4321
+#: ../../libraries/entropy/server/interfaces/main.py:4323
 msgid "server-side repository"
 msgstr "dépôt côté serveur"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4323
+#: ../../libraries/entropy/server/interfaces/main.py:4325
 msgid "community repository"
 msgstr "dépôt de la communauté"
 
 #. ..on repository: <repository_name>
-#: ../../libraries/entropy/server/interfaces/main.py:4325
+#: ../../libraries/entropy/server/interfaces/main.py:4327
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Instance de l'interface du serveur Entropy dans le dépôt"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4330
+#: ../../libraries/entropy/server/interfaces/main.py:4332
 msgid "current branch"
 msgstr "Branche courante"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4332
+#: ../../libraries/entropy/server/interfaces/main.py:4334
 #: ../../server/server_reagent.py:218
 msgid "type"
 msgstr "type"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4342
+#: ../../libraries/entropy/server/interfaces/main.py:4344
 msgid "Currently configured repositories"
 msgstr "Dépôts présentement configurés"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4379
+#: ../../libraries/entropy/server/interfaces/main.py:4381
 #, fuzzy
 msgid "GPG key expired"
 msgstr "expiré"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4381
+#: ../../libraries/entropy/server/interfaces/main.py:4383
 #, fuzzy
 msgid "please frigging fix"
 msgstr "veuillez corriger"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4392
+#: ../../libraries/entropy/server/interfaces/main.py:4394
 msgid "GPG got unexpected error"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:4394
+#: ../../libraries/entropy/server/interfaces/main.py:4396
 msgid "skipping"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:4410
-#: ../../libraries/entropy/server/interfaces/main.py:4423
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2157
+#: ../../libraries/entropy/server/interfaces/main.py:4412
+#: ../../libraries/entropy/server/interfaces/main.py:4425
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2158
 msgid "config files"
 msgstr "fichiers de configuration"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:4411
+#: ../../libraries/entropy/server/interfaces/main.py:4413
 msgid "checking system"
 msgstr "vérification du système"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:4424
+#: ../../libraries/entropy/server/interfaces/main.py:4426
 msgid "there are configuration files not updated yet"
 msgstr "certains fichiers de configuration ne sont pas encore à jour"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4715
+#: ../../libraries/entropy/server/interfaces/main.py:4717
 msgid "found available dep_rewrites for this package"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:4757
+#: ../../libraries/entropy/server/interfaces/main.py:4759
 msgid "replaced"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:4768
+#: ../../libraries/entropy/server/interfaces/main.py:4770
 #, fuzzy
 msgid "removed"
 msgstr "suppression"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4779
-#: ../../libraries/entropy/server/interfaces/main.py:4793
+#: ../../libraries/entropy/server/interfaces/main.py:4781
+#: ../../libraries/entropy/server/interfaces/main.py:4795
 #, fuzzy
 msgid "No dependency rewrite made for"
 msgstr "rendre les règles de dépendance plus strictes"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4897
+#: ../../libraries/entropy/server/interfaces/main.py:4899
 msgid "Entropy Server interface must be run as root"
 msgstr "L'interface du serveur Entropy doit être exécutée en tant que root"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4964
+#: ../../libraries/entropy/server/interfaces/main.py:4966
 msgid "protected repository id, can't use this, sorry dude..."
 msgstr "id de dépôt protégé, ne peut être utilisé, désolé l'ami..."
 
@@ -1207,13 +1207,13 @@ msgstr "déverrouillage"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:371
 #: ../../libraries/entropy/server/interfaces/mirrors.py:462
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1542
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1562
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1543
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1563
 msgid "locking"
 msgstr "verrouillage"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:401
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1543
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1544
 msgid "mirror already locked"
 msgstr "miroir déjà verrouillé"
 
@@ -1311,332 +1311,332 @@ msgstr "ensemble de paquets configurés"
 msgid "None configured"
 msgstr "Aucun configuré"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1314
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1315
 msgid "preparing uncompressed database for the upload"
 msgstr "préparation de la base de données non compressée pour l'envoi"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1321
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1346
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1394
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1322
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1347
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1395
 msgid "database path"
 msgstr "emplacement de la base de données"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1339
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1340
 msgid "creating compressed database dump + checksum"
 msgstr ""
 "création du 'dump' de la base de données compressée et de sa somme de "
 "contrôle"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1353
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1354
 msgid "dump light"
 msgstr "'dump light'"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1362
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1363
 msgid "dump light checksum"
 msgstr "déversement d'une somme de contrôle légère"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1371
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1427
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1372
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1428
 msgid "opener"
 msgstr "origine"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1386
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1387
 msgid "compressing database + checksum"
 msgstr "compression de la base dee données et de la somme de contrôle"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1401
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1402
 msgid "compressed database path"
 msgstr "emplacement de la base de données compressée"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1410
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1411
 msgid "database checksum"
 msgstr "Somme de contrôle de la base de données"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1419
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1420
 msgid "compressed checksum"
 msgstr "Somme de contrôle compressée"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1544
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1545
 msgid "waiting up to 2 minutes before giving up"
 msgstr "attente de 2 minutes avant abandon"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1563
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1564
 msgid "mirror unlocked"
 msgstr "miroir déverrouillé"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1634
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1635
 msgid "Troubles with treeupdates"
 msgstr "Problèmes avec les treeupdates"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1637
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1638
 msgid "Bumping old data back"
 msgstr "Restauration des vieilles données"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1696
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1727
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2290
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1697
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1728
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2291
 msgid "upload"
 msgstr "envoi"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1697
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1698
 msgid "disabled EAPI"
 msgstr "EAPI désactivé"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1728
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1729
 msgid "preparing to upload database to mirror"
 msgstr "préparation à l'envoi de la base de données au miroir"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1849
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1964
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1850
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1965
 msgid "errors"
 msgstr "erreurs"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1850
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1851
 msgid "upload failed, not unlocking and continuing"
 msgstr "l'envoi a échoué, pas de déverrouillage et poursuite"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1919
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1920
 msgid "preparing to download database from mirror"
 msgstr "préparation au téléchargement de la base de données à partir du miroir"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1929
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1930
 msgid "download path"
 msgstr "emplacement du téléchargement"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1965
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1966
 msgid "failed to download from mirror"
 msgstr "échec du téléchargement à partir du miroir"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2076
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2077
 msgid "Mirrors are locked, someone is working on the repository"
 msgstr "Les miroirs sont verrouillés, quelqu'un travaille sur le dépôt"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2077
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2078
 msgid "try again later"
 msgstr "réessayez plus tard"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2089
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2108
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2140
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2173
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2187
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2697
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2866
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2882
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2951
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2977
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2995
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3013
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3044
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3110
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3129
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3151
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3177
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2090
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2109
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2141
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2174
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2188
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2698
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2867
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2883
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2952
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2978
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2996
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3014
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3045
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3111
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3130
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3152
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3178
 msgid "sync"
 msgstr "synchroniser"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2090
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2091
 msgid "database already in sync"
 msgstr "base de données déjà en synchro"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2109
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2174
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2110
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2175
 msgid "database sync failed"
 msgstr "échec de la synchro de la base de données"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2110
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2111
 msgid "download issues"
 msgstr "problèmes de téléchargement"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2141
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2142
 msgid "database sync forbidden"
 msgstr "synchro de la base de données interdite"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2142
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2143
 msgid "dependencies_test() reported errors"
 msgstr "dependencies_test() a rapporté des erreurs"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2158
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2159
 msgid "no configuration files to commit. All fine."
 msgstr "Pas de fichier de configuration à confirmer. Tout est OK."
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2175
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2176
 msgid "upload issues"
 msgstr "problèmes d'envoi"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2188
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2189
 msgid "database sync completed successfully"
 msgstr "synchro de la base de données complétée avec succès"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2250
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2251
 msgid "Local statistics"
 msgstr "Statistiques locales"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2258
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2259
 msgid "upload directory"
 msgstr "Répertoire d'envoi"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2260
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2271
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2261
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2272
 msgid "files ready"
 msgstr "fichiers prêts"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2269
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2270
 msgid "packages directory"
 msgstr "Répertoire des paquets"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2320
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2321
 msgid "copy"
 msgstr "copie"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2345
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2346
 msgid "Packages to be removed"
 msgstr "Paquets à être supprimés"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2354
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2355
 msgid "Packages to be moved locally"
 msgstr "Paquets à être déplacés localement"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2363
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2364
 msgid "Packages to be uploaded"
 msgstr "Paquets à être envoyés"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2373
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2374
 msgid "Total removal size"
 msgstr "Taille totale de la suppression"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2385
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2386
 msgid "Total upload size"
 msgstr "Taille totale de l'envoi"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2394
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2395
 msgid "Total download size"
 msgstr "Taille totale du téléchargement"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2449
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2450
 msgid "Remote statistics for"
 msgstr "Statistiques distantes pour "
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2462
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2463
 msgid "remote packages"
 msgstr "Paquets distants"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2464
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2465
 msgid "files stored"
 msgstr "fichiers stockés"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2472
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2473
 msgid "Calculating queues"
 msgstr "Calcul des files"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2678
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2679
 msgid "removing package+hash"
 msgstr "suppression du paquet et de la clé de hachage"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2725
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2726
 msgid "copying file+hash to repository"
 msgstr "copie du fichier et de la clé de hachage vers le dépôt"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2790
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2791
 msgid "upload errors"
 msgstr "erreurs d'envoi"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2804
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2805
 msgid "upload completed successfully"
 msgstr "envoi complété avec succès"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2909
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2910
 msgid "QA checking package file"
 msgstr "Vérification d'AQ du fichier du paquet"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2931
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2932
 msgid "faulty package file, please fix"
 msgstr "Fichier de paquet fautif, veuillez corriger"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2952
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2953
 msgid "starting packages sync"
 msgstr "démarrage de la synchro des paquets"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2979
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2980
 msgid "packages sync"
 msgstr "synchronisation des paquets"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2997
+#: ../../libraries/entropy/server/interfaces/mirrors.py:2998
 msgid "socket error"
 msgstr "erreur de socket"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:2999
-#: ../../server/server_reagent.py:482
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3000
+#: ../../server/server_reagent.py:479
 msgid "on"
 msgstr "sur"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3015
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3016
 msgid "nothing to do on"
 msgstr "rien à faire sur"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3026
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3027
 msgid "Expanding queues"
 msgstr "Expansion des files"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3046
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3047
 msgid "nothing to sync for"
 msgstr "rien à synchroniser pour"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3063
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3064
 msgid "Would you like to run the steps above ?"
 msgstr "Voulez-vous exécuter les étapes ci-dessus ?"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3112
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3113
 msgid "keyboard interrupt !"
 msgstr "Invocation d'un « keyboard interrupt » !"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3131
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3132
 msgid "you must package them again"
 msgstr "il vous faut les réempaquetter"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3153
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3154
 msgid "exception caught"
 msgstr "exception trappée"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3180
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3181
 msgid "at least one mirror synced properly!"
 msgstr "au moins un miroir correctement synchronisé !"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3285
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3286
 msgid "tidy"
 msgstr "ordonné"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3287
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3288
 msgid "collecting expired packages"
 msgstr "collecte des paquets expirés"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3302
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3303
 msgid "collecting expired packages in the selected branches"
 msgstr "collecte des paquets expirés dans les branches sélectionnées"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3344
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3345
 msgid "nothing to remove on this branch"
 msgstr "rien à supprimer dans cette branche"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3355
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3356
 msgid "these are the expired packages"
 msgstr "voici les paquets expirés"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3407
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3408
 msgid "removing packages remotely"
 msgstr "suppression des paquets à distance"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3439
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3440
 msgid "remove errors"
 msgstr "supprimer les erreurs"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3454
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3455
 msgid "removing packages locally"
 msgstr "suppression des paquets localement"
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3483
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3484
 msgid "removing"
 msgstr "suppression"
 
@@ -1721,7 +1721,7 @@ msgstr "Veuilles vous connecter contre "
 #: ../../server/server_reagent.py:105 ../../server/server_reagent.py:109
 #: ../../server/server_reagent.py:122 ../../server/server_reagent.py:126
 #: ../../server/server_reagent.py:165 ../../server/server_reagent.py:195
-#: ../../server/server_reagent.py:332
+#: ../../server/server_reagent.py:329
 msgid "repository"
 msgstr "dépôt"
 
@@ -1756,12 +1756,12 @@ msgstr ""
 #: ../../client/text_ugc.py:412 ../../client/text_ugc.py:488
 #: ../../client/text_ugc.py:507 ../../client/text_ui.py:446
 #: ../../client/text_ui.py:473 ../../server/server_activator.py:317
-#: ../../server/server_reagent.py:706 ../../server/server_reagent.py:707
-#: ../../server/server_reagent.py:732 ../../server/server_reagent.py:745
-#: ../../server/server_reagent.py:746 ../../server/server_reagent.py:761
+#: ../../server/server_reagent.py:703 ../../server/server_reagent.py:704
+#: ../../server/server_reagent.py:729 ../../server/server_reagent.py:742
+#: ../../server/server_reagent.py:743 ../../server/server_reagent.py:758
 #: ../../sulfur/src/sulfur/dialogs.py:1357
 #: ../../sulfur/src/sulfur/dialogs.py:1824
-#: ../../sulfur/src/sulfur/entropyapi.py:378
+#: ../../sulfur/src/sulfur/entropyapi.py:380
 #: ../../sulfur/src/sulfur/events.py:709
 msgid "Yes"
 msgstr "Oui"
@@ -2053,7 +2053,7 @@ msgstr "Définir le dépôt du serveu Entropy par défaut"
 #: ../../libraries/entropy/client/services/system/methods.py:387
 #: ../../libraries/entropy/client/services/system/methods.py:394
 #: ../../libraries/entropy/client/services/system/methods.py:403
-#: ../../sulfur/src/sulfur/views.py:2830
+#: ../../sulfur/src/sulfur/views.py:2832
 msgid "Repository Identifier"
 msgstr "Identifiant du dépôt"
 
@@ -2202,8 +2202,8 @@ msgstr "Ajouter un élément au tableau d'affichage"
 
 #. title
 #: ../../libraries/entropy/client/services/system/methods.py:404
-#: ../../client/text_repositories.py:289 ../../client/text_repositories.py:321
-#: ../../client/text_repositories.py:376 ../../client/text_security.py:96
+#: ../../client/text_repositories.py:305 ../../client/text_repositories.py:337
+#: ../../client/text_repositories.py:392 ../../client/text_security.py:96
 #: ../../client/text_ugc.py:385 ../../client/text_ugc.py:576
 #: ../../server/server_activator.py:204 ../../server/server_activator.py:236
 #: ../../server/server_activator.py:268 ../../sulfur/src/sulfur/dialogs.py:381
@@ -2244,17 +2244,19 @@ msgid "Injecting downloaded dump"
 msgstr "Injection du 'dump' téléchargé"
 
 #: ../../libraries/entropy/client/interfaces/db.py:314
-#: ../../client/text_repositories.py:228
-msgid "Database URL"
-msgstr "URL de la base de données"
+#, fuzzy
+msgid "Repository URL"
+msgstr "Dépôt"
 
 #: ../../libraries/entropy/client/interfaces/db.py:322
-msgid "Database local path"
-msgstr "Emplacement local de la base de données"
+#, fuzzy
+msgid "Repository local path"
+msgstr "Emplacement de la base de données du dépôt"
 
 #: ../../libraries/entropy/client/interfaces/db.py:330
-msgid "Database EAPI"
-msgstr "Base de données EAPI"
+#, fuzzy
+msgid "Repository API"
+msgstr "Dépôt"
 
 #: ../../libraries/entropy/client/interfaces/db.py:345
 msgid "Repository is being updated"
@@ -2347,7 +2349,7 @@ msgid "cannot be unpacked, not very ok!"
 msgstr "Impossible d'ouvrir les paquets, désolé"
 
 #: ../../libraries/entropy/client/interfaces/db.py:1019
-#: ../../client/text_repositories.py:234
+#: ../../client/text_repositories.py:250
 msgid "Repository revision"
 msgstr "Révision du dépôt"
 
@@ -2521,7 +2523,7 @@ msgid "Packages injection complete"
 msgstr "Injection de paquets terminée"
 
 #: ../../libraries/entropy/client/interfaces/db.py:1627
-#: ../../sulfur/src/sulfur/entropyapi.py:217
+#: ../../sulfur/src/sulfur/entropyapi.py:219
 msgid "Removing package"
 msgstr "Suppression du paquet"
 
@@ -2544,8 +2546,9 @@ msgid "remote"
 msgstr "distant"
 
 #: ../../libraries/entropy/client/interfaces/db.py:1764
-msgid "database is already up to date"
-msgstr "La base de données est déjà à jour"
+#, fuzzy
+msgid "repository is already up to date"
+msgstr "Tous les dépôts étaient déjà à jour."
 
 #: ../../libraries/entropy/client/interfaces/db.py:1826
 msgid "EAPI3 Service error"
@@ -2565,15 +2568,15 @@ msgstr "vérification de %s"
 msgid "Sorting dependencies"
 msgstr "Tri des dépendances"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1328
+#: ../../libraries/entropy/client/interfaces/dep.py:1337
 msgid "Calculating inverse dependencies for"
 msgstr "Calcul des dépendances inverses pour"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1441
+#: ../../libraries/entropy/client/interfaces/dep.py:1546
 msgid "Calculating available packages for"
 msgstr "Calcul des paquets disponibles pou"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1639
+#: ../../libraries/entropy/client/interfaces/dep.py:1744
 #, fuzzy
 msgid "Calculating updates"
 msgstr "Calcul des mises à jour..."
@@ -2582,7 +2585,7 @@ msgstr "Calcul des mises à jour..."
 #: ../../libraries/entropy/client/interfaces/methods.py:93
 #: ../../client/text_ui.py:451 ../../server/server_reagent.py:112
 #: ../../server/server_reagent.py:129 ../../sulfur/src/sulfur/__init__.py:955
-#: ../../sulfur/src/sulfur/views.py:2760
+#: ../../sulfur/src/sulfur/views.py:2762
 msgid "Repository"
 msgstr "Dépôt"
 
@@ -2613,93 +2616,93 @@ msgstr "mauvais id de dépôt spécifié"
 msgid "Repository %s hasn't been downloaded yet."
 msgstr "Le dépôt %s n'a pas encore été téléchargé."
 
-#: ../../libraries/entropy/client/interfaces/methods.py:585
+#: ../../libraries/entropy/client/interfaces/methods.py:589
 msgid "System database not found or corrupted"
 msgstr "Base de données système introuvable ou corrompue"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:586
+#: ../../libraries/entropy/client/interfaces/methods.py:590
 #, fuzzy
 msgid "running in safe mode using temporary, empty repository"
 msgstr ""
 "exécution en mode sans échec en utilisant une base de données vide de la "
 "mémoire vive"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:698
+#: ../../libraries/entropy/client/interfaces/methods.py:702
 msgid "Cannot backup selected database"
 msgstr ""
 "Impossible de créer de copie de sauvegarde de la base de données sélectionnée"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:700
-#: ../../libraries/entropy/client/interfaces/methods.py:763
+#: ../../libraries/entropy/client/interfaces/methods.py:704
+#: ../../libraries/entropy/client/interfaces/methods.py:767
 msgid "permission denied"
 msgstr "permission refusée"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:720
+#: ../../libraries/entropy/client/interfaces/methods.py:724
 msgid "Backing up database to"
 msgstr "Prise de copie de sécurité de la base de données vers"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:736
+#: ../../libraries/entropy/client/interfaces/methods.py:740
 msgid "Unable to compress"
 msgstr "Incapable de compresser"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:740
+#: ../../libraries/entropy/client/interfaces/methods.py:744
 msgid "Database backed up successfully"
 msgstr "Copie de sécurité de la base de données créée avec succès"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:749
-#: ../../libraries/entropy/client/interfaces/methods.py:807
+#: ../../libraries/entropy/client/interfaces/methods.py:753
+#: ../../libraries/entropy/client/interfaces/methods.py:811
 #: ../../libraries/entropy/client/interfaces/sets.py:187
 #: ../../libraries/entropy/client/interfaces/sets.py:213
 #: ../../libraries/entropy/const.py:555
 msgid "All fine"
 msgstr "Tout est OK"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:761
+#: ../../libraries/entropy/client/interfaces/methods.py:765
 msgid "Cannot restore selected backup"
 msgstr "Impossible de restaurer la copie de sécurité sélectionnée"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:775
+#: ../../libraries/entropy/client/interfaces/methods.py:779
 msgid "Restoring backed up database"
 msgstr "REstauration de la copie de sécurité de la base de données"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:793
+#: ../../libraries/entropy/client/interfaces/methods.py:797
 msgid "Unable to unpack"
 msgstr "Incapable de dépaquetter"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:797
+#: ../../libraries/entropy/client/interfaces/methods.py:801
 msgid "Database restored successfully"
 msgstr "Base de données restaurée avec succès"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1188
+#: ../../libraries/entropy/client/interfaces/methods.py:1192
 msgid "Resources unlocked, let's go!"
 msgstr "Ressources déverrouillées, allons-y !"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1200
+#: ../../libraries/entropy/client/interfaces/methods.py:1204
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr "Ressources toujours verrouillées après %s minutes, abandon !"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1209
+#: ../../libraries/entropy/client/interfaces/methods.py:1213
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr "Ressources verrouillées, sleeping %s seconds, check #%s/%s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1233
+#: ../../libraries/entropy/client/interfaces/methods.py:1237
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr "Rien à sauvegarder dans etpConst avec la clé %s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1341
+#: ../../libraries/entropy/client/interfaces/methods.py:1350
 #, fuzzy
 msgid "Checking response time of"
 msgstr "vérification de l'état de "
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1362
+#: ../../libraries/entropy/client/interfaces/methods.py:1372
 #, fuzzy
 msgid "Mirror response time"
 msgstr "Table d'état des mirroirs"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1677
+#: ../../libraries/entropy/client/interfaces/methods.py:1697
 msgid "not a valid method"
 msgstr "pas une méthode valide"
 
@@ -2726,13 +2729,13 @@ msgstr "Taux de transfert groupé"
 
 #: ../../libraries/entropy/client/interfaces/package.py:265
 #: ../../libraries/entropy/client/interfaces/package.py:525
-#: ../../libraries/entropy/client/interfaces/package.py:2405
+#: ../../libraries/entropy/client/interfaces/package.py:2351
 msgid "second"
 msgstr "seconde"
 
 #: ../../libraries/entropy/client/interfaces/package.py:280
 #: ../../libraries/entropy/client/interfaces/package.py:541
-#: ../../libraries/entropy/client/interfaces/package.py:2420
+#: ../../libraries/entropy/client/interfaces/package.py:2366
 msgid "Error downloading from"
 msgstr "Erreur de téléchargement depuis"
 
@@ -2758,13 +2761,13 @@ msgstr "erreur de délai expiré"
 
 #: ../../libraries/entropy/client/interfaces/package.py:293
 #: ../../libraries/entropy/client/interfaces/package.py:571
-#: ../../libraries/entropy/client/interfaces/package.py:2431
+#: ../../libraries/entropy/client/interfaces/package.py:2377
 msgid "discarded download"
 msgstr "téléchargement ignoré"
 
 #: ../../libraries/entropy/client/interfaces/package.py:296
 #: ../../libraries/entropy/client/interfaces/package.py:574
-#: ../../libraries/entropy/client/interfaces/package.py:2433
+#: ../../libraries/entropy/client/interfaces/package.py:2379
 msgid "unknown reason"
 msgstr "raison inconnue"
 
@@ -2773,17 +2776,17 @@ msgid "Downloading from"
 msgstr "Téléchargement à partir de"
 
 #: ../../libraries/entropy/client/interfaces/package.py:519
-#: ../../libraries/entropy/client/interfaces/package.py:2402
+#: ../../libraries/entropy/client/interfaces/package.py:2348
 msgid "Successfully downloaded from"
 msgstr "Téléchargement terminé avec succès à partir de"
 
 #: ../../libraries/entropy/client/interfaces/package.py:524
-#: ../../libraries/entropy/client/interfaces/package.py:2405
+#: ../../libraries/entropy/client/interfaces/package.py:2351
 msgid "at"
 msgstr "à"
 
 #: ../../libraries/entropy/client/interfaces/package.py:547
-#: ../../libraries/entropy/client/interfaces/package.py:2426
+#: ../../libraries/entropy/client/interfaces/package.py:2372
 msgid "file not available on this mirror"
 msgstr "fichier non disponible sur ce miroir"
 
@@ -2878,7 +2881,7 @@ msgid "Removing config file, never modified"
 msgstr "Suppression du fichier de configuration, jamais modifié"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1147
-#: ../../libraries/entropy/client/interfaces/package.py:2306
+#: ../../libraries/entropy/client/interfaces/package.py:2252
 msgid "Protecting config file"
 msgstr "Protection du fichier de configuration"
 
@@ -2938,220 +2941,220 @@ msgstr "Erreur de déplacement de fichier"
 msgid "please report"
 msgstr "Veuillez rapporter"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2264
+#: ../../libraries/entropy/client/interfaces/package.py:2208
 msgid "Skipping file installation/removal"
 msgstr "Saut de l'installation/suppression du fichier"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2323
+#: ../../libraries/entropy/client/interfaces/package.py:2269
 msgid "Collision found during install for"
 msgstr "Collision constatée durant installation pour"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2326
+#: ../../libraries/entropy/client/interfaces/package.py:2272
 msgid "cannot overwrite"
 msgstr "Impossible d'écraser"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2386
-#: ../../libraries/entropy/client/interfaces/package.py:2489
+#: ../../libraries/entropy/client/interfaces/package.py:2332
+#: ../../libraries/entropy/client/interfaces/package.py:2435
 msgid "Downloading"
 msgstr "Téléchargement"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2413
+#: ../../libraries/entropy/client/interfaces/package.py:2359
 msgid "Local path"
 msgstr "Emplacement local"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2448
+#: ../../libraries/entropy/client/interfaces/package.py:2394
 msgid "Downloading archive"
 msgstr "Téléchargement de l'archive"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2472
+#: ../../libraries/entropy/client/interfaces/package.py:2418
 msgid "Package cannot be fetched. Try to update repositories"
 msgstr "Le paquet ne peut être lu. Essayez de mettre à jour vos dépôts"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2473
-#: ../../libraries/entropy/client/interfaces/package.py:2510
-#: ../../libraries/entropy/client/interfaces/package.py:2591
-#: ../../libraries/entropy/client/interfaces/package.py:2598
-#: ../../libraries/entropy/client/interfaces/package.py:2642
-#: ../../libraries/entropy/client/interfaces/package.py:2670
-#: ../../libraries/entropy/client/interfaces/package.py:2804
-#: ../../libraries/entropy/client/interfaces/package.py:2824
+#: ../../libraries/entropy/client/interfaces/package.py:2419
+#: ../../libraries/entropy/client/interfaces/package.py:2456
+#: ../../libraries/entropy/client/interfaces/package.py:2537
+#: ../../libraries/entropy/client/interfaces/package.py:2544
+#: ../../libraries/entropy/client/interfaces/package.py:2588
+#: ../../libraries/entropy/client/interfaces/package.py:2616
+#: ../../libraries/entropy/client/interfaces/package.py:2750
+#: ../../libraries/entropy/client/interfaces/package.py:2770
 #: ../../libraries/entropy/client/interfaces/trigger.py:48
-#: ../../libraries/entropy/security.py:643 ../../server/server_reagent.py:537
+#: ../../libraries/entropy/security.py:643 ../../server/server_reagent.py:534
 #: ../../sulfur/src/sulfur/events.py:903 ../../sulfur/src/sulfur/events.py:909
 #: ../../sulfur/src/sulfur/events.py:948
 #: ../../sulfur/src/sulfur/sulfur.glade.h:83
 msgid "Error"
 msgstr "Erreur"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2491
+#: ../../libraries/entropy/client/interfaces/package.py:2437
 msgid "archives"
 msgstr "archives"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2508
+#: ../../libraries/entropy/client/interfaces/package.py:2454
 msgid "Some packages cannot be fetched"
 msgstr "Certains paquets ne peuvent être lus"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2509
+#: ../../libraries/entropy/client/interfaces/package.py:2455
 msgid "Try to update your repositories and retry"
 msgstr "Essayez de mettre à jour vos dépôts et réessayez"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2537
+#: ../../libraries/entropy/client/interfaces/package.py:2483
 msgid "Package cannot be downloaded, unknown error."
 msgstr "Le paquet ne peut être téléchargé, erreur inconnue"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2546
+#: ../../libraries/entropy/client/interfaces/package.py:2492
 msgid "Installed package in queue vanished, skipping."
 msgstr "Le paquet installé dans la file a disparu, saut."
 
-#: ../../libraries/entropy/client/interfaces/package.py:2565
+#: ../../libraries/entropy/client/interfaces/package.py:2511
 msgid "Unpacking package"
 msgstr "Dépaquettage du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2576
+#: ../../libraries/entropy/client/interfaces/package.py:2522
 msgid "Merging package"
 msgstr "Fusion du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2589
+#: ../../libraries/entropy/client/interfaces/package.py:2535
 msgid "You are running out of disk space"
 msgstr "Vous manquez d'espace disque"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2590
+#: ../../libraries/entropy/client/interfaces/package.py:2536
 msgid "I bet, you're probably Michele"
 msgstr "JE parie que vous vous êtes probablement Michele"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2594
+#: ../../libraries/entropy/client/interfaces/package.py:2540
 msgid "An error occured while trying to unpack the package"
 msgstr "Une erreur s'est produite durant de la dépaquettage du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2597
-#: ../../libraries/entropy/client/interfaces/package.py:2641
+#: ../../libraries/entropy/client/interfaces/package.py:2543
+#: ../../libraries/entropy/client/interfaces/package.py:2587
 msgid "Check if your system is healthy"
 msgstr "Vérifiez si votre système est sain"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2611
+#: ../../libraries/entropy/client/interfaces/package.py:2557
 msgid "Installing package"
 msgstr "Installation du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2629
+#: ../../libraries/entropy/client/interfaces/package.py:2575
 #, fuzzy
 msgid "<3 debug files installation enabled <3"
 msgstr "Saut de l'installation/suppression du fichier"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2640
+#: ../../libraries/entropy/client/interfaces/package.py:2586
 msgid "An error occured while trying to install the package"
 msgstr "Une erreur s'est produite lors de l'installation du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2655
+#: ../../libraries/entropy/client/interfaces/package.py:2601
 msgid "Removing data"
 msgstr "Suppression des données"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2668
+#: ../../libraries/entropy/client/interfaces/package.py:2614
 msgid "An error occured while trying to remove the package"
 msgstr "Une erreur s'est produite lors de la suppression du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2669
+#: ../../libraries/entropy/client/interfaces/package.py:2615
 msgid "Check if you have enough disk space on your hard disk"
 msgstr "Vérifiez si vous disposez de suffisamment d'espace disque"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2683
-#: ../../libraries/entropy/client/interfaces/package.py:2928
+#: ../../libraries/entropy/client/interfaces/package.py:2629
+#: ../../libraries/entropy/client/interfaces/package.py:2874
 #: ../../client/text_tools.py:34
 msgid "Cleaning"
 msgstr "Nettoyage"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2789
+#: ../../libraries/entropy/client/interfaces/package.py:2735
 msgid "Configuring package"
 msgstr "Configuration du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2801
-#: ../../libraries/entropy/client/interfaces/package.py:2821
+#: ../../libraries/entropy/client/interfaces/package.py:2747
+#: ../../libraries/entropy/client/interfaces/package.py:2767
 msgid "An error occured while trying to configure the package"
 msgstr "Une erreur s'est produite lors de la configuration du paquet"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2803
+#: ../../libraries/entropy/client/interfaces/package.py:2749
 msgid "Make sure that your system is healthy"
 msgstr "Assurez-vous que vous système est sain"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2823
+#: ../../libraries/entropy/client/interfaces/package.py:2769
 msgid "It seems that Source Package Manager entry is missing"
 msgstr ""
 "Il semble que l'entrée du gestionnaire de source de paquets est manquante"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2847
+#: ../../libraries/entropy/client/interfaces/package.py:2793
 msgid "Installed package vanished"
 msgstr "Le paquet installé a disparu"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2853
+#: ../../libraries/entropy/client/interfaces/package.py:2799
 msgid "Fetch not available"
 msgstr "Lecture indisponible"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2860
-#: ../../sulfur/src/sulfur/entropyapi.py:129
+#: ../../libraries/entropy/client/interfaces/package.py:2806
+#: ../../sulfur/src/sulfur/entropyapi.py:131
 msgid "Fetching"
 msgstr "Lecture"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2867
+#: ../../libraries/entropy/client/interfaces/package.py:2813
 msgid "Multi Fetching"
 msgstr "Lecture multiple"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2868
-#: ../../libraries/entropy/client/interfaces/package.py:2887
+#: ../../libraries/entropy/client/interfaces/package.py:2814
+#: ../../libraries/entropy/client/interfaces/package.py:2833
 #: ../../client/text_query.py:774 ../../client/text_query.py:809
-#: ../../client/text_ui.py:999 ../../server/server_reagent.py:491
+#: ../../client/text_ui.py:999 ../../server/server_reagent.py:488
 msgid "packages"
 msgstr "paquets"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2874
+#: ../../libraries/entropy/client/interfaces/package.py:2820
 msgid "Fetching sources"
 msgstr "Lecture des sources"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2880
+#: ../../libraries/entropy/client/interfaces/package.py:2826
 msgid "Verifying"
 msgstr "Vérification"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2886
+#: ../../libraries/entropy/client/interfaces/package.py:2832
 msgid "Multi Verification"
 msgstr "Vérification multiple"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2893
+#: ../../libraries/entropy/client/interfaces/package.py:2839
 msgid "Unpacking"
 msgstr "Dépaquettage"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2899
+#: ../../libraries/entropy/client/interfaces/package.py:2845
 msgid "Merging"
 msgstr "Fusion"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2912
-#: ../../sulfur/src/sulfur/entropyapi.py:268
+#: ../../libraries/entropy/client/interfaces/package.py:2858
+#: ../../sulfur/src/sulfur/entropyapi.py:270
 msgid "Installing"
 msgstr "Installation"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2920
-#: ../../client/text_rescue.py:514 ../../sulfur/src/sulfur/entropyapi.py:226
+#: ../../libraries/entropy/client/interfaces/package.py:2866
+#: ../../client/text_rescue.py:514 ../../sulfur/src/sulfur/entropyapi.py:228
 msgid "Removing"
 msgstr "Suppression"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2936
+#: ../../libraries/entropy/client/interfaces/package.py:2882
 msgid "Postinstall"
 msgstr "Post-installation"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2944
+#: ../../libraries/entropy/client/interfaces/package.py:2890
 msgid "Preinstall"
 msgstr "Pré-installation"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2952
+#: ../../libraries/entropy/client/interfaces/package.py:2898
 msgid "Preremove"
 msgstr "Pré-suppression"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2960
+#: ../../libraries/entropy/client/interfaces/package.py:2906
 msgid "Postremove"
 msgstr "Post-suppression"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2968
+#: ../../libraries/entropy/client/interfaces/package.py:2914
 msgid "Configuring"
 msgstr "Configuration"
 
-#: ../../libraries/entropy/client/interfaces/package.py:3011
+#: ../../libraries/entropy/client/interfaces/package.py:2957
 #: ../../libraries/entropy/client/interfaces/repository.py:180
 #: ../../libraries/entropy/security.py:1026
 #, fuzzy
@@ -3160,16 +3163,16 @@ msgstr ""
 "Une autre instance d'Entropy est en cours d'exécution. Impossible de traiter "
 "la file."
 
-#: ../../libraries/entropy/client/interfaces/package.py:3022
+#: ../../libraries/entropy/client/interfaces/package.py:2968
 msgid "Cannot acquire Entropy resources lock."
 msgstr "Impossible d'acquérir le verrouillages des ressources d'Entropy"
 
-#: ../../libraries/entropy/client/interfaces/package.py:3035
+#: ../../libraries/entropy/client/interfaces/package.py:2981
 msgid "An error occured. Action aborted."
 msgstr "Une erreur s'est produite. Action annulée."
 
 #: ../../libraries/entropy/client/interfaces/qa.py:81
-#: ../../libraries/entropy/qa.py:1277
+#: ../../libraries/entropy/qa.py:1284
 msgid "Not prepared yet"
 msgstr "Pas préparé encore"
 
@@ -3407,7 +3410,7 @@ msgid "items"
 msgstr "éléments"
 
 #: ../../libraries/entropy/output.py:585
-#: ../../sulfur/src/sulfur/entropyapi.py:390
+#: ../../sulfur/src/sulfur/entropyapi.py:392
 msgid "Entropy needs your attention"
 msgstr "Entropy nécessite votre attention"
 
@@ -3796,442 +3799,447 @@ msgid "remove repository"
 msgstr "Vers le dépôt"
 
 #: ../../client/equo.py:74
+#, fuzzy
+msgid "reorder mirrors basing on response time"
+msgstr "Table d'état des mirroirs"
+
+#: ../../client/equo.py:75
 msgid "repository notice board reader"
 msgstr "lecteur de tableau d'affichage du dépôt"
 
-#: ../../client/equo.py:75
+#: ../../client/equo.py:76
 msgid "show respositories status"
 msgstr "afficher l'état des dépôts"
 
-#: ../../client/equo.py:77
+#: ../../client/equo.py:78
 msgid "search packages in repositories"
 msgstr "recherche les paquets dans les dépôts"
 
-#: ../../client/equo.py:78
+#: ../../client/equo.py:79
 msgid "match a package in repositories"
 msgstr "comparer un paquet dans les dépôts"
 
-#: ../../client/equo.py:79
+#: ../../client/equo.py:80
 msgid "return all the possible matches"
 msgstr "retourner toutes les correspondances possibles"
 
-#: ../../client/equo.py:80
+#: ../../client/equo.py:81
 #, fuzzy
 msgid "match inside installed packages repository"
 msgstr "Paquets installés"
 
-#: ../../client/equo.py:81
+#: ../../client/equo.py:82
 msgid "return matches from every repository"
 msgstr "retourner les correspondance de chaque dépôt"
 
-#: ../../client/equo.py:82
+#: ../../client/equo.py:83
 msgid "print repository information (w/--quiet)"
 msgstr "imprimer l'information du dépôt (avec --quiet)"
 
-#: ../../client/equo.py:83
+#: ../../client/equo.py:84
 msgid "print description too (w/--quiet)"
 msgstr "imprimer également la description (avec --quiet)"
 
-#: ../../client/equo.py:85
+#: ../../client/equo.py:86
 msgid "upgrade your distribution to a new release (branch)"
 msgstr "mettre à niveau votre distribution à une nouvelle version (branche)"
 
-#: ../../client/equo.py:87
+#: ../../client/equo.py:88
 msgid "update system with the latest available packages"
 msgstr ""
 "mettre à jour le système avec la dernière version des paquets disponible"
 
-#: ../../client/equo.py:88 ../../client/equo.py:108 ../../client/equo.py:114
-#: ../../client/equo.py:132 ../../client/equo.py:139 ../../client/equo.py:147
-#: ../../client/equo.py:156 ../../client/equo.py:159 ../../client/equo.py:163
-#: ../../client/equo.py:168 ../../client/equo.py:179 ../../client/equo.py:264
+#: ../../client/equo.py:89 ../../client/equo.py:109 ../../client/equo.py:115
+#: ../../client/equo.py:133 ../../client/equo.py:140 ../../client/equo.py:148
+#: ../../client/equo.py:157 ../../client/equo.py:160 ../../client/equo.py:164
+#: ../../client/equo.py:169 ../../client/equo.py:180 ../../client/equo.py:265
 #: ../../server/activator.py:56
 msgid "ask before making any changes"
 msgstr "demander avant de faire tout changement"
 
-#: ../../client/equo.py:89 ../../client/equo.py:109
+#: ../../client/equo.py:90 ../../client/equo.py:110
 msgid "just download packages"
 msgstr "seulement télécharger les paquets"
 
-#: ../../client/equo.py:90 ../../client/equo.py:265
+#: ../../client/equo.py:91 ../../client/equo.py:266
 #: ../../server/activator.py:57
 msgid "only show what would be done"
 msgstr "afficher seulement ce qui serait fait"
 
-#: ../../client/equo.py:91 ../../client/equo.py:125
+#: ../../client/equo.py:92 ../../client/equo.py:126
 msgid "show more details about what is going on"
 msgstr "afficher plus de détails à propos de ce qui se passe"
 
-#: ../../client/equo.py:92
+#: ../../client/equo.py:93
 msgid "reinstall all the packages and their dependencies"
 msgstr "réinstaller tous les paquets et leurs dépendances"
 
-#: ../../client/equo.py:93
+#: ../../client/equo.py:94
 msgid "same as --replay"
 msgstr "idem que --replay"
 
-#: ../../client/equo.py:94 ../../client/equo.py:119 ../../client/equo.py:153
+#: ../../client/equo.py:95 ../../client/equo.py:120 ../../client/equo.py:154
 msgid "resume previously interrupted operations"
 msgstr "continuer les opération précédemment interrompues"
 
-#: ../../client/equo.py:95
+#: ../../client/equo.py:96
 msgid "used with --resume, makes the first package to be skipped"
 msgstr "utilisé avec --resume, ignore le premier paquet"
 
-#: ../../client/equo.py:96 ../../client/equo.py:127
+#: ../../client/equo.py:97 ../../client/equo.py:128
 msgid "disable package integrity check"
 msgstr "désactiver la vérification d'intégrité des paquets"
 
-#: ../../client/equo.py:97 ../../client/equo.py:128 ../../client/equo.py:143
+#: ../../client/equo.py:98 ../../client/equo.py:129 ../../client/equo.py:144
 msgid "download multiple packages in parallel (default 3)"
 msgstr "télécharger plusieurs paquets simultanément (3 par défaut)"
 
-#: ../../client/equo.py:98 ../../client/equo.py:129 ../../client/equo.py:144
+#: ../../client/equo.py:99 ../../client/equo.py:130 ../../client/equo.py:145
 msgid "download N packages in parallel (max 10)"
 msgstr "télécharger N paquets simultanément (maximum 10)"
 
-#: ../../client/equo.py:100
+#: ../../client/equo.py:101
 msgid "security infrastructure functions"
 msgstr "fonctions de sécurité d'infrastructure"
 
-#: ../../client/equo.py:101
+#: ../../client/equo.py:102
 msgid "download the latest Security Advisories"
 msgstr "télécharger les derniers avis de sécurité"
 
-#: ../../client/equo.py:102
+#: ../../client/equo.py:103
 #, fuzzy
 msgid "force download even if already up-to-date"
 msgstr "La base de données est déjà à jour"
 
-#: ../../client/equo.py:103
+#: ../../client/equo.py:104
 msgid "list all the available Security Advisories"
 msgstr "lister tous les avis de sécurité disponibles"
 
-#: ../../client/equo.py:104
+#: ../../client/equo.py:105
 msgid "list only affected"
 msgstr "lister seulement  les non-affectés"
 
-#: ../../client/equo.py:105
+#: ../../client/equo.py:106
 msgid "list only unaffected"
 msgstr "lister uniquement les non-affectés"
 
-#: ../../client/equo.py:106
+#: ../../client/equo.py:107
 msgid "show information about provided advisories identifiers"
 msgstr "montrer les informations sur les identifiants d'alerte donnés"
 
-#: ../../client/equo.py:107
+#: ../../client/equo.py:108
 msgid "automatically install all the available security updates"
 msgstr ""
 "installer automatiquement toutes les mises à jour de sécurité disponibles"
 
-#: ../../client/equo.py:110 ../../client/equo.py:115 ../../client/equo.py:133
-#: ../../client/equo.py:140 ../../client/equo.py:148 ../../client/equo.py:157
-#: ../../client/equo.py:160 ../../client/equo.py:164 ../../client/equo.py:169
-#: ../../client/equo.py:180
+#: ../../client/equo.py:111 ../../client/equo.py:116 ../../client/equo.py:134
+#: ../../client/equo.py:141 ../../client/equo.py:149 ../../client/equo.py:158
+#: ../../client/equo.py:161 ../../client/equo.py:165 ../../client/equo.py:170
+#: ../../client/equo.py:181
 msgid "just show what would be done"
 msgstr "afficher seulement ce qui serait fait"
 
-#: ../../client/equo.py:111 ../../client/equo.py:167 ../../client/equo.py:172
-#: ../../client/equo.py:178
+#: ../../client/equo.py:112 ../../client/equo.py:168 ../../client/equo.py:173
+#: ../../client/equo.py:179
 msgid "show less details (useful for scripting)"
 msgstr "afficher moins de détails (utile pour coder)"
 
-#: ../../client/equo.py:113
+#: ../../client/equo.py:114
 #, fuzzy
 msgid "install atoms or binary packages"
 msgstr "Installer les atomes ou paquets .tbz2"
 
-#: ../../client/equo.py:116 ../../client/equo.py:138
+#: ../../client/equo.py:117 ../../client/equo.py:139
 msgid "just download packages without doing the install"
 msgstr "seulement télécharger les paquets sans installer"
 
-#: ../../client/equo.py:117 ../../client/equo.py:134 ../../client/equo.py:141
-#: ../../client/equo.py:149
+#: ../../client/equo.py:118 ../../client/equo.py:135 ../../client/equo.py:142
+#: ../../client/equo.py:150
 msgid "do not pull in any dependency"
 msgstr "ne présenter aucune dépendance"
 
-#: ../../client/equo.py:118
+#: ../../client/equo.py:119
 #, fuzzy
 msgid "also pull in build-time dependencies"
 msgstr "Calcul des dépendances"
 
-#: ../../client/equo.py:120
+#: ../../client/equo.py:121
 msgid "used with --resume, makes the first package in queue to be skipped"
 msgstr "utilisé avec --resume, saute le premier paquet dans la paquet"
 
-#: ../../client/equo.py:121
+#: ../../client/equo.py:122
 msgid "remove downloaded packages after being used"
 msgstr "supprimer les paquets téléchargés après utilisation"
 
-#: ../../client/equo.py:122
+#: ../../client/equo.py:123
 msgid "pull all the dependencies in, regardless their state"
 msgstr "présenter toutes les dépendances, quelque soit leur état"
 
-#: ../../client/equo.py:123 ../../client/equo.py:135 ../../client/equo.py:142
+#: ../../client/equo.py:124 ../../client/equo.py:136 ../../client/equo.py:143
 msgid "calm down dependencies resolution algorithm (might be risky)"
 msgstr ""
 
-#: ../../client/equo.py:124
+#: ../../client/equo.py:125
 msgid "makes dependency rules stricter"
 msgstr "rendre les règles de dépendance plus strictes"
 
-#: ../../client/equo.py:126
+#: ../../client/equo.py:127
 msgid "makes old configuration files to be removed"
 msgstr "fait en sorte de supprimer les vieux fichiers de configuration"
 
-#: ../../client/equo.py:131
+#: ../../client/equo.py:132
 msgid "download atoms source code"
 msgstr "télécharger le code source des atomes"
 
-#: ../../client/equo.py:136
+#: ../../client/equo.py:137
 msgid "save sources in current working directory"
 msgstr "enregistrer less ources dans le répertoire de travail courant"
 
-#: ../../client/equo.py:146
+#: ../../client/equo.py:147
 msgid "remove one or more packages"
 msgstr "supprimer un ou plusieurs paquets"
 
-#: ../../client/equo.py:150
+#: ../../client/equo.py:151
 #, fuzzy
 msgid "also pull unused dependencies where reverse deps list is empty"
 msgstr ""
 "présenter également les dépendances inutilisées quand la liste de "
 "dépendances est vide"
 
-#: ../../client/equo.py:151
+#: ../../client/equo.py:152
 #, fuzzy
 msgid "when used with --deep, helps the removal of virtual packages"
 msgstr "utilisé avec --resume, ignore le premier paquet"
 
-#: ../../client/equo.py:152
+#: ../../client/equo.py:153
 msgid "makes configuration files to be removed"
 msgstr "fait en sorte de supprimer les fichiers de configuration"
 
-#: ../../client/equo.py:155
+#: ../../client/equo.py:156
 #, fuzzy
 msgid "mask one or more packages"
 msgstr "supprimer un ou plusieurs paquets"
 
-#: ../../client/equo.py:158
+#: ../../client/equo.py:159
 #, fuzzy
 msgid "unmask one or more packages"
 msgstr "supprimer un ou plusieurs paquets"
 
-#: ../../client/equo.py:162
+#: ../../client/equo.py:163
 msgid "configure one or more installed packages"
 msgstr "configurer un ou plusieurs paquets installés"
 
-#: ../../client/equo.py:166 ../../server/reagent.py:122
+#: ../../client/equo.py:167 ../../server/reagent.py:122
 msgid "look for unsatisfied dependencies"
 msgstr "regarder pour des dépendances non satisfaites"
 
-#: ../../client/equo.py:171
+#: ../../client/equo.py:172
 msgid "look for unused packages (pay attention)"
 msgstr "regarder pour des paquets inutilisés (regarder attentivement)"
 
-#: ../../client/equo.py:173
+#: ../../client/equo.py:174
 msgid "sort packages by disk size"
 msgstr "trier les paquets par taille sur disque"
 
-#: ../../client/equo.py:175 ../../server/reagent.py:123
+#: ../../client/equo.py:176 ../../server/reagent.py:123
 msgid "look for missing libraries"
 msgstr "regarder pour les librairies manquantes"
 
-#: ../../client/equo.py:176 ../../server/reagent.py:124
+#: ../../client/equo.py:177 ../../server/reagent.py:124
 msgid "dump results to files"
 msgstr "déverser les résultats vers les fichiers"
 
-#: ../../client/equo.py:177
+#: ../../client/equo.py:178
 msgid "print broken files to stdout"
 msgstr "afficher les fichiers corrompus sur stdout"
 
-#: ../../client/equo.py:182
+#: ../../client/equo.py:183
 msgid "configuration files update tool"
 msgstr "outil de mise à jour des fichiers de configuration"
 
-#: ../../client/equo.py:183
+#: ../../client/equo.py:184
 msgid "show configuration files to be updated"
 msgstr "afficher les fichiers de configuration qui seront mis à jour"
 
-#: ../../client/equo.py:184
+#: ../../client/equo.py:185
 msgid "run the configuration files update function"
 msgstr "exécuter la fonction de mise à jour des fichiers de configuration"
 
-#: ../../client/equo.py:186
+#: ../../client/equo.py:187
 msgid "do misc queries on repository and local databases"
 msgstr "faire diverses query sur les bases de données locale et dépôt"
 
-#: ../../client/equo.py:187
+#: ../../client/equo.py:188
 msgid "search from what package a file belongs"
 msgstr "rechercher à quel paquet appartient un fichier"
 
-#: ../../client/equo.py:188 ../../client/equo.py:322
+#: ../../client/equo.py:189 ../../client/equo.py:323
 msgid "show packages changelog"
 msgstr "afficher le changelog des paquets"
 
-#: ../../client/equo.py:189
+#: ../../client/equo.py:190
 msgid "search what packages depend on the provided atoms"
 msgstr "rechercher quels paquets dépendent des atomes donnés"
 
-#: ../../client/equo.py:190 ../../client/equo.py:324
+#: ../../client/equo.py:191 ../../client/equo.py:325
 #: ../../server/reagent.py:66
 msgid "search packages by description"
 msgstr "rechercher des paquets par description"
 
-#: ../../client/equo.py:191 ../../client/equo.py:326
+#: ../../client/equo.py:192 ../../client/equo.py:327
 #: ../../server/reagent.py:64
 msgid "show files owned by the provided atoms"
 msgstr "montrer les fichiers appartenant aux atomes donnés"
 
-#: ../../client/equo.py:192
+#: ../../client/equo.py:193
 msgid "search a package into the local database"
 msgstr "rechercher un paquet dans la base de données locale"
 
-#: ../../client/equo.py:193
+#: ../../client/equo.py:194
 msgid "show packages owning the provided licenses"
 msgstr "montrer les paquets associés aux licenses données"
 
-#: ../../client/equo.py:194
+#: ../../client/equo.py:195
 msgid "list packages based on the chosen parameter below"
 msgstr "lister les paquets basés sur le paramètre choisi ci-dessous"
 
-#: ../../client/equo.py:195
+#: ../../client/equo.py:196
 msgid "list installed packages"
 msgstr "énumérer les paquets installés"
 
-#: ../../client/equo.py:196
+#: ../../client/equo.py:197
 msgid "list available packages"
 msgstr "énumérer les paquets disponibles"
 
-#: ../../client/equo.py:197
+#: ../../client/equo.py:198
 #, fuzzy
 msgid "search packages able to handle given mimetypes"
 msgstr "rechercher les paquets utilisant les eclass données"
 
-#: ../../client/equo.py:198 ../../client/equo.py:200
+#: ../../client/equo.py:199 ../../client/equo.py:201
 #, fuzzy
 msgid "search among installed packages"
 msgstr "Voici les paquets installés"
 
-#: ../../client/equo.py:199
+#: ../../client/equo.py:200
 msgid "associate given file paths to applications able to read them"
 msgstr ""
 
-#: ../../client/equo.py:201 ../../client/equo.py:328
+#: ../../client/equo.py:202 ../../client/equo.py:329
 #: ../../server/reagent.py:60
 msgid "show runtime libraries needed by the provided atoms"
 msgstr "montrer les librairies runtime requises par les atomes donnés"
 
-#: ../../client/equo.py:202
+#: ../../client/equo.py:203
 msgid "search files that do not belong to any package"
 msgstr "rechercher les fichiers qui n'appartient à aucun paquet"
 
-#: ../../client/equo.py:203
+#: ../../client/equo.py:204
 msgid "show the removal tree for the specified atoms"
 msgstr "montrer l'arborescence de suppression des atomes spécifiés"
 
-#: ../../client/equo.py:204
+#: ../../client/equo.py:205
 msgid "show atoms needing the provided libraries"
 msgstr "montrer les atomes nécessitant les librairies données"
 
-#: ../../client/equo.py:205 ../../client/equo.py:330
+#: ../../client/equo.py:206 ../../client/equo.py:331
 #: ../../server/reagent.py:63
 msgid "search available package sets"
 msgstr "recherche les ensembles de paquets disponibles"
 
-#: ../../client/equo.py:206
+#: ../../client/equo.py:207
 msgid "show packages owning the provided slot"
 msgstr "montrer les paquets associés au slot donné"
 
-#: ../../client/equo.py:207
+#: ../../client/equo.py:208
 msgid "show packages owning the provided tags"
 msgstr "montrer les paquets associés aux tags donnés"
 
-#: ../../client/equo.py:208 ../../server/reagent.py:69
+#: ../../client/equo.py:209 ../../server/reagent.py:69
 msgid "show direct depdendencies tree for provided installable atoms"
 msgstr ""
 
-#: ../../client/equo.py:209 ../../client/equo.py:211
+#: ../../client/equo.py:210 ../../client/equo.py:212
 #: ../../server/reagent.py:70 ../../server/reagent.py:72
 msgid "include system packages, build deps and circularity information"
 msgstr ""
 
-#: ../../client/equo.py:210 ../../server/reagent.py:71
+#: ../../client/equo.py:211 ../../server/reagent.py:71
 #, fuzzy
 msgid "show reverse depdendencies tree for provided installed atoms"
 msgstr "montrer quels paquets dépendent des atomes donnés"
 
-#: ../../client/equo.py:212 ../../client/equo.py:333 ../../client/equo.py:379
+#: ../../client/equo.py:213 ../../client/equo.py:334 ../../client/equo.py:380
 #: ../../server/reagent.py:73
 msgid "show more details"
 msgstr "afficher plus de détails"
 
-#: ../../client/equo.py:213 ../../client/equo.py:334 ../../client/equo.py:380
+#: ../../client/equo.py:214 ../../client/equo.py:335 ../../client/equo.py:381
 #: ../../server/reagent.py:74
 msgid "print results in a scriptable way"
 msgstr "afficher les résultats pour qu'ils soient utilisables par script"
 
-#: ../../client/equo.py:219
+#: ../../client/equo.py:220
 msgid "!!! Use --verbose to get full help output"
 msgstr "!!! Utiliser --verbose pour obtenir toute l'aide en sortie"
 
-#: ../../client/equo.py:224
+#: ../../client/equo.py:225
 msgid "Extended Options"
 msgstr "Options étendues"
 
-#: ../../client/equo.py:226
+#: ../../client/equo.py:227
 msgid "handles extended functionalities"
 msgstr "prend en charge les fonctionnalités étendues"
 
-#: ../../client/equo.py:227
+#: ../../client/equo.py:228
 msgid "make a smart application for the provided atoms (experimental)"
 msgstr "construit une smart application pour les atomes donnés (expérimental)"
 
-#: ../../client/equo.py:228
+#: ../../client/equo.py:229
 msgid ""
 "make a smart package for the provided atoms (multiple packages into one file)"
 msgstr ""
 "construit un smart package pour les atomes donnés (plusieurs paquets dans un "
 "seul fichier)"
 
-#: ../../client/equo.py:229
+#: ../../client/equo.py:230
 msgid "recreate an Entropy package from your System"
 msgstr "Recréer un paquet Entropy de votre système"
 
-#: ../../client/equo.py:230 ../../client/equo.py:232 ../../client/equo.py:234
+#: ../../client/equo.py:231 ../../client/equo.py:233 ../../client/equo.py:235
 msgid "save new packages into the specified directory"
 msgstr "Enregistrer les nouveaux paquets dans le répertoire spécifié"
 
-#: ../../client/equo.py:231
+#: ../../client/equo.py:232
 msgid ""
 "convert provided Source Package Manager package files into Entropy packages"
 msgstr ""
 
-#: ../../client/equo.py:233
+#: ../../client/equo.py:234
 #, fuzzy
 msgid "convert provided Entropy packages into Source Package Manager ones"
 msgstr ""
 "convertir les paquets fournis d'Entropy en paquets Gentoo (requiert Portage)"
 
-#: ../../client/equo.py:235
+#: ../../client/equo.py:236
 #, fuzzy
 msgid "extract Entropy metadata from provided Entropy package files"
 msgstr "extraire les métadonnées Entropy des paquets .tbz2 fournis"
 
-#: ../../client/equo.py:236
+#: ../../client/equo.py:237
 msgid "save new metadata into the specified directory"
 msgstr "Enregistrer les nouvelles métadonnées dans le répertoire spécifié"
 
-#: ../../client/equo.py:238
+#: ../../client/equo.py:239
 msgid "contains System rescue tools"
 msgstr ""
 
-#: ../../client/equo.py:239
+#: ../../client/equo.py:240
 #, fuzzy
 msgid "check installed packages repository for errors"
 msgstr "Paquets installés"
 
-#: ../../client/equo.py:240
+#: ../../client/equo.py:241
 #, fuzzy
 msgid ""
 "remove installed packages repository internal indexes to save disk space"
@@ -4239,7 +4247,7 @@ msgstr ""
 "Supprimer les index internes de la base de données système pour économiser "
 "de l'espace"
 
-#: ../../client/equo.py:241
+#: ../../client/equo.py:242
 #, fuzzy
 msgid ""
 "generate installed packages database using Source Package Manager "
@@ -4248,389 +4256,389 @@ msgstr ""
 "générer la base de donnée des paquets installés en utilisant les fichiers du "
 "système [dernier espoir]"
 
-#: ../../client/equo.py:242
+#: ../../client/equo.py:243
 msgid ""
 "generate installed packages database using files on the system [last hope]"
 msgstr ""
 "générer la base de donnée des paquets installés en utilisant les fichiers du "
 "système [dernier espoir]"
 
-#: ../../client/equo.py:243
+#: ../../client/equo.py:244
 #, fuzzy
 msgid "regenerate reverse dependencies metadata"
 msgstr "regénérer la table des dépendances"
 
-#: ../../client/equo.py:244 ../../client/equo.py:294
+#: ../../client/equo.py:245 ../../client/equo.py:295
 #, fuzzy
 msgid "regenerate SPM UIDs map (SPM <-> Entropy packages)"
 msgstr ""
 "mettre à jour / générer la table des compteurs (table des paquets Portage <-"
 "> Entropy)"
 
-#: ../../client/equo.py:245
+#: ../../client/equo.py:246
 #, fuzzy
 msgid "makes Entropy aware of your Source Package Manager updated packages"
 msgstr "rend  Entropy conscient de vos paquets mis à jour par Portage"
 
-#: ../../client/equo.py:246
+#: ../../client/equo.py:247
 msgid "backup the current Entropy installed packages database"
 msgstr ""
 "Faire une copie de sécurité de la base de données courante des paquets "
 "Entropy installés"
 
-#: ../../client/equo.py:247
+#: ../../client/equo.py:248
 msgid "restore a previously backed up Entropy installed packages database"
 msgstr ""
 "restaurer une ancienne copie de sécurité de la base de données Entropy des "
 "paquets installés"
 
-#: ../../client/equo.py:249
+#: ../../client/equo.py:250
 msgid "handles community-side features"
 msgstr "gère les fonctionnalités du côté de la communauté"
 
-#: ../../client/equo.py:251
+#: ../../client/equo.py:252
 msgid "community repositories management functions"
 msgstr "fonctions de gestion des dépôts de la communauté"
 
-#: ../../client/equo.py:252 ../../server/reagent.py:48
+#: ../../client/equo.py:253 ../../server/reagent.py:48
 msgid "scan the System looking for newly compiled packages"
 msgstr "recherche des paquets nouvellement compilés dans le système "
 
-#: ../../client/equo.py:253 ../../server/reagent.py:49
+#: ../../client/equo.py:254 ../../server/reagent.py:49
 msgid "analyze the Entropy Store directory directly"
 msgstr "analyser le répertoire du magasin Entropy  directement"
 
-#: ../../client/equo.py:254 ../../server/reagent.py:50
+#: ../../client/equo.py:255 ../../server/reagent.py:50
 msgid "repackage the specified atoms"
 msgstr "Réempaquetter les atomes spécifiés"
 
-#: ../../client/equo.py:255 ../../client/equo.py:261
+#: ../../client/equo.py:256 ../../client/equo.py:262
 #: ../../server/activator.py:49 ../../server/reagent.py:51
 msgid "do not ask anything except critical things"
 msgstr "ne rien demander sauf les trucs critiques"
 
-#: ../../client/equo.py:256 ../../server/reagent.py:52
+#: ../../client/equo.py:257 ../../server/reagent.py:52
 msgid "manage only the specified atoms"
 msgstr "gérer seulement les atomes spécifiés"
 
-#: ../../client/equo.py:257 ../../server/reagent.py:53
+#: ../../client/equo.py:258 ../../server/reagent.py:53
 msgid "run in interactive mode (asking things one by one)"
 msgstr ""
 
-#: ../../client/equo.py:258 ../../server/reagent.py:55
+#: ../../client/equo.py:259 ../../server/reagent.py:55
 msgid "add binary packages to repository w/o affecting scopes (multipackages)"
 msgstr ""
 "ajouter des laqpets binaires au dépôt sans affecter la portée (multipaquets)"
 
-#: ../../client/equo.py:259
+#: ../../client/equo.py:260
 msgid "community repositories mirrors management functions"
 msgstr "fonctions de gestion des miroirs des dépôts de la communauté"
 
-#: ../../client/equo.py:260 ../../server/activator.py:47
+#: ../../client/equo.py:261 ../../server/activator.py:47
 msgid "sync packages, database and also do some tidy"
 msgstr ""
 "synchronisation des paquets, de la base de données, et quelques rangements"
 
-#: ../../client/equo.py:262 ../../client/equo.py:266 ../../client/equo.py:269
+#: ../../client/equo.py:263 ../../client/equo.py:267 ../../client/equo.py:270
 #: ../../server/activator.py:50 ../../server/activator.py:58
 #: ../../server/activator.py:68
 msgid "sync all the configured repositories"
 msgstr "synchroniser tous les dépôts configurés"
 
-#: ../../client/equo.py:263
+#: ../../client/equo.py:264
 msgid "sync packages across primary mirrors"
 msgstr "synchroniser les paquets entre les miroirs primaires"
 
-#: ../../client/equo.py:267 ../../server/activator.py:59
+#: ../../client/equo.py:268 ../../server/activator.py:59
 msgid "also verify packages integrity"
 msgstr "vérifier également l'intégrité des paquets"
 
-#: ../../client/equo.py:268 ../../server/activator.py:62
+#: ../../client/equo.py:269 ../../server/activator.py:62
 msgid "sync the current repository database across primary mirrors"
 msgstr ""
 "synchroniser la base de données du dépôt courant parmi les miroirs principaux"
 
-#: ../../client/equo.py:270 ../../server/activator.py:63
+#: ../../client/equo.py:271 ../../server/activator.py:63
 msgid "lock the current repository database (server-side)"
 msgstr "verrouiller la base de données du dépôt courant (côté serveur)"
 
-#: ../../client/equo.py:271 ../../server/activator.py:64
+#: ../../client/equo.py:272 ../../server/activator.py:64
 msgid "unlock the current repository database (server-side)"
 msgstr "déverrouiller la base de données du dépôt courant (côté serveur)"
 
-#: ../../client/equo.py:272 ../../server/activator.py:65
+#: ../../client/equo.py:273 ../../server/activator.py:65
 msgid "lock the current repository database (client-side)"
 msgstr "verrouiller la base de données du dépôt courant (côté client)"
 
-#: ../../client/equo.py:273 ../../server/activator.py:66
+#: ../../client/equo.py:274 ../../server/activator.py:66
 msgid "unlock the current repository database (client-side)"
 msgstr "déverrouiller la base de données du dépôt courant (côté client)"
 
-#: ../../client/equo.py:274 ../../server/activator.py:67
+#: ../../client/equo.py:275 ../../server/activator.py:67
 msgid "show current lock status"
 msgstr "afficher l'état de verrouillage actuel"
 
-#: ../../client/equo.py:275 ../../server/activator.py:52
+#: ../../client/equo.py:276 ../../server/activator.py:52
 msgid "remove binary packages not in repositories and expired"
 msgstr "supprimer les paquets binaires absents des dépôts et expirés"
 
-#: ../../client/equo.py:279 ../../server/reagent.py:76
+#: ../../client/equo.py:280 ../../server/reagent.py:76
 msgid "manage a repository"
 msgstr "gérer un dépôt"
 
-#: ../../client/equo.py:281 ../../server/reagent.py:77
+#: ../../client/equo.py:282 ../../server/reagent.py:77
 msgid "(re)initialize the current repository database"
 msgstr "(ré)initialiser la base de données du dépôt courant"
 
-#: ../../client/equo.py:282
+#: ../../client/equo.py:283
 msgid "do not refill database using packages on mirrors"
 msgstr ""
 "ne pas réalimenter la base de données en utilisant les paquets du miroir"
 
-#: ../../client/equo.py:283 ../../server/reagent.py:78
+#: ../../client/equo.py:284 ../../server/reagent.py:78
 msgid "(re)create the database for the specified repository"
 msgstr "(re)créer la base de données pour le dépôt spécifié"
 
-#: ../../client/equo.py:284 ../../server/reagent.py:79
+#: ../../client/equo.py:285 ../../server/reagent.py:79
 msgid "manually force a revision bump for the current repository database"
 msgstr "forcer manuellement un saut de révision pour le dépôt courant"
 
-#: ../../client/equo.py:285 ../../server/reagent.py:80
+#: ../../client/equo.py:286 ../../server/reagent.py:80
 msgid "synchronize the database"
 msgstr "synchroniser la base de données"
 
-#: ../../client/equo.py:286 ../../server/reagent.py:81
+#: ../../client/equo.py:287 ../../server/reagent.py:81
 msgid "flush back old branches packages to current branch"
 msgstr "purger les paquets des vieilles branches vers la branche courante"
 
-#: ../../client/equo.py:287 ../../server/reagent.py:82
+#: ../../client/equo.py:288 ../../server/reagent.py:82
 msgid "remove the provided atoms from the current repository database"
 msgstr "supprimer les atomes donnés de la base de données du dépôt"
 
-#: ../../client/equo.py:288 ../../server/reagent.py:84
+#: ../../client/equo.py:289 ../../server/reagent.py:84
 msgid "remove the provided injected atoms (all if no atom specified)"
 msgstr "supprimer les atomes injectés donnés (tous si aucun atome spécifié)"
 
-#: ../../client/equo.py:289 ../../server/reagent.py:85
+#: ../../client/equo.py:290 ../../server/reagent.py:85
 msgid "create an empty repository database in the provided path"
 msgstr "créer une base de données de dépôt vide à l'emplacement spécifié"
 
-#: ../../client/equo.py:290
+#: ../../client/equo.py:291
 msgid "switch to the specified branch the provided atoms (or world)"
 msgstr "passer les atomes donnés dans la branch spécifiée (ou world)"
 
-#: ../../client/equo.py:291
+#: ../../client/equo.py:292
 msgid "verify remote integrity of the provided atoms (or world)"
 msgstr "vérifier l'intégrité distante des atomes donnés (ou world)"
 
-#: ../../client/equo.py:292 ../../server/reagent.py:88
+#: ../../client/equo.py:293 ../../server/reagent.py:88
 msgid "backup current repository database"
 msgstr "faire une copie de sécurité de la base de données du dépôt courant"
 
-#: ../../client/equo.py:293 ../../server/reagent.py:89
+#: ../../client/equo.py:294 ../../server/reagent.py:89
 msgid "restore a previously backed-up repository database"
 msgstr ""
 "restaurer une ancienne copie de sécurité de la base de données du dépôt"
 
-#: ../../client/equo.py:296 ../../server/reagent.py:90
+#: ../../client/equo.py:297 ../../server/reagent.py:90
 msgid "enable the specified repository"
 msgstr "activer le dépôt spécifié"
 
-#: ../../client/equo.py:297 ../../server/reagent.py:91
+#: ../../client/equo.py:298 ../../server/reagent.py:91
 msgid "disable the specified repository"
 msgstr "désactiver le dépôt spécifié"
 
-#: ../../client/equo.py:298
+#: ../../client/equo.py:299
 msgid "show the current Server Interface status"
 msgstr "afficher l'état de l'interface du serveur courant"
 
-#: ../../client/equo.py:299 ../../server/reagent.py:92
+#: ../../client/equo.py:300 ../../server/reagent.py:92
 #, fuzzy
 msgid "handle packages dependencies"
 msgstr "gérer les dépendances manuelles des paquets"
 
-#: ../../client/equo.py:300
+#: ../../client/equo.py:301
 msgid "clone a package inside a repository assigning it an arbitrary tag"
 msgstr ""
 "cloner un paquet dans un dépôt en lui assignant une étiquette arbitraire"
 
-#: ../../client/equo.py:301 ../../server/reagent.py:94
+#: ../../client/equo.py:302 ../../server/reagent.py:94
 msgid "move packages from a repository to another"
 msgstr "déplacer des paquets d'un dépôt à l'autre"
 
-#: ../../client/equo.py:302 ../../client/equo.py:304
+#: ../../client/equo.py:303 ../../client/equo.py:305
 #: ../../server/reagent.py:95 ../../server/reagent.py:97
 msgid "pulls dependencies in"
 msgstr "arrivée des dépendances dans"
 
-#: ../../client/equo.py:303 ../../server/reagent.py:96
+#: ../../client/equo.py:304 ../../server/reagent.py:96
 msgid "copy packages from a repository to another"
 msgstr "copier les paquets d'un dépôt à l'autre"
 
-#: ../../client/equo.py:305 ../../server/reagent.py:98
+#: ../../client/equo.py:306 ../../server/reagent.py:98
 msgid "set the default repository"
 msgstr "définir le dépôt par défaut"
 
-#: ../../client/equo.py:309 ../../server/reagent.py:100
+#: ../../client/equo.py:310 ../../server/reagent.py:100
 msgid "manage repository digital signatures (OpenGPG)"
 msgstr ""
 
-#: ../../client/equo.py:310 ../../server/reagent.py:101
+#: ../../client/equo.py:311 ../../server/reagent.py:101
 #, fuzzy
 msgid "create keypair for repositories and sign packages"
 msgstr "Essayez de mettre à jour vos dépôts et réessayez"
 
-#: ../../client/equo.py:311 ../../server/reagent.py:102
+#: ../../client/equo.py:312 ../../server/reagent.py:102
 msgid "delete keypair (and digital signatures) of repository"
 msgstr ""
 
-#: ../../client/equo.py:312 ../../server/reagent.py:103
+#: ../../client/equo.py:313 ../../server/reagent.py:103
 #, fuzzy
 msgid "show currently configured keys information for given repositories"
 msgstr "Dépôts présentement configurés"
 
-#: ../../client/equo.py:313 ../../server/reagent.py:104
+#: ../../client/equo.py:314 ../../server/reagent.py:104
 msgid "sign (or re-sign) packages in repository using currently set keypair"
 msgstr ""
 
-#: ../../client/equo.py:314 ../../server/reagent.py:105
+#: ../../client/equo.py:315 ../../server/reagent.py:105
 #, fuzzy
 msgid "import keypair, bind to given repository"
 msgstr "n'est pas listé dans le dépôt !"
 
-#: ../../client/equo.py:315 ../../server/reagent.py:106
+#: ../../client/equo.py:316 ../../server/reagent.py:106
 #, fuzzy
 msgid "export public key of given repository"
 msgstr "Trier par dépôt"
 
-#: ../../client/equo.py:316 ../../server/reagent.py:107
+#: ../../client/equo.py:317 ../../server/reagent.py:107
 #, fuzzy
 msgid "export private key of given repository"
 msgstr "Dépôt de destination"
 
-#: ../../client/equo.py:320
+#: ../../client/equo.py:321
 msgid "do some searches into community repository databases"
 msgstr ""
 "faites res recherches dans les bases de données du dépôt de la communauté"
 
-#: ../../client/equo.py:321 ../../server/reagent.py:65
+#: ../../client/equo.py:322 ../../server/reagent.py:65
 msgid "show from what package the provided files belong"
 msgstr "afficher à quel paquet les fichiers spécifiés appartiennent"
 
-#: ../../client/equo.py:323 ../../server/reagent.py:61
+#: ../../client/equo.py:324 ../../server/reagent.py:61
 msgid "show what packages depend on the provided atoms"
 msgstr "montrer quels paquets dépendent des atomes donnés"
 
-#: ../../client/equo.py:325 ../../server/reagent.py:67
+#: ../../client/equo.py:326 ../../server/reagent.py:67
 msgid "search packages using the provided eclasses"
 msgstr "rechercher les paquets utilisant les eclass données"
 
-#: ../../client/equo.py:327 ../../server/reagent.py:68
+#: ../../client/equo.py:328 ../../server/reagent.py:68
 msgid "list all the packages in the default repository"
 msgstr "lister tous les paquets du dépôt par défaut"
 
-#: ../../client/equo.py:329 ../../server/reagent.py:58
+#: ../../client/equo.py:330 ../../server/reagent.py:58
 msgid "search packages inside the default repository database"
 msgstr "recherche des paquets dans la base de données du dépôt par défaut"
 
-#: ../../client/equo.py:331 ../../server/reagent.py:62
+#: ../../client/equo.py:332 ../../server/reagent.py:62
 msgid "show packages owning the specified tags"
 msgstr "afficher les paquets ayant les étiquettes spécifiées"
 
-#: ../../client/equo.py:332
+#: ../../client/equo.py:333
 #, fuzzy
 msgid "show installed packages owning the specified revisions"
 msgstr "afficher les paquets ayant les étiquettes spécifiées"
 
-#: ../../client/equo.py:338 ../../server/reagent.py:109
+#: ../../client/equo.py:339 ../../server/reagent.py:109
 msgid "source package manager functions"
 msgstr "fonctions du gestionnaire de sources du paquet"
 
-#: ../../client/equo.py:339 ../../server/reagent.py:110
+#: ../../client/equo.py:340 ../../server/reagent.py:110
 msgid "compilation function"
 msgstr "fonction de compilation"
 
-#: ../../client/equo.py:340 ../../server/reagent.py:111
+#: ../../client/equo.py:341 ../../server/reagent.py:111
 msgid "compile packages belonging to the provided categories"
 msgstr "compiler les paquets appartenant aux catégories fournies"
 
-#: ../../client/equo.py:341 ../../client/equo.py:344
+#: ../../client/equo.py:342 ../../client/equo.py:345
 #: ../../server/reagent.py:112 ../../server/reagent.py:115
 msgid "just list packages"
 msgstr "seulement lister les paquets"
 
-#: ../../client/equo.py:342 ../../server/reagent.py:113
+#: ../../client/equo.py:343 ../../server/reagent.py:113
 msgid "do not pull old package slots"
 msgstr "ne pas retirer les vieilles fentes de paquets"
 
-#: ../../client/equo.py:343 ../../server/reagent.py:114
+#: ../../client/equo.py:344 ../../server/reagent.py:114
 msgid "compile packages in provided package set names"
 msgstr "compiler les paquets dans les noms de groupe de paquets spécifiés"
 
-#: ../../client/equo.py:345 ../../server/reagent.py:116
+#: ../../client/equo.py:346 ../../server/reagent.py:116
 msgid "rebuild everything"
 msgstr "tout reconstruire"
 
-#: ../../client/equo.py:346 ../../server/reagent.py:117
+#: ../../client/equo.py:347 ../../server/reagent.py:117
 msgid "run database update if all went fine"
 msgstr ""
 "exécuter une mise à jour de la base de données si tout s'est bien passé"
 
-#: ../../client/equo.py:347 ../../server/reagent.py:118
+#: ../../client/equo.py:348 ../../server/reagent.py:118
 msgid "run mirror sync if all went fine"
 msgstr "exécuter une synchro du miroir si tout s'est bien passé"
 
-#: ../../client/equo.py:348
+#: ../../client/equo.py:349
 msgid "scan orphaned packages on SPM"
 msgstr "vérifier les paquets orphelins dans SPM"
 
-#: ../../client/equo.py:352 ../../server/activator.py:70
+#: ../../client/equo.py:353 ../../server/activator.py:70
 msgid "notice board handling functions"
 msgstr "fonctions de gestion du tableau d'affichage"
 
-#: ../../client/equo.py:353 ../../server/activator.py:71
+#: ../../client/equo.py:354 ../../server/activator.py:71
 msgid "add a news item to the notice board"
 msgstr "ajouter un élément de nouvelle au tableau d'affichage"
 
-#: ../../client/equo.py:354 ../../server/activator.py:72
+#: ../../client/equo.py:355 ../../server/activator.py:72
 msgid "remove a news item from the notice board"
 msgstr "supprimer un élément de nouvelles du tableau d'affichage"
 
-#: ../../client/equo.py:355 ../../server/activator.py:73
+#: ../../client/equo.py:356 ../../server/activator.py:73
 msgid "read the current notice board"
 msgstr "lire le tableau d'affichage courant"
 
-#: ../../client/equo.py:359
+#: ../../client/equo.py:360
 msgid "look for unsatisfied dependencies across community repositories"
 msgstr ""
 "voir pour des dépendances non satisfaites parmi les dépôts de la communauté"
 
-#: ../../client/equo.py:360 ../../server/reagent.py:125
+#: ../../client/equo.py:361 ../../server/reagent.py:125
 msgid "verify the integrity of local package files"
 msgstr "vérifier l'intégrité des fichiers des paquets locaux"
 
-#: ../../client/equo.py:361 ../../server/reagent.py:126
+#: ../../client/equo.py:362 ../../server/reagent.py:126
 #, fuzzy
 msgid "regenerate the reverse dependencies metadata"
 msgstr "regénérer la table des dépendances"
 
-#: ../../client/equo.py:364
+#: ../../client/equo.py:365
 msgid "handles User Generated Content features"
 msgstr "gère les fonctionnalités du contenu généré par l'utilisateur"
 
-#: ../../client/equo.py:365
+#: ../../client/equo.py:366
 msgid "login against a specified repository"
 msgstr "se connecter à un dépôt spécifié"
 
-#: ../../client/equo.py:366
+#: ../../client/equo.py:367
 msgid "logout from a specified repository"
 msgstr "se déconnecter d'un dépôt spécifié"
 
-#: ../../client/equo.py:367
+#: ../../client/equo.py:368
 msgid "force action"
 msgstr "forcer l'action"
 
-#: ../../client/equo.py:368
+#: ../../client/equo.py:369
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
@@ -4638,88 +4646,88 @@ msgstr ""
 "Gérer les documents du paquet pour le dépôt sélectionné (commentaires, "
 "fichiers, vidéos)"
 
-#: ../../client/equo.py:369
+#: ../../client/equo.py:370
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "obtenir les documents disponibles pour la clé de paquet spécifié (exemple : "
 "x11-libs/qt)"
 
-#: ../../client/equo.py:370
+#: ../../client/equo.py:371
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
 msgstr ""
 "ajouter un nouveau document à la clé de paquet spécifiée (exemple ; x11-libs/"
 "qt)"
 
-#: ../../client/equo.py:371
+#: ../../client/equo.py:372
 msgid "remove documents from database using their identifiers"
 msgstr ""
 "Supprimer les documents de la base de données en utilisant leurs identifiants"
 
-#: ../../client/equo.py:372
+#: ../../client/equo.py:373
 msgid "manage package votes for the selected repository"
 msgstr "Gérer les votes des paquets pour le dépôt sélectionné"
 
-#: ../../client/equo.py:373
+#: ../../client/equo.py:374
 msgid "get vote for the specified package key (example: x11-libs/qt)"
 msgstr "obtenir un vote pour la clé de paquet spécifié (exemple : x11-libs/qt)"
 
-#: ../../client/equo.py:374
+#: ../../client/equo.py:375
 msgid "add vote for the specified package key (example: x11-libs/qt)"
 msgstr "ajouter un vote pour la clé de paquet spécifié (exemple : x11-libs/qt)"
 
-#: ../../client/equo.py:377
+#: ../../client/equo.py:378
 msgid "handles Entropy cache"
 msgstr "gère le cache Entropy"
 
-#: ../../client/equo.py:378
+#: ../../client/equo.py:379
 msgid "clean Entropy cache"
 msgstr "nettoyer le cache d'Entropy"
 
-#: ../../client/equo.py:382
+#: ../../client/equo.py:383
 msgid "remove downloaded packages and clean temp. directories"
 msgstr ""
 "supprimer les paquets téléchargés et nettoyer les répertoires temporaires"
 
-#: ../../client/equo.py:384
+#: ../../client/equo.py:385
 msgid "show system information"
 msgstr "afficher l'information système"
 
-#: ../../client/equo.py:425 ../../client/text_rescue.py:97
+#: ../../client/equo.py:426 ../../client/text_rescue.py:97
 #: ../../client/text_rescue.py:107 ../../client/text_ui.py:203
 msgid "is deprecated, please use"
 msgstr ""
 
-#: ../../client/equo.py:436
+#: ../../client/equo.py:437
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr "Vous devez installer 'sys-apps/entropy-server'. Faites-le !"
 
-#: ../../client/equo.py:514
+#: ../../client/equo.py:515
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 "Vous devez installer/mettre à jour 'sys-apps/entropy-server'. Faites-le !"
 
-#: ../../client/equo.py:769
+#: ../../client/equo.py:770
 msgid "not enough parameters"
 msgstr "pas assez de paramètres"
 
-#: ../../client/equo.py:819
+#: ../../client/equo.py:820
 #, fuzzy
 msgid "Installed packages repository corrupted. Please re-generate it"
 msgstr ""
 "La base de données des paquets installés est introuvable ou endommagée. "
 "Veuillez la générer avec les outils 'equo database'"
 
-#: ../../client/equo.py:827 ../../client/text_smart.py:143
+#: ../../client/equo.py:828 ../../client/text_smart.py:143
 #: ../../client/text_smart.py:320 ../../client/text_smart.py:469
 msgid "Cannot continue"
 msgstr "Impossible de continuer"
 
-#: ../../client/equo.py:850
+#: ../../client/equo.py:851
 msgid "Your hard drive is full! Your fault!"
 msgstr ""
 
-#: ../../client/equo.py:855
+#: ../../client/equo.py:856
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
@@ -4727,26 +4735,26 @@ msgstr ""
 "Bonjour, je suis le rapporteur de bogues. J'ai le regret de vous informer "
 "qu'Equo a crashé. Ce sont des choses qui arrivent..."
 
-#: ../../client/equo.py:856
+#: ../../client/equo.py:857
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr ""
 "Mais il y a quelque chose que vous pourriez faire pour nous aider à faire "
 "d'Equo une meilleure application"
 
-#: ../../client/equo.py:857
+#: ../../client/equo.py:858
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 "-- MÊME SI JE NE VEUX PAS QUE VOUS SOUMETTIEZ LE MÊME RAPPORT PLUSIEURS FOIS "
 "--"
 
-#: ../../client/equo.py:858
+#: ../../client/equo.py:859
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 "Je suis maintenant en train de vous montrer ce qui s'est passé. Ne vous "
 "inquiétez pas, je suis là pour vous aider."
 
-#: ../../client/equo.py:866
+#: ../../client/equo.py:867
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayon.org."
@@ -4754,11 +4762,11 @@ msgstr ""
 "Je ne peux pas même pas écrire dans /tmp. Alors, veuillez copier l'erreur et "
 "l'envoyer à lxnay@sabayon.org"
 
-#: ../../client/equo.py:884
+#: ../../client/equo.py:885
 msgid "Of course you are on the Internet..."
 msgstr "Bien sûr que vous êtes sur Internet..."
 
-#: ../../client/equo.py:885
+#: ../../client/equo.py:886
 #, fuzzy
 msgid ""
 "Erm... Can I send the error, along with some information\n"
@@ -4769,11 +4777,11 @@ msgstr ""
 "à propos de votre matériel à mes créateurs pour qu'ils me corrigent ? (votre "
 "adresse IP sera enregistrée)"
 
-#: ../../client/equo.py:887
+#: ../../client/equo.py:888
 msgid "Ok, ok ok ok... Sorry!"
 msgstr "D'accord, d'accord... désolé !"
 
-#: ../../client/equo.py:891
+#: ../../client/equo.py:892
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
@@ -4781,19 +4789,19 @@ msgstr ""
 "Si vous désirez être contacté (et activement supporté), répondez également "
 "aux questions ci-bas :"
 
-#: ../../client/equo.py:892
+#: ../../client/equo.py:893
 msgid "Your Full name:"
 msgstr "Votre nom complet :"
 
-#: ../../client/equo.py:893
+#: ../../client/equo.py:894
 msgid "Your E-Mail address:"
 msgstr "Votre courriel :"
 
-#: ../../client/equo.py:894
+#: ../../client/equo.py:895
 msgid "What you were doing:"
 msgstr "Ce que vous faisiez :"
 
-#: ../../client/equo.py:913
+#: ../../client/equo.py:914
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
@@ -4801,7 +4809,7 @@ msgstr ""
 "Merci beaucoup. Cette erreur a été rapportée et le problème sera réglé, "
 "espérons-le, dès que possible."
 
-#: ../../client/equo.py:915
+#: ../../client/equo.py:916
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayon.org."
@@ -4809,11 +4817,11 @@ msgstr ""
 "Impossible d'envoyer le rapport. J'ai sauvegardé l'erreur dans /tmp/"
 "equoerror.txt. Quand vous le voudrez, envoyez-le à lxnay@sabayon.org."
 
-#: ../../client/equo.py:931
+#: ../../client/equo.py:932
 msgid "Entropy/Equo version mismatch"
 msgstr ""
 
-#: ../../client/equo.py:932
+#: ../../client/equo.py:933
 msgid "it could make your system explode!"
 msgstr ""
 
@@ -4915,7 +4923,7 @@ msgid "Other options are:"
 msgstr "Les autres options sont :"
 
 #: ../../client/text_configuration.py:272
-#: ../../client/text_repositories.py:328
+#: ../../client/text_repositories.py:344
 #: ../../magneto/src/magneto/core/interfaces.py:152
 msgid "Exit"
 msgstr "Quitter"
@@ -5074,7 +5082,7 @@ msgstr "Recherche dans le changelog"
 msgid "No match for"
 msgstr "Pas de correspondance pour"
 
-#: ../../client/text_query.py:607 ../../sulfur/src/sulfur/dialogs.py:2843
+#: ../../client/text_query.py:607 ../../sulfur/src/sulfur/dialogs.py:2845
 msgid "Atom"
 msgstr "Atome"
 
@@ -5090,7 +5098,7 @@ msgstr ""
 msgid "Inverse Dependencies Search"
 msgstr "Recherche de dépendances inverses"
 
-#: ../../client/text_query.py:697 ../../client/text_ui.py:2169
+#: ../../client/text_query.py:697 ../../client/text_ui.py:2170
 msgid "Matched"
 msgstr "Matched"
 
@@ -5113,7 +5121,7 @@ msgstr "Recherche requise"
 
 #: ../../client/text_query.py:737 ../../client/text_query.py:843
 #: ../../client/text_query.py:1615 ../../sulfur/src/sulfur/dialogs.py:1479
-#: ../../sulfur/src/sulfur/dialogs.py:2357
+#: ../../sulfur/src/sulfur/dialogs.py:2359
 msgid "Package"
 msgstr "Paquet"
 
@@ -5196,8 +5204,8 @@ msgstr "Recherche sur Removal"
 #: ../../client/text_query.py:1037 ../../client/text_ui.py:912
 #: ../../client/text_ui.py:1055 ../../client/text_ui.py:1143
 #: ../../client/text_ui.py:1603 ../../client/text_ui.py:1687
-#: ../../client/text_ui.py:1780 ../../server/server_reagent.py:373
-#: ../../server/server_reagent.py:423
+#: ../../client/text_ui.py:1780 ../../server/server_reagent.py:370
+#: ../../server/server_reagent.py:420
 msgid "No packages found"
 msgstr "Aucun paquet trouvé"
 
@@ -5342,7 +5350,7 @@ msgstr "Téléchargement"
 msgid "Checksum"
 msgstr "Somme de contrôle"
 
-#: ../../client/text_query.py:1680 ../../server/server_reagent.py:278
+#: ../../client/text_query.py:1680 ../../server/server_reagent.py:275
 #: ../../sulfur/src/sulfur/dialogs.py:1136
 msgid "Dependencies"
 msgstr "Dépendances"
@@ -5358,7 +5366,7 @@ msgstr "Page d'accueil"
 #: ../../client/text_query.py:1711 ../../client/text_security.py:101
 #: ../../client/text_ugc.py:390 ../../server/server_key.py:371
 #: ../../sulfur/src/sulfur/dialogs.py:635
-#: ../../sulfur/src/sulfur/views.py:2605 ../../sulfur/src/sulfur/views.py:2831
+#: ../../sulfur/src/sulfur/views.py:2607 ../../sulfur/src/sulfur/views.py:2833
 #: ../../sulfur/src/sulfur/sulfur.glade.h:63
 msgid "Description"
 msgstr "Description"
@@ -5396,7 +5404,7 @@ msgid "Created"
 msgstr "Créé"
 
 #: ../../client/text_query.py:1778 ../../client/text_ui.py:1484
-#: ../../sulfur/src/sulfur/dialogs.py:3148
+#: ../../sulfur/src/sulfur/dialogs.py:3150
 msgid "License"
 msgstr "License"
 
@@ -5411,168 +5419,177 @@ msgstr "Vous devez être root ou appartenir au groupe %s"
 msgid "You must be root"
 msgstr "doit être de type"
 
-#: ../../client/text_repositories.py:115
+#: ../../client/text_repositories.py:117
 #, fuzzy
 msgid "invalid data, skipping"
 msgstr "Révision de la base de données invalide"
 
-#: ../../client/text_repositories.py:121
+#: ../../client/text_repositories.py:123
 #, fuzzy
 msgid "invalid repository string, skipping"
 msgstr "dépôt invalide"
 
-#: ../../client/text_repositories.py:126
+#: ../../client/text_repositories.py:128
 #, fuzzy
 msgid "Adding repository string"
 msgstr "dans les dépôts"
 
-#: ../../client/text_repositories.py:133
+#: ../../client/text_repositories.py:135
 #, fuzzy
 msgid "Repository id:"
 msgstr "Dépôt"
 
-#: ../../client/text_repositories.py:134
+#: ../../client/text_repositories.py:136
 #, fuzzy
 msgid "Description:"
 msgstr "Description"
 
-#: ../../client/text_repositories.py:135
+#: ../../client/text_repositories.py:137
 #, fuzzy
 msgid "Repository format:"
 msgstr "Informations du dépôt"
 
-#: ../../client/text_repositories.py:136
+#: ../../client/text_repositories.py:138
 #, fuzzy
 msgid "Service port:"
 msgstr "Port des services"
 
-#: ../../client/text_repositories.py:137
+#: ../../client/text_repositories.py:139
 #, fuzzy
 msgid "Service port (SSL):"
 msgstr "Port des services"
 
-#: ../../client/text_repositories.py:139
+#: ../../client/text_repositories.py:141
 #, fuzzy
 msgid "Packages URL:"
 msgstr "URL des paquets"
 
-#: ../../client/text_repositories.py:142
+#: ../../client/text_repositories.py:144
 msgid "None given"
 msgstr ""
 
-#: ../../client/text_repositories.py:143
+#: ../../client/text_repositories.py:145
 #, fuzzy
 msgid "Repository URL:"
 msgstr "Dépôt"
 
-#: ../../client/text_repositories.py:148
+#: ../../client/text_repositories.py:150
 #, fuzzy
 msgid "repository added succesfully"
 msgstr "Les dépôts ont été mis à jour avec succès"
 
-#: ../../client/text_repositories.py:158
+#: ../../client/text_repositories.py:160
 #, fuzzy
 msgid "repository id not available"
 msgstr "dépôt n'est pas disponible"
 
-#: ../../client/text_repositories.py:163
+#: ../../client/text_repositories.py:165
 #, fuzzy
 msgid "repository removed succesfully"
 msgstr "Les dépôts ont été mis à jour avec succès"
 
-#: ../../client/text_repositories.py:171
+#: ../../client/text_repositories.py:173
 #, fuzzy
 msgid "repository already enabled"
 msgstr "Déjà activé"
 
-#: ../../client/text_repositories.py:175 ../../client/text_repositories.py:193
-#: ../../server/server_key.py:47
+#: ../../client/text_repositories.py:177 ../../client/text_repositories.py:195
+#: ../../client/text_repositories.py:213 ../../server/server_key.py:47
 #, fuzzy
 msgid "repository not available"
 msgstr "dépôt n'est pas disponible"
 
-#: ../../client/text_repositories.py:179
+#: ../../client/text_repositories.py:181
 #, fuzzy
 msgid "repository enabled"
 msgstr "Nom du dépôt"
 
-#: ../../client/text_repositories.py:189
+#: ../../client/text_repositories.py:191
 #, fuzzy
 msgid "repository already disabled"
 msgstr "déjà désactivé"
 
-#: ../../client/text_repositories.py:197
+#: ../../client/text_repositories.py:199
 #, fuzzy
 msgid "cannot disable default repository"
 msgstr "définir le dépôt par défaut"
 
-#: ../../client/text_repositories.py:201
+#: ../../client/text_repositories.py:203
 #, fuzzy
 msgid "repository disabled"
 msgstr "Nom du dépôt"
 
-#: ../../client/text_repositories.py:217
+#: ../../client/text_repositories.py:216
+#, fuzzy
+msgid "mirrors sorted successfully"
+msgstr "miroir verrouillé avec succès"
+
+#: ../../client/text_repositories.py:233
 msgid "active"
 msgstr "actif"
 
-#: ../../client/text_repositories.py:219
+#: ../../client/text_repositories.py:235
 msgid "never synced"
 msgstr "jamais synchronisé"
 
-#: ../../client/text_repositories.py:220
+#: ../../client/text_repositories.py:236
 #: ../../sulfur/src/sulfur/dialogs.py:362
-#: ../../sulfur/src/sulfur/views.py:2582
+#: ../../sulfur/src/sulfur/views.py:2584
 msgid "Status"
 msgstr "État"
 
-#: ../../client/text_repositories.py:226
+#: ../../client/text_repositories.py:242
 msgid "Packages URL"
 msgstr "URL des paquets"
 
-#: ../../client/text_repositories.py:230
+#: ../../client/text_repositories.py:244
+msgid "Database URL"
+msgstr "URL de la base de données"
+
+#: ../../client/text_repositories.py:246
 msgid "Repository name"
 msgstr "Nom du dépôt"
 
-#: ../../client/text_repositories.py:231
+#: ../../client/text_repositories.py:247
 msgid "Repository database path"
 msgstr "Emplacement de la base de données du dépôt"
 
-#: ../../client/text_repositories.py:249 ../../client/text_ui.py:527
+#: ../../client/text_repositories.py:265 ../../client/text_ui.py:527
 #: ../../sulfur/src/sulfur/__init__.py:1337
 msgid "No repositories specified in"
 msgstr "Pas de dépôts spécifiés dans"
 
-#: ../../client/text_repositories.py:253 ../../client/text_ui.py:532
+#: ../../client/text_repositories.py:269 ../../client/text_ui.py:532
 #: ../../sulfur/src/sulfur/__init__.py:1342
 msgid "Unhandled exception"
 msgstr "Exception non gérée"
 
-#: ../../client/text_repositories.py:275 ../../server/server_activator.py:285
+#: ../../client/text_repositories.py:291 ../../server/server_activator.py:285
 #: ../../server/server_activator.py:304
 msgid "Notice board not available"
 msgstr "Tableau d'affichage non disponible"
 
-#: ../../client/text_repositories.py:295 ../../client/text_ugc.py:585
+#: ../../client/text_repositories.py:311 ../../client/text_ugc.py:585
 #: ../../server/server_activator.py:210
 #: ../../sulfur/src/sulfur/dialogs.py:1195
 #: ../../sulfur/src/sulfur/sulfur.glade.h:48
 msgid "Content"
 msgstr "Contenu"
 
-#: ../../client/text_repositories.py:300 ../../server/server_activator.py:215
+#: ../../client/text_repositories.py:316 ../../server/server_activator.py:215
 #: ../../sulfur/src/sulfur/sulfur.glade.h:122
 msgid "Link"
 msgstr "Lien"
 
-#: ../../client/text_repositories.py:308 ../../server/server_activator.py:223
+#: ../../client/text_repositories.py:324 ../../server/server_activator.py:223
 msgid "Press Enter to continue"
 msgstr "Appuyez sur Entrée pour continuer"
 
-#: ../../client/text_repositories.py:335 ../../server/server_activator.py:250
+#: ../../client/text_repositories.py:351 ../../server/server_activator.py:250
 msgid "Choose one by typing its identifier"
 msgstr "Choisissez-en un en entrant son identifiant"
 
-#: ../../client/text_repositories.py:364
+#: ../../client/text_repositories.py:380
 #: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Notice board"
 msgstr "Tableau d'affichage"
@@ -5597,15 +5614,15 @@ msgstr "Nettoyage de la base de données système terminé"
 msgid "No System Databases found"
 msgstr "Pas de base de données système trouvée"
 
-#: ../../client/text_rescue.py:149 ../../server/server_reagent.py:549
+#: ../../client/text_rescue.py:149 ../../server/server_reagent.py:546
 msgid "No backed up databases found"
 msgstr "Pas de copie de sécurité des bases de données trouvée"
 
-#: ../../client/text_rescue.py:164 ../../server/server_reagent.py:564
+#: ../../client/text_rescue.py:164 ../../server/server_reagent.py:561
 msgid "Select the database you want to restore"
 msgstr "Choisir la base de données que vous voulez restaurer"
 
-#: ../../client/text_rescue.py:170 ../../server/server_reagent.py:570
+#: ../../client/text_rescue.py:170 ../../server/server_reagent.py:567
 msgid "Entropy installed packages database restore tool"
 msgstr ""
 "Outil de restauration de la base de données des paquets installés d'Entropy"
@@ -6329,7 +6346,7 @@ msgstr "Vote du paquet courant"
 #: ../../client/text_ui.py:230 ../../client/text_ui.py:237
 #: ../../client/text_ui.py:245 ../../client/text_ui.py:253
 #: ../../client/text_ui.py:1158 ../../client/text_ui.py:1835
-#: ../../server/server_reagent.py:1034
+#: ../../server/server_reagent.py:1031
 msgid "Nothing to do"
 msgstr "Rien à faire"
 
@@ -6476,7 +6493,7 @@ msgid "atom"
 msgstr "atome"
 
 #: ../../client/text_ui.py:635 ../../server/server_reagent.py:164
-#: ../../server/server_reagent.py:194 ../../server/server_reagent.py:331
+#: ../../server/server_reagent.py:194 ../../server/server_reagent.py:328
 msgid "in"
 msgstr "dans"
 
@@ -6582,11 +6599,11 @@ msgstr "lecture des sources"
 msgid "fetch"
 msgstr "rapporter"
 
-#: ../../client/text_ui.py:1122 ../../sulfur/src/sulfur/__init__.py:1956
+#: ../../client/text_ui.py:1122 ../../sulfur/src/sulfur/__init__.py:1957
 msgid "Please update the following critical packages"
 msgstr "Veuillez mettre à jour les paquets critiques suivants"
 
-#: ../../client/text_ui.py:1128 ../../sulfur/src/sulfur/__init__.py:1957
+#: ../../client/text_ui.py:1128 ../../sulfur/src/sulfur/__init__.py:1958
 msgid "You should install them as soon as possible"
 msgstr "Vous devriez les installer dès que possible"
 
@@ -6754,7 +6771,7 @@ msgstr "Suppression refusée"
 msgid "Would you like to calculate dependencies ?"
 msgstr "Voulez-vous calculer les dépendances ?"
 
-#: ../../client/text_ui.py:1843 ../../server/server_reagent.py:743
+#: ../../client/text_ui.py:1843 ../../server/server_reagent.py:740
 msgid "Would you like to remove them now ?"
 msgstr "Voulez-vous les supprimer maintenant ?"
 
@@ -6806,11 +6823,11 @@ msgstr "Exécution du test de dépendance"
 msgid "Would you like to install the available packages ?"
 msgstr "Voulez-vous installer les paquets disponibles ?"
 
-#: ../../client/text_ui.py:2115 ../../client/text_ui.py:2198
+#: ../../client/text_ui.py:2115 ../../client/text_ui.py:2199
 msgid "Installing available packages in"
 msgstr "Installation des paquets disponibles dans"
 
-#: ../../client/text_ui.py:2116 ../../client/text_ui.py:2199
+#: ../../client/text_ui.py:2116 ../../client/text_ui.py:2200
 msgid "10 seconds"
 msgstr "10 secondes"
 
@@ -6822,7 +6839,7 @@ msgstr "Statistiques des Librairies/Fichiers exécutables"
 msgid "Not matched"
 msgstr "Non trouvé"
 
-#: ../../client/text_ui.py:2192
+#: ../../client/text_ui.py:2193
 msgid "Would you like to install them ?"
 msgstr "Voulez-vous les installer ?"
 
@@ -7131,7 +7148,7 @@ msgid "Expires on"
 msgstr ""
 
 #: ../../server/server_query.py:50 ../../server/server_query.py:71
-#: ../../sulfur/src/sulfur/packages.py:1090
+#: ../../sulfur/src/sulfur/packages.py:1093
 msgid "Nothing found"
 msgstr "Rien trouvé"
 
@@ -7151,7 +7168,7 @@ msgstr "Dépôts spécifiés invalides."
 msgid "Enabling"
 msgstr "Activation"
 
-#: ../../server/server_reagent.py:108 ../../sulfur/src/sulfur/dialogs.py:2123
+#: ../../server/server_reagent.py:108 ../../sulfur/src/sulfur/dialogs.py:2125
 msgid "Enabled"
 msgstr "Activé"
 
@@ -7172,7 +7189,7 @@ msgid "already disabled"
 msgstr "déjà désactivé"
 
 #: ../../server/server_reagent.py:163 ../../server/server_reagent.py:193
-#: ../../server/server_reagent.py:330 ../../server/server_reagent.py:646
+#: ../../server/server_reagent.py:327 ../../server/server_reagent.py:643
 msgid "Cannot match"
 msgstr "Ne peut pas correspondre"
 
@@ -7180,214 +7197,214 @@ msgstr "Ne peut pas correspondre"
 msgid "package dependencies"
 msgstr "dépendances de paquets"
 
-#: ../../server/server_reagent.py:253
+#: ../../server/server_reagent.py:250
 #, fuzzy
 msgid "Dependency type"
 msgstr "Test de dépendances"
 
-#: ../../server/server_reagent.py:257
+#: ../../server/server_reagent.py:254
 #, fuzzy
 msgid "Select a dependency type for"
 msgstr "dépendances manuelles pour"
 
-#: ../../server/server_reagent.py:281
+#: ../../server/server_reagent.py:278
 #, fuzzy
 msgid "Dependencies editor"
 msgstr "Test de dépendances"
 
-#: ../../server/server_reagent.py:290
+#: ../../server/server_reagent.py:287
 #, fuzzy
 msgid "Confirm ?"
 msgstr "Confirmer"
 
-#: ../../server/server_reagent.py:313
+#: ../../server/server_reagent.py:310
 #, fuzzy
 msgid "dependencies updated successfully"
 msgstr "Dépendances manuelles ajoutées avec succès"
 
-#: ../../server/server_reagent.py:352
+#: ../../server/server_reagent.py:349
 msgid "Matching packages to remove"
 msgstr "Paquets correspondants à supprimer"
 
-#: ../../server/server_reagent.py:355 ../../server/server_reagent.py:469
-#: ../../server/server_reagent.py:510
+#: ../../server/server_reagent.py:352 ../../server/server_reagent.py:466
+#: ../../server/server_reagent.py:507
 msgid "Not enough parameters"
 msgstr "Pas assez de paramètres"
 
-#: ../../server/server_reagent.py:377 ../../server/server_reagent.py:738
+#: ../../server/server_reagent.py:374 ../../server/server_reagent.py:735
 msgid "These are the packages that would be removed from the database"
 msgstr "Voici les paquets qui seraient supprimés de la base de données"
 
-#: ../../server/server_reagent.py:392 ../../server/server_reagent.py:439
+#: ../../server/server_reagent.py:389 ../../server/server_reagent.py:436
 msgid "Removing selected packages"
 msgstr "Suppression des paquets sélectionnés"
 
-#: ../../server/server_reagent.py:396 ../../server/server_reagent.py:444
+#: ../../server/server_reagent.py:393 ../../server/server_reagent.py:441
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr ""
 "Paquets supprimés. Pour supprimer les paquets binaires, exécuter l'activateur"
 
-#: ../../server/server_reagent.py:403
+#: ../../server/server_reagent.py:400
 msgid "Searching injected packages to remove"
 msgstr "Recherche de paquets injectés à supprimer"
 
-#: ../../server/server_reagent.py:428
+#: ../../server/server_reagent.py:425
 msgid "These are the injected packages pulled in for removal"
 msgstr "Voici les paquets présentés pour suppression"
 
-#: ../../server/server_reagent.py:452
+#: ../../server/server_reagent.py:449
 #, fuzzy
 msgid "Entropy repository has been initialized"
 msgstr "Votre dépôt par défaut n'est pas initialisé"
 
-#: ../../server/server_reagent.py:459
+#: ../../server/server_reagent.py:456
 msgid "Creating empty database to"
 msgstr "Création de la base de données vide dans"
 
-#: ../../server/server_reagent.py:461
+#: ../../server/server_reagent.py:458
 msgid "Cannot overwrite already existing file"
 msgstr "Impossible d'écraser le fichier déjà existant"
 
-#: ../../server/server_reagent.py:474
+#: ../../server/server_reagent.py:471
 msgid "Switching branch, be sure to have your packages in sync."
 msgstr "Changement de branche, assurez-vous que vous paquets sont en synchro"
 
-#: ../../server/server_reagent.py:481
+#: ../../server/server_reagent.py:478
 msgid "Collecting packages that would be marked"
 msgstr "Collecte des paquets qui seraient marqués"
 
-#: ../../server/server_reagent.py:490
+#: ../../server/server_reagent.py:487
 msgid "These are the packages that would be marked"
 msgstr "Voici les paquets qui seraient marqués"
 
-#: ../../server/server_reagent.py:525
+#: ../../server/server_reagent.py:522
 msgid "Bumping Repository database"
 msgstr "Saut de la base de données du dépôt"
 
-#: ../../server/server_reagent.py:662
+#: ../../server/server_reagent.py:659
 msgid "No valid packages to repackage."
 msgstr "Pas de paquets valides à réempaquetter"
 
 #. normal scanning
-#: ../../server/server_reagent.py:667
+#: ../../server/server_reagent.py:664
 msgid "Scanning database for differences"
 msgstr "Vérification de la base de données pour des différences"
 
-#: ../../server/server_reagent.py:687
+#: ../../server/server_reagent.py:684
 #, fuzzy
 msgid "Invalid atom"
 msgstr "Action invalide."
 
-#: ../../server/server_reagent.py:694
+#: ../../server/server_reagent.py:691
 msgid "Zarro thinggz totoo"
 msgstr "? Zarro thinggz totoo ?"
 
-#: ../../server/server_reagent.py:698
+#: ../../server/server_reagent.py:695
 msgid "These are the packages that would be changed to injected status"
 msgstr "Voici les paquets qui seront modifiés avec le statut injecté"
 
-#: ../../server/server_reagent.py:704
+#: ../../server/server_reagent.py:701
 msgid "Would you like to transform them now ?"
 msgstr "Voulez-vous les transformer maintenant ?"
 
-#: ../../server/server_reagent.py:711
+#: ../../server/server_reagent.py:708
 msgid "Transforming from database"
 msgstr "Transformation depuis la base de données"
 
-#: ../../server/server_reagent.py:714
+#: ../../server/server_reagent.py:711
 msgid "Database transform complete"
 msgstr "Transformation de la base de données complétée"
 
-#: ../../server/server_reagent.py:723
+#: ../../server/server_reagent.py:720
 msgid "expired"
 msgstr "expiré"
 
-#: ../../server/server_reagent.py:727
+#: ../../server/server_reagent.py:724
 #, fuzzy
 msgid "So sweetheart, what packages do you want to remove ?"
 msgstr "Choisissez quel ensemble de paquets vous désirez supprimer"
 
-#: ../../server/server_reagent.py:731
+#: ../../server/server_reagent.py:728
 #, fuzzy
 msgid "Remove this package?"
 msgstr "Supprimer les paquets"
 
-#: ../../server/server_reagent.py:756
+#: ../../server/server_reagent.py:753
 #, fuzzy
 msgid "So sweetheart, what packages do you want to add ?"
 msgstr "Choisir quel groupe de paquets vous voulez ajouter"
 
-#: ../../server/server_reagent.py:760
+#: ../../server/server_reagent.py:757
 #, fuzzy
 msgid "Add this package?"
 msgstr "Masquer ce paquet"
 
-#: ../../server/server_reagent.py:767
+#: ../../server/server_reagent.py:764
 msgid "These are the packages that would be added/updated to the add list"
 msgstr ""
 "Voici les paquets qui seraient ajoutés/mis à jour dans la liste d'ajout"
 
-#: ../../server/server_reagent.py:798
+#: ../../server/server_reagent.py:795
 #, fuzzy
 msgid "warning"
 msgstr "Avertissement"
 
-#: ../../server/server_reagent.py:805
+#: ../../server/server_reagent.py:802
 msgid "Would you like to package them now ?"
 msgstr "Voulez-vous les empaquetter maintenant ?"
 
-#: ../../server/server_reagent.py:806
+#: ../../server/server_reagent.py:803
 msgid "inside"
 msgstr "à l'intérieur"
 
 #. package them
-#: ../../server/server_reagent.py:818
+#: ../../server/server_reagent.py:815
 msgid "Compressing packages"
 msgstr "Compression des paquets"
 
-#: ../../server/server_reagent.py:827
+#: ../../server/server_reagent.py:824
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr "Saut de l'entrée du SPM endommagé, veuillez le recompiler"
 
-#: ../../server/server_reagent.py:834
+#: ../../server/server_reagent.py:831
 msgid "Nothing to do, check later."
 msgstr "Rien à faire, vérifiez plus tard."
 
-#: ../../server/server_reagent.py:845
+#: ../../server/server_reagent.py:842
 msgid "Entries handled"
 msgstr "Entrées gérées"
 
-#: ../../server/server_reagent.py:869
+#: ../../server/server_reagent.py:866
 #, fuzzy
 msgid "local revision"
 msgstr "révision"
 
-#: ../../server/server_reagent.py:871
+#: ../../server/server_reagent.py:868
 #, fuzzy
 msgid "local packages"
 msgstr "Paquet vital"
 
-#: ../../server/server_reagent.py:878
+#: ../../server/server_reagent.py:875
 #, fuzzy
 msgid "stored packages"
 msgstr "Paquet masqué"
 
-#: ../../server/server_reagent.py:883
+#: ../../server/server_reagent.py:880
 #, fuzzy
 msgid "upload packages"
 msgstr "Paquets téléchargés"
 
-#: ../../server/server_reagent.py:944
+#: ../../server/server_reagent.py:941
 #, fuzzy
 msgid ""
 "These are the newly available packages, either updatable or not installed"
 msgstr "Voici les paquets qui seraient installés"
 
-#: ../../server/server_reagent.py:997
+#: ../../server/server_reagent.py:994
 msgid "No package sets found"
 msgstr "Pas de groupe de paquets trouvé"
 
-#: ../../server/server_reagent.py:1005
+#: ../../server/server_reagent.py:1002
 msgid "package set not found"
 msgstr "groupe de paquets introuvable"
 
@@ -7674,131 +7691,131 @@ msgstr "Sélectionner votre fichier"
 msgid "On repository"
 msgstr "dans le dépôt"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2024
+#: ../../sulfur/src/sulfur/dialogs.py:2028
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
 "Voici les paquets qui doivent être activés pour satisfaire votre requête"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2026
+#: ../../sulfur/src/sulfur/dialogs.py:2030
 msgid "Some packages are masked"
 msgstr "Certains paquets sont masqués"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2115
+#: ../../sulfur/src/sulfur/dialogs.py:2117
 msgid "Masked package"
 msgstr "Paquet masqué"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2196
-#: ../../sulfur/src/sulfur/dialogs.py:2429
-#: ../../sulfur/src/sulfur/dialogs.py:2440
-#: ../../sulfur/src/sulfur/dialogs.py:2451
-#: ../../sulfur/src/sulfur/dialogs.py:2462
-#: ../../sulfur/src/sulfur/dialogs.py:2473
+#: ../../sulfur/src/sulfur/dialogs.py:2198
+#: ../../sulfur/src/sulfur/dialogs.py:2431
+#: ../../sulfur/src/sulfur/dialogs.py:2442
+#: ../../sulfur/src/sulfur/dialogs.py:2453
+#: ../../sulfur/src/sulfur/dialogs.py:2464
+#: ../../sulfur/src/sulfur/dialogs.py:2475
 #: ../../sulfur/src/sulfur/package.py:283 ../../sulfur/src/sulfur/views.py:89
-#: ../../sulfur/src/sulfur/views.py:149 ../../sulfur/src/sulfur/views.py:2480
+#: ../../sulfur/src/sulfur/views.py:149 ../../sulfur/src/sulfur/views.py:2482
 msgid "No description"
 msgstr "Pas de description"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2319
+#: ../../sulfur/src/sulfur/dialogs.py:2321
 msgid "Please confirm the actions above"
 msgstr "Veuillez confirmer les actions ci-haut"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2363
+#: ../../sulfur/src/sulfur/dialogs.py:2365
 #: ../../sulfur/src/sulfur/__init__.py:883
 #: ../../sulfur/src/sulfur/__init__.py:893
 #: ../../sulfur/src/sulfur/__init__.py:903
 msgid "Item"
 msgstr "Élément"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2380
-#: ../../sulfur/src/sulfur/dialogs.py:2434
+#: ../../sulfur/src/sulfur/dialogs.py:2382
+#: ../../sulfur/src/sulfur/dialogs.py:2436
 msgid "To be downgraded"
 msgstr "À être rétrogradé"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2386
-#: ../../sulfur/src/sulfur/dialogs.py:2423
+#: ../../sulfur/src/sulfur/dialogs.py:2388
+#: ../../sulfur/src/sulfur/dialogs.py:2425
 msgid "To be removed"
 msgstr "À être supprimé"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2392
-#: ../../sulfur/src/sulfur/dialogs.py:2445
+#: ../../sulfur/src/sulfur/dialogs.py:2394
+#: ../../sulfur/src/sulfur/dialogs.py:2447
 msgid "To be reinstalled"
 msgstr "À être réinstallé"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2398
-#: ../../sulfur/src/sulfur/dialogs.py:2456
+#: ../../sulfur/src/sulfur/dialogs.py:2400
+#: ../../sulfur/src/sulfur/dialogs.py:2458
 msgid "To be installed"
 msgstr "À être installé"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2404
-#: ../../sulfur/src/sulfur/dialogs.py:2467
+#: ../../sulfur/src/sulfur/dialogs.py:2406
+#: ../../sulfur/src/sulfur/dialogs.py:2469
 msgid "To be updated"
 msgstr "À être mis à jour"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2604
+#: ../../sulfur/src/sulfur/dialogs.py:2606
 msgid "About"
 msgstr "À propos de"
 
 #. open file selector
-#: ../../sulfur/src/sulfur/dialogs.py:2689
+#: ../../sulfur/src/sulfur/dialogs.py:2691
 msgid "Sulfur file chooser"
 msgstr "Sélectionneur de fichier dans Sulfur"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2725
+#: ../../sulfur/src/sulfur/dialogs.py:2727
 msgid "Sulfur Question"
 msgstr "Question sur Sulfur"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2730
+#: ../../sulfur/src/sulfur/dialogs.py:2732
 msgid "Hey!"
 msgstr "Hé !"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2772
+#: ../../sulfur/src/sulfur/dialogs.py:2774
 msgid "Please fill the following form"
 msgstr "Veuillez remplir le formulaire suivant"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2842
+#: ../../sulfur/src/sulfur/dialogs.py:2844
 msgid "Add atom"
 msgstr "Ajouter un atome"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2998
 #: ../../sulfur/src/sulfur/dialogs.py:3000
+#: ../../sulfur/src/sulfur/dialogs.py:3002
 msgid "Invalid entry"
 msgstr "Entrée invalide"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3060
+#: ../../sulfur/src/sulfur/dialogs.py:3062
 msgid "Cancel"
 msgstr "Annuler"
 
 #. new
-#: ../../sulfur/src/sulfur/dialogs.py:3151
+#: ../../sulfur/src/sulfur/dialogs.py:3153
 msgid "Accepted"
 msgstr "Accepté"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3218
+#: ../../sulfur/src/sulfur/dialogs.py:3220
 #: ../../sulfur/src/sulfur/events.py:697
 msgid "license text"
 msgstr "texte de license"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3257
+#: ../../sulfur/src/sulfur/dialogs.py:3259
 msgid "Exception caught"
 msgstr "Exception trappée"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3258
+#: ../../sulfur/src/sulfur/dialogs.py:3260
 msgid "Sulfur crashed! An unexpected error occured."
 msgstr "Sulfur a crashé. Une erreur inattendue s'est produite."
 
-#: ../../sulfur/src/sulfur/dialogs.py:3279
+#: ../../sulfur/src/sulfur/dialogs.py:3281
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr "Votre rapport a été soumis avec succès ! Merci beaucoup."
 
-#: ../../sulfur/src/sulfur/dialogs.py:3281
+#: ../../sulfur/src/sulfur/dialogs.py:3283
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "Impossible de soumettre votre rapport. Êtes-vous connecté à Internet ?"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:99
+#: ../../sulfur/src/sulfur/entropyapi.py:101
 msgid "Error enabling masked package"
 msgstr "Erreur au cours de l'activation du paquet masqué"
 
-#: ../../sulfur/src/sulfur/entropyapi.py:131
+#: ../../sulfur/src/sulfur/entropyapi.py:133
 msgid "Downloading sources"
 msgstr "Téléchargement des sources"
 
@@ -7987,7 +8004,7 @@ msgid "Oh oh ooooh... Merry Xmas!"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/__init__.py:331
-#: ../../sulfur/src/sulfur/views.py:2392
+#: ../../sulfur/src/sulfur/views.py:2394
 #: ../../sulfur/src/sulfur/sulfur.glade.h:14
 msgid "Applications"
 msgstr "Applications"
@@ -8134,7 +8151,7 @@ msgstr "Erreur lors de la mise à jour des dépôts."
 #: ../../sulfur/src/sulfur/__init__.py:1354
 #: ../../sulfur/src/sulfur/__init__.py:1431
 #: ../../sulfur/src/sulfur/__init__.py:1522
-#: ../../sulfur/src/sulfur/__init__.py:2025
+#: ../../sulfur/src/sulfur/__init__.py:2026
 msgid "Running tasks"
 msgstr "Exécution de tâches"
 
@@ -8195,7 +8212,7 @@ msgid "Testing libraries..."
 msgstr "Scan des librairies..."
 
 #: ../../sulfur/src/sulfur/__init__.py:1542
-#: ../../sulfur/src/sulfur/__init__.py:2295
+#: ../../sulfur/src/sulfur/__init__.py:2296
 msgid "Aborting queue tasks."
 msgstr "Annulation des tâches en file."
 
@@ -8251,22 +8268,22 @@ msgstr "Description de la commande"
 msgid "Entropy Search"
 msgstr "Recherche dans Entropy"
 
-#: ../../sulfur/src/sulfur/__init__.py:1960
+#: ../../sulfur/src/sulfur/__init__.py:1961
 msgid "Abort action"
 msgstr "Annuler l'action"
 
-#: ../../sulfur/src/sulfur/__init__.py:1961
+#: ../../sulfur/src/sulfur/__init__.py:1962
 msgid "Ignore"
 msgstr "Ignorer"
 
-#: ../../sulfur/src/sulfur/__init__.py:1993
-#: ../../sulfur/src/sulfur/__init__.py:2009
+#: ../../sulfur/src/sulfur/__init__.py:1994
+#: ../../sulfur/src/sulfur/__init__.py:2010
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 "Une autre instance d'Entropy est en cours d'exécution. Impossible de traiter "
 "la file."
 
-#: ../../sulfur/src/sulfur/__init__.py:2019
+#: ../../sulfur/src/sulfur/__init__.py:2020
 msgid ""
 "Another Entropy instance is locking this task at the moment. Try in a few "
 "minutes."
@@ -8274,15 +8291,15 @@ msgstr ""
 "Une autre instance d'Entropy verrouillage cette tâche en ce moment. "
 "Réessayez dans quelques minutes."
 
-#: ../../sulfur/src/sulfur/__init__.py:2046
+#: ../../sulfur/src/sulfur/__init__.py:2047
 msgid "Processing Packages in queue"
 msgstr "Paquets en cours de traitement dans la file"
 
-#: ../../sulfur/src/sulfur/__init__.py:2135
+#: ../../sulfur/src/sulfur/__init__.py:2136
 msgid "Attention. You chose to abort the processing."
 msgstr "Attention. Vous avez choisi d'annuler le traitement."
 
-#: ../../sulfur/src/sulfur/__init__.py:2138
+#: ../../sulfur/src/sulfur/__init__.py:2139
 #, fuzzy
 msgid ""
 "Attention. An error occured while processing the queue.\n"
@@ -8291,14 +8308,14 @@ msgstr ""
 "Attention. Une erreur s'est produite au cours du traitement de la file.\n"
 "Veuillez jeter un coup d'oeil au terminal de traitement"
 
-#: ../../sulfur/src/sulfur/__init__.py:2150
+#: ../../sulfur/src/sulfur/__init__.py:2151
 #, fuzzy
 msgid ""
 "Attention. Something really bad happened.\n"
 "Please have a look at the terminal."
 msgstr "Quelque chose de mauvais s'est produit. Veuillez vérifier."
 
-#: ../../sulfur/src/sulfur/__init__.py:2158
+#: ../../sulfur/src/sulfur/__init__.py:2159
 msgid ""
 "Attention. You have updated Entropy.\n"
 "Sulfur will be reloaded."
@@ -8306,34 +8323,34 @@ msgstr ""
 "Attention. Vous avez mis à jour Entropy.\n"
 "Sulfur sera relancé."
 
-#: ../../sulfur/src/sulfur/__init__.py:2200
+#: ../../sulfur/src/sulfur/__init__.py:2201
 msgid "No packages selected"
 msgstr "Aucun paquet sélectionné"
 
-#: ../../sulfur/src/sulfur/__init__.py:2215
+#: ../../sulfur/src/sulfur/__init__.py:2216
 #, fuzzy
 msgid "Tasks completed successfully."
 msgstr "envoi complété avec succès"
 
-#: ../../sulfur/src/sulfur/__init__.py:2216
+#: ../../sulfur/src/sulfur/__init__.py:2217
 msgid "Please make sure to read all the messages in the terminal below."
 msgstr ""
 
-#: ../../sulfur/src/sulfur/__init__.py:2219
+#: ../../sulfur/src/sulfur/__init__.py:2220
 msgid "Oh, a fairytale gone bad!"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/__init__.py:2220
+#: ../../sulfur/src/sulfur/__init__.py:2221
 #, fuzzy
 msgid ""
 "Something bad happened, have a look at the messages in the terminal below."
 msgstr "Quelque chose de mauvais s'est produit. Veuillez vérifier."
 
-#: ../../sulfur/src/sulfur/__init__.py:2221
+#: ../../sulfur/src/sulfur/__init__.py:2222
 msgid "Don't feel guilty, it's all my fault!"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/__init__.py:2302
+#: ../../sulfur/src/sulfur/__init__.py:2303
 msgid "Skipping current mirror."
 msgstr "Saut du miroir courant"
 
@@ -8409,59 +8426,59 @@ msgstr "Espace libéré"
 msgid "Needed space"
 msgstr "Espace requis"
 
-#: ../../sulfur/src/sulfur/packages.py:989
+#: ../../sulfur/src/sulfur/packages.py:992
 msgid "Set from"
 msgstr "Groupe à partir de"
 
-#: ../../sulfur/src/sulfur/packages.py:990
+#: ../../sulfur/src/sulfur/packages.py:993
 msgid "Unknown"
 msgstr "Inconnu(e)"
 
-#: ../../sulfur/src/sulfur/packages.py:995
+#: ../../sulfur/src/sulfur/packages.py:998
 msgid "User configuration"
 msgstr "Configuration de l'utilisateur"
 
-#: ../../sulfur/src/sulfur/packages.py:1060
+#: ../../sulfur/src/sulfur/packages.py:1063
 #, fuzzy
 msgid "Try to update your repositories"
 msgstr "Essayez de mettre à jour vos dépôts et réessayez"
 
-#: ../../sulfur/src/sulfur/packages.py:1063
+#: ../../sulfur/src/sulfur/packages.py:1066
 msgid "No updates available"
 msgstr "Pas de mise à jour disponible"
 
-#: ../../sulfur/src/sulfur/packages.py:1064
+#: ../../sulfur/src/sulfur/packages.py:1067
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr "Il semble que votre système est déjà à jour. Bien !"
 
-#: ../../sulfur/src/sulfur/packages.py:1075
-#: ../../sulfur/src/sulfur/views.py:2675
+#: ../../sulfur/src/sulfur/packages.py:1078
+#: ../../sulfur/src/sulfur/views.py:2677
 #, fuzzy
 msgid "Please wait, loading..."
 msgstr "Veuillez patienter"
 
-#: ../../sulfur/src/sulfur/packages.py:1076
+#: ../../sulfur/src/sulfur/packages.py:1079
 msgid "The current view is loading."
 msgstr ""
 
-#: ../../sulfur/src/sulfur/packages.py:1077
+#: ../../sulfur/src/sulfur/packages.py:1080
 msgid "Be patient, sit down and relax."
 msgstr ""
 
-#: ../../sulfur/src/sulfur/packages.py:1086
+#: ../../sulfur/src/sulfur/packages.py:1089
 msgid "No packages found means nothing to show!"
 msgstr "Aucun paquet trouvé signifie rien à afficher !"
 
-#: ../../sulfur/src/sulfur/packages.py:1091
+#: ../../sulfur/src/sulfur/packages.py:1094
 msgid "No packages found using the provided search term"
 msgstr "Aucun paquet trouvé en utilisant les termes de recherche spécifiés"
 
-#: ../../sulfur/src/sulfur/packages.py:1095
 #: ../../sulfur/src/sulfur/packages.py:1098
+#: ../../sulfur/src/sulfur/packages.py:1101
 msgid "No packages to show"
 msgstr "Aucun paquet à afficher"
 
-#: ../../sulfur/src/sulfur/packages.py:1099
+#: ../../sulfur/src/sulfur/packages.py:1102
 msgid "There are no packages that can be shown, sorry."
 msgstr "Il n'y a pas de paquet pouvant être affiché, désolé."
 
@@ -8526,81 +8543,81 @@ msgstr ""
 msgid "Application"
 msgstr "Application"
 
-#: ../../sulfur/src/sulfur/views.py:2430
+#: ../../sulfur/src/sulfur/views.py:2432
 #, fuzzy
 msgid "Applications to remove"
 msgstr "Applications sans groupe"
 
-#: ../../sulfur/src/sulfur/views.py:2435
+#: ../../sulfur/src/sulfur/views.py:2437
 #, fuzzy
 msgid "Applications to downgrade"
 msgstr "Paquets à rétrograder"
 
-#: ../../sulfur/src/sulfur/views.py:2440
+#: ../../sulfur/src/sulfur/views.py:2442
 #, fuzzy
 msgid "Applications to install"
 msgstr "Options de l'application"
 
-#: ../../sulfur/src/sulfur/views.py:2445
+#: ../../sulfur/src/sulfur/views.py:2447
 #, fuzzy
 msgid "Applications to update"
 msgstr "Mises à jour d'applications"
 
-#: ../../sulfur/src/sulfur/views.py:2450
+#: ../../sulfur/src/sulfur/views.py:2452
 #, fuzzy
 msgid "Applications to reinstall"
 msgstr "Options de l'application"
 
-#: ../../sulfur/src/sulfur/views.py:2519
+#: ../../sulfur/src/sulfur/views.py:2521
 msgid "Proposed"
 msgstr "Proposé"
 
-#: ../../sulfur/src/sulfur/views.py:2526
+#: ../../sulfur/src/sulfur/views.py:2528
 msgid "Destination"
 msgstr "Destination"
 
-#: ../../sulfur/src/sulfur/views.py:2533
+#: ../../sulfur/src/sulfur/views.py:2535
 msgid "Rev."
 msgstr "Rev."
 
-#: ../../sulfur/src/sulfur/views.py:2589
+#: ../../sulfur/src/sulfur/views.py:2591
 #, fuzzy
 msgid "Security id."
 msgstr "Sécurité"
 
-#: ../../sulfur/src/sulfur/views.py:2597
+#: ../../sulfur/src/sulfur/views.py:2599
 #, fuzzy
 msgid "Application name"
 msgstr "Application"
 
-#: ../../sulfur/src/sulfur/views.py:2676
+#: ../../sulfur/src/sulfur/views.py:2678
 #, fuzzy
 msgid "Advisories are being loaded"
 msgstr "Les dépôts sont en cours de mise à jour"
 
-#: ../../sulfur/src/sulfur/views.py:2733
+#: ../../sulfur/src/sulfur/views.py:2735
 msgid "No advisories"
 msgstr "Pas d'alertes"
 
-#: ../../sulfur/src/sulfur/views.py:2734
+#: ../../sulfur/src/sulfur/views.py:2736
 msgid "There are no items to show"
 msgstr "Il n'y a pas d'élément à afficher"
 
-#: ../../sulfur/src/sulfur/views.py:2760
+#: ../../sulfur/src/sulfur/views.py:2762
 msgid "Filename"
 msgstr "Nom de fichier"
 
-#: ../../sulfur/src/sulfur/views.py:2809
+#: ../../sulfur/src/sulfur/views.py:2811
 msgid "Active"
 msgstr "Actif"
 
-#: ../../sulfur/src/sulfur/views.py:2819
+#: ../../sulfur/src/sulfur/views.py:2821
 #: ../../sulfur/src/sulfur/sulfur.glade.h:276
 msgid "Update"
 msgstr "Mettre à jour"
 
 #. Setup revision column
-#: ../../sulfur/src/sulfur/views.py:2827
+#: ../../sulfur/src/sulfur/views.py:2829
 #: ../../sulfur/src/sulfur/sulfur.glade.h:211
 msgid "Revision"
 msgstr "Révision"
@@ -9946,6 +9963,15 @@ msgstr "Icône de notification"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Lancer  le gestionnaire de paquets"
+
+#~ msgid "Database local path"
+#~ msgstr "Emplacement local de la base de données"
+
+#~ msgid "Database EAPI"
+#~ msgstr "Base de données EAPI"
+
+#~ msgid "database is already up to date"
+#~ msgstr "La base de données est déjà à jour"
 
 #~ msgid "Entropy needs Python compiled with sqlite3 support"
 #~ msgstr "Entropy nécessite Python compilé avec le support sqlite3"
