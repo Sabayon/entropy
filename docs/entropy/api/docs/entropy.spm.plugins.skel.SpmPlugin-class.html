@@ -78,7 +78,7 @@
 <area shape="rect" id="node483" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_build_script_path" title="Return build script path for given package looking into installed packages &#160;repository." alt="" coords="17,409,449,428"/>
 <area shape="rect" id="node483" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_metadata" title="Return package metadata referenced by &quot;key&quot; argument from installed &#160;packages repository." alt="" coords="17,428,449,447"/>
 <area shape="rect" id="node483" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_system_packages" title="Return list of core (system) packages." alt="" coords="17,447,449,465"/>
-<area shape="rect" id="node483" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_unpack_hook" title="This function is called by Entropy Client during package installation, &#160;unpack phase." alt="" coords="17,484,449,503"/>
+<area shape="rect" id="node483" href="entropy.spm.plugins.skel.SpmPlugin-class.html#allocate_protected_file" title="Allocate a configuration protected file." alt="" coords="17,484,449,503"/>
 <area shape="rect" id="node1" href="entropy.spm.plugins.skel.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="5,102,461,509"/>
 <area shape="rect" id="node3" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin" alt="" coords="91,529,376,567"/>
 <area shape="rect" id="node484" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="135,39,332,57"/>
@@ -1148,6 +1148,24 @@
       installation, unpack phase.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.entropy_install_unpack_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#allocate_protected_file" class="summary-sig-name">allocate_protected_file</a>(<span class="summary-sig-arg">package_file_path</span>,
+        <span class="summary-sig-arg">destination_file_path</span>)</span><br />
+      Allocate a configuration protected file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.allocate_protected_file">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -2774,6 +2792,52 @@ keys:
   </dl>
 </td></tr></table>
 </div>
+<a name="allocate_protected_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">allocate_protected_file</span>(<span class="sig-arg">package_file_path</span>,
+        <span class="sig-arg">destination_file_path</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.allocate_protected_file">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Allocate a configuration protected file. This method returns a new
+destination_file_path value that is used by Entropy Client code to
+merge file at package_file_path to live system.
+This method offers basic support for Entropy ability to protect user
+configuration files against overwrites. Any subclass can hook code
+here in order to trigger extra actions on every acknowledged
+path modification.
+
+@param package_file_path: a valid file path pointing to the file
+    that Entropy Client is going to move to destination_file_path
+@type package_file_path: string
+@param destination_file_path: the default destination path for given
+    package_file_path. It points to the live system.
+@type destination_file_path: string
+@return: Tuple (of length 2) composed by (1) a new destination file
+    path. Please note that it can be the same of the one passed
+    (destination_file_path) if no protection is taken (for eg. when
+    md5 of proposed_file_path and destination_file_path is the same)
+    and (2) a bool informing if the function actually protected the
+    destination file. Unfortunately, the bool bit is stil required
+    in order to provide a valid new destination_file_path in any case.
+@rtype tuple
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -2806,7 +2870,7 @@ keys:
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  1 07:15:45 2010
+    Generated by Epydoc 3.0.1 on Thu Jul 15 10:57:07 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

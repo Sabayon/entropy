@@ -59,50 +59,51 @@
 <h1 class="epydoc">Class EntropyRepositoryBase</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__31" name="uml_class_diagram_for_entropy__31">
-<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#output" title="Text output print function." alt="" coords="125,181,788,200"/>
-<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#ask_question" title="Questions asking function." alt="" coords="125,200,788,219"/>
-<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#input_box" title="Generic input box (form) creator and data collector." alt="" coords="125,219,788,237"/>
-<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#set_title" title="Set application title." alt="" coords="125,237,788,256"/>
-<area shape="rect" id="node1" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="113,149,799,262"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#VIRTUAL_META_PACKAGE_CATEGORY" title="entropy.db.skel.EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY" alt="" coords="356,353,1104,372"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_ALREADY_UPTODATE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE" alt="" coords="356,372,1104,391"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_NOT_AVAILABLE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE" alt="" coords="356,391,1104,409"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_GENERIC_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR" alt="" coords="356,409,1104,428"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_CHECKSUM_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_CHECKSUM_ERROR" alt="" coords="356,428,1104,447"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_UPDATED_OK" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_UPDATED_OK" alt="" coords="356,447,1104,465"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#__init__" title="EntropyRepositoryBase constructor." alt="" coords="356,468,1104,487"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#closeDB" title="Close repository storage communication and open disk files." alt="" coords="356,487,1104,505"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#vacuum" title="Repository storage cleanup and optimization function." alt="" coords="356,505,1104,524"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#commitChanges" title="Commit actual changes and make them permanently stored." alt="" coords="356,524,1104,543"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#initializeRepository" title="This method (re)initializes the repository, dropping all its content." alt="" coords="356,543,1104,561"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#filterTreeUpdatesActions" title="This method should be considered internal and not suited for general &#160;audience." alt="" coords="356,561,1104,580"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#handlePackage" title="Update or add a package to repository automatically handling its scope and thus removal of previous versions if requested by the given metadata." alt="" coords="356,580,1104,599"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackagesToRemove" title="Return a list of packages that would be removed given name, category, slot &#160;and injection status." alt="" coords="356,599,1104,617"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#addPackage" title="Add package to this Entropy repository." alt="" coords="356,617,1104,636"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#removePackage" title="Remove package from this Entropy repository using it&#39;s identifier &#160;(package_id)." alt="" coords="356,636,1104,655"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#setInjected" title="Mark package as injected, injection is usually set for packages manually &#160;added to repository." alt="" coords="356,655,1104,673"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#setCreationDate" title="Update the creation date for package." alt="" coords="356,673,1104,692"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#setDigest" title="Set package file md5sum for package." alt="" coords="356,692,1104,711"/>
-<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#atomMatch" title="Match given atom (or dependency) in repository and return its package &#160;identifer and execution status." alt="" coords="356,729,1104,748"/>
-<area shape="rect" id="node7" href="entropy.db.skel.EntropyRepositoryBase-class.html" title="EntropyRepository interface base class." alt="" coords="344,329,1115,754"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="840,135,1167,153"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="840,153,1167,172"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="840,172,1167,191"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" title="Remove EntropyRepository permanent plugin." alt="" coords="840,191,1167,209"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" title="Return EntropyRepositoryStore installed permanent plugins." alt="" coords="840,209,1167,228"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugins" title="Overloaded from EntropyPluginStore, adds support for permanent plugins." alt="" coords="840,228,1167,247"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="840,247,1167,265"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="840,265,1167,284"/>
-<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="840,284,1167,303"/>
-<area shape="rect" id="node2" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="828,102,1177,309"/>
-<area shape="rect" id="node3" href="entropy.client.interfaces.db.InstalledPackagesRepository-class.html" title="This class represents the installed packages repository and is a direct subclass of EntropyRepository." alt="" coords="5,833,344,871"/>
-<area shape="rect" id="node124" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="919,39,1089,57"/>
-<area shape="rect" id="node124" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="919,57,1089,76"/>
-<area shape="rect" id="node4" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="907,6,1101,82"/>
-<area shape="rect" id="node5" href="entropy.client.interfaces.db.AvailablePackagesRepository-class.html" title="This class represents the available packages repository and is a direct subclass of EntropyRepository." alt="" coords="373,833,715,871"/>
-<area shape="rect" id="node6" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html" title="This class represents the installed packages repository and is a direct subclass of EntropyRepository." alt="" coords="744,833,1093,871"/>
-<area shape="rect" id="node9" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="655,774,807,813"/>
-<area shape="rect" id="node8" href="entropy.client.interfaces.db.GenericRepository-class.html" title="This class represents a generic packages repository and is a direct subclass of EntropyRepository." alt="" coords="1123,833,1395,871"/>
+<area shape="rect" id="node1" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="636,793,788,831"/>
+<area shape="rect" id="node3" href="entropy.client.interfaces.db.AvailablePackagesRepository-class.html" title="This class represents the available packages repository and is a direct subclass of EntropyRepository." alt="" coords="5,851,347,890"/>
+<area shape="rect" id="node5" href="entropy.client.interfaces.db.InstalledPackagesRepository-class.html" title="This class represents the installed packages repository and is a direct subclass of EntropyRepository." alt="" coords="376,851,715,890"/>
+<area shape="rect" id="node6" href="entropy.client.interfaces.db.GenericRepository-class.html" title="This class represents a generic packages repository and is a direct subclass of EntropyRepository." alt="" coords="744,851,1016,890"/>
+<area shape="rect" id="node8" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html" title="This class represents the installed packages repository and is a direct subclass of EntropyRepository." alt="" coords="1045,851,1395,890"/>
+<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#output" title="Text output print function." alt="" coords="107,181,769,200"/>
+<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#ask_question" title="Questions asking function." alt="" coords="107,200,769,219"/>
+<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#input_box" title="Generic input box (form) creator and data collector." alt="" coords="107,219,769,237"/>
+<area shape="rect" id="node122" href="entropy.output.TextInterface-class.html#set_title" title="Set application title." alt="" coords="107,237,769,256"/>
+<area shape="rect" id="node2" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="95,149,780,262"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#VIRTUAL_META_PACKAGE_CATEGORY" title="entropy.db.skel.EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY" alt="" coords="337,353,1085,372"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_ALREADY_UPTODATE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE" alt="" coords="337,372,1085,391"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_NOT_AVAILABLE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE" alt="" coords="337,391,1085,409"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_GENERIC_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR" alt="" coords="337,409,1085,428"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_CHECKSUM_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_CHECKSUM_ERROR" alt="" coords="337,428,1085,447"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_PERMISSION_DENIED_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_PERMISSION_DENIED_ERROR" alt="" coords="337,447,1085,465"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_UPDATED_OK" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_UPDATED_OK" alt="" coords="337,465,1085,484"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#__init__" title="EntropyRepositoryBase constructor." alt="" coords="337,487,1085,505"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#closeDB" title="Close repository storage communication and open disk files." alt="" coords="337,505,1085,524"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#vacuum" title="Repository storage cleanup and optimization function." alt="" coords="337,524,1085,543"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#commitChanges" title="Commit actual changes and make them permanently stored." alt="" coords="337,543,1085,561"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#initializeRepository" title="This method (re)initializes the repository, dropping all its content." alt="" coords="337,561,1085,580"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#filterTreeUpdatesActions" title="This method should be considered internal and not suited for general &#160;audience." alt="" coords="337,580,1085,599"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#handlePackage" title="Update or add a package to repository automatically handling its scope and thus removal of previous versions if requested by the given metadata." alt="" coords="337,599,1085,617"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackagesToRemove" title="Return a list of packages that would be removed given name, category, slot &#160;and injection status." alt="" coords="337,617,1085,636"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#addPackage" title="Add package to this Entropy repository." alt="" coords="337,636,1085,655"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#removePackage" title="Remove package from this Entropy repository using it&#39;s identifier &#160;(package_id)." alt="" coords="337,655,1085,673"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#setInjected" title="Mark package as injected, injection is usually set for packages manually &#160;added to repository." alt="" coords="337,673,1085,692"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#setCreationDate" title="Update the creation date for package." alt="" coords="337,692,1085,711"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#setDigest" title="Set package file md5sum for package." alt="" coords="337,711,1085,729"/>
+<area shape="rect" id="node121" href="entropy.db.skel.EntropyRepositoryBase-class.html#atomMatch" title="Match given atom (or dependency) in repository and return its package &#160;identifer and execution status." alt="" coords="337,748,1085,767"/>
+<area shape="rect" id="node7" href="entropy.db.skel.EntropyRepositoryBase-class.html" title="EntropyRepository interface base class." alt="" coords="325,329,1096,773"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="821,135,1148,153"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="821,153,1148,172"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="821,172,1148,191"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" title="Remove EntropyRepository permanent plugin." alt="" coords="821,191,1148,209"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" title="Return EntropyRepositoryStore installed permanent plugins." alt="" coords="821,209,1148,228"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugins" title="Overloaded from EntropyPluginStore, adds support for permanent plugins." alt="" coords="821,228,1148,247"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="821,247,1148,265"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="821,265,1148,284"/>
+<area shape="rect" id="node123" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="821,284,1148,303"/>
+<area shape="rect" id="node4" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="809,102,1159,309"/>
+<area shape="rect" id="node124" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="900,39,1071,57"/>
+<area shape="rect" id="node124" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="900,57,1071,76"/>
+<area shape="rect" id="node9" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="888,6,1083,82"/>
 </map>
   <img src="uml_class_diagram_for_entropy__31.gif" alt='' usemap="#uml_class_diagram_for_entropy__31" ismap="ismap" class="graph-without-title" />
 </center>
@@ -3664,7 +3665,7 @@ audience.</td>
         <span class="summary-sig-arg">gpg</span>)</span><br />
       Update the content of this repository.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase.update">source&nbsp;code</a></span>
+            
             
           </td>
         </tr>
@@ -3682,7 +3683,7 @@ audience.</td>
       Returns the repository local revision in int format or None, if no 
       revision is available.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase.revision">source&nbsp;code</a></span>
+            
             
           </td>
         </tr>
@@ -3700,7 +3701,7 @@ audience.</td>
       Returns the repository remote revision in int format or None, if no 
       revision is available.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase.remote_revision">source&nbsp;code</a></span>
+            
             
           </td>
         </tr>
@@ -3759,6 +3760,13 @@ audience.</td>
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
         <a name="REPOSITORY_CHECKSUM_ERROR"></a><span class="summary-name">REPOSITORY_CHECKSUM_ERROR</span> = <code title="-4">-4</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="REPOSITORY_PERMISSION_DENIED_ERROR"></a><span class="summary-name">REPOSITORY_PERMISSION_DENIED_ERROR</span> = <code title="-5">-5</code>
     </td>
   </tr>
 <tr>
@@ -8859,7 +8867,7 @@ Return Compiler flags during building of package.
     <br /><em class="fname">Static Method</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase.update">source&nbsp;code</a></span>&nbsp;
+    >&nbsp;
     </td>
   </tr></table>
   
@@ -8870,7 +8878,10 @@ Return Compiler flags during building of package.
   EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR or 
   EntropyRepositoryBase.REPOSITORY_CHECKSUM_ERROR or 
   EntropyRepositoryBase.REPOSITORY_UPDATED_OK If your repository is not 
-  supposed to be remotely updated, just ignore this method.</p>
+  supposed to be remotely updated, just ignore this method. Otherwise, if 
+  you intend to implement this method, make sure that any unprivileged call
+  raises entropy.exceptions.PermissionDenied(). Only superuser should call 
+  this method.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -8895,7 +8906,7 @@ Return Compiler flags during building of package.
     <br /><em class="fname">Static Method</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase.revision">source&nbsp;code</a></span>&nbsp;
+    >&nbsp;
     </td>
   </tr></table>
   
@@ -8926,7 +8937,7 @@ Return Compiler flags during building of package.
     <br /><em class="fname">Static Method</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db.skel-pysrc.html#EntropyRepositoryBase.remote_revision">source&nbsp;code</a></span>&nbsp;
+    >&nbsp;
     </td>
   </tr></table>
   
@@ -9051,7 +9062,7 @@ Return Compiler flags during building of package.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  1 07:15:39 2010
+    Generated by Epydoc 3.0.1 on Thu Jul 15 10:57:01 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

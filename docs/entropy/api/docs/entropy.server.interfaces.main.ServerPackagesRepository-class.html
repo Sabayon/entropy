@@ -60,9 +60,45 @@
 <h1 class="epydoc">Class ServerPackagesRepository</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#ServerPackagesRepository">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__90" name="uml_class_diagram_for_entropy__90">
-<area shape="rect" id="node390" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html#revision" title="Returns the repository local revision in int format or None, if no revision is available." alt="" coords="355,991,555,1009"/>
-<area shape="rect" id="node390" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html#remote_revision" title="Returns the repository remote revision in int format or None, if no &#160;revision is available." alt="" coords="355,1009,555,1028"/>
-<area shape="rect" id="node1" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html" title="This class represents the installed packages repository and is a direct subclass of EntropyRepository." alt="" coords="343,958,567,1034"/>
+<area shape="rect" id="node390" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html#revision" title="Returns the repository local revision in int format or None, if no revision is available." alt="" coords="355,1065,555,1084"/>
+<area shape="rect" id="node390" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html#remote_revision" title="Returns the repository remote revision in int format or None, if no &#160;revision is available." alt="" coords="355,1084,555,1103"/>
+<area shape="rect" id="node1" href="entropy.server.interfaces.main.ServerPackagesRepository-class.html" title="This class represents the installed packages repository and is a direct subclass of EntropyRepository." alt="" coords="343,1033,567,1109"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository.Schema-class.html" title="entropy.db.EntropyRepository.Schema" alt="" coords="35,705,875,724"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__init__" title="EntropyRepository constructor." alt="" coords="35,727,875,745"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__repr__" title="repr(x)" alt="" coords="35,745,875,764"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__str__" title="str(x)" alt="" coords="35,764,875,783"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__unicode__" title="entropy.db.EntropyRepository.__unicode__" alt="" coords="35,783,875,801"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__hash__" title="hash(x)" alt="" coords="35,801,875,820"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__del__" title="entropy.db.EntropyRepository.__del__" alt="" coords="35,820,875,839"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#closeDB" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,839,875,857"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#vacuum" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,857,875,876"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#commitChanges" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,876,875,895"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#initializeDatabase" title="@deprecated" alt="" coords="35,895,875,913"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#initializeRepository" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,913,875,932"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#handlePackage" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,932,875,951"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#addPackage" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,951,875,969"/>
+<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#idpackageValidator" title="@deprecated" alt="" coords="35,988,875,1007"/>
+<area shape="rect" id="node2" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="23,681,887,1013"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#VIRTUAL_META_PACKAGE_CATEGORY" title="entropy.db.skel.EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY" alt="" coords="80,353,828,372"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_ALREADY_UPTODATE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE" alt="" coords="80,372,828,391"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_NOT_AVAILABLE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE" alt="" coords="80,391,828,409"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_GENERIC_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR" alt="" coords="80,409,828,428"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_CHECKSUM_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_CHECKSUM_ERROR" alt="" coords="80,428,828,447"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_PERMISSION_DENIED_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_PERMISSION_DENIED_ERROR" alt="" coords="80,447,828,465"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_UPDATED_OK" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_UPDATED_OK" alt="" coords="80,465,828,484"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#filterTreeUpdatesActions" title="This method should be considered internal and not suited for general &#160;audience." alt="" coords="80,487,828,505"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackagesToRemove" title="Return a list of packages that would be removed given name, category, slot &#160;and injection status." alt="" coords="80,505,828,524"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#getTriggerData" title="Get a set of basic package metadata for provided package identifier." alt="" coords="80,524,828,543"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackageData" title="Reconstruct all the package metadata belonging to provided package &#160;identifier into a dict object." alt="" coords="80,543,828,561"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#runTreeUpdatesActions" title="Method not suited for general purpose usage." alt="" coords="80,561,828,580"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#listAllFiles" title="List all file paths owned by packaged stored in repository." alt="" coords="80,580,828,599"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#update" title="Update the content of this repository." alt="" coords="80,599,828,617"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#maskFilter" title="Return whether given package identifier is available to user or not, &#160;reading package masking metadata stored in SystemSettings." alt="" coords="80,617,828,636"/>
+<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#atomMatch" title="Match given atom (or dependency) in repository and return its package &#160;identifer and execution status." alt="" coords="80,636,828,655"/>
+<area shape="rect" id="node3" href="entropy.db.skel.EntropyRepositoryBase-class.html" title="EntropyRepository interface base class." alt="" coords="68,329,839,661"/>
+<area shape="rect" id="node395" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="96,39,267,57"/>
+<area shape="rect" id="node395" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="96,57,267,76"/>
+<area shape="rect" id="node4" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="84,6,279,82"/>
 <area shape="rect" id="node394" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="17,135,344,153"/>
 <area shape="rect" id="node394" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="17,153,344,172"/>
 <area shape="rect" id="node394" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="17,172,344,191"/>
@@ -72,44 +108,12 @@
 <area shape="rect" id="node394" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="17,247,344,265"/>
 <area shape="rect" id="node394" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="17,265,344,284"/>
 <area shape="rect" id="node394" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="17,284,344,303"/>
-<area shape="rect" id="node2" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,102,355,309"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_ALREADY_UPTODATE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE" alt="" coords="264,353,644,372"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_NOT_AVAILABLE" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE" alt="" coords="264,372,644,391"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_GENERIC_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR" alt="" coords="264,391,644,409"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_CHECKSUM_ERROR" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_CHECKSUM_ERROR" alt="" coords="264,409,644,428"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_UPDATED_OK" title="entropy.db.skel.EntropyRepositoryBase.REPOSITORY_UPDATED_OK" alt="" coords="264,428,644,447"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackagesToRemove" title="Return a list of packages that would be removed given name, category, slot &#160;and injection status." alt="" coords="264,449,644,468"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#getTriggerData" title="Get a set of basic package metadata for provided package identifier." alt="" coords="264,468,644,487"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#update" title="Update the content of this repository." alt="" coords="264,487,644,505"/>
-<area shape="rect" id="node392" href="entropy.db.skel.EntropyRepositoryBase-class.html#maskFilter" title="Return whether given package identifier is available to user or not, &#160;reading package masking metadata stored in SystemSettings." alt="" coords="264,505,644,524"/>
-<area shape="rect" id="node5" href="entropy.db.skel.EntropyRepositoryBase-class.html" title="EntropyRepository interface base class." alt="" coords="252,329,655,530"/>
-<area shape="rect" id="node395" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="96,39,267,57"/>
-<area shape="rect" id="node395" href="entropy.core.EntropyPluginStore-class.html#has_plugin" title="Return whether EntropyPluginStore instance contains the given plugin id." alt="" coords="96,57,267,76"/>
-<area shape="rect" id="node3" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="84,6,279,82"/>
+<area shape="rect" id="node5" href="entropy.db.skel.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,102,355,309"/>
 <area shape="rect" id="node393" href="entropy.output.TextInterface-class.html#output" title="Text output print function." alt="" coords="396,181,1059,200"/>
 <area shape="rect" id="node393" href="entropy.output.TextInterface-class.html#ask_question" title="Questions asking function." alt="" coords="396,200,1059,219"/>
 <area shape="rect" id="node393" href="entropy.output.TextInterface-class.html#input_box" title="Generic input box (form) creator and data collector." alt="" coords="396,219,1059,237"/>
 <area shape="rect" id="node393" href="entropy.output.TextInterface-class.html#set_title" title="Set application title." alt="" coords="396,237,1059,256"/>
-<area shape="rect" id="node4" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="384,149,1069,262"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository.Schema-class.html" title="entropy.db.EntropyRepository.Schema" alt="" coords="35,575,875,593"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#SETTING_KEYS" title="entropy.db.EntropyRepository.SETTING_KEYS" alt="" coords="35,593,875,612"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#VIRTUAL_META_PACKAGE_CATEGORY" title="entropy.db.EntropyRepository.VIRTUAL_META_PACKAGE_CATEGORY" alt="" coords="35,612,875,631"/>
-<area shape="rect" id="node391" href="javascript:void(0);" title="entropy.db.EntropyRepository.threading" alt="" coords="35,631,875,649"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__init__" title="EntropyRepository constructor." alt="" coords="35,652,875,671"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__repr__" title="repr(x)" alt="" coords="35,671,875,689"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__str__" title="str(x)" alt="" coords="35,689,875,708"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__unicode__" title="entropy.db.EntropyRepository.__unicode__" alt="" coords="35,708,875,727"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__hash__" title="hash(x)" alt="" coords="35,727,875,745"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#__del__" title="entropy.db.EntropyRepository.__del__" alt="" coords="35,745,875,764"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#closeDB" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,764,875,783"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#vacuum" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,783,875,801"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#commitChanges" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,801,875,820"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#initializeDatabase" title="@deprecated" alt="" coords="35,820,875,839"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#initializeRepository" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,839,875,857"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#handlePackage" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,857,875,876"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#addPackage" title="Reimplemented from EntropyRepositoryBase." alt="" coords="35,876,875,895"/>
-<area shape="rect" id="node391" href="entropy.db.EntropyRepository-class.html#uniformBranch" title="Enforce given branch string to all currently available packages." alt="" coords="35,913,875,932"/>
-<area shape="rect" id="node6" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="23,550,887,938"/>
+<area shape="rect" id="node6" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="384,149,1069,262"/>
 </map>
   <img src="uml_class_diagram_for_entropy__90.gif" alt='' usemap="#uml_class_diagram_for_entropy__90" ismap="ismap" class="graph-without-title" />
 </center>
@@ -152,35 +156,14 @@
       <code><a href="entropy.db.EntropyRepository-class.html#__str__">__str__</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#__unicode__">__unicode__</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#acceptLicense">acceptLicense</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addCategory">addCategory</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addCompileFlags">addCompileFlags</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addDependency">addDependency</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addEclass">addEclass</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addKeyword">addKeyword</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addLicense">addLicense</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addMirrors">addMirrors</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addNeeded">addNeeded</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#addPackage">addPackage</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addProtect">addProtect</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#addRepositoryUpdatesActions">addRepositoryUpdatesActions</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addSource">addSource</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#addUseflag">addUseflag</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#alignDatabases">alignDatabases</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#areCompileFlagsAvailable">areCompileFlagsAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#areIdpackagesAvailable">areIdpackagesAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#arePackageIdsAvailable">arePackageIdsAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#atomMatch">atomMatch</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#bindSpmPackageUid">bindSpmPackageUid</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#bumpTreeUpdatesActions">bumpTreeUpdatesActions</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#checkDatabaseApi">checkDatabaseApi</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#checksum">checksum</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#clean">clean</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#cleanupChangelogs">cleanupChangelogs</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#cleanupDependencies">cleanupDependencies</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#cleanupEclasses">cleanupEclasses</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#cleanupNeeded">cleanupNeeded</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#cleanupSources">cleanupSources</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#cleanupUseflags">cleanupUseflags</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#clearCache">clearCache</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#clearPackageSets">clearPackageSets</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#clearTreeupdatesEntries">clearTreeupdatesEntries</a></code>,
@@ -190,41 +173,26 @@
       <code><a href="entropy.db.EntropyRepository-class.html#createAllIndexes">createAllIndexes</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#createCategoriesdescriptionTable">createCategoriesdescriptionTable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#createLicensedataTable">createLicensedataTable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#doCleanups">doCleanups</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#doDatabaseExport">doDatabaseExport</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#doDatabaseImport">doDatabaseImport</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#doTreeupdatesSpmCleanup">doTreeupdatesSpmCleanup</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#doesTreeupdatesActionExist">doesTreeupdatesActionExist</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#dropAllIndexes">dropAllIndexes</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#dropChangelog">dropChangelog</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#dropContent">dropContent</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#dropContentIndex">dropContentIndex</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#dropGpgSignatures">dropGpgSignatures</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#dropInstalledPackageFromStore">dropInstalledPackageFromStore</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#exportRepository">exportRepository</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#filterTreeUpdatesActions">filterTreeUpdatesActions</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#generateReverseDependenciesMetadata">generateReverseDependenciesMetadata</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getApi">getApi</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getBaseData">getBaseData</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getCategory">getCategory</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getDependency">getDependency</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getFakeSpmUid">getFakeSpmUid</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getIdcategory">getIdcategory</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getIdpackageFromDownload">getIdpackageFromDownload</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getIdpackages">getIdpackages</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getIdpackagesDifferences">getIdpackagesDifferences</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getIdpackagesFromFile">getIdpackagesFromFile</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getInstalledPackageRepository">getInstalledPackageRepository</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getNewNegativeSpmUid">getNewNegativeSpmUid</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getPackageData">getPackageData</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getPackageIdFromDownload">getPackageIdFromDownload</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getPackageIds">getPackageIds</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getScopeData">getScopeData</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getSetting">getSetting</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getStrictData">getStrictData</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getStrictScopeData">getStrictScopeData</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getSystemPackages">getSystemPackages</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#getTriggerInfo">getTriggerInfo</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#getVersioningData">getVersioningData</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#handlePackage">handlePackage</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#idpackageValidator">idpackageValidator</a></code>,
@@ -233,60 +201,30 @@
       <code><a href="entropy.db.EntropyRepository-class.html#initializeRepository">initializeRepository</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertAutomergefiles">insertAutomergefiles</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertBranchMigration">insertBranchMigration</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertChangelog">insertChangelog</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertConfigProtect">insertConfigProtect</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertConflicts">insertConflicts</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertContent">insertContent</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertDependencies">insertDependencies</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertEclasses">insertEclasses</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertKeywords">insertKeywords</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertLicenses">insertLicenses</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertManualDependencies">insertManualDependencies</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertMessages">insertMessages</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertMirrors">insertMirrors</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertNeeded">insertNeeded</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertOnDiskSize">insertOnDiskSize</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertPackageSets">insertPackageSets</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertProvide">insertProvide</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertSignatures">insertSignatures</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertSources">insertSources</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertSpmUid">insertSpmUid</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#insertTreeUpdatesActions">insertTreeUpdatesActions</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertTrigger">insertTrigger</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#insertUseflags">insertUseflags</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isAtomAvailable">isAtomAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isBranchMigrationAvailable">isBranchMigrationAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isCategoryAvailable">isCategoryAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isDependencyAvailable">isDependencyAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isEclassAvailable">isEclassAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isFileAvailable">isFileAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isIdpackageAvailable">isIdpackageAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isInjected">isInjected</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isKeywordAvailable">isKeywordAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isLicenseAccepted">isLicenseAccepted</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isLicenseAvailable">isLicenseAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isLicenseDataKeyAvailable">isLicenseDataKeyAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isLicensedataKeyAvailable">isLicensedataKeyAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isNeededAvailable">isNeededAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isPackageIdAvailable">isPackageIdAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isPackageScopeAvailable">isPackageScopeAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isProtectAvailable">isProtectAvailable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isSourceAvailable">isSourceAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isSpmUidAvailable">isSpmUidAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isSpmUidTrashed">isSpmUidTrashed</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#isSystemPackage">isSystemPackage</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#isUseflagAvailable">isUseflagAvailable</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllCategories">listAllCategories</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#listAllDependencies">listAllDependencies</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllDownloads">listAllDownloads</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#listAllFiles">listAllFiles</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllIdpackages">listAllIdpackages</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#listAllIndexes">listAllIndexes</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#listAllInjectedPackages">listAllInjectedPackages</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllPackageIds">listAllPackageIds</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllPackages">listAllPackages</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllSpmUids">listAllSpmUids</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#listAllTables">listAllTables</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listAllTreeUpdatesActions">listAllTreeUpdatesActions</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listConfigProtectEntries">listConfigProtectEntries</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#listIdPackagesInIdcategory">listIdPackagesInIdcategory</a></code>,
@@ -294,10 +232,7 @@
       <code><a href="entropy.db.EntropyRepository-class.html#moveSpmUidsToBranch">moveSpmUidsToBranch</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#regenerateSpmUidMapping">regenerateSpmUidMapping</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#regenerateSpmUidTable">regenerateSpmUidTable</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#removeContent">removeContent</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#removeDependencies">removeDependencies</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#removeLicensedata">removeLicensedata</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#removeMirrorEntries">removeMirrorEntries</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#removePackage">removePackage</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#removeTreeUpdatesActions">removeTreeUpdatesActions</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#resetTreeupdatesDigests">resetTreeupdatesDigests</a></code>,
@@ -324,7 +259,6 @@
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveDownloadURL">retrieveDownloadURL</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveEclasses">retrieveEclasses</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveHomepage">retrieveHomepage</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieveIdDependencies">retrieveIdDependencies</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveKeySlot">retrieveKeySlot</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveKeySlotAggregated">retrieveKeySlotAggregated</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveKeySlotTag">retrieveKeySlotTag</a></code>,
@@ -334,12 +268,9 @@
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveLicenseData">retrieveLicenseData</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveLicenseDataKeys">retrieveLicenseDataKeys</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveLicenseText">retrieveLicenseText</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieveLicensedata">retrieveLicensedata</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieveLicensedataKeys">retrieveLicensedataKeys</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveManualDependencies">retrieveManualDependencies</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveMessages">retrieveMessages</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveMirrorData">retrieveMirrorData</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieveMirrorInfo">retrieveMirrorInfo</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveName">retrieveName</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveNeeded">retrieveNeeded</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveNeededRaw">retrieveNeededRaw</a></code>,
@@ -363,7 +294,6 @@
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveSpmPhases">retrieveSpmPhases</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveSpmRepository">retrieveSpmRepository</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveSpmUid">retrieveSpmUid</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieveSystemPackages">retrieveSystemPackages</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveTag">retrieveTag</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveTreeUpdatesActions">retrieveTreeUpdatesActions</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveTrigger">retrieveTrigger</a></code>,
@@ -371,12 +301,7 @@
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveUnusedPackageIds">retrieveUnusedPackageIds</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveUseflags">retrieveUseflags</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveVersion">retrieveVersion</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieveVersionTag">retrieveVersionTag</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#retrieveXpakMetadata">retrieveXpakMetadata</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#retrieve_packages_to_remove">retrieve_packages_to_remove</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#runTreeUpdatesActions">runTreeUpdatesActions</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#runTreeUpdatesMoveAction">runTreeUpdatesMoveAction</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#runTreeUpdatesSlotmoveAction">runTreeUpdatesSlotmoveAction</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchBelongs">searchBelongs</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchCategory">searchCategory</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchDependency">searchDependency</a></code>,
@@ -391,7 +316,6 @@
       <code><a href="entropy.db.EntropyRepository-class.html#searchNeeded">searchNeeded</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchPackageIdFromDependencyId">searchPackageIdFromDependencyId</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchPackages">searchPackages</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#searchProvide">searchProvide</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchProvidedMime">searchProvidedMime</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchProvidedVirtualPackage">searchProvidedVirtualPackage</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#searchRevisionedPackages">searchRevisionedPackages</a></code>,
@@ -401,11 +325,9 @@
       <code><a href="entropy.db.EntropyRepository-class.html#searchTaggedPackages">searchTaggedPackages</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setAtom">setAtom</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setBranchMigrationPostUpgradeMd5sum">setBranchMigrationPostUpgradeMd5sum</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#setCacheSize">setCacheSize</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setCategory">setCategory</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setCategoryDescription">setCategoryDescription</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setCreationDate">setCreationDate</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#setDefaultCacheSize">setDefaultCacheSize</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setDependency">setDependency</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setDigest">setDigest</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setDownloadURL">setDownloadURL</a></code>,
@@ -416,21 +338,24 @@
       <code><a href="entropy.db.EntropyRepository-class.html#setSignatures">setSignatures</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setSlot">setSlot</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setSpmUid">setSpmUid</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#setSystemPackage">setSystemPackage</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#setTrashedUid">setTrashedUid</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#storeInstalledPackage">storeInstalledPackage</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#storeSpmMetadata">storeSpmMetadata</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#storeXpakMetadata">storeXpakMetadata</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#switchBranch">switchBranch</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#taintReverseDependenciesMetadata">taintReverseDependenciesMetadata</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#uniformBranch">uniformBranch</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#vacuum">vacuum</a></code>,
       <code><a href="entropy.db.EntropyRepository-class.html#validateDatabase">validateDatabase</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html">db.skel.EntropyRepositoryBase</a></code></b>:
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#atomMatch">atomMatch</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#filterTreeUpdatesActions">filterTreeUpdatesActions</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackageData">getPackageData</a></code>,
       <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#getPackagesToRemove">getPackagesToRemove</a></code>,
       <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#getTriggerData">getTriggerData</a></code>,
-      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#maskFilter">maskFilter</a></code>
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#listAllFiles">listAllFiles</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#maskFilter">maskFilter</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#runTreeUpdatesActions">runTreeUpdatesActions</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
       <code><a href="entropy.output.TextInterface-class.html#ask_question">ask_question</a></code>,
@@ -531,16 +456,14 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.EntropyRepository-class.html">db.EntropyRepository</a></code></b>:
-      <code><a href="entropy.db.EntropyRepository-class.html#SETTING_KEYS">SETTING_KEYS</a></code>,
-      <code><a href="entropy.db.EntropyRepository-class.html#VIRTUAL_META_PACKAGE_CATEGORY">VIRTUAL_META_PACKAGE_CATEGORY</a></code>
-      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html">db.skel.EntropyRepositoryBase</a></code></b>:
       <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_ALREADY_UPTODATE">REPOSITORY_ALREADY_UPTODATE</a></code>,
       <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_CHECKSUM_ERROR">REPOSITORY_CHECKSUM_ERROR</a></code>,
       <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_GENERIC_ERROR">REPOSITORY_GENERIC_ERROR</a></code>,
       <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_NOT_AVAILABLE">REPOSITORY_NOT_AVAILABLE</a></code>,
-      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_UPDATED_OK">REPOSITORY_UPDATED_OK</a></code>
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_PERMISSION_DENIED_ERROR">REPOSITORY_PERMISSION_DENIED_ERROR</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#REPOSITORY_UPDATED_OK">REPOSITORY_UPDATED_OK</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryBase-class.html#VIRTUAL_META_PACKAGE_CATEGORY">VIRTUAL_META_PACKAGE_CATEGORY</a></code>
       </p>
     </td>
   </tr>
@@ -672,7 +595,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul  1 07:15:43 2010
+    Generated by Epydoc 3.0.1 on Thu Jul 15 10:57:05 2010
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
