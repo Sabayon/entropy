@@ -48,9 +48,8 @@ def repositories(options):
     try:
         if options[0] == "update":
             # check if I am root
-            er_txt = darkred(_("You must be either root or in this group:")) + \
-                " " +  etpConst['sysgroup']
-            if not entropy.tools.is_user_in_entropy_group():
+            er_txt = darkred(_("You must be root"))
+            if not entropy.tools.is_root():
                 print_error(er_txt)
                 return 1
 

@@ -16,7 +16,7 @@ import subprocess
 
 from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write
-from entropy.exceptions import RepositoryError
+from entropy.exceptions import RepositoryError, PermissionDenied
 from entropy.output import blue, darkred, red, darkgreen, bold
 
 from entropy.db.exceptions import Error
@@ -67,8 +67,12 @@ class Repository:
         for repo in self.repo_ids:
 
             # handle
-            status = self._entropy.get_repository(repo).update(self._entropy,
-                repo, self.force, self._gpg_feature)
+            try:
+                status = self._entropy.get_repository(repo).update(self._entropy,
+                    repo, self.force, self._gpg_feature)
+            except PermissionDenied:
+                status = EntropyRepositoryBase.REPOSITORY_PERMISSION_DENIED_ERROR
+
             if status == EntropyRepositoryBase.REPOSITORY_ALREADY_UPTODATE:
                 self.already_updated = True
             elif status == EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE:

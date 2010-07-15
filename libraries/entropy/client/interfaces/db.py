@@ -25,7 +25,7 @@ from entropy.dump import dumpobj
 from entropy.cache import EntropyCacher
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
-    ConnectionError
+    ConnectionError, PermissionDenied
 from entropy.security import Repository as RepositorySecurity
 from entropy.misc import TimeScheduled
 from entropy.i18n import _
@@ -695,7 +695,7 @@ class AvailablePackagesRepositoryUpdater(object):
         if self._entropy.installed_repository() is not None:
             try: # client db can be absent
                 self._entropy.installed_repository().createAllIndexes()
-            except (OperationalError, IntegrityError,):
+            except (DatabaseError, OperationalError, IntegrityError,):
                 pass
         const_set_nice_level(old_prio)
 
@@ -838,7 +838,7 @@ class AvailablePackagesRepositoryUpdater(object):
         rc = fetcher.download()
         if rc in ("-1", "-2", "-3", "-4"):
             return False
-        const_setup_file(filepath, etpConst['entropygid'], 0o664)
+        const_setup_file(filepath, etpConst['entropygid'], 0o644)
         return True
 
     def _is_repository_unlocked(self):
@@ -1015,6 +1015,8 @@ class AvailablePackagesRepositoryUpdater(object):
                         except (shutil.Error, IOError, OSError,):
                             continue
                         continue
+
+                    const_setup_file(to_mypath, etpConst['entropygid'], 0o644)
 
             finally:
                 shutil.rmtree(tmpdir, True)
@@ -1758,6 +1760,11 @@ class AvailablePackagesRepositoryUpdater(object):
 
     def update(self):
 
+        # disallow unprivileged update
+        if not entropy.tools.is_root():
+            raise PermissionDenied(
+                "cannot update repository as unprivileged user")
+
         self.__show_repository_information()
 
         # this calls writes self._last_rev which is used to write back
@@ -1949,8 +1956,13 @@ class AvailablePackagesRepositoryUpdater(object):
                     continue
             return EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR
 
-        if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
-            const_setup_file(dbfile, etpConst['entropygid'], 0o664)
+        # make sure that all the repository files are stored with proper
+        # permissions to avoid possible XSS and trust boundary problems.
+        downloaded_files.append(dbfile)
+        for downloaded_file in sorted(set(downloaded_files)):
+            if os.path.isfile(downloaded_file) and \
+                os.access(downloaded_file, os.W_OK | os.R_OK):
+                const_setup_file(downloaded_file, etpConst['entropygid'], 0o644)
 
         # remove garbage left around
         for path in files_to_remove:
@@ -1992,6 +2004,11 @@ class AvailablePackagesRepository(EntropyRepository):
     subclass of EntropyRepository. It implements the update() method in order
     to make possible to update the repository.
     """
+    def __init__(self, *args, **kwargs):
+        EntropyRepository.__init__(self, *args, **kwargs)
+        # ensure proper repository file permissions
+        if entropy.tools.is_root() and os.path.isfile(self._db_path):
+            const_setup_file(self._db_path, etpConst['entropygid'], 0o644)
 
     @staticmethod
     def update(entropy_client, repository_id, force, gpg):

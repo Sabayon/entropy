@@ -3512,6 +3512,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
     REPOSITORY_NOT_AVAILABLE = -2
     REPOSITORY_GENERIC_ERROR = -3
     REPOSITORY_CHECKSUM_ERROR = -4
+    REPOSITORY_PERMISSION_DENIED_ERROR = -5
     REPOSITORY_UPDATED_OK = 0
 
     @staticmethod
@@ -3527,6 +3528,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         EntropyRepositoryBase.REPOSITORY_UPDATED_OK
         If your repository is not supposed to be remotely updated, just
         ignore this method.
+        Otherwise, if you intend to implement this method, make sure that
+        any unprivileged call raises entropy.exceptions.PermissionDenied().
+        Only superuser should call this method.
 
         @param entropy_client: Entropy Client based object
         @type entropy_client: entropy.client.interfaces.Client
