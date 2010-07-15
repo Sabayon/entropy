@@ -583,7 +583,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         total = len(ldpaths)
         count = 0
         sys_root_len = len(etpConst['systemroot'])
-        for ldpath in ldpaths:
+        for ldpath in sorted(ldpaths):
 
             if hasattr(task_bombing_func, '__call__'):
                 task_bombing_func()
