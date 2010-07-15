@@ -2621,7 +2621,7 @@ def resolve_dynamic_library(library, requiring_executable):
     @return: resolved library path
     @rtype: string
     """
-    def do_resolve(mypaths):
+    def do_resolve(mypaths, elf_class):
         found_path = None
         for mypath in mypaths:
             mypath = os.path.join(etpConst['systemroot']+mypath, library)
@@ -2631,16 +2631,19 @@ def resolve_dynamic_library(library, requiring_executable):
                 continue
             if not is_elf_file(mypath):
                 continue
+            elif read_elf_class(mypath) != elf_class:
+                continue
             found_path = mypath
             break
         return found_path
 
+    elf_class = read_elf_class(requiring_executable)
     mypaths = collect_linker_paths()
-    found_path = do_resolve(mypaths)
+    found_path = do_resolve(mypaths, elf_class)
 
     if not found_path:
         mypaths = read_elf_linker_paths(requiring_executable)
-        found_path = do_resolve(mypaths)
+        found_path = do_resolve(mypaths, elf_class)
 
     return found_path
 
