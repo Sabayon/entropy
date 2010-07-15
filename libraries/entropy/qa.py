@@ -558,9 +558,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         ldpaths.update(entropy.tools.collect_paths())
 
         # some crappy packages put shit here too
-        ldpaths.add("/usr/share")
-        # always force /usr/libexec too
-        ldpaths.add("/usr/libexec")
+        ldpaths.update(self._settings['extra_ldpaths'])
 
         # remove duplicated dirs (due to symlinks) to speed up scanning
         for real_dir in list(reverse_symlink_map.keys()):

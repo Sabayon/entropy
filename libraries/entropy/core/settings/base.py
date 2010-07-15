@@ -181,6 +181,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'system_mask': etpConst['confpackagesdir']+"/system.mask",
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
+            'extra_ldpaths': etpConst['confdir']+"/fsldpaths.conf",
             'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
             'broken_syms': etpConst['confdir']+"/brokensyms.conf",
             'broken_libs_mask': etpConst['confdir']+"/brokenlibsmask.conf",
@@ -193,8 +194,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.__setting_files_order.extend([
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
             'license_accept', 'system_mask', 'system_package_sets',
-            'system_dirs', 'system_dirs_mask', 'socket_service', 'system',
-            'system_rev_symlinks', 'hw_hash', 'broken_syms', 'broken_libs_mask'
+            'system_dirs', 'system_dirs_mask', 'extra_ldpaths',
+            'socket_service', 'system', 'system_rev_symlinks', 'hw_hash',
+            'broken_syms', 'broken_libs_mask'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
@@ -685,6 +687,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
             if set_elements:
                 data[set_name] = set_elements.copy()
         return data
+
+    def _extra_ldpaths_parser(self):
+        """
+        Parser returning directories considered part of the base system.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        return self.__generic_parser(self.__setting_files['extra_ldpaths'])
 
     def _system_dirs_parser(self):
         """
