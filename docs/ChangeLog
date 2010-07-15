@@ -1,3 +1,27 @@
+commit bcd075d4e97424ccb15e52708bf41ee3ebdf0e81
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 11:21:53 2010 +0200
+
+    [entropy.client,entropy.const] improve entropy directory permissions handling
+
+commit 381df0552b056ca66236ef34d9c39f69bdaa6b79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 10:57:49 2010 +0200
+
+    [docs] update API documentation
+
+commit 07055331b52644bba0df67faa0f2f52bd48f3ed4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 10:56:01 2010 +0200
+
+    [entropy.db.skel,entropy.client.interfaces.db] disallow unprivileged repository update
+
+commit 93450fcf4d3fd00e9d56f93e381f9a16958e3f52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 00:05:02 2010 +0200
+
+    Tagging Entropy version 0.99.47.7
+
 commit 7900c00bd5b624198da0388038a62d42e61b0d80
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 15 00:03:53 2010 +0200
