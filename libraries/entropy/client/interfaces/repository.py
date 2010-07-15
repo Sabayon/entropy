@@ -80,6 +80,11 @@ class Repository:
             elif status == EntropyRepositoryBase.REPOSITORY_UPDATED_OK:
                 self.updated = True
                 self.updated_repos.add(repo)
+            elif status == EntropyRepositoryBase.REPOSITORY_PERMISSION_DENIED_ERROR:
+                self.not_available += 1
+                self.sync_errors = True
+            else: # fallback
+                self.not_available += 1
 
         # keep them closed
         self._entropy.close_repositories()

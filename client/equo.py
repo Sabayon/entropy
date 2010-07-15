@@ -19,6 +19,7 @@ sys.path.insert(0, '/usr/lib/entropy/client')
 sys.path.insert(0, '../libraries')
 sys.path.insert(0, '../server')
 sys.path.insert(0, '../client')
+
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, TransceiverError, PermissionDenied, FileNotFound, \
     SPMError, ConnectionError

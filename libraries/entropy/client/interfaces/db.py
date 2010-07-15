@@ -369,10 +369,10 @@ class AvailablePackagesRepositoryUpdater(object):
 
         # create dir if it doesn't exist
         if not os.path.isdir(repo_data['dbpath']):
-            os.makedirs(repo_data['dbpath'], 0o775)
+            os.makedirs(repo_data['dbpath'], 0o755)
 
         const_setup_perms(etpConst['etpdatabaseclientdir'],
-            etpConst['entropygid'])
+            etpConst['entropygid'], f_perms = 0o644)
 
     def __validate_compression_method(self):
 
@@ -824,8 +824,9 @@ class AvailablePackagesRepositoryUpdater(object):
         if not os.path.isdir(filepath_dir) and not \
             os.path.lexists(filepath_dir):
 
-            os.makedirs(filepath_dir, 0o775)
-            const_setup_perms(filepath_dir, etpConst['entropygid'])
+            os.makedirs(filepath_dir, 0o755)
+            const_setup_perms(filepath_dir, etpConst['entropygid'],
+                f_perms = 0o644)
 
         fetcher = self._entropy.urlFetcher(
             url,

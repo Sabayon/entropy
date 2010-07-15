@@ -972,12 +972,13 @@ def const_create_working_dirs():
         etpConst['entropygid'] = gid
         if not os.path.isdir(etpConst['entropyworkdir']):
             try:
-                os.makedirs(etpConst['entropyworkdir'])
+                os.makedirs(etpConst['entropyworkdir'], 0o775)
             except OSError:
                 pass
         w_gid = os.stat(etpConst['entropyworkdir'])[stat.ST_GID]
         if w_gid != gid:
-            const_setup_perms(etpConst['entropyworkdir'], gid)
+            const_setup_perms(etpConst['entropyworkdir'], gid,
+                recursion = False)
 
         if not os.path.isdir(etpConst['entropyunpackdir']):
             try:
@@ -994,7 +995,8 @@ def const_create_working_dirs():
         # always setup /var/lib/entropy/client permissions
         if not const_islive():
             # aufs/unionfs will start to leak otherwise
-            const_setup_perms(etpConst['etpdatabaseclientdir'], gid)
+            const_setup_perms(etpConst['etpdatabaseclientdir'], gid,
+                f_perms = 0o644)
 
 def const_configure_lock_paths():
     """
