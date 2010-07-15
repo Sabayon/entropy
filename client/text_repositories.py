@@ -16,6 +16,8 @@
 #
 import os
 import sys
+import time
+
 from entropy.exceptions import TimeoutError
 from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
@@ -48,13 +50,16 @@ def repositories(options):
     try:
         if options[0] == "update":
             # check if I am root
-            er_txt = darkred(_("You must be root"))
-            if not entropy.tools.is_root():
+            er_txt = darkred(_("You must be either root or in this group:")) + \
+                " " +  etpConst['sysgroup']
+            if not entropy.tools.is_user_in_entropy_group():
                 print_error(er_txt)
                 return 1
-
-            rc = _do_sync(entropy_client, repo_identifiers = repo_names,
-                force = e_req_force_update)
+            if not entropy.tools.is_root():
+                rc = _do_dbus_sync()
+            else:
+                rc = _do_sync(entropy_client, repo_identifiers = repo_names,
+                    force = e_req_force_update)
 
         elif options[0] == "status":
             for repo in SystemSettings['repositories']['order']:
@@ -250,6 +255,60 @@ def _show_repository_info(entropy_client, reponame):
         darkgreen(str(revision)),) )
 
     return 0
+
+def _do_dbus_sync():
+
+    info_txt = \
+        _("Sending the update request to Entropy Services")
+    info_txt2 = _("Repositories will be updated in background")
+    print_info(purple(info_txt) + ".")
+    print_info(teal(info_txt2) + ".")
+
+    def bail_out(err):
+        print_error(darkred(" @@ ")+brown("%s" % (
+            _("sys-apps/entropy-client-services not installed. Update not allowed."),) ))
+        if err:
+            print_error(str(err))
+
+    try:
+        import glib
+        import gobject
+        import dbus
+        from dbus.mainloop.glib import DBusGMainLoop
+    except ImportError as err:
+        bail_out(err)
+        return 1
+
+    dbus_loop = DBusGMainLoop(set_as_default = True)
+    loop = glib.MainLoop()
+    gobject.threads_init()
+
+    _entropy_dbus_object = None
+    tries = 5
+    while tries:
+        _system_bus = dbus.SystemBus(mainloop = dbus_loop)
+        try:
+            _entropy_dbus_object = _system_bus.get_object(
+                "org.entropy.Client", "/notifier"
+            )
+            break
+        except dbus.exceptions.DBusException as e:
+            # service not avail
+            tries -= 1
+            time.sleep(2)
+            continue
+
+    if _entropy_dbus_object is not None:
+        iface = dbus.Interface(_entropy_dbus_object,
+            dbus_interface = "org.entropy.Client")
+        iface.trigger_check()
+        info_txt = _("Have a nice day")
+        print_info(brown(info_txt) + ".")
+        return 0
+
+    bail_out(None)
+    return 1
+
 
 def _do_sync(entropy_client, repo_identifiers = None, force = False):
 
