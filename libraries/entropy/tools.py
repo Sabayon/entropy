@@ -1344,7 +1344,8 @@ def md5string(string):
     m.update(string)
     return m.hexdigest()
 
-def generic_file_content_parser(filepath, comment_tag = "#"):
+def generic_file_content_parser(filepath, comment_tag = "#",
+    filter_comments = True):
     """
     Generic unix-style file content parser. Return a list of parsed lines with
     filtered comments.
@@ -1353,7 +1354,10 @@ def generic_file_content_parser(filepath, comment_tag = "#"):
     @type filepath: string
     @keyword comment_tag: default comment tag (column where comments starts) if
         line already contains valid data (doesn't start with comment_tag)
-    @type: string
+    @type comment_tag: string
+    @keyword filter_comments: filter out comments, True by default.
+        Are considered comments the lines starting with "#"
+    @type filter_comments: bool
     @return: list representing file content
     @rtype: list
     """
@@ -1364,7 +1368,9 @@ def generic_file_content_parser(filepath, comment_tag = "#"):
         gen_f.close()
         # filter comments and white lines
         content = [x.strip().rsplit(comment_tag, 1)[0].strip() for x \
-            in content if not x.startswith("#") and x.strip()]
+            in content if x.strip()]
+        if filter_comments:
+            content = [x for x in content if not x.startswith("#")]
         for line in content:
             if line in data:
                 continue
