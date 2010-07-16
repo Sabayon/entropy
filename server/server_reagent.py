@@ -319,7 +319,7 @@ def repositories(options):
 
     elif cmd == "package-mask":
 
-        if len(myopts) < 3:
+        if len(myopts) < 2:
             print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
             return 1
         repo = myopts[0]
@@ -347,7 +347,7 @@ def repositories(options):
 
     elif cmd == "package-unmask":
 
-        if len(myopts) < 3:
+        if len(myopts) < 2:
             print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
             return 1
         repo = myopts[0]
