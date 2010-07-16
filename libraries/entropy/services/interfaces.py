@@ -1285,7 +1285,8 @@ class SocketHost:
                 try:
                     os.makedirs(stream_dir)
                     if etpConst['entropygid'] != None:
-                        const_setup_perms(stream_dir, etpConst['entropygid'])
+                        const_setup_perms(stream_dir, etpConst['entropygid'],
+                            recursion = False)
                 except OSError:
                     return False, 'cannot initialize stream directory'
 

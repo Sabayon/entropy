@@ -134,7 +134,7 @@ class Package:
             filename = os.path.basename(url)
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
-                os.makedirs(dest_dir, 0o755)
+                os.makedirs(dest_dir, 0o775)
                 const_setup_perms(dest_dir, etpConst['entropygid'])
 
             url_path_list.append((url, dest_path,))
@@ -3392,8 +3392,9 @@ class Package:
                     elif os.path.isdir(unpack_dir):
                         shutil.rmtree(unpack_dir, True)
                 if not os.path.lexists(unpack_dir):
-                    os.makedirs(unpack_dir, 0o775)
-                const_setup_perms(unpack_dir, etpConst['entropygid'])
+                    os.makedirs(unpack_dir, 0o755)
+                const_setup_perms(unpack_dir, etpConst['entropygid'],
+                    recursion = False, uid = etpConst['uid'])
             return 0
 
         # downloading binary package

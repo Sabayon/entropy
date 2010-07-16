@@ -1157,7 +1157,7 @@ class MiscMixin:
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir, 0o775)
-        const_setup_perms(lockdir, etpConst['entropygid'])
+        const_setup_perms(lockdir, etpConst['entropygid'], recursion = False)
         mypid = os.getpid()
 
         pid_f = open(pidfile, "w")

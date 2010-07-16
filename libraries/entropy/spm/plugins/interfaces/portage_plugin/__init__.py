@@ -1771,8 +1771,9 @@ class PortagePlugin(SpmPlugin):
             portage_tmpdir = tempfile.mkdtemp()
             portage_tmpdir_created = True
         elif not os.path.isdir(portage_tmpdir):
-            os.makedirs(portage_tmpdir, 0o774)
-            const_setup_perms(portage_tmpdir, etpConst['entropygid'])
+            os.makedirs(portage_tmpdir, 0o744)
+            const_setup_perms(portage_tmpdir, etpConst['entropygid'],
+                recursion = False)
 
         if portage_tmpdir:
             mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
@@ -1782,8 +1783,9 @@ class PortagePlugin(SpmPlugin):
         portdir = os.path.join(portage_tmpdir, "portdir")
         portdir_lic = os.path.join(portdir, "licenses")
         if not os.path.isdir(portdir):
-            os.mkdir(portdir, 0o774)
-            const_setup_perms(portdir, etpConst['entropygid'])
+            os.mkdir(portdir, 0o744)
+            const_setup_perms(portdir, etpConst['entropygid'],
+                recursion = False)
         # create licenses subdir
         if not os.path.isdir(portdir_lic):
             os.mkdir(portdir_lic)

@@ -265,14 +265,15 @@ class Server(RemoteDatabase):
     def setup_store_path(self, path):
         path = os.path.realpath(path)
         if not os.path.isabs(path):
-            raise PermissionDenied('PermissionDenied: %s' % (_("not a valid directory path"),))
+            raise PermissionDenied("not a valid directory path")
         if not os.path.isdir(path):
             try:
                 os.makedirs(path)
             except OSError as e:
                 raise PermissionDenied('PermissionDenied: %s' % (e,))
             if etpConst['entropygid'] != None:
-                const_setup_perms(path, etpConst['entropygid'])
+                const_setup_perms(path, etpConst['entropygid'],
+                    recursion = False)
         self.STORE_PATH = path
 
     def initialize_tables(self):
@@ -1487,7 +1488,8 @@ class Server(RemoteDatabase):
             except OSError as e:
                 raise PermissionDenied('PermissionDenied: %s' % (e,))
             if etpConst['entropygid'] != None:
-                const_setup_perms(dest_dir, etpConst['entropygid'])
+                const_setup_perms(dest_dir, etpConst['entropygid'],
+                    recursion = False)
 
         orig_dest_path = dest_path
         dcount = 0

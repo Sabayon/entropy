@@ -155,7 +155,8 @@ class Sets:
                 if os.path.lexists(sets_dir):
                     os.remove(sets_dir)
                 os.makedirs(sets_dir, 0o775)
-                const_setup_perms(sets_dir, etpConst['entropygid'])
+                const_setup_perms(sets_dir, etpConst['entropygid'],
+                    recursion = False)
 
         try:
             set_name = str(set_name)

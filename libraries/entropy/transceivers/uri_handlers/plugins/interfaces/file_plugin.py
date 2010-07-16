@@ -236,7 +236,7 @@ class EntropyFileUriHandler(EntropyUriHandler):
         remote_str = self._setup_remote_path(remote_path)
         if not os.path.isdir(remote_str):
             os.makedirs(remote_str, 0o755)
-        const_setup_perms(remote_str, etpConst['entropygid'])
+        const_setup_perms(remote_str, etpConst['entropygid'], recursion = False)
         return True
 
     def keep_alive(self):
