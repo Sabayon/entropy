@@ -334,7 +334,7 @@ def repositories(options):
 
         print_info(brown(" @@ ") + teal(_("Masking")) + " " + \
             ', '.join(packages) + " " + _("in") + " " + bold(str(repo)) + \
-            red(" %s..." % (_("repository"),) ))
+            " %s..." % (purple(_("repository")),) )
 
         # taint repository
         w_dbconn = Entropy.open_server_repository(repo = repo,
@@ -362,7 +362,7 @@ def repositories(options):
 
         print_info(brown(" @@ ") + teal(_("Unmasking")) + " " + \
             ', '.join(packages) + " " + _("in") + " " + bold(str(repo)) + \
-            red(" %s..." % (_("repository"),) ))
+            " %s..." % (purple(_("repository")),) )
 
         # taint repository
         w_dbconn = Entropy.open_server_repository(repo = repo,
