@@ -332,8 +332,8 @@ def repositories(options):
             print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
             return 3
 
-        print_info(brown(" @@ ") + red(_("Masking")) + ', '.join(packages) + \
-            " " + _("in") + " " + bold(str(repoid)) + \
+        print_info(brown(" @@ ") + teal(_("Masking")) + " " + \
+            ', '.join(packages) + " " + _("in") + " " + bold(str(repo)) + \
             red(" %s..." % (_("repository"),) ))
 
         # taint repository
@@ -360,8 +360,8 @@ def repositories(options):
             print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
             return 3
 
-        print_info(brown(" @@ ") + red(_("Unmasking")) + ', '.join(packages) + \
-            + " " + _("in") + " " + bold(str(repoid)) + \
+        print_info(brown(" @@ ") + teal(_("Unmasking")) + " " + \
+            ', '.join(packages) + " " + _("in") + " " + bold(str(repo)) + \
             red(" %s..." % (_("repository"),) ))
 
         # taint repository
