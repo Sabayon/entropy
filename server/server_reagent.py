@@ -333,7 +333,7 @@ def repositories(options):
             return 3
 
         print_info(brown(" @@ ") + red(_("Masking")) + ', '.join(packages) + \
-            + " " + _("in") + " " + bold(str(repoid)) + \
+            " " + _("in") + " " + bold(str(repoid)) + \
             red(" %s..." % (_("repository"),) ))
 
         # taint repository
