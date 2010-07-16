@@ -94,7 +94,8 @@ class InstalledPackagesRepository(EntropyRepository):
         EntropyRepository.__init__(self, *args, **kwargs)
         # ensure proper repository file permissions
         if entropy.tools.is_root() and os.path.isfile(self._db_path):
-            const_setup_file(self._db_path, etpConst['entropygid'], 0o644)
+            const_setup_file(self._db_path, etpConst['entropygid'], 0o644,
+                uid = etpConst['uid'])
 
 
 class AvailablePackagesRepositoryUpdater(object):
@@ -613,7 +614,8 @@ class AvailablePackagesRepositoryUpdater(object):
             raise AttributeError(mytxt)
 
         if rc == 0:
-            const_setup_file(path, etpConst['entropygid'], 0o664)
+            const_setup_file(path, etpConst['entropygid'], 0o644,
+                uid = etpConst['uid'])
 
         return rc
 
@@ -839,7 +841,8 @@ class AvailablePackagesRepositoryUpdater(object):
         rc = fetcher.download()
         if rc in ("-1", "-2", "-3", "-4"):
             return False
-        const_setup_file(filepath, etpConst['entropygid'], 0o644)
+        const_setup_file(filepath, etpConst['entropygid'], 0o644,
+            uid = etpConst['uid'])
         return True
 
     def _is_repository_unlocked(self):
@@ -1017,7 +1020,8 @@ class AvailablePackagesRepositoryUpdater(object):
                             continue
                         continue
 
-                    const_setup_file(to_mypath, etpConst['entropygid'], 0o644)
+                    const_setup_file(to_mypath, etpConst['entropygid'], 0o644,
+                        uid = etpConst['uid'])
 
             finally:
                 shutil.rmtree(tmpdir, True)
@@ -1963,7 +1967,8 @@ class AvailablePackagesRepositoryUpdater(object):
         for downloaded_file in sorted(set(downloaded_files)):
             if os.path.isfile(downloaded_file) and \
                 os.access(downloaded_file, os.W_OK | os.R_OK):
-                const_setup_file(downloaded_file, etpConst['entropygid'], 0o644)
+                const_setup_file(downloaded_file, etpConst['entropygid'], 0o644,
+                    uid = etpConst['uid'])
 
         # remove garbage left around
         for path in files_to_remove:
@@ -2009,7 +2014,8 @@ class AvailablePackagesRepository(EntropyRepository):
         EntropyRepository.__init__(self, *args, **kwargs)
         # ensure proper repository file permissions
         if entropy.tools.is_root() and os.path.isfile(self._db_path):
-            const_setup_file(self._db_path, etpConst['entropygid'], 0o644)
+            const_setup_file(self._db_path, etpConst['entropygid'], 0o644,
+                uid = etpConst['uid'])
 
     @staticmethod
     def update(entropy_client, repository_id, force, gpg):
