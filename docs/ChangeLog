@@ -1,3 +1,105 @@
+commit 713f4157b056f5e614bf0ced2be7d91f5ba13698
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 23:37:19 2010 +0200
+
+    [entropy.const] improve usage of const_setup_perms()
+
+commit 46c9264e28cd50fd392c3a6feb698f3b7fb832f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 18:16:29 2010 +0200
+
+    [entropy.client.interfaces.db] make sure that repository is owned by root
+
+commit 2a0ea068bd1f9867ceaced3cf4d4a881bfd5851b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 18:15:59 2010 +0200
+
+    [entropy.const] add "uid" keyword argument to const_setup_file and const_setup_perms (and use it properly)
+
+commit a43ea23d6a4394aded27083021f36d51645b8cda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:52:12 2010 +0200
+
+    [entropy.server] {un,}mask_packages(): do not filter out comments from config file
+
+commit 8ae938725720b5a97533cbb553f4fb7f44cb2c20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:51:47 2010 +0200
+
+    [reagent] beautify "package-{un,}mask" output
+
+commit 56e1413d243cb0bd12453906b98edf5ed95c6fa1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:49:42 2010 +0200
+
+    [entropy.tools] add filter_comments argument to generic_file_content_parser
+
+commit db60d88329aa1f1b94c861cdd45ec0b02f2d28ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:44:18 2010 +0200
+
+    [reagent] fix print_info() arguments
+
+commit fad0dc5dc7bf49df4c7fb20af179d378594a3fa5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:43:01 2010 +0200
+
+    [reagent] fix syntax error
+
+commit eb17f0b6e4e04b04d8ce8303e01b550f796bf903
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:41:58 2010 +0200
+
+    [reagent] properly handle "repo package-{un,}mask" tool arguments
+
+commit dd14a39281fb95ab16393c9709ad25d4b5fbd47d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 14:34:32 2010 +0200
+
+    [entropy.server] add Server.{un,}mask_packages() function and reagent "repo package-{un,}mask" tools
+
+commit 544c378a3198547c2005b8263f15fbe32acd126b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 23:17:13 2010 +0200
+
+    [entropy.tools] improve resolve_dynamic_library() by also considering ELF class
+
+commit 2feac20c47595b53a8f721a4b0eb37201e4597bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 23:16:42 2010 +0200
+
+    [entropy.qa] test_shared_objects: sort LDPATH directories to scan
+
+commit acf47f9da52c854ecb609c3bf486b7cbad9025a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 23:01:35 2010 +0200
+
+    [conf] add more directories to fsldpaths.conf
+
+commit 57ece8e980fa5e1b0fcd88739e8b534da0e8f67c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 20:26:00 2010 +0200
+
+    [conf] add /usr/bin to fsldpaths.conf
+
+commit a805892396bf1dd50b836d7cad698ea84b06997c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 20:11:49 2010 +0200
+
+    [entropy.qa,entropy.core.settings.base] move extra LDPATHs to external configuration file
+
+commit 1299e2de145402201c145c10474de05030f5697e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 14:11:04 2010 +0200
+
+    [equo] allow background repositories update via entropy-client-services when running unprivileged
+
+commit 6d08c0a92f26041d84c77f8729da68769141208d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 15 11:22:29 2010 +0200
+
+    Tagging Entropy version 0.99.47.8
+
 commit bcd075d4e97424ccb15e52708bf41ee3ebdf0e81
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 15 11:21:53 2010 +0200
