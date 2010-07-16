@@ -1400,7 +1400,7 @@ class ServerPackageDepsMixin:
 
         if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
             current_packages = entropy.tools.generic_file_content_parser(
-                mask_file, comment_tag = "##")
+                mask_file, comment_tag = "##", filter_comments = False)
         # this is untrusted input, it's fine because that config file is
         # untrusted too
         current_packages.extend(packages)
@@ -1431,9 +1431,12 @@ class ServerPackageDepsMixin:
 
         if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
             current_packages = entropy.tools.generic_file_content_parser(
-                mask_file, comment_tag = "##")
+                mask_file, comment_tag = "##", filter_comments = False)
 
         def mask_filter(package):
+            if package.startswith("#"):
+                # comment, always valid
+                return True
             in_file_pkg_match = self.atom_match(package)
             for req_package in packages:
                 if package == req_package:
