@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2010-06-08" "perl v5.10.1" "Entropy"
+.TH REAGENT 1 "2010-07-16" "perl v5.10.1" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -312,6 +312,12 @@ handle packages dependencies
 .IP "\fBpackage-tag <repo\fR <tag\-string> [atoms]>" 4
 .IX Item "package-tag <repo <tag-string> [atoms]>"
 clone a package assigning it an arbitrary tag
+.IP "\fBpackage-mask <repo\fR [atoms]>" 4
+.IX Item "package-mask <repo [atoms]>"
+mask given package in given repository
+.IP "\fBpackage-unmask <repo\fR [atoms]>" 4
+.IX Item "package-unmask <repo [atoms]>"
+unmask given package in given repository
 .IP "\fBmove <from\fR <to> [atoms]>" 4
 .IX Item "move <from <to> [atoms]>"
 move packages from a repository to another
@@ -445,9 +451,9 @@ Fabio Erculiani <lxnay@sabayon.org>
 .SH "POD ERRORS"
 .IX Header "POD ERRORS"
 Hey! \fBThe above document had some coding errors, which are explained below:\fR
-.IP "Around line 304:" 4
-.IX Item "Around line 304:"
+.IP "Around line 312:" 4
+.IX Item "Around line 312:"
 \&'=item' outside of any '=over'
-.IP "Around line 404:" 4
-.IX Item "Around line 404:"
+.IP "Around line 412:" 4
+.IX Item "Around line 412:"
 You forgot a '=back' before '=head1'

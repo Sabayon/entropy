@@ -92,7 +92,8 @@ def repositories(options):
         else:
             myopts.append(opt)
 
-    if cmd in ["enable", "disable", "copy", "move", "default"] and not repoid:
+    repoid_required_cmds = ("enable", "disable", "copy", "move", "default")
+    if cmd in repoid_required_cmds and not repoid:
         print_error(darkred(" !!! ")+red(_("No valid repositories specified.")))
         return 2
 
@@ -141,6 +142,7 @@ def repositories(options):
     elif cmd == "package-tag":
 
         if len(myopts) < 3:
+            print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
             return 1
         repo = myopts[0]
 
@@ -148,6 +150,7 @@ def repositories(options):
             etpConst['system_settings_plugins_ids']['server_plugin']
         srv_set = SYS_SET[sys_settings_plugin_id]['server']
         if repo not in srv_set['repositories']:
+            print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
             return 3
 
         tag_string = myopts[1]
@@ -172,6 +175,7 @@ def repositories(options):
     elif cmd == "package-dep":
 
         if len(myopts) < 2:
+            print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
             return 1
         repo = myopts[0]
 
@@ -179,6 +183,7 @@ def repositories(options):
             etpConst['system_settings_plugins_ids']['server_plugin']
         srv_set = SYS_SET[sys_settings_plugin_id]['server']
         if repo not in srv_set['repositories']:
+            print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
             return 3
 
         atoms = myopts[1:]
@@ -311,6 +316,62 @@ def repositories(options):
 
         Entropy.close_repositories()
         return 0
+
+    elif cmd == "package-mask":
+
+        if len(myopts) < 3:
+            print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
+            return 1
+        repo = myopts[0]
+        packages = myopts[1:]
+
+        sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        srv_set = SYS_SET[sys_settings_plugin_id]['server']
+        if repo not in srv_set['repositories']:
+            print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
+            return 3
+
+        print_info(brown(" @@ ") + red(_("Masking")) + ', '.join(packages) + \
+            + " " + _("in") + " " + bold(str(repoid)) + \
+            red(" %s..." % (_("repository"),) ))
+
+        # taint repository
+        w_dbconn = Entropy.open_server_repository(repo = repo,
+            read_only = False)
+        status = Entropy.mask_packages(packages, repo = repo)
+        Entropy.close_repositories()
+        if status:
+            return 0
+        return 1
+
+    elif cmd == "package-unmask":
+
+        if len(myopts) < 3:
+            print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
+            return 1
+        repo = myopts[0]
+        packages = myopts[1:]
+
+        sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        srv_set = SYS_SET[sys_settings_plugin_id]['server']
+        if repo not in srv_set['repositories']:
+            print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
+            return 3
+
+        print_info(brown(" @@ ") + red(_("Unmasking")) + ', '.join(packages) + \
+            + " " + _("in") + " " + bold(str(repoid)) + \
+            red(" %s..." % (_("repository"),) ))
+
+        # taint repository
+        w_dbconn = Entropy.open_server_repository(repo = repo,
+            read_only = False)
+        status = Entropy.unmask_packages(packages, repo = repo)
+        Entropy.close_repositories()
+        if status:
+            return 0
+        return 1
 
     elif cmd in ["move", "copy"]:
         matches = []

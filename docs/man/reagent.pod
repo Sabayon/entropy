@@ -246,6 +246,14 @@ handle packages dependencies
 
 clone a package assigning it an arbitrary tag
 
+=item B<package-mask <repo> [atoms]>
+
+mask given package in given repository
+
+=item B<package-unmask <repo> [atoms]>
+
+unmask given package in given repository
+
 =item B<move <from> <to> [atoms]>
 
 move packages from a repository to another

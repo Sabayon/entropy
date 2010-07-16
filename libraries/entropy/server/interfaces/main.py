@@ -1383,6 +1383,79 @@ class ServerPackageDepsMixin:
                     )
             return idpackages, False
 
+    def mask_packages(self, packages, repo = None):
+        """
+        Mask given package dependencies for given repository, if any (otherwise
+        use default one).
+
+        @param packages: list of package dependency strings
+        @type packages: list
+        @keyword repo: repository identifier
+        @type repo: string
+        @return: mask status, True if ok, False if not
+        @rtype: bool
+        """
+        mask_file = self._get_local_database_mask_file(repo = repo)
+        current_packages = []
+
+        if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
+            current_packages = entropy.tools.generic_file_content_parser(
+                mask_file, comment_tag = "##")
+        # this is untrusted input, it's fine because that config file is
+        # untrusted too
+        current_packages.extend(packages)
+
+        mask_file_tmp = mask_file + ".mask_packages_tmp"
+        with open(mask_file_tmp, "w") as mask_f:
+            for package in current_packages:
+                mask_f.write(package + "\n")
+            mask_f.flush()
+        os.rename(mask_file_tmp, mask_file)
+
+        return True
+
+    def unmask_packages(self, packages, repo = None):
+        """
+        Unmask given package dependencies for given repository, if any (otherwise
+        use default one).
+
+        @param packages: list of package dependency strings
+        @type packages: list
+        @keyword repo: repository identifier
+        @type repo: string
+        @return: mask status, True if ok, False if not
+        @rtype: bool
+        """
+        mask_file = self._get_local_database_mask_file(repo = repo)
+        current_packages = []
+
+        if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
+            current_packages = entropy.tools.generic_file_content_parser(
+                mask_file, comment_tag = "##")
+
+        def mask_filter(package):
+            in_file_pkg_match = self.atom_match(package)
+            for req_package in packages:
+                if package == req_package:
+                    # of course remove if it's equal
+                    return False
+                req_package_match = self.atom_match(req_package)
+                if req_package_match == in_file_pkg_match:
+                    # drop it, they point to the same package match
+                    return False
+            return True
+
+        current_packages = list(filter(mask_filter, current_packages))
+
+        mask_file_tmp = mask_file + ".mask_packages_tmp"
+        with open(mask_file_tmp, "w") as mask_f:
+            for package in current_packages:
+                mask_f.write(package + "\n")
+            mask_f.flush()
+        os.rename(mask_file_tmp, mask_file)
+
+        return True
+
 class ServerPackagesHandlingMixin:
 
     def initialize_server_repository(self, repo = None, show_warnings = True):

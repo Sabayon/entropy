@@ -91,6 +91,8 @@ help_opts = [
         (2, 'disable <repo>', 3, _('disable the specified repository')),
         (2, 'package-dep <repo> [atoms]', 1, _('handle packages dependencies')),
         (2, 'package-tag <repo> <tag-string> [atoms]', 1, _('clone a package assigning it an arbitrary tag')),
+        (2, 'package-mask <repo> [atoms]', 1, _('mask given package in given repository')),
+        (2, 'package-unmask <repo> [atoms]', 1, _('unmask given packages in given repository')),
         (2, 'move <from> <to> [atoms]', 1, _('move packages from a repository to another')),
             (3, '--deps', 3, _('pulls dependencies in')),
         (2, 'copy <from> <to> [atoms]', 1, _('copy packages from a repository to another')),
