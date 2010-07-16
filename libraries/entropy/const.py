@@ -996,7 +996,7 @@ def const_create_working_dirs():
         if not const_islive():
             # aufs/unionfs will start to leak otherwise
             const_setup_perms(etpConst['etpdatabaseclientdir'], gid,
-                f_perms = 0o644)
+                f_perms = 0o644, uid = etpConst['uid'])
 
 def const_configure_lock_paths():
     """
@@ -1010,7 +1010,7 @@ def const_configure_lock_paths():
             '.using_resources'),
     }
 
-def const_setup_perms(mydir, gid, f_perms = None, recursion = True):
+def const_setup_perms(mydir, gid, f_perms = None, recursion = True, uid = -1):
     """
     Setup permissions and group id (GID) to a directory, recursively.
 
@@ -1022,6 +1022,9 @@ def const_setup_perms(mydir, gid, f_perms = None, recursion = True):
     @type f_perms: octal
     @keyword recursion: set permissions recursively?
     @type recursion: bool
+    @keyword uid: usually this argument shouldn't be used, but in cae
+        it sets the uid to the file
+    @type uid: int
     @rtype: None
     @return: None
     """
@@ -1035,7 +1038,7 @@ def const_setup_perms(mydir, gid, f_perms = None, recursion = True):
         try:
             cur_gid = os.stat(currentdir)[stat.ST_GID]
             if cur_gid != gid:
-                os.chown(currentdir, -1, gid)
+                os.chown(currentdir, uid, gid)
             cur_mod = const_get_chmod(currentdir)
             if cur_mod != oct(0o775):
                 os.chmod(currentdir, 0o775)
@@ -1049,11 +1052,11 @@ def const_setup_perms(mydir, gid, f_perms = None, recursion = True):
             for item in files:
                 item = os.path.join(currentdir, item)
                 try:
-                    const_setup_file(item, gid, f_perms)
+                    const_setup_file(item, gid, f_perms, uid = uid)
                 except OSError:
                     pass
 
-def const_setup_file(myfile, gid, chmod):
+def const_setup_file(myfile, gid, chmod, uid = -1):
     """
     Setup file permissions and group id (GID).
 
@@ -1063,12 +1066,13 @@ def const_setup_file(myfile, gid, chmod):
     @type gid: int
     @param chmod: permissions
     @type chmod: integer representing an octal
-    @rtype: None
-    @return: None
+    @keyword uid: usually this argument shouldn't be used, but in cae
+        it sets the uid to the file
+    @type uid: int
     """
     cur_gid = os.stat(myfile)[stat.ST_GID]
     if cur_gid != gid:
-        os.chown(myfile, -1, gid)
+        os.chown(myfile, uid, gid)
     const_set_chmod(myfile, chmod)
 
 # you need to convert to int
