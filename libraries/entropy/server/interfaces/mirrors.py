@@ -2046,7 +2046,7 @@ class Server(ServerNoticeBoardMixin):
         return download_latest, upload_queue
 
     def sync_repositories(self, no_upload = False, unlock_mirrors = False,
-        repo = None):
+        repo = None, conf_files_qa_test = True):
 
         if repo is None:
             repo = self._entropy.default_repository
@@ -2147,9 +2147,10 @@ class Server(ServerNoticeBoardMixin):
                 )
                 return 3, set(), set()
 
-            problems = self._entropy._check_config_file_updates()
-            if problems:
-                return 4, set(), set()
+            if conf_files_qa_test:
+                problems = self._entropy._check_config_file_updates()
+                if problems:
+                    return 4, set(), set()
 
             self._entropy.output(
                 "[repo:%s|%s] %s" % (

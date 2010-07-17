@@ -464,7 +464,8 @@ def sync_remote_databases():
             blue(str(local_revision)))
 
     # do the rest
-    errors, fine_uris, broken_uris = Entropy.Mirrors.sync_repositories()
+    errors, fine_uris, broken_uris = Entropy.Mirrors.sync_repositories(
+        conf_files_qa_test = False)
     remote_status = Entropy.Mirrors.get_remote_repositories_status()
     print_info(darkgreen(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
