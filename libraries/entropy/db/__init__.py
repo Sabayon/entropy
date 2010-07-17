@@ -1861,7 +1861,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # setup random table name
         randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
-        while self._doesTableExist(randomtable):
+        while self._doesTableExist(randomtable, temporary = True):
             randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
 
         # create random table
