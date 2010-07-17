@@ -524,6 +524,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
         reverse_symlink_map = self._settings['system_rev_symlinks']
         broken_syms_list = self._settings['broken_syms']
         broken_libs_mask = self._settings['broken_libs_mask']
+        # make possible to pass a mask list from env
+        env_broken_libs_mask = os.getenv("ETP_BROKEN_LIBS_MASK", "")
+        if env_broken_libs_mask.strip():
+            broken_libs_mask += env_broken_libs_mask.strip().split()
 
         import re
 
