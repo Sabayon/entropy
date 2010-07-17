@@ -1134,6 +1134,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @type package_path: string
         @return: True, if all checks passed
         @rtype: bool
+        @raise EntropyPackageException: raised by the QA testing function
         """
         # built-in ones
         qa_methods = [self.__analyze_package_edb]
