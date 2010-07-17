@@ -4533,16 +4533,27 @@ class EntropyRepository(EntropyRepositoryBase):
         """)
         return self._cur2list(cur)
 
-    def _doesTableExist(self, table):
+    def _doesTableExist(self, table, temporary = False):
 
-        # speed up a bit if we already reported a column as existing
+        # NOTE: override cache when temporary is True
+        if temporary:
+            # temporary table do not pop-up with the statement below, so
+            # we need to handle them with "care"
+            try:
+                self._cursor().execute("""
+                SELECT count(*) FROM (?) LIMIT 1""", (table,))
+            except OperationalError:
+                return False
+            return True
+
+        # speed up a bit if we already reported a table as existing
         c_tup = ("_doesTableExist", table,)
         cached = self.__live_cache.get(c_tup)
         if cached is not None:
             return cached
 
         cur = self._cursor().execute("""
-        select name from SQLITE_MASTER where type = "table" and name = (?)
+        SELECT name FROM SQLITE_MASTER WHERE type = "table" AND name = (?)
         LIMIT 1
         """, (table,))
         rslt = cur.fetchone()
