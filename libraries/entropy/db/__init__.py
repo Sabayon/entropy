@@ -430,6 +430,9 @@ class EntropyRepository(EntropyRepositoryBase):
         # setup service interface
         self.__skip_checks = skipChecks
         self.__live_cache = {}
+        # this instance will set this to True if reverse dependencies
+        # metadata is generated runtime
+        self._temp_reverse_deps = False
 
         self.__structure_update = False
         if not self.__skip_checks:
@@ -3213,30 +3216,34 @@ class EntropyRepository(EntropyRepositoryBase):
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
                     dep_type,)
 
+        table_name = self._getReverseDependenciesTable()
         if atoms:
             cur = self._cursor().execute("""
-            SELECT baseinfo.atom FROM dependstable,dependencies,baseinfo 
-            WHERE dependstable.idpackage = (?) AND 
-            dependstable.iddependency = dependencies.iddependency AND 
+            SELECT baseinfo.atom FROM %s,dependencies,baseinfo 
+            WHERE %s.idpackage = (?) AND 
+            %s.iddependency = dependencies.iddependency AND 
             baseinfo.idpackage = dependencies.idpackage %s""" % (
-                excluded_deptypes_query,), (package_id,))
+                table_name, table_name, table_name, excluded_deptypes_query,),
+                (package_id,))
             result = self._cur2set(cur)
         elif key_slot:
             cur = self._cursor().execute("""
             SELECT categories.category || "/" || baseinfo.name,baseinfo.slot 
-            FROM baseinfo,categories,dependstable,dependencies 
-            WHERE dependstable.idpackage = (?) AND 
-            dependstable.iddependency = dependencies.iddependency AND 
+            FROM baseinfo,categories,%s,dependencies 
+            WHERE %s.idpackage = (?) AND 
+            %s.iddependency = dependencies.iddependency AND 
             baseinfo.idpackage = dependencies.idpackage AND 
             categories.idcategory = baseinfo.idcategory %s""" % (
-                excluded_deptypes_query,), (package_id,))
+                table_name, table_name, table_name, excluded_deptypes_query,),
+                (package_id,))
             result = cur.fetchall()
         else:
             cur = self._cursor().execute("""
-            SELECT dependencies.idpackage FROM dependstable,dependencies 
-            WHERE dependstable.idpackage = (?) AND 
-            dependstable.iddependency = dependencies.iddependency %s""" % (
-                excluded_deptypes_query,), (package_id,))
+            SELECT dependencies.idpackage FROM %s,dependencies 
+            WHERE %s.idpackage = (?) AND 
+            %s.iddependency = dependencies.iddependency %s""" % (
+                table_name, table_name, table_name, excluded_deptypes_query,),
+                (package_id,))
             result = self._cur2set(cur)
 
         return result
@@ -3262,11 +3269,12 @@ class EntropyRepository(EntropyRepositoryBase):
                 # read-only repos will be called over and over.
                 self.commitChanges(force = True)
 
+        table_name = self._getReverseDependenciesTable()
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo 
-        WHERE idpackage NOT IN (SELECT idpackage FROM dependstable)
+        WHERE idpackage NOT IN (SELECT idpackage FROM %s)
         ORDER BY atom
-        """)
+        """ % (table_name,))
         return self._cur2list(cur)
 
     def _isAtomAvailable(self, atom):
@@ -4709,18 +4717,26 @@ class EntropyRepository(EntropyRepositoryBase):
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (package_id,))
 
-    def _createDependsTable(self):
+    def _createDependsTable(self, temporary = False):
+        temp_txt = ""
+        temp_txt_table = "dependstable"
+        fk_data = """, FOREIGN KEY(idpackage) REFERENCES 
+        baseinfo(idpackage) ON DELETE CASCADE"""
+        if temporary:
+            temp_txt = "TEMPORARY"
+            temp_txt_table = "dependstable_temp"
+            fk_data = ""
+
         self._cursor().executescript("""
-        CREATE TABLE IF NOT EXISTS dependstable
-        ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER,
-            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
-        INSERT INTO dependstable VALUES (-1,NULL);
-        """)
+        CREATE %s TABLE IF NOT EXISTS %s
+        ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER%s );
+        INSERT INTO %s VALUES (-1,NULL);
+        """ % (temp_txt, temp_txt_table, fk_data, temp_txt_table,))
         if self.indexing:
             self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS dependsindex_idpackage
-            ON dependstable ( idpackage )
-            """)
+            CREATE INDEX IF NOT EXISTS dependsindex%s_idpackage
+            ON %s ( idpackage )
+            """ % (temp_txt_table, temp_txt_table,))
         self.commitChanges()
 
     def _sanitizeDependsTable(self):
@@ -4730,10 +4746,12 @@ class EntropyRepository(EntropyRepositoryBase):
         self.commitChanges()
 
     def _isDependsTableSane(self):
+
+        table_name = self._getReverseDependenciesTable()
         try:
             cur = self._cursor().execute("""
-            SELECT iddependency FROM dependstable WHERE iddependency = -1
-            """)
+            SELECT iddependency FROM %s WHERE iddependency = -1
+            """ % (table_name,))
         except (OperationalError,):
             return False # table does not exist, please regenerate and re-run
 
@@ -4742,8 +4760,8 @@ class EntropyRepository(EntropyRepositoryBase):
             return False
 
         cur = self._cursor().execute("""
-        SELECT count(iddependency) FROM dependstable
-        """)
+        SELECT count(iddependency) FROM %s
+        """ % (table_name,))
         data = cur.fetchone()
         count = 0
         if data:
@@ -5526,6 +5544,20 @@ class EntropyRepository(EntropyRepositoryBase):
                             (iddep, package_id,))
                 except IntegrityError:
                     continue
+        except OperationalError:
+            # ouch, we cannot write on db file, but still we need to store
+            # the dep map and make unprivileged uids to get correct information
+            # out of this, since it's stuff we can give away for free.
+            # So, let's create a temp table, this will work.
+            self._createDependsTable(temporary = True)
+            self._cursor().executemany("""
+                INSERT or REPLACE into dependstable_temp VALUES (?,?)""",
+                    iterable)
+            # from now on, reverse dependencies should be considered
+            # runtime generated only.
+            self._temp_reverse_deps = True
+            # no need to execute stuff below this
+            return
 
         # prune old iddependencies
         # NOTE: maybe use ON DELETE CASCADE + foreign key reference?
@@ -5539,14 +5571,28 @@ class EntropyRepository(EntropyRepositoryBase):
             DELETE FROM dependstable WHERE iddependency = (?)
             """, prune_list)
 
+    def _getReverseDependenciesTable(self):
+        """
+        Internal method. When reverse dependencies table is not available
+        and user has no privileges to make it automatically generated by
+        the EntropyRepository logic, we need to fallback to a temporary table.
+        This method just returns the available reverse dependency table that
+        this instance should use. It does not check if user has write
+        permissions but rather if the temporary table exists.
+        """
+        if self._temp_reverse_deps:
+            return "dependstable_temp"
+        return "dependstable"
+
     def taintReverseDependenciesMetadata(self):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        table_name = self._getReverseDependenciesTable()
         try:
             self._cursor().executescript("""
-            INSERT or IGNORE INTO dependstable VALUES (-1,NULL);
-            """)
+            INSERT or IGNORE INTO %s VALUES (-1,NULL);
+            """ % (table_name,))
         except (OperationalError,):
             # FIXME: backward compatibility
             return
