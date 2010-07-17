@@ -1,3 +1,27 @@
+commit f053368a62b9dee5950fe988a25a6c8f0ccd1499
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 08:59:57 2010 +0200
+
+    [entropy.tools] generic_file_content_parser(): fix regression, always filter out empty lines
+
+commit 18310b1d8a21486d4c6e019ed78affa97a593ba1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 07:59:54 2010 +0200
+
+    [entropy.server] make possible to skip config files QA check when calling sync_repositories()
+
+commit d26b8f67dbc1a8c142d53693719e30b679400bcb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 07:43:56 2010 +0200
+
+    [equo] fix undefined reference in text_query.search_required_libraries()
+
+commit 63dec46252190ae2b7a6b472bb7deb49fb5eb852
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 16 23:43:42 2010 +0200
+
+    Tagging Entropy version 0.99.47.9
+
 commit 713f4157b056f5e614bf0ced2be7d91f5ba13698
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 16 23:37:19 2010 +0200
