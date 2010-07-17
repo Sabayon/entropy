@@ -4320,12 +4320,13 @@ class EntropyRepository(EntropyRepositoryBase):
         mytxt = "Repository is corrupted, missing SQL tables!"
         self._cursor().execute("""
         SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND (
-            name = "extrainfo" OR name = "baseinfo" OR name = "keywords" )
+            name = "extrainfo" OR name = "baseinfo" OR name = "keywords"
+            OR name = "categories" )
         """)
         rslt = self._cursor().fetchone()
         if rslt is None:
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
-        elif rslt[0] != 3:
+        elif rslt[0] != 4:
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
     def _getIdpackagesDifferences(self, foreign_package_ids):
