@@ -756,7 +756,7 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
     key_sorter = lambda x: dbconn.retrieveAtom(x)
 
     for library in libraries:
-        results = dbconn.searchNeeded(search_lib, like = True)
+        results = dbconn.searchNeeded(library, like = True)
         for pkg_id in sorted(results, key = key_sorter):
 
             if etpUi['quiet']:
