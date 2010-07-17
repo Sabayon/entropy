@@ -1369,6 +1369,8 @@ def generic_file_content_parser(filepath, comment_tag = "#",
         # filter comments and white lines
         content = [x.strip().rsplit(comment_tag, 1)[0].strip() for x \
             in content if x.strip()]
+        # filter out empty lines
+        content = [x for x in content if x.strip()]
         if filter_comments:
             content = [x for x in content if not x.startswith("#")]
         for line in content:
