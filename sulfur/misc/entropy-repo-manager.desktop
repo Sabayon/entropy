@@ -1,8 +1,8 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Entropy Repository Manager
+Name=Entropy Development Repository Manager
 Comment=Entropy Graphical Repository Manager
-Categories=Application;System
+Categories=Application;Development
 Icon=/usr/share/pixmaps/sulfur/sulfur-icon.png
 Exec=entropy-repo-manager %U
 Type=Application
