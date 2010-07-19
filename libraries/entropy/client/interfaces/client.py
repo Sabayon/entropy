@@ -476,13 +476,15 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             split_line = line.split("|")
             split_line_len = len(split_line)
 
-            if line.startswith("filesbackup|") and (split_line_len == 2):
+            if (line.startswith("filesbackup|") or \
+                line.startswith("files-backup|")) and (split_line_len == 2):
 
                 compatopt = split_line[1].strip().lower()
                 if compatopt in ("disable", "disabled", "false", "0", "no",):
                     data['filesbackup'] = False
 
-            elif line.startswith("forcedupdates|") and (split_line_len == 2):
+            elif (line.startswith("forcedupdates|") or \
+                line.startswith("forced-updates|")) and (split_line_len == 2):
 
                 compatopt = split_line[1].strip().lower()
                 if compatopt in ("disable", "disabled", "false", "0", "no",):
@@ -490,7 +492,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 else:
                     data['forcedupdates'] = True
 
-            elif line.startswith("packagehashes|") and (split_line_len == 2):
+            elif (line.startswith("packagehashes|") or \
+                line.startswith("package-hashes|")) and (split_line_len == 2):
 
                 opts = split_line[1].strip().lower().split()
                 hashes = []
@@ -538,20 +541,24 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 else:
                     data['splitdebug'] = False 
 
-            elif line.startswith("collisionprotect|") and (split_line_len == 2):
+            elif (line.startswith("collisionprotect|") or \
+                line.startswith("collision-protect|")) and \
+                (split_line_len == 2):
 
                 collopt = split_line[1].strip()
                 if collopt.lower() in ("0", "1", "2",):
                     data['collisionprotect'] = int(collopt)
 
-            elif line.startswith("configprotect|") and (split_line_len == 2):
+            elif (line.startswith("configprotect|") or \
+                line.startswith("config-protect|")) and (split_line_len == 2):
 
                 configprotect = split_line[1].strip()
                 for myprot in configprotect.split():
                     data['configprotect'].append(
                         const_convert_to_unicode(myprot))
 
-            elif line.startswith("configprotectmask|") and \
+            elif (line.startswith("configprotectmask|") or \
+                line.startswith("config-protect-mask|")) and \
                 (split_line_len == 2):
 
                 configprotect = split_line[1].strip()
@@ -559,7 +566,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     data['configprotectmask'].append(
                         const_convert_to_unicode(myprot))
 
-            elif line.startswith("configprotectskip|") and \
+            elif (line.startswith("configprotectskip|") or \
+                line.startswith("config-protect-skip|")) and \
                 (split_line_len == 2):
 
                 configprotect = split_line[1].strip()
