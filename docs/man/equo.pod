@@ -406,6 +406,10 @@ when used with --deep, helps the removal of virtual packages
 
 makes configuration files to be removed
 
+=item B<--force-system>
+
+dangerous: forces system packages removal, do not use this
+
 =item B<--resume>
 
 resume previously interrupted operations

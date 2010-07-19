@@ -63,6 +63,7 @@ def package(options):
     e_req_dump = False
     e_req_bdeps = False
     e_req_recursive = True
+    e_req_system_packages_check = True
     e_req_multifetch = 1
     rc = 0
     _myopts = []
@@ -97,6 +98,8 @@ def package(options):
             e_req_listfiles = True
         elif (opt == "--configfiles"):
             e_req_config_files = True
+        elif (opt == "--force-system"):
+            e_req_system_packages_check = False
         elif (opt == "--replay"):
             e_req_replay = True
         elif (opt == "--resume"):
@@ -225,6 +228,7 @@ def package(options):
                 packages = myopts, deps = e_req_deps,
                 deep = e_req_deep, remove_config_files = e_req_config_files,
                 resume = e_req_resume, recursive = e_req_recursive,
+                system_packages_check = e_req_system_packages_check,
                 empty = e_req_empty_deps)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
@@ -1741,8 +1745,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
     if atomsdata is None:
         atomsdata = []
 
-    # check if I am root
-    if (not entropy.tools.is_root()):
+    if not entropy.tools.is_root():
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1856,7 +1859,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             try:
                 removal_queue += entropy_client.get_removal_queue(
                     plain_removal_queue, deep = deep, recursive = recursive,
-                    empty = empty)
+                    empty = empty, system_packages = system_packages_check)
             except DependenciesNotRemovable as err:
                 non_rm_pkg_ids = sorted([x[0] for x in err.value],
                     key = lambda x: \
