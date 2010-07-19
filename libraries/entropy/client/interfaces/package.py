@@ -605,7 +605,7 @@ class Package:
         enabled_hashes = sys_settings[sys_set_plg_id]['misc']['packagehashes']
 
         pkg_disk_path = self.__get_fetch_disk_path(download)
-        pkg_disk_path_mtime = pkg_disk_path + ".mtime"
+        pkg_disk_path_mtime = pkg_disk_path + etpConst['packagemtimefileext']
 
         def do_mtime_validation():
             if not (os.path.isfile(pkg_disk_path_mtime) and \

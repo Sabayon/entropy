@@ -461,6 +461,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'configprotect': etpConst['configprotect'][:],
             'configprotectmask': etpConst['configprotectmask'][:],
             'configprotectskip': etpConst['configprotectskip'][:],
+            'autoprune_days': None, # disabled by default
         }
 
         cli_conf = etpConst['clientconf']
@@ -491,6 +492,20 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     data['forcedupdates'] = False
                 else:
                     data['forcedupdates'] = True
+
+            elif line.startswith("packages-autoprune-days|") and \
+                (split_line_len == 2):
+
+                prune_opt = split_line[1].strip()
+                try:
+                    autoprune_days = int(prune_opt)
+                    if autoprune_days < 0:
+                        raise ValueError()
+                    if autoprune_days > 365:
+                        raise ValueError()
+                    data['autoprune_days'] = autoprune_days
+                except ValueError:
+                    data['autoprune_days'] = None
 
             elif (line.startswith("packagehashes|") or \
                 line.startswith("package-hashes|")) and (split_line_len == 2):

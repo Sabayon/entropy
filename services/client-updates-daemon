@@ -42,7 +42,7 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 from entropy.misc import LogFile
 from entropy.i18n import _
 from entropy.exceptions import PermissionDenied, RepositoryError
-import entropy.tools
+import entropy.tools as entropy_tools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.const import etpConst, const_setup_entropy_pid, \
@@ -87,7 +87,7 @@ def uninstall_exception_handler():
 
 def handle_exception(exc_class, exc_instance, exc_tb):
 
-    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+    t_back = entropy_tools.get_traceback(tb_obj = exc_tb)
 
     # restore original exception handler, to avoid loops
     uninstall_exception_handler()
@@ -147,6 +147,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__alive = False
         self.__is_working_mutex = Lock()
         self.__updater = None
+        self.__entropy_cache_cleaner = None
         self.__system_changes_checker = None
         self.__client_ping_checker = None
         self.__oncall_updater = None
@@ -177,36 +178,41 @@ class UpdatesDaemon(dbus.service.Object):
     def start(self):
         self.stop()
         self.__alive = True
-        self.__updater = gobject.timeout_add(
-            CHECK_DELAY_SECS*1000, self.run_fetcher)
-        self.__oncall_updater = gobject.timeout_add(
-            3000, self.run_oncall_fetcher)
-        self.__quit_service_wd = gobject.timeout_add(
-            60*1000, self.quit_service_watchdog)
-        self.__system_changes_checker = gobject.timeout_add(
-            120*1000, self.check_system_changes)
+        self.__updater = gobject.timeout_add_seconds(
+            CHECK_DELAY_SECS, self.run_fetcher)
+        self.__oncall_updater = gobject.timeout_add_seconds(
+            3, self.run_oncall_fetcher)
+        self.__quit_service_wd = gobject.timeout_add_seconds(
+            60, self.quit_service_watchdog)
+        self.__system_changes_checker = gobject.timeout_add_seconds(
+            120, self.check_system_changes)
+        self.__entropy_cache_cleaner = gobject.timeout_add_seconds(
+            3600, self.cleanup_entropy_cache)
         if "--disable-timer" not in sys.argv:
-            self.__client_ping_checker = gobject.timeout_add(
-                120*1000, self.check_client_ping)
+            self.__client_ping_checker = gobject.timeout_add_seconds(
+                120, self.check_client_ping)
 
     def stop(self):
         if self.__alive:
             self.__alive = False
 
-            if self.__updater != None:
+            if self.__updater is not None:
                 gobject.source_remove(self.__updater)
 
-            if self.__system_changes_checker != None:
+            if self.__system_changes_checker is not None:
                 gobject.source_remove(self.__system_changes_checker)
 
-            if self.__oncall_updater != None:
+            if self.__oncall_updater is not None:
                 gobject.source_remove(self.__oncall_updater)
 
-            if self.__quit_service_wd != None:
+            if self.__quit_service_wd is not None:
                 gobject.source_remove(self.__quit_service_wd)
 
-            if self.__client_ping_checker != None:
+            if self.__client_ping_checker is not None:
                 gobject.source_remove(self.__client_ping_checker)
+
+            if self.__entropy_cache_cleaner is not None:
+                gobject.source_remove(self.__entropy_cache_cleaner)
 
     def do_alert(self, string, msg, urgency = "critical"):
         write_output('alert: %s, %s, urgency: %s' % (string, msg, urgency,))
@@ -235,6 +241,102 @@ class UpdatesDaemon(dbus.service.Object):
             self.__quit_service_trigger = True
         return self.__alive
 
+    def cleanup_entropy_cache(self):
+
+        with self.__is_working_mutex:
+            entropy = Entropy()
+            acquired = self.__acquire_entropy_locks(entropy)
+            if not acquired:
+                entropy.shutdown()
+                return True # respawn later
+
+            try:
+
+                sys_set = SysSet()
+                sys_set_plg_id = \
+                    etpConst['system_settings_plugins_ids']['client_plugin']
+                client_settings = sys_set[sys_set_plg_id]
+                misc_settings = client_settings['misc']
+                autoprune_days = misc_settings.get('autoprune_days', None)
+                if autoprune_days is None:
+                    # sorry, feature disabled or not available
+                    # (upgrade entropy?)
+                    return False
+
+                def filter_expired_pkg(pkg_path):
+
+                    pkg_path = os.path.abspath(pkg_path)
+                    # security check
+                    if not pkg_path.startswith(etpConst['entropyworkdir']):
+                        return False
+                    if not pkg_path.endswith(etpConst['packagesext']):
+                        return False
+
+                    if not os.path.isfile(pkg_path):
+                        return False
+                    if not os.access(pkg_path, os.R_OK | os.W_OK):
+                        return False
+                    try:
+                        mtime = os.path.getmtime(pkg_path)
+                    except (OSError, IOError):
+                        return False
+                    if (mtime + (autoprune_days*24*3600)) > time.time():
+                        return False
+                    return True
+
+                # only check against available repositories
+                # skip disabled and corrupted
+                for repo_id in sys_set['repositories']['available']:
+
+                    try:
+                        repo_db = entropy.open_repository(repo_id)
+                    except RepositoryError as err:
+                        write_output(
+                            "cleanup_entropy_cache: open_repository() error: %s" % (err,))
+                        continue
+                    except Exception as err:
+                        write_output(
+                            "cleanup_entropy_cache: open_repository() general error: %s" % (err,))
+                        continue
+
+                    repo_pkgs = set(repo_db.listAllDownloads(do_sort = False,
+                        full_path = True))
+                    repo_pkgs = [os.path.join(etpConst['entropyworkdir'], x) \
+                        for x in repo_pkgs]
+                    repo_pkgs = sorted(filter(filter_expired_pkg, repo_pkgs))
+                    if not repo_pkgs:
+                        if DAEMON_DEBUG:
+                            write_output(
+                                "cleanup_entropy_cache: removing from %s: nothing" % (
+                                    repo_id,))
+                        continue
+
+                    if DAEMON_DEBUG:
+                        write_output(
+                            "cleanup_entropy_cache: removing from %s: %s" % (
+                                repo_id, ', '.join(repo_pkgs),))
+                    for repo_pkg in repo_pkgs:
+                        try:
+                            os.remove(repo_pkg)
+                        except OSError:
+                            pass
+                        try:
+                            os.remove(repo_pkg + etpConst['packagesmd5fileext'])
+                        except OSError:
+                            pass
+                        try:
+                            os.remove(repo_pkg + \
+                                etpConst['packagemtimefileext'])
+                        except (OSError, KeyError,):
+                            # KeyError is for backward compatibility
+                            continue
+
+                return False
+
+            finally:
+                self.__release_entropy_locks(entropy)
+                entropy.shutdown()
+
     def check_system_changes(self):
         if self.__trigger_oncall_updater:
             return self.__alive
@@ -262,7 +364,7 @@ class UpdatesDaemon(dbus.service.Object):
         if self.__quit_service_trigger:
             self.stop()
             with self.__is_working_mutex:
-                entropy.tools.kill_threads()
+                entropy_tools.kill_threads()
                 raise SystemExit(0)
         return self.__alive
 
@@ -320,6 +422,43 @@ class UpdatesDaemon(dbus.service.Object):
 
         return 0
 
+    def __acquire_entropy_locks(self, entropy):
+
+        acquired, locked = const_setup_entropy_pid(force_handling = True)
+        if (not acquired) or locked:
+            if DAEMON_DEBUG:
+                if locked:
+                    write_output(
+                        "__acquire_entropy_locks: app. locked, skipping")
+                else:
+                    write_output(
+                        "__acquire_entropy_locks: app. locked during acquire")
+            return False
+
+        # entropy resources locked?
+        locked = entropy.resources_locked()
+        if locked:
+            if DAEMON_DEBUG:
+                write_output(
+                    "__acquire_entropy_locks: resources locked, skipping")
+            return False
+
+        # acquire resources lock
+        acquired = entropy.lock_resources()
+        if not acquired:
+            if DAEMON_DEBUG:
+                write_output(
+                    "__acquire_entropy_locks: resources locked during acquire")
+            return False
+
+        return True
+
+    def __release_entropy_locks(self, entropy):
+        # unlock resources
+        entropy.unlock_resources()
+        # remove application lock
+        const_remove_entropy_pid()
+
     def __run_fetcher(self):
 
         if self.__updater == None:
@@ -330,29 +469,8 @@ class UpdatesDaemon(dbus.service.Object):
             rc_fetch = 0
             entropy = Entropy()
 
-            acquired, locked = const_setup_entropy_pid(force_handling = True)
-            if (not acquired) or locked:
-                if DAEMON_DEBUG:
-                    if locked:
-                        write_output("__run_fetcher: app. locked, skipping")
-                    else:
-                        write_output("__run_fetcher: app. locked during acquire")
-                entropy.shutdown()
-                return rc_fetch
-
-            # entropy resources locked?
-            locked = entropy.resources_locked()
-            if locked:
-                if DAEMON_DEBUG:
-                    write_output("__run_fetcher: resources locked, skipping")
-                entropy.shutdown()
-                return rc_fetch
-
-            # acquire resources lock
-            acquired = entropy.lock_resources()
+            acquired = self.__acquire_entropy_locks(entropy)
             if not acquired:
-                if DAEMON_DEBUG:
-                    write_output("__run_fetcher: resources locked during acquire")
                 entropy.shutdown()
                 return rc_fetch
 
@@ -392,7 +510,7 @@ class UpdatesDaemon(dbus.service.Object):
                         entropy.calculate_updates(use_cache = False)
                     del fine, remove
                 except Exception, err:
-                    entropy.tools.print_traceback(f = DAEMON_LOG)
+                    entropy_tools.print_traceback(f = DAEMON_LOG)
                     msg = "%s: %s" % (_("Updates: error"), err,)
                     self.do_alert(_("Updates: error"), msg)
                     del self.__updates[:]
@@ -424,10 +542,7 @@ class UpdatesDaemon(dbus.service.Object):
                 return 0
 
             finally:
-                # unlock resources
-                entropy.unlock_resources()
-                # remove application lock
-                const_remove_entropy_pid()
+                self.__release_entropy_locks(entropy)
                 # say goodbye
                 entropy.shutdown()
 
@@ -485,7 +600,7 @@ class UpdatesDaemon(dbus.service.Object):
                 update, remove, fine, spm_fine = \
                     entropy.calculate_updates(use_cache = False)
             except Exception, err:
-                entropy.tools.print_traceback(f = DAEMON_LOG)
+                entropy_tools.print_traceback(f = DAEMON_LOG)
                 msg = "get_updates: %s: %s" % (_("Updates: error"), err,)
                 self.do_alert(_("Updates: error"), msg)
                 return self.__updates
