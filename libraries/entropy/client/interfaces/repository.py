@@ -17,7 +17,8 @@ import subprocess
 from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write
 from entropy.exceptions import RepositoryError, PermissionDenied
-from entropy.output import blue, darkred, red, darkgreen, bold
+from entropy.output import blue, darkred, red, darkgreen, bold, purple, teal, \
+    brown
 
 from entropy.db.exceptions import Error
 from entropy.db.skel import EntropyRepositoryBase
@@ -36,11 +37,13 @@ class Repository:
 
         self._entropy = entropy_client_instance
         self._settings = SystemSettings()
+        self._pkg_size_warning_th = 512*1024000 # 500mb
         self.repo_ids = repo_identifiers
         self.force = force
         self.sync_errors = False
         self.updated = False
         self.new_entropy = False
+        self.need_packages_cleanup = False
         self.updated_repos = set()
         self.fetch_security = fetch_security
         self.entropy_updates_alert = entropy_updates_alert
@@ -120,6 +123,46 @@ class Repository:
 
         if self.entropy_updates_alert:
             self._check_entropy_updates()
+
+        if self.updated:
+            pkgs = self._entropy.clean_downloaded_packages(dry_run = True)
+            number_of_pkgs = len(pkgs)
+            if number_of_pkgs > 0:
+                pkgs_size = entropy.tools.sum_file_sizes(pkgs)
+                if pkgs_size > self._pkg_size_warning_th:
+                    self.need_packages_cleanup = True
+                    pkg_dirs = set((os.path.dirname(x) for x in pkgs))
+                    human_size = entropy.tools.bytes_into_human(pkgs_size)
+                    mytxt = "%s: %s %s %s." % (
+                        teal("Packages"),
+                        purple(_("there are")),
+                        brown(str(number_of_pkgs)),
+                        purple(_("package files that could be removed")),
+                    )
+                    self._entropy.output(
+                        mytxt,
+                        importance = 1,
+                        level = "info",
+                        header = bold(" !!! ")
+                    )
+                    mytxt = "%s %s. %s:" % (
+                        teal("They are taking up to"),
+                        brown(human_size),
+                        purple(_("Packages are stored in")),
+                    )
+                    self._entropy.output(
+                        mytxt,
+                        importance = 1,
+                        level = "info",
+                        header = bold(" !!! ")
+                    )
+                    for pkg_dir in pkg_dirs:
+                        self._entropy.output(
+                            brown(pkg_dir),
+                            importance = 1,
+                            level = "info",
+                            header = bold("     ")
+                        )
 
         return 0
 
