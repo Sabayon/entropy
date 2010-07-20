@@ -2549,6 +2549,22 @@ def is_valid_string(string):
     if invalid: return False
     return True
 
+valid_path_regexp = re.compile("^([A-Za-z0-9/\.:]+)$")
+def is_valid_path_string(path):
+    """
+    Return whether given path is a valid path string (whitelisting valid
+    characters). Regexp is ^([A-Za-z0-9/\.:]+)$ and only works with ASCII
+    paths.
+
+    @param path: path to test
+    @type path: string
+    @return: True, if valid
+    @rtype: bool
+    """
+    if valid_path_regexp.match(path):
+        return True
+    return False
+
 def is_valid_path(path):
     """
     Return whether given path is valid (it uses os.stat()). Broken symlinks
