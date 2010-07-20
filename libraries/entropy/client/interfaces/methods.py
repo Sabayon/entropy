@@ -818,6 +818,86 @@ class RepositoryMixin:
                     os.access(os.path.join(client_dbdir, x), os.R_OK)
         ]
 
+    def clean_downloaded_packages(self):
+        """
+        Clean Entropy Client downloaded packages older than the setting
+        specified by "packages-autoprune-days" in /etc/entropy/client.conf.
+        If setting is not set or invalid, this method will do nothing.
+        Otherwise, files older than given settings (representing time delta in
+        days) will be removed.
+
+        @return: list of removed package file paths.
+        @rtype: list
+        """
+        client_settings = self._settings[self.sys_settings_client_plugin_id]
+        misc_settings = client_settings['misc']
+        autoprune_days = misc_settings.get('autoprune_days', None)
+        if autoprune_days is None:
+            # sorry, feature disabled or not available
+            return []
+
+        def filter_expired_pkg(pkg_path):
+
+            if not os.path.isfile(pkg_path):
+                return False
+            if not os.access(pkg_path, os.R_OK | os.W_OK):
+                return False
+            try:
+                mtime = os.path.getmtime(pkg_path)
+            except (OSError, IOError):
+                return False
+            if (mtime + (autoprune_days*24*3600)) > time.time():
+                return False
+            return True
+
+        repo_pkgs_dirs = [os.path.join(etpConst['entropyworkdir'], x,
+            etpConst['currentarch']) for x in \
+                etpConst['packagesrelativepaths']]
+
+        def get_removable_packages():
+            removable_pkgs = set()
+            for pkg_dir in repo_pkgs_dirs:
+                if not os.path.isdir(pkg_dir):
+                    continue
+                for branch in os.listdir(pkg_dir):
+                    branch_dir = os.path.join(pkg_dir, branch)
+                    dir_repo_pkgs = set((os.path.join(branch_dir, x) \
+                        for x in os.listdir(branch_dir)))
+                    # filter out hostile paths
+                    dir_repo_pkgs = set((x for x in dir_repo_pkgs \
+                        if os.path.realpath(x).startswith(branch_dir) \
+                        and os.path.realpath(x).endswith(
+                            etpConst['packagesext'])))
+                    removable_pkgs |= dir_repo_pkgs
+            return removable_pkgs
+
+        removable_pkgs = get_removable_packages()
+        removable_pkgs = sorted(filter(filter_expired_pkg,
+            removable_pkgs))
+
+        if not removable_pkgs:
+            return []
+
+        successfully_removed = []
+        for repo_pkg in removable_pkgs:
+            try:
+                os.remove(repo_pkg)
+                successfully_removed.append(repo_pkg)
+            except OSError:
+                pass
+            try:
+                os.remove(repo_pkg + etpConst['packagesmd5fileext'])
+            except OSError:
+                pass
+            try:
+                os.remove(repo_pkg + \
+                    etpConst['packagemtimefileext'])
+            except OSError:
+                # KeyError is for backward compatibility
+                pass
+
+        return successfully_removed
+
     def _run_repositories_post_branch_switch_hooks(self, old_branch, new_branch):
         """
         This method is called whenever branch is successfully switched by user.
