@@ -822,7 +822,7 @@ def update(options):
 
         if to_be_added:
 
-            print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
+            print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated"),) ))
             items = sorted([x[0] for x in to_be_added])
             for item in items:
                 item_txt = purple(item)
