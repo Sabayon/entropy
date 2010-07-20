@@ -34,11 +34,6 @@ class Repository:
         if repo_identifiers is None:
             repo_identifiers = []
 
-        from entropy.client.interfaces import Client
-        if not isinstance(entropy_client_instance, Client):
-            mytxt = "A valid Entropy Client instance or subclass is needed"
-            raise AttributeError(mytxt)
-
         self._entropy = entropy_client_instance
         self._settings = SystemSettings()
         self.repo_ids = repo_identifiers
