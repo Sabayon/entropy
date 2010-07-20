@@ -2298,8 +2298,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
+        @keyword exclude_deptypes: exclude given dependency types from returned
+            data. Please see etpConst['dependency_type_ids'] for valid values.
+            Anything != int will raise AttributeError
+        @type exclude_deptypes: list
         @return: list (set) of dependencies of package
         @rtype: set
+        @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
 
@@ -2358,10 +2363,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             see etpConst['dependency_type_ids']['*depend_id'] for dependency type
             identifiers
         @type deptype: bool
-        @keyword exclude_deptypes: list of dependency types to exclude
+        @keyword exclude_deptypes: exclude given dependency types from returned
+            data. Please see etpConst['dependency_type_ids'] for valid values.
+            Anything != int will raise AttributeError
         @type exclude_deptypes: list
         @return: dependencies of given package
         @rtype: list or set
+        @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
 
@@ -2436,8 +2444,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def retrieveContent(self, package_id, extended = False, contentType = None,
-        formatted = False, insert_formatted = False, order_by = ''):
+    def retrieveContent(self, package_id, extended = False,
+        formatted = False, insert_formatted = False, order_by = None):
         """
         Return files contained in given package.
 
@@ -2445,9 +2453,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
-        @keyword contentType: only return given entry type, which can be:
-            "obj", "sym", "dir", "fif", "dev"
-        @type contentType: int
         @keyword formatted: return in dict() form
         @type formatted: bool
         @keyword insert_formatted: return in list of tuples form, ready to
@@ -2457,6 +2462,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type order_by: string
         @return: content metadata
         @rtype: dict or list or set
+        @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
 
@@ -2615,10 +2621,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             key:slot form, example: [('app-foo/bar','2',), ...]
         @type key_slot: bool
         @keyword exclude_deptypes: exclude given dependency types from returned
-            data
-        @type exclude_deptypes: iterable
+            data. Please see etpConst['dependency_type_ids'] for valid values.
+            Anything != int will raise AttributeError
+        @type exclude_deptypes: iterable of ints
         @return: reverse dependency list
         @rtype: list or set
+        @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
 
@@ -2988,7 +2996,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         raise NotImplementedError()
 
     def searchPackages(self, keyword, sensitive = False, slot = None,
-            tag = None, order_by = 'atom', just_id = False):
+            tag = None, order_by = None, just_id = False):
         """
         Search packages using given package name "keyword" argument.
 
@@ -3000,12 +3008,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type slot: string
         @keyword tag: search matching given package tag
         @type tag: string
-        @keyword order_by: order results by "atom", "name" or "version"
+        @keyword order_by: order results by "atom", "package_id", "branch",
+            "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
         @keyword just_id: just return package identifiers (returning set())
         @type just_id: bool
         @return: packages found matching given search criterias
         @rtype: set or list
+        @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
 
@@ -3130,13 +3140,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @keyword get_scope: return also entropy package revision
         @type get_scope: bool
-        @keyword order_by: order by given metadatum, "atom", "slot", "revision"
-            or "package_id"
+        @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
+            "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
         @return: list of tuples of length 3 (or 4 if get_scope is True),
             containing (atom, package_id, branch,) if get_scope is False and
             (package_id, atom, slot, revision,) if get_scope is True
         @rtype: list
+        @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
 
@@ -3146,10 +3157,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param category_id: cateogory identifier
         @type category_id: int
-        @keyword order_by: order by "atom", "name", "version"
+        @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
+            "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
         @return: list (set) of available package identifiers in category.
         @rtype: set
+        @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
 
@@ -3157,11 +3170,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         List all package identifiers available in repository.
 
-        @keyword order_by: order by "atom", "package_id", "version", "name",
-            "idcategory"
+        @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
+            "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
         @return: list (if order_by) or set of package identifiers
         @rtype: list or set
+        @raise AttributeError: if order_by value is invalid
         """
 
     def listAllSpmUids(self):
@@ -3203,10 +3217,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         List all categories available in repository.
 
-        @keyword order_by: order by "category", "idcategory"
+        @keyword order_by: order by "category", "category_id"
         @type order_by: string
-        @return: list of tuples of length 2 composed by (idcategory, category,)
+        @return: list of tuples of length 2 composed by (category_id, category,)
         @rtype: list
+        @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
 
@@ -3288,6 +3303,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type dbfile: string
         @return: sqlite3 import return code
         @rtype: int
+        @raise AttributeError: if given paths are invalid
         """
         raise NotImplementedError()
 

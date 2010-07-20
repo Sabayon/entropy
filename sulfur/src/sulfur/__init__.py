@@ -1862,7 +1862,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             for repoid in self._entropy.repositories():
                 dbconn = self._entropy.open_repository(repoid)
                 try:
-                    results = dbconn.searchPackages(keyword, just_id = True)
+                    results = dbconn.searchPackages(keyword, just_id = True,
+                        order_by = "atom")
                 except OperationalError:
                     continue
                 matches += [(x, repoid) for x in results]

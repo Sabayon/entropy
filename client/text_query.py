@@ -182,7 +182,7 @@ def get_installed_packages(packages, dbconn = None, entropy_intf = None):
         package = entropy.tools.remove_tag(package)
 
         idpackages = repo_db.searchPackages(package, slot = slot, tag = tag,
-            just_id = True)
+            just_id = True, order_by = "atom")
         pkg_data[real_package].update(idpackages)
         flat_results.update(idpackages)
 
@@ -1138,7 +1138,7 @@ def search_package(packages, Equo = None, get_results = False,
 
             try:
                 result = set(dbconn.searchPackages(package, slot = slot,
-                    tag = tag, just_id = True))
+                    tag = tag, just_id = True, order_by = "atom"))
                 if not result: # look for something else?
                     pkg_id, rc = dbconn.atomMatch(package, matchSlot = slot)
                     if pkg_id != -1:

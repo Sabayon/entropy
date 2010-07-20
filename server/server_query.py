@@ -35,7 +35,7 @@ def query(myopts):
         # open read only
         count = 0
         for mykeyword in myopts:
-            results = dbconn.searchPackages(mykeyword)
+            results = dbconn.searchPackages(mykeyword, order_by = "atom")
             for result in results:
                 count += 1
                 text_query.print_package_info(

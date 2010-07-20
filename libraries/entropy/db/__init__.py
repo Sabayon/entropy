@@ -583,6 +583,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._cursor().execute('PRAGMA default_cache_size = %s' % (size,))
 
+    def __clearLiveCache(self, key):
+        try:
+            del self.__live_cache[key]
+        except KeyError:
+            pass
 
     def __del__(self):
         self.closeDB()
@@ -639,6 +644,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 # skip tables that can't be dropped
                 continue
         self._cursor().executescript(my.get_init())
+        self.commitChanges()
+        self.__clearLiveCache("_doesTableExist")
         self._databaseStructureUpdates()
         # set cache size
         self._setCacheSize(8192)
@@ -646,6 +653,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._setupInitialSettings()
 
         self.commitChanges()
+        self.__clearLiveCache("_doesTableExist")
         super(EntropyRepository, self).initializeRepository()
 
     def handlePackage(self, pkg_data, forcedRevision = -1,
@@ -941,7 +949,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 DELETE FROM injected WHERE idpackage = %d;
                 DELETE FROM installedtable WHERE idpackage = %d;
             """ % r_tup)
-            # FIXME: incorportate in query above before 2010-12-31
+            # FIXME: incorportate in query above after 2011
             if self._doesTableExist("packagedesktopmime"):
                 self._cursor().execute("""
                 DELETE FROM packagedesktopmime WHERE idpackage = (?)""",
@@ -2765,7 +2773,7 @@ class EntropyRepository(EntropyRepositoryBase):
         excluded_deptypes_query = ""
         if exclude_deptypes is not None:
             for dep_type in exclude_deptypes:
-                excluded_deptypes_query += " AND dependencies.type != %s" % (
+                excluded_deptypes_query += " AND dependencies.type != %d" % (
                     dep_type,)
 
         cur = self._cursor().execute("""
@@ -2814,7 +2822,7 @@ class EntropyRepository(EntropyRepositoryBase):
         excluded_deptypes_query = ""
         if exclude_deptypes is not None:
             for dep_type in exclude_deptypes:
-                excluded_deptypes_query += " AND dependencies.type != %s" % (
+                excluded_deptypes_query += " AND dependencies.type != %d" % (
                     dep_type,)
 
         if extended:
@@ -2928,8 +2936,8 @@ class EntropyRepository(EntropyRepositoryBase):
             data = dict(((x, y,) for x, y in data))
         return data
 
-    def retrieveContent(self, package_id, extended = False, contentType = None,
-        formatted = False, insert_formatted = False, order_by = ''):
+    def retrieveContent(self, package_id, extended = False,
+        formatted = False, insert_formatted = False, order_by = None):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -2940,14 +2948,13 @@ class EntropyRepository(EntropyRepositoryBase):
         if insert_formatted:
             extstring_package_id = 'idpackage,'
 
-        searchkeywords = [package_id]
-        contentstring = ''
-        if contentType:
-            searchkeywords.append(contentType)
-            contentstring = ' and type = (?)'
-
+        searchkeywords = (package_id,)
         order_by_string = ''
-        if order_by:
+        if order_by is not None:
+            if order_by not in ("package_id", "idpackage", "file", "type",):
+                raise AttributeError("invalid order_by argument")
+            if order_by == "package_id":
+                order_by = "idpackage"
             order_by_string = ' order by %s' % (order_by,)
 
         did_try = False
@@ -2955,10 +2962,9 @@ class EntropyRepository(EntropyRepositoryBase):
             try:
 
                 cur = self._cursor().execute("""
-                SELECT %s file%s FROM content WHERE idpackage = (?) %s%s""" % (
-                    extstring_package_id, extstring,
-                    contentstring, order_by_string,),
-                searchkeywords)
+                SELECT %s file%s FROM content WHERE idpackage = (?) %s""" % (
+                    extstring_package_id, extstring, order_by_string,),
+                    searchkeywords)
 
                 if extended and insert_formatted:
                     fl = cur.fetchall()
@@ -3213,7 +3219,7 @@ class EntropyRepository(EntropyRepositoryBase):
         excluded_deptypes_query = ""
         if exclude_deptypes is not None:
             for dep_type in exclude_deptypes:
-                excluded_deptypes_query += " AND dependencies.type != %s" % (
+                excluded_deptypes_query += " AND dependencies.type != %d" % (
                     dep_type,)
 
         table_name = self._getReverseDependenciesTable()
@@ -3855,7 +3861,7 @@ class EntropyRepository(EntropyRepositoryBase):
         return self._cur2list(cur)
 
     def searchPackages(self, keyword, sensitive = False, slot = None,
-            tag = None, order_by = 'atom', just_id = False):
+            tag = None, order_by = None, just_id = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -3872,7 +3878,13 @@ class EntropyRepository(EntropyRepositoryBase):
             tagstring = ' and versiontag = (?)'
 
         order_by_string = ''
-        if order_by in ("atom", "idpackage", "branch",):
+        if order_by is not None:
+            valid_order_by = ("atom", "idpackage", "package_id", "branch",
+                "name", "version", "versiontag", "revision", "slot")
+            if order_by not in valid_order_by:
+                raise AttributeError("invalid order_by argument")
+            if order_by == "package_id":
+                order_by = "idpackage"
             order_by_string = ' order by %s' % (order_by,)
 
         search_elements = 'atom,idpackage,branch'
@@ -4066,18 +4078,17 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def listPackageIdsInCategoryId(self, category_id, order_by = None):
         """
-        List package identifiers available in given category identifier.
-
-        @param category_id: cateogory identifier
-        @type category_id: int
-        @keyword order_by: order by "atom", "name", "version"
-        @type order_by: string
-        @return: list (set) of available package identifiers in category.
-        @rtype: set
+        Reimplemented from EntropyRepositoryBase.
         """
         order_by_string = ''
-        if order_by in ("atom", "name", "version",):
-            order_by_string = ' ORDER BY %s' % (order_by,)
+        if order_by is not None:
+            valid_order_by = ("atom", "idpackage", "package_id", "branch",
+                "name", "version", "versiontag", "revision", "slot")
+            if order_by not in valid_order_by:
+                raise AttributeError("invalid order_by argument")
+            if order_by == "package_id":
+                order_by = "idpackage"
+            order_by_string = ' order by %s' % (order_by,)
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo where idcategory = (?)
@@ -4089,16 +4100,23 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        order_txt = ''
-        if order_by:
-            order_txt = ' ORDER BY %s' % (order_by,)
+        order_by_string = ''
+        if order_by is not None:
+            valid_order_by = ("atom", "idpackage", "package_id", "branch",
+                "name", "version", "versiontag", "revision", "slot")
+            if order_by not in valid_order_by:
+                raise AttributeError("invalid order_by argument")
+            if order_by == "package_id":
+                order_by = "idpackage"
+            order_by_string = ' order by %s' % (order_by,)
 
         if get_scope:
             cur = self._cursor().execute("""
-            SELECT idpackage,atom,slot,revision FROM baseinfo""" + order_txt)
+            SELECT idpackage,atom,slot,revision FROM baseinfo""" + \
+                order_by_string)
         else:
             cur = self._cursor().execute("""
-            SELECT atom,idpackage,branch FROM baseinfo""" + order_txt)
+            SELECT atom,idpackage,branch FROM baseinfo""" + order_by_string)
 
         return cur.fetchall()
 
@@ -4118,12 +4136,18 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        orderbystring = ''
-        if order_by:
-            orderbystring = ' ORDER BY '+order_by
+        order_by_string = ''
+        if order_by is not None:
+            valid_order_by = ("atom", "idpackage", "package_id", "branch",
+                "name", "version", "versiontag", "revision", "slot")
+            if order_by not in valid_order_by:
+                raise AttributeError("invalid order_by argument")
+            if order_by == "package_id":
+                order_by = "idpackage"
+            order_by_string = ' order by %s' % (order_by,)
 
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo""" + orderbystring)
+        SELECT idpackage FROM baseinfo""" + order_by_string)
 
         try:
             if order_by:
@@ -4174,10 +4198,17 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         order_by_string = ''
-        if order_by:
-            order_by_string = ' order by %s' % (order_by,)
-        self._cursor().execute('SELECT idcategory,category FROM categories %s' % (
-            order_by_string,))
+        if order_by is not None:
+            valid_order_by = ("category", "category_id", "idcategory")
+            if order_by not in valid_order_by:
+                raise AttributeError("invalid order_by argument")
+            if order_by == "category_id":
+                order_by = "idcategory"
+            order_by_string = 'ORDER BY %s' % (order_by,)
+
+        self._cursor().execute(
+            "SELECT idcategory, category FROM categories %s" % (
+                order_by_string,))
         return self._cursor().fetchall()
 
     def listConfigProtectEntries(self, mask = False):
@@ -4458,7 +4489,11 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         @todo: remove /usr/bin/sqlite3 dependency
         """
-        sqlite3_exec = "/usr/bin/sqlite3 %s < %s" % (dbfile, dumpfile,)
+        if not entropy.tools.is_valid_path_string(dbfile):
+            raise AttributeError("dbfile value is invalid")
+        if not entropy.tools.is_valid_path_string(dumpfile):
+            raise AttributeError("dumpfile value is invalid")
+        sqlite3_exec = "/usr/bin/sqlite3 \"%s\" < \"%s\"" % (dbfile, dumpfile,)
         retcode = subprocess.call(sqlite3_exec, shell = True)
         return retcode
 
@@ -4556,10 +4591,10 @@ class EntropyRepository(EntropyRepositoryBase):
             return True
 
         # speed up a bit if we already reported a table as existing
-        c_tup = ("_doesTableExist", table,)
-        cached = self.__live_cache.get(c_tup)
-        if cached is not None:
-            return cached
+        c_tup = "_doesTableExist"
+        cached = self.__live_cache.get(c_tup, {})
+        if table in cached:
+            return cached[table]
 
         cur = self._cursor().execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "table" AND name = (?)
@@ -4567,24 +4602,26 @@ class EntropyRepository(EntropyRepositoryBase):
         """, (table,))
         rslt = cur.fetchone()
         exists = rslt is not None
-        if exists:
-            self.__live_cache[c_tup] = True
+        obj = self.__live_cache.setdefault(c_tup, {})
+        obj[table] = exists
         return exists
 
     def _doesColumnInTableExist(self, table, column):
 
         # speed up a bit if we already reported a column as existing
-        c_tup = ("_doesColumnInTableExist", table, column,)
-        cached = self.__live_cache.get(c_tup)
-        if cached is not None:
-            return cached
+        c_tup = "_doesColumnInTableExist"
+        d_tup = (table, column,)
+        cached = self.__live_cache.get(c_tup, {})
+        if d_tup in cached:
+            return cached[d_tup]
 
         cur = self._cursor().execute('PRAGMA table_info( %s )' % (table,))
         rslt = (x[1] for x in cur.fetchall())
-        if column in rslt:
-            self.__live_cache[c_tup] = True
-            return True
-        return False
+
+        exists = column in rslt
+        obj = self.__live_cache.setdefault(c_tup, {})
+        obj[d_tup] = exists
+        return exists
 
     def checksum(self, do_order = False, strict = True,
         strings = False, include_signatures = False):
@@ -4739,6 +4776,7 @@ class EntropyRepository(EntropyRepositoryBase):
             ON %s ( idpackage )
             """ % (temp_txt_table, temp_txt_table,))
         self.commitChanges()
+        self.__clearLiveCache("_doesTableExist")
 
     def _sanitizeDependsTable(self):
         self._cursor().execute("""
@@ -5295,6 +5333,7 @@ class EntropyRepository(EntropyRepositoryBase):
             ALTER TABLE counterstemp RENAME TO counters;
         """)
         self.commitChanges()
+        self.__clearLiveCache("_doesTableExist")
 
     def _createSettingsTable(self):
         self._cursor().executescript("""
@@ -5305,6 +5344,7 @@ class EntropyRepository(EntropyRepositoryBase):
             );
         """)
         self._setupInitialSettings()
+        self.__clearLiveCache("_doesTableExist")
 
     def _createProvidedLibs(self):
 
@@ -5319,6 +5359,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     ON DELETE CASCADE
                 );
             """)
+            self.__clearLiveCache("_doesTableExist")
 
         # TODO: this is going to be removed soon
         client_repo = self.get_plugins_metadata().get('client_repo')
@@ -5411,11 +5452,14 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         ALTER TABLE provided_libs_tmp RENAME TO provided_libs;
         """)
+        # make sure that live_cache reports correct info regarding tables
+        self.__clearLiveCache("_doesTableExist")
 
     def _createProvideDefault(self):
         self._cursor().execute("""
         ALTER TABLE provide ADD COLUMN is_default INTEGER DEFAULT 0
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createInstalledTableSource(self):
         self._cursor().execute("""
@@ -5424,12 +5468,14 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE installedtable SET source = (?)
         """, (etpConst['install_sources']['unknown'],))
+        self.__clearLiveCache("_doesTableExist")
 
     def _createPackagechangelogsTable(self):
         self._cursor().execute("""
         CREATE TABLE packagechangelogs ( category VARCHAR,
             name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createAutomergefilesTable(self):
         self._cursor().execute("""
@@ -5438,6 +5484,7 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage)
             ON DELETE CASCADE );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createPackagesignaturesTable(self):
         self._cursor().execute("""
@@ -5449,11 +5496,13 @@ class EntropyRepository(EntropyRepositoryBase):
         gpg BLOB,
         FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createPackagesignaturesGpgColumn(self):
         self._cursor().execute("""
         ALTER TABLE packagesignatures ADD gpg BLOB;
         """)
+        self.__clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagespmphases(self):
         self._cursor().execute("""
@@ -5463,6 +5512,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createPackagespmrepository(self):
         self._cursor().execute("""
@@ -5472,6 +5522,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createEntropyBranchMigrationTable(self):
         self._cursor().execute("""
@@ -5484,11 +5535,13 @@ class EntropyRepository(EntropyRepositoryBase):
                 PRIMARY KEY (repository, from_branch, to_branch)
             );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createPackagesetsTable(self):
         self._cursor().execute("""
         CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createPackageDesktopMimeTable(self):
         self._cursor().execute("""
@@ -5501,6 +5554,7 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createProvidedMimeTable(self):
         self._cursor().execute("""
@@ -5510,23 +5564,13 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
-
-    def createCategoriesdescriptionTable(self):
-        self._cursor().execute("""
-        CREATE TABLE categoriesdescription ( category VARCHAR,
-            locale VARCHAR, description VARCHAR );
-        """)
-
-    def createLicensedataTable(self):
-        self._cursor().execute("""
-        CREATE TABLE licensedata ( licensename VARCHAR UNIQUE,
-            text BLOB, compressed INTEGER );
-        """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _createLicensesAcceptedTable(self):
         self._cursor().execute("""
         CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );
         """)
+        self.__clearLiveCache("_doesTableExist")
 
     def _addDependsRelationToDependsTable(self, iterable):
         # since this is not bulletproof (because user can mess with this

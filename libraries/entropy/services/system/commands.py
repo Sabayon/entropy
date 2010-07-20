@@ -1237,7 +1237,7 @@ class Repository(SocketCommands):
 
             mysearchlist = search_string.split()
             for mystring in mysearchlist:
-                results = dbconn.searchPackages(mystring)
+                results = dbconn.searchPackages(mystring, order_by = "atom")
                 for atom, idpackage, branch in results:
                     data = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     if not data: continue
