@@ -25,7 +25,7 @@ from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_set_nice_level, const_setup_perms, const_setup_entropy_pid, \
-    const_isstring, const_convert_to_unicode
+    const_isstring, const_convert_to_unicode, const_isnumber
 from entropy.exceptions import RepositoryError, InvalidPackageSet,\
     SystemDatabaseError
 from entropy.db import EntropyRepository
@@ -818,7 +818,7 @@ class RepositoryMixin:
                     os.access(os.path.join(client_dbdir, x), os.R_OK)
         ]
 
-    def clean_downloaded_packages(self):
+    def clean_downloaded_packages(self, dry_run = False, days_override = None):
         """
         Clean Entropy Client downloaded packages older than the setting
         specified by "packages-autoprune-days" in /etc/entropy/client.conf.
@@ -826,15 +826,23 @@ class RepositoryMixin:
         Otherwise, files older than given settings (representing time delta in
         days) will be removed.
 
+        @keyword dry_run: do not remove files, just return them
+        @type dry_run: bool
+        @keyword days_override: override SystemSettings setting (from client.conf)
+        @type days_override: int
         @return: list of removed package file paths.
         @rtype: list
+        @raise AttributeError: if days_override or client.conf setting is
+            invalid (the latter cannot really happen).
         """
         client_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = client_settings['misc']
-        autoprune_days = misc_settings.get('autoprune_days', None)
+        autoprune_days = misc_settings.get('autoprune_days', days_override)
         if autoprune_days is None:
             # sorry, feature disabled or not available
             return []
+        if not const_isnumber(autoprune_days):
+            raise AttributeError("autoprune_days is invalid")
 
         def filter_expired_pkg(pkg_path):
 
@@ -877,14 +885,29 @@ class RepositoryMixin:
 
         if not removable_pkgs:
             return []
+        if dry_run:
+            return removable_pkgs
 
         successfully_removed = []
         for repo_pkg in removable_pkgs:
+
+            mytxt = "%s: %s" % (
+                blue(_("Removing")),
+                purple(repo_pkg),
+            )
+            self.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = purple(" @@ ")
+            )
+
             try:
                 os.remove(repo_pkg)
                 successfully_removed.append(repo_pkg)
             except OSError:
                 pass
+
             try:
                 os.remove(repo_pkg + etpConst['packagesmd5fileext'])
             except OSError:
