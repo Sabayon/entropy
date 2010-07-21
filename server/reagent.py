@@ -253,7 +253,7 @@ elif main_cmd == "revdeps":
 # cleanup
 elif main_cmd == "cleanup":
     import text_tools
-    rc = text_tools.cleanup()
+    rc = text_tools.cleanup([etpConst['packagestmpdir'], etpConst['logdir']])
 
 # deptest tool
 elif main_cmd == "spm":
