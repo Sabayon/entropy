@@ -1,3 +1,160 @@
+commit ab0b15c528d7ed5ca9075a6a4b995082c8f89bf6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 09:01:23 2010 +0200
+
+    [conf] client.conf: protect /etc/exports against even getting config. protected (nothing should change that file)
+
+commit 8c7763f774d7eea29ab0d962e53451b3105bda5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 08:57:12 2010 +0200
+
+    [entropy.client] move packages cache directory to /var/lib/entropy/client/packages
+    
+    This allows easier NFS sharing over home networks. Previously,
+    paths were /var/lib/entropy/packages{-nonfree,-restricted,}.
+    Please note that if you want to share Entropy packages in a
+    larger infrastructure, it's advised to rsync the whole Entropy
+    mirror and serve your cache via FTP/HTTP/FILE protocols adding
+    the URI to repositories.conf.
+
+commit f7ffe433d0a88297339cf529dd470c325177c1ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 08:56:10 2010 +0200
+
+    [equo] make "directories" argument mandatory for text_tools.cleanup()
+
+commit a96525028fd0f7851310197e3bbd5e01fd9ff276
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 08:55:43 2010 +0200
+
+    [reagent] execute text_tools.cleanup() with arguments
+
+commit e224f5b2d694388f8b50c6f9007e91738cf70695
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 01:19:56 2010 +0200
+
+    [entropy.client.interfaces.repository] inform user about old downloaded packages cache size, if >500Mb
+
+commit a28e3ac1a68a2e1147ff353930e0c4f6ade74aac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 01:19:40 2010 +0200
+
+    [entropy.client.interfaces.repository] remove useless code
+
+commit 190fbf33cdc96ca64954ea56a0a05e3b997a6891
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 01:18:30 2010 +0200
+
+    [entropy.client] add two keyword args to Client.clean_downloaded_packages()
+    
+    Add "dry_run" and "days_override" argument to function above.
+
+commit 0f7b648a5a061d8cefc39f3b16986df115990872
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 20 23:52:02 2010 +0200
+
+    [entropy.db] improve robustness of EntropyRepository code
+
+commit 670d4e3387012c0a84581306056decb371286a7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 20 23:48:55 2010 +0200
+
+    [entropy.tools] add function is_valid_path_string
+    
+    It uses a very restricted whitelist of chars (through regexp) to
+    determine whether given path argument represents a sane filesystem
+    path.
+
+commit 3ab1d8db4b28fca71480736de24ea7ec45f07e55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 20 18:24:06 2010 +0200
+
+    [entropy.client] complete implementation of older entropy downloaded packages cleanup
+
+commit 899e514659e2f27deb5f7815b095825993fb34ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 20 10:32:53 2010 +0200
+
+    [reagent] trivial string update
+
+commit ca912cac637f983dd523ac7211cd5c8dc335de40
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 19 12:55:13 2010 +0200
+
+    [entropy.client,services] add automatic (disabled by default) old cached packages removal
+
+commit 8792fd863b1219f2e0f473488e6a781664a85426
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 19 11:31:49 2010 +0200
+
+    [sulfur] remove unwanted shebangs in sulfur modules
+
+commit 70a9ad0761b90ace0441a412fc5b7004888e8891
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 19 11:30:17 2010 +0200
+
+    [sulfur] remove shebang from module
+
+commit f31c878938f091f05f9fcc739c2163ec442d7dbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 19 11:29:11 2010 +0200
+
+    [entropy.client,client.conf] add support for "-" separated config options (keeping backward compat)
+
+commit 705431d52ab7dd92dda9123f2db157ac6348834a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 19 10:23:29 2010 +0200
+
+    [sulfur] change entropy-repo-manager application .desktop category (to Development)
+
+commit bf738f21cab8bcc456e7b9a4b2d5fa0ea1f1176c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 19 10:08:46 2010 +0200
+
+    [equo] add "--force-system" option support to "equo remove"
+
+commit 2c3f019108bed3462eacdd6c9ffbf7add72cbf50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 23:40:44 2010 +0200
+
+    [entropy.db] improve EntropyRepository.validateDatabase() (add categories table test)
+
+commit 7da34cef6acc1499ce9bf3a691b224b0d7970560
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 23:39:50 2010 +0200
+
+    [entropy.qa] add unadverstised support to env ETP_BROKEN_LIBS_MASK in test_shared_objects()
+
+commit ea4b90df8ff432529f67e561e5a3f5a5b79db834
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 20:18:42 2010 +0200
+
+    [entropy.db] properly use _doesTableExist() in contentDiff()
+
+commit 5c376ba9cd21a880554a71008026f252f4b08c06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 20:17:08 2010 +0200
+
+    [entropy.db] use a temporary table for reverse dependencies metadata when db file is read-only
+
+commit 6e5bc03082b923741f332d7c5f0e011f5f0f4bb2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 20:16:42 2010 +0200
+
+    [entropy.db] add temporary argument to _doesTableExist() to check against temp tables
+
+commit 21bbee9ad6d3d59ee7a8f4fc805b567c8609ec91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 20:14:48 2010 +0200
+
+    [entropy.qa] update docstring
+
+commit d88c8a7cb5e0aad93328b92b0559205ee7af38a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 17 09:00:43 2010 +0200
+
+    Tagging Entropy version 0.99.47.10
+
 commit f053368a62b9dee5950fe988a25a6c8f0ccd1499
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 17 08:59:57 2010 +0200
