@@ -93,7 +93,7 @@ class Package:
         "download" argument passed must come from
         EntropyRepository.retrieveDownloadURL()
         """
-        return os.path.join(etpConst['entropyworkdir'], download)
+        return os.path.join(etpConst['entropypackagesworkdir'], download)
 
     def __get_fetch_disk_path(self, download):
         """
@@ -329,8 +329,7 @@ class Package:
                         # properly, give up with everything
                         return 3, my_download_list
                     myuri = os.path.join(best_mirror, fname)
-                    pkg_path = os.path.join(etpConst['entropyworkdir'],
-                        fname)
+                    pkg_path = Package.get_standard_fetch_disk_path(fname)
                     fetch_files_list.append((myuri, pkg_path, cksum,))
 
                 try:

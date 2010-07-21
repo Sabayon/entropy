@@ -858,7 +858,7 @@ class RepositoryMixin:
                 return False
             return True
 
-        repo_pkgs_dirs = [os.path.join(etpConst['entropyworkdir'], x,
+        repo_pkgs_dirs = [os.path.join(etpConst['entropypackagesworkdir'], x,
             etpConst['currentarch']) for x in \
                 etpConst['packagesrelativepaths']]
 

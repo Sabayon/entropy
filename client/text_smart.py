@@ -363,7 +363,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
         entropy.tools.dump_entropy_metadata(
-            etpConst['entropyworkdir'] + os.path.sep + \
+            etpConst['entropypackagesworkdir'] + os.path.sep + \
                 matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
         mydbconn = entropy_client.open_generic_repository(tmpdbfile)
@@ -373,8 +373,9 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
             data = mydbconn.getPackageData(myidpackage)
             if len(idpackages) == 1:
                 # just a plain package that would like to become smart
-                xpakdata = xpaktools.read_xpak(etpConst['entropyworkdir'] + \
-                    os.path.sep + matchedAtoms[package]['download'])
+                xpakdata = xpaktools.read_xpak(
+                    etpConst['entropypackagesworkdir'] + \
+                        os.path.sep + matchedAtoms[package]['download'])
             else:
                 xpakdata = mydbconn.retrieveSpmMetadata(myidpackage) # already a smart package
             # add
@@ -390,9 +391,10 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     # merge packages
     for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("unpacking content"))
-        rc = entropy.tools.uncompress_tarball(etpConst['entropyworkdir'] + \
-            os.path.sep+matchedAtoms[x]['download'],
-            extract_path = os.path.join(unpackdir, "content"))
+        rc = entropy.tools.uncompress_tarball(
+            etpConst['entropypackagesworkdir'] + \
+                os.path.sep+matchedAtoms[x]['download'],
+                extract_path = os.path.join(unpackdir, "content"))
         if rc != 0:
             print_error(darkred(" * ")+red("%s." % (_("Unpack failed due to unknown reasons"),)))
             return rc
@@ -497,7 +499,8 @@ def smartgenerator(entropy_client, matched_atoms):
     if os.path.isdir(pkg_data_dir):
         shutil.rmtree(pkg_data_dir)
     os.makedirs(pkg_data_dir)
-    main_bin_path = os.path.join(etpConst['entropyworkdir'], pkgfilepath)
+    main_bin_path = os.path.join(etpConst['entropypackagesworkdir'],
+        pkgfilepath)
     print_info(darkgreen(" * ") + \
         red("%s " % (_("Unpacking the main package"),)) + \
         bold(str(pkgfilename)))
@@ -519,7 +522,8 @@ def smartgenerator(entropy_client, matched_atoms):
         depatom = mydbconn.retrieveAtom(dep_idpackage)
         print_info(darkgreen(" * ") + \
             red("%s " % (_("Unpacking dependency package"),)) + bold(depatom))
-        deppath = os.path.join(etpConst['entropyworkdir'], download_path)
+        deppath = os.path.join(etpConst['entropypackagesworkdir'],
+            download_path)
         entropy.tools.uncompress_tarball(deppath,
             extract_path = pkg_data_dir) # first unpack
 

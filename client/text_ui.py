@@ -46,6 +46,7 @@ def package(options):
         return 0
 
     # Options available for all the packages submodules
+    cmd = options[0]
     myopts = options[1:]
     e_req_deps = True
     e_req_empty_deps = False
@@ -80,7 +81,7 @@ def package(options):
             return -10
         if (opt == "--nodeps"):
             e_req_deps = False
-        elif (opt == "--bdeps") and (options[0] in get_pkgs_opts):
+        elif (opt == "--bdeps") and (cmd in get_pkgs_opts):
             e_req_bdeps = True
         elif (opt == "--empty"):
             e_req_empty_deps = True
@@ -136,21 +137,22 @@ def package(options):
                 _myopts.append(opt.strip())
     myopts = _myopts
 
-    entropy_client = Client()
-
+    entropy_client = None
     try:
-        if options[0] == "deptest":
+        entropy_client = Client()
+
+        if cmd == "deptest":
             rc, garbage = _dependencies_test(entropy_client)
 
-        elif options[0] == "unusedpackages":
+        elif cmd == "unusedpackages":
             rc, garbage = _unused_packages_test(entropy_client,
                 do_size_sort = e_req_sort_size)
 
-        elif options[0] == "libtest":
+        elif cmd == "libtest":
             rc, garbage = _libraries_test(entropy_client,
                 listfiles = e_req_listfiles, dump = e_req_dump)
 
-        elif options[0] == "source":
+        elif cmd == "source":
 
             if myopts or my_etp_pkg_paths:
                 rc, status = _download_sources(entropy_client,
@@ -164,7 +166,7 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] == "fetch":
+        elif cmd == "fetch":
 
             if myopts:
                 rc, status = _download_packages(entropy_client,
@@ -180,7 +182,7 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] == "install":
+        elif cmd == "install":
             if myopts or my_etp_pkg_paths or e_req_resume:
                 rc, garbage = install_packages(entropy_client,
                     packages = myopts, deps = e_req_deps,
@@ -198,8 +200,8 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] in ("world", "upgrade"):
-            if options[0] == "world": # print deprecation warning
+        elif cmd in ("world", "upgrade"):
+            if cmd == "world": # print deprecation warning
                 print_warning("")
                 print_warning("'%s' %s: '%s'" % (
                     purple("equo world"),
@@ -215,14 +217,14 @@ def package(options):
                 multifetch = e_req_multifetch,
                 build_deps = e_req_bdeps)
 
-        elif options[0] == "hop":
+        elif cmd == "hop":
             if myopts:
                 rc, status = branch_hop(entropy_client, myopts[0])
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] == "remove":
+        elif cmd == "remove":
             if myopts or e_req_resume:
                 rc, status = remove_packages(entropy_client,
                 packages = myopts, deps = e_req_deps,
@@ -234,25 +236,25 @@ def package(options):
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] == "config":
+        elif cmd == "config":
             if myopts:
                 rc, status = _configure_packages(entropy_client, myopts)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] == "mask":
+        elif cmd == "mask":
             if myopts:
                 rc, status = _mask_unmask_packages(entropy_client,
-                    myopts, options[0])
+                    myopts, cmd)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
-        elif options[0] == "unmask":
+        elif cmd == "unmask":
             if myopts:
                 rc, status = _mask_unmask_packages(entropy_client,
-                    myopts, options[0])
+                    myopts, cmd)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -262,12 +264,13 @@ def package(options):
 
         conf_cache_excl = ("hop", "fetch", "source", "deptest", "libtest",
             "unusedpackages", "mask", "unmask")
-        if (options[0] not in conf_cache_excl) and (rc not in (125, 126, -10)) \
+        if (cmd not in conf_cache_excl) and (rc not in (125, 126, -10)) \
             and (not etpUi['pretend']) and (not etpUi['quiet']):
             show_config_files_to_update(entropy_client)
 
     finally:
-        entropy_client.shutdown()
+        if entropy_client is not None:
+            entropy_client.shutdown()
 
     return rc
 
@@ -978,7 +981,8 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
         mystart = 0
         while True:
             mylist = run_queue[mystart:mymultifetch]
-            if not mylist: break
+            if not mylist:
+                break
             myqueue.append(mylist)
             mystart += multifetch
             mymultifetch += multifetch
@@ -1046,7 +1050,7 @@ def _download_packages(entropy_client, packages = None, deps = True,
         packages = []
 
     # check if I am root
-    if (not entropy.tools.is_root()):
+    if not entropy.tools.is_root():
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1072,6 +1076,7 @@ def _download_packages(entropy_client, packages = None, deps = True,
         return run_queue
 
     if etpUi['pretend']:
+        print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
         return 0, 0
 
     downdata = {}

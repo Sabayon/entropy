@@ -240,6 +240,11 @@ def const_default_settings(rootdir):
         'packagesrelativepath_basename': ETP_ARCH_CONST,
 
         'entropyworkdir': default_etp_dir, # Entropy workdir
+        # new (since 0.99.48) Entropy downloaded packages location
+        # equals to /var/lib/entropy/client/packages containing packages/,
+        # packages-nonfree/, packages-restricted/ etc
+        'entropypackagesworkdir': os.path.join(default_etp_dir + \
+            default_etp_client_repodir, "packages"),
         # Entropy unpack directory
         'entropyunpackdir': default_etp_vardir,
         # Entropy packages image directory

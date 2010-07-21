@@ -577,7 +577,11 @@ def _do_text_cleanup(main_cmd, options):
     dirs = [etpConst['packagestmpdir'], etpConst['logdir'],
         etpConst['entropyunpackdir']]
     for rel in etpConst['packagesrelativepaths']:
+        # backward compatibility, packages are moved to packages/ dir,
+        # including nonfree, restricted etc.
         dirs.append(os.path.join(etpConst['entropyworkdir'], rel))
+        # new location
+        dirs.append(os.path.join(etpConst['entropypackagesworkdir'], rel))
     text_tools.cleanup(dirs)
     return 0
 

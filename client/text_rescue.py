@@ -810,6 +810,7 @@ def _getinfo(entropy_client):
     info['Current branch'] = SysSettings['repositories']['branch']
     info['Entropy configuration directory'] = etpConst['confdir']
     info['Entropy work directory'] = etpConst['entropyworkdir']
+    info['Entropy packages directory'] = etpConst['entropypackagesworkdir']
     info['Entropy unpack directory'] = etpConst['entropyunpackdir']
     info['Entropy logging directory'] = etpConst['logdir']
     info['Entropy Official Repository identifier'] = SysSettings['repositories']['default_repository']
