@@ -296,7 +296,9 @@ class PortagePlugin(SpmPlugin):
                         self._zap_parens(x, dest)
             return dest
 
-    def init_singleton(self, OutputInterface):
+    def init_singleton(self, output_interface):
+
+        self.__output = output_interface
 
         # setup color status
         if not getcolor():
@@ -305,21 +307,9 @@ class PortagePlugin(SpmPlugin):
         elif "NOCOLOR" in os.environ:
             del os.environ['NOCOLOR']
 
-        mytxt = _("OutputInterface does not have an output method")
-        if not hasattr(OutputInterface, 'output'):
-            raise AttributeError(mytxt)
-        elif not hasattr(OutputInterface.output, '__call__'):
-            raise AttributeError(mytxt)
-
-        # interface only needed OutputInterface functions
-        self.output = OutputInterface.output
-        self.ask_question = OutputInterface.ask_question
-        self.input_box = OutputInterface.input_box
-        self.set_title = OutputInterface.set_title
-
         # importing portage stuff
         import portage
-        self.portage = portage
+        self._portage = portage
         try:
             import portage.const as portage_const
         except ImportError:
@@ -350,7 +340,7 @@ class PortagePlugin(SpmPlugin):
         try:
             from portage._global_updates import _global_updates
         except ImportError:
-            _global_updates = self.portage._global_updates
+            _global_updates = self._portage._global_updates
         self._portage_global_updates = _global_updates
 
         try:
@@ -398,7 +388,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        return self.portage.portdb.aux_get(package, [key])[0]
+        return self._portage.portdb.aux_get(package, [key])[0]
 
     def get_package_changelog(self, package):
         """
@@ -416,7 +406,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        return self.portage.portdb.findname(package)
+        return self._portage.portdb.findname(package)
 
     def get_installed_package_build_script_path(self, package, root = None):
         """
@@ -442,7 +432,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         system = []
-        for package in self.portage.settings.packages:
+        for package in self._portage.settings.packages:
             pkgs = self.match_installed_package(package, match_all = True)
             system.extend(pkgs)
         return system
@@ -459,7 +449,7 @@ class PortagePlugin(SpmPlugin):
         """
         from xml.dom import minidom
         data = {}
-        portdir = self.portage.settings['PORTDIR']
+        portdir = self._portage.settings['PORTDIR']
         myfile = os.path.join(portdir, category, "metadata.xml")
         if os.access(myfile, os.R_OK) and os.path.isfile(myfile):
             doc = minidom.parse(myfile)
@@ -480,7 +470,7 @@ class PortagePlugin(SpmPlugin):
             return []
 
         glsaconfig = self.glsa.checkconfig(
-            self.portage.config(clone=self.portage.settings))
+            self._portage.config(clone=self._portage.settings))
         completelist = self.glsa.get_glsa_list(
             glsaconfig["GLSA_DIR"], glsaconfig)
 
@@ -522,7 +512,7 @@ class PortagePlugin(SpmPlugin):
             return {}
 
         glsaconfig = self.glsa.checkconfig(
-            self.portage.config(clone=self.portage.settings))
+            self._portage.config(clone=self._portage.settings))
         try:
             myglsa = self.glsa.Glsa(advisory_id, glsaconfig)
         except (self.glsa.GlsaTypeException, self.glsa.GlsaFormatException):
@@ -564,7 +554,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        return self.portage.settings[key]
+        return self._portage.settings[key]
 
     def get_user_installed_packages_file(self, root = None):
         """
@@ -579,14 +569,14 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        config_protect = self.portage.settings['CONFIG_PROTECT']
+        config_protect = self._portage.settings['CONFIG_PROTECT']
         return [os.path.expandvars(x) for x in config_protect.split()]
 
     def get_merge_protected_paths_mask(self):
         """
         Reimplemented from SpmPlugin class.
         """
-        config_protect = self.portage.settings['CONFIG_PROTECT_MASK']
+        config_protect = self._portage.settings['CONFIG_PROTECT_MASK']
         return [os.path.expandvars(x) for x in config_protect.split()]
 
     def get_download_mirrors(self, mirror_name):
@@ -594,8 +584,8 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         mirrors = []
-        if mirror_name in self.portage.thirdpartymirrors:
-            mirrors.extend(self.portage.thirdpartymirrors[mirror_name])
+        if mirror_name in self._portage.thirdpartymirrors:
+            mirrors.extend(self._portage.thirdpartymirrors[mirror_name])
         return mirrors
 
     def packages_repositories_metadata_update(self):
@@ -608,7 +598,7 @@ class PortagePlugin(SpmPlugin):
         mydb[root]['vartree'] = self._get_portage_vartree(root)
         mydb[root]['porttree'] = self._get_portage_portagetree(root)
         mydb[root]['bintree'] = self._get_portage_binarytree(root)
-        mydb[root]['virtuals'] = self.portage.settings.getvirtuals()
+        mydb[root]['virtuals'] = self._portage.settings.getvirtuals()
 
         if etpUi['mute']:
             pid = os.fork()
@@ -644,8 +634,8 @@ class PortagePlugin(SpmPlugin):
         elif match_type not in PortagePlugin.SUPPORTED_MATCH_TYPES:
             raise KeyError()
         try:
-            return self.portage.portdb.xmatch(match_type, package)
-        except self.portage.exception.PortageException:
+            return self._portage.portdb.xmatch(match_type, package)
+        except self._portage.exception.PortageException:
             raise KeyError()
 
     def match_installed_package(self, package, match_all = False, root = None):
@@ -658,7 +648,7 @@ class PortagePlugin(SpmPlugin):
         vartree = self._get_portage_vartree(root = root)
         try:
             matches = vartree.dep_match(package) or []
-        except self.portage.exception.InvalidAtom as err:
+        except self._portage.exception.InvalidAtom as err:
             raise InvalidAtom(str(err))
 
         if match_all:
@@ -679,9 +669,9 @@ class PortagePlugin(SpmPlugin):
 
         import tarfile
         import stat
-        trees = self.portage.db["/"]
+        trees = self._portage.db["/"]
         vartree = trees["vartree"]
-        dblnk = self.portage.dblink(pkgcat, pkgname, "/", vartree.settings,
+        dblnk = self._portage.dblink(pkgcat, pkgname, "/", vartree.settings,
             treetype="vartree", vartree=vartree)
         if etpConst['uid'] == 0:
             dblnk.lockdb()
@@ -813,7 +803,7 @@ class PortagePlugin(SpmPlugin):
             return kern_dep_key
 
     def _get_default_virtual_pkg(self, virtual_key):
-        defaults = self.portage.settings.getvirtuals()[virtual_key]
+        defaults = self._portage.settings.getvirtuals()[virtual_key]
         if defaults:
             return defaults[0]
 
@@ -905,7 +895,7 @@ class PortagePlugin(SpmPlugin):
         #    # WARNING: this can be erroneously set to currently running
         #    # system CHOST that could not match the CHOST the package was
         #    # built with
-        #    data['chost'] = self.portage.settings['CHOST']
+        #    data['chost'] = self._portage.settings['CHOST']
 
         if not data['spm_repository']: # make sure it's set to None
             data['spm_repository'] = None
@@ -1223,7 +1213,7 @@ class PortagePlugin(SpmPlugin):
                 matched_slot,
             )
             installed_atom = self.match_installed_package(inst_key)
-        except self.portage.exception.PortageException:
+        except self._portage.exception.PortageException:
             installed_atom = ''
 
         if installed_atom:
@@ -1357,8 +1347,8 @@ class PortagePlugin(SpmPlugin):
         mytree = self._get_portage_vartree(root)
 
         cat, pkgv = package.split("/")
-        return sorted(self.portage.dblink(cat, pkgv, root,
-            self.portage.settings).getcontents())
+        return sorted(self._portage.dblink(cat, pkgv, root,
+            self._portage.settings).getcontents())
 
     def get_packages(self, categories = None, filter_reinstalls = True):
         """
@@ -1369,7 +1359,7 @@ class PortagePlugin(SpmPlugin):
 
         root = etpConst['systemroot'] + os.path.sep
         mysettings = self._get_portage_config(os.path.sep, root)
-        portdb = self.portage.portdbapi(mysettings["PORTDIR"],
+        portdb = self._portage.portdbapi(mysettings["PORTDIR"],
             mysettings = mysettings)
 
         cps = portdb.cp_all()
@@ -1667,8 +1657,8 @@ class PortagePlugin(SpmPlugin):
 
         for package in packages:
             cat, pkgv = package.split("/")
-            content = self.portage.dblink(cat, pkgv, root,
-                self.portage.settings).getcontents()
+            content = self._portage.dblink(cat, pkgv, root,
+                self._portage.settings).getcontents()
 
             if exact_match:
                 for filename in paths:
@@ -1720,7 +1710,7 @@ class PortagePlugin(SpmPlugin):
 
         # load metadata
         myebuilddir = os.path.dirname(myebuild)
-        keys = self.portage.auxdbkeys
+        keys = self._portage.auxdbkeys
         metadata = {}
 
         for key in keys:
@@ -1811,7 +1801,7 @@ class PortagePlugin(SpmPlugin):
                 lic_f.close()
 
         cpv = str(cpv)
-        mydbapi = self.portage.fakedbapi(settings=mysettings)
+        mydbapi = self._portage.fakedbapi(settings=mysettings)
         mydbapi.cpv_inject(cpv, metadata = metadata)
         mysettings.setcpv(cpv, mydb = mydbapi)
 
@@ -1819,7 +1809,7 @@ class PortagePlugin(SpmPlugin):
         vartree = self._get_portage_vartree(root = root)
 
         if etpUi['debug']:
-            self.output(
+            self.__output.output(
                 "PortagePlugin<_portage_doebuild>, env: %s" % (
                     locals(),),
                 importance = 0,
@@ -1827,7 +1817,7 @@ class PortagePlugin(SpmPlugin):
             )
 
         try:
-            rc = self.portage.doebuild(
+            rc = self._portage.doebuild(
                 myebuild = str(myebuild),
                 mydo = str(mydo),
                 myroot = root,
@@ -2053,7 +2043,7 @@ class PortagePlugin(SpmPlugin):
                 brown(_("Cannot run Source Package Manager trigger for")),
                 bold(str(package)),
             )
-            self.output(
+            self.__output.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -2064,7 +2054,7 @@ class PortagePlugin(SpmPlugin):
                 darkred(etpConst['spmlogfile']),
                 brown(phase),
             )
-            self.output(
+            self.__output.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -2088,7 +2078,7 @@ class PortagePlugin(SpmPlugin):
 
         except EOFError as e:
             # stuff on system is broken, ignore it
-            self.output(
+            self.__output.output(
                 darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
                     str(e) + darkred(" - ignoring"),
                 importance = 1,
@@ -2099,7 +2089,7 @@ class PortagePlugin(SpmPlugin):
 
         except ImportError as e:
             # stuff on system is broken, ignore it
-            self.output(
+            self.__output.output(
                 darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
                     str(e) + darkred(" - ignoring"),
                 importance = 1,
@@ -2130,7 +2120,7 @@ class PortagePlugin(SpmPlugin):
                 brown(_("Cannot run Source Package Manager trigger for")),
                 bold(str(package)),
             )
-            self.output(
+            self.__output.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -2141,7 +2131,7 @@ class PortagePlugin(SpmPlugin):
                 darkred(etpConst['spmlogfile']),
                 brown(phase),
             )
-            self.output(
+            self.__output.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -2203,7 +2193,7 @@ class PortagePlugin(SpmPlugin):
                 err,
             )
             for txt in (mytxt, mytxt2,):
-                self.output(
+                self.__output.output(
                     txt,
                     importance = 0,
                     header = red("   ## ")
@@ -2242,7 +2232,7 @@ class PortagePlugin(SpmPlugin):
 
         for myatom in runatoms:
 
-            self.output(
+            self.__output.output(
                 red("%s: " % (_("repackaging"),) )+blue(myatom),
                 importance = 1,
                 level = "warning",
@@ -2264,7 +2254,7 @@ class PortagePlugin(SpmPlugin):
                     blue(myatom),
                     _("do it manually"),
                 )
-                self.output(
+                self.__output.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
@@ -2283,7 +2273,7 @@ class PortagePlugin(SpmPlugin):
                 red(_("package files rebuild did not run properly")),
                 red(_("Please update packages manually")),
             )
-            self.output(
+            self.__output.output(
                 mytxt,
                 importance = 1,
                 level = "warning",
@@ -2380,7 +2370,7 @@ class PortagePlugin(SpmPlugin):
                     red(_("Syncing with")),
                     blue(updates_dir),
                 )
-                self.output(
+                self.__output.output(
                     mytxt,
                     importance = 1,
                     level = "info",
@@ -2417,7 +2407,7 @@ class PortagePlugin(SpmPlugin):
                             blue(str(sorted(quickpkg_list))),
                             _("do it manually"),
                         )
-                        self.output(
+                        self.__output.output(
                             mytxt,
                             importance = 1,
                             level = "warning",
@@ -2516,7 +2506,7 @@ class PortagePlugin(SpmPlugin):
                 mytxt = "%s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot stat path")),
                     purple(repr(path)),)
-                self.output(
+                self.__output.output(
                     mytxt,
                     importance = 1,
                     level = "warning",
@@ -2571,12 +2561,12 @@ class PortagePlugin(SpmPlugin):
             self.__parent = parent
 
         def __enter__(self):
-            self.__vdb_lock = self.__parent.portage.locks.lockdir(
+            self.__vdb_lock = self.__parent._portage.locks.lockdir(
                 self.__vdb_path)
 
         def __exit__(self, exc_type, exc_value, traceback):
             if self.__vdb_lock is not None:
-                self.__parent.portage.locks.unlockdir(
+                self.__parent._portage.locks.unlockdir(
                     self.__vdb_lock)
                 self.__vdb_lock = None
 
@@ -2670,7 +2660,7 @@ class PortagePlugin(SpmPlugin):
                     mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                         brown(_("Cannot update Portage database to destination")),
                         purple(pkg_dir), e,)
-                    self.output(
+                    self.__output.output(
                         mytxt,
                         importance = 1,
                         level = "warning",
@@ -2693,7 +2683,7 @@ class PortagePlugin(SpmPlugin):
                         mytxt = "%s: %s [%s]" % (
                             brown(_("SPM uid update error")), pkg_dir, err,
                         )
-                        self.output(
+                        self.__output.output(
                             red("QA: ") + mytxt,
                             importance = 1,
                             level = "warning",
@@ -2761,7 +2751,7 @@ class PortagePlugin(SpmPlugin):
             mytxt = "%s: %s" % (
                 brown(_("Cannot update SPM installed pkgs file")), world_file,
             )
-            self.output(
+            self.__output.output(
                 red("QA: ") + mytxt + ": " + repr(e),
                 importance = 1,
                 level = "warning",
@@ -3300,7 +3290,7 @@ class PortagePlugin(SpmPlugin):
             return cached
 
         try:
-            mytree = self.portage.vartree(root=root)
+            mytree = self._portage.vartree(root=root)
         except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['vartree'][root] = mytree
@@ -3313,7 +3303,7 @@ class PortagePlugin(SpmPlugin):
             return cached
 
         try:
-            mytree = self.portage.portagetree(root=root)
+            mytree = self._portage.portagetree(root=root)
         except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['portagetree'][root] = mytree
@@ -3325,9 +3315,9 @@ class PortagePlugin(SpmPlugin):
         if cached is not None:
             return cached
 
-        pkgdir = root+self.portage.settings['PKGDIR']
+        pkgdir = root+self._portage.settings['PKGDIR']
         try:
-            mytree = self.portage.binarytree(root, pkgdir)
+            mytree = self._portage.binarytree(root, pkgdir)
         except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['binarytree'][root] = mytree
@@ -3341,7 +3331,7 @@ class PortagePlugin(SpmPlugin):
                 return cached
 
         try:
-            mysettings = self.portage.config(config_root = config_root,
+            mysettings = self._portage.config(config_root = config_root,
                 target_root = root,
                 config_incrementals = self._portage_const.INCREMENTALS)
         except Exception as e:
@@ -3530,13 +3520,13 @@ class PortagePlugin(SpmPlugin):
         return data
 
     def _get_useflags(self):
-        return self.portage.settings['USE']
+        return self._portage.settings['USE']
 
     def _get_useflags_force(self):
-        return self.portage.settings.useforce
+        return self._portage.settings.useforce
 
     def _get_useflags_mask(self):
-        return self.portage.settings.usemask
+        return self._portage.settings.usemask
 
     def _resolve_enabled_useflags(self, iuse_list, use_list):
         use = set()
@@ -3593,7 +3583,7 @@ class PortagePlugin(SpmPlugin):
                 deps = ' '.join(deps)
             except Exception as e:
                 entropy.tools.print_traceback()
-                self.output(
+                self.__output.output(
                     darkred("%s: %s: %s :: %s") % (
                         _("Error calculating dependencies"),
                         str(Exception),
@@ -3853,7 +3843,7 @@ class PortagePlugin(SpmPlugin):
                     warned = 0
                     if len(newdeparray[-1]) == 0:
                         mytxt = "%s. (%s)" % (_("Empty target in string"), _("Deprecated"),)
-                        self.output(
+                        self.__output.output(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
                             level = "error",
@@ -3862,7 +3852,7 @@ class PortagePlugin(SpmPlugin):
                         warned = 1
                     if len(newdeparray) != 2:
                         mytxt = "%s. (%s)" % (_("Nested use flags without parenthesis"), _("Deprecated"),)
-                        self.output(
+                        self.__output.output(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
                             level = "error",
@@ -3870,7 +3860,7 @@ class PortagePlugin(SpmPlugin):
                         )
                         warned = 1
                     if warned:
-                        self.output(
+                        self.__output.output(
                             darkred("PortagePlugin._use_reduce(): "+" ".join(map(str, [head]+newdeparray))),
                             importance = 0,
                             level = "error",
@@ -4041,8 +4031,8 @@ class PortagePlugin(SpmPlugin):
             return
         myroot = etpConst['systemroot'] + os.path.sep
         return self._load_sets_config(
-            self.portage.settings,
-            self.portage.db[myroot]
+            self._portage.settings,
+            self._portage.db[myroot]
         )
 
     def _extract_pkg_metadata_generate_extraction_dict(self):
@@ -4249,7 +4239,7 @@ class PortagePlugin(SpmPlugin):
                     continue
                 elf_class = entropy.tools.read_elf_class(unpack_obj)
             except IOError as err:
-                self.output("%s: %s => %s" % (
+                self.__output.output("%s: %s => %s" % (
                     _("IOError while reading"), unpack_obj, repr(err),),
                     level = "warning")
                 continue
@@ -4378,7 +4368,7 @@ class PortagePlugin(SpmPlugin):
                 brown(_("illegal Entropy package tag in ebuild")),
                 tag,
             )
-            self.output(
+            self.__output.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
