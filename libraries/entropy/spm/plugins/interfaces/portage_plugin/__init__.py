@@ -1813,8 +1813,13 @@ class PortagePlugin(SpmPlugin):
         # cached vartree class
         vartree = self._get_portage_vartree(root = root)
 
-        self.log_message("PortagePlugin<_portage_doebuild>, environment: %s" % (
-            locals(),))
+        if etpUi['debug']:
+            self.output(
+                "PortagePlugin<_portage_doebuild>, env: %s" % (
+                    locals(),),
+                importance = 0,
+                header = ""
+            )
 
         try:
             rc = self.portage.doebuild(

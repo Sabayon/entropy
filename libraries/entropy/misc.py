@@ -21,9 +21,10 @@ if sys.hexversion >= 0x3000000:
 else:
     import urllib2
     UrllibBaseHandler = urllib2.BaseHandler
+import logging
 import threading
 from entropy.const import etpConst, etpUi, const_isunicode, const_isstring, \
-    const_isfileobj
+    const_isfileobj, const_convert_log_level
 
 import entropy.tools
 
@@ -976,168 +977,81 @@ class RSS:
 
 class LogFile:
 
+    LEVELS = {
+        "debug": logging.DEBUG,
+        "info": logging.INFO,
+        "warning": logging.WARNING,
+        "error": logging.ERROR,
+        "critical": logging.CRITICAL
+    }
+    LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
+    DATE_FORMAT = "[%H:%M:%S %d/%m/%Y %Z]"
+
     """ Entropy simple logging interface, works as file object """
 
-    def __init__(self, level = 0, filename = None, header = "[LOG]"):
+    def __init__(self, level = None, filename = None, header = "[LOG]"):
         """
         LogFile constructor.
 
-        @keyword level: log level threshold which will trigger effective write
-            on log file
+        @keyword level: any valid Entropy log level id (0, 1, 2).
+            0: error logging, 1: normal logging, 2: debug logging
         @type level: int
         @keyword filename: log file path
         @type filename: string
         @keyword header: log line header
         @type header: string
         """
-        self.handler = self.default_handler
-        self.level = level
-        self.header = header
-        self._logfile = None
-        self.open(filename)
+        if level is not None:
+            logger_level = const_convert_log_level(level)
+        else:
+            logger_level = logging.INFO
+
+        self.__logger = logging.getLogger(os.path.basename(filename))
+        self.__level = LogFile.LEVELS.get(logger_level)
+        self.__logger.setLevel(logging.DEBUG)
+        if filename is not None:
+            try:
+                self.__handler = logging.FileHandler(filename)
+            except (IOError, OSError):
+                self.__handler = logging.StreamHandler()
+        else:
+            self.__handler = logging.StreamHandler()
+
+        self.__handler.setLevel(self.__level)
+        self.__handler.setFormatter(logging.Formatter(LogFile.LOG_FORMAT,
+            LogFile.DATE_FORMAT))
+        self.__logger.addHandler(self.__handler)
         self.__filename = filename
+        self.__header = header
 
     def __del__(self):
         self.close()
 
+    def flush(self):
+        """ Flush log buffer """
+        if hasattr(self.__handler, 'flush'):
+            self.__handler.flush()
+
     def close(self):
         """ Close log file """
-        try:
-            self._logfile.close()
-        except (IOError, OSError,):
-            pass
+        if hasattr(self.__handler, 'close'):
+            self.__handler.close()
+        self.__logger = None
 
-    def get_fpath(self):
-        """ Get log file path """
-        return self.__filename
-
-    def flush(self):
-        """ Flush log file buffer to disk """
-        self._logfile.flush()
-
-    def fileno(self):
-        """
-        Get log file descriptor number
-
-        @return: file descriptor number
-        @rtype: int
-        """
-        return self.__get_file()
-
-    def isatty(self):
-        """
-        Return whether LogFile works like a tty
-
-        @return: is a tty?
-        @rtype: bool
-        """
-        return False
-
-    def read(self, *args):
-        """
-        Fake method (exposed for file object compatibility)
-
-        @return: empty string
-        @rtype: string
-        """
-        return ''
-
-    def readline(self):
-        """
-        Fake method (exposed for file object compatibility)
-
-        @return: empty string
-        @rtype: string
-        """
-        return ''
-
-    def readlines(self):
-        """
-        Fake method (exposed for file object compatibility)
-
-        @return: empty list
-        @rtype: list
-        """
-        return []
-
-    def seek(self, offset):
-        """
-        File object method, move file object cursor at offset
-
-        @return: new file object position
-        @rtype: int
-        """
-        return self._logfile.seek(offset)
-
-    def tell(self):
-        """
-        File object method, tell file object position
-
-        @return: file object position
-        @rtype: int
-        """
-        return self._logfile.tell()
-
-    def truncate(self):
-        """
-        File object method, truncate file buffer.
-        """
-        return self._logfile.truncate()
-
-    def open(self, file_path = None):
-        """
-        Open log file, if possible, otherwise redirect to /dev/null or stderr.
-
-        @keyword file_path: path to file
-        @type file_path: string
-        """
-        if const_isstring(file_path):
-            if not os.path.isfile(file_path) and os.access(
-                os.path.dirname(file_path), os.W_OK):
-                self._logfile = open(file_path, "a")
-            else:
-                if os.access(file_path, os.W_OK) and os.path.isfile(file_path):
-                    self._logfile = open(file_path, "a")
-                elif os.path.exists("/dev/null"):
-                    self._logfile = open("/dev/null", "a")
-                else:
-                    self._logfile = sys.stderr
-
-        elif hasattr(file_path, 'write'):
-            self._logfile = file_path
-        else:
-            self._logfile = sys.stderr
-
-    def __get_file(self):
-        return self._logfile.fileno()
-
-    def __call__(self, format, *args):
-        self.handler (format % args)
-
-    def default_handler(self, mystr):
+    def _handler(self, mystr):
         """
         Default log file writer. This can be reimplemented.
 
         @param mystr: log string to write
         @type mystr: string
+        @param level: logging level
+        @type level: string
         """
+        self.__get_logger()
         try:
-            self._logfile.write ("* %s\n" % (mystr))
+            self.__get_logger()(mystr)
         except UnicodeEncodeError:
-            self._logfile.write ("* %s\n" % (mystr.encode('utf-8'),))
-        except ValueError:
-            # file closed!
-            return
-        self._logfile.flush()
-
-    def set_loglevel(self, level):
-        """
-        Change logging threshold.
-
-        @param level: new logging threshold
-        @type level: int
-        """
-        self.level = level
+            self.__get_logger()(mystr.encode('utf-8'))
 
     def log(self, messagetype, level, message):
         """
@@ -1151,9 +1065,7 @@ class LogFile:
         @param message: log message
         @type message: string
         """
-        if self.level >= level and not etpUi['nolog']:
-            self.handler("%s %s %s %s" % (self.__get_header(),
-                messagetype, self.header, message,))
+        self._handler("%s %s %s" % (messagetype, self.__header, message,))
 
     def write(self, mystr):
         """
@@ -1163,7 +1075,7 @@ class LogFile:
         @param mystr: log string to write
         @type mystr: string
         """
-        self.handler(mystr)
+        self._handler(mystr)
 
     def writelines(self, lst):
         """
@@ -1176,8 +1088,17 @@ class LogFile:
         for line in lst:
             self.write(line)
 
-    def __get_header(self):
-        return time.strftime('[%H:%M:%S %d/%m/%Y %Z]')
+    def __get_logger(self):
+        logger_map = {
+            logging.INFO: self.__logger.info,
+            logging.WARNING: self.__logger.warning,
+            logging.DEBUG: self.__logger.debug,
+            logging.ERROR: self.__logger.error,
+            logging.CRITICAL: self.__logger.error,
+            logging.NOTSET: self.__logger.info,
+        }
+        return logger_map.get(self.__level, self.__logger.info)
+
 
 class Callable:
     """

@@ -300,7 +300,6 @@ class Trigger:
 
             myenv = {
                 "ETP_API": etpSys['api'],
-                "ETP_LOG": self.Entropy.clientLog.get_fpath(),
                 "ETP_STAGE": stage, # entropy trigger stage
                 "ETP_PHASE": self.__get_sh_stage(stage), # entropy trigger phase
                 "ETP_BRANCH": etp_branch,

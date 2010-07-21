@@ -73,6 +73,7 @@ etpUi = {
     'ask': False,
     'pretend': False,
     'mute': False,
+    # TODO: remove this after 20101010
     'nolog': False,
     'clean': False,
     'warn': True,
@@ -1004,6 +1005,25 @@ def const_create_working_dirs():
             # aufs/unionfs will start to leak otherwise
             const_setup_perms(etpConst['etpdatabaseclientdir'], gid,
                 f_perms = 0o644, uid = etpConst['uid'])
+
+def const_convert_log_level(entropy_log_level):
+    """
+    Converts Entropy log levels (0, 1, 2) to logging.ERROR, logging.INFO,
+    logging.DEBUG.
+
+    @param entropy_log_level: entropy log level id (0, 1, 2), bogus values are
+        return logging.DEBUG
+    @type entropy_log_level: int
+    @return: logging.{ERROR,INFO,DEBUG} value
+    @rtype: int
+    """
+    import logging
+    log_map = {
+        0: logging.ERROR,
+        1: logging.INFO,
+        2: logging.DEBUG
+    }
+    return log_map.get(entropy_log_level, logging.INFO)
 
 def const_configure_lock_paths():
     """
