@@ -32,6 +32,7 @@ def repositories(options):
 
     # Options available for all the packages submodules
     myopts = options[1:]
+    cmd = options[0]
     e_req_force_update = False
     rc = 0
     repo_names = []
@@ -46,9 +47,10 @@ def repositories(options):
             repo_names.append(opt)
 
     from entropy.client.interfaces import Client
-    entropy_client = Client(noclientdb = True)
+    entropy_client = None
     try:
-        if options[0] == "update":
+        entropy_client = Client(noclientdb = True)
+        if cmd == "update":
             # check if I am root
             er_txt = darkred(_("You must be either root or in this group:")) + \
                 " " +  etpConst['sysgroup']
@@ -61,11 +63,11 @@ def repositories(options):
                 rc = _do_sync(entropy_client, repo_identifiers = repo_names,
                     force = e_req_force_update)
 
-        elif options[0] == "status":
+        elif cmd == "status":
             for repo in SystemSettings['repositories']['order']:
                 _show_repository_info(entropy_client, repo)
 
-        elif options[0] == "repo":
+        elif cmd == "repo":
 
             er_txt = darkred(_("You must be root"))
             if not entropy.tools.is_root():
@@ -92,7 +94,7 @@ def repositories(options):
                 else:
                     rc = -10
 
-        elif options[0] == "notice":
+        elif cmd == "notice":
             myopts = options[1:]
             myopts = [x for x in myopts if x in \
                 SystemSettings['repositories']['available']]
@@ -105,7 +107,8 @@ def repositories(options):
         else:
             rc = -10
     finally:
-        entropy_client.shutdown()
+        if entropy_client is not None:
+            entropy_client.shutdown()
 
     return rc
 

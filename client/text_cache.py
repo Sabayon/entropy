@@ -21,8 +21,9 @@ def cache(options):
     rc = 0
 
     from entropy.client.interfaces import Client
-    entropy_client = Client(noclientdb = True)
+    entropy_client = None
     try:
+        entropy_client = Client(noclientdb = True)
         if cmd == "clean":
             entropy_client.output(
                 blue(_("Cleaning Entropy cache, please wait ...")),
@@ -39,7 +40,8 @@ def cache(options):
         else:
             rc = -10
     finally:
-        entropy_client.shutdown()
+        if entropy_client is not None:
+            entropy_client.shutdown()
 
     return rc
 

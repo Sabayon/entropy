@@ -36,11 +36,13 @@ def security(options):
         elif opt == "--force":
             force = True
 
+    cmd = options[0]
     from entropy.client.interfaces import Client
-    entropy_client = Client()
+    entropy_client = None
     try:
+        entropy_client = Client()
 
-        if options[0] == "update":
+        if cmd == "update":
             security_intf = entropy_client.Security()
             er_txt = darkred(_("You must be either root or in this group:")) + \
                 " " +  etpConst['sysgroup']
@@ -49,22 +51,23 @@ def security(options):
                 return 1
             rc = security_intf.sync(force = force)
 
-        elif options[0] == "list":
+        elif cmd == "list":
             security_intf = entropy_client.Security()
             rc = list_advisories(security_intf, only_affected = only_affected,
                 only_unaffected = only_unaffected)
 
-        elif options[0] == "install":
+        elif cmd == "install":
             security_intf = entropy_client.Security()
             rc = install_packages(entropy_client, security_intf, fetch = fetch)
 
-        elif options[0] == "info":
+        elif cmd == "info":
             security_intf = entropy_client.Security()
             rc = show_advisories_info(security_intf, options[1:])
         else:
             rc = -10
     finally:
-        entropy_client.shutdown()
+        if entropy_client is not None:
+            entropy_client.shutdown()
 
     return rc
 

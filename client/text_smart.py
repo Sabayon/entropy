@@ -57,8 +57,9 @@ def smart(options):
     rc = 0
 
     from entropy.client.interfaces import Client
-    entropy_client = Client()
+    entropy_client = None
     try:
+        entropy_client = Client()
         if options[0] == "application":
             rc = smart_apps_handler(entropy_client, options[1:])
 
@@ -76,7 +77,8 @@ def smart(options):
         else:
             rc = -10
     finally:
-        entropy_client.shutdown()
+        if entropy_client is not None:
+            entropy_client.shutdown()
 
     return rc
 

@@ -43,8 +43,9 @@ def configurator(options):
         return 1
 
     from entropy.client.interfaces import Client
-    etp_client = Client()
+    etp_client = None
     try:
+        etp_client = Client()
         cmd = options.pop(0)
         if cmd == "info":
             rc = confinfo(etp_client)
@@ -53,7 +54,8 @@ def configurator(options):
         else:
             rc = -10
     finally:
-        etp_client.shutdown()
+        if etp_client is not None:
+            etp_client.shutdown()
 
     return rc
 

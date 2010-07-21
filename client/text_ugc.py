@@ -38,9 +38,10 @@ def ugc(options):
     rc = -10
 
     from entropy.client.interfaces import Client
-    entropy_client = Client()
-    entropy_client.UGC.show_progress = True
+    entropy_client = None
     try:
+        entropy_client = Client()
+        entropy_client.UGC.show_progress = True
         if cmd == "login":
             if options:
                 rc = _ugc_login(entropy_client, options[0],
@@ -55,7 +56,8 @@ def ugc(options):
             if options:
                 rc = _ugc_votes(entropy_client, options)
     finally:
-        entropy_client.shutdown()
+        if entropy_client is not None:
+            entropy_client.shutdown()
 
     return rc
 

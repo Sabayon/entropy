@@ -74,23 +74,25 @@ def database(options):
         print_error(red(mytxt+"."))
         return 1
 
-    etp_client = Client(noclientdb = True)
+    cmd = options[0]
+    etp_client = None
     try:
+        etp_client = Client(noclientdb = True)
 
-        if options[0] == "generate":
+        if cmd == "generate":
             return _database_generate(etp_client)
 
-        elif options[0] == "check":
+        elif cmd == "check":
             return _database_check(etp_client)
 
-        elif options[0] == "resurrect":
+        elif cmd == "resurrect":
             return _database_resurrect(etp_client)
 
-        elif options[0] == "revdeps":
+        elif cmd == "revdeps":
             return _database_revdeps(etp_client)
 
-        elif options[0] in ("counters", "spmuids",):
-            if options[0] == "counters":
+        elif cmd in ("counters", "spmuids",):
+            if cmd == "counters":
                 print_warning("")
                 print_warning("'%s' %s: '%s'" % (
                     purple("equo database counters"),
@@ -99,8 +101,8 @@ def database(options):
                 print_warning("")
             return _database_counters(etp_client)
 
-        elif options[0] in ("gentoosync", "spmsync",):
-            if options[0] == "gentoosync":
+        elif cmd in ("gentoosync", "spmsync",):
+            if cmd == "gentoosync":
                 print_warning("")
                 print_warning("'%s' %s: '%s'" % (
                     purple("equo database gentoosync"),
@@ -109,24 +111,25 @@ def database(options):
                 print_warning("")
             return _database_spmsync(etp_client)
 
-        elif options[0] == "backup":
+        elif cmd == "backup":
             status, err_msg = etp_client.backup_repository(
                 etpConst['etpdatabaseclientfilepath'])
             if status:
                 return 0
             return 1
 
-        elif options[0] == "restore":
+        elif cmd == "restore":
             return _database_restore(etp_client)
 
-        elif options[0] == "vacuum":
+        elif cmd == "vacuum":
             return _database_vacuum(etp_client)
 
-        elif options[0] == "info":
+        elif cmd == "info":
             return _getinfo(etp_client)
 
     finally:
-        etp_client.shutdown()
+        if etp_client is not None:
+            etp_client.shutdown()
 
     return -10
 
