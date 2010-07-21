@@ -1767,14 +1767,42 @@ class CalculatorsMixin:
                 continue
             use_match_cache = True
             do_continue = False
+
+            # try to search inside package tag, if it's available,
+            # otherwise, do the usual duties.
+            cl_pkgkey_tag = None
+            if cl_tag:
+                cl_pkgkey_tag = cl_pkgkey + etpConst['entropytagprefix'] + \
+                    cl_tag
+
             while True:
                 try:
-                    match = self.atom_match(
-                        cl_pkgkey,
-                        match_slot = cl_slot,
-                        extended_results = True,
-                        use_cache = use_match_cache
-                    )
+                    match = None
+                    if cl_pkgkey_tag is not None:
+                        # search with tag first, if nothing pops up, fallback
+                        # to usual search?
+                        match = self.atom_match(
+                            cl_pkgkey_tag,
+                            match_slot = cl_slot,
+                            extended_results = True,
+                            use_cache = use_match_cache
+                        )
+                        try:
+                            if const_isnumber(match[1]):
+                                match = None
+                        except TypeError:
+                            if not use_match_cache:
+                                raise
+                            use_match_cache = False
+                            continue
+
+                    if match is None:
+                        match = self.atom_match(
+                            cl_pkgkey,
+                            match_slot = cl_slot,
+                            extended_results = True,
+                            use_cache = use_match_cache
+                        )
                 except OperationalError:
                     # ouch, but don't crash here
                     do_continue = True
@@ -1802,7 +1830,7 @@ class CalculatorsMixin:
                     if (m_idpackage, repoid) not in update:
                         update.append((m_idpackage, repoid))
                     continue
-                elif (cl_revision != revision):
+                if cl_revision != revision:
                     # different revision
                     if cl_revision == 9999 and ignore_spm_downgrades:
                         # no difference, we're ignoring revision 9999
