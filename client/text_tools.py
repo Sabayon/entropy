@@ -22,10 +22,7 @@ from entropy.i18n import _
 import entropy.tools
 
 # Temporary files cleaner
-def cleanup(directories = None):
-
-    if not directories:
-        directories = [etpConst['packagestmpdir'], etpConst['logdir']]
+def cleanup(directories):
 
     counter = 0
     for xdir in directories:
