@@ -320,14 +320,11 @@ class PortagePlugin(SpmPlugin):
         # importing portage stuff
         import portage
         self.portage = portage
-        self.EAPI = 1
         try:
             import portage.const as portage_const
         except ImportError:
             import portage_const
-        if hasattr(portage_const, "EAPI"):
-            self.EAPI = portage_const.EAPI
-        self.portage_const = portage_const
+        self._portage_const = portage_const
 
         from portage.versions import best
         self._portage_best = best
@@ -336,13 +333,19 @@ class PortagePlugin(SpmPlugin):
             import portage.util as portage_util
         except ImportError:
             import portage_util
-        self.portage_util = portage_util
+        self._portage_util = portage_util
 
         try:
             import portage.sets as portage_sets
-            self.portage_sets = portage_sets
+            self._portage_sets = portage_sets
         except ImportError:
-            self.portage_sets = None
+            self._portage_sets = None
+
+        try:
+            from portage.sets.files import WorldSelectedSet
+            self._WorldSelectedSet = WorldSelectedSet
+        except ImportError:
+            self._WorldSelectedSet = None
 
         try:
             from portage._global_updates import _global_updates
@@ -388,7 +391,7 @@ class PortagePlugin(SpmPlugin):
         """
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
-        cache_path = self.portage_const.CACHE_PATH.lstrip(os.path.sep)
+        cache_path = self._portage_const.CACHE_PATH.lstrip(os.path.sep)
         return os.path.join(root, cache_path)
 
     def get_package_metadata(self, package, key):
@@ -567,7 +570,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        world_file = self.portage_const.WORLD_FILE
+        world_file = self._portage_const.WORLD_FILE
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
         return os.path.join(root, world_file)
@@ -3317,7 +3320,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mysettings = self.portage.config(config_root = config_root,
                 target_root = root,
-                config_incrementals = self.portage_const.INCREMENTALS)
+                config_incrementals = self._portage_const.INCREMENTALS)
         except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception, e,))
         if use_cache:
@@ -3326,7 +3329,7 @@ class PortagePlugin(SpmPlugin):
         return mysettings
 
     def _get_package_use_file(self):
-        return os.path.join(self.portage_const.USER_CONFIG_PATH, 'package.use')
+        return os.path.join(self._portage_const.USER_CONFIG_PATH, 'package.use')
 
     def _handle_new_useflags(self, atom, useflags, mark):
         matched_atom = self.match_package(atom)
@@ -3484,7 +3487,7 @@ class PortagePlugin(SpmPlugin):
 
         plus = const_convert_to_rawstring("+")
         minus = const_convert_to_rawstring("-")
-        use_data = self.portage_util.grabdict(use_file)
+        use_data = self._portage_util.grabdict(use_file)
         for myatom in use_data:
             mymatch = self.match_package(myatom)
             if mymatch != matched_atom:
@@ -3997,21 +4000,21 @@ class PortagePlugin(SpmPlugin):
     def _get_vdb_path(self, root = None):
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
-        return os.path.join(root, self.portage_const.VDB_PATH)
+        return os.path.join(root, self._portage_const.VDB_PATH)
 
     def _load_sets_config(self, settings, trees):
 
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
-        setconfigpaths = [os.path.join(self.portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
+        setconfigpaths = [os.path.join(self._portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
         setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
         setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
-            self.portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
-        return self.portage_sets.SetConfig(setconfigpaths, settings, trees)
+            self._portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
+        return self._portage_sets.SetConfig(setconfigpaths, settings, trees)
 
     def _get_set_config(self):
         # old portage
-        if self.portage_sets == None:
+        if self._portage_sets is None:
             return
         myroot = etpConst['systemroot'] + os.path.sep
         return self._load_sets_config(
