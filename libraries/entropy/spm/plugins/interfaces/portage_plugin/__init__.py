@@ -2580,6 +2580,25 @@ class PortagePlugin(SpmPlugin):
                     self.__vdb_lock)
                 self.__vdb_lock = None
 
+    class _PortageWorldSetLocker(object):
+
+        def __init__(self, parent):
+            self.__world_set = None
+            if parent._WorldSelectedSet is not None:
+                self.__root = etpConst['systemroot'] + os.path.sep
+                self.__world_set = parent._WorldSelectedSet(self.__root)
+            self.__locked = 0
+
+        def __enter__(self):
+            if self.__world_set is not None:
+                self.__world_set.lock()
+                self.__locked += 1
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            if self.__locked > 0:
+                self.__world_set.unlock()
+                self.__locked -= 1
+
     def add_installed_package(self, package_metadata):
         """
         Reimplemented from SpmPlugin class.
@@ -2711,27 +2730,31 @@ class PortagePlugin(SpmPlugin):
 
         try:
 
-            if os.access(world_file, os.R_OK) and os.path.isfile(world_file):
-                with open(world_file, "rb") as world_f:
-                    world_atoms |= set((x.strip() for x in \
-                        world_f.readlines() if x.strip()))
+            with self._PortageWorldSetLocker(self):
 
-            if keyslot not in world_atoms and \
-                os.access(world_dir, os.W_OK) and \
-                entropy.tools.istextfile(world_file):
+                if os.access(world_file, os.R_OK) and \
+                    os.path.isfile(world_file):
 
-                    world_atoms.discard(key)
-                    world_atoms.add(keyslot)
-                    world_file_tmp = world_file+".entropy_inst"
+                    with open(world_file, "rb") as world_f:
+                        world_atoms |= set((x.strip() for x in \
+                            world_f.readlines() if x.strip()))
 
-                    newline = const_convert_to_rawstring("\n")
-                    with open(world_file_tmp, "wb") as world_f:
-                        for item in sorted(world_atoms):
-                            world_f.write(
-                                const_convert_to_rawstring(item + newline))
-                        world_f.flush()
+                if keyslot not in world_atoms and \
+                    os.access(world_dir, os.W_OK) and \
+                    entropy.tools.istextfile(world_file):
 
-                    os.rename(world_file_tmp, world_file)
+                        world_atoms.discard(key)
+                        world_atoms.add(keyslot)
+                        world_file_tmp = world_file+".entropy_inst"
+
+                        newline = const_convert_to_rawstring("\n")
+                        with open(world_file_tmp, "wb") as world_f:
+                            for item in sorted(world_atoms):
+                                world_f.write(
+                                    const_convert_to_rawstring(item + newline))
+                            world_f.flush()
+
+                        os.rename(world_file_tmp, world_file)
 
         except (UnicodeDecodeError, UnicodeEncodeError,) as e:
 
