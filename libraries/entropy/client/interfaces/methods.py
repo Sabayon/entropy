@@ -1659,11 +1659,13 @@ class MiscMixin:
                 if stat.S_ISREG(exist.st_mode):
                     tarinfo.mode = stat.S_IMODE(exist.st_mode)
                     tarinfo.type = tarfile.REGTYPE
-                    f = open(path)
+                    f = None
                     try:
+                        f = open(path, "rb")
                         tar.addfile(tarinfo, f)
                     finally:
-                        f.close()
+                        if f is not None:
+                            f.close()
                 else:
                     tar.addfile(tarinfo)
 

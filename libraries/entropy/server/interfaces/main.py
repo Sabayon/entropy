@@ -889,6 +889,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         tmp_fd, tmp_f = tempfile.mkstemp()
         os.close(tmp_fd)
 
+        dbc = None
         try:
             found_edb = entropy.tools.dump_entropy_metadata(package_path, tmp_f)
             if not found_edb:
@@ -907,7 +908,8 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                     self._server.output(darkred("~"*40), level = "warning")
                     time.sleep(10)
         finally:
-            dbc.closeDB()
+            if dbc is not None:
+                dbc.closeDB()
             try:
                 os.remove(tmp_f)
             except OSError:

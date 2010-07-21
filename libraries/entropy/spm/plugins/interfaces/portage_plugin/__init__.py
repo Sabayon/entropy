@@ -704,11 +704,13 @@ class PortagePlugin(SpmPlugin):
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.mode = stat.S_IMODE(exist.st_mode)
                 tarinfo.type = tarfile.REGTYPE
-                f = open(path, "rb")
+                f = None
                 try:
+                    f = open(path, "rb")
                     tar.addfile(tarinfo, f)
                 finally:
-                    f.close()
+                    if f is not None:
+                        f.close()
             else:
                 tar.addfile(tarinfo)
 
@@ -2857,14 +2859,17 @@ class PortagePlugin(SpmPlugin):
 
         qa_rlangs = [const_convert_to_rawstring("LC_ALL="+x) for x in qa_langs]
 
-        # read env file
-        bz_f = bz2.BZ2File(env_file, "r")
         valid_lc_all = False
         lc_found = False
         msg = None
         lc_all_str = const_convert_to_rawstring("LC_ALL")
         found_lang = None
+        bz_f = None
         try:
+
+            # read env file
+            bz_f = bz2.BZ2File(env_file, "r")
+
             for line in bz_f.readlines():
                 if not line.startswith(lc_all_str):
                     continue
@@ -2875,7 +2880,8 @@ class PortagePlugin(SpmPlugin):
                         valid_lc_all = True
                         break
         finally:
-            bz_f.close()
+            if bz_f is not None:
+                bz_f.close()
 
         env_rc = 0
         if lc_found and (not valid_lc_all):

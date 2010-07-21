@@ -900,8 +900,9 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
         AttributeError("invalid compressor specified")
 
     id_strings = {}
-    tar = tarfile.open(dest_file, "w:%s" % (compressor,))
+    tar = None
     try:
+        tar = tarfile.open(dest_file, "w:%s" % (compressor,))
         for path in files_to_compress:
             exist = os.lstat(path)
             tarinfo = tar.gettarinfo(path, os.path.basename(path))
@@ -913,7 +914,8 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
             with open(path, "rb") as f:
                 tar.addfile(tarinfo, f)
     finally:
-        tar.close()
+        if tar is not None:
+            tar.close()
 
 def universal_uncompress(compressed_file, dest_path, catch_empty = False):
     """
@@ -931,16 +933,17 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
     @type catch_empty: bool
     """
 
+    tar = None
     try:
-        tar = tarfile.open(compressed_file, "r")
-    except tarfile.ReadError:
-        if catch_empty:
-            return True
-        return False
-    except EOFError:
-        return False
 
-    try:
+        try:
+            tar = tarfile.open(compressed_file, "r")
+        except tarfile.ReadError:
+            if catch_empty:
+                return True
+            return False
+        except EOFError:
+            return False
 
         if sys.hexversion < 0x3000000:
             dest_path = dest_path.encode('utf-8')
@@ -998,7 +1001,8 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
         return False
 
     finally:
-        tar.close()
+        if tar is not None:
+            tar.close()
 
     return True
 
@@ -2293,15 +2297,6 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     if not os.path.isfile(filepath):
         raise FileNotFound('FileNotFound: archive does not exist')
 
-    try:
-        tar = tarfile.open(filepath, "r")
-    except tarfile.ReadError:
-        if catch_empty:
-            return 0
-        raise
-    except EOFError:
-        return -1
-
     def fix_uid_gid(tarinfo, epath):
         # workaround for buggy tar files
         uname = tarinfo.uname
@@ -2322,7 +2317,17 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         except OSError:
             pass
 
+    tar = None
     try:
+
+        try:
+            tar = tarfile.open(filepath, "r")
+        except tarfile.ReadError:
+            if catch_empty:
+                return 0
+            raise
+        except EOFError:
+            return -1
 
         encoded_path = extract_path
         if sys.hexversion < 0x3000000:
@@ -2363,8 +2368,10 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
     except EOFError:
         return -1
     finally:
-        del tar.members[:]
-        tar.close()
+        if tar is not None:
+            del tar.members[:]
+            tar.close()
+
     if os.listdir(extract_path):
         return 0
     return -1
