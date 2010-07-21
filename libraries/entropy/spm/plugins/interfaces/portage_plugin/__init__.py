@@ -2560,6 +2560,23 @@ class PortagePlugin(SpmPlugin):
     def __remove_kernel_tag_from_slot(self, slot):
         return slot[::-1].split(",", 1)[-1][::-1]
 
+    class _PortageVdbLocker(object):
+
+        def __init__(self, parent):
+            self.__vdb_path = parent._get_vdb_path()
+            self.__vdb_lock = None
+            self.__parent = parent
+
+        def __enter__(self):
+            self.__vdb_lock = self.__parent.portage.locks.lockdir(
+                self.__vdb_path)
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            if self.__vdb_lock is not None:
+                self.__parent.portage.locks.unlockdir(
+                    self.__vdb_lock)
+                self.__vdb_lock = None
+
     def add_installed_package(self, package_metadata):
         """
         Reimplemented from SpmPlugin class.
@@ -2612,8 +2629,6 @@ class PortagePlugin(SpmPlugin):
 
             if not os.path.isdir(cat_dir):
                 os.makedirs(cat_dir, 0o755)
-            if os.path.isdir(pkg_dir):
-                shutil.rmtree(pkg_dir)
 
             splitdebug = package_metadata.get("splitdebug", False)
             if splitdebug:
@@ -2621,44 +2636,51 @@ class PortagePlugin(SpmPlugin):
                     PortagePlugin.xpak_entries['features'])
                 self.__update_features_file(features_path)
 
-            try:
-                shutil.copytree(copypath, pkg_dir)
-            except (IOError,) as e:
-                mytxt = "%s: %s: %s: %s" % (red(_("QA")),
-                    brown(_("Cannot update Portage database to destination")),
-                    purple(pkg_dir), e,)
-                self.output(
-                    mytxt,
-                    importance = 1,
-                    level = "warning",
-                    header = darkred("   ## ")
-                )
+            # lock vdb before making changes
+            with self._PortageVdbLocker(self):
 
-            # this is a Unit Testing setting, so it's always not available
-            # unless in unit testing code
-            if not package_metadata.get('unittest_root'):
-
-                # Packages emerged with -B don't contain CONTENTS file in their
-                # metadata, so we have to create one
-                self._create_contents_file_if_not_available(pkg_dir,
-                    package_metadata['triggers']['install'])
+                if os.path.isdir(pkg_dir):
+                    shutil.rmtree(pkg_dir)
 
                 try:
-                    counter = self.assign_uid_to_installed_package(spm_package)
-                except SPMError as err:
-                    mytxt = "%s: %s [%s]" % (
-                        brown(_("SPM uid update error")), pkg_dir, err,
-                    )
+                    shutil.copytree(copypath, pkg_dir)
+                except (IOError,) as e:
+                    mytxt = "%s: %s: %s: %s" % (red(_("QA")),
+                        brown(_("Cannot update Portage database to destination")),
+                        purple(pkg_dir), e,)
                     self.output(
-                        red("QA: ") + mytxt,
+                        mytxt,
                         importance = 1,
                         level = "warning",
                         header = darkred("   ## ")
                     )
-                    counter = -1
 
-            # from this point, every vardb change has to be committed
-            self._bump_vartree_mtime(spm_package)
+                # this is a Unit Testing setting, so it's always not available
+                # unless in unit testing code
+                if not package_metadata.get('unittest_root'):
+
+                    # Packages emerged with -B don't contain CONTENTS file
+                    # in their metadata, so we have to create one
+                    self._create_contents_file_if_not_available(pkg_dir,
+                        package_metadata['triggers']['install'])
+
+                    try:
+                        counter = self.assign_uid_to_installed_package(
+                            spm_package)
+                    except SPMError as err:
+                        mytxt = "%s: %s [%s]" % (
+                            brown(_("SPM uid update error")), pkg_dir, err,
+                        )
+                        self.output(
+                            red("QA: ") + mytxt,
+                            importance = 1,
+                            level = "warning",
+                            header = darkred("   ## ")
+                        )
+                        counter = -1
+
+                # from this point, every vardb change has to be committed
+                self._bump_vartree_mtime(spm_package)
 
         user_inst_source = etpConst['install_sources']['user']
         if package_metadata['install_source'] != user_inst_source:
@@ -2683,12 +2705,13 @@ class PortagePlugin(SpmPlugin):
         world_dir = os.path.dirname(world_file)
         world_atoms = set()
 
-        if os.access(world_file, os.R_OK) and os.path.isfile(world_file):
-            with open(world_file, "rb") as world_f:
-                world_atoms |= set((x.strip() for x in world_f.readlines() if \
-                    x.strip()))
 
         try:
+
+            if os.access(world_file, os.R_OK) and os.path.isfile(world_file):
+                with open(world_file, "rb") as world_f:
+                    world_atoms |= set((x.strip() for x in \
+                        world_f.readlines() if x.strip()))
 
             if keyslot not in world_atoms and \
                 os.access(world_dir, os.W_OK) and \
