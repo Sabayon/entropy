@@ -392,14 +392,14 @@ class UpdatesDaemon(dbus.service.Object):
         with self.__is_working_mutex:
 
             rc_fetch = 0
-            entropy = Entropy()
-
-            acquired = self.__acquire_entropy_locks(entropy)
-            if not acquired:
-                entropy.shutdown()
-                return rc_fetch
+            entropy = None
 
             try:
+
+                entropy = Entropy()
+                acquired = self.__acquire_entropy_locks(entropy)
+                if not acquired:
+                    return rc_fetch
 
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: called %s" % (time.time(),))
@@ -467,9 +467,10 @@ class UpdatesDaemon(dbus.service.Object):
                 return 0
 
             finally:
-                self.__release_entropy_locks(entropy)
-                # say goodbye
-                entropy.shutdown()
+                if entropy is not None:
+                    self.__release_entropy_locks(entropy)
+                    # say goodbye
+                    entropy.shutdown()
 
     # compare repos status for updates
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
@@ -513,9 +514,10 @@ class UpdatesDaemon(dbus.service.Object):
         out_signature = 'av')
     def get_updates(self):
 
-        entropy = Entropy()
+        entropy = None
         try:
 
+            entropy = Entropy()
             curr_hash = entropy.installed_repository().checksum(
                 do_order = True, strict = False)
             if curr_hash == self.__system_db_hash:
@@ -535,20 +537,21 @@ class UpdatesDaemon(dbus.service.Object):
             return self.__updates
 
         finally:
-            entropy.shutdown()
+            if entropy is not None:
+                entropy.shutdown()
 
     def _is_system_changed(self):
         with self.__is_working_mutex:
 
-            entropy = Entropy()
-            locked = entropy.resources_locked()
-            if locked:
-                if DAEMON_DEBUG:
-                    write_output("_is_system_changed: resources locked!")
-                entropy.shutdown()
-                return False # resources are locked, nothing changed yet :P
-
+            entropy = None
             try:
+
+                entropy = Entropy()
+                locked = entropy.resources_locked()
+                if locked:
+                    if DAEMON_DEBUG:
+                        write_output("_is_system_changed: resources locked!")
+                    return False # resources are locked, nothing changed yet :P
 
                 last_checksum = self.__last_system_repo_checksum
                 cur_checksum = entropy.installed_repository().checksum(
@@ -561,8 +564,9 @@ class UpdatesDaemon(dbus.service.Object):
                 return changed
 
             finally:
-                # say goodbye
-                entropy.shutdown()
+                if entropy is not None:
+                    # say goodbye
+                    entropy.shutdown()
 
     @dbus.service.method("org.entropy.Client", in_signature = '',
         out_signature = 'b')
@@ -578,8 +582,9 @@ class UpdatesDaemon(dbus.service.Object):
 
         with self.__is_working_mutex:
             atoms = []
-            entropy = Entropy()
+            entropy = None
             try:
+                entropy = Entropy()
                 self.__updates_atoms = []
                 for idpackage, repoid in self.__updates:
                     try:
@@ -591,7 +596,8 @@ class UpdatesDaemon(dbus.service.Object):
                 return self.__updates_atoms
 
             finally:
-                entropy.shutdown()
+                if entropy is not None:
+                    entropy.shutdown()
 
 
     @dbus.service.method("org.entropy.Client", in_signature = '',
