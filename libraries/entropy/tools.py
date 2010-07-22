@@ -2556,7 +2556,7 @@ def is_valid_string(string):
     if invalid: return False
     return True
 
-valid_path_regexp = re.compile("^([A-Za-z0-9/\.:]+)$")
+valid_path_regexp = re.compile("^([A-Za-z0-9/\.:-]+)$")
 def is_valid_path_string(path):
     """
     Return whether given path is a valid path string (whitelisting valid
