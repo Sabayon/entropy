@@ -3746,7 +3746,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         # WORKAROUND for buggy entries
         # ** is fine then
-        mykeywords = self.retrieveKeywords(package_id) or set([''])
+        # FIXME: remove after 2011
+        mykeywords = self.retrieveKeywords(package_id)
+        if mykeywords == set([""]):
+            mykeywords = set(['**'])
 
         mask_ref = self._settings['pkg_masking_reference']
 
@@ -3924,8 +3927,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
             repo_keywords[cached_key] = keyword_data_ids
 
-        same_keywords = keyword_data_ids.get(package_id, set()) & \
-            etpConst['keywords']
+        pkg_keywords = keyword_data_ids.get(package_id, set())
+        if "**" in pkg_keywords:
+            same_keywords = True
+        else:
+            same_keywords = pkg_keywords & etpConst['keywords']
         if same_keywords:
             # found! this pkg is not masked, yay!
             myr = mask_ref['repository_packages_db_keywords']
