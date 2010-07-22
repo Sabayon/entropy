@@ -1096,6 +1096,8 @@ class PortagePlugin(SpmPlugin):
         data['provide_extended'] = provide_extended
 
         # Get License text if possible
+        # NOTE: this is sucky, because Portage XPAK metadata doesn't contain
+        # license text, and we need to rely on PORTDIR, which is very bad
         licenses_dir = os.path.join(self.get_setting('PORTDIR'), 'licenses')
         data['licensedata'] = self._extract_pkg_metadata_license_data(
             licenses_dir, data['license'])
@@ -4310,6 +4312,17 @@ class PortagePlugin(SpmPlugin):
                 and entropy.tools.is_valid_string(x.strip())]
             for mylicense in licdata:
                 licfile = os.path.join(licenses_dir, mylicense)
+
+                # make sure we always collect license and show something to
+                # user. Also set a default sorry text, in case we are not
+                # able to print it.
+                pkg_licensedata[mylicense] = """We're sorry, %s license couldn't
+be retrieved correcly, so this is a placeholder. I know it's a suboptimal
+advice, but please make sure to read it, just google '%s license' and you'll
+find it. By accepting this, you agree that your distribution won't be
+responsible in any way.
+""" % (mylicense, mylicense,)
+
                 if not (os.access(licfile, os.R_OK) and os.path.isfile(licfile)):
                     continue
                 if not entropy.tools.istextfile(licfile):
