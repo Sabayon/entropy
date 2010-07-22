@@ -2560,7 +2560,7 @@ valid_path_regexp = re.compile("^([A-Za-z0-9/\.:-]+)$")
 def is_valid_path_string(path):
     """
     Return whether given path is a valid path string (whitelisting valid
-    characters). Regexp is ^([A-Za-z0-9/\.:]+)$ and only works with ASCII
+    characters). Regexp is ^([A-Za-z0-9/\.:-]+)$ and only works with ASCII
     paths.
 
     @param path: path to test
