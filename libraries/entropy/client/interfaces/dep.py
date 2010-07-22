@@ -1295,21 +1295,28 @@ class CalculatorsMixin:
         return depends
 
     def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
-        recursive = True, empty = False, system_packages = True):
+        recursive = True, empty = False, system_packages = True,
+        elf_needed_scanning = True):
 
         """
         @raise DependenciesNotRemovable: if at least one dependencies is
         considered vital for the system.
         """
 
+        # experimental feature, make possible to override it
+        # please remove in future.
+        if os.getenv("ETP_DISABLE_ELF_NEEDED_SCANNING"):
+            elf_needed_scanning = False
+
         const_debug_write(__name__,
-            "_generate_reverse_dependency_tree [m:%s|d:%s|r:%s|e:%s|s:%s]" \
-                 % (matched_atoms, deep, recursive, empty, system_packages))
+            "_generate_reverse_dependency_tree [m:%s|d:%s|r:%s|e:%s|s:%s|es:%s]" \
+                 % (matched_atoms, deep, recursive, empty,
+                     system_packages, elf_needed_scanning))
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
-                hash("%s|%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
-                    recursive, empty, system_packages,),
+                hash("%s|%s|%s|%s|%s|%s" % (tuple(sorted(matched_atoms)), deep,
+                    recursive, empty, system_packages, elf_needed_scanning,),
             ),
         )
         if self.xcache:
@@ -1380,14 +1387,29 @@ class CalculatorsMixin:
                 filtered_deps.add((mydep, m_repo_id,))
             return filtered_deps
 
-        def get_revdeps(pkg_id, repo_id):
+        def get_revdeps(pkg_id, repo_id, repo_db):
             # obtain its inverse deps
-            reverse_deps = set([(x, repo_id) for x in \
+            reverse_deps = set((x, repo_id) for x in \
                 repo_db.retrieveReverseDependencies(
-                    pkg_id, exclude_deptypes = (pdepend_id, bdepend_id,))])
+                    pkg_id, exclude_deptypes = (pdepend_id, bdepend_id,)))
             if reverse_deps:
                 reverse_deps = self.__filter_depends_multimatched_atoms(
                     pkg_id, repo_id, reverse_deps)
+            return reverse_deps
+
+        def get_revdeps_lib(pkg_id, repo_id, repo_db):
+            provided_libs = repo_db.retrieveProvidedLibraries(pkg_id)
+            reverse_deps = set()
+
+            for needed, path, elfclass in provided_libs:
+                reverse_deps |= set((x, repo_id) for x in \
+                    repo_db.searchNeeded(needed, elfclass = elfclass))
+
+            if reverse_deps:
+                reverse_deps = self.__filter_depends_multimatched_atoms(
+                    pkg_id, repo_id, reverse_deps)
+            # remove myself
+            reverse_deps.discard((pkg_id, repo_id))
             return reverse_deps
 
         def setup_revdeps(filtered_deps):
@@ -1442,7 +1464,14 @@ class CalculatorsMixin:
                 header = '|/-\\'[count%4]+" "
             )
 
-            reverse_deps = get_revdeps(pkg_id, repo_id)
+            reverse_deps = get_revdeps(pkg_id, repo_id, repo_db)
+            if elf_needed_scanning:
+                # use metadata collected during package generation to
+                # look for dependencies based on ELF NEEDED.
+                # a nice example is libpng-1.2 vs libpng-1.4 when pkg
+                # lists a generic media-libs/libpng as dependency.
+                reverse_deps_lib = get_revdeps_lib(pkg_id, repo_id, repo_db)
+                reverse_deps |= reverse_deps_lib
 
             const_debug_write(__name__,
                 "_generate_reverse_dependency_tree [m:%s] rev_deps: %s" % (
