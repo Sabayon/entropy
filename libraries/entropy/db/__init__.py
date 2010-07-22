@@ -4489,6 +4489,8 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         @todo: remove /usr/bin/sqlite3 dependency
         """
+        dbfile = os.path.realpath(dbfile)
+        dumpfile = os.path.realpath(dumpfile)
         if not entropy.tools.is_valid_path_string(dbfile):
             raise AttributeError("dbfile value is invalid")
         if not entropy.tools.is_valid_path_string(dumpfile):
