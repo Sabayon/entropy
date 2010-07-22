@@ -1,3 +1,27 @@
+commit 260640e226bd2599f678151c319860d4f8702810
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 11:25:57 2010 +0200
+
+    [entropy.tools] add "-" to is_valid_path_string regexp
+
+commit 491bc32dc13546284e47287c63ce3bfa4e7e0d49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 11:11:53 2010 +0200
+
+    [entropy.db.skel] properly handle pkgs with "**" keyword
+
+commit ccc27cc897d3f7bd17312123c5256d8da47bb2d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 11:11:27 2010 +0200
+
+    [entropy.spm] PortagePlugin: when pkg has no keywords, add "**" keyword (instead of "")
+
+commit e6c027ed51b588d6e404794823fbb7488bd4da71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 10:42:24 2010 +0200
+
+    Tagging Entropy version 0.99.48
+
 commit 566733f2cac24838939e386422832e0724397e73
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 22 10:07:38 2010 +0200
