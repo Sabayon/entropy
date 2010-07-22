@@ -1,3 +1,94 @@
+commit 566733f2cac24838939e386422832e0724397e73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 10:07:38 2010 +0200
+
+    [entropy.client.interfaces.dep] improve reverse deps calculation by considering ELF's NEEDED metadatum
+    
+    When removing packages, can happen that a reverse dependency loses
+    precision, causing Entropy Client to remove vital libraries.
+    An example is libpng-1.2 vs libpng-1.4 when pkg lists a generic
+    media-libs/libpng as dependency and its build system decides
+    to what version to link at build time. In this case, Entropy Server
+    automagic runtime dependencies calculation logic can have hard times.
+
+commit 6e95231f10443d06cf89c140c612fd7108670121
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 06:09:54 2010 +0200
+
+    [entropy.spm] PortagePlugin: provide fallback when license text is not available during package metadata extraction
+
+commit ae69514b81dc2bf2e1d4a1213d47c3633d23c190
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 06:08:27 2010 +0200
+
+    [entropy.spm] PortagePlugin: make possible to call the "with" context of _PortageVdbLocker and _PortageVdbLocker recursively
+
+commit a2ff52aff53d46a7eb62f3a92c6bab696cf372be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 23:10:16 2010 +0200
+
+    [entropy.spm] PortagePlugin: make several attributes protected
+
+commit 696e381e43b2ea8cca1fd53addf35aab6f8e82ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 22:49:37 2010 +0200
+
+    [entropy.spm] PortagePlugin: acquire world file lock before making changes
+
+commit 34bbb0b4b1f49492fea6a247ea48f0b47c52152d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 22:49:12 2010 +0200
+
+    [entropy.spm] PortagePlugin: make some instance properties protected
+
+commit 9f67b7e37a842e3d5c2d534766059949238caec5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 21:11:21 2010 +0200
+
+    [entropy.spm] PortagePlugin: lock vdb before moving entries
+
+commit 9d177f1ab018e18094ec4728dcf5ce161d2b9067
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 20:06:22 2010 +0200
+
+    [entropy] avoid race conditions when using try/finally statements
+
+commit 6b21e0d46f4a8eb58ccd25f6e17e58deb83590ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 18:18:34 2010 +0200
+
+    [server,services] avoid race condition when calling Client.shutdown() in finally context
+
+commit 3c6e2ccaed2b34632899d1fab3fd28fc18d130a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 18:17:14 2010 +0200
+
+    [client-tracker-packages-miner] goodbye
+
+commit 5bab482ed9b60abd9d1267f28f82660bac85c2d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 18:13:18 2010 +0200
+
+    [equo] avoid race condition when calling Client.shutdown() in finally context
+
+commit 8ee58ce65a7d6625f9df26d6128a32fe8d8051a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 17:49:52 2010 +0200
+
+    [entropy.misc] refactor LogFile (keeping backward compat, almost) make it use logging module
+
+commit d27cf48d48b1fe61ea10ccd8cb4ebca54ec70035
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 15:33:29 2010 +0200
+
+    [entropy.client.interfaces.dep] Client.calculate_updates: properly handle tagged packages upgrade
+
+commit 012bc749126615a3c9c68eb02351973753bb79b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 21 13:27:53 2010 +0200
+
+    Tagging Entropy version 0.99.47.20
+
 commit ab0b15c528d7ed5ca9075a6a4b995082c8f89bf6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jul 21 09:01:23 2010 +0200
