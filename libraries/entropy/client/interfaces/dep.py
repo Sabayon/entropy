@@ -587,6 +587,7 @@ class CalculatorsMixin:
                     dbconn = self.open_repository(r_repo)
                     repo_pkgver, repo_pkgtag, repo_pkgrev = \
                         dbconn.getVersioningData(r_id)
+                    repo_digest = dbconn.retrieveDigest(r_id)
 
             # this is required for multi-slotted packages (like python)
             # and when people mix Entropy and Portage
