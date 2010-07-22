@@ -2559,13 +2559,18 @@ class PortagePlugin(SpmPlugin):
             self.__vdb_path = parent._get_vdb_path()
             self.__vdb_lock = None
             self.__parent = parent
+            self.__locked = 0
 
         def __enter__(self):
-            self.__vdb_lock = self.__parent._portage.locks.lockdir(
-                self.__vdb_path)
+            if self.__locked == 0:
+                self.__vdb_lock = self.__parent._portage.locks.lockdir(
+                    self.__vdb_path)
+            self.__locked += 1
 
         def __exit__(self, exc_type, exc_value, traceback):
-            if self.__vdb_lock is not None:
+            if self.__locked > 0:
+                self.__locked -= 1
+            if (self.__locked == 0) and (self.__vdb_lock is not None):
                 self.__parent._portage.locks.unlockdir(
                     self.__vdb_lock)
                 self.__vdb_lock = None
@@ -2581,13 +2586,16 @@ class PortagePlugin(SpmPlugin):
 
         def __enter__(self):
             if self.__world_set is not None:
-                self.__world_set.lock()
+                if self.__locked == 0:
+                    self.__world_set.lock()
                 self.__locked += 1
 
         def __exit__(self, exc_type, exc_value, traceback):
-            if self.__locked > 0:
-                self.__world_set.unlock()
-                self.__locked -= 1
+            if self.__world_set is not None:
+                if self.__locked > 0:
+                    self.__locked -= 1
+                if self.__locked == 0:
+                    self.__world_set.unlock()
 
     def add_installed_package(self, package_metadata):
         """
