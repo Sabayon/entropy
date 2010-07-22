@@ -937,7 +937,7 @@ class PortagePlugin(SpmPlugin):
             if x.strip()]
         if not data['keywords']:
             # support for packages with no keywords
-            data['keywords'].insert(0, "")
+            data['keywords'].insert(0, "**")
 
         data['keywords'] = set(data['keywords'])
         needed_file = os.path.join(meta_dir,
