@@ -811,7 +811,7 @@ class PortagePlugin(SpmPlugin):
         bash_exec = ""
         cmd = "/bin/bash -c \"source " + env_file + \
             " && echo ${" + env_var + "}\""
-        tmp_fd, tmp_file = tempfile.mkstemp()
+        tmp_fd, tmp_file = tempfile.mkstemp(prefix = "etp_portage")
         os.close(tmp_fd)
         std_f = open(tmp_file, "w")
 
@@ -824,6 +824,7 @@ class PortagePlugin(SpmPlugin):
         std_f = open(tmp_file, "r")
         output = std_f.read()
         std_f.close()
+        os.remove(tmp_file)
         if sts != 0:
             raise IOError("cannot source %s and get %s => %s" % (env_file,
                 env_var, repr(output)))
