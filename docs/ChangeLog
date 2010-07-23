@@ -1,3 +1,43 @@
+commit 019906e05062b8a040f7ccb9011fb41846b848e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 23 17:44:07 2010 +0200
+
+    [entropy.tools] isjustname: make it working with names like "389-ds-base"
+
+commit aefb13732678c62a36a4069d05aa08c1f834b503
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 23 12:55:05 2010 +0200
+
+    [entropy.spm] PortagePlugin: remove temp file after usage
+
+commit bc8b49046d5dc978f53f68cf49f78e044a177287
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 22:45:55 2010 +0200
+
+    [entropy.client.interfaces.dep] Client._get_unsatisfied_dependencies: fix data retrieval
+    
+    When handling tagged packages, make sure to set every variable that
+    is used for filtering afterwards. repo_digest was not properly
+    re-bound to the new package match.
+
+commit 5e01d50cf8e5540b5949fe45b5820a70f2d22154
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 11:46:46 2010 +0200
+
+    [entropy.db] EntropyRepository.importRepository: resolve input paths to real path
+
+commit d3d87de9fae998a8ef19a3d3296a782febec392f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 11:46:16 2010 +0200
+
+    [entropy.tools] is_valid_path_string: update docstring
+
+commit 5c6451b2408a25d3fcd830633d561f7dd33f4746
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 22 11:26:23 2010 +0200
+
+    Tagging Entropy version 0.99.48.1
+
 commit 260640e226bd2599f678151c319860d4f8702810
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 22 11:25:57 2010 +0200
