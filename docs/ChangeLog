@@ -1,3 +1,33 @@
+commit 1c84bc3376582d60bdfa8ac97fefe1ab1f442072
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 21:30:20 2010 +0200
+
+    [todo] update TODO
+
+commit 28d19bb55d440d75443039666b22d7e40f616b56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 21:21:09 2010 +0200
+
+    [entropy.server.interfaces.mirrors] improve efficiency of repository upload when more mirrors are set
+
+commit 5ebc6d461ce2b17083da02be8ee247f34fbff929
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 21:20:50 2010 +0200
+
+    [entropy.server] fix typo in if condition
+
+commit df10dfd14e9e8ec009d536b1407dcec4357c39ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 21:20:26 2010 +0200
+
+    [entropy.services.repository] make repository hash more visible in logs
+
+commit 4c3036ad02306010ec5c62bc25274b98376095aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 20:39:37 2010 +0200
+
+    Tagging Entropy version 0.99.49.1
+
 commit 86d46032b6a491970a7d1c3eb5f287db289a32b0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 24 20:39:02 2010 +0200
