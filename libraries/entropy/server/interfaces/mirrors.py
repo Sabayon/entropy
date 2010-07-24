@@ -17,7 +17,7 @@ import time
 from entropy.exceptions import OnlineMirrorError, ConnectionError, \
     EntropyPackageException, TransceiverError
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
-    darkblue, purple
+    darkblue, purple, teal
 from entropy.const import etpConst, const_setup_perms, const_setup_file
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
@@ -38,7 +38,7 @@ class ServerNoticeBoardMixin:
 
         if repo is None:
             repo = self._entropy.default_repository
-        mirrors = self._entropy.get_remote_mirrors(repo)
+        mirrors = self._entropy.get_remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
         mytmpdir = tempfile.mkdtemp()
 
@@ -87,7 +87,7 @@ class ServerNoticeBoardMixin:
 
         if repo is None:
             repo = self._entropy.default_repository
-        mirrors = self._entropy.get_remote_mirrors(repo)
+        mirrors = self._entropy.get_remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
         rss_file = os.path.basename(rss_path)
 
@@ -142,7 +142,7 @@ class ServerNoticeBoardMixin:
 
         if repo is None:
             repo = self._entropy.default_repository
-        mirrors = self._entropy.get_remote_mirrors(repo)
+        mirrors = self._entropy.get_remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
 
         self._entropy.output(
@@ -259,11 +259,20 @@ class Server(ServerNoticeBoardMixin):
             level = "info",
             header = red(" @@ ")
         )
-        mytxt = _("mirror")
-        for mirror in self._entropy.get_remote_mirrors(repo = repo):
+        for mirror in self._entropy.get_remote_repository_mirrors(repo = repo):
+            mytxt = _("repository mirror")
             mirror = EntropyTransceiver.hide_sensible_data(mirror)
             self._entropy.output(
-                blue("%s: %s") % (mytxt, darkgreen(mirror),),
+                "%s: %s" % (purple(mytxt), darkgreen(mirror),),
+                importance = 0,
+                level = "info",
+                header = brown("   # ")
+            )
+        for mirror in self._entropy.get_remote_packages_mirrors(repo = repo):
+            mytxt = _("packages mirror")
+            mirror = EntropyTransceiver.hide_sensible_data(mirror)
+            self._entropy.output(
+                blue("%s: %s") % (teal(mytxt), darkgreen(mirror),),
                 importance = 0,
                 level = "info",
                 header = brown("   # ")
@@ -272,7 +281,8 @@ class Server(ServerNoticeBoardMixin):
     def _read_remote_file_in_branches(self, filename, repo = None,
             excluded_branches = None):
         """
-        Reads a file remotely located in all the available branches.
+        Reads a file remotely located in all the available branches, in
+        repository directory.
 
         @param filename: name of the file that should be located inside
             repository database directory
@@ -291,7 +301,7 @@ class Server(ServerNoticeBoardMixin):
             excluded_branches = []
 
         branch_data = {}
-        mirrors = self._entropy.get_remote_mirrors(repo)
+        mirrors = self._entropy.get_remote_repository_mirrors(repo)
         for uri in mirrors:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
@@ -359,7 +369,7 @@ class Server(ServerNoticeBoardMixin):
             repo = self._entropy.default_repository
 
         if not mirrors:
-            mirrors = self._entropy.get_remote_mirrors(repo)
+            mirrors = self._entropy.get_remote_repository_mirrors(repo)
 
         issues = False
         for uri in mirrors:
@@ -450,7 +460,7 @@ class Server(ServerNoticeBoardMixin):
             repo = self._entropy.default_repository
 
         if not mirrors:
-            mirrors = self._entropy.get_remote_mirrors(repo)
+            mirrors = self._entropy.get_remote_repository_mirrors(repo)
 
         issues = False
         for uri in mirrors:
@@ -883,7 +893,7 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self._entropy.default_repository
         if not mirrors:
-            mirrors = self._entropy.get_remote_mirrors(repo)
+            mirrors = self._entropy.get_remote_repository_mirrors(repo)
 
         data = []
         for uri in mirrors:
@@ -908,7 +918,7 @@ class Server(ServerNoticeBoardMixin):
         down_lock_file = os.path.join(remote_dir,
             etpConst['etpdatabasedownloadlockfile'])
 
-        for uri in self._entropy.get_remote_mirrors(repo):
+        for uri in self._entropy.get_remote_repository_mirrors(repo):
             data = [uri, False, False]
 
             # let raise exception if connection is impossible
@@ -2967,7 +2977,7 @@ class Server(ServerNoticeBoardMixin):
         mirror_errors = False
         mirrors_errors = False
 
-        for uri in self._entropy.get_remote_mirrors(repo):
+        for uri in self._entropy.get_remote_packages_mirrors(repo):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             mirror_errors = False
@@ -3391,7 +3401,7 @@ class Server(ServerNoticeBoardMixin):
             obj.append(base_pkg)
             obj.append(base_pkg+etpConst['packagesmd5fileext'])
 
-        for uri in self._entropy.get_remote_mirrors(repo):
+        for uri in self._entropy.get_remote_packages_mirrors(repo):
 
             ##
             # remove remotely

@@ -465,14 +465,33 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         mydata = {}
         mydata['repoid'] = repoid
         mydata['description'] = repodesc
-        mydata['mirrors'] = []
+        mydata['pkg_mirrors'] = []
+        mydata['repo_mirrors'] = []
         mydata['community'] = False
         mydata['service_url'] = service_url
         mydata['service_port'] = eapi3_port
         mydata['ssl_service_port'] = eapi3_ssl_port
         uris = repouris.split()
         for uri in uris:
-            mydata['mirrors'].append(uri)
+            do_pkg = False
+            do_repo = False
+            while True:
+                if uri.startswith("<p>"):
+                    do_pkg = True
+                    uri = uri[3:]
+                    continue
+                if uri.startswith("<r>"):
+                    do_repo = True
+                    uri = uri[3:]
+                    continue
+                break
+            if not (do_repo and do_pkg):
+                do_repo = True
+                do_pkg = True
+            if do_repo:
+                mydata['repo_mirrors'].append(uri)
+            if do_pkg:
+                mydata['pkg_mirrors'].append(uri)
 
         return repoid, mydata
 
@@ -630,8 +649,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                         product = sys_set['repositories']['product'])
                 if repoid in data['repositories']:
                     # just update mirrors
-                    data['repositories'][repoid]['mirrors'].extend(
-                        repodata['mirrors'])
+                    data['repositories'][repoid]['pkg_mirrors'].extend(
+                        repodata['pkg_mirrors'])
+                    data['repositories'][repoid]['repo_mirrors'].extend(
+                        repodata['repo_mirrors'])
                 else:
                     data['repositories'][repoid] = repodata.copy()
 
@@ -702,7 +723,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             data['repositories'][etpConst['clientserverrepoid']] = {}
             mydata = {}
             mydata['description'] = "Community Repositories System Database"
-            mydata['mirrors'] = []
+            mydata['pkg_mirrors'] = []
+            mydata['repo_mirrors'] = []
             mydata['community'] = False
             data['repositories'][etpConst['clientserverrepoid']].update(mydata)
             # installed packages repository is now the base repository
@@ -1238,11 +1260,17 @@ class ServerSettingsMixin:
         return os.path.join(srv_set['repositories'][repo]['repo_basedir'],
             pkg_rel_url)
 
-    def get_remote_mirrors(self, repo = None):
+    def get_remote_repository_mirrors(self, repo = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if repo is None:
             repo = self.default_repository
-        return srv_set['repositories'][repo]['mirrors'][:]
+        return srv_set['repositories'][repo]['repo_mirrors'][:]
+
+    def get_remote_packages_mirrors(self, repo = None):
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        if repo is None:
+            repo = self.default_repository
+        return srv_set['repositories'][repo]['pkg_mirrors'][:]
 
     def get_local_repository_revision(self, repo = None):
 
@@ -1680,7 +1708,7 @@ class ServerPackagesHandlingMixin:
                 if rc_question == _("No"):
                     continue
 
-            for uri in self.get_remote_mirrors(repo):
+            for uri in self.get_remote_packages_mirrors(repo):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -2437,7 +2465,7 @@ class ServerPackagesHandlingMixin:
         not_match = set()
         broken_packages = {}
 
-        for uri in self.get_remote_mirrors(repo):
+        for uri in self.get_remote_packages_mirrors(repo):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             self.output(
@@ -3000,7 +3028,7 @@ class ServerPackagesHandlingMixin:
             level = "info",
             header = "   "
         )
-        for uri in self.get_remote_mirrors(repo):
+        for uri in self.get_remote_packages_mirrors(repo):
 
             if not_downloaded:
                 mytxt = blue("%s ...") % (
@@ -3713,7 +3741,7 @@ class ServerRepositoryMixin:
                 header = red(" * "),
                 back = True
             )
-            for uri in self.get_remote_mirrors(repo):
+            for uri in self.get_remote_repository_mirrors(repo):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -3761,11 +3789,14 @@ class ServerRepositoryMixin:
 
 
     def _init_generic_memory_server_repository(self, repoid, description,
-        mirrors = None, community_repo = False, service_url = None,
-        set_as_default = False):
+        pkg_mirrors = None, repo_mirrors = None, community_repo = False,
+        service_url = None, set_as_default = False):
 
-        if mirrors is None:
-            mirrors = []
+        if pkg_mirrors is None:
+            pkg_mirrors = []
+        if repo_mirrors is None:
+            repo_mirrors = []
+
         dbc = self._open_temp_repository(repoid, temp_file = ":memory:")
         self._memory_db_srv_instances[repoid] = dbc
 
@@ -3775,7 +3806,8 @@ class ServerRepositoryMixin:
         repodata = {
             'repoid': repoid,
             'description': description,
-            'mirrors': mirrors,
+            'pkg_mirrors': pkg_mirrors,
+            'repo_mirrors': repo_mirrors,
             'community': community_repo,
             'service_port': eapi3_port,
             'ssl_service_port': eapi3_ssl_port,

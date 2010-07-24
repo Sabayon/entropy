@@ -801,7 +801,7 @@ class Base:
 
                     repo_data[repoid] = {}
 
-                    for uri in Entropy.get_remote_mirrors(repoid):
+                    for uri in Entropy.get_remote_packages_mirrors(repoid):
 
                         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -833,6 +833,20 @@ class Base:
                                     'removal': removal,
                                     'copy': copy,
                                 }
+
+                        repo_data[repoid][crippled_uri]['database'] = {
+                            'current_revision': 0,
+                            'remote_revision': 0,
+                            'download_latest': (),
+                            'upload_queue': []
+                        }
+
+                    for uri in Entropy.get_remote_repository_mirrors(repoid):
+
+                        crippled_uri = EntropyTransceiver.get_uri_name(uri)
+                        if crippled_uri not in repo_data[repoid]:
+                            repo_data[repoid][crippled_uri] = {}
+                            repo_data[repoid][crippled_uri]['packages'] = {}
 
                         # now the db
                         current_revision = Entropy.get_local_repository_revision(
