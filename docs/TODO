@@ -5,9 +5,6 @@
     - 3. move update() code to Entropy server db class (change semantic?)
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
 
-    - rework entropy db usage by website and entropy services, let the unpack/sync
-         be handled externally => file lock di qualche tipo?
-
   1.0:
 
     - sort out some TODO/FIXME
