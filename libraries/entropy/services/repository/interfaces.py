@@ -185,21 +185,22 @@ class Server(SocketHost):
             if os.path.lexists(lock_file):
 
                 # locked !
-                self.repositories[repo_tuple]['locked'] = True
-                # trash old databases
-                self.close_db(db_path)
-                do_clear.add(repository)
+                if not self.repositories[repo_tuple]['locked']:
+                    self.repositories[repo_tuple]['locked'] = True
+                    # trash old databases
+                    self.close_db(db_path)
+                    do_clear.add(repository)
 
-                mytxt = blue("%s.") % (
-                    "repository is now locked, it's being uploaded.",)
-                self.output(
-                    "[%s] %s" % (
-                        brown(str(repo_tuple)),
-                        mytxt,
-                    ),
-                    importance = 1,
-                    level = "info"
-                )
+                    mytxt = blue("%s.") % (
+                        "repository is now locked, it's being uploaded",)
+                    self.output(
+                        "[%s] %s" % (
+                            brown(str(repo_tuple)),
+                            mytxt,
+                        ),
+                        importance = 1,
+                        level = "info"
+                    )
                 continue
 
             elif self.repositories[repo_tuple]['locked']:
@@ -254,8 +255,8 @@ class Server(SocketHost):
 
                 else:
                     mytxt = darkred("%s.") % (
-                        "error during repository unpack, disabling repository.",)
-                    self.output(
+                        "error during repository unpack, disabling repository",)
+                    self.output( # scrive 2 volte stessa roba (self.output())
                         "[%s] %s" % (
                             brown(str(repo_tuple)),
                             mytxt,
