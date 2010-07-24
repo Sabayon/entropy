@@ -2780,92 +2780,99 @@ class PortagePlugin(SpmPlugin):
         remove_path = os.path.dirname(remove_build)
         key = entropy.tools.dep_getkey(atom)
 
-        others_installed = self.match_installed_package(key, match_all = True)
+        with self._PortageVdbLocker(self):
 
-        # Support for tagged packages
-        slot = package_metadata['slot']
-        tag = package_metadata['versiontag']
-        if (tag == slot) and tag:
-            # old kernel tagged pkgs protocol
-            slot = "0"
-        elif tag and ("," in slot):
-            # new kernel tagged pkgs protocol
-            slot = self.__remove_kernel_tag_from_slot(slot)
+            others_installed = self.match_installed_package(key,
+                match_all = True)
 
-        def do_rm_path_atomic(xpath):
-            for my_el in os.listdir(xpath):
-                my_el = os.path.join(xpath, my_el)
+            # Support for tagged packages
+            slot = package_metadata['slot']
+            tag = package_metadata['versiontag']
+            if (tag == slot) and tag:
+                # old kernel tagged pkgs protocol
+                slot = "0"
+            elif tag and ("," in slot):
+                # new kernel tagged pkgs protocol
+                slot = self.__remove_kernel_tag_from_slot(slot)
+
+            def do_rm_path_atomic(xpath):
+                for my_el in os.listdir(xpath):
+                    my_el = os.path.join(xpath, my_el)
+                    try:
+                        os.remove(my_el)
+                    except OSError:
+                        pass
                 try:
-                    os.remove(my_el)
-                except OSError:
-                    pass
-            try:
-                os.rmdir(xpath)
-            except OSError:
-                pass
-
-        if os.path.isdir(remove_path):
-            do_rm_path_atomic(remove_path)
-
-        # also remove parent directory if empty
-        category_path = os.path.dirname(remove_path)
-        if os.path.isdir(category_path):
-            if not os.listdir(category_path):
-                try:
-                    os.rmdir(category_path)
+                    os.rmdir(xpath)
                 except OSError:
                     pass
 
-        if isinstance(others_installed, (list, set, tuple)):
+            if os.path.isdir(remove_path):
+                do_rm_path_atomic(remove_path)
 
-            for myatom in others_installed:
+            # also remove parent directory if empty
+            category_path = os.path.dirname(remove_path)
+            if os.path.isdir(category_path):
+                if not os.listdir(category_path):
+                    try:
+                        os.rmdir(category_path)
+                    except OSError:
+                        pass
 
-                if myatom == atom:
-                    # do not remove self
-                    continue
+            if isinstance(others_installed, (list, set, tuple)):
 
-                try:
-                    myslot = self.get_installed_package_metadata(myatom, "SLOT")
-                except KeyError:
-                    # package got removed or not available or broken
-                    continue
+                for myatom in others_installed:
 
-                if myslot != slot:
-                    continue
-                mybuild = self.get_installed_package_build_script_path(myatom)
-                mydir = os.path.dirname(mybuild)
-                if not os.path.isdir(mydir):
-                    continue
-                do_rm_path_atomic(mydir)
+                    if myatom == atom:
+                        # do not remove self
+                        continue
 
-            return 0
+                    try:
+                        myslot = self.get_installed_package_metadata(myatom,
+                            "SLOT")
+                    except KeyError:
+                        # package got removed or not available or broken
+                        continue
 
-        # otherwise update Portage world file
-        world_file = self.get_user_installed_packages_file()
-        world_file_tmp = world_file + ".entropy.tmp"
-        if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
+                    if myslot != slot:
+                        continue
+                    mybuild = self.get_installed_package_build_script_path(
+                        myatom)
+                    mydir = os.path.dirname(mybuild)
+                    if not os.path.isdir(mydir):
+                        continue
+                    do_rm_path_atomic(mydir)
 
-            new = open(world_file_tmp, "wb")
-            old = open(world_file, "rb")
-            line = old.readline()
-            key = const_convert_to_rawstring(key)
-            keyslot = const_convert_to_rawstring(key+":"+slot)
+                return 0
 
-            while line:
+        with self._PortageWorldSetLocker(self):
 
-                if line.find(key) != -1:
-                    line = old.readline()
-                    continue
-                if line.find(keyslot) != -1:
-                    line = old.readline()
-                    continue
-                new.write(line)
+            # otherwise update Portage world file
+            world_file = self.get_user_installed_packages_file()
+            world_file_tmp = world_file + ".entropy.tmp"
+            if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
+
+                new = open(world_file_tmp, "wb")
+                old = open(world_file, "rb")
                 line = old.readline()
+                key = const_convert_to_rawstring(key)
+                keyslot = const_convert_to_rawstring(key+":"+slot)
 
-            new.flush()
-            new.close()
-            old.close()
-            os.rename(world_file_tmp, world_file)
+                while line:
+
+                    if line.find(key) != -1:
+                        line = old.readline()
+                        continue
+                    if line.find(keyslot) != -1:
+                        line = old.readline()
+                        continue
+                    new.write(line)
+                    line = old.readline()
+
+                new.flush()
+                new.close()
+                old.close()
+                os.rename(world_file_tmp, world_file)
 
         return 0
 
