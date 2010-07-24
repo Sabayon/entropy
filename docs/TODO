@@ -3,17 +3,23 @@
 
     EntropyRepositoryBase:
     - 3. move update() code to Entropy server db class (change semantic?)
+    - entropy.tools: move version checking functions to SPM (and use spm ones?)
 
-    - entropy.client API docs
+    - rework entropy db usage by website and entropy services, let the unpack/sync
+         be handled externally => file lock di qualche tipo?
 
   1.0:
 
-    - add ENTROPY_KNOWN_BROKEN_DEPS support into ebuild/PortagePlugin?
+    - sort out some TODO/FIXME
+    - uniform config files options to this-and-that (keeping backward compat)
+      alternatively use "=" instead of "|"
+    - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
     - implement system snapshots (as snapshots, sets).
     - Client.urlFetcher/MultipleUrlFetcher? ugly!
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - entropy.db: remove @deprecated methods
+    - entropy.client API docs
 
   1.1:
 

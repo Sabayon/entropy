@@ -219,7 +219,7 @@ class CalculatorsMixin:
             k_ms = match_slot
         repos_ck = self._all_repositories_checksum()
 
-        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
             atom, k_ms, mask_filter,
             str(tuple(self._enabled_repos)),
