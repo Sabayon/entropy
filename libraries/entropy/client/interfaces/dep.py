@@ -219,11 +219,11 @@ class CalculatorsMixin:
             k_ms = match_slot
         repos_ck = self._all_repositories_checksum()
 
-        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
             atom, k_ms, mask_filter,
-            hash(tuple(self._enabled_repos)),
-            hash(tuple(self._settings['repositories']['available'])),
+            str(tuple(self._enabled_repos)),
+            str(tuple(self._settings['repositories']['available'])),
             multi_match, multi_repo, extended_results, u_hash,
         )
         c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
@@ -247,7 +247,11 @@ class CalculatorsMixin:
         for repo in valid_repos:
 
             # search
-            dbconn = self.open_repository(repo)
+            try:
+                dbconn = self.open_repository(repo)
+            except (RepositoryError, SystemDatabaseError):
+                # ouch, repository not available or corrupted !
+                continue
             xuse_cache = use_cache
             while True:
                 try:
