@@ -330,8 +330,7 @@ class Repository(SocketCommands):
 
     def get_database_revision(self, repository, arch, product, branch):
         x = (repository, arch, product, branch,)
-        l_dbrev = self.HostInterface.repositories[x]['live_db_rev']
-        dbrev = -1
-        if l_dbrev:
-            dbrev = l_dbrev
-        return dbrev
+        try:
+            return int(self.HostInterface.repositories[x]['dbrevision'])
+        except ValueError:
+            return -1

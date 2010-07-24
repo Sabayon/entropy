@@ -234,6 +234,9 @@ class Server(SocketHost):
                         importance = 1,
                         level = "info"
                     )
+                    # update revision
+                    self.repositories[repo_tuple]['dbrevision'] = \
+                        self.__read_revision(repo_tuple)
                     # woohoo, got unlocked eventually
                     dbc = self.open_db(db_path, docache = False)
                     dbc.createAllIndexes()
@@ -272,6 +275,18 @@ class Server(SocketHost):
         for repo in do_clear:
             self.__drop_cache_now(repo)
 
+    def __read_revision(self, repo_tuple):
+        db_dir = self.repositories[repo_tuple]['dbpath']
+        rev_file = os.path.join(db_dir, etpConst['etpdatabaserevisionfile'])
+        myrev = '0'
+        if os.path.isfile(rev_file) and os.access(rev_file, os.R_OK):
+            with open(rev_file, "r") as f:
+                try:
+                    myrev = str(int(f.readline().strip()))
+                except ValueError:
+                    myrev = '-1'
+        return myrev
+
     def _expand_repositories(self):
 
         for repository, arch, product, branch in self.repositories:
@@ -296,14 +311,4 @@ class Server(SocketHost):
             else:
                 self.repositories[x]['enabled'] = False
 
-            db_dir = self.repositories[x]['dbpath']
-            rev_file = os.path.join(db_dir, etpConst['etpdatabaserevisionfile'])
-            myrev = '0'
-            if os.path.isfile(rev_file) and os.access(rev_file, os.R_OK):
-                with open(rev_file, "r") as f:
-                    try:
-                        myrev = str(int(f.readline().strip()))
-                    except ValueError:
-                        myrev = '-1'
-
-            self.repositories[x]['dbrevision'] = myrev
+            self.repositories[x]['dbrevision'] = self.__read_revision(x)
