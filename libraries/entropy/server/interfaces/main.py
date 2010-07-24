@@ -485,7 +485,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                     uri = uri[3:]
                     continue
                 break
-            if not (do_repo and do_pkg):
+            if not (do_repo or do_pkg):
                 do_repo = True
                 do_pkg = True
             if do_repo:
