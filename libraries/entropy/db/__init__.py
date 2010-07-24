@@ -4781,9 +4781,11 @@ class EntropyRepository(EntropyRepositoryBase):
         self.__clearLiveCache("_doesTableExist")
 
     def _sanitizeDependsTable(self):
+        table_name = self._getReverseDependenciesTable()
         self._cursor().execute("""
-        DELETE FROM dependstable where iddependency = -1
-        """)
+        DELETE FROM %s where iddependency = -1
+        """ % (table_name,))
+        self.__clearLiveCache("taintReverseDependenciesMetadata")
         self.commitChanges()
 
     def _isDependsTableSane(self):
