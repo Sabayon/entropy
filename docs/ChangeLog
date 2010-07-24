@@ -1,3 +1,15 @@
+commit 86d46032b6a491970a7d1c3eb5f287db289a32b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 20:39:02 2010 +0200
+
+    [entropy.client.interfaces.dep] fix Client.atom_match() cache tag generation
+
+commit f21ca328082fbd6a336d8059bf51bef063a7a0c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 20:35:23 2010 +0200
+
+    Tagging Entropy version 0.99.49
+
 commit fc923dc850d7007979915054e4c98decbeabbc08
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 24 20:19:39 2010 +0200
