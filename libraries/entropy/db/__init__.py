@@ -58,6 +58,8 @@ class EntropyRepository(EntropyRepositoryBase):
     pattern, it can be considered the "model".
     Actually it's the only one available but more model backends will be
     supported in future (which will inherit this class directly).
+    Beside the underlying SQLite3 calls are thread safe, you are responsible
+    of the semantic of your calls.
 
     Every Entropy repository storage interface MUST inherit from this base
     class.
@@ -5606,6 +5608,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # runtime generated only.
             self._temp_reverse_deps = True
             # no need to execute stuff below this
+            self.__clearLiveCache("taintReverseDependenciesMetadata")
             return
 
         # prune old iddependencies
@@ -5619,6 +5622,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().executemany("""
             DELETE FROM dependstable WHERE iddependency = (?)
             """, prune_list)
+        self.__clearLiveCache("taintReverseDependenciesMetadata")
 
     def _getReverseDependenciesTable(self):
         """
@@ -5637,6 +5641,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        cache_id = "taintReverseDependenciesMetadata"
+        if cache_id in self.__live_cache:
+            return
         table_name = self._getReverseDependenciesTable()
         try:
             self._cursor().executescript("""
@@ -5644,7 +5651,8 @@ class EntropyRepository(EntropyRepositoryBase):
             """ % (table_name,))
         except (OperationalError,):
             # FIXME: backward compatibility
-            return
+            pass
+        self.__live_cache[cache_id] = True
 
     def generateReverseDependenciesMetadata(self, verbose = True):
         """
