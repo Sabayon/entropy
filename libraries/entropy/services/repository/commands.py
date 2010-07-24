@@ -75,14 +75,7 @@ class Repository(SocketCommands):
             }
         }
 
-    def trash_old_databases(self):
-        for db in self.HostInterface.syscache['db_trashed']:
-            db.closeDB()
-        self.HostInterface.syscache['db_trashed'].clear()
-
     def docmd_dbdiff(self, myargs):
-
-        self.trash_old_databases()
 
         if len(myargs) < 5:
             return None
@@ -96,7 +89,7 @@ class Repository(SocketCommands):
         foreign_idpackages = myargs[4:]
         x = (repository, arch, product, branch,)
 
-        valid = self.HostInterface.is_repository_available(x)
+        valid = self.HostInterface.is_repository_active(x)
         if not valid:
             return valid
 
@@ -136,8 +129,6 @@ class Repository(SocketCommands):
 
     def docmd_repository_metadata(self, myargs):
 
-        self.trash_old_databases()
-
         if len(myargs) < 4:
             return None
         repository = myargs[0]
@@ -149,7 +140,7 @@ class Repository(SocketCommands):
             return None
 
         x = (repository, arch, product, branch,)
-        valid = self.HostInterface.is_repository_available(x)
+        valid = self.HostInterface.is_repository_active(x)
         if not valid:
             return valid
 
@@ -182,8 +173,6 @@ class Repository(SocketCommands):
 
     def docmd_package_sets(self, myargs):
 
-        self.trash_old_databases()
-
         if len(myargs) < 4:
             return None
         repository = myargs[0]
@@ -195,7 +184,7 @@ class Repository(SocketCommands):
             return None
 
         x = (repository, arch, product, branch,)
-        valid = self.HostInterface.is_repository_available(x)
+        valid = self.HostInterface.is_repository_active(x)
         if not valid:
             return valid
 
@@ -223,8 +212,6 @@ class Repository(SocketCommands):
 
     def docmd_treeupdates(self, myargs):
 
-        self.trash_old_databases()
-
         if len(myargs) < 4:
             return None
         repository = myargs[0]
@@ -236,7 +223,7 @@ class Repository(SocketCommands):
             return None
 
         x = (repository, arch, product, branch,)
-        valid = self.HostInterface.is_repository_available(x)
+        valid = self.HostInterface.is_repository_active(x)
         if not valid:
             return valid
 
@@ -266,8 +253,6 @@ class Repository(SocketCommands):
 
     def docmd_pkginfo_strict(self, myargs):
 
-        self.trash_old_databases()
-
         if len(myargs) < 6:
             return None
         format_content_for_insert = myargs[0]
@@ -290,7 +275,7 @@ class Repository(SocketCommands):
         idpackages = tuple(sorted(idpackages))
         x = (repository, arch, product, branch,)
 
-        valid = self.HostInterface.is_repository_available(x)
+        valid = self.HostInterface.is_repository_active(x)
         if not valid:
             return valid
 
