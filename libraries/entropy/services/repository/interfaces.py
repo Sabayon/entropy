@@ -13,7 +13,7 @@
 import os
 import shutil
 from entropy.core.settings.base import SystemSettings
-from entropy.output import TextInterface, blue, brown, darkred, darkgreen
+from entropy.output import TextInterface, blue, brown, darkred, darkgreen, teal
 from entropy.const import etpConst
 from entropy.misc import TimeScheduled
 from entropy.cache import EntropyCacher
@@ -240,7 +240,7 @@ class Server(SocketHost):
                     db_ck = dbc.checksum(do_order = True, strict = False,
                         strings = True)
                     self.output(
-                        darkgreen(str(db_ck)),
+                        teal(str(db_ck)),
                         importance = 1,
                         level = "info"
                     )
