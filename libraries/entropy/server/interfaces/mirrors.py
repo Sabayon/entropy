@@ -1688,39 +1688,134 @@ class Server(ServerNoticeBoardMixin):
         fine_uris = set()
 
         disabled_eapis = sorted(srv_set['disabled_eapis'])
+        db_format = srv_set['database_file_format']
+        cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
+        if cmethod is None:
+            raise AttributeError("wrong database compression method passed")
+        database_path = self._entropy._get_local_database_file(repo)
+
+        if disabled_eapis:
+            self._entropy.output(
+                "[repo:%s|%s] %s: %s" % (
+                    blue(repo),
+                    darkgreen(_("upload")),
+                    darkred(_("disabled EAPI")),
+                    bold(', '.join([str(x) for x in disabled_eapis])),
+                ),
+                importance = 1,
+                level = "warning",
+                header = darkgreen(" * ")
+            )
+
+        # create/update timestamp file
+        self._update_repository_timestamp(repo)
+        # create pkglist service file
+        self._create_repository_pkglist(repo)
+
+        upload_data, critical, text_files, gpg_to_sign_files = \
+            self._get_files_to_sync(cmethod, repo = repo,
+                disabled_eapis = disabled_eapis)
+
+        self._entropy.output(
+            "[repo:%s|%s] %s" % (
+                blue(repo),
+                darkgreen(_("upload")),
+                darkgreen(_("preparing to upload database to mirror")),
+            ),
+            importance = 1,
+            level = "info",
+            header = darkgreen(" * ")
+        )
+
+        # Package Sets info
+        self._show_package_sets_messages(repo)
+
+        self._sync_database_treeupdates(repo)
+        self._entropy._update_database_package_sets(repo)
+        dbconn = self._entropy.open_server_repository(
+            read_only = False, no_upload = True, repo = repo,
+            do_treeupdates = False)
+        dbconn.commitChanges()
+        # now we can safely copy it
+
+        # backup current database to avoid re-indexing
+        old_dbpath = self._entropy._get_local_database_file(repo)
+        backup_dbpath = old_dbpath + ".up_backup"
+        copy_back = False
+        if not pretend:
+            try:
+                if os.access(backup_dbpath, os.R_OK) and \
+                    os.path.isfile(backup_dbpath):
+                    os.remove(backup_dbpath)
+
+                shutil.copy2(old_dbpath, backup_dbpath)
+                copy_back = True
+            except shutil.Error:
+                copy_back = False
+
+        self._shrink_database_and_close(repo)
+
+        if 2 not in disabled_eapis:
+            self._show_eapi2_upload_messages("~all~", database_path,
+                upload_data, cmethod, repo)
+            # create compressed dump + checksum
+            self._dump_database_to_file(database_path,
+                upload_data['dump_path_light'], cmethod[0],
+                exclude_tables = ["content", "packagechangelogs"],
+                repo = repo)
+            self._create_file_checksum(upload_data['dump_path_light'],
+                upload_data['dump_path_digest_light'])
+
+        if 1 not in disabled_eapis:
+
+            self._show_eapi1_upload_messages("~all~", database_path,
+                upload_data, cmethod, repo)
+
+            # compress the database and create uncompressed
+            # database checksum -- DEPRECATED
+            self._compress_file(database_path,
+                upload_data['compressed_database_path'], cmethod[0])
+            self._create_file_checksum(database_path,
+                upload_data['database_path_digest'])
+
+            # create compressed database checksum
+            self._create_file_checksum(
+                upload_data['compressed_database_path'],
+                upload_data['compressed_database_path_digest'])
+
+            # create light version of the compressed db
+            eapi1_dbfile = self._entropy._get_local_database_file(repo)
+            temp_eapi1_dbfile = eapi1_dbfile+".light"
+            shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
+            # open and remove content table
+            eapi1_tmp_dbconn = \
+                self._entropy.open_generic_repository(
+                    temp_eapi1_dbfile, indexing_override = False,
+                    xcache = False)
+            eapi1_tmp_dbconn.dropContent()
+            eapi1_tmp_dbconn.dropChangelog()
+            eapi1_tmp_dbconn.commitChanges()
+            eapi1_tmp_dbconn.vacuum()
+            eapi1_tmp_dbconn.closeDB()
+
+            # compress
+            self._compress_file(temp_eapi1_dbfile,
+                upload_data['compressed_database_path_light'], cmethod[0])
+            # go away, we don't need you anymore
+            os.remove(temp_eapi1_dbfile)
+            # create compressed light database checksum
+            self._create_file_checksum(
+                upload_data['compressed_database_path_light'],
+                upload_data['compressed_database_path_digest_light'])
+
+        # always upload metafile, it's cheap and also used by EAPI1,2
+        self._create_metafiles_file(upload_data['metafiles_path'],
+            text_files, repo)
+        # Setup GPG signatures for files that are going to be uploaded
+        self._create_upload_gpg_signatures(upload_data, gpg_to_sign_files,
+            repo)
 
         for uri in uris:
-
-            db_format = srv_set['database_file_format']
-            cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
-            if cmethod is None:
-                raise AttributeError("wrong database compression method passed")
-
-            crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            database_path = self._entropy._get_local_database_file(repo)
-
-            if disabled_eapis:
-                self._entropy.output(
-                    "[repo:%s|%s|%s] %s: %s" % (
-                        blue(repo),
-                        red(crippled_uri),
-                        darkgreen(_("upload")),
-                        darkred(_("disabled EAPI")),
-                        bold(', '.join([str(x) for x in disabled_eapis])),
-                    ),
-                    importance = 1,
-                    level = "warning",
-                    header = darkgreen(" * ")
-                )
-
-            # create/update timestamp file
-            self._update_repository_timestamp(repo)
-            # create pkglist service file
-            self._create_repository_pkglist(repo)
-
-            upload_data, critical, text_files, gpg_to_sign_files = \
-                self._get_files_to_sync(cmethod, repo = repo,
-                    disabled_eapis = disabled_eapis)
 
             if lock_check:
                 given_up = self._mirror_lock_check(uri, repo = repo)
@@ -1729,113 +1824,12 @@ class Server(ServerNoticeBoardMixin):
                     broken_uris.add(uri)
                     continue
 
-            self._entropy.output(
-                "[repo:%s|%s|%s] %s" % (
-                    blue(repo),
-                    red(crippled_uri),
-                    darkgreen(_("upload")),
-                    darkgreen(_("preparing to upload database to mirror")),
-                ),
-                importance = 1,
-                level = "info",
-                header = darkgreen(" * ")
-            )
-
-            # Package Sets info
-            self._show_package_sets_messages(repo)
-
-            self._sync_database_treeupdates(repo)
-            self._entropy._update_database_package_sets(repo)
-            dbconn = self._entropy.open_server_repository(
-                read_only = False, no_upload = True, repo = repo,
-                do_treeupdates = False)
-            dbconn.commitChanges()
-            # now we can safely copy it
-
-            # backup current database to avoid re-indexing
-            old_dbpath = self._entropy._get_local_database_file(repo)
-            backup_dbpath = old_dbpath + ".up_backup"
-            copy_back = False
-            if not pretend:
-                try:
-                    if os.access(backup_dbpath, os.R_OK) and \
-                        os.path.isfile(backup_dbpath):
-                        os.remove(backup_dbpath)
-
-                    shutil.copy2(old_dbpath, backup_dbpath)
-                    copy_back = True
-                except shutil.Error:
-                    copy_back = False
-
-            self._shrink_database_and_close(repo)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
             # EAPI 3
             if 3 not in disabled_eapis:
                 self._show_eapi3_upload_messages(crippled_uri, database_path,
                     repo)
-
-            # EAPI 2
-            if 2 not in disabled_eapis:
-                self._show_eapi2_upload_messages(crippled_uri, database_path,
-                    upload_data, cmethod, repo)
-
-                # create compressed dump + checksum
-                self._dump_database_to_file(database_path,
-                    upload_data['dump_path_light'], cmethod[0],
-                    exclude_tables = ["content", "packagechangelogs"],
-                    repo = repo)
-                self._create_file_checksum(upload_data['dump_path_light'],
-                    upload_data['dump_path_digest_light'])
-
-
-            # EAPI 1
-            if 1 not in disabled_eapis:
-                self._show_eapi1_upload_messages(crippled_uri, database_path,
-                    upload_data, cmethod, repo)
-
-                # compress the database and create uncompressed
-                # database checksum -- DEPRECATED
-                self._compress_file(database_path,
-                    upload_data['compressed_database_path'], cmethod[0])
-                self._create_file_checksum(database_path,
-                    upload_data['database_path_digest'])
-
-                # create compressed database checksum
-                self._create_file_checksum(
-                    upload_data['compressed_database_path'],
-                    upload_data['compressed_database_path_digest'])
-
-                # create light version of the compressed db
-                eapi1_dbfile = self._entropy._get_local_database_file(repo)
-                temp_eapi1_dbfile = eapi1_dbfile+".light"
-                shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
-                # open and remove content table
-                eapi1_tmp_dbconn = \
-                    self._entropy.open_generic_repository(
-                        temp_eapi1_dbfile, indexing_override = False,
-                        xcache = False)
-                eapi1_tmp_dbconn.dropContent()
-                eapi1_tmp_dbconn.dropChangelog()
-                eapi1_tmp_dbconn.commitChanges()
-                eapi1_tmp_dbconn.vacuum()
-                eapi1_tmp_dbconn.closeDB()
-
-                # compress
-                self._compress_file(temp_eapi1_dbfile,
-                    upload_data['compressed_database_path_light'], cmethod[0])
-                # go away, we don't need you anymore
-                os.remove(temp_eapi1_dbfile)
-                # create compressed light database checksum
-                self._create_file_checksum(
-                    upload_data['compressed_database_path_light'],
-                    upload_data['compressed_database_path_digest_light'])
-
-            # always upload metafile, it's cheap and also used by EAPI1,2
-            self._create_metafiles_file(upload_data['metafiles_path'],
-                text_files, repo)
-            # Setup GPG signatures for files that are going to be uploaded
-            self._create_upload_gpg_signatures(upload_data, gpg_to_sign_files,
-                repo)
 
             if not pretend:
                 self.lock_mirrors_for_download(True, [uri], repo = repo)
@@ -1875,18 +1869,19 @@ class Server(ServerNoticeBoardMixin):
                     broken_uris |= m_broken_uris
                     continue
 
-                # copy db back
-                if copy_back and os.path.isfile(backup_dbpath):
-                    self._entropy.close_repositories()
-                    further_backup_dbpath = old_dbpath+".security_backup"
-                    if os.path.isfile(further_backup_dbpath):
-                        os.remove(further_backup_dbpath)
-                    shutil.copy2(old_dbpath, further_backup_dbpath)
-                    shutil.move(backup_dbpath, old_dbpath)
                 # unlock
                 self.lock_mirrors_for_download(False, [uri], repo = repo)
 
             fine_uris |= m_fine_uris
+
+        if (not pretend) and copy_back and os.path.isfile(backup_dbpath):
+            # copy db back
+            self._entropy.close_repositories()
+            further_backup_dbpath = old_dbpath+".security_backup"
+            if os.path.isfile(further_backup_dbpath):
+                os.remove(further_backup_dbpath)
+            shutil.copy2(old_dbpath, further_backup_dbpath)
+            shutil.move(backup_dbpath, old_dbpath)
 
         if not fine_uris:
             upload_errors = True
