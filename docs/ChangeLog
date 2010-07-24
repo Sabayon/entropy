@@ -1,3 +1,51 @@
+commit fc923dc850d7007979915054e4c98decbeabbc08
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 20:19:39 2010 +0200
+
+    [entropy.server] decouple list of repository mirrors from packages mirrors, keeping backward compatibility
+
+commit 9273f21b0bbb26bf9cc5768267b38bb6d5251f1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 18:37:50 2010 +0200
+
+    [entropy.client.interfaces.commands] rework repository EAPI service, revert to original behaviour (using packages.db.download.lock as lock file)
+
+commit f6094eb4663bbc8da268226cc7a89a753ffeecfb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 17:08:48 2010 +0200
+
+    [entropy.db] EntropyRepository: optimize frequent calls to taintReverseDependenciesMetadata()
+
+commit 41c0a7cadc2c6b6c4de91eefd3353cf5fcd36f3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 17:08:22 2010 +0200
+
+    [entropy.db] EntropyRepository._sanitizeDependsTable: use proper sql table (temp or non-temp)
+
+commit 5a1e38019f03e27cce12c4f4fd0173cc10848fa9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 16:50:50 2010 +0200
+
+    [entropy.spm] PortagePlugin.remove_installed_package: lock vdb and world file before making any change
+
+commit f3331b36cdda7749d3b955f53edacf0c421b7d7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 16:47:09 2010 +0200
+
+    [entropy.client.interfaces.dep] catch RepositoryError and SystemDatabaseError on open_repository() in atom_match()
+
+commit 96d315b7be07757ec43a018b27b30e71fdbedfda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 01:41:08 2010 +0200
+
+    [docs] remove generated documentation from repository, not needed
+
+commit 17f7dc5c7bab6603f9b2d73853aac8e55ea50d1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 23 19:57:55 2010 +0200
+
+    Tagging Entropy version 0.99.48.2
+
 commit 019906e05062b8a040f7ccb9011fb41846b848e6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 23 17:44:07 2010 +0200
