@@ -21,7 +21,7 @@ import entropy.tools
 
 class UGC(SocketCommands):
 
-    ERROR_REPORT_MAIL = os.environ.get('ETP_ERROR_REPORT_MAIL'
+    ERROR_REPORT_MAIL = os.environ.get('ETP_ERROR_REPORT_MAIL',
         'website@sabayon.org')
     if not entropy.tools.is_valid_email(ERROR_REPORT_MAIL):
         raise AttributeError("ETP_ERROR_REPORT_MAIL is bad")
