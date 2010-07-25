@@ -32,7 +32,7 @@ etpConst['community']['mode'] = community_repo
 etpConst['socket_service']['session_ttl'] = 300
 from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
-from entropy.tools import get_year
+from entropy.tools import get_year, print_traceback
 from entropy.output import nocolor
 from text_tools import print_menu
 
@@ -91,6 +91,9 @@ def term_myself():
 def run_srv(s):
     try:
         s.go()
+    except:
+        print_traceback()
+        raise
     finally:
         if s is not None:
             s.killall()

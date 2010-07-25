@@ -30,7 +30,7 @@ if "--nostdout" in sys.argv:
 
 from entropy.i18n import _
 from entropy.output import nocolor
-from entropy.tools import get_year
+from entropy.tools import get_year, print_traceback
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
 from text_tools import print_menu
@@ -106,6 +106,9 @@ def term_myself():
 def run_srv(s):
     try:
         s.go()
+    except:
+        print_traceback()
+        raise
     finally:
         if s is not None:
             s.killall()
