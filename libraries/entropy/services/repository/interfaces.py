@@ -53,8 +53,9 @@ class Server(SocketHost):
         etpConst['socketloglevel'] = 1
         if 'external_cmd_classes' not in kwargs:
             kwargs['external_cmd_classes'] = []
-        kwargs['external_cmd_classes'].insert(0,
-            self.__repository_commands_class)
+        if not repository_lock_scanner:
+            kwargs['external_cmd_classes'].insert(0,
+                self.__repository_commands_class)
         SocketHost.__init__(
             self,
             Server.ServiceInterface,
