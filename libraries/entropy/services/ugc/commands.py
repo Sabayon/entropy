@@ -21,6 +21,15 @@ import entropy.tools
 
 class UGC(SocketCommands):
 
+    ERROR_REPORT_MAIL = os.environ.get('ETP_ERROR_REPORT_MAIL'
+        'website@sabayon.org')
+    if not entropy.tools.is_valid_email(ERROR_REPORT_MAIL):
+        raise AttributeError("ETP_ERROR_REPORT_MAIL is bad")
+    SENDER_EMAIL_FALLBACK = os.environ.get('ETP_SENDER_EMAIL_FALLBACK',
+        'www-data@sabayon.org')
+    if not entropy.tools.is_valid_email(SENDER_EMAIL_FALLBACK):
+        raise AttributeError("ETP_SENDER_EMAIL_FALLBACK is bad")
+
     def __init__(self, HostInterface, connection_data, store_path, store_url):
 
         SocketCommands.__init__(self, HostInterface, inst_name = "ugc-commands")
@@ -760,10 +769,10 @@ class UGC(SocketCommands):
             return None, "error: %s" % (e,)
 
         subject = 'Entropy Error Reporting Handler'
-        destination_email = 'website@sabayon.org'
-        sender_email = mydict.get('email', 'www-data@sabayon.org')
+
+        sender_email = mydict.get('email', UGC.SENDER_EMAIL_FALLBACK)
         if not entropy.tools.is_valid_email(sender_email):
-            sender_email = 'www-data@sabayon.org'
+            sender_email = UGC.SENDER_EMAIL_FALLBACK
         keys_to_file = ['errordata', 'processes', 'lspci', 'dmesg', 'locale',
             'lsof', 'repositories.conf', 'client.conf']
 
@@ -802,7 +811,7 @@ class UGC(SocketCommands):
             rm_paths.append(path)
 
         sender = EmailSender()
-        sender.send_mime_email(sender_email, [destination_email], subject,
+        sender.send_mime_email(sender_email, [UGC.ERROR_REPORT_MAIL], subject,
             mail_txt, files)
         del sender
 
