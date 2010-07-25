@@ -986,6 +986,7 @@ class LogFile:
     }
     LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
     DATE_FORMAT = "[%H:%M:%S %d/%m/%Y %Z]"
+    _HANDLER_CACHE = {}
 
     """ Entropy simple logging interface, works as file object """
 
@@ -1005,24 +1006,34 @@ class LogFile:
             logger_level = const_convert_log_level(level)
         else:
             logger_level = logging.INFO
-
-        self.__logger = logging.getLogger(os.path.basename(filename))
-        self.__level = LogFile.LEVELS.get(logger_level)
-        self.__logger.setLevel(logging.DEBUG)
-        if filename is not None:
-            try:
-                self.__handler = logging.FileHandler(filename)
-            except (IOError, OSError):
-                self.__handler = logging.StreamHandler()
-        else:
-            self.__handler = logging.StreamHandler()
-
-        self.__handler.setLevel(self.__level)
-        self.__handler.setFormatter(logging.Formatter(LogFile.LOG_FORMAT,
-            LogFile.DATE_FORMAT))
-        self.__logger.addHandler(self.__handler)
         self.__filename = filename
         self.__header = header
+
+        self.__logger = logging.getLogger(os.path.basename(self.__filename))
+        self.__level = LogFile.LEVELS.get(logger_level)
+        self.__logger.setLevel(logging.DEBUG)
+
+        handler_cache_key = self.__handler_cache_key()
+        cached_handler = LogFile._HANDLER_CACHE.get(handler_cache_key)
+
+        if cached_handler is None:
+            if self.__filename is not None:
+                try:
+                    self.__handler = logging.FileHandler(self.__filename)
+                except (IOError, OSError):
+                    self.__handler = logging.StreamHandler()
+            else:
+                self.__handler = logging.StreamHandler()
+            LogFile._HANDLER_CACHE[handler_cache_key] = self.__handler
+            self.__handler.setLevel(self.__level)
+            self.__handler.setFormatter(logging.Formatter(LogFile.LOG_FORMAT,
+                LogFile.DATE_FORMAT))
+            self.__logger.addHandler(self.__handler)
+        else:
+            self.__handler = cached_handler
+
+    def __handler_cache_key(self):
+        return (self.__filename, self.__level)
 
     def __del__(self):
         self.close()
@@ -1034,8 +1045,13 @@ class LogFile:
 
     def close(self):
         """ Close log file """
-        if hasattr(self.__handler, 'close'):
-            self.__handler.close()
+        handler_cache_key = self.__handler_cache_key()
+        # drop from cache
+        handler = LogFile._HANDLER_CACHE.pop(handler_cache_key, None)
+        if handler is not None:
+            if hasattr(handler, 'close'):
+                handler.close()
+            handler = None
         self.__logger = None
 
     def _handler(self, mystr):
