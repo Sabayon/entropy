@@ -14,6 +14,7 @@ import os
 import select
 import shutil
 import time
+import copy
 
 import entropy.dump
 import entropy.tools
@@ -1509,8 +1510,8 @@ class SocketHost:
         self.PythonGarbageCollector = None
         self.AuthenticatorInst = None
 
-        self.args = args
-        self.kwds = kwds
+        self.args = args[:]
+        self.kwds = kwds.copy()
         from entropy.misc import LogFile
         self.socketLog = LogFile(
             level = etpConst['socketloglevel'],
@@ -1519,7 +1520,6 @@ class SocketHost:
         )
 
         # settings
-        import copy
         """
         SystemSettings is a singleton, and we just need to read
         socket configuration. we don't want to mess other instances
@@ -1535,7 +1535,8 @@ class SocketHost:
         self.timeout = self.__socket_settings['timeout']
         self.hostname = self.__socket_settings['hostname']
         self.session_ttl = self.__socket_settings['session_ttl']
-        if self.hostname == "*": self.hostname = ''
+        if self.hostname == "*":
+            self.hostname = ''
         self.port = self.__socket_settings['port']
         self.threads = self.__socket_settings['threads'] # maximum number of allowed sessions
         self.max_connections = self.__socket_settings['max_connections']
@@ -1960,7 +1961,8 @@ class SocketHost:
                     continue
                 else:
                     raise
-        self.output('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname, self.port, self.timeout,))
+        self.output('server connected, listening on: %s, port: %s, timeout: %s, command classes: %s' % (
+            self.hostname, self.port, self.timeout, self.command_classes,))
         self.Server.serve_forever()
         self.Gc.kill()
 
