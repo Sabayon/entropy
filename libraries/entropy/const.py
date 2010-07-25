@@ -1361,7 +1361,7 @@ def const_islive():
         return True
     return False
 
-def const_kill_threads():
+def const_kill_threads(wait_seconds = 120.0):
     """
     Entropy threads killer. Even if Python threads cannot
     be stopped or killed, TimeScheduled ones can, exporting
@@ -1371,6 +1371,8 @@ def const_kill_threads():
         >>> from entropy.const import const_kill_threads
         >>> const_kill_threads()
 
+    @param wait_seconds: number of seconds thread.join() should wait
+    @type wait_seconds: int
     @rtype: None
     @return: None
     """
@@ -1382,7 +1384,7 @@ def const_kill_threads():
             continue
         if hasattr(running_t, 'kill'):
             running_t.kill()
-        running_t.join(120.0) # wait 2 minutes?
+        running_t.join(wait_seconds) # wait n seconds?
 
 def __const_handle_exception(etype, value, t_back):
     """
