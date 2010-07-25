@@ -1,3 +1,85 @@
+commit 19e45348243333f2fa098fe9a27da40d7ec88a83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 13:35:35 2010 +0200
+
+    [entropy.services.repository] add "repository_lock_scanner" to disable the feature
+
+commit 6e82774473ca3ac753ba5d75f0ef3a7039f03c96
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 13:29:44 2010 +0200
+
+    [entropy.services.ugc] fix coding error in os.environ.get()
+
+commit 843546a5f4571d6827ab09f59185cc3250c855f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 13:24:08 2010 +0200
+
+    [entropy.misc] LogFile: cache logging handlers and reuse them across threads
+
+commit 57ee2889a1da1081ca9f7182c96e8bc05d280d3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 13:20:43 2010 +0200
+
+    [entropy.services] update SocketHost code style
+
+commit c8e877422ed11290b75b31f72ebb82656e3f890c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 13:11:35 2010 +0200
+
+    [services] print traceback when server fails to load
+
+commit 774320f8244e8c94f336e8540361b62c66a14e06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 12:40:22 2010 +0200
+
+    [services] update entropy services example code
+
+commit 09b5b232510b128a765e17c4981f4941df36a676
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 12:32:51 2010 +0200
+
+    [services] update service-test-daemon example code
+
+commit 0cb34df73c9ec4879273b7a139038d9bf0e69519
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 12:32:22 2010 +0200
+
+    [entropy.const] add "wait_seconds" argument to const_kill_threads
+
+commit f3ae36daa16050f33a55194e0f4b766b4f17f0c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 09:22:33 2010 +0200
+
+    [entropy.services.ugc] do not strictly hardcode Entropy Error Report emails into class
+    
+    Use the following environment variables:
+    - ETP_ERROR_REPORT_MAIL: destination email where errors are submitted
+    - ETP_SENDER_EMAIL_FALLBACK: default source email when user didn't provide one
+
+commit 4accd7d21d7f7739401a8c921601ba2710e3bbf8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 09:14:23 2010 +0200
+
+    [entropy.services.ugc] move more reported data to file when submitting a bug
+
+commit c0edbbe278d7916f91ecaebe2c9cc04057edced4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 22:26:50 2010 +0200
+
+    [entropy.services.repository] do not keep printing that repository is locked
+
+commit efe8e33515671714f4e9212195205e61c21d9697
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 22:10:32 2010 +0200
+
+    [entropy.services.repository] several fixes to the new interface layout
+
+commit 0fd4bcb26babdb4f8d22930d1116b4810f5724a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 24 21:31:00 2010 +0200
+
+    Tagging Entropy version 0.99.49.2
+
 commit 1c84bc3376582d60bdfa8ac97fefe1ab1f442072
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 24 21:30:20 2010 +0200
