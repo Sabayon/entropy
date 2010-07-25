@@ -1,5 +1,10 @@
 #!/usr/bin/python2
-import sys, time
+import os
+import sys
+import time
+import signal
+import threading
+
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -62,11 +67,22 @@ from entropy.services.test.interfaces import Server as ServiceServer
 from entropy.services.test.commands import Test
 from entropy.misc import ParallelTask
 
+def kill_threads():
+    for th in threading.enumerate():
+        if hasattr(th, 'kill'):
+            th.kill()
+
+def term_myself():
+    os.kill(os.getpid(), signal.SIGTERM)
+
 def run_srv(s):
     try:
         s.go()
-    except (KeyboardInterrupt, SystemExit,):
-        s.killall()
+    finally:
+        if s is not None:
+            s.killall()
+        kill_threads()
+        term_myself()
 
 srv = ServiceServer(
         do_ssl = do_ssl,
@@ -85,7 +101,9 @@ task.start()
 
 try:
     while task.isAlive():
-        time.sleep(1)
-except KeyboardInterrupt:
-    raise SystemExit(1)
-raise SystemExit(0)
+        time.sleep(2)
+finally:
+    if srv is not None:
+        srv.killall()
+    kill_threads()
+    term_myself()
