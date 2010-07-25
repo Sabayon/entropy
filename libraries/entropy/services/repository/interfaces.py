@@ -34,7 +34,8 @@ class Server(SocketHost):
         def __init__(self, *args, **kwargs):
             pass
 
-    def __init__(self, repositories, do_ssl = False, stdout_logging = True, **kwargs):
+    def __init__(self, repositories, repository_lock_scanner = True,
+        do_ssl = False, stdout_logging = True, **kwargs):
 
         # instantiate critical constants
         etpConst['socket_service']['max_connections'] = 5000
@@ -65,8 +66,9 @@ class Server(SocketHost):
         self.stdout_logging = stdout_logging
         self.repositories = repositories.copy()
         self._expand_repositories()
-        # start timed lock file scanning
-        self._start_repository_lock_scanner()
+        if repository_lock_scanner:
+            # start timed lock file scanning
+            self._start_repository_lock_scanner()
 
     def killall(self):
         SocketHost.killall(self)
