@@ -1961,8 +1961,13 @@ class SocketHost:
                     continue
                 else:
                     raise
+        shown_command_classes = []
+        for cmd_class in self.command_classes:
+            if isinstance(cmd_class, (list, tuple)):
+                cmd_class = cmd_class[0]
+            shown_command_classes.append(cmd_class)
         self.output('server connected, listening on: %s, port: %s, timeout: %s, command classes: %s' % (
-            self.hostname, self.port, self.timeout, self.command_classes,))
+            self.hostname, self.port, self.timeout, shown_command_classes,))
         self.Server.serve_forever()
         self.Gc.kill()
 
