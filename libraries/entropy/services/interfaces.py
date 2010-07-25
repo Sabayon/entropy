@@ -17,9 +17,11 @@ import time
 
 import entropy.dump
 import entropy.tools
+from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst, const_setup_perms, const_isstring, \
     const_get_stringtype, const_convert_to_rawstring, etpUi, const_debug_write
-from entropy.exceptions import *
+from entropy.exceptions import ConnectionError, InterruptError, \
+    PermissionDenied, TimeoutError, DumbException
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
 from entropy.output import blue, red, darkgreen, darkred, darkblue, brown, \
@@ -354,7 +356,7 @@ class SocketHost:
             )
             per_host_connections = self.HostInterface.per_host_connections
             conn_data = per_host_connections.get(client_address[0])
-            if conn_data != None:
+            if conn_data is not None:
                 if conn_data < 1:
                     del per_host_connections[client_address[0]]
                 else:
@@ -697,7 +699,7 @@ class SocketHost:
                 args = args[1:] # remove session
 
             stream_enabled = False
-            if (session != None) and session in self.HostInterface.sessions:
+            if (session is not None) and session in self.HostInterface.sessions:
                 stream_enabled = self.HostInterface.sessions[session].get('stream_mode')
 
             if stream_enabled and (cmd not in self.HostInterface.config_commands):
@@ -732,7 +734,7 @@ class SocketHost:
                 return False, "session is not alive"
 
             # check if command needs authentication
-            if session != None:
+            if session is not None:
                 auth = self.HostInterface.valid_commands[cmd]['auth']
                 if auth:
                     # are we?
@@ -742,7 +744,7 @@ class SocketHost:
                         return False, "not authenticated"
 
             # keep session alive
-            if session != None:
+            if session is not None:
                 self.HostInterface.set_session_running(session)
                 self.HostInterface.update_session_time(session)
 
@@ -756,7 +758,7 @@ class SocketHost:
         def load_service_interface(self, session):
 
             uid = None
-            if session != None:
+            if session is not None:
                 uid = self.HostInterface.sessions[session]['auth_uid']
 
             intf = self.HostInterface.EntropyInstantiation[0]
@@ -814,7 +816,7 @@ class SocketHost:
                     return "close"
 
             p_args = args
-            if (cmd in self.HostInterface.login_pass_commands) and authenticator != None:
+            if (cmd in self.HostInterface.login_pass_commands) and authenticator is not None:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
@@ -855,7 +857,7 @@ class SocketHost:
             whoops = False
             if valid_cmd:
 
-                if authenticator != None:
+                if authenticator is not None:
                     # now set session
                     authenticator.set_session(session)
 
@@ -916,13 +918,13 @@ class SocketHost:
                             type(e),
                         )
                     )
-                    if session != None:
+                    if session is not None:
                         self.HostInterface.store_rc(str(e), session)
                     whoops = True
 
                 del Entropy
 
-            if session != None:
+            if session is not None:
                 self.HostInterface.update_session_time(session)
                 self.HostInterface.unset_session_running(session)
             rcmd = None
@@ -931,7 +933,7 @@ class SocketHost:
             except (self.socket.error, self.socket.timeout, self.HostInterface.SSL_exceptions['SysCallError'],):
                 rcmd = "close"
 
-            if authenticator != None:
+            if authenticator is not None:
                 authenticator.terminate_instance()
             del authenticator
             if not self.HostInterface.fork_requests:
@@ -974,7 +976,7 @@ class SocketHost:
                 myargs, mykwargs = self._get_args_kwargs(args)
 
             rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy, authenticator)
-            if session != None and session in self.HostInterface.sessions:
+            if session is not None and session in self.HostInterface.sessions:
                 self.HostInterface.store_rc(rc, session)
             return rc
 
@@ -1048,9 +1050,9 @@ class SocketHost:
         def fork_task(self, f, session, authenticator, *args, **kwargs):
             gid = None
             uid = None
-            if session != None:
+            if session is not None:
                 logged_in = self.HostInterface.sessions[session]['auth_uid']
-                if logged_in != None:
+                if logged_in is not None:
                     uid = logged_in
                     gid = etpConst['entropygid']
             return entropy.tools.spawn_function(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
@@ -1284,7 +1286,7 @@ class SocketHost:
             if not os.path.isdir(os.path.dirname(stream_path)):
                 try:
                     os.makedirs(stream_dir)
-                    if etpConst['entropygid'] != None:
+                    if etpConst['entropygid'] is not None:
                         const_setup_perms(stream_dir, etpConst['entropygid'],
                             recursion = False)
                 except OSError:
@@ -1303,7 +1305,7 @@ class SocketHost:
 
             # is already auth'd?
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
-            if auth_uid != None:
+            if auth_uid is not None:
                 return False, "already authenticated"
 
             status, user, uid, reason = authenticator.docmd_login(myargs)
@@ -1391,7 +1393,7 @@ class SocketHost:
             alive = False
             if myargs:
                 session_data = self.HostInterface.sessions.get(myargs[0])
-                if session_data != None:
+                if session_data is not None:
                     if client_address[0] == session_data.get('ip_address'):
                         cmd = self.HostInterface.answers['ok']
                         alive = True
@@ -1517,7 +1519,6 @@ class SocketHost:
         )
 
         # settings
-        from entropy.core.settings.base import SystemSettings
         import copy
         """
         SystemSettings is a singleton, and we just need to read
@@ -1582,11 +1583,11 @@ class SocketHost:
     def killall(self):
         if hasattr(self, 'socketLog'):
             self.socketLog.close()
-        if self.Server != None:
+        if self.Server is not None:
             self.Server.alive = False
-        if self.Gc != None:
+        if self.Gc is not None:
             self.Gc.kill()
-        if self.PythonGarbageCollector != None:
+        if self.PythonGarbageCollector is not None:
             self.PythonGarbageCollector.kill()
 
     def append_eos(self, data):
@@ -1646,18 +1647,27 @@ class SocketHost:
                     os.chown(self.SSL['ca_cert'], -1, 0)
                 except OSError:
                     pass
-                os.chmod(self.SSL['ca_pkey'], 0o600)
+                try:
+                    os.chmod(self.SSL['ca_pkey'], 0o600)
+                except OSError:
+                    pass
                 try:
                     os.chown(self.SSL['ca_pkey'], -1, 0)
                 except OSError:
                     pass
 
-        os.chmod(self.SSL['key'], 0o600)
+        try:
+            os.chmod(self.SSL['key'], 0o600)
+        except OSError:
+            pass
         try:
             os.chown(self.SSL['key'], -1, 0)
         except OSError:
             pass
-        os.chmod(self.SSL['cert'], 0o644)
+        try:
+            os.chmod(self.SSL['cert'], 0o644)
+        except OSError:
+            pass
         try:
             os.chown(self.SSL['cert'], -1, 0)
         except OSError:
@@ -1820,11 +1830,13 @@ class SocketHost:
 
     def start_python_garbage_collector(self):
         self.PythonGarbageCollector = self.TimeScheduled(3600, self.python_garbage_collect)
+        self.PythonGarbageCollector.setName("Socket Server Python Garbage Collector")
         self.PythonGarbageCollector.set_accuracy(False)
         self.PythonGarbageCollector.start()
 
     def start_session_garbage_collector(self):
-        self.Gc = self.TimeScheduled(5, self.gc_clean)
+        self.Gc = self.TimeScheduled(10, self.gc_clean)
+        self.Gc.setName("Socket Server Session Garbage Collector")
         self.Gc.start()
 
     def python_garbage_collect(self):
@@ -2003,8 +2015,9 @@ class SocketHost:
     def output(self, *args, **kwargs):
         message = args[0]
         if message != self.last_print:
-            self.socketLog.log("[SocketHost]", etpConst['logging']['normal_loglevel_id'],
-                str(args[0]))
-            if self.__output != None and self.stdout_logging:
+            self.socketLog.log("[SocketHost]",
+                etpConst['logging']['normal_loglevel_id'],
+                    str(args[0]))
+            if self.__output is not None and self.stdout_logging:
                 self.__output.output(*args,**kwargs)
             self.last_print = message
