@@ -765,7 +765,7 @@ class UGC(SocketCommands):
         if not entropy.tools.is_valid_email(sender_email):
             sender_email = 'www-data@sabayon.org'
         keys_to_file = ['errordata', 'processes', 'lspci', 'dmesg', 'locale',
-            'lsof']
+            'lsof', 'repositories.conf', 'client.conf']
 
         # call it over
         mail_txt = ''
