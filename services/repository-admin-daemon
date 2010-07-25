@@ -9,7 +9,12 @@
     B{Entropy Package Manager Service}.
 
 """
-import sys, time
+import os
+import sys
+import time
+import signal
+import threading
+
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -21,7 +26,8 @@ do_stdout_logging = True
 community_repo = False
 do_port = 1027
 
-from entropy.const import *
+from entropy.i18n import _
+from entropy.const import etpConst
 etpConst['community']['mode'] = community_repo
 etpConst['socket_service']['session_ttl'] = 300
 from entropy.core.settings.base import SystemSettings
@@ -74,11 +80,22 @@ from entropy.services.system.commands import Repository
 from entropy.server.interfaces import Server
 from entropy.misc import ParallelTask
 
+def kill_threads():
+    for th in threading.enumerate():
+        if hasattr(th, 'kill'):
+            th.kill()
+
+def term_myself():
+    os.kill(os.getpid(), signal.SIGTERM)
+
 def run_srv(s):
     try:
         s.go()
-    except (KeyboardInterrupt, SystemExit,):
-        s.killall()
+    finally:
+        if s is not None:
+            s.killall()
+        kill_threads()
+        term_myself()
 
 srv = ServiceServer(
         Server,
@@ -99,7 +116,9 @@ task.start()
 
 try:
     while task.isAlive():
-        time.sleep(1)
-except KeyboardInterrupt:
-    raise SystemExit(1)
-raise SystemExit(0)
+        time.sleep(2)
+finally:
+    if srv is not None:
+        srv.killall()
+    kill_threads()
+    term_myself()

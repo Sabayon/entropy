@@ -9,7 +9,12 @@
     B{Entropy Package Manager Service}.
 
 """
-import sys, time
+import os
+import sys
+import time
+import signal
+import threading
+
 sys.path.insert(0,'/usr/lib/entropy/libraries')
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'../libraries')
@@ -23,6 +28,7 @@ if "--ssl" in sys.argv:
 if "--nostdout" in sys.argv:
     do_stdout_logging = False
 
+from entropy.i18n import _
 from entropy.output import nocolor
 from entropy.tools import get_year
 from entropy.misc import ParallelTask
@@ -89,11 +95,22 @@ repositories = {
     },
 }
 
+def kill_threads():
+    for th in threading.enumerate():
+        if hasattr(th, 'kill'):
+            th.kill()
+
+def term_myself():
+    os.kill(os.getpid(), signal.SIGTERM)
+
 def run_srv(s):
     try:
         s.go()
-    except (KeyboardInterrupt, SystemExit,):
-        s.killall()
+    finally:
+        if s is not None:
+            s.killall()
+        kill_threads()
+        term_myself()
 
 sock_auth = (phpBB3,[],connection_data)
 srv_ssl = None
@@ -117,7 +134,7 @@ task = ParallelTask(run_srv, srv)
 task.setName('repodaemon')
 task.start()
 task2 = None
-if srv_ssl != None:
+if srv_ssl is not None:
     task2 = ParallelTask(run_srv, srv_ssl)
     task2.setName('repodaemon_ssl')
     task2.start()
@@ -131,13 +148,17 @@ t_map = {
     "repodaemon_ssl": task2,
 }
 
-while 1:
-    try:
-        time.sleep(1)
-    except (KeyboardInterrupt, SystemExit,):
-        for obj in run_map.values():
-            obj.killall()
-        for t in t_map.values():
-            t.join()
-        break
-raise SystemExit(0)
+def threads_alive():
+    for th in t_map.values():
+        if th.isAlive():
+            return True
+    return False
+
+try:
+    while threads_alive():
+        time.sleep(2)
+finally:
+    for serv in run_map.values():
+        serv.killall()
+    kill_threads()
+    term_myself()
