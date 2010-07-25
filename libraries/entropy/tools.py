@@ -1017,7 +1017,10 @@ def unpack_gzip(gzipfilepath):
     """
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
-    item = open(filepath, "wb")
+    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
+    os.close(fd)
+
+    item = open(tmp_path, "wb")
     filegz = gzip.GzipFile(gzipfilepath, "rb")
     chunk = filegz.read(8192)
     while chunk:
@@ -1026,6 +1029,7 @@ def unpack_gzip(gzipfilepath):
     filegz.close()
     item.flush()
     item.close()
+    os.rename(tmp_path, filepath)
     return filepath
 
 def unpack_bzip2(bzip2filepath):
@@ -1039,7 +1043,9 @@ def unpack_bzip2(bzip2filepath):
     """
     import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
-    item = open(filepath, "wb")
+    fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
+    os.close(fd)
+    item = open(tmp_path, "wb")
     filebz2 = bz2.BZ2File(bzip2filepath, "rb")
     chunk = filebz2.read(16384)
     while chunk:
@@ -1048,6 +1054,7 @@ def unpack_bzip2(bzip2filepath):
     filebz2.close()
     item.flush()
     item.close()
+    os.rename(tmp_path, filepath)
     return filepath
 
 def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
