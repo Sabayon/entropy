@@ -1,3 +1,15 @@
+commit 57838fabdc3b1ea5c3522b03f10aceeacd7a468b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 27 18:56:21 2010 +0200
+
+    [entropy.misc] LogFile: re-add fileno() method
+
+commit 5be17018bdef36788093549332aa5ba4dcbfa7a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 27 16:05:13 2010 +0200
+
+    Tagging Entropy version 0.99.49.4
+
 commit b186bd2558c3de2e9e4e789e29cc21c1677085c9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 27 16:03:51 2010 +0200
