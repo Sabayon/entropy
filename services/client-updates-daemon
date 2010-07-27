@@ -154,6 +154,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__quit_service_wd = None
         self.__quit_service_trigger = False
         self.__trigger_oncall_updater = False
+        self.__trigger_disable_repos_update = False
         self.__trigger_startup_check = False
         self.__fetch_mutex = Lock()
         self.__updates = []
@@ -249,7 +250,8 @@ class UpdatesDaemon(dbus.service.Object):
             try:
 
                 entropy = Entropy()
-                acquired = self.__acquire_entropy_locks(entropy)
+                acquired = self.__acquire_entropy_locks(entropy,
+                    pid_lock = False)
                 if not acquired:
                     return True # respawn later
 
@@ -265,11 +267,12 @@ class UpdatesDaemon(dbus.service.Object):
     def check_system_changes(self):
         if self.__trigger_oncall_updater:
             return self.__alive
-        if self.is_system_on_batteries():
-            # running on batteries, then skip
-            return self.__alive
+
         changed = self._is_system_changed()
         if changed:
+            # this will disable repositories download, we don't really want
+            # that in this case.
+            self.__trigger_disable_repos_update = True
             # trigger check and push
             self.__trigger_oncall_updater = True
         # keep alive
@@ -280,7 +283,11 @@ class UpdatesDaemon(dbus.service.Object):
             return self.__alive
         with self.__fetch_mutex:
             self.__trigger_oncall_updater = False
-            task = ParallelTask(self.__run_fetcher)
+            update_repos = True
+            if self.__trigger_disable_repos_update:
+                update_repos = False
+                self.__trigger_disable_repos_update = False
+            task = ParallelTask(self.__run_fetcher, update_repos = update_repos)
             task.start()
             #self.__run_fetcher()
         return self.__alive
@@ -347,18 +354,19 @@ class UpdatesDaemon(dbus.service.Object):
 
         return 0
 
-    def __acquire_entropy_locks(self, entropy):
+    def __acquire_entropy_locks(self, entropy, pid_lock = True):
 
-        acquired, locked = const_setup_entropy_pid(force_handling = True)
-        if (not acquired) or locked:
-            if DAEMON_DEBUG:
-                if locked:
-                    write_output(
-                        "__acquire_entropy_locks: app. locked, skipping")
-                else:
-                    write_output(
-                        "__acquire_entropy_locks: app. locked during acquire")
-            return False
+        if pid_lock:
+            acquired, locked = const_setup_entropy_pid(force_handling = True)
+            if (not acquired) or locked:
+                if DAEMON_DEBUG:
+                    if locked:
+                        write_output(
+                            "__acquire_entropy_locks: app. locked, skipping")
+                    else:
+                        write_output(
+                            "__acquire_entropy_locks: app. locked during acquire")
+                return False
 
         # entropy resources locked?
         locked = entropy.resources_locked()
@@ -384,7 +392,7 @@ class UpdatesDaemon(dbus.service.Object):
         # remove application lock
         const_remove_entropy_pid()
 
-    def __run_fetcher(self):
+    def __run_fetcher(self, update_repos = True):
 
         if self.__updater == None:
             return 0
@@ -397,38 +405,39 @@ class UpdatesDaemon(dbus.service.Object):
             try:
 
                 entropy = Entropy()
-                acquired = self.__acquire_entropy_locks(entropy)
+                acquired = self.__acquire_entropy_locks(entropy,
+                    pid_lock = update_repos)
                 if not acquired:
                     return rc_fetch
 
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: called %s" % (time.time(),))
 
-                repos_to_up = self.get_repo_status()
+                if update_repos:
+                    repos_to_up = self.get_repo_status()
+                    if repos_to_up:
 
-                if repos_to_up:
+                        self.do_alert(
+                            _("Repositories to update"),
+                            unicode(repos_to_up),
+                            urgency = 'critical'
+                        )
 
-                    self.do_alert(
-                        _("Repositories to update"),
-                        unicode(repos_to_up),
-                        urgency = 'critical'
-                    )
-
-                    if not self.__trigger_startup_check:
-                        gobject.timeout_add(0, self.signal_updating)
-                        repos = repos_to_up.keys()
-                        rc_fetch = self.__run_sync(repos, entropy)
-                        if rc_fetch != 0:
-                            return rc_fetch
-                        if DAEMON_DEBUG:
-                            write_output("__run_fetcher: sync closed, rc: %s" % (
-                                rc_fetch,))
-                    else:
-                        self.__trigger_startup_check = False
-                        if DAEMON_DEBUG:
-                            write_output("__run_fetcher: not syncing atm, "
-                                "trigger startup check is ON, waiting next "
-                                "round, repos: %s" % (repos_to_up,))
+                        if not self.__trigger_startup_check:
+                            gobject.timeout_add(0, self.signal_updating)
+                            repos = repos_to_up.keys()
+                            rc_fetch = self.__run_sync(repos, entropy)
+                            if rc_fetch != 0:
+                                return rc_fetch
+                            if DAEMON_DEBUG:
+                                write_output("__run_fetcher: sync closed, rc: %s" % (
+                                    rc_fetch,))
+                        else:
+                            self.__trigger_startup_check = False
+                            if DAEMON_DEBUG:
+                                write_output("__run_fetcher: not syncing atm, "
+                                    "trigger startup check is ON, waiting next "
+                                    "round, repos: %s" % (repos_to_up,))
 
                 try:
                     update, remove, fine, spm_fine = \
