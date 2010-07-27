@@ -1038,6 +1038,9 @@ class LogFile:
     def __del__(self):
         self.close()
 
+    def fileno(self):
+        return self.__handler.stream.fileno()
+
     def flush(self):
         """ Flush log buffer """
         if hasattr(self.__handler, 'flush'):
