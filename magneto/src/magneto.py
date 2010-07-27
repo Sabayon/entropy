@@ -25,6 +25,20 @@ if __name__ == "__main__":
     sys.path.insert(0, '../')
     sys.argv.append('--no-pid-handling')
 
+    startup_delay = None
+    for arg in sys.argv[1:]:
+        if arg.startswith("--startup-delay="):
+            try:
+                delay = int(arg[len("--startup-delay="):])
+                if delay < 1 and delay > 300:
+                    raise ValueError()
+                startup_delay = delay
+            except ValueError:
+                pass
+
+    if startup_delay:
+        time.sleep(startup_delay)
+
     kde_env = os.getenv("KDE_FULL_SESSION")
 
     if "--kde" in sys.argv:
@@ -42,20 +56,6 @@ if __name__ == "__main__":
         else:
             # load GTK
             from magneto.gtk.interfaces import Magneto
-
-    startup_delay = None
-    for arg in sys.argv[1:]:
-        if arg.startswith("--startup-delay="):
-            try:
-                delay = int(arg[len("--startup-delay="):])
-                if delay < 1 and delay > 300:
-                    raise ValueError()
-                startup_delay = delay
-            except ValueError:
-                pass
-
-    if startup_delay:
-        time.sleep(startup_delay)
 
     magneto = Magneto()
     try:
