@@ -1,3 +1,63 @@
+commit b186bd2558c3de2e9e4e789e29cc21c1677085c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 27 16:03:51 2010 +0200
+
+    [magneto] add --startup-delay switch support, delay magneto startup by 30 seconds by default
+
+commit ab8dc91766935e9cfa2c21dd15801fdbb815a0bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 27 15:52:49 2010 +0200
+
+    [services] client-updates-daemon: fix available updates signalling when Sulfur is running
+    
+    Sulfur holds Entropy general lock, which caused the daemon to not
+    run its duties whenever the installed packages repository is changed
+    (due to pkg updates/install/removal). Just skip the lock check since
+    it is not going to alter the content of available repositories in
+    any case.
+
+commit 92a53212ef75b5938792823714cfa128fe23e3ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 23:04:21 2010 +0200
+
+    [entropy.tools] is_valid_path_string: also allow "_"
+
+commit 4c6eae07caf0a09324495294cb8bd4b095efe2bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 23:03:31 2010 +0200
+
+    [entropy.tools] make unpack_gzip and unpack_bzip2 atomic
+
+commit 6a37ba8c16e84123b0df6d66773f42d7d4d66ef9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 14:44:51 2010 +0200
+
+    [entropy.services] SocketHost: only print class objects on startup
+
+commit bee87b080da6b85a8f616cefc02575f64402f221
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 14:42:26 2010 +0200
+
+    [entropy.services.repository] properly enable Repository commands when repository_lock_scanner is available
+
+commit 1290f3408804b49945cef69f4986b5504bdd5fb1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 14:36:56 2010 +0200
+
+    [entropy.services] provide more output when loading SocketHost
+
+commit d5dcbf0e066f6d997f6e532bf6cab8665a42106e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 14:20:52 2010 +0200
+
+    [entropy.services.repository] if "repository_lock_scanner" is False, repository commands should not be available at all
+
+commit c7191ae030c03b98545b52e36b8c4642f8dcd8ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 25 13:39:04 2010 +0200
+
+    Tagging Entropy version 0.99.49.3
+
 commit 19e45348243333f2fa098fe9a27da40d7ec88a83
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jul 25 13:35:35 2010 +0200
