@@ -1,3 +1,27 @@
+commit 9af987aa8c3b4b4a9438a661710cfbb0d1304fea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 28 08:18:26 2010 +0200
+
+    [entropy.client.interfaces.dep] _generate_dependency_tree: catch TypeError when calling retrieveKeySlot with invalid data
+
+commit aee668be7b67e9c73a4b0d52621167e986fd3a23
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 28 07:24:30 2010 +0200
+
+    [entropy.tools] fix is_valid_path_string regexp
+
+commit 546e634b46daba379b195127c5b0dedf43cd7fca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 27 19:45:27 2010 +0200
+
+    [magneto] move --startup-delay handling early in the pipe
+
+commit bf78609ef1cce7f1083acfb72477032ab54adfbf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 27 18:59:50 2010 +0200
+
+    Tagging Entropy version 0.99.49.5
+
 commit 57838fabdc3b1ea5c3522b03f10aceeacd7a468b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jul 27 18:56:21 2010 +0200
