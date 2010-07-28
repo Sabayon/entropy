@@ -855,7 +855,11 @@ class CalculatorsMixin:
 
             # search inside installed packages repository if there's something
             # in the same slot, if so, do some extra checks first.
-            pkg_key, pkg_slot = repo_db.retrieveKeySlot(pkg_id)
+            try:
+                pkg_key, pkg_slot = repo_db.retrieveKeySlot(pkg_id)
+            except TypeError:
+                deps_not_found("unknown_%s_%s" % (pkg_id, repo_id,))
+                continue
             cm_idpackage, cm_result = self._installed_repository.atomMatch(
                 pkg_key, matchSlot = pkg_slot)
 
