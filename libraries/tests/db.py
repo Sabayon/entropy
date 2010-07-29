@@ -418,6 +418,32 @@ class EntropyRepositoryTest(unittest.TestCase):
         cur_cache = self.test_db._EntropyRepository__cursor_cache.keys()
         self.assertEqual(len(cur_cache), 0)
 
+    def test_db_reverse_deps(self):
+
+        # insert/compare
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        test_pkg2 = _misc.get_test_package2()
+        data2 = self.Spm.extract_package_metadata(test_pkg2)
+        data['dependencies'][_misc.get_test_package_atom2()] = \
+            etpConst['dependency_type_ids']['rdepend_id']
+        data2['dependencies'][_misc.get_test_package_atom()] = \
+            etpConst['dependency_type_ids']['rdepend_id']
+
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(new_data, db_data)
+
+        idpackage2, rev, new_data2 = self.test_db.handlePackage(data2)
+        db_data2 = self.test_db.getPackageData(idpackage2)
+        self.assertEqual(new_data2, db_data2)
+
+        rev_deps = self.test_db.retrieveReverseDependencies(idpackage)
+        rev_deps2 = self.test_db.retrieveReverseDependencies(idpackage2)
+
+        self.assert_(idpackage in rev_deps2)
+        self.assert_(idpackage2 in rev_deps)
+
 
     def test_db_import_export(self):
 
