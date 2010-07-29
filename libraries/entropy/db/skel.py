@@ -4549,7 +4549,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
     def __atomMatchFetchCache(self, *args):
         if self.xcache:
-            ck_sum = hash(self.checksum(strict = False))
+            ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             cached = entropy.dump.loadobj("%s/%s/%s_%s" % (
                 self.__db_match_cache_key, self.reponame, ck_sum,
@@ -4565,7 +4565,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
     def __atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
-            ck_sum = hash(self.checksum(strict = False))
+            ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             self._cacher.push("%s/%s/%s_%s" % (
                 self.__db_match_cache_key, self.reponame, ck_sum, hash(hash_str),),
