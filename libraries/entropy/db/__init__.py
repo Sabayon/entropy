@@ -4628,7 +4628,7 @@ class EntropyRepository(EntropyRepositoryBase):
         return exists
 
     def checksum(self, do_order = False, strict = True,
-        strings = False, include_signatures = False):
+        strings = True, include_signatures = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """

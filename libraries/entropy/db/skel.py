@@ -3321,7 +3321,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         raise NotImplementedError()
 
     def checksum(self, do_order = False, strict = True,
-        strings = False, include_signatures = False):
+        strings = True, include_signatures = False):
         """
         Get Repository metadata checksum, useful for integrity verification.
         Note: result is cached in EntropyRepository.live_cache (dict).
