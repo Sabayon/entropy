@@ -2012,7 +2012,6 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             if rc != 0:
                 # generate reverse dependencies metadata now that's done
                 # so we have fresh meat when queried with user privs
-                installed_repo.generateReverseDependenciesMetadata(verbose = False)
                 return -1, rc
 
         # update resume cache
@@ -2026,10 +2025,6 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         Package.kill()
         del metaopts
         del Package
-
-    # generate reverse dependencies metadata now that's done
-    # so we have fresh meat when queried with user privs
-    installed_repo.generateReverseDependenciesMetadata(verbose = False)
 
     print_info(red(" @@ ")+blue("%s." % (_("All done"),) ))
     return 0, 0

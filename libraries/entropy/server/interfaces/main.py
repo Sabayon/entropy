@@ -409,17 +409,6 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         return self.treeupdates_move_action_hook(entropy_repository_instance,
             package_id)
 
-    def reverse_dependencies_tree_generation_hook(self,
-        entropy_repository_instance):
-        # force commit even if readonly, this will allow
-        # to automagically fix dependstable server side
-        # we don't care much about syncing the
-        # database since it's a quite trivial change
-        entropy_repository_instance.commitChanges(force = True,
-            no_plugins = True)
-
-        return 0
-
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -4270,7 +4259,6 @@ class ServerRepositoryMixin:
         idpackages_added = set()
         to_be_injected = set()
         my_qa = self.QA()
-        missing_deps_taint = False
         for package_filepath, inject in packages_data:
 
             mycount += 1
@@ -4308,13 +4296,11 @@ class ServerRepositoryMixin:
                     header = bold(" !!! "),
                     count = (mycount, maxcount,)
                 )
-                # reinit depends table
-                self.generate_reverse_dependencies_metadata(repo)
                 # reinit librarypathsidpackage table
                 if idpackages_added:
                     dbconn = self.open_server_repository(read_only = False,
                         no_upload = True, repo = repo)
-                    missing_deps_taint = my_qa.test_missing_dependencies(
+                    my_qa.test_missing_dependencies(
                         idpackages_added,
                         dbconn,
                         ask = ask,
@@ -4331,14 +4317,8 @@ class ServerRepositoryMixin:
                 if to_be_injected:
                     self._inject_database_into_packages(to_be_injected,
                         repo = repo)
-                # reinit depends table
-                if missing_deps_taint:
-                    self.generate_reverse_dependencies_metadata(repo)
                 self.close_repositories()
                 raise
-
-        # reinit depends table
-        self.generate_reverse_dependencies_metadata(repo)
 
         # make sure packages are really available, it can happen
         # after a previous failure to have garbage here
@@ -4349,7 +4329,7 @@ class ServerRepositoryMixin:
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo)
-            missing_deps_taint = my_qa.test_missing_dependencies(
+            my_qa.test_missing_dependencies(
                 idpackages_added,
                 dbconn,
                 ask = ask,
@@ -4362,10 +4342,6 @@ class ServerRepositoryMixin:
             )
             my_qa.test_reverse_dependencies_linking(idpackages_added, dbconn,
                 repo = repo)
-
-        # reinit depends table
-        if missing_deps_taint:
-            self.generate_reverse_dependencies_metadata(repo)
 
         # inject database into packages
         self._inject_database_into_packages(to_be_injected, repo = repo)
@@ -4474,13 +4450,6 @@ class ServerMiscMixin:
                 self._backup_constant(setting)
             elif isinstance(setting, dict):
                 self._settings.set_persistent_setting(setting)
-
-    def generate_reverse_dependencies_metadata(self, repo = None):
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
-        dbconn.generateReverseDependenciesMetadata()
-        self._taint_database(repo = repo)
-        dbconn.commitChanges()
 
     def _get_gpg_signature(self, repo_sec, repo, pkg_path):
         try:

@@ -33,6 +33,7 @@ import threading
 import subprocess
 import warnings
 from sqlite3 import dbapi2
+from threading import RLock
 
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
@@ -122,12 +123,6 @@ class EntropyRepository(EntropyRepositoryBase):
                 CREATE TABLE dependenciesreference (
                     iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
                     dependency VARCHAR
-                );
-
-                CREATE TABLE dependstable (
-                    iddependency INTEGER PRIMARY KEY,
-                    idpackage INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE conflicts (
@@ -415,6 +410,7 @@ class EntropyRepository(EntropyRepositoryBase):
             on closeDB()
         @type temporary: bool
         """
+        self.__live_cache_lock = RLock()
         self.__cursor_cache = {}
         self.__connection_cache = {}
         self._cleanup_stale_cur_conn_t = time.time()
@@ -586,10 +582,11 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute('PRAGMA default_cache_size = %s' % (size,))
 
     def __clearLiveCache(self, key):
-        try:
-            del self.__live_cache[key]
-        except KeyError:
-            pass
+        with self.__live_cache_lock:
+            try:
+                del self.__live_cache[key]
+            except KeyError:
+                pass
 
     def __del__(self):
         self.closeDB()
@@ -2189,7 +2186,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         super(EntropyRepository, self).clearCache()
 
-        self.__live_cache.clear()
+        with self.__live_cache_lock:
+            self.__live_cache.clear()
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         """
@@ -3206,52 +3204,51 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # WARNING: never remove this, otherwise equo.db
-        # (client database) dependstable will be always broken (trust me)
-        # sanity check on the table
-        c_tup = ("retrieveReverseDependencies_check",)
-        if not self.__live_cache.get(c_tup):
-            self.__live_cache[c_tup] = True
-            if not self._isDependsTableSane(): # is empty, need generation
-                self.generateReverseDependenciesMetadata(verbose = False)
-                # always force commit, if possible, otherwise this, for
-                # read-only repos will be called over and over.
-                self.commitChanges(force = True)
+        with self.__live_cache_lock:
+            if "reverseDependenciesMetadata" not in self.__live_cache:
+                self.__generateReverseDependenciesMetadata()
 
-        excluded_deptypes_query = ""
-        if exclude_deptypes is not None:
-            for dep_type in exclude_deptypes:
-                excluded_deptypes_query += " AND dependencies.type != %d" % (
-                    dep_type,)
+            excluded_deptypes_query = ""
+            if exclude_deptypes is not None:
+                for dep_type in exclude_deptypes:
+                    excluded_deptypes_query += " AND dependencies.type != %d" % (
+                        dep_type,)
 
-        table_name = self._getReverseDependenciesTable()
+            rev_deps = self.__live_cache['reverseDependenciesMetadata']
+            dep_ids = set((k for k, v in rev_deps.items() if package_id in v))
+            if not dep_ids:
+                if key_slot:
+                    return []
+                return set()
+
+        dep_ids_str = ', '.join((str(x) for x in dep_ids))
+
         if atoms:
             cur = self._cursor().execute("""
-            SELECT baseinfo.atom FROM %s,dependencies,baseinfo 
-            WHERE %s.idpackage = (?) AND 
-            %s.iddependency = dependencies.iddependency AND 
-            baseinfo.idpackage = dependencies.idpackage %s""" % (
-                table_name, table_name, table_name, excluded_deptypes_query,),
-                (package_id,))
+            SELECT baseinfo.atom FROM dependencies, baseinfo
+            WHERE baseinfo.idpackage = dependencies.idpackage %s AND
+            dependencies.iddependency IN ( %s )""" % (
+                excluded_deptypes_query, dep_ids_str,))
             result = self._cur2set(cur)
         elif key_slot:
             cur = self._cursor().execute("""
-            SELECT categories.category || "/" || baseinfo.name,baseinfo.slot 
-            FROM baseinfo,categories,%s,dependencies 
-            WHERE %s.idpackage = (?) AND 
-            %s.iddependency = dependencies.iddependency AND 
-            baseinfo.idpackage = dependencies.idpackage AND 
-            categories.idcategory = baseinfo.idcategory %s""" % (
-                table_name, table_name, table_name, excluded_deptypes_query,),
-                (package_id,))
+            SELECT categories.category || "/" || baseinfo.name,baseinfo.slot
+            FROM baseinfo, categories, dependencies
+            WHERE baseinfo.idpackage = dependencies.idpackage AND
+            categories.idcategory = baseinfo.idcategory %s AND
+            dependencies.iddependency IN ( %s )""" % (
+                excluded_deptypes_query, dep_ids_str,))
             result = cur.fetchall()
+        elif excluded_deptypes_query:
+            cur = self._cursor().execute("""
+            SELECT dependencies.idpackage FROM dependencies
+            WHERE %s AND dependencies.iddependency IN ( %s )""" % (
+                excluded_deptypes_query.lstrip("AND "), dep_ids_str,))
+            result = self._cur2set(cur)
         else:
             cur = self._cursor().execute("""
-            SELECT dependencies.idpackage FROM %s,dependencies 
-            WHERE %s.idpackage = (?) AND 
-            %s.iddependency = dependencies.iddependency %s""" % (
-                table_name, table_name, table_name, excluded_deptypes_query,),
-                (package_id,))
+            SELECT dependencies.idpackage FROM dependencies
+            WHERE dependencies.iddependency IN ( %s )""" % (dep_ids_str,))
             result = self._cur2set(cur)
 
         return result
@@ -3265,24 +3262,23 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # WARNING: never remove this, otherwise equo.db (client database)
-        # dependstable will be always broken (trust me)
-        # sanity check on the table
-        c_tup = ("retrieveUnusedPackageIds_check",)
-        if not self.__live_cache.get(c_tup):
-            self.__live_cache[c_tup] = True
-            if not self._isDependsTableSane(): # is empty, need generation
-                self.generateReverseDependenciesMetadata(verbose = False)
-                # always force commit, if possible, otherwise this, for
-                # read-only repos will be called over and over.
-                self.commitChanges(force = True)
+        with self.__live_cache_lock:
+            if "reverseDependenciesMetadata" not in self.__live_cache:
+                self.__generateReverseDependenciesMetadata()
 
-        table_name = self._getReverseDependenciesTable()
+            rev_deps = self.__live_cache['reverseDependenciesMetadata']
+            pkg_ids = set()
+            for v in rev_deps.values():
+                pkg_ids |= v
+            if not pkg_ids:
+                return []
+            pkg_ids_str = ', '.join((str(x) for x in pkg_ids))
+
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo 
-        WHERE idpackage NOT IN (SELECT idpackage FROM %s)
+        SELECT idpackage FROM baseinfo
+        WHERE idpackage NOT IN ( %s )
         ORDER BY atom
-        """ % (table_name,))
+        """ % (pkg_ids_str,))
         return self._cur2list(cur)
 
     def _isAtomAvailable(self, atom):
@@ -4312,9 +4308,6 @@ class EntropyRepository(EntropyRepositoryBase):
         if not self._doesTableExist("entropy_branch_migration"):
             self._createEntropyBranchMigrationTable()
 
-        if not self._doesTableExist("dependstable"):
-            self._createDependsTable()
-
         if not self._doesTableExist("settings"):
             self._createSettingsTable()
 
@@ -4327,11 +4320,12 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        live_cache_id = ("validateDatabase",)
-        cached = self.__live_cache.get(live_cache_id)
-        if cached is not None:
-            return
-        self.__live_cache[live_cache_id] = True
+        with self.__live_cache_lock:
+            live_cache_id = ("validateDatabase",)
+            cached = self.__live_cache.get(live_cache_id)
+            if cached is not None:
+                return
+            self.__live_cache[live_cache_id] = True
 
         # use sqlite3 pragma
         pingus = MtimePingus()
@@ -4461,7 +4455,6 @@ class EntropyRepository(EntropyRepositoryBase):
         # clear caches
         self.clearCache()
         self.commitChanges()
-        self.generateReverseDependenciesMetadata(verbose = False)
         dbconn.clearCache()
 
         # verify both checksums, if they don't match, bomb out
@@ -4594,37 +4587,41 @@ class EntropyRepository(EntropyRepositoryBase):
                 return False
             return True
 
-        # speed up a bit if we already reported a table as existing
-        c_tup = "_doesTableExist"
-        cached = self.__live_cache.get(c_tup, {})
-        if table in cached:
-            return cached[table]
+        with self.__live_cache_lock:
+            # speed up a bit if we already reported a table as existing
+            c_tup = "_doesTableExist"
+            cached = self.__live_cache.get(c_tup, {})
+            if table in cached:
+                return cached[table]
 
-        cur = self._cursor().execute("""
-        SELECT name FROM SQLITE_MASTER WHERE type = "table" AND name = (?)
-        LIMIT 1
-        """, (table,))
-        rslt = cur.fetchone()
-        exists = rslt is not None
-        obj = self.__live_cache.setdefault(c_tup, {})
-        obj[table] = exists
+            cur = self._cursor().execute("""
+            SELECT name FROM SQLITE_MASTER WHERE type = "table" AND name = (?)
+            LIMIT 1
+            """, (table,))
+            rslt = cur.fetchone()
+            exists = rslt is not None
+            obj = self.__live_cache.setdefault(c_tup, {})
+            obj[table] = exists
+
         return exists
 
     def _doesColumnInTableExist(self, table, column):
 
-        # speed up a bit if we already reported a column as existing
-        c_tup = "_doesColumnInTableExist"
-        d_tup = (table, column,)
-        cached = self.__live_cache.get(c_tup, {})
-        if d_tup in cached:
-            return cached[d_tup]
+        with self.__live_cache_lock:
+            # speed up a bit if we already reported a column as existing
+            c_tup = "_doesColumnInTableExist"
+            d_tup = (table, column,)
+            cached = self.__live_cache.get(c_tup, {})
+            if d_tup in cached:
+                return cached[d_tup]
 
-        cur = self._cursor().execute('PRAGMA table_info( %s )' % (table,))
-        rslt = (x[1] for x in cur.fetchall())
+            cur = self._cursor().execute('PRAGMA table_info( %s )' % (table,))
+            rslt = (x[1] for x in cur.fetchall())
 
-        exists = column in rslt
-        obj = self.__live_cache.setdefault(c_tup, {})
-        obj[d_tup] = exists
+            exists = column in rslt
+            obj = self.__live_cache.setdefault(c_tup, {})
+            obj[d_tup] = exists
+
         return exists
 
     def checksum(self, do_order = False, strict = True,
@@ -4632,6 +4629,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        #         with self.__live_cache_lock:
+        # Cache usage is thread safe here.
         c_tup = ("checksum", do_order, strict, strings, include_signatures,)
         cache = self.__live_cache.get(c_tup)
         if cache is not None:
@@ -4758,61 +4757,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (package_id,))
-
-    def _createDependsTable(self, temporary = False):
-        temp_txt = ""
-        temp_txt_table = "dependstable"
-        fk_data = """, FOREIGN KEY(idpackage) REFERENCES 
-        baseinfo(idpackage) ON DELETE CASCADE"""
-        if temporary:
-            temp_txt = "TEMPORARY"
-            temp_txt_table = "dependstable_temp"
-            fk_data = ""
-
-        self._cursor().executescript("""
-        CREATE %s TABLE IF NOT EXISTS %s
-        ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER%s );
-        INSERT INTO %s VALUES (-1,NULL);
-        """ % (temp_txt, temp_txt_table, fk_data, temp_txt_table,))
-        if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS dependsindex%s_idpackage
-            ON %s ( idpackage )
-            """ % (temp_txt_table, temp_txt_table,))
-        self.commitChanges()
-        self.__clearLiveCache("_doesTableExist")
-
-    def _sanitizeDependsTable(self):
-        table_name = self._getReverseDependenciesTable()
-        self._cursor().execute("""
-        DELETE FROM %s where iddependency = -1
-        """ % (table_name,))
-        self.__clearLiveCache("taintReverseDependenciesMetadata")
-        self.commitChanges()
-
-    def _isDependsTableSane(self):
-
-        table_name = self._getReverseDependenciesTable()
-        try:
-            cur = self._cursor().execute("""
-            SELECT iddependency FROM %s WHERE iddependency = -1
-            """ % (table_name,))
-        except (OperationalError,):
-            return False # table does not exist, please regenerate and re-run
-
-        status = cur.fetchone()
-        if status:
-            return False
-
-        cur = self._cursor().execute("""
-        SELECT count(iddependency) FROM %s
-        """ % (table_name,))
-        data = cur.fetchone()
-        count = 0
-        if data:
-            count = data[0]
-
-        return count > 1
 
     def storeXpakMetadata(self, *args, **kwargs):
         """ @deprecated """
@@ -5254,7 +5198,7 @@ class EntropyRepository(EntropyRepositoryBase):
             "useflags", "keywords", "content", "counters", "sizes",
             "eclasses", "needed", "triggers", "systempackages", "injected",
             "installedtable", "automergefiles", "packagesignatures",
-            "packagespmphases", "provided_libs", "dependstable"
+            "packagespmphases", "provided_libs"
         )
 
         done_something = False
@@ -5578,119 +5522,32 @@ class EntropyRepository(EntropyRepositoryBase):
         """)
         self.__clearLiveCache("_doesTableExist")
 
-    def _addDependsRelationToDependsTable(self, iterable):
-        # since this is not bulletproof (because user can mess with this
-        # stuff via SPM), we need to IGNORE IntegrityError exceptions
-        # caused by foreign constraint violation
-        try:
-            self._cursor().executemany("""
-                INSERT or REPLACE into dependstable VALUES (?,?)""",
-                    iterable)
-        except IntegrityError:
-            # ouch, need to cope with that and execute each insert manually
-            for iddep, package_id in iterable:
-                try:
-                    self._cursor().execute("""
-                        INSERT or REPLACE into dependstable VALUES (?,?)""",
-                            (iddep, package_id,))
-                except IntegrityError:
-                    continue
-        except OperationalError:
-            # ouch, we cannot write on db file, but still we need to store
-            # the dep map and make unprivileged uids to get correct information
-            # out of this, since it's stuff we can give away for free.
-            # So, let's create a temp table, this will work.
-            self._createDependsTable(temporary = True)
-            self._cursor().executemany("""
-                INSERT or REPLACE into dependstable_temp VALUES (?,?)""",
-                    iterable)
-            # from now on, reverse dependencies should be considered
-            # runtime generated only.
-            self._temp_reverse_deps = True
-            # no need to execute stuff below this
-            self.__clearLiveCache("taintReverseDependenciesMetadata")
-            return
+    def __generateReverseDependenciesMetadata(self):
+        """
+        Reverse dependencies dynamic metadata generation.
+        """
+        checksum = self.checksum(strict = False)
+        cache_key = "__generateReverseDependenciesMetadata_%s_%s" % (
+            self.reponame, checksum,)
+        rev_deps_data = self._cacher.pop(cache_key)
+        if rev_deps_data is not None:
+            self.__live_cache['reverseDependenciesMetadata'] = rev_deps_data
+            return rev_deps_data
 
-        # prune old iddependencies
-        # NOTE: maybe use ON DELETE CASCADE + foreign key reference?
-        cur = self._cursor().execute("SELECT iddependency from dependstable")
-        cur_iddeps = self._cur2set(cur)
-        my_iddeps = set(x for x, y in iterable)
-        to_be_pruned = cur_iddeps - my_iddeps
-        if to_be_pruned:
-            prune_list = [(x,) for x in to_be_pruned]
-            self._cursor().executemany("""
-            DELETE FROM dependstable WHERE iddependency = (?)
-            """, prune_list)
-        self.__clearLiveCache("taintReverseDependenciesMetadata")
+        dep_data = {}
+        for iddep, atom in self._listAllDependencies():
 
-    def _getReverseDependenciesTable(self):
-        """
-        Internal method. When reverse dependencies table is not available
-        and user has no privileges to make it automatically generated by
-        the EntropyRepository logic, we need to fallback to a temporary table.
-        This method just returns the available reverse dependency table that
-        this instance should use. It does not check if user has write
-        permissions but rather if the temporary table exists.
-        """
-        if self._temp_reverse_deps:
-            return "dependstable_temp"
-        return "dependstable"
-
-    def taintReverseDependenciesMetadata(self):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cache_id = "taintReverseDependenciesMetadata"
-        if cache_id in self.__live_cache:
-            return
-        table_name = self._getReverseDependenciesTable()
-        try:
-            self._cursor().executescript("""
-            INSERT or IGNORE INTO %s VALUES (-1,NULL);
-            """ % (table_name,))
-        except (OperationalError,):
-            # FIXME: backward compatibility
-            pass
-        self.__live_cache[cache_id] = True
-
-    def generateReverseDependenciesMetadata(self, verbose = True):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        depends = self._listAllDependencies()
-        count = 0
-        total = len(depends)
-        mydata = set()
-        self.taintReverseDependenciesMetadata()
-        self.commitChanges()
-        for iddep, atom in depends:
-            count += 1
             if iddep == -1:
                 continue
-
-            if verbose and ((count == 0) or (count % 150 == 0) or \
-                (count == total)):
-                self.output( red("Resolving %s") % (atom,), importance = 0,
-                    level = "info", back = True, count = (count, total))
-
             # not safe to use cache here, people messing with multiple
             # instances can make this crash
             package_id, rc = self.atomMatch(atom, useCache = False)
             if package_id != -1:
-                mydata.add((iddep, package_id,))
+                obj = dep_data.setdefault(iddep, set())
+                obj.add(package_id)
 
-        # after this step, it'll be sane for sure
-        if mydata:
-            # NOTE: no need to call _sanitizeDependsTable()
-            # _addDependsRelationToDependsTable() already removes
-            # iddependency = -1
-            self._addDependsRelationToDependsTable(mydata)
-        else:
-            self._sanitizeDependsTable()
-
-        super(EntropyRepository, self).generateReverseDependenciesMetadata(
-            verbose = verbose)
+        self.__live_cache['reverseDependenciesMetadata'] = dep_data
+        self._cacher.push(cache_key, dep_data, async = False)
 
     def moveSpmUidsToBranch(self, to_branch):
         """

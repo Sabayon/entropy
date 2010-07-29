@@ -243,7 +243,6 @@ help_opts_extended = [
         (2, 'vacuum', 2, _('remove installed packages repository internal indexes to save disk space')),
         (2, 'generate', 1, _('generate installed packages database using Source Package Manager repositories')),
         (2, 'resurrect', 1, _('generate installed packages database using files on the system [last hope]')),
-        (2, 'revdeps', 1, _('regenerate reverse dependencies metadata')),
         (2, 'spmuids', 1, _('regenerate SPM UIDs map (SPM <-> Entropy packages)')),
         (2, 'spmsync', 1, _('makes Entropy aware of your Source Package Manager updated packages')),
         (2, 'backup', 2, _('backup the current Entropy installed packages database')),
@@ -361,7 +360,6 @@ help_opts_extended = [
 
         (2, 'deptest', 2, _('look for unsatisfied dependencies across community repositories')),
         (2, 'pkgtest', 2, _('verify the integrity of local package files')),
-        (2, 'revdeps', 2, _('regenerate the reverse dependencies metadata')),
 
     None,
     (1, 'ugc', 2, _('handles User Generated Content features')),
@@ -559,16 +557,6 @@ def _do_text_community(main_cmd, options):
             server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
             server_reagent.Entropy.close_repositories()
             rc = 0
-
-    elif sub_cmd == "revdeps":
-        try:
-            import server_reagent
-        except ImportError:
-            print_error(darkgreen(comm_err_msg))
-            rc = 1
-        else:
-            rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
-            server_reagent.Entropy.close_repositories()
 
     return rc
 

@@ -349,23 +349,6 @@ class EntropyRepositoryPlugin(object):
         """
         return 0
 
-    def reverse_dependencies_tree_generation_hook(self,
-        entropy_repository_instance):
-        """
-        This hook is called inside
-        EntropyRepository.generateReverseDependenciesMetadata() method at
-        the very end of the function code.
-        Every time that repository is "tainted" with new packages, sooner or
-        later that function is called.
-
-        @param entropy_repository_instance: EntropyRepository instance
-        @type entropy_repository_instance: EntropyRepository
-        @return: execution status code, return nonzero for errors, this will
-            raise a RepositoryPluginError exception.
-        @rtype: int
-        """
-        return 0
-
 
 class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object):
     """
@@ -3481,31 +3464,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         audience. Reset "treeupdates" digest metadata.
         """
         raise NotImplementedError()
-
-    def taintReverseDependenciesMetadata(self):
-        """
-        Taint reverse (or inverse) dependencies metadata so that will be
-        generated during the next request.
-        """
-        raise NotImplementedError()
-
-    def generateReverseDependenciesMetadata(self, verbose = True):
-        """
-        Regenerate reverse (or inverse) dependencies metadata.
-        Attention: call this method from your subclass (AT THE END), otherwise
-        EntropyRepositoryPlugins won't be notified.
-
-        @keyword verbose: enable verbosity
-        @type verbose: bool
-        """
-        plugins = self.get_plugins()
-        for plugin_id in sorted(plugins):
-            plug_inst = plugins[plugin_id]
-            exec_rc = plug_inst.reverse_dependencies_tree_generation_hook(self)
-            if exec_rc:
-                raise RepositoryPluginError(
-                    "[reverse_dependencies_tree_generation_hook] %s: status: %s" % (
-                        plug_inst.get_id(), exec_rc,))
 
     def moveSpmUidsToBranch(self, to_branch):
         """

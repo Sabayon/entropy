@@ -780,10 +780,6 @@ generate installed packages database using Source Package Manager repositories
 
 generate installed packages database using files on the system [last hope]
 
-=item B<revdeps>
-
-regenerate reverse dependencies metadata
-
 =item B<spmuids>
 
 regenerate SPM UIDs map (SPM <-> Entropy packages)
@@ -1253,10 +1249,6 @@ look for unsatisfied dependencies across community repositories
 =item B<pkgtest>
 
 verify the integrity of local package files
-
-=item B<revdeps>
-
-regenerate reverse dependencies metadata
 
 
 =item B<ugc>

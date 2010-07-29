@@ -88,9 +88,6 @@ def database(options):
         elif cmd == "resurrect":
             return _database_resurrect(etp_client)
 
-        elif cmd == "revdeps":
-            return _database_revdeps(etp_client)
-
         elif cmd in ("counters", "spmuids",):
             if cmd == "counters":
                 print_warning("")
@@ -203,18 +200,6 @@ def _database_counters(entropy_client):
     entropy_client.installed_repository().regenerateSpmUidMapping()
     print_info(red("  %s" % (
         _("Counters table regenerated. Look above for errors."),) ))
-    return 0
-
-def _database_revdeps(entropy_client):
-    rc = test_clientdb(entropy_client)
-    if rc is not None:
-        return rc
-
-    print_info(red("  %s..." % (
-        _("Regenerating reverse dependencies metadata"),) ))
-    entropy_client.installed_repository().generateReverseDependenciesMetadata()
-    print_info(red("  %s." % (
-        _("Reverse dependencies metadata regenerated successfully"),) ))
     return 0
 
 def _database_resurrect(entropy_client):
@@ -372,8 +357,6 @@ def _database_resurrect(entropy_client):
 
     print_info(red("  %s." % (_("Database resurrected successfully"),)))
 
-    print_info(red("  %s..." % (_("Now generating reverse dependencies metadata"),)))
-    entropy_client.installed_repository().generateReverseDependenciesMetadata()
     print_info(red("  %s..." % (_("Now indexing tables"),)))
     entropy_client.installed_repository().indexing = True
     entropy_client.installed_repository().createAllIndexes()
@@ -718,9 +701,6 @@ def _database_generate(entropy_client):
 
     print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))
 
-    print_info(red("  %s..." % (
-        _("Now generating reverse dependencies metadata"),) ))
-    entropy_client.installed_repository().generateReverseDependenciesMetadata()
     print_info(red("  %s...") % (_("Now indexing tables"),) )
     entropy_client.installed_repository().indexing = True
     entropy_client.installed_repository().createAllIndexes()

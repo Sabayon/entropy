@@ -1574,9 +1574,6 @@ class Package:
         if automerge_data:
             inst_repo.insertAutomergefiles(idpackage, automerge_data)
 
-        # clear depends table, this will make clientdb dependstable to be
-        # regenerated during the next request (retrieveReverseDependencies)
-        inst_repo.taintReverseDependenciesMetadata()
         return idpackage
 
     def __filter_out_items_not_installed_from_content(self, pkg_data):
