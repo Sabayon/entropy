@@ -1258,7 +1258,7 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
             return unicode("None")
 
     # int support
-    if isinstance(obj, int):
+    if isinstance(obj, const_get_int()):
         if sys.hexversion >= 0x3000000:
             return str(obj)
         else:
@@ -1318,6 +1318,17 @@ def const_get_buffer():
         return memoryview
     else:
         return buffer
+
+def const_get_int():
+    """
+    Return generic int object (supporting both Python 2.x and Python 3.x).
+    For Python 2.x a (long, int) tuple is returned.
+    For Python 3.x a (int,) tuple is returned.
+    """
+    if sys.hexversion >= 0x3000000:
+        return (int,)
+    else:
+        return (long, int,)
 
 def const_isfileobj(obj):
     """
