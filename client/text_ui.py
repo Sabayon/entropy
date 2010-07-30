@@ -387,6 +387,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
+        etpUi['ask'] = False
 
     print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
 
@@ -1054,6 +1055,7 @@ def _download_packages(entropy_client, packages = None, deps = True,
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
+        etpUi['ask'] = False
 
 
     found_pkg_atoms = _scan_packages(entropy_client, packages, None)
@@ -1115,6 +1117,7 @@ def install_packages(entropy_client,
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
+        etpUi['ask'] = False
 
     explicit_user_packages = set()
 
@@ -1591,6 +1594,7 @@ def _mask_unmask_packages(entropy_client, packages, action):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
+        etpUi['ask'] = False
 
     found_pkg_atoms = []
     for package in packages:
@@ -1674,6 +1678,7 @@ def _configure_packages(entropy_client, packages):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
+        etpUi['ask'] = False
 
     found_pkg_atoms = []
     packages = entropy_client.packages_expand(packages)
@@ -1754,6 +1759,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
+        etpUi['ask'] = False
 
     installed_repo = entropy_client.installed_repository()
 
