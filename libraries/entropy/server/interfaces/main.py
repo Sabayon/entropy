@@ -65,6 +65,15 @@ class ServerPackagesRepository(EntropyRepository):
     def update(entropy_client, repository_id, force, gpg):
         raise NotImplementedError()
 
+    def maskFilter(self, package_id, live = True):
+        """
+        Reimplemented from EntropyRepository.
+        Server-side repositories do not feature any masked package. So, it's
+        safe to always consider package_id valid.
+        """
+        return package_id, 0
+
+
 class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
     PLUGIN_ID = "__server__"
@@ -90,12 +99,6 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             self._metadata = {}
         else:
             self._metadata = metadata
-
-        # make sure we set client_repo metadata to False, this indicates
-        # ServerPackagesRepository that we are a server-side repository
-        # Of course, it shouldn't make any diff to not set this, but we
-        # really want to make sure it's always enforced.
-        self._metadata['client_repo'] = False
 
     def get_id(self):
         return ServerEntropyRepositoryPlugin.PLUGIN_ID

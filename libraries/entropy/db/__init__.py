@@ -679,44 +679,30 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        def remove_conflicting_packages(pkgdata):
 
-            manual_deps = set()
-            removelist = self.getPackagesToRemove(
-                pkgdata['name'], pkgdata['category'],
-                pkgdata['slot'], pkgdata['injected']
-            )
+        # Remove entries in the same scope.
+        manual_deps = set()
+        removelist = self.getPackagesToRemove(
+            pkg_data['name'], pkg_data['category'],
+            pkg_data['slot'], pkg_data['injected']
+        )
 
-            for r_package_id in removelist:
-                manual_deps |= self.retrieveManualDependencies(r_package_id)
-                self.removePackage(r_package_id, do_cleanup = False,
-                    do_commit = False)
+        for r_package_id in removelist:
+            manual_deps |= self.retrieveManualDependencies(r_package_id)
+            self.removePackage(r_package_id, do_cleanup = False,
+                do_commit = False)
 
-            # inject old manual dependencies back to package metadata
-            for manual_dep in manual_deps:
-                if manual_dep in pkgdata['dependencies']:
-                    continue
-                pkgdata['dependencies'][manual_dep] = \
-                    etpConst['dependency_type_ids']['mdepend_id']
-
-        # Client repositories behave differently
-        # TODO: move to Client repository class?
-        client_repo = self.get_plugins_metadata().get('client_repo')
-        if client_repo:
-            remove_conflicting_packages(pkg_data)
-            return self.addPackage(pkg_data, revision = forcedRevision,
-                formatted_content = formattedContent)
+        # inject old manual dependencies back to package metadata
+        for manual_dep in manual_deps:
+            if manual_dep in pkg_data['dependencies']:
+                continue
+            pkg_data['dependencies'][manual_dep] = \
+                etpConst['dependency_type_ids']['mdepend_id']
 
         # build atom string, server side
         pkgatom = entropy.tools.create_package_atom_string(
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
-
-        foundid = self._isAtomAvailable(pkgatom)
-        if foundid < 0: # same atom doesn't exist in any branch
-            remove_conflicting_packages(pkg_data)
-            return self.addPackage(pkg_data, revision = forcedRevision,
-                formatted_content = formattedContent)
 
         package_ids = self.getPackageIds(pkgatom)
         current_rev = forcedRevision
@@ -735,7 +721,6 @@ class EntropyRepository(EntropyRepositoryBase):
             current_rev += 1
 
         # add the new one
-        remove_conflicting_packages(pkg_data)
         return self.addPackage(pkg_data, revision = current_rev,
             formatted_content = formattedContent)
 
@@ -1847,13 +1832,10 @@ class EntropyRepository(EntropyRepositoryBase):
             branchstring = ', branch = (?)'
             insertdata += (branch,)
 
-        try:
-            self._cursor().execute("""
-            UPDATE counters SET counter = (?) %s
-            WHERE idpackage = (?)""" % (branchstring,), insertdata)
-        except Error:
-            if self.reponame == etpConst['clientdbid']:
-                raise
+        self._cursor().execute("""
+        UPDATE or REPLACE counters SET counter = (?) %s
+        WHERE idpackage = (?)""" % (branchstring,), insertdata)
+
         self.commitChanges()
 
     def contentDiff(self, package_id, dbconn, dbconn_package_id):
@@ -3278,23 +3260,6 @@ class EntropyRepository(EntropyRepositoryBase):
         ORDER BY atom
         """ % (pkg_ids_str,))
         return self._cur2list(cur)
-
-    def _isAtomAvailable(self, atom):
-        """
-        Return whether given atom is available in repository.
-
-        @param atom: package atom
-        @type atom: string
-        @return: package_id or -1 if not found
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE atom = (?) LIMIT 1
-        """, (atom,))
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
 
     def arePackageIdsAvailable(self, package_ids):
         """
@@ -5323,9 +5288,7 @@ class EntropyRepository(EntropyRepositoryBase):
             """)
             self.__clearLiveCache("_doesTableExist")
 
-        client_repo = self.get_plugins_metadata().get('client_repo')
-
-        if client_repo and (self.reponame != etpConst['clientdbid']):
+        if self.reponame != etpConst['clientdbid']:
             return do_create()
 
         mytxt = "%s: %s" % (

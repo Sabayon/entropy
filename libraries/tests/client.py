@@ -30,6 +30,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         # fake clientDbconn
         self.Client._installed_repository = self.Client.open_temp_repository(
             dbname = etpConst['clientdbid'], temp_file = ":memory:")
+        # as per GenericRepository specifications, enable generic handlePackage
+        self.Client._installed_repository.override_handlePackage = True
         self.Spm = self.Client.Spm()
         self._settings = SystemSettings()
         self.test_pkgs = [_misc.get_entrofoo_test_package()]
@@ -113,7 +115,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = dbconn.handlePackage(data)
+        idpackage, rev, new_data = dbconn.addPackage(data)
         self.assertEqual(data, new_data)
         self.Client.remove_repository(self.mem_repoid)
         self.assertNotEqual(

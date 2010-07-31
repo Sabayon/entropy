@@ -55,12 +55,6 @@ class QAEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         else:
             self._metadata = metadata
 
-        # make sure we set client_repo metadata to True, this indicates
-        # EntropyRepository that we are a client-side repository
-        # Of course, it shouldn't make any diff to not set this, but we
-        # really want to make sure it's always enforced.
-        self._metadata['client_repo'] = True
-
     def get_metadata(self):
         return self._metadata
 

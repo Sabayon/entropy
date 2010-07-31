@@ -1663,7 +1663,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             self.setSlot(package_id, slot_to)
 
             # look for packages we need to quickpkg again
-            # note: quickpkg_queue is simply ignored if client_repo == True
+            # NOTE: quickpkg_queue is simply ignored if this is a client side
+            # repository
             quickpkg_queue.add(atom+":"+slot_to)
 
             # only if we've found VALID matches !
@@ -3907,8 +3908,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             value of the tuple (see SystemSettings['pkg_masking_reasons'])
         @rtype: tuple
         """
-        if self.reponame == etpConst['clientdbid']:
-            return package_id, 0
 
         reponame = self.reponame[len(etpConst['dbnamerepoprefix']):]
         try:
@@ -3931,14 +3930,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         def push_cache(package_id, live, result):
             self.__atomMatchStoreCache(("idpackageValidator", package_id, live),
                 result = result)
-
-        # non-client repos don't use validation here
-        # TODO: move to Client repository class?
-        client_repo = self.get_plugins_metadata().get('client_repo')
-        if not client_repo:
-            # server-side repositories don't make any use of package_id validator
-            push_cache(package_id, live, (package_id, 0))
-            return package_id, 0
 
         # avoid memleaks
         if len(validator_cache) > 10000:

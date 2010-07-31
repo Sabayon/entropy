@@ -59,12 +59,6 @@ class ClientEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         else:
             self._metadata = metadata
 
-        # make sure we set client_repo metadata to True, this indicates
-        # EntropyRepository that we are a client-side repository
-        # Of course, it shouldn't make any diff to not set this, but we
-        # really want to make sure it's always enforced.
-        self._metadata['client_repo'] = True
-
     def get_id(self):
         return "__client__"
 
@@ -97,6 +91,27 @@ class InstalledPackagesRepository(EntropyRepository):
             const_setup_file(self._db_path, etpConst['entropygid'], 0o644,
                 uid = etpConst['uid'])
 
+    def handlePackage(self, pkg_data, forcedRevision = -1,
+        formattedContent = False):
+        """
+        Reimplemented from EntropyRepository.
+        """
+        removelist = self.getPackagesToRemove(
+            pkg_data['name'], pkg_data['category'],
+            pkg_data['slot'], pkg_data['injected']
+        )
+        for r_package_id in removelist:
+            self.removePackage(r_package_id, do_cleanup = False,
+                do_commit = False)
+        return self.addPackage(pkg_data, revision = forcedRevision,
+            formatted_content = formattedContent)
+
+    def maskFilter(self, package_id, live = True):
+        """
+        Reimplemented from EntropyRepository.
+        Installed packages are always valid, can't be otherwise.
+        """
+        return package_id, 0
 
 class AvailablePackagesRepositoryUpdater(object):
 
@@ -2006,6 +2021,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return EntropyRepositoryBase.REPOSITORY_UPDATED_OK
 
+
 class AvailablePackagesRepository(EntropyRepository):
     """
     This class represents the available packages repository and is a direct
@@ -2055,9 +2071,62 @@ class AvailablePackagesRepository(EntropyRepository):
         return AvailablePackagesRepositoryUpdater(TextInterface(),
             repository_id, False, False).remote_revision()
 
+    def handlePackage(self, pkg_data, forcedRevision = -1,
+        formattedContent = False):
+        """
+        Reimplemented from EntropyRepository
+        """
+        raise PermissionDenied(
+            "cannot execute handlePackage on this repository")
+
+    def addPackage(self, pkg_data, revision = -1, package_id = None,
+        do_commit = True, formatted_content = False):
+        """
+        Reimplemented from EntropyRepository
+        """
+        raise PermissionDenied(
+            "cannot execute addPackage on this repository")
+
+    def removePackage(self, package_id, do_cleanup = True, do_commit = True,
+        from_add_package = False):
+        """
+        Reimplemented from EntropyRepository
+        """
+        raise PermissionDenied(
+            "cannot execute removePackage on this repository")
+
 
 class GenericRepository(EntropyRepository):
     """
     This class represents a generic packages repository and is a direct
     subclass of EntropyRepository.
     """
+
+    def handlePackage(self, pkg_data, forcedRevision = -1,
+        formattedContent = False):
+        """
+        Reimplemented from EntropyRepository.
+        It is supposed that a generic repository should not support
+        handlePackage. You can override this (at your own risk) by setting the
+        "override_handlePackage" property to True. In this case, a generic
+        addPackage() call is issued.
+        """
+        override = getattr(self, 'override_handlePackage', False)
+        if not override:
+            raise PermissionDenied(
+                "cannot execute handlePackage on this repository")
+
+        return self.addPackage(pkg_data, revision = forcedRevision,
+            formatted_content = formattedContent)
+
+    def maskFilter(self, package_id, live = True):
+        """
+        Reimplemented from EntropyRepository.
+        It is supposed that a generic repository doesn't support package
+        masking. You can override this by setting the "enable_mask_filter"
+        to True.
+        """
+        enabled = getattr(self, 'enable_mask_filter', False)
+        if not enabled:
+            return package_id, 0
+        return EntropyRepository.maskFilter(self, package_id, live = live)

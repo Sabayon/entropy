@@ -27,7 +27,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.client_sysset_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.test_db = self.__open_test_db(":memory:")
+        # GenericRepository supports package masking if this property is set
+        self.test_db.enable_mask_filter = True
         self.test_db2 = self.__open_test_db(":memory:")
+        # GenericRepository supports package masking if this property is set
+        self.test_db2.enable_mask_filter = True
         self._settings = SystemSettings()
 
     def tearDown(self):
@@ -83,13 +87,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         data['content'].update(test_entry.copy())
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
 
         test_pkg2 = _misc.get_test_package2()
         data2 = self.Spm.extract_package_metadata(test_pkg2)
         data2['content'].update(test_entry.copy())
-        idpackage2, rev2, new_data2 = self.test_db2.handlePackage(data2)
+        idpackage2, rev2, new_data2 = self.test_db2.addPackage(data2)
         db_data2 = self.test_db2.getPackageData(idpackage2)
 
         cont_diff = self.test_db.contentDiff(idpackage, self.test_db2,
@@ -156,14 +160,14 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_db_insert_compare_match_provide(self):
         test_pkg = _misc.get_test_entropy_package_provide()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
     def test_db_cache(self):
         test_pkg = _misc.get_test_entropy_package_provide()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
 
         # enable cache
         self.test_db.xcache = True
@@ -196,7 +200,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # insert/compare
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
@@ -254,7 +258,7 @@ class EntropyRepositoryTest(unittest.TestCase):
                 const_convert_to_unicode(
                     "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
         }
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
@@ -291,7 +295,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # insert/compare
         test_pkg = _misc.get_test_package3()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
@@ -328,7 +332,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # insert/compare
         test_pkg = _misc.get_test_package4()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
@@ -374,7 +378,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # insert/compare
         test_pkg = _misc.get_test_entropy_package_tag()
         data = self.Spm.extract_package_metadata(test_pkg)
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
@@ -394,7 +398,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = self.Spm.extract_package_metadata(test_pkg)
 
         def handle_pkg(xdata):
-            idpackage, rev, new_data = self.test_db.handlePackage(xdata)
+            idpackage, rev, new_data = self.test_db.addPackage(xdata)
             db_data = self.test_db.getPackageData(idpackage)
             self.assertEqual(new_data, db_data)
 
@@ -430,11 +434,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         data2['dependencies'][_misc.get_test_package_atom()] = \
             etpConst['dependency_type_ids']['rdepend_id']
 
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
-        idpackage2, rev, new_data2 = self.test_db.handlePackage(data2)
+        idpackage2, rev, new_data2 = self.test_db.addPackage(data2)
         db_data2 = self.test_db.getPackageData(idpackage2)
         self.assertEqual(new_data2, db_data2)
 
@@ -458,7 +462,7 @@ class EntropyRepositoryTest(unittest.TestCase):
                 const_convert_to_unicode(
                     "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
         }
-        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
 
