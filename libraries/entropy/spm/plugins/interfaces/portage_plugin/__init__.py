@@ -1958,40 +1958,6 @@ class PortagePlugin(SpmPlugin):
         if os.path.isfile(env_file) and skip_if_found:
             return 0
 
-        # FIXME: please remove as soon as upstream fixes it
-        # FIXME: workaround for buggy linux-info.eclass not being
-        # ported to EAPI=2 yet.
-        # It is required to make depmod running properly for the
-        # kernel modules inside this ebuild
-        # fix KV_OUT_DIR= inside environment
-        bz2envfile = os.path.join(package_metadata['xpakdir'],
-            PortagePlugin.ENV_FILE_COMP)
-
-        if "linux-info" in package_metadata['eclasses'] and \
-            os.path.isfile(bz2envfile) and package_metadata['versiontag']:
-
-            envfile = entropy.tools.unpack_bzip2(bz2envfile)
-            bzf = bz2.BZ2File(bz2envfile, "w")
-            f = open(envfile, "rb")
-            line = f.readline()
-            while line:
-
-                if sys.hexversion >= 0x3000000:
-                    if line == b"KV_OUT_DIR=/usr/src/linux\n":
-                        line = b"KV_OUT_DIR=/lib/modules/"
-                        line += const_convert_to_rawstring(
-                            package_metadata['versiontag'])
-                        line += "/build\n"
-                else:
-                    if line == "KV_OUT_DIR=/usr/src/linux\n":
-                        line = "KV_OUT_DIR=/lib/modules/%s/build\n" % (
-                            package_metadata['versiontag'],)
-                bzf.write(line)
-                line = f.readline()
-            f.close()
-            bzf.close()
-            os.remove(envfile)
-
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
         rc = self._portage_doebuild(ebuild, "setup",
             "bintree", package, portage_tmpdir = package_metadata['unpackdir'],
