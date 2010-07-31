@@ -12,7 +12,8 @@
 from entropy.const import etpConst
 from entropy.output import red, darkred, blue, brown, darkgreen, darkblue, \
     bold, purple, green, print_error, print_warning, print_info
-from text_tools import print_table
+from text_tools import print_table, acquire_entropy_locks, \
+    release_entropy_locks
 from entropy.i18n import _
 import entropy.tools
 
@@ -57,8 +58,21 @@ def security(options):
                 only_unaffected = only_unaffected)
 
         elif cmd == "install":
-            security_intf = entropy_client.Security()
-            rc = install_packages(entropy_client, security_intf, fetch = fetch)
+
+            acquired = False
+            try:
+                acquired = acquire_entropy_locks(entropy_client)
+                if not acquired:
+                    print_error(darkgreen(
+                        _("Another Entropy is currently running.")))
+                    return 1
+
+                security_intf = entropy_client.Security()
+                rc = install_packages(entropy_client, security_intf,
+                    fetch = fetch)
+            finally:
+                if acquired:
+                    release_entropy_locks(entropy_client)
 
         elif cmd == "info":
             security_intf = entropy_client.Security()
