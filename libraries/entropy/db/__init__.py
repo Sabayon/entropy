@@ -2374,11 +2374,6 @@ class EntropyRepository(EntropyRepositoryBase):
             return mycounter[0]
         return -1
 
-    def retrieveMessages(self, package_id):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return []
-
     def retrieveSize(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3192,11 +3187,6 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return result
 
-    def retrieveUnusedIdpackages(self):
-        """@deprecated"""
-        warnings.warn("deprecated call!")
-        return self.retrieveUnusedPackageIds()
-
     def retrieveUnusedPackageIds(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3233,11 +3223,6 @@ class EntropyRepository(EntropyRepositoryBase):
         if count != len(package_ids):
             return False
         return True
-
-    def isIdpackageAvailable(self, package_id):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.isPackageIdAvailable(package_id)
 
     def isPackageIdAvailable(self, package_id):
         """
@@ -3451,11 +3436,6 @@ class EntropyRepository(EntropyRepositoryBase):
         if result:
             return True
         return False
-
-    def isLicensedataKeyAvailable(self, license_name):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.isLicenseDataKeyAvailable(license_name)
 
     def isLicenseDataKeyAvailable(self, license_name):
         """
@@ -3724,11 +3704,6 @@ class EntropyRepository(EntropyRepositoryBase):
             return iddep[0]
         return -1
 
-    def searchIdpackageFromIddependency(self, iddep):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.searchPackageIdFromDependencyId(iddep)
-
     def searchPackageIdFromDependencyId(self, dependency_id):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3991,11 +3966,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """, (repository, from_branch, to_branch,))
         return cur.fetchone()
 
-    def listIdPackagesInIdcategory(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.listPackageIdsInCategoryId(*args, **kwargs)
-
     def listPackageIdsInCategoryId(self, category_id, order_by = None):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4046,11 +4016,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute('SELECT counter, idpackage FROM counters')
         return cur.fetchall()
-
-    def listAllIdpackages(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.listAllPackageIds(*args, **kwargs)
 
     def listAllPackageIds(self, order_by = None):
         """
@@ -4403,21 +4368,6 @@ class EntropyRepository(EntropyRepositoryBase):
             return 1
         return 0
 
-    def checkDatabaseApi(self):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return
-
-    def doDatabaseImport(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.importRepository(*args, **kwargs)
-
-    def doDatabaseExport(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.exportRepository(*args, **kwargs)
-
     def importRepository(self, dumpfile, dbfile):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4694,11 +4644,6 @@ class EntropyRepository(EntropyRepositoryBase):
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (package_id,))
 
-    def storeXpakMetadata(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.storeSpmMetadata(*args, **kwargs)
-
     def storeSpmMetadata(self, package_id, blob):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4707,11 +4652,6 @@ class EntropyRepository(EntropyRepositoryBase):
             (package_id, const_get_buffer()(blob),)
         )
         self.commitChanges()
-
-    def retrieveXpakMetadata(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.retrieveSpmMetadata(*args, **kwargs)
 
     def retrieveSpmMetadata(self, package_id):
         """
@@ -5037,11 +4977,6 @@ class EntropyRepository(EntropyRepositoryBase):
             CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname
                 ON eclassesreference ( classname );
             """)
-
-    def regenerateSpmUidTable(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.regenerateSpmUidTable()
 
     def regenerateSpmUidMapping(self):
         """
@@ -5491,8 +5426,3 @@ class EntropyRepository(EntropyRepositoryBase):
         """, (to_branch,))
         self.commitChanges()
         self.clearCache()
-
-    def idpackageValidator(self, *args, **kwargs):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.maskFilter(*args, **kwargs)

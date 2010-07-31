@@ -9,7 +9,6 @@
 
     - make sure that every equo command properly uses entropy locks
         smart, security, cache, repositories?
-    - remove @deprecated in entropy.db
     - uniform config files options to this-and-that (keeping backward compat)
       alternatively use "=" instead of "|"
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
@@ -17,7 +16,6 @@
     - Client.urlFetcher/MultipleUrlFetcher/clientLog? ugly!
     - entropy.db.search* unittest
     - entropy package metadata .dtd specs
-    - entropy.db: remove @deprecated methods
     - entropy.client API docs
 
   1.1:
