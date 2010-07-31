@@ -7,8 +7,6 @@
 
   1.0:
 
-    - make sure that every equo command properly uses entropy locks
-        smart, security, cache, repositories?
     - uniform config files options to this-and-that (keeping backward compat)
       alternatively use "=" instead of "|"
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
