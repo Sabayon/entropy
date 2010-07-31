@@ -26,7 +26,8 @@ from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package as ClientPkg
 from entropy.i18n import _
-from text_tools import countdown, enlightenatom
+from text_tools import countdown, enlightenatom, acquire_entropy_locks, \
+    release_entropy_locks
 
 import entropy.tools
 import entropy.dump
@@ -138,8 +139,13 @@ def package(options):
     myopts = _myopts
 
     entropy_client = None
+    acquired = False
     try:
         entropy_client = Client()
+        acquired = acquire_entropy_locks(entropy_client)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
 
         if cmd == "deptest":
             rc, garbage = _dependencies_test(entropy_client)
@@ -269,6 +275,8 @@ def package(options):
             show_config_files_to_update(entropy_client)
 
     finally:
+        if acquired and (entropy_client is not None):
+            release_entropy_locks(entropy_client)
         if entropy_client is not None:
             entropy_client.shutdown()
 
