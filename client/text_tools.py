@@ -14,22 +14,24 @@ import os
 import time
 import subprocess
 
-from entropy.const import etpConst, const_setup_entropy_pid, \
-    const_remove_entropy_pid
+from entropy.const import etpConst
 from entropy.output import print_info, print_generic, writechar, blue, red, \
     brown, darkblue, purple, teal, darkgreen, decolorize
 from entropy.i18n import _
 
 import entropy.tools
 
-def acquire_entropy_locks(entropy_client, pid_lock = True):
+def acquire_entropy_locks(entropy_client):
     """
     Acquire Entropy Client/Server file locks.
     """
-    if pid_lock:
-        acquired, locked = const_setup_entropy_pid(force_handling = True)
-        if (not acquired) or locked:
-            return False
+    gave_up = entropy_client.wait_resources()
+    if gave_up:
+        return False
+
+    locked = entropy_client.another_entropy_running()
+    if locked:
+        return False
 
     # entropy resources locked?
     locked = entropy_client.resources_locked()
@@ -43,14 +45,11 @@ def acquire_entropy_locks(entropy_client, pid_lock = True):
 
     return True
 
-def release_entropy_locks(entropy_client, pid_lock = True):
+def release_entropy_locks(entropy_client):
     """
     Release Entropy Client/Server file locks.
     """
     entropy_client.unlock_resources()
-    if pid_lock:
-        # remove application lock
-        const_remove_entropy_pid()
 
 def cleanup(directories):
     """
