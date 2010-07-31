@@ -3933,7 +3933,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 result = result)
 
         # non-client repos don't use validation here
-        # TODO: fix this
+        # TODO: move to Client repository class?
         client_repo = self.get_plugins_metadata().get('client_repo')
         if not client_repo:
             # server-side repositories don't make any use of package_id validator
