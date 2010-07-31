@@ -73,6 +73,57 @@ class ServerPackagesRepository(EntropyRepository):
         """
         return package_id, 0
 
+    def handlePackage(self, pkg_data, forcedRevision = -1,
+        formattedContent = False):
+        """
+        Reimplemented from EntropyRepository.
+        """
+
+        # Remove entries in the same scope.
+        manual_deps = set()
+        removelist = self.getPackagesToRemove(
+            pkg_data['name'], pkg_data['category'],
+            pkg_data['slot'], pkg_data['injected']
+        )
+
+        for r_package_id in removelist:
+            manual_deps |= self.retrieveManualDependencies(r_package_id)
+            self.removePackage(r_package_id, do_cleanup = False,
+                do_commit = False)
+
+        # inject old manual dependencies back to package metadata
+        for manual_dep in manual_deps:
+            if manual_dep in pkg_data['dependencies']:
+                continue
+            pkg_data['dependencies'][manual_dep] = \
+                etpConst['dependency_type_ids']['mdepend_id']
+
+        # build atom string, server side
+        pkgatom = entropy.tools.create_package_atom_string(
+            pkg_data['category'], pkg_data['name'], pkg_data['version'],
+            pkg_data['versiontag'])
+
+        package_ids = self.getPackageIds(pkgatom)
+        current_rev = forcedRevision
+
+        for package_id in package_ids:
+
+            if forcedRevision == -1:
+                myrev = self.retrieveRevision(package_id)
+                if myrev > current_rev:
+                    current_rev = myrev
+
+            # injected packages wouldn't be removed by addPackage
+            self.removePackage(package_id, do_cleanup = False,
+                do_commit = False)
+
+        if forcedRevision == -1:
+            current_rev += 1
+
+        # add the new one
+        return self.addPackage(pkg_data, revision = current_rev,
+            formatted_content = formattedContent)
+
 
 class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
