@@ -4191,6 +4191,23 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return results
 
+    def listAllFiles(self, clean = False, count = False):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        self._connection().text_factory = lambda x: const_convert_to_unicode(x)
+
+        if count:
+            cur = self._cursor().execute('SELECT count(file) FROM content')
+        else:
+            cur = self._cursor().execute('SELECT file FROM content')
+
+        if count:
+            return cur.fetchone()[0]
+        if clean:
+            return self._cur2set(cur)
+        return self._cur2list(cur)
+
     def listAllCategories(self, order_by = None):
         """
         Reimplemented from EntropyRepositoryBase.
