@@ -561,17 +561,38 @@ def _do_text_community(main_cmd, options):
     return rc
 
 def _do_text_cleanup(main_cmd, options):
-    import text_tools
-    dirs = [etpConst['packagestmpdir'], etpConst['logdir'],
-        etpConst['entropyunpackdir']]
-    for rel in etpConst['packagesrelativepaths']:
-        # backward compatibility, packages are moved to packages/ dir,
-        # including nonfree, restricted etc.
-        dirs.append(os.path.join(etpConst['entropyworkdir'], rel))
-        # new location
-        dirs.append(os.path.join(etpConst['entropypackagesworkdir'], rel))
-    text_tools.cleanup(dirs)
-    return 0
+
+    if not entropy.tools.is_root():
+        mytxt = _("You are not root")
+        print_error(red(mytxt+"."))
+        return 1
+
+    acquired = False
+    try:
+
+        import text_tools
+        from entropy.client.interfaces import Client
+        client = Client(repo_validation = False, load_ugc = False,
+            indexing = False, noclientdb = True)
+        acquired = text_tools.acquire_entropy_locks(client)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
+
+        dirs = [etpConst['packagestmpdir'], etpConst['logdir'],
+            etpConst['entropyunpackdir']]
+        for rel in etpConst['packagesrelativepaths']:
+            # backward compatibility, packages are moved to packages/ dir,
+            # including nonfree, restricted etc.
+            dirs.append(os.path.join(etpConst['entropyworkdir'], rel))
+            # new location
+            dirs.append(os.path.join(etpConst['entropypackagesworkdir'], rel))
+        text_tools.cleanup(dirs)
+        return 0
+
+    finally:
+        if acquired:
+            text_tools.release_entropy_locks(client)
 
 def do_moo(*args):
     t = """ _____________
