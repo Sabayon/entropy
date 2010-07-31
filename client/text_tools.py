@@ -14,16 +14,53 @@ import os
 import time
 import subprocess
 
-from entropy.const import etpConst
+from entropy.const import etpConst, const_setup_entropy_pid, \
+    const_remove_entropy_pid
 from entropy.output import print_info, print_generic, writechar, blue, red, \
     brown, darkblue, purple, teal, darkgreen, decolorize
 from entropy.i18n import _
 
 import entropy.tools
 
-# Temporary files cleaner
-def cleanup(directories):
+def acquire_entropy_locks(entropy_client, pid_lock = True):
+    """
+    Acquire Entropy Client/Server file locks.
+    """
+    if pid_lock:
+        acquired, locked = const_setup_entropy_pid(force_handling = True)
+        if (not acquired) or locked:
+            return False
 
+    # entropy resources locked?
+    locked = entropy_client.resources_locked()
+    if locked:
+        return False
+
+    # acquire resources lock
+    acquired = entropy_client.lock_resources()
+    if not acquired:
+        return False
+
+    return True
+
+def release_entropy_locks(entropy_client, pid_lock = True):
+    """
+    Release Entropy Client/Server file locks.
+    """
+    entropy_client.unlock_resources()
+    if pid_lock:
+        # remove application lock
+        const_remove_entropy_pid()
+
+def cleanup(directories):
+    """
+    Temporary files cleaner.
+
+    @param directories: list of directory paths
+    @type directories: list
+    @return: exit status
+    @rtype: int
+    """
     counter = 0
     for xdir in directories:
         if not os.path.isdir(xdir):
