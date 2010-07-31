@@ -23,6 +23,8 @@ from entropy.output import red, darkred, darkgreen, brown, bold, \
 from entropy.i18n import _
 import entropy.tools
 
+from text_tools import acquire_entropy_locks, release_entropy_locks
+
 def smart(options):
 
     # check if I am root
@@ -58,8 +60,15 @@ def smart(options):
 
     from entropy.client.interfaces import Client
     entropy_client = None
+    acquired = False
     try:
         entropy_client = Client()
+        acquired = acquire_entropy_locks(entropy_client)
+        if not acquired:
+            print_error(darkgreen(
+                _("Another Entropy is currently running.")))
+            return 1
+
         if options[0] == "application":
             rc = smart_apps_handler(entropy_client, options[1:])
 
@@ -77,6 +86,8 @@ def smart(options):
         else:
             rc = -10
     finally:
+        if acquired and (entropy_client is not None):
+            release_entropy_locks(entropy_client)
         if entropy_client is not None:
             entropy_client.shutdown()
 
