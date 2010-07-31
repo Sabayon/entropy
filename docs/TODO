@@ -4,6 +4,7 @@
     EntropyRepositoryBase:
     - 3. move update() code to Entropy server db class (change semantic?)
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
+    - check this in entropy.db.skel => # TODO: move to Client repository class?
 
   1.0:
 
