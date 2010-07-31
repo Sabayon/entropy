@@ -261,7 +261,7 @@ class UpdatesDaemon(dbus.service.Object):
 
             finally:
                 if entropy is not None:
-                    self.__release_entropy_locks(entropy)
+                    self.__release_entropy_locks(entropy, pid_lock = False)
                     entropy.shutdown()
 
     def check_system_changes(self):
@@ -386,11 +386,12 @@ class UpdatesDaemon(dbus.service.Object):
 
         return True
 
-    def __release_entropy_locks(self, entropy):
+    def __release_entropy_locks(self, entropy, pid_lock = True):
         # unlock resources
         entropy.unlock_resources()
-        # remove application lock
-        const_remove_entropy_pid()
+        if pid_lock:
+            # remove application lock
+            const_remove_entropy_pid()
 
     def __run_fetcher(self, update_repos = True):
 
@@ -477,7 +478,8 @@ class UpdatesDaemon(dbus.service.Object):
 
             finally:
                 if entropy is not None:
-                    self.__release_entropy_locks(entropy)
+                    self.__release_entropy_locks(entropy,
+                        pid_lock = update_repos)
                     # say goodbye
                     entropy.shutdown()
 
