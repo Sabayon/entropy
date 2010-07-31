@@ -10,7 +10,6 @@
 
 """
 from entropy.services.interfaces import SocketHost
-from entropy.const import etpConst
 from entropy.output import TextInterface
 
 class Server(SocketHost):
@@ -21,7 +20,9 @@ class Server(SocketHost):
             self.Text.output(":: FakeServiceInterface loaded ::")
 
     def __init__(self, do_ssl = False, stdout_logging = True,
-        entropy_interface_kwargs = {}, **kwargs):
+        entropy_interface_kwargs = None, **kwargs):
+        if entropy_interface_kwargs is None:
+            entropy_interface_kwargs = {}
 
         from entropy.services.system.commands import Base
         if 'external_cmd_classes' not in kwargs:

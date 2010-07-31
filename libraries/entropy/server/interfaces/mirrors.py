@@ -14,11 +14,10 @@ import tempfile
 import shutil
 import time
 
-from entropy.exceptions import OnlineMirrorError, ConnectionError, \
-    EntropyPackageException, TransceiverError
+from entropy.exceptions import OnlineMirrorError, EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
-from entropy.const import etpConst, const_setup_perms, const_setup_file
+from entropy.const import etpConst, const_setup_file
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS
@@ -646,7 +645,6 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self._entropy.default_repository
 
-        pkgfile = os.path.basename(pkg_relative_path)
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
         tries = 0
@@ -1265,7 +1263,7 @@ class Server(ServerNoticeBoardMixin):
                     data[myname] = myfile
                 extra_text_files.append(myfile)
 
-        # XXX/FIXME: for symlinks, we read their link and send a file with that
+        # NOTE: for symlinks, we read their link and send a file with that
         # content. This is the default behaviour for now and allows to send
         # /etc/make.profile link pointer correctly.
         for symname, symfile in spm_syms.items():
@@ -2038,7 +2036,7 @@ class Server(ServerNoticeBoardMixin):
             if local_revision < highest_remote_revision:
                 for remote_item in remote_status:
                     if remote_item[1] == highest_remote_revision:
-                        download_latest = x
+                        download_latest = remote_item
                         break
 
             if download_latest:
@@ -2122,8 +2120,8 @@ class Server(ServerNoticeBoardMixin):
 
         if upload_queue and not no_upload:
 
-            # XXX QA checks,
-            # please group them into entropy.qa
+            # Some internal QA checks, make sure everything is fine
+            # on the repo
 
             srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
             base_repo = srv_set['base_repository_id']
@@ -3167,7 +3165,7 @@ class Server(ServerNoticeBoardMixin):
                 )
 
                 exc_txt = entropy.tools.print_exception(
-                    returndata = True)
+                    silent = True)
                 for line in exc_txt:
                     self._entropy.output(
                         repr(line),

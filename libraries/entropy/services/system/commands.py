@@ -754,7 +754,8 @@ class Repository(SocketCommands):
                         'buildonly, nodeps, custom_use, ldflags, cflags'
 
         atoms = mydict.get('atoms')
-        if atoms: atoms = atoms.split()
+        if atoms:
+            atoms = atoms.split()
         pretend = mydict.get('pretend')
         oneshot = mydict.get('oneshot')
         verbose = mydict.get('verbose')
@@ -766,20 +767,34 @@ class Repository(SocketCommands):
         ldflags = mydict.get('ldflags')
         cflags = mydict.get('cflags')
 
-        if pretend == "1": pretend = True
-        else: pretend = False
-        if oneshot == "1": oneshot = True
-        else: oneshot = False
-        if verbose == "1": verbose = True
-        else: verbose = False
-        if nocolor == "1": nocolor = True
-        else: nocolor = False
-        if fetchonly == "1": fetchonly = True
-        else: fetchonly = False
-        if buildonly == "1": buildonly = True
-        else: buildonly = False
-        if nodeps == "1": nodeps = True
-        else: nodeps = False
+        if pretend == "1":
+            pretend = True
+        else:
+            pretend = False
+        if oneshot == "1":
+            oneshot = True
+        else:
+            oneshot = False
+        if verbose == "1":
+            verbose = True
+        else:
+            verbose = False
+        if nocolor == "1":
+            nocolor = True
+        else:
+            nocolor = False
+        if fetchonly == "1":
+            fetchonly = True
+        else:
+            fetchonly = False
+        if buildonly == "1":
+            buildonly = True
+        else:
+            buildonly = False
+        if nodeps == "1":
+            nodeps = True
+        else:
+            nodeps = False
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -819,17 +834,24 @@ class Repository(SocketCommands):
             return None, 'wrong dict arguments, xml must have 4 items with attr value -> atoms, pretend, verbose, nocolor'
 
         atoms = mydict.get('atoms')
-        if atoms: atoms = atoms.split()
+        if atoms:
+            atoms = atoms.split()
         pretend = mydict.get('pretend')
         verbose = mydict.get('verbose')
         nocolor = mydict.get('nocolor')
 
-        if pretend == "1": pretend = True
-        else: pretend = False
-        if verbose == "1": verbose = True
-        else: verbose = False
-        if nocolor == "1": nocolor = True
-        else: nocolor = False
+        if pretend == "1":
+            pretend = True
+        else:
+            pretend = False
+        if verbose == "1":
+            verbose = True
+        else:
+            verbose = False
+        if nocolor == "1":
+            nocolor = True
+        else:
+            nocolor = False
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -842,7 +864,8 @@ class Repository(SocketCommands):
         }
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'spm_remove_atoms', [atoms[:]], add_dict.copy(), False, False, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_get_spm_categories_updates(self, cmd, myargs, authenticator):
@@ -854,7 +877,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_updates', [myargs], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_get_spm_categories_installed(self, cmd, myargs, authenticator):
@@ -864,7 +888,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_categories_installed', [myargs], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_enable_uses_for_atoms(self, cmd, myargs, authenticator):
@@ -881,15 +906,18 @@ class Repository(SocketCommands):
 
         atoms = mydict.get('atoms')
         useflags = mydict.get('useflags')
-        if atoms: atoms = atoms.split()
-        if useflags: useflags = useflags.split()
+        if atoms:
+            atoms = atoms.split()
+        if useflags:
+            useflags = useflags.split()
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'enable_uses_for_atoms', [atoms, useflags], {}, True, True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_disable_uses_for_atoms(self, cmd, myargs, authenticator):
@@ -906,15 +934,18 @@ class Repository(SocketCommands):
 
         atoms = mydict.get('atoms')
         useflags = mydict.get('useflags')
-        if atoms: atoms = atoms.split()
-        if useflags: useflags = useflags.split()
+        if atoms:
+            atoms = atoms.split()
+        if useflags:
+            useflags = useflags.split()
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'disable_uses_for_atoms', [atoms, useflags], {}, True, True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_get_spm_atoms_info(self, cmd, myargs, authenticator):
@@ -926,7 +957,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_atoms_info', [myargs], {}, True, True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_spm_info(self, cmd, authenticator):
@@ -936,7 +968,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_spm_info', [], {}, True, False, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_custom_shell_command(self, cmd, myargs, authenticator):
@@ -949,7 +982,8 @@ class Repository(SocketCommands):
         command = ' '.join(myargs)
 
         queue_id = self.HostInterface.add_to_queue(cmd, command, uid, gid, 'run_custom_shell_command', [command], {}, True, False, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_get_spm_glsa_data(self, cmd, myargs, authenticator):
@@ -961,7 +995,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_spm_glsa_data', [myargs[0]], {}, True, True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_get_available_repositories(self):
@@ -1010,7 +1045,8 @@ class Repository(SocketCommands):
         for idpackage in idpackages:
 
             data = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-            if not data: continue
+            if not data:
+                continue
             package_data['data'][idpackage] = data.copy()
         dbconn.closeDB()
         return True, package_data
@@ -1076,7 +1112,8 @@ class Repository(SocketCommands):
             [from_repo, to_repo, idpackages, do_copy], {}, False, True,
             interactive = True
         )
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_scan_entropy_packages_database_changes(self, cmd, authenticator):
@@ -1086,7 +1123,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'scan_entropy_packages_database_changes', [], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_dependency_test(self, cmd, authenticator):
@@ -1096,7 +1134,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_dependency_test', [], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_library_test(self, cmd, authenticator):
@@ -1106,7 +1145,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, '', uid, gid, 'run_entropy_library_test', [], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_checksum_test(self, cmd, myargs, authenticator):
@@ -1120,7 +1160,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_checksum_test', [repoid, mode], {}, True, False, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_treeupdates(self, cmd, myargs, authenticator):
@@ -1133,7 +1174,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_treeupdates', [myargs[0]], {}, False, False, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_scan_entropy_mirror_updates(self, cmd, myargs, authenticator):
@@ -1146,7 +1188,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'scan_entropy_mirror_updates', [myargs], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_mirror_updates(self, cmd, myargs, authenticator):
@@ -1165,7 +1208,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, '<raw data>', uid, gid, 'run_entropy_mirror_updates', [mydict], {}, False, False, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_database_updates(self, cmd, myargs, authenticator):
@@ -1210,7 +1254,8 @@ class Repository(SocketCommands):
             'run_entropy_database_updates', [to_add, to_remove, to_inject],
             {}, False, True, interactive = True
         )
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
 
@@ -1240,7 +1285,8 @@ class Repository(SocketCommands):
                 results = dbconn.searchPackages(mystring, order_by = "atom")
                 for atom, idpackage, branch in results:
                     data = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                    if not data: continue
+                    if not data:
+                        continue
                     search_results['ordered_idpackages'].add(idpackage)
                     search_results['data'][idpackage] = data.copy()
 
@@ -1318,7 +1364,8 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'get_notice_board', [repoid], {}, True, True, interactive = True)
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_remove_notice_board_entries(self, cmd, myargs, authenticator):
@@ -1336,7 +1383,8 @@ class Repository(SocketCommands):
             cmd, ' '.join([str(x) for x in myargs]), uid, gid,
             'remove_notice_board_entries', [repoid, entry_ids], {}, True, False, interactive = True
         )
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def docmd_add_notice_board_entry(self, cmd, myargs, authenticator):
@@ -1366,7 +1414,8 @@ class Repository(SocketCommands):
             cmd, ' '.join(myargs), uid, gid,
             'add_notice_board_entry', [repoid, title, notice_text, link], {}, True, False, interactive = True
         )
-        if queue_id < 0: return False, queue_id
+        if queue_id < 0:
+            return False, queue_id
         return True, queue_id
 
     def _get_entropy_pkginfo(self, dbconn, idpackage, repoid):

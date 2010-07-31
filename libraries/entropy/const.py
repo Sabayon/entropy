@@ -73,8 +73,6 @@ etpUi = {
     'ask': False,
     'pretend': False,
     'mute': False,
-    # TODO: remove this after 20101010
-    'nolog': False,
     'clean': False,
     'warn': True,
 }
@@ -155,7 +153,6 @@ def const_default_settings(rootdir):
 
     default_etp_dir = os.getenv('DEV_ETP_VAR_DIR', rootdir+"/var/lib/entropy")
     default_etp_tmpdir = "/tmp"
-    default_etp_repodir = "/packages/"+ETP_ARCH_CONST
     default_etp_portdir = rootdir+"/usr/portage"
     default_etp_distfilesdir = "/distfiles"
     default_etp_dbdir = "/database/"+ETP_ARCH_CONST

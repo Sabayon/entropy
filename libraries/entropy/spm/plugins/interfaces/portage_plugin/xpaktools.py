@@ -95,9 +95,8 @@ def suck_xpak(tbz2file, outputpath):
     # position old to the end
     old.seek(0, os.SEEK_END)
     # read backward until we find
-    bytes = old.tell()
-    counter = bytes - 1
-    # FIXME: when Python 2.x will phase out, use b"XPAKSTOP"...
+    n_bytes = old.tell()
+    counter = n_bytes - 1
     if sys.hexversion >= 0x3000000:
         xpak_end = b"XPAKSTOP"
         xpak_start = b"XPAKPACK"
@@ -114,8 +113,8 @@ def suck_xpak(tbz2file, outputpath):
 
     while counter >= (0 - chunk_len):
 
-        old.seek(counter - bytes, os.SEEK_END)
-        if (bytes - (abs(counter - bytes))) < chunk_len:
+        old.seek(counter - n_bytes, os.SEEK_END)
+        if (n_bytes - (abs(counter - n_bytes))) < chunk_len:
             chunk_len = 1
         read_bytes = old.read(chunk_len)
         read_len = len(read_bytes)

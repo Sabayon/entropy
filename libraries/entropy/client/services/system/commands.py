@@ -194,13 +194,20 @@ class Repository(Client):
         s_fetchonly = "0"
         s_buildonly = "0"
         s_nodeps = "0"
-        if pretend: s_pretend = "1"
-        if oneshot: s_oneshot = "1"
-        if verbose: s_verbose = "1"
-        if nocolor: s_nocolor = "1"
-        if fetchonly: s_fetchonly = "1"
-        if buildonly: s_buildonly = "1"
-        if nodeps: s_nodeps = "1"
+        if pretend:
+            s_pretend = "1"
+        if oneshot:
+            s_oneshot = "1"
+        if verbose:
+            s_verbose = "1"
+        if nocolor:
+            s_nocolor = "1"
+        if fetchonly:
+            s_fetchonly = "1"
+        if buildonly:
+            s_buildonly = "1"
+        if nodeps:
+            s_nodeps = "1"
         mydict = {
             'atoms': ' '.join(atoms),
             'pretend': s_pretend,
@@ -228,9 +235,12 @@ class Repository(Client):
         s_pretend = "0"
         s_verbose = "0"
         s_nocolor = "0"
-        if pretend: s_pretend = "1"
-        if verbose: s_verbose = "1"
-        if nocolor: s_nocolor = "1"
+        if pretend:
+            s_pretend = "1"
+        if verbose:
+            s_verbose = "1"
+        if nocolor:
+            s_nocolor = "1"
         mydict = {
             'atoms': ' '.join(atoms),
             'pretend': s_pretend,

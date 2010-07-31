@@ -158,7 +158,7 @@ class Repository(SocketCommands):
         metadata['sets'] = dbconn.retrievePackageSets()
         metadata['treeupdates_actions'] = dbconn.listAllTreeUpdatesActions()
         metadata['treeupdates_digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
-        # FIXME: kept for backward compatibility (<=0.99.0.x) remove in future
+        # NOTE: kept for backward compatibility (<=0.99.0.x) remove in future
         metadata['library_idpackages'] = []
         metadata['revision'] = self.get_database_revision(repository, arch,
             product, branch)
@@ -299,7 +299,7 @@ class Repository(SocketCommands):
                     content_insert_formatted = format_content_for_insert,
                     get_content = False, get_changelog = False
                 )
-            except:
+            except Exception:
                 tb = entropy.tools.get_traceback()
                 print(tb)
                 self.HostInterface.socketLog.write(tb)

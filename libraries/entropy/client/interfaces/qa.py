@@ -13,7 +13,7 @@ from entropy.qa import ErrorReportInterface
 from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
-from entropy.exceptions import OnlineMirrorError, PermissionDenied
+from entropy.exceptions import PermissionDenied
 from entropy.i18n import _
 
 class UGCErrorReportInterface(ErrorReportInterface):

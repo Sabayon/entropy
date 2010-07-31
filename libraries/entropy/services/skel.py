@@ -11,7 +11,8 @@
 """
 import os
 from entropy.const import const_convert_to_unicode
-from entropy.exceptions import *
+from entropy.exceptions import PermissionDenied, ConnectionError, \
+    LibraryNotFound
 from entropy.i18n import _
 
 class SocketCommands:
@@ -148,8 +149,8 @@ class RemoteDatabase:
             if e[0] != 2006:
                 raise
             else:
-               self.connect()
-               return True
+                self.connect()
+                return True
         return False
 
     def _raise_not_implemented_error(self):
@@ -227,7 +228,7 @@ class RemoteDatabase:
         return self.cursor.fetchall()
 
     def fetchmany(self, *args, **kwargs):
-        return self.cursor.fetchmany(*args,**kwargs)
+        return self.cursor.fetchmany(*args, **kwargs)
 
     def lastrowid(self):
         return self.cursor.lastrowid

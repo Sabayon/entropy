@@ -64,14 +64,15 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
     t_back += "\n"
-    t_back += ''.join(entropy.tools.print_exception(True, tb_data = exc_tb))
+    t_back += ''.join(entropy.tools.print_exception(silent = True,
+        tb_data = exc_tb))
 
     if "--debug-catch" in sys.argv:
         print(t_back)
         import pdb
         pdb.set_trace()
 
-    exc_data = entropy.tools.print_exception(returndata = True,
+    exc_data = entropy.tools.print_exception(silent = True,
         tb_data = exc_tb, all_frame_data = True)
 
     my = ExceptionDialog()

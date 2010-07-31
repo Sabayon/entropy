@@ -29,23 +29,23 @@ class SystemSettingsPlugin(object):
 
     Sample code:
 
-        >>> # load SystemSettings
-        >>> from entropy.core.settings.base import SystemSettings
-        >>> from entropy.core.settings.plugins.skel import SystemSettingsPlugin
-        >>> system_settings = SystemSettings()
-        >>> class MyPlugin(SystemSettingsPlugin):
-        >>>      pass
-        >>> my_plugin = MyPlugin('mystuff', None)
-        >>> def myparsing_function():
-        >>>     return {'abc': 1 }
-        >>> my_plugin.add_parser('parser_no_1', myparsing_function)
-        >>> system_settings.add_plugin(my_plugin)
-        >>> print(system_settings['mystuff']['parser_no_1'])
-        {'abc': 1 }
-        >>> # let's remove it
-        >>> system_settings.remove_plugin('mystuff') # through its plugin_id
-        >>> print(system_settings.get('mystuff'))
-        None
+    >>> # load SystemSettings
+    >>> from entropy.core.settings.base import SystemSettings
+    >>> from entropy.core.settings.plugins.skel import SystemSettingsPlugin
+    >>> system_settings = SystemSettings()
+    >>> class MyPlugin(SystemSettingsPlugin):
+    >>>      pass
+    >>> my_plugin = MyPlugin('mystuff', None)
+    >>> def myparsing_function():
+    >>>     return {'abc': 1 }
+    >>> my_plugin.add_parser('parser_no_1', myparsing_function)
+    >>> system_settings.add_plugin(my_plugin)
+    >>> print(system_settings['mystuff']['parser_no_1'])
+    {'abc': 1 }
+    >>> # let's remove it
+    >>> system_settings.remove_plugin('mystuff') # through its plugin_id
+    >>> print(system_settings.get('mystuff'))
+    None
 
     """
 

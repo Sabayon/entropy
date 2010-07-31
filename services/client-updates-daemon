@@ -113,7 +113,7 @@ class DaemonUrlFetcher(UrlFetcher):
         self.__remotesize = total_size
         self.__datatransfer = data_transfer
 
-    def output(self):
+    def update(self):
         myavg = abs(int(round(float(self.__average), 1)))
         if abs((myavg - self.daemon_last_avg)) < 1:
             return

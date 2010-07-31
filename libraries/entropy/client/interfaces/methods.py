@@ -24,10 +24,10 @@ from datetime import datetime
 from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
-    const_set_nice_level, const_setup_perms, const_setup_entropy_pid, \
+    const_setup_perms, const_setup_entropy_pid, \
     const_isstring, const_convert_to_unicode, const_isnumber
-from entropy.exceptions import RepositoryError, InvalidPackageSet,\
-    SystemDatabaseError
+from entropy.exceptions import RepositoryError, SystemDatabaseError, \
+    RepositoryPluginError
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
@@ -229,17 +229,18 @@ class RepositoryMixin:
         if (repoid not in self._treeupdates_repos) and \
             (entropy.tools.is_root()) and \
             (not repoid.endswith(etpConst['packagesext'])):
-                # only as root due to Portage
-                try:
-                    updated = self.repository_packages_spm_sync(repoid, conn)
-                except (OperationalError, DatabaseError,):
-                    updated = False
-                if updated:
-                    self._cacher.discard()
-                    EntropyCacher.clear_cache_item(
-                        EntropyCacher.CACHE_IDS['world_update'])
-                    EntropyCacher.clear_cache_item(
-                        EntropyCacher.CACHE_IDS['critical_update'])
+
+            # only as root due to Portage
+            try:
+                updated = self.repository_packages_spm_sync(repoid, conn)
+            except (OperationalError, DatabaseError,):
+                updated = False
+            if updated:
+                self._cacher.discard()
+                EntropyCacher.clear_cache_item(
+                    EntropyCacher.CACHE_IDS['world_update'])
+                EntropyCacher.clear_cache_item(
+                    EntropyCacher.CACHE_IDS['critical_update'])
         return conn
 
     def get_repository_revision(self, reponame):
@@ -251,8 +252,6 @@ class RepositoryMixin:
 
     def add_repository(self, repodata):
 
-        product = self._settings['repositories']['product']
-        branch = self._settings['repositories']['branch']
         avail_data = self._settings['repositories']['available']
         repoid = repodata['repoid']
 
@@ -629,7 +628,7 @@ class RepositoryMixin:
                     except SystemDatabaseError:
                         try:
                             conn.closeDB()
-                        except:
+                        except (RepositoryPluginError, OSError, IOError):
                             pass
                         entropy.tools.print_traceback(f = self.clientLog)
                         conn = load_db_from_ram()
@@ -690,7 +689,8 @@ class RepositoryMixin:
             compress_level = 9
 
         backup_dir = os.path.dirname(dbpath)
-        if not backup_dir: backup_dir = os.path.dirname(dbpath)
+        if not backup_dir:
+            backup_dir = os.path.dirname(dbpath)
         dbname = os.path.basename(dbpath)
         bytes_required = 1024000*300
         if not (os.access(backup_dir, os.W_OK) and \
@@ -734,7 +734,7 @@ class RepositoryMixin:
         try:
             entropy.tools.compress_file(dbpath, comp_dbpath, bz2.BZ2File,
                 compress_level)
-        except:
+        except (IOError, OSError):
             if not silent:
                 entropy.tools.print_traceback()
             return False, _("Unable to compress")
@@ -760,19 +760,19 @@ class RepositoryMixin:
             os.path.isfile(backup_path) and os.access(backup_path, os.R_OK) and \
             entropy.tools.check_required_space(db_dir, bytes_required)):
 
-                if not silent:
-                    mytxt = "%s: %s, %s" % (
-                        darkred(_("Cannot restore selected backup")),
-                        blue(os.path.basename(backup_path)),
-                        darkred(_("permission denied")),
-                    )
-                    self.output(
-                        mytxt,
-                        importance = 1,
-                        level = "error",
-                        header = red(" @@ ")
-                    )
-                return False, mytxt
+            if not silent:
+                mytxt = "%s: %s, %s" % (
+                    darkred(_("Cannot restore selected backup")),
+                    blue(os.path.basename(backup_path)),
+                    darkred(_("permission denied")),
+                )
+                self.output(
+                    mytxt,
+                    importance = 1,
+                    level = "error",
+                    header = red(" @@ ")
+                )
+            return False, mytxt
 
         if not silent:
             mytxt = "%s: %s => %s ..." % (
@@ -791,7 +791,7 @@ class RepositoryMixin:
         try:
             entropy.tools.uncompress_file(backup_path, db_destination,
                 bz2.BZ2File)
-        except:
+        except (IOError, OSError):
             if not silent:
                 entropy.tools.print_traceback()
             return False, _("Unable to unpack")

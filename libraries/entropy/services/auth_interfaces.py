@@ -14,7 +14,7 @@ import os
 import time
 import random
 from entropy.services.skel import Authenticator, RemoteDatabase
-from entropy.exceptions import *
+from entropy.exceptions import PermissionDenied
 from entropy.const import etpConst, const_isstring, const_convert_to_unicode
 from entropy.i18n import _
 
@@ -77,27 +77,36 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
         self.check_connection()
         self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `username_clean` = %s OR LOWER(`username`) = %s', (username_clean, username.lower(),))
         data = self.cursor.fetchone()
-        if not data: return False
-        if not isinstance(data, dict): return False
-        if 'user_id' not in data: return False
+        if not data:
+            return False
+        if not isinstance(data, dict):
+            return False
+        if 'user_id' not in data:
+            return False
         return True
 
     def does_email_exist(self, email):
         self.check_connection()
         self.cursor.execute('SELECT user_id FROM '+self.TABLE_PREFIX+'users WHERE `user_email` = %s', (email,))
         data = self.cursor.fetchone()
-        if not data: return False
-        if not isinstance(data, dict): return False
-        if 'user_id' not in data: return False
+        if not data:
+            return False
+        if not isinstance(data, dict):
+            return False
+        if 'user_id' not in data:
+            return False
         return True
 
     def is_username_allowed(self, username):
         self.check_connection()
         self.cursor.execute('SELECT disallow_id FROM '+self.TABLE_PREFIX+'disallow WHERE `disallow_username` = %s', (username,))
         data = self.cursor.fetchone()
-        if not data: return True
-        if not isinstance(data, dict): return True
-        if 'disallow_id' not in data: return True
+        if not data:
+            return True
+        if not isinstance(data, dict):
+            return True
+        if 'disallow_id' not in data:
+            return True
         return False
 
     def validate_username_string(self, username, username_clean):
@@ -118,10 +127,12 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
             return False, 'Invalid username'
 
         exists = self.does_username_exist(username, username_clean)
-        if exists: return False, 'Username already taken'
+        if exists:
+            return False, 'Username already taken'
 
         allowed = self.is_username_allowed(username)
-        if not allowed: return False, 'Username not allowed'
+        if not allowed:
+            return False, 'Username not allowed'
 
         return True, 'All fine'
 
@@ -157,11 +168,13 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
 
         # check username validity
         status, err_msg = self.validate_username_string(username, username_clean)
-        if not status: return False, err_msg
+        if not status:
+            return False, err_msg
 
         # check email
         exists = self.does_email_exist(email)
-        if exists: return False, 'Email already in use'
+        if exists:
+            return False, 'Email already in use'
 
         # now cross fingers
         status, user_id = self.__register(username, username_clean, password, email, activate)
@@ -178,7 +191,8 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
         time_now = int(time.time())
 
         user_type = self.USER_INACTIVE
-        if activate: user_type = self.USER_NORMAL
+        if activate:
+            user_type = self.USER_NORMAL
 
         registration_data = {
             'username': username,
@@ -260,7 +274,8 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
         if isinstance(data, dict):
             if 'group_colour' in data:
                 gcolor = data['group_colour']
-        if gcolor: self._set_config_value('newest_user_colour', gcolor)
+        if gcolor:
+            self._set_config_value('newest_user_colour', gcolor)
 
         return True, user_id
 
@@ -548,7 +563,8 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
         my_params = {}
         for param in valid_params:
             d = profile_data.get(param)
-            if d == None: continue
+            if d is None:
+                continue
             my_params[param] = d
 
         if not my_params:
@@ -700,7 +716,8 @@ class phpBB3Auth(Authenticator, RemoteDatabase):
             return myoutput
 
         count_log2 = self.itoa64.find(setting[3])
-        if count_log2 == -1: count_log2 = 0
+        if count_log2 == -1:
+            count_log2 = 0
 
         if (count_log2 < 7) or (count_log2 > 30):
             return myoutput

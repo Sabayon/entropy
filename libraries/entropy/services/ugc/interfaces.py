@@ -20,7 +20,8 @@ import shutil
 import entropy.dump
 import entropy.tools
 from entropy.services.skel import RemoteDatabase
-from entropy.exceptions import *
+from entropy.exceptions import DumbException, ConnectionError, \
+    TimeoutError, SSLError, PermissionDenied
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_set_chmod, const_setup_file, const_get_stringtype, \
     const_convert_to_rawstring, const_convert_to_unicode, const_debug_write
@@ -225,17 +226,19 @@ class Server(RemoteDatabase):
     def cache_results(self):
         for cache_item in self.cached_results:
             fdata = self.cached_results.get(cache_item)
-            if fdata == None: return
+            if fdata is None:
+                return
             func, args, kwargs, exp_time = fdata
             key = self.get_cache_item_key(cache_item)
-            r = func(*args,**kwargs)
+            r = func(*args, **kwargs)
             entropy.dump.dumpobj(key, r)
 
     def get_cache_item_key(self, cache_item):
         return os.path.join(Server.CACHE_ID, cache_item)
 
     def cache_result(self, cache_item, r):
-        if not self.cached_results.get(cache_item): return None
+        if not self.cached_results.get(cache_item):
+            return None
         key = self.get_cache_item_key(cache_item)
         entropy.dump.dumpobj(key, r)
 
@@ -251,7 +254,8 @@ class Server(RemoteDatabase):
     # expired get_ugc_alldownloads 0 86400 1228577077
     def get_cached_result(self, cache_item):
         fdata = self.cached_results.get(cache_item)
-        if fdata == None: return None
+        if fdata is None:
+            return None
         func, args, kwargs, exp_time = fdata
 
         key = self.get_cache_item_key(cache_item)
@@ -316,13 +320,15 @@ class Server(RemoteDatabase):
     def insert_iddoctype(self, iddoctype, description, do_commit = False):
         self.check_connection()
         self.execute_query('INSERT INTO entropy_doctypes VALUES (%s,%s)', (iddoctype, description,))
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
 
     def insert_pkgkey(self, key, do_commit = False):
         self.check_connection()
         self.execute_query('INSERT INTO entropy_base VALUES (%s,%s)', (None, key,))
         myid = self.lastrowid()
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return myid
 
     def insert_download(self, key, ddate, count = 0, do_commit = False):
@@ -330,28 +336,32 @@ class Server(RemoteDatabase):
         idkey = self.handle_pkgkey(key)
         self.execute_query('INSERT INTO entropy_downloads VALUES (%s,%s,%s,%s)', (None, idkey, ddate, count))
         myid = self.lastrowid()
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return myid
 
     def insert_entropy_branch(self, branch, do_commit = False):
         self.check_connection()
         self.execute_query('INSERT INTO entropy_branches VALUES (%s,%s)', (None, branch,))
         myid = self.lastrowid()
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return myid
 
     def insert_entropy_release_string(self, release_string, do_commit = False):
         self.check_connection()
         self.execute_query('INSERT INTO entropy_release_strings VALUES (%s,%s)', (None, release_string,))
         myid = self.lastrowid()
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return myid
 
     def insert_entropy_ip_locations_id(self, ip_latitude, ip_longitude, do_commit = False):
         self.check_connection()
         self.execute_query('INSERT INTO entropy_ip_locations VALUES (%s,%s,%s)', (None, ip_latitude, ip_longitude,))
         myid = self.lastrowid()
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return myid
 
     def handle_entropy_ip_locations_id(self, ip_addr):
@@ -371,14 +381,16 @@ class Server(RemoteDatabase):
     def update_download(self, iddownload, do_commit = False):
         self.check_connection()
         self.execute_query('UPDATE entropy_downloads SET `count` = `count`+1 WHERE `iddownload` = %s', (iddownload,))
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return iddownload
 
     def store_download_data(self, iddownloads, ip_addr, do_commit = False):
         entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
         mydata = [(x, ip_addr, entropy_ip_locations_id,) for x in iddownloads]
         self.execute_many('INSERT INTO entropy_downloads_data VALUES (%s,%s,%s)', mydata)
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
 
     def get_date(self):
         mytime = time.time()
@@ -448,7 +460,8 @@ class Server(RemoteDatabase):
         self.check_connection()
         self.execute_query('SELECT `key` FROM entropy_base WHERE `idkey` = %s', (idkey,))
         data = self.fetchone()
-        if data: return data['key']
+        if data:
+            return data['key']
 
     def get_ugc_metadata(self, pkgkey):
         self.check_connection()
@@ -575,7 +588,8 @@ class Server(RemoteDatabase):
         # cached?
         cache_item = 'get_ugc_alldownloads'
         cached = self.get_cached_result(cache_item)
-        if cached != None: return cached
+        if cached != None:
+            return cached
 
         self.check_connection()
         self.execute_query("""
@@ -627,7 +641,8 @@ class Server(RemoteDatabase):
         # cached?
         cache_item = 'get_total_downloads_count'
         cached = self.get_cached_result(cache_item)
-        if cached != None: return cached
+        if cached != None:
+            return cached
 
         self.check_connection()
         self.execute_query('SELECT SQL_CACHE sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
@@ -648,7 +663,7 @@ class Server(RemoteDatabase):
         SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM 
         entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s""", (userid,))
         data = self.fetchone() or {}
-        ranking = data.get('Row', 0) # key can be avail but == None
+        ranking = data.get('Row', 0) # key can be avail but is None
         if not ranking:
             return 0
         return ranking
@@ -702,7 +717,7 @@ class Server(RemoteDatabase):
         self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s', (userid,))
         data = self.fetchone() or {}
         myscore = data.get('score')
-        if myscore == None:
+        if myscore is None:
             myscore = self.update_user_score(userid)
         return myscore
 
@@ -1152,7 +1167,7 @@ class Server(RemoteDatabase):
             return False
         elif 'ts' not in data:
             return False
-        elif data['ts'] == None:
+        elif data['ts'] is None:
             return False
         delta = self.datetime.fromtimestamp(time.time()) - data['ts']
         if (delta.days == 0) and (delta.seconds <= self.FLOOD_INTERVAL):
@@ -1197,10 +1212,13 @@ class Server(RemoteDatabase):
                 key = key.strip().split()[0]
             except IndexError:
                 continue
-            if not key: continue
-            if not key.isalnum(): continue
+            if not key:
+                continue
+            if not key.isalnum():
+                continue
             key = key[:self.entropy_docs_keyword_len]
-            if key in clean_keys: continue
+            if key in clean_keys:
+                continue
             clean_keys.append(key)
 
         if not clean_keys:
@@ -1364,7 +1382,8 @@ class Server(RemoteDatabase):
             self.do_entropy_hardware_usage_stats(entropy_distribution_usage_id,
                 hw_hash)
 
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return True
 
     def do_entropy_hardware_usage_stats(self, entropy_distribution_usage_id, hw_hash):
@@ -1397,7 +1416,8 @@ class Server(RemoteDatabase):
             description, keywords, doc_type = None, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
-        if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
+        if doc_type is None:
+            doc_type = self.DOC_TYPES['bbcode_doc']
         iddoc = self.insert_generic_doc(idkey, userid, username, doc_type,
             text, title, description, keywords)
         if isinstance(iddoc, const_get_stringtype()):
@@ -1468,7 +1488,8 @@ class Server(RemoteDatabase):
 
         # flood control
         flood_risk = self.insert_flood_control_check(userid)
-        if flood_risk: return False, 'flooding detected'
+        if flood_risk:
+            return False, 'flooding detected'
 
         # validity check
         if doc_type == self.DOC_TYPES['image']:
@@ -1611,7 +1632,7 @@ class Server(RemoteDatabase):
             shutil.move(video_path, new_video_path)
 
         yt_service = self.get_youtube_service()
-        if yt_service == None:
+        if yt_service is None:
             return False, None
 
         mykeywords = ', '.join([x.strip().strip(',') for x in \
@@ -1658,7 +1679,7 @@ class Server(RemoteDatabase):
         userid = self.get_iddoc_userid(iddoc)
 
         yt_service = self.get_youtube_service()
-        if yt_service == None:
+        if yt_service is None:
             return False, None
 
         def do_remove():
@@ -1691,7 +1712,8 @@ class Server(RemoteDatabase):
 
         if deleted:
             do_remove()
-        if userid: self.update_user_score(userid)
+        if userid:
+            self.update_user_score(userid)
         return deleted, (iddoc, video_id,)
 
     def get_youtube_service(self):
@@ -1774,17 +1796,15 @@ class Client:
         self.pyopenssl = True
         self.context = None
 
-        '''
-            self.server_cert = server_cert
-            self.server_ca_cert = server_ca_cert
-            self.ssl_pkey = None
-            self.ssl_cert = None
-            self.ssl_CN = 'Entropy Repository Service Client'
-            self.ssl_digest = 'md5'
-            self.ssl_serial = 1
-            self.ssl_not_before = 0
-            self.ssl_not_after = 60*60*24*1 # 1 day
-        '''
+        #    self.server_cert = server_cert
+        #    self.server_ca_cert = server_ca_cert
+        #    self.ssl_pkey = None
+        #    self.ssl_cert = None
+        #    self.ssl_CN = 'Entropy Repository Service Client'
+        #    self.ssl_digest = 'md5'
+        #    self.ssl_serial = 1
+        #    self.ssl_not_before = 0
+        #    self.ssl_not_after = 60*60*24*1 # 1 day
 
         if self.ssl:
 
@@ -2041,7 +2061,7 @@ class Client:
 
                 cl_answer = self.answers['cl']
                 data = do_receive()
-                if self.buffer_length == None:
+                if self.buffer_length is None:
                     self.buffered_data = const_convert_to_rawstring('')
                     if (not data) or (data == cl_answer):
                         # nein! no support, KAPUTT!

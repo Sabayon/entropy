@@ -317,9 +317,12 @@ class UGC(SocketCommands):
         if doc_type not in self.SUPPORTED_DOCFILE_TYPES:
             return None, 'unsupported doc type (SUPPORTED_DOCFILE_TYPES)'
 
-        if not title: title = 'No title'
-        if not description: description = 'No description'
-        if not keywords: keywords = ''
+        if not title:
+            title = 'No title'
+        if not description:
+            description = 'No description'
+        if not keywords:
+            keywords = ''
 
         userid = self._get_userid(authenticator)
         if userid == None:

@@ -454,7 +454,7 @@ class GuiUrlFetcher(UrlFetcher):
         self.__remotesize = total_size
         self.__datatransfer = data_transfer
 
-    def output(self):
+    def update(self):
 
         if self.progress == None:
             return

@@ -74,7 +74,7 @@ class Client:
         if timeout is not None:
             kwargs['socket_timeout'] = timeout
 
-        srv = Client(*args,**kwargs)
+        srv = Client(*args, **kwargs)
         srv.connect(url, port)
         return srv
 
@@ -133,7 +133,7 @@ class Client:
         if not aware:
             return False, _('repository does not support EAPI3')
 
-        def fake_callback(*args,**kwargs):
+        def fake_callback(*args, **kwargs):
             return True
 
         attempts = 3
@@ -278,9 +278,12 @@ class Client:
 
     def add_vote(self, repository, pkgkey, vote):
         data = self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
-        if isinstance(data, tuple): voted, add_err_msg = data
-        else: return False, 'wrong server answer'
-        if voted: self.get_vote(repository, pkgkey)
+        if isinstance(data, tuple):
+            voted, add_err_msg = data
+        else:
+            return False, 'wrong server answer'
+        if voted:
+            self.get_vote(repository, pkgkey)
         return voted, add_err_msg
 
     def get_vote(self, repository, pkgkey):
@@ -298,8 +301,10 @@ class Client:
 
     def get_downloads(self, repository, pkgkey):
         data = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
-        if isinstance(data, tuple): downloads, err_msg = data
-        else: return False, 'wrong server answer'
+        if isinstance(data, tuple):
+            downloads, err_msg = data
+        else:
+            return False, 'wrong server answer'
         if downloads:
             mydict = {pkgkey: downloads}
             self.UGCCache.update_downloads_cache(repository, mydict)
@@ -484,14 +489,22 @@ class AuthStore(Singleton):
             store.appendChild(repo)
 
         self.xmldoc.appendChild(store)
-	try:
+        f = None
+        try:
             f = open(self.access_file, "w")
             f.writelines(self.xmldoc.toprettyxml(indent="    "))
             f.flush()
-            f.close()
             self.setup_permissions()
         except IOError:
-            pass # wtf! no permissions?
+            # no permissions?
+            pass
+        finally:
+            if f is not None:
+                try:
+                    f.close()
+                except IOError:
+                    pass
+
         self.parse_document()
 
     def remove_login(self, repository, save = True):

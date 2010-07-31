@@ -667,8 +667,6 @@ class PortagePlugin(SpmPlugin):
         file_save_path += "/" + pkgname + etpConst['packagesext']
         dbdir = os.path.join(self._get_vdb_path(), pkgcat, pkgname)
 
-        import tarfile
-        import stat
         trees = self._portage.db["/"]
         vartree = trees["vartree"]
         dblnk = self._portage.dblink(pkgcat, pkgname, "/", vartree.settings,
@@ -784,6 +782,7 @@ class PortagePlugin(SpmPlugin):
             possible_kernel_owned_path = os.path.join(kmod_pfx, kern_vermagic)
             owners = self.search_paths_owners([possible_kernel_owned_path])
             owner_data = None
+            k_atom = None
             for k_atom, k_slot in owners:
                 k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
                 if k_cat == PortagePlugin.KERNEL_CATEGORY:
@@ -798,7 +797,8 @@ class PortagePlugin(SpmPlugin):
             k_cat, k_name, k_ver, k_rev = owner_data
             if k_rev != "r0":
                 k_ver += "-%s" % (k_rev,)
-            kern_dep_key = "=%s~-1" % (k_atom,)
+            if k_atom is not None:
+                kern_dep_key = "=%s~-1" % (k_atom,)
 
             return kern_dep_key
 
@@ -808,7 +808,6 @@ class PortagePlugin(SpmPlugin):
             return defaults[0]
 
     def __source_env_get_var(self, env_file, env_var):
-        bash_exec = ""
         cmd = "/bin/bash -c \"source " + env_file + \
             " && echo ${" + env_var + "}\""
         tmp_fd, tmp_file = tempfile.mkstemp(prefix = "etp_portage")
@@ -1347,7 +1346,6 @@ class PortagePlugin(SpmPlugin):
         """
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
-        mytree = self._get_portage_vartree(root)
 
         cat, pkgv = package.split("/")
         return sorted(self._portage.dblink(cat, pkgv, root,
@@ -2210,13 +2208,13 @@ class PortagePlugin(SpmPlugin):
             mydest = entropy_server._get_local_store_directory(repo = repo)
             try:
                 mypath = self.generate_package(myatom, mydest)
-            except:
+            except Exception:
+                entropy.tools.print_traceback()
                 # remove broken bin before raising
                 mypath = os.path.join(mydest,
                     os.path.basename(myatom) + etpConst['packagesext'])
                 if os.path.isfile(mypath):
                     os.remove(mypath)
-                entropy.tools.print_traceback()
                 mytxt = "%s: %s: %s, %s." % (
                     bold(_("WARNING")),
                     red(_("Cannot complete quickpkg for atom")),
@@ -2295,8 +2293,6 @@ class PortagePlugin(SpmPlugin):
 
             # force parameters
             entropy_repository.readonly = False
-            # XXX: remove this in future
-            entropy_repository.readOnly = False
             # disable upload trigger
             from entropy.server.interfaces.main import \
                 ServerEntropyRepositoryPlugin
@@ -2678,7 +2674,7 @@ class PortagePlugin(SpmPlugin):
 
         myslot = package_metadata['slot'][:]
         # old slot protocol for kernel packages
-        # FIXME: remove before 2010-12-31
+        # XXX: remove before 2011-12-31
         if (package_metadata['versiontag'] == package_metadata['slot']) \
             and package_metadata['versiontag']:
             # usually kernel packages
@@ -2710,18 +2706,18 @@ class PortagePlugin(SpmPlugin):
                     os.access(world_dir, os.W_OK) and \
                     entropy.tools.istextfile(world_file):
 
-                        world_atoms.discard(key)
-                        world_atoms.add(keyslot)
-                        world_file_tmp = world_file+".entropy_inst"
+                    world_atoms.discard(key)
+                    world_atoms.add(keyslot)
+                    world_file_tmp = world_file+".entropy_inst"
 
-                        newline = const_convert_to_rawstring("\n")
-                        with open(world_file_tmp, "wb") as world_f:
-                            for item in sorted(world_atoms):
-                                world_f.write(
-                                    const_convert_to_rawstring(item + newline))
-                            world_f.flush()
+                    newline = const_convert_to_rawstring("\n")
+                    with open(world_file_tmp, "wb") as world_f:
+                        for item in sorted(world_atoms):
+                            world_f.write(
+                                const_convert_to_rawstring(item + newline))
+                        world_f.flush()
 
-                        os.rename(world_file_tmp, world_file)
+                    os.rename(world_file_tmp, world_file)
 
         except (UnicodeDecodeError, UnicodeEncodeError,) as e:
 
@@ -3032,8 +3028,10 @@ class PortagePlugin(SpmPlugin):
                 try:
                     myval = '='.join(differences[var].strip().split("=")[1:])
                     if myval:
-                        if myval[0] in ("'", '"',): myval = myval[1:]
-                        if myval[-1] in ("'", '"',): myval = myval[:-1]
+                        if myval[0] in ("'", '"',):
+                            myval = myval[1:]
+                        if myval[-1] in ("'", '"',):
+                            myval = myval[:-1]
                 except IndexError:
                     myval = ''
                 os.environ[var] = myval
@@ -3385,7 +3383,8 @@ class PortagePlugin(SpmPlugin):
         for line in content:
 
             changed, elaborated_line = handle_line(line, useflags)
-            if changed: atom_found = True
+            if changed:
+                atom_found = True
             new_content.append(elaborated_line)
 
         if not atom_found:
@@ -3736,10 +3735,10 @@ class PortagePlugin(SpmPlugin):
     def _strip_empty(self, myarr):
         """
 
-            # deps.py -- Portage dependency resolution functions
-            # Copyright 2003-2004 Gentoo Foundation
-            # Distributed under the terms of the GNU General Public License v2
-            # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
+        # deps.py -- Portage dependency resolution functions
+        # Copyright 2003-2004 Gentoo Foundation
+        # Distributed under the terms of the GNU General Public License v2
+        # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
 
         Strip all empty elements from an array
 
@@ -3749,8 +3748,8 @@ class PortagePlugin(SpmPlugin):
         @return: The array with empty elements removed
         """
         for x in range(len(myarr)-1, -1, -1):
-                if not myarr[x]:
-                        del myarr[x]
+            if not myarr[x]:
+                del myarr[x]
         return myarr
 
     def _use_reduce(self, deparray, uselist = None, masklist = None,
@@ -3810,8 +3809,8 @@ class PortagePlugin(SpmPlugin):
                 if additions:
                     rlist.append(additions)
                 elif rlist and rlist[-1] == "||":
-                    #XXX: Currently some DEPEND strings have || lists without default atoms.
-                    #	raise portage_exception.InvalidDependString("No default atom(s) in \""+paren_enclose(deparray)+"\"")
+                    # Currently some DEPEND strings have || lists without default atoms.
+                    # raise portage_exception.InvalidDependString("No default atom(s) in \""+paren_enclose(deparray)+"\"")
                     rlist.append([])
             else:
                 if head[-1] == "?": # Use reduce next group on fail.
@@ -3870,8 +3869,8 @@ class PortagePlugin(SpmPlugin):
                                 break
                         elif head not in masklist:
                             if not matchall and head not in uselist:
-                                    ismatch = False
-                                    break
+                                ismatch = False
+                                break
                         else:
                             ismatch = False
                     if missing_flag:
@@ -3886,7 +3885,7 @@ class PortagePlugin(SpmPlugin):
                         if isinstance(target, list):
                             additions = self._use_reduce(target, uselist, masklist, matchall, excludeall)
                             if additions:
-                                    rlist.append(additions)
+                                rlist.append(additions)
                         elif not _dep_check_strict:
                             # The old deprecated behavior.
                             rlist.append(target)

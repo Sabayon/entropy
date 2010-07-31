@@ -213,7 +213,7 @@ class AvailablePackagesRepositoryUpdater(object):
         elif 'added' not in data or \
             'removed' not in data or \
             'secure_checksum' not in data:
-                return None, None, None
+            return None, None, None
 
         return data['added'], data['removed'], data['secure_checksum']
 
@@ -711,8 +711,8 @@ class AvailablePackagesRepositoryUpdater(object):
             "dbdumplight", "dbdumplightck", "compck",
         )
         if (item in items_needing_cmethod) and (cmethod is None):
-                mytxt = "For %s, cmethod can't be None" % (item,)
-                raise AttributeError(mytxt)
+            mytxt = "For %s, cmethod can't be None" % (item,)
+            raise AttributeError(mytxt)
 
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self.__repository_id]
@@ -1372,9 +1372,10 @@ class AvailablePackagesRepositoryUpdater(object):
                 myidpackages, session)
         if (None in (added_ids, removed_ids, secure_checksum)) or \
             (not added_ids and not removed_ids and self.__force):
-                mydbconn.closeDB()
-                self.__eapi3_close(eapi3_interface, session)
-                return False
+
+            mydbconn.closeDB()
+            self.__eapi3_close(eapi3_interface, session)
+            return False
 
         elif not secure_checksum:
             # {added_ids, removed_ids, secure_checksum} == False
@@ -1427,6 +1428,7 @@ class AvailablePackagesRepositoryUpdater(object):
         count = 0
         maxcount = len(added_segments)
         product = self._settings['repositories']['product']
+        segment = None
         for segment in added_segments:
 
             count += 1

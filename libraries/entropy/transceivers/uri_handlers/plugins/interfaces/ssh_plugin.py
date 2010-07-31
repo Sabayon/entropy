@@ -22,11 +22,11 @@ from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 class EntropySshUriHandler(EntropyUriHandler):
 
-    PLUGIN_API_VERSION = 1
-
     """
     EntropyUriHandler based SSH (with pubkey) transceiver plugin.
     """
+
+    PLUGIN_API_VERSION = 1
 
     _DEFAULT_TIMEOUT = 60
     _DEFAULT_PORT = 22

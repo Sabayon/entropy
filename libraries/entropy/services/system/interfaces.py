@@ -174,7 +174,7 @@ class Server(SocketHost):
 
     def handle_executor_command_classes_initialization(self):
         for myclass, args, kwargs in self.ExecutorCommandClasses:
-            myintf = myclass(self.SystemExecutor, *args,**kwargs)
+            myintf = myclass(self.SystemExecutor, *args, **kwargs)
             if hasattr(myintf, 'available_commands'):
                 self.SystemExecutor.register(myintf.available_commands)
                 self.ExecutorCommandInstances.append(myintf)
@@ -342,7 +342,8 @@ class Server(SocketHost):
                         self.ManagerQueue[key+"_order"].remove(queue_id)
                 removed = True
                 self.remove_queue_ext_rc(queue_id)
-        if removed: self.store_queue()
+        if removed:
+            self.store_queue()
         return removed
 
     def kill_processing_queue_id(self, queue_id):
@@ -443,7 +444,8 @@ class Server(SocketHost):
     def _queue_processor(self, fork_data):
 
         # queue processing is stopped until there's a process running
-        if self.ForkLock.locked(): return
+        if self.ForkLock.locked():
+            return
 
         with self.ForkLock:
             with self.QueueLock:
@@ -452,10 +454,13 @@ class Server(SocketHost):
                     command_data, queue_id = self._queue_copy_obj(fork_data)
                 else:
                     self.load_queue()
-                    if self.ManagerQueue['pause']: return
-                    if not self.ManagerQueue['queue_order']: return
+                    if self.ManagerQueue['pause']:
+                        return
+                    if not self.ManagerQueue['queue_order']:
+                        return
                     command_data, queue_id = self._pop_item_from_queue()
-                    if not command_data: return
+                    if not command_data:
+                        return
                     command_data = self._queue_copy_obj(command_data)
                     command_data['processing_ts'] = "%s" % (self.get_ts(),)
                     self.ManagerQueue['processing'][queue_id] = command_data
@@ -470,7 +475,8 @@ class Server(SocketHost):
                 return
             done, result = self.SystemExecutor.execute_task(command_data)
         except Exception as e:
-            if self.QueueLock.locked(): self.QueueLock.release()
+            if self.QueueLock.locked():
+                self.QueueLock.release()
             entropy.tools.print_traceback()
             done = False
             result = (False, str(e),)

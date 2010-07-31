@@ -156,7 +156,7 @@ class Base:
     def sync_portage(self, queue_id):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -182,7 +182,7 @@ class Base:
 
         sys_intf = self.SystemManagerExecutor.SystemInterface
         queue_data, key = sys_intf.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         def set_proc_pid(pid):
@@ -222,7 +222,7 @@ class Base:
 
         sys_intf = self.SystemManagerExecutor.SystemInterface
         queue_data, key = sys_intf.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         def set_proc_pid(pid):
@@ -253,7 +253,7 @@ class Base:
     def enable_uses_for_atoms(self, queue_id, atoms, useflags):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         use_data = {}
@@ -273,7 +273,7 @@ class Base:
     def disable_uses_for_atoms(self, queue_id, atoms, useflags):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         use_data = {}
@@ -293,7 +293,7 @@ class Base:
     def get_spm_atoms_info(self, queue_id, atoms):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         atoms_data = {}
@@ -322,7 +322,7 @@ class Base:
     def get_spm_categories_updates(self, queue_id, categories):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -343,7 +343,7 @@ class Base:
     def get_spm_categories_installed(self, queue_id, categories):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -365,7 +365,7 @@ class Base:
 
         sys_intf = self.SystemManagerExecutor.SystemInterface
         queue_data, key = sys_intf.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         def set_proc_pid(pid):
@@ -394,7 +394,7 @@ class Base:
     def run_custom_shell_command(self, queue_id, command):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -418,7 +418,7 @@ class Base:
     def move_entropy_packages_to_repository(self, queue_id, from_repo, to_repo, idpackages, do_copy):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         # run
@@ -463,7 +463,7 @@ class Base:
     def scan_entropy_packages_database_changes(self, queue_id):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -522,7 +522,7 @@ class Base:
     def run_entropy_database_updates(self, queue_id, to_add, to_remove, to_inject):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -533,13 +533,15 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
 
                 atoms_removed = []
                 matches_injected = set()
 
-                if to_inject: Entropy.output(_("Running package injection"))
+                if to_inject:
+                    Entropy.output(_("Running package injection"))
 
                 # run inject
                 for idpackage, repoid in to_inject:
@@ -547,7 +549,8 @@ class Base:
                     Entropy._transform_package_into_injected(idpackage,
                         repo = repoid)
 
-                if to_remove: Entropy.output(_("Running package removal"))
+                if to_remove:
+                    Entropy.output(_("Running package removal"))
 
                 # run remove
                 remdata = {}
@@ -634,7 +637,7 @@ class Base:
     def run_entropy_dependency_test(self, queue_id):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -643,7 +646,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
                 return True, deps_not_matched
@@ -668,7 +672,7 @@ class Base:
     def run_entropy_library_test(self, queue_id):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -677,7 +681,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
             except Exception as e:
@@ -698,14 +703,16 @@ class Base:
         stdout_err.close()
 
         mystatus = False
-        if status == 0: mystatus = True
-        if not result: result = set()
+        if status == 0:
+            mystatus = True
+        if not result:
+            result = set()
         return mystatus, result
 
     def run_entropy_checksum_test(self, queue_id, repoid, mode):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -714,7 +721,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 if mode == "local":
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_local_packages([], ask = False, repo = repoid)
@@ -742,7 +750,7 @@ class Base:
     def run_entropy_treeupdates(self, queue_id, repoid):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -751,7 +759,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 sys.stdout.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.").encode('utf-8')+"\n")
                 dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.open_server_repository(
@@ -780,7 +789,7 @@ class Base:
     def scan_entropy_mirror_updates(self, queue_id, repositories):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -792,7 +801,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
 
                 sys.stdout.write(_("Scanning").encode('utf-8')+"\n")
@@ -885,7 +895,7 @@ class Base:
     def run_entropy_mirror_updates(self, queue_id, repository_data):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -922,7 +932,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
 
                 repo_data = {}
@@ -972,7 +983,8 @@ class Base:
 
                         if mirrors_tainted and sys_settings[sys_settings_srv_plugin_id]['server']['rss']['enabled']:
                             commit_msg = repository_data[repoid]['commit_msg']
-                            if not commit_msg: commit_msg = "Autodriven update"
+                            if not commit_msg:
+                                commit_msg = "Autodriven update"
                             ServerRssMetadata()['commitmessage'] = commit_msg
 
                         errors, fine, broken = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
@@ -1010,7 +1022,7 @@ class Base:
     def get_spm_glsa_data(self, queue_id, list_type):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -1026,7 +1038,7 @@ class Base:
     def get_notice_board(self, queue_id, repoid):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -1035,10 +1047,11 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.read_notice_board(repo = repoid)
-                if data == None:
+                if data is None:
                     return False, None
                 return True, data
             except Exception as e:
@@ -1062,7 +1075,7 @@ class Base:
     def remove_notice_board_entries(self, queue_id, repoid, entry_ids):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -1071,7 +1084,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 for entry_id in entry_ids:
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.remove_from_notice_board(entry_id, repo = repoid)
@@ -1098,7 +1112,7 @@ class Base:
     def add_notice_board_entry(self, queue_id, repoid, title, notice_text, link):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
-        if queue_data == None:
+        if queue_data is None:
             return False, 'no item in queue'
 
         stdout_err = open(queue_data['stdout'], "a+")
@@ -1107,7 +1121,8 @@ class Base:
             sys.stdout = stdout_err
             sys.stderr = stdout_err
             mystdin = self._get_stdin(queue_id)
-            if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
+            if mystdin:
+                sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.update_notice_board(title, notice_text, link = link, repo = repoid)
                 return True, data
@@ -1132,7 +1147,8 @@ class Base:
     def _get_stdin(self, queue_id):
         mystdin = None
         std_data = self.SystemManagerExecutor.SystemInterface.ManagerQueueStdInOut.get(queue_id)
-        if std_data != None: mystdin = std_data[0]
+        if std_data is not None:
+            mystdin = std_data[0]
         return mystdin
 
     def _file_output(self, f, *myargs, **mykwargs):
@@ -1143,7 +1159,8 @@ class Base:
         header = mykwargs.get("header")
         percent = mykwargs.get("percent")
         text = myargs[0].encode('utf-8')
-        if not header: header = ''
+        if not header:
+            header = ''
 
         count_str = ""
         if count:
@@ -1167,7 +1184,8 @@ class Base:
             seek_till_newline(f)
             txt = header+count_str+text
         else:
-            if not is_last_newline(f): f.write("\n")
+            if not is_last_newline(f):
+                f.write("\n")
             txt = header+count_str+text+"\n"
         f.write(txt)
 

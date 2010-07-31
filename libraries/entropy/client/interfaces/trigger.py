@@ -12,7 +12,7 @@
 import sys
 import os
 import subprocess
-import shutil
+
 from entropy.client.interfaces.client import Client
 from entropy.const import etpConst, const_isunicode, etpSys, etpUi
 from entropy.output import brown, bold, darkred, red
@@ -234,7 +234,8 @@ class Trigger:
 
             pr = entropy.tools.dep_get_spm_revision(pv)
             pvr = pv
-            if pr == "r0": pvr += "-%s" % (pr,)
+            if pr == "r0":
+                pvr += "-%s" % (pr,)
 
             pet = pkgdata.get('versiontag')
             if const_isunicode(pet):
@@ -376,7 +377,8 @@ class Trigger:
         tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
         while True:
             triggerfile = "%s%s" % (tg_pfx, entropy.tools.get_random_number(),)
-            if not os.path.isfile(triggerfile): break
+            if not os.path.isfile(triggerfile):
+                break
 
         triggerdir = os.path.dirname(triggerfile)
         if not os.path.isdir(triggerdir):
@@ -387,7 +389,8 @@ class Trigger:
         start = 0
         while True:
             buf = self.pkgdata['trigger'][start:]
-            if not buf: break
+            if not buf:
+                break
             f.write(buf)
             start += chunk
         f.flush()

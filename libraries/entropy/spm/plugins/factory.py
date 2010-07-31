@@ -9,10 +9,8 @@
     B{Entropy Source Package Manager Plugins factory module}.
 
 """
-from entropy.const import etpConst
 from entropy.core import EntropyPluginFactory
 from entropy.core.settings.base import SystemSettings
-from entropy.i18n import _
 from entropy.spm.plugins.skel import SpmPlugin
 import entropy.spm.plugins.interfaces as plugs
 

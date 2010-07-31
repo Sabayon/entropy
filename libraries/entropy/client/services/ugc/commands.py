@@ -11,7 +11,7 @@
 """
 
 import os
-from entropy.exceptions import *
+from entropy.exceptions import SSLError
 from entropy.const import etpConst, const_get_stringtype, const_debug_write, \
     const_convert_to_rawstring
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
@@ -148,7 +148,7 @@ class Base:
         try:
             data = self.Service.receive()
             return data
-        except:
+        except Exception:
             entropy.tools.print_traceback()
             return None
 

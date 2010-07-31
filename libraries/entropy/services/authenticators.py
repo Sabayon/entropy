@@ -11,10 +11,9 @@
 """
 
 from entropy.const import const_get_stringtype
-from entropy.services.skel import Authenticator
 from entropy.services.auth_interfaces import phpBB3Auth
 from entropy.services.skel import SocketAuthenticator
-from entropy.exceptions import *
+from entropy.exceptions import PermissionDenied
 
 # Authenticator that can be used by SocketHostInterface based instances
 class phpBB3(phpBB3Auth, SocketAuthenticator):

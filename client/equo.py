@@ -886,7 +886,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         try_to_kill_cacher()
         raise SystemExit(1)
 
-    exception_data = entropy.tools.print_exception(returndata = True,
+    exception_data = entropy.tools.print_exception(silent = True,
         tb_data = exc_tb, all_frame_data = True)
     exception_stack = t_back
     ferror.write(const_convert_to_rawstring("\nRevision: " + \

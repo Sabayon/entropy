@@ -204,12 +204,14 @@ class SocketHost:
             self.ssl_authorized_clients_only = authorized_clients_only
 
             if self.SSL:
-                socketserver.BaseServer.__init__(self, server_address, RequestHandlerClass)
+                socketserver.BaseServer.__init__(self, server_address,
+                    RequestHandlerClass)
                 self.load_ssl_context()
                 self.make_ssl_connection_alive()
             else:
                 try:
-                    socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
+                    socketserver.TCPServer.__init__(self, server_address,
+                        RequestHandlerClass)
                 except self.socket_mod.error as e:
                     if e[0] == 13:
                         raise ConnectionError('ConnectionError: %s' % (_("Cannot bind the service"),))
@@ -247,8 +249,10 @@ class SocketHost:
         def verify_request(self, request, client_address):
 
             self.do_ssl = self.HostInterface.SSL
-            if self.do_ssl: self.do_ssl = True
-            else: self.do_ssl = False
+            if self.do_ssl:
+                self.do_ssl = True
+            else:
+                self.do_ssl = False
 
             allowed = self.ip_blacklist_check(client_address[0])
             if allowed: allowed = self.ip_max_connections_check(client_address[0])
@@ -570,7 +574,8 @@ class SocketHost:
             if hasattr(self.server.processor.HostInterface, 'ForkLock'):
                 x = getattr(self.server.processor.HostInterface, 'ForkLock')
                 if hasattr(x, 'acquire') and hasattr(x, 'release') and hasattr(x, 'locked'):
-                    if x.locked(): x.release()
+                    if x.locked():
+                        x.release()
 
         def handle(self):
             # not using spawnFunction because it causes some mess
@@ -693,8 +698,8 @@ class SocketHost:
             if (session in self.HostInterface.initialization_commands) or \
                 (session in self.HostInterface.no_session_commands) or \
                 len(args) < 2:
-                    cmd = args[0]
-                    session = None
+                cmd = args[0]
+                session = None
             else:
                 cmd = args[1]
                 args = args[1:] # remove session
@@ -705,7 +710,8 @@ class SocketHost:
 
             if stream_enabled and (cmd not in self.HostInterface.config_commands):
                 session_len = 0
-                if session: session_len = len(session)+1
+                if session:
+                    session_len = len(session)+1
                 return cmd, [string[session_len+len(cmd)+1:]], session
             else:
                 myargs = []
@@ -753,7 +759,7 @@ class SocketHost:
 
         def load_authenticator(self):
             f, args, kwargs = self.HostInterface.AuthenticatorInst
-            myinst = f(*args,**kwargs)
+            myinst = f(*args, **kwargs)
             return myinst
 
         def load_service_interface(self, session):
@@ -1060,7 +1066,7 @@ class SocketHost:
 
         def _do_fork(self, f, authenticator, uid, gid, *args, **kwargs):
             authenticator.set_exc_permissions(uid, gid)
-            rc = f(*args,**kwargs)
+            rc = f(*args, **kwargs)
             return rc
 
     class BuiltInCommands(SocketCommands):
@@ -1403,7 +1409,6 @@ class SocketHost:
 
         def docmd_hello(self, transmitter):
             from entropy.tools import getstatusoutput
-            from entropy.core.settings.base import SystemSettings
             sys_settings = SystemSettings()
             uname = os.uname()
             kern_string = uname[2]
@@ -1633,29 +1638,30 @@ class SocketHost:
             os.path.isfile(self.SSL['ca_pkey']) and \
             os.path.isfile(self.SSL['key']) and \
             os.path.isfile(self.SSL['cert'])):
-                self.create_ca_server_certs(
-                    self.SSL['serial'],
-                    self.SSL['digest'],
-                    self.SSL['not_before'],
-                    self.SSL['not_after'],
-                    self.SSL['ca_pkey'],
-                    self.SSL['ca_cert'],
-                    self.SSL['key'],
-                    self.SSL['cert']
-                )
-                os.chmod(self.SSL['ca_cert'], 0o644)
-                try:
-                    os.chown(self.SSL['ca_cert'], -1, 0)
-                except OSError:
-                    pass
-                try:
-                    os.chmod(self.SSL['ca_pkey'], 0o600)
-                except OSError:
-                    pass
-                try:
-                    os.chown(self.SSL['ca_pkey'], -1, 0)
-                except OSError:
-                    pass
+
+            self.create_ca_server_certs(
+                self.SSL['serial'],
+                self.SSL['digest'],
+                self.SSL['not_before'],
+                self.SSL['not_after'],
+                self.SSL['ca_pkey'],
+                self.SSL['ca_cert'],
+                self.SSL['key'],
+                self.SSL['cert']
+            )
+            os.chmod(self.SSL['ca_cert'], 0o644)
+            try:
+                os.chown(self.SSL['ca_cert'], -1, 0)
+            except OSError:
+                pass
+            try:
+                os.chmod(self.SSL['ca_pkey'], 0o600)
+            except OSError:
+                pass
+            try:
+                os.chown(self.SSL['ca_pkey'], -1, 0)
+            except OSError:
+                pass
 
         try:
             os.chmod(self.SSL['key'], 0o600)
@@ -2026,5 +2032,5 @@ class SocketHost:
                 etpConst['logging']['normal_loglevel_id'],
                     str(args[0]))
             if self.__output is not None and self.stdout_logging:
-                self.__output.output(*args,**kwargs)
+                self.__output.output(*args, **kwargs)
             self.last_print = message

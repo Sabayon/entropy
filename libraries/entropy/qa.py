@@ -413,7 +413,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         rc_ask = self.ask_question(_("Want to add?"))
                         if rc_ask == _("Yes"):
                             newmissing.add(dependency)
-                        ### XXX: disabled, devs are not able to use it properly
+                        ### NOTE: disabled, devs are not able to use it properly
                         ### needs usability fixes
                         #else:
                             #rc_ask = self.ask_question(

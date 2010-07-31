@@ -23,7 +23,7 @@ else:
     import urllib2 as urlmod_error
 
 from entropy.exceptions import InterruptError
-from entropy.tools import print_traceback, get_file_size, \
+from entropy.tools import print_traceback, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl, \
     add_proxy_opener, md5sum
 from entropy.const import etpConst, const_isfileobj
@@ -79,8 +79,6 @@ class UrlFetcher(TextInterface):
             speed_limit = \
                 self.__system_settings['repositories']['transfer_limit']
 
-        import socket
-        self.socket = socket
         self.__timeout = \
             self.__system_settings['repositories']['timeout']
         self.__th_id = 0
@@ -94,7 +92,7 @@ class UrlFetcher(TextInterface):
         self.__disallow_redirect = disallow_redirect
         self.__speedlimit = speed_limit # kbytes/sec
         self.__existed_before = False
-        self.localfile = None
+        self.__localfile = None
 
         # important to have this here too
         self.__datatransfer = 0
@@ -140,10 +138,11 @@ class UrlFetcher(TextInterface):
         # if client uses this instance more than
         # once, make sure we close previously opened
         # files.
-        if const_isfileobj(self.localfile):
+        if const_isfileobj(self.__localfile):
             try:
-                self.localfile.flush()
-                self.localfile.close()
+                if hasattr(self.__localfile, 'flush'):
+                    self.__localfile.flush()
+                self.__localfile.close()
             except (IOError, OSError,):
                 pass
 
@@ -151,14 +150,14 @@ class UrlFetcher(TextInterface):
         if os.path.isfile(self.__path_to_save) and \
             os.access(self.__path_to_save, os.W_OK) and self.__resume:
 
-            self.localfile = open(self.__path_to_save, "ab")
-            self.localfile.seek(0, os.SEEK_END)
-            self.__startingposition = int(self.localfile.tell())
+            self.__localfile = open(self.__path_to_save, "ab")
+            self.__localfile.seek(0, os.SEEK_END)
+            self.__startingposition = int(self.__localfile.tell())
             self.__last_downloadedsize = self.__startingposition
             self.__resumed = True
             return
 
-        self.localfile = open(self.__path_to_save, "wb")
+        self.__localfile = open(self.__path_to_save, "wb")
 
     def _setup_proxy(self):
         # setup proxy, doing here because config is dynamic
@@ -214,13 +213,16 @@ class UrlFetcher(TextInterface):
             req = self.__url
 
         u_agent_error = False
+        do_return = False
         while True:
+
             # get file size if available
             try:
                 self.__remotefile = urlmod.urlopen(req, None, self.__timeout)
             except KeyboardInterrupt:
                 self.__close(False)
                 raise
+
             except urlmod_error.HTTPError as e:
                 if (e.code == 405) and not u_agent_error:
                     # server doesn't like our user agent
@@ -229,32 +231,37 @@ class UrlFetcher(TextInterface):
                     continue
                 self.__close(True)
                 self.__status = "-3"
-                return self.__status
+                do_return = True
 
             except urlmod_error.URLError as err: # timeout error
                 self.__close(True)
                 self.__status = "-3"
-                return self.__status
+                do_return = True
 
             except httplib.BadStatusLine:
                 # obviously, something to cope with
                 self.__close(True)
                 self.__status = "-3"
-                return self.__status
+                do_return = True
+
             except socket.timeout:
                 # arghv!!
                 self.__close(True)
                 self.__status = "-3"
+                do_return = True
 
             except ValueError: # malformed, unsupported URL? raised by urllib
                 self.__close(True)
                 self.__status = "-3"
-                return self.__status
+                do_return = True
 
-            except:
+            except Exception:
                 print_traceback()
                 raise
             break
+
+        if do_return:
+            return self.__status
 
         try:
             self.__remotesize = int(self.__remotefile.headers.get(
@@ -263,7 +270,7 @@ class UrlFetcher(TextInterface):
         except KeyboardInterrupt:
             self.__close(False)
             raise
-        except:
+        except Exception:
             pass
 
         # handle user stupidity
@@ -322,7 +329,7 @@ class UrlFetcher(TextInterface):
             except KeyboardInterrupt:
                 self.__close(False)
                 raise
-            except self.socket.timeout:
+            except socket.timeout:
                 self.__close(False)
                 self.__status = "-4"
                 return self.__status
@@ -339,14 +346,14 @@ class UrlFetcher(TextInterface):
                     self.__updatestep, self.__show_speed, self.__datatransfer,
                     self.__time_remaining, self.__time_remaining_secs
                 )
-                self.output()
+                self.update()
                 self.__oldaverage = self.__average
             if self.__speedlimit:
                 while self.__datatransfer > self.__speedlimit*1024:
                     time.sleep(0.1)
                     self._update_speed()
                     if self.__show_speed:
-                        self.output()
+                        self.update()
                         self.__oldaverage = self.__average
 
         self._push_progress_to_output()
@@ -364,9 +371,9 @@ class UrlFetcher(TextInterface):
 
     def _commit(self, mybuffer):
         # writing file buffer
-        self.localfile.write(mybuffer)
+        self.__localfile.write(mybuffer)
         # update progress info
-        self.__downloadedsize = self.localfile.tell()
+        self.__downloadedsize = self.__localfile.tell()
         kbytecount = float(self.__downloadedsize)/1024
         average = int((kbytecount/self.__remotesize)*100)
         if average > 100:
@@ -377,9 +384,10 @@ class UrlFetcher(TextInterface):
     def __close(self, errored):
         self._update_speed()
         try:
-            if const_isfileobj(self.localfile):
-                self.localfile.flush()
-                self.localfile.close()
+            if const_isfileobj(self.__localfile):
+                if hasattr(self.__localfile, 'flush'):
+                    self.__localfile.flush()
+                self.__localfile.close()
         except IOError:
             pass
         if (not self.__existed_before) and errored:
@@ -532,6 +540,10 @@ class UrlFetcher(TextInterface):
         TextInterface.output(self, current_txt, back = True)
 
     def output(self):
+        """ @deprecated, remove after 2010 """
+        return self.update()
+
+    def update(self):
         """
         Main fetch progress callback. You can reimplement this to refresh
         your output devices.
@@ -634,7 +646,7 @@ class MultipleUrlFetcher(TextInterface):
                 klass.__init__(self, *args, **kwargs)
                 self.__multiple_fetcher = multiple
 
-            def output(self):
+            def update(self):
                 return self.__multiple_fetcher.output()
 
             def _push_progress_to_output(self):
@@ -860,7 +872,7 @@ class MultipleUrlFetcher(TextInterface):
 
         self.__old_average = average
 
-    def output(self):
+    def update(self):
         """
         Main fetch progress callback. You can reimplement this to refresh
         your output devices.

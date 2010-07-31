@@ -13,9 +13,7 @@ import os
 import shutil
 from entropy.const import etpConst, const_setup_perms
 from entropy.exceptions import RepositoryError
-from entropy.output import red, darkred, darkgreen
 from entropy.cache import EntropyCacher
-from entropy.i18n import _
 from entropy.db.exceptions import OperationalError
 
 class CacheMixin:

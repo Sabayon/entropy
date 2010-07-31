@@ -11,7 +11,6 @@
 """
 
 import os
-import sys
 from entropy.core import Singleton
 from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.client.interfaces.loaders import LoadersMixin
@@ -20,7 +19,7 @@ from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
-from entropy.const import etpConst, etpUi, const_debug_write, \
+from entropy.const import etpConst, const_debug_write, \
     const_convert_to_unicode
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -352,10 +351,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
 
         # parse license whitelist
-        """
-        Parser returning licenses considered accepted by default
-        (= GPL compatibles) read from package.lic_whitelist.
-        """
+        # Parser returning licenses considered accepted by default
+        # (= GPL compatibles) read from package.lic_whitelist.
         for repoid in self.__repos_files['repos_license_whitelist']:
             sys_settings_instance.validate_entropy_cache(
                 self.__repos_files['repos_license_whitelist'][repoid],
@@ -367,10 +364,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     self.__repos_files['repos_license_whitelist'][repoid])
 
         # package masking
-        """
-        Parser returning packages masked at repository level read from
-        packages.db.mask inside the repository database directory.
-        """
+        # Parser returning packages masked at repository level read from
+        # packages.db.mask inside the repository database directory.
         for repoid in self.__repos_files['repos_mask']:
             sys_settings_instance.validate_entropy_cache(
                 self.__repos_files['repos_mask'][repoid],
@@ -381,10 +376,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     self.__repos_files['repos_mask'][repoid])
 
         # keywords masking
-        """
-        Parser returning packages masked at repository level read from
-        packages.db.keywords inside the repository database directory.
-        """
+        # Parser returning packages masked at repository level read from
+        # packages.db.keywords inside the repository database directory.
         for repoid in self.__repos_files['repos_keywords']:
             sys_settings_instance.validate_entropy_cache(
                 self.__repos_files['repos_keywords'][repoid],
@@ -399,12 +392,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             sys_settings_instance)
 
         # critical updates
-        """
-        Parser returning critical packages list metadata read from
-        packages.db.critical file inside the repository directory.
-        This file contains packages that should be always updated
-        before anything else.
-        """
+        # Parser returning critical packages list metadata read from
+        # packages.db.critical file inside the repository directory.
+        # This file contains packages that should be always updated
+        # before anything else.
         for repoid in self.__repos_files['repos_critical_updates']:
             sys_settings_instance.validate_entropy_cache(
                 self.__repos_files['repos_critical_updates'][repoid],
@@ -416,11 +407,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
 
         # conflicts map
-        """
-        Parser returning packages that could have been installed because
-        they aren't in the same scope, but ending up creating critical
-        issues. You can see it as a configurable conflict map.
-        """
+        # Parser returning packages that could have been installed because
+        # they aren't in the same scope, but ending up creating critical
+        # issues. You can see it as a configurable conflict map.
         # keep priority order
         repoids = [x for x in sys_settings_instance['repositories']['order'] \
             if x in self.__repos_files['conflicting_tagged_packages']]
@@ -640,9 +629,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.openclientdb = True
 
         # setup package settings (masking and other stuff)
-        # TODO: kept for backward compatibility, will be removed
-        self.SystemSettings = SystemSettings()
-        self._settings = self.SystemSettings
+        self._settings = SystemSettings()
         const_debug_write(__name__, "SystemSettings loaded")
 
         # class init

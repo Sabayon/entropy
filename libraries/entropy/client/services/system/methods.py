@@ -44,12 +44,6 @@ class BaseMixin:
                 'call': self.get_queue_id_stdout,
                 'private': True,
             },
-            'get_queue_id_stdout': {
-                'desc': _("Get queued command result using its queue unique identifier"),
-                'params': [('queue_id', int, _('Queue Identifier'), True,)],
-                'call': self.get_queue_id_result,
-                'private': True,
-            },
             'remove_queue_ids': {
                 'desc': _("Remove queued commands using their queue unique identifiers"),
                 'params': [('queue_ids', list, _('Queue Identifiers'), True,)],

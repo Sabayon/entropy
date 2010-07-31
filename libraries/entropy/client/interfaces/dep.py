@@ -9,14 +9,18 @@
     B{Entropy Package Manager Client Dependency handling Interface}.
 
 """
-from entropy.const import *
-from entropy.exceptions import *
+import os
+
+from entropy.const import etpConst, const_debug_write, const_isstring, \
+    const_isnumber
+from entropy.exceptions import RepositoryError, SystemDatabaseError, \
+    DependenciesNotFound, DependenciesNotRemovable
 from entropy.graph import Graph
 from entropy.misc import Lifo
 from entropy.cache import EntropyCacher
-from entropy.output import bold, darkgreen, darkred, blue, red, purple
+from entropy.output import bold, darkgreen, darkred, blue, purple
 from entropy.i18n import _
-from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
+from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError, InterfaceError
 from entropy.db.skel import EntropyRepositoryBase
 
@@ -165,7 +169,7 @@ class CalculatorsMixin:
                 # set([((14789, '3.3.8b', '', 0), 'sabayonlinux.org')])
                 matches = [(x[0][0], x[1],) for x in data]
             for m_id, m_repo in matches:
-                # FIXME: there is a bug up the queue somewhere
+                # NOTE: there is a bug up the queue somewhere
                 # but current error report tool didn't provide full
                 # stack variables (only for the innermost frame)
                 #if isinstance(m_id, tuple):
@@ -189,21 +193,7 @@ class CalculatorsMixin:
 
     def atom_match(self, atom, match_slot = None, mask_filter = True,
             multi_match = False, multi_repo = False, match_repo = None,
-            extended_results = False, use_cache = True, **kwargs):
-
-        # TODO: remove this on 20101010, backward compatiblity
-        if kwargs:
-            import warnings
-            warnings.warn(
-                "Client.atom_match() called with deprecated args %s" % (
-                    kwargs,))
-            match_slot = kwargs.get('matchSlot', match_slot)
-            mask_filter = kwargs.get('packagesFilter', mask_filter)
-            multi_match = kwargs.get('multiMatch', multi_match)
-            multi_repo = kwargs.get('multiRepo', multi_repo)
-            match_repo = kwargs.get('matchRepo', match_repo)
-            extended_results = kwargs.get('extendedResults', extended_results)
-            use_cache = kwargs.get('useCache', use_cache)
+            extended_results = False, use_cache = True):
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
@@ -452,7 +442,7 @@ class CalculatorsMixin:
                     av_tags = [x for x in \
                         _my_get_available_tags(dependency, None) if x]
                     if av_tags:
-                        # XXX: since tags replace slots, use them as slots
+                        # NOTE: since tags replace slots, use them as slots
                         i_key = entropy.tools.dep_getkey(dependency)
                         matching_tags = set()
                         for a_tag in av_tags:
@@ -858,7 +848,7 @@ class CalculatorsMixin:
             try:
                 pkg_key, pkg_slot = repo_db.retrieveKeySlot(pkg_id)
             except TypeError:
-                deps_not_found("unknown_%s_%s" % (pkg_id, repo_id,))
+                deps_not_found.add("unknown_%s_%s" % (pkg_id, repo_id,))
                 continue
             cm_idpackage, cm_result = self._installed_repository.atomMatch(
                 pkg_key, matchSlot = pkg_slot)
@@ -1044,9 +1034,9 @@ class CalculatorsMixin:
 
         soname = ".so"
         repo_needed = match_db.retrieveNeeded(match_idpackage,
-            extended = True, format = True)
+            extended = True, formatted = True)
         client_needed = self._installed_repository.retrieveNeeded(client_idpackage,
-            extended = True, format = True)
+            extended = True, formatted = True)
 
         repo_split = [x.split(soname)[0] for x in repo_needed]
         client_split = [x.split(soname)[0] for x in client_needed]
@@ -1330,9 +1320,6 @@ class CalculatorsMixin:
         )
         if self.xcache:
             cached = self._cacher.pop(c_hash)
-            # XXX drop old cache object format
-            if not isinstance(cached, dict):
-                cached = None
             if cached is not None:
                 return cached
 
@@ -1957,9 +1944,9 @@ class CalculatorsMixin:
         if idpackage == -1:
             treelevel += 1
             if atoms:
-                mydict = {myatom: idreason,}
+                mydict = {myatom: idreason}
             else:
-                mydict = {package_match: idreason,}
+                mydict = {package_match: idreason}
             if flat:
                 maskedtree.update(mydict)
             else:

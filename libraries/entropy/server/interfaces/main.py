@@ -17,23 +17,21 @@ import tempfile
 import time
 import re
 
-from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, etpUi, \
     const_setup_file, const_get_stringtype, const_debug_write
-from entropy.output import TextInterface, purple, red, darkgreen, \
+from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
-from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import EntropyRepository
-from entropy.db.skel import EntropyRepositoryPlugin, EntropyRepositoryBase
+from entropy.db.skel import EntropyRepositoryPlugin
 from entropy.server.interfaces.db import ServerRepositoryStatus
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class
@@ -63,6 +61,9 @@ class ServerPackagesRepository(EntropyRepository):
         srv = Server()
         return srv.get_remote_repository_revision(repo = repository_id)
 
+    @staticmethod
+    def update(entropy_client, repository_id, force, gpg):
+        raise NotImplementedError()
 
 class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
@@ -130,8 +131,6 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # better than having a completely broken db
             self._metadata['read_only'] = False
             entropy_repository_instance.readonly = False
-            # XXX remove this in future
-            entropy_repository_instance.readOnly = False
             entropy_repository_instance.initializeRepository()
             entropy_repository_instance.commitChanges()
 
@@ -570,11 +569,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             split_line = line.split("|")
             split_line_len = len(split_line)
 
-            # TODO: remove this in future, supported for backward compat.
+            # NOTE: remove this in future, supported for backward compat.
             if (line.find("officialserverrepositoryid|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):
 
-                # TODO: added for backward and mixed compat.
+                # NOTE: added for backward and mixed compat.
                 if default_repo_changed:
                     continue
 
@@ -2102,7 +2101,6 @@ class ServerPackagesHandlingMixin:
             # and grab the new "download" metadatum value using our
             # license check callback. It has to be done here because
             # we need the new path.
-            srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
             def _package_injector_check_license(pkg_data):
                 licenses = pkg_data['license'].split()
@@ -2117,11 +2115,11 @@ class ServerPackagesHandlingMixin:
 
             # check if pkg is restricted
             # and check if pkg is free, we must do this step in any case
-            # XXX: it sucks!
+            # NOTE: it sucks!
             tmp_data = self.Spm().extract_package_metadata(from_file,
                 license_callback = _package_injector_check_license,
                 restricted_callback = _package_injector_check_restricted)
-            # XXX: since ~0.tbz2 << revision is lost, we need to trick
+            # NOTE: since ~0.tbz2 << revision is lost, we need to trick
             # the logic.
             updated_package_rel_path = os.path.join(
                 os.path.dirname(tmp_data['download']),
@@ -4084,8 +4082,8 @@ class ServerRepositoryMixin:
         if not wl_licenses:
             return True # no whitelist !
 
-        for license in pkg_licenses:
-            if license not in wl_licenses:
+        for lic in pkg_licenses:
+            if lic not in wl_licenses:
                 return False
         return True
 
@@ -4594,7 +4592,6 @@ class ServerMiscMixin:
         to_be_injected = set()
         my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         exp_based_scope = my_settings['exp_based_scope']
-        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
 
         server_repos = list(my_settings['repositories'].keys())
 

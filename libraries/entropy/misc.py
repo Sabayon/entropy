@@ -19,11 +19,12 @@ if sys.hexversion >= 0x3000000:
     import urllib.request, urllib.error, urllib.parse
     UrllibBaseHandler = urllib.request.BaseHandler
 else:
+    import urllib
     import urllib2
     UrllibBaseHandler = urllib2.BaseHandler
 import logging
 import threading
-from entropy.const import etpConst, etpUi, const_isunicode, const_isstring, \
+from entropy.const import etpConst, const_isunicode, \
     const_isfileobj, const_convert_log_level
 
 import entropy.tools
@@ -977,6 +978,8 @@ class RSS:
 
 class LogFile:
 
+    """ Entropy simple logging interface, works as file object """
+
     LEVELS = {
         "debug": logging.DEBUG,
         "info": logging.INFO,
@@ -987,8 +990,6 @@ class LogFile:
     LOG_FORMAT = "%(asctime)s %(levelname)s: %(message)s"
     DATE_FORMAT = "[%H:%M:%S %d/%m/%Y %Z]"
     _HANDLER_CACHE = {}
-
-    """ Entropy simple logging interface, works as file object """
 
     def __init__(self, level = None, filename = None, header = "[LOG]"):
         """
@@ -1178,7 +1179,6 @@ class MultipartPostHandler(UrllibBaseHandler):
                 if sys.hexversion >= 0x3000000:
                     data = urllib.parse.urlencode(v_vars, doseq)
                 else:
-                    import urllib
                     data = urllib.urlencode(v_vars, doseq)
             else:
                 boundary, data = self.multipart_encode(v_vars, v_files)

@@ -13,12 +13,10 @@
 import os
 import shutil
 from entropy.core.settings.base import SystemSettings
-from entropy.output import TextInterface, blue, brown, darkred, darkgreen, teal
+from entropy.output import TextInterface, blue, brown, darkred, teal
 from entropy.const import etpConst
 from entropy.misc import TimeScheduled
 from entropy.cache import EntropyCacher
-from entropy.i18n import _
-from entropy.db.exceptions import ProgrammingError
 from entropy.services.interfaces import SocketHost
 from entropy.services.repository.commands import Repository
 from entropy.client.interfaces import Client
@@ -300,7 +298,7 @@ class Server(SocketHost):
                 raise AttributeError("cmethod not specified for: %s" % (x,))
             if self.repositories[x]['cmethod'] not in \
                 etpConst['etpdatabasesupportedcformats']:
-                    raise AttributeError("wrong cmethod for: %s" % (x,))
+                raise AttributeError("wrong cmethod for: %s" % (x,))
 
             # repository is locked by default, its db needs to be unpacked
             self.repositories[x]['locked'] = True

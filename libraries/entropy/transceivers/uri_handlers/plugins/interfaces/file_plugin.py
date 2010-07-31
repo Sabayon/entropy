@@ -11,15 +11,11 @@
 
 """
 import os
-import tempfile
 import pwd
 import grp
 import shutil
 
-from entropy.const import const_isnumber, const_setup_perms, etpConst
-from entropy.output import brown, darkgreen, teal
-from entropy.i18n import _
-from entropy.exceptions import ConnectionError
+from entropy.const import const_setup_perms, etpConst
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 from entropy.tools import md5sum
 
@@ -91,11 +87,11 @@ def filemode(mode):
 
 class EntropyFileUriHandler(EntropyUriHandler):
 
-    PLUGIN_API_VERSION = 1
-
     """
     EntropyUriHandler based FILE (local) transceiver plugin.
     """
+
+    PLUGIN_API_VERSION = 1
 
     @staticmethod
     def approve_uri(uri):

@@ -21,7 +21,6 @@ class LoadersMixin:
     def __init__(self):
         self._spm_cache = {}
 
-        from entropy.client.interfaces.client import Client
         from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package

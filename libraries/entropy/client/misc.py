@@ -138,7 +138,7 @@ class FileUpdates:
                             continue
 
                     filepath = os.path.join(currentdir, item)
-                    # FIXME: with Python 3.x we can remove const_convert...
+                    # NOTE: with Python 3.x we can remove const_convert...
                     # and not use path.encode('utf-8')
                     if item.startswith(const_convert_to_rawstring("._cfg")): 
 
@@ -276,31 +276,34 @@ class FileUpdates:
             mydict['automerge'] = True
         if (not mydict['automerge']):
             # is it trivial?
+            if not os.path.lexists(filepath): # if file does not even exist
+                return mydict
+            if os.path.islink(filepath):
+                # if it's broken, skip diff and automerge
+                if not os.path.exists(filepath):
+                    return mydict
+            result = 1
             try:
-                if not os.path.lexists(filepath): # if file does not even exist
+                result = getstatusoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath, tofilepath,))[1]
+            except (OSError, IOError):
+                pass
+            if not result:
+                mydict['automerge'] = True
+            # another test
+            if not mydict['automerge']:
+                # if file does not even exist
+                if not os.path.lexists(filepath):
                     return mydict
                 if os.path.islink(filepath):
                     # if it's broken, skip diff and automerge
                     if not os.path.exists(filepath):
                         return mydict
-                result = getstatusoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath, tofilepath,))[1]
-                if not result:
-                    mydict['automerge'] = True
-            except:
-                pass
-            # another test
-            if not mydict['automerge']:
+                result = 0
                 try:
-                    # if file does not even exist
-                    if not os.path.lexists(filepath):
-                        return mydict
-                    if os.path.islink(filepath):
-                        # if it's broken, skip diff and automerge
-                        if not os.path.exists(filepath):
-                            return mydict
-                    result = subprocess.call('diff -Bbua "%s" "%s" | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'' % (filepath, tofilepath,), shell = True)
-                    if result == 1:
-                        mydict['automerge'] = True
-                except:
+                    result = subprocess.call('diff -Bbua "%s" "%s" | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'' % (filepath, tofilepath,),
+                        shell = True)
+                except (IOError, OSError,):
                     pass
+                if result == 1:
+                    mydict['automerge'] = True
         return mydict

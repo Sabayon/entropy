@@ -19,7 +19,7 @@
 
 import sys
 import os, shutil, errno
-from stat import *
+from stat import ST_SIZE, ST_MTIME, ST_CTIME
 from entropy.const import const_convert_to_rawstring
 
 if sys.hexversion >= 0x3000000:
@@ -32,16 +32,17 @@ else:
     STOP = "STOP"
 
 def _addtolist(mylist, curdir, _nested = False):
-    if not _nested:
-        curdir = os.path.normpath(curdir)
     """(list, dir) --- Takes an array(list) and appends all files from dir down
     the directory tree. Returns nothing. list is modified."""
+
+    if not _nested:
+        curdir = os.path.normpath(curdir)
     for x in os.listdir(curdir):
         x_path = os.path.join(curdir, x)
         if os.path.isdir(x_path):
             _addtolist(mylist, x_path, _nested = True)
         elif x_path not in mylist:
-                mylist.append(x_path)
+            mylist.append(x_path)
 
     if not _nested:
         for idx in xrange(len(mylist)):
@@ -50,29 +51,29 @@ def _addtolist(mylist, curdir, _nested = False):
 def encodeint(myint):
     """Takes a 4 byte integer and converts it into a string of 4 characters.
     Returns the characters in a string."""
-    part1=chr((myint >> 24 ) & 0x000000ff)
-    part2=chr((myint >> 16 ) & 0x000000ff)
-    part3=chr((myint >> 8 ) & 0x000000ff)
-    part4=chr(myint & 0x000000ff)
+    part1 = chr((myint >> 24 ) & 0x000000ff)
+    part2 = chr((myint >> 16 ) & 0x000000ff)
+    part3 = chr((myint >> 8 ) & 0x000000ff)
+    part4 = chr(myint & 0x000000ff)
     if sys.hexversion >= 0x3000000:
-        return bytes(part1+part2+part3+part4, 'raw_unicode_escape')
+        return bytes(part1 + part2 + part3 + part4, 'raw_unicode_escape')
     else:
-        return part1+part2+part3+part4
+        return part1 + part2 + part3 + part4
 
 def decodeint(mystring):
     """Takes a 4 byte string and converts it into a 4 byte integer.
     Returns an integer."""
-    myint=0
+    myint = 0
     if sys.hexversion >= 0x3000000:
-        myint=myint+mystring[3]
-        myint=myint+(mystring[2] << 8)
-        myint=myint+(mystring[1] << 16)
-        myint=myint+(mystring[0] << 24)
+        myint = myint+mystring[3]
+        myint = myint+(mystring[2] << 8)
+        myint = myint+(mystring[1] << 16)
+        myint = myint+(mystring[0] << 24)
     else:
-        myint=myint+ord(mystring[3])
-        myint=myint+(ord(mystring[2]) << 8)
-        myint=myint+(ord(mystring[1]) << 16)
-        myint=myint+(ord(mystring[0]) << 24)
+        myint = myint+ord(mystring[3])
+        myint = myint+(ord(mystring[2]) << 8)
+        myint = myint+(ord(mystring[1]) << 16)
+        myint = myint+(ord(mystring[0]) << 24)
     return myint
 
 def xpak(rootdir, outfile=None):
@@ -127,18 +128,18 @@ def xsplit(infile):
     """(infile) -- Splits the infile into two files.
     'infile.index' contains the index segment.
     'infile.dat' contails the data segment."""
-    myfile=open(infile, "rb")
-    mydat=myfile.read()
+    myfile = open(infile, "rb")
+    mydat = myfile.read()
     myfile.close()
 
     splits = xsplit_mem(mydat)
     if not splits:
         return False
 
-    myfile=open(infile+".index", "wb")
+    myfile = open(infile+".index", "wb")
     myfile.write(splits[0])
     myfile.close()
-    myfile=open(infile+".dat", "wb")
+    myfile = open(infile+".dat", "wb")
     myfile.write(splits[1])
     myfile.close()
     return True
@@ -148,34 +149,34 @@ def xsplit_mem(mydat):
         return None
     if mydat[-8:] != XPAKSTOP:
         return None
-    indexsize=decodeint(mydat[8:12])
-    #datasize=decodeint(mydat[12:16]) not used
+    indexsize = decodeint(mydat[8:12])
+    #datasize = decodeint(mydat[12:16]) not used
     return (mydat[16:indexsize+16], mydat[indexsize+16:-8])
 
 def getindex(infile):
     """(infile) -- grabs the index segment from the infile and returns it."""
-    myfile=open(infile, "rb")
-    myheader=myfile.read(16)
+    myfile = open(infile, "rb")
+    myheader = myfile.read(16)
     if myheader[0:8] != XPAKPACK:
         myfile.close()
         return
-    indexsize=decodeint(myheader[8:12])
-    myindex=myfile.read(indexsize)
+    indexsize = decodeint(myheader[8:12])
+    myindex = myfile.read(indexsize)
     myfile.close()
     return myindex
 
 def getboth(infile):
     """(infile) -- grabs the index and data segments from the infile.
     Returns an array [indexSegment,dataSegment]"""
-    myfile=open(infile, "rb")
-    myheader=myfile.read(16)
+    myfile = open(infile, "rb")
+    myheader = myfile.read(16)
     if myheader[0:8] != XPAKPACK:
         myfile.close()
         return
-    indexsize=decodeint(myheader[8:12])
-    datasize=decodeint(myheader[12:16])
-    myindex=myfile.read(indexsize)
-    mydata=myfile.read(datasize)
+    indexsize = decodeint(myheader[8:12])
+    datasize = decodeint(myheader[12:16])
+    myindex = myfile.read(indexsize)
+    mydata = myfile.read(datasize)
     myfile.close()
     return myindex, mydata
 
@@ -186,35 +187,35 @@ def listindex(myindex):
 
 def getindex_mem(myindex):
     """Returns the filenames listed in the indexglob passed in."""
-    myindexlen=len(myindex)
-    startpos=0
-    myret=[]
-    while ((startpos+8)<myindexlen):
-        mytestlen=decodeint(myindex[startpos:startpos+4])
-        myret=myret+[myindex[startpos+4:startpos+4+mytestlen]]
-        startpos=startpos+mytestlen+12
+    myindexlen = len(myindex)
+    startpos = 0
+    myret = []
+    while ((startpos+8) < myindexlen):
+        mytestlen = decodeint(myindex[startpos:startpos+4])
+        myret = myret + [myindex[startpos+4:startpos+4+mytestlen]]
+        startpos = startpos + mytestlen + 12
     return myret
 
 def searchindex(myindex, myitem):
     """(index,item) -- Finds the offset and length of the file 'item' in the
     datasegment via the index 'index' provided."""
-    mylen=len(myitem)
-    myindexlen=len(myindex)
-    startpos=0
-    while ((startpos+8)<myindexlen):
-        mytestlen=decodeint(myindex[startpos:startpos+4])
-        if mytestlen==mylen:
-            if myitem==myindex[startpos+4:startpos+4+mytestlen]:
+    mylen = len(myitem)
+    myindexlen = len(myindex)
+    startpos = 0
+    while ((startpos+8) < myindexlen):
+        mytestlen = decodeint(myindex[startpos:startpos+4])
+        if mytestlen == mylen:
+            if myitem == myindex[startpos+4:startpos+4+mytestlen]:
                 #found
-                datapos=decodeint(myindex[startpos+4+mytestlen:startpos+8+mytestlen])
-                datalen=decodeint(myindex[startpos+8+mytestlen:startpos+12+mytestlen])
+                datapos = decodeint(myindex[startpos+4+mytestlen:startpos+8+mytestlen])
+                datalen = decodeint(myindex[startpos+8+mytestlen:startpos+12+mytestlen])
                 return datapos, datalen
-        startpos=startpos+mytestlen+12
+        startpos = startpos+mytestlen+12
 
 def getitem(myid, myitem):
-    myindex=myid[0]
-    mydata=myid[1]
-    myloc=searchindex(myindex, myitem)
+    myindex = myid[0]
+    mydata = myid[1]
+    myloc = searchindex(myindex, myitem)
     if not myloc:
         return None
     return mydata[myloc[0]:myloc[0]+myloc[1]]
@@ -242,18 +243,18 @@ def xpand(myid, mydest):
 
 class tbz2:
     def __init__(self, myfile):
-        self.file=myfile
-        self.filestat=None
-        self.index=""
-        self.infosize=0
-        self.xpaksize=0
-        self.indexsize=None
-        self.datasize=None
-        self.indexpos=None
-        self.datapos=None
+        self.file = myfile
+        self.filestat = None
+        self.index = ""
+        self.infosize = 0
+        self.xpaksize = 0
+        self.indexsize = None
+        self.datasize = None
+        self.indexpos = None
+        self.datapos = None
         self.scan()
 
-    def decompose(self,datadir,cleanup=1):
+    def decompose(self, datadir, cleanup=1):
         """Alias for unpackinfo() --- Complement to recompose() but optionally
         deletes the destination directory. Extracts the xpak from the tbz2 into
         the directory provided. Raises IOError if scan() fails.
@@ -266,11 +267,11 @@ class tbz2:
             os.makedirs(datadir)
         return self.unpackinfo(datadir)
 
-    def compose(self, datadir, cleanup=0):
+    def compose(self, datadir, cleanup = 0):
         """Alias for recompose()."""
         return self.recompose(datadir, cleanup)
 
-    def recompose(self, datadir, cleanup=0):
+    def recompose(self, datadir, cleanup = 0):
         """Creates an xpak segment from the datadir provided, truncates the tbz2
         to the end of regular data if an xpak segment already exists, and adds
         the new segment to the file with terminating info."""
@@ -281,7 +282,7 @@ class tbz2:
 
     def recompose_mem(self, xpdata):
         self.scan() # Don't care about condition... We'll rewrite the data anyway.
-        myfile=open(self.file, "ab+")
+        myfile = open(self.file, "ab+")
         if not myfile:
             raise IOError
         myfile.seek(-self.xpaksize, os.SEEK_END) # 0,2 or -0,2 just mean EOF.
@@ -308,38 +309,38 @@ class tbz2:
         """Scans the tbz2 to locate the xpak segment and setup internal values.
         This function is called by relevant functions already."""
         try:
-            mystat=os.stat(self.file)
+            mystat = os.stat(self.file)
             if self.filestat:
-                changed=0
+                changed = 0
                 for x in [ST_SIZE, ST_MTIME, ST_CTIME]:
                     if mystat[x] != self.filestat[x]:
-                        changed=1
+                        changed = 1
                 if not changed:
                     return 1
-            self.filestat=mystat
+            self.filestat = mystat
             a = open(self.file, "rb")
             a.seek(-16, os.SEEK_END)
-            trailer=a.read()
-            self.infosize=0
-            self.xpaksize=0
-            if trailer[-4:]!=STOP:
+            trailer = a.read()
+            self.infosize = 0
+            self.xpaksize = 0
+            if trailer[-4:] != STOP:
                 a.close()
                 return 0
-            if trailer[0:8]!=XPAKSTOP:
+            if trailer[0:8] != XPAKSTOP:
                 a.close()
                 return 0
-            self.infosize=decodeint(trailer[8:12])
-            self.xpaksize=self.infosize+8
+            self.infosize = decodeint(trailer[8:12])
+            self.xpaksize = self.infosize+8
             a.seek(-(self.xpaksize), os.SEEK_END)
-            header=a.read(16)
-            if header[0:8]!=XPAKPACK:
+            header = a.read(16)
+            if header[0:8] != XPAKPACK:
                 a.close()
                 return 0
-            self.indexsize=decodeint(header[8:12])
-            self.datasize=decodeint(header[12:16])
-            self.indexpos=a.tell()
-            self.index=a.read(self.indexsize)
-            self.datapos=a.tell()
+            self.indexsize = decodeint(header[8:12])
+            self.datasize = decodeint(header[12:16])
+            self.indexpos = a.tell()
+            self.index = a.read(self.indexsize)
+            self.datapos = a.tell()
             a.close()
             return 2
         except SystemExit:
@@ -353,22 +354,22 @@ class tbz2:
             return None
         return getindex_mem(self.index)
 
-    def getfile(self,myfile,mydefault=None):
+    def getfile(self, myfile, mydefault=None):
         """Finds 'myfile' in the data segment and returns it."""
         if not self.scan():
             return None
-        myresult=searchindex(self.index, myfile)
+        myresult = searchindex(self.index, myfile)
         if not myresult:
             return mydefault
         a = open(self.file, "rb")
-        a.seek(self.datapos+myresult[0], 0)
+        a.seek(self.datapos + myresult[0], 0)
         myreturn = a.read(myresult[1])
         a.close()
         return myreturn
 
     def getelements(self, myfile):
         """A split/array representation of tbz2.getfile()"""
-        mydat=self.getfile(myfile)
+        mydat = self.getfile(myfile)
         if not mydat:
             return []
         return mydat.split()
@@ -379,9 +380,9 @@ class tbz2:
             return 0
 
         a = open(self.file, "rb")
-        startpos=0
+        startpos = 0
 
-        while ((startpos+8)<self.indexsize):
+        while ((startpos+8) < self.indexsize):
             namelen = decodeint(self.index[startpos:startpos+4])
             datapos = decodeint(self.index[startpos+4+namelen:startpos+8+namelen])
             datalen = decodeint(self.index[startpos+8+namelen:startpos+12+namelen])
@@ -405,15 +406,15 @@ class tbz2:
             return 0
         a = open(self.file, "rb")
         mydata = {}
-        startpos=0
-        while ((startpos+8)<self.indexsize):
-            namelen=decodeint(self.index[startpos:startpos+4])
-            datapos=decodeint(self.index[startpos+4+namelen:startpos+8+namelen]);
-            datalen=decodeint(self.index[startpos+8+namelen:startpos+12+namelen]);
-            myname=self.index[startpos+4:startpos+4+namelen]
+        startpos = 0
+        while ((startpos+8) < self.indexsize):
+            namelen = decodeint(self.index[startpos:startpos+4])
+            datapos = decodeint(self.index[startpos+4+namelen:startpos+8+namelen])
+            datalen = decodeint(self.index[startpos+8+namelen:startpos+12+namelen])
+            myname = self.index[startpos+4:startpos+4+namelen]
             a.seek(self.datapos+datapos)
             mydata[myname] = a.read(datalen)
-            startpos=startpos+namelen+12
+            startpos = startpos+namelen+12
         a.close()
         return mydata
 
@@ -424,8 +425,7 @@ class tbz2:
 
         a = open(self.file, "rb")
         a.seek(self.datapos)
-        mydata =a.read(self.datasize)
+        mydata = a.read(self.datasize)
         a.close()
 
         return self.index, mydata
-

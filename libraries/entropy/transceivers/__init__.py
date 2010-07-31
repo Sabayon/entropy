@@ -26,25 +26,22 @@ from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 class EntropyTransceiver(TextInterface):
 
-    _URI_HANDLERS = []
-
     """
     Base class for Entropy transceivers. This provides a common API across
     all the available URI handlers.
 
-    # FIXME: allow to provide other OutputInterfaces
-
     How to use this class:
-      Let's consider that we have a valid EntropyUriHandler for ftp:// protocol
-      already installed via "add_uri_handler".
+    Let's consider that we have a valid EntropyUriHandler for ftp:// protocol
+    already installed via "add_uri_handler".
 
-      >> txc = EntropyTransceiver("ftp://myuser:mypwd@myhost")
-      >> txc.set_speed_limit(150) # set speed limit to 150kb/sec
-      >> handler = txc.swallow()
-      >> handler.download("ftp://myuser:mypwd@myhost/myfile.txt", "/tmp")
-         # download 
-
+    >> txc = EntropyTransceiver("ftp://myuser:mypwd@myhost")
+    >> txc.set_speed_limit(150) # set speed limit to 150kb/sec
+    >> handler = txc.swallow()
+    >> handler.download("ftp://myuser:mypwd@myhost/myfile.txt", "/tmp")
+        # download 
     """
+
+    _URI_HANDLERS = []
 
     @staticmethod
     def add_uri_handler(entropy_uri_handler_class):

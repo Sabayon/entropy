@@ -418,9 +418,6 @@ class EntropyRepository(EntropyRepositoryBase):
         EntropyRepositoryBase.__init__(self, readOnly, xcache, temporary,
             dbname, indexing)
 
-        # FIXME: remove before 20101010, backward compatibility
-        self.dbFile = dbFile
-
         self._db_path = dbFile
         if self._db_path is None:
             raise AttributeError("valid database path needed")
@@ -591,6 +588,28 @@ class EntropyRepository(EntropyRepositoryBase):
     def __del__(self):
         self.closeDB()
 
+    @staticmethod
+    def update(entropy_client, repository_id, force, gpg):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        return EntropyRepositoryBase.update(entropy_client, repository_id,
+            force, gpg)
+
+    @staticmethod
+    def revision(repository_id):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        return EntropyRepositoryBase.revision(repository_id)
+
+    @staticmethod
+    def remote_revision(repository_id):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        return EntropyRepositoryBase.remote_revision(repository_id)
+
     def closeDB(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -680,10 +699,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 pkgdata['dependencies'][manual_dep] = \
                     etpConst['dependency_type_ids']['mdepend_id']
 
-        # FIXME: this is Entropy Client related but also part of the
-        # currently implemented metaphor, so let's wait to have a Rule
-        # Engine in place before removing the oddity of client_repo
-        # metadatum.
+        # Client repositories behave differently
+        # TODO: move to Client repository class?
         client_repo = self.get_plugins_metadata().get('client_repo')
         if client_repo:
             remove_conflicting_packages(pkg_data)
@@ -920,7 +937,7 @@ class EntropyRepository(EntropyRepositoryBase):
             new_way = self.getSetting("on_delete_cascade")
         except KeyError:
             new_way = ''
-        # TODO: deprecate this someday
+        # TODO: remove this before 31-12-2011 (deprecate)
         if new_way:
             # this will work thanks to ON DELETE CASCADE !
             self._cursor().execute(
@@ -948,7 +965,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 DELETE FROM injected WHERE idpackage = %d;
                 DELETE FROM installedtable WHERE idpackage = %d;
             """ % r_tup)
-            # FIXME: incorportate in query above after 2011
+            # TODO: incorportate in query above after 2011
             if self._doesTableExist("packagedesktopmime"):
                 self._cursor().execute("""
                 DELETE FROM packagedesktopmime WHERE idpackage = (?)""",
@@ -1352,10 +1369,6 @@ class EntropyRepository(EntropyRepositoryBase):
             tuples of length 3 containing library name, path and ELF class.
         @type libs_metadata: list
         """
-        # TODO: remove this in future
-        if not self._doesTableExist('provided_libs'):
-            self._createProvidedLibs()
-
         self._cursor().executemany("""
         INSERT INTO provided_libs VALUES (?,?,?,?)
         """, [(package_id, x, y, z,) for x, y, z in libs_metadata])
@@ -1526,14 +1539,9 @@ class EntropyRepository(EntropyRepositoryBase):
         @keyword gpg: GPG signature file content
         @type gpg: string
         """
-        try:
-            self._cursor().execute("""
-            INSERT INTO packagesignatures VALUES (?,?,?,?,?)
-            """, (package_id, sha1, sha256, sha512, gpg))
-        except OperationalError: # FIXME: remove this before 2010-12-31
-            self._cursor().execute("""
-            INSERT INTO packagesignatures VALUES (?,?,?,?)
-            """, (package_id, sha1, sha256, sha512))
+        self._cursor().execute("""
+        INSERT INTO packagesignatures VALUES (?,?,?,?,?)
+        """, (package_id, sha1, sha256, sha512, gpg))
 
     def _insertDesktopMime(self, package_id, metadata):
         """
@@ -1544,9 +1552,6 @@ class EntropyRepository(EntropyRepositoryBase):
         @param metadata: list of dict() containing file association metadata
         @type metadata: list
         """
-        # FIXME: remove this before 2010-12-31
-        if not self._doesTableExist("packagedesktopmime"):
-            self._createPackageDesktopMimeTable()
         mime_data = [(package_id, x['name'], x['mimetype'], x['executable'],
             x['icon']) for x in metadata]
         self._cursor().executemany("""
@@ -1563,9 +1568,6 @@ class EntropyRepository(EntropyRepositoryBase):
         @param mimetypes: list of mimetypes supported by package
         @type mimetypes: list
         """
-        # FIXME: remove this before 2010-12-31
-        if not self._doesTableExist("provided_mime"):
-            self._createProvidedMimeTable()
         self._cursor().executemany("""
         INSERT INTO provided_mime VALUES (?,?)""",
             [(x, package_id) for x in mimetypes])
@@ -1597,9 +1599,6 @@ class EntropyRepository(EntropyRepositoryBase):
         @param repository: Source Package Manager repository
         @type repository: string
         """
-        # FIXME backward compatibility
-        if not self._doesTableExist('packagespmrepository'):
-            self._createPackagespmrepository()
         self._cursor().execute("""
         INSERT INTO packagespmrepository VALUES (?,?)
         """, (package_id, repository,))
@@ -1658,7 +1657,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @param provides: list of atom strings
         @type provides: list
         """
-        # FIXME: backward compat, remove someday
+        # TODO: remove this before 31-12-2011
         # this adds default provide information to set data if not available
         my_provides = set()
         for prov in provides:
@@ -1864,7 +1863,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if self is dbconn:
             raise AttributeError("cannot diff inside the same db")
 
-        self._connection().text_factory = lambda x: const_convert_to_unicode(x)
+        self._connection().text_factory = const_convert_to_unicode
 
         # setup random table name
         randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
@@ -1877,8 +1876,7 @@ class EntropyRepository(EntropyRepositoryBase):
         )
 
         try:
-            dbconn._connection().text_factory = lambda x: \
-                const_convert_to_unicode(x)
+            dbconn._connection().text_factory = const_convert_to_unicode
 
             cur = dbconn._cursor().execute("""
             SELECT file FROM content WHERE idpackage = (?)
@@ -2330,7 +2328,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('packagesets'):
             return {}
 
@@ -2481,7 +2479,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('packagesignatures'):
             return None, None, None, None
 
@@ -2492,7 +2490,7 @@ class EntropyRepository(EntropyRepositoryBase):
             """, (package_id,))
             data = cur.fetchone()
         except OperationalError:
-            # FIXME: backward compat
+            # TODO: remove this before 31-12-2011
             cur = self._cursor().execute("""
             SELECT sha1, sha256, sha512 FROM packagesignatures
             WHERE idpackage = (?) LIMIT 1
@@ -2633,7 +2631,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('packagespmphases'):
             return None
 
@@ -2649,7 +2647,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('packagespmrepository'):
             return None
         cur = self._cursor().execute("""
@@ -2701,7 +2699,7 @@ class EntropyRepository(EntropyRepositoryBase):
         needed.idneeded = neededreference.idneeded""", (package_id,))
         return self._cur2set(cur)
 
-    def retrieveNeeded(self, package_id, extended = False, format = False):
+    def retrieveNeeded(self, package_id, extended = False, formatted = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -2723,7 +2721,7 @@ class EntropyRepository(EntropyRepositoryBase):
             """, (package_id,))
             needed = self._cur2list(cur)
 
-        if extended and format:
+        if extended and formatted:
             return dict((lib, elfclass,) for lib, elfclass in needed)
         return needed
 
@@ -2731,7 +2729,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this in future, backward compat.
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('provided_libs'):
             return set()
 
@@ -2754,7 +2752,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME: added for backward compatibility, remove someday
+        # TODO: remove this before 31-12-2011
         is_default_str = ',0'
         if self._doesColumnInTableExist("provide", "is_default"):
             is_default_str = ',is_default '
@@ -2920,12 +2918,12 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('automergefiles'):
             self._createAutomergefilesTable()
 
         # like portage does
-        self._connection().text_factory = lambda x: const_convert_to_unicode(x)
+        self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
         SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)
@@ -2993,10 +2991,10 @@ class EntropyRepository(EntropyRepositoryBase):
                     raise
                 did_try = True
 
-                # FIXME support for old entropy db entries, which were
+                # TODO: remove this before 31-12-2011
+                # Support for old entropy db entries, which were
                 # not inserted in utf-8
-                self._connection().text_factory = lambda x: \
-                    const_convert_to_unicode(x)
+                self._connection().text_factory = const_convert_to_unicode
                 continue
 
         return fl
@@ -3005,7 +3003,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('packagechangelogs'):
             return None
 
@@ -3030,11 +3028,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # FIXME backward compatibility
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('packagechangelogs'):
             return None
 
-        self._connection().text_factory = lambda x: const_convert_to_unicode(x)
+        self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
         SELECT changelog FROM packagechangelogs WHERE category = (?) AND
@@ -3162,7 +3160,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._connection().text_factory = lambda x: const_convert_to_unicode(x)
+        self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
         SELECT text FROM licensedata WHERE licensename = (?) LIMIT 1
@@ -3383,7 +3381,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this in future, backward compat.
+        # TODO: remove this before 31-12-2011
         if not self._doesTableExist('provided_libs'):
             self._createProvidedLibs()
 
@@ -3643,7 +3641,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return result[0]
         return -1
 
-    def searchBelongs(self, file, like = False):
+    def searchBelongs(self, bfile, like = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -3651,11 +3649,11 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT content.idpackage FROM content,baseinfo
             WHERE file LIKE (?) AND
-            content.idpackage = baseinfo.idpackage""", (file,))
+            content.idpackage = baseinfo.idpackage""", (bfile,))
         else:
             cur = self._cursor().execute("""SELECT content.idpackage
             FROM content, baseinfo WHERE file = (?)
-            AND content.idpackage = baseinfo.idpackage""", (file,))
+            AND content.idpackage = baseinfo.idpackage""", (bfile,))
 
         return self._cur2set(cur)
 
@@ -3917,7 +3915,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @return: found PROVIDE metadata
         @rtype: list
         """
-        # FIXME: this small snippet is here for backward compat
+        # TODO: remove this before 31-12-2011
         if self._doesColumnInTableExist("provide", "is_default"):
             get_def_string = ",provide.is_default"
         else:
@@ -4195,7 +4193,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._connection().text_factory = lambda x: const_convert_to_unicode(x)
+        self._connection().text_factory = const_convert_to_unicode
 
         if count:
             cur = self._cursor().execute('SELECT count(file) FROM content')
@@ -4554,8 +4552,7 @@ class EntropyRepository(EntropyRepositoryBase):
             q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
             q += ")' FROM '%(tbl_name)s'"
             self._cursor().execute(q % {'tbl_name': name})
-            self._connection().text_factory = lambda x: \
-                const_convert_to_unicode(x)
+            self._connection().text_factory = const_convert_to_unicode
             for row in self._cursor():
                 dumpfile.write(toraw("%s;\n" % (row[0],)))
 
@@ -4567,10 +4564,9 @@ class EntropyRepository(EntropyRepositoryBase):
             dumpfile.write(toraw("%s;\n" % sql))
 
         dumpfile.write(toraw("COMMIT;\n"))
-        try:
+        if hasattr(dumpfile, 'flush'):
             dumpfile.flush()
-        except:
-            pass
+
         self.output(
             red(_("Database Export complete.")),
             importance = 0,
@@ -4672,7 +4668,6 @@ class EntropyRepository(EntropyRepositoryBase):
         if strings:
             m = hashlib.md5()
 
-
         if not self._doesTableExist("baseinfo"):
             if strings:
                 m.update(const_convert_to_rawstring("~empty~"))
@@ -4702,7 +4697,7 @@ class EntropyRepository(EntropyRepositoryBase):
             b_hash = hash(tuple(cur.fetchall()))
 
         if include_signatures:
-            # TODO: backward compatibility, remove this in future
+            # TODO: remove this before 31-12-2011
             gpg_str = ", gpg"
             if not self._doesColumnInTableExist("packagesignatures", "gpg"):
                 gpg_str = ""
@@ -5204,13 +5199,13 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def _foreignKeySupport(self):
 
-        # TODO: remove this by 2011/12/31
+        # TODO: remove this before 31-12-2011
 
         # entropy.qa uses this dbname, must skip migration
         if self.reponame in ("qa_testing", "mem_repo"):
             return
 
-        tables = ("extrainfo", "dependencies" ,"provide",
+        tables = ("extrainfo", "dependencies" , "provide",
             "conflicts", "configprotect", "configprotectmask", "sources",
             "useflags", "keywords", "content", "counters", "sizes",
             "eclasses", "needed", "triggers", "systempackages", "injected",
@@ -5328,7 +5323,6 @@ class EntropyRepository(EntropyRepositoryBase):
             """)
             self.__clearLiveCache("_doesTableExist")
 
-        # TODO: this is going to be removed soon
         client_repo = self.get_plugins_metadata().get('client_repo')
 
         if client_repo and (self.reponame != etpConst['clientdbid']):

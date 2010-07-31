@@ -18,12 +18,13 @@
 import os
 import sys
 import tempfile
-import time
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_pid_exists, const_setup_perms
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
+import threading
+import copy
 
 import entropy.dump
 import entropy.tools
@@ -60,31 +61,31 @@ class EntropyCacher(Singleton):
 
     Sample code:
 
-        >>> # import module
-        >>> from entropy.cache import EntropyCacher
-        ...
-        >>> # first EntropyCacher load, start it
-        >>> cacher = EntropyCacher()
-        >>> cacher.start()
-        ...
-        >>> # now store something into its cache
-        >>> cacher.push('my_identifier1', [1, 2, 3])
-        >>> # now store something synchronously
-        >>> cacher.push('my_identifier2', [1, 2, 3], async = False)
-        ...
-        >>> # now flush all the caches to disk, and make sure all
-        >>> # is written
-        >>> cacher.sync()
-        ...
-        >>> # now fetch something from the cache
-        >>> data = cacher.pop('my_identifier1')
-        [1, 2, 3]
-        ...
-        >>> # now discard all the cached (async) writes
-        >>> cacher.discard()
-        ...
-        >>> # and stop EntropyCacher
-        >>> cacher.stop()
+    >>> # import module
+    >>> from entropy.cache import EntropyCacher
+    ...
+    >>> # first EntropyCacher load, start it
+    >>> cacher = EntropyCacher()
+    >>> cacher.start()
+    ...
+    >>> # now store something into its cache
+    >>> cacher.push('my_identifier1', [1, 2, 3])
+    >>> # now store something synchronously
+    >>> cacher.push('my_identifier2', [1, 2, 3], async = False)
+    ...
+    >>> # now flush all the caches to disk, and make sure all
+    >>> # is written
+    >>> cacher.sync()
+    ...
+    >>> # now fetch something from the cache
+    >>> data = cacher.pop('my_identifier1')
+    [1, 2, 3]
+    ...
+    >>> # now discard all the cached (async) writes
+    >>> cacher.discard()
+    ...
+    >>> # and stop EntropyCacher
+    >>> cacher.stop()
 
     """
 
@@ -94,8 +95,6 @@ class EntropyCacher(Singleton):
         This is the place where all the properties initialization
         takes place.
         """
-        import threading
-        import copy
         self.__copy = copy
         self.__alive = False
         self.__cache_writer = None

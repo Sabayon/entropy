@@ -62,7 +62,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         from threading import RLock
         self.__lock = RLock()
-        from entropy.cache import EntropyCacher
         self.__cacher = EntropyCacher()
         self.__data = {}
         self.__is_destroyed = False

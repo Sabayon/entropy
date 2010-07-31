@@ -34,7 +34,7 @@ try:
     envdir = os.getenv('TEXTDOMAINDIR')
     if envdir is not None:
         localedir = envdir
-    kwargs = {"localedir": localedir,}
+    kwargs = {"localedir": localedir}
     if sys.hexversion < 0x3000000:
         kwargs['unicode'] = True
     gettext.install('entropy', **kwargs)
@@ -65,16 +65,16 @@ def change_language(lang):
     """
     global _
     # change in environ
-    for var in ("LANGUAGE", "LC_ALL", "LANG",):
+    for var in ("LANGUAGE", "LC_ALL", "LANG"):
         os.environ[var] = lang
     # reinstall gettext
     # remove _ from global scope so that gettext will readd it
     old_ = _
     del _
-    kwargs = {"localedir": localedir,}
+    kw_args = {"localedir": localedir}
     if sys.hexversion < 0x3000000:
-        kwargs['unicode'] = True
-    gettext.install('entropy', **kwargs)
+        kw_args['unicode'] = True
+    gettext.install('entropy', **kw_args)
     _ = _
     # redeclare "_" in all loaded modules
     for module in list(sys.modules.values()):

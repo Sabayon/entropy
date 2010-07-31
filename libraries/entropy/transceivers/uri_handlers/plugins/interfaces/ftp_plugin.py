@@ -11,6 +11,7 @@
 """
 import os
 import time
+import socket
 
 from entropy.tools import print_traceback, get_file_size, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl
@@ -21,11 +22,11 @@ from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 class EntropyFtpUriHandler(EntropyUriHandler):
 
-    PLUGIN_API_VERSION = 1
-
     """
     EntropyUriHandler based FTP transceiver plugin.
     """
+
+    PLUGIN_API_VERSION = 1
 
     _DEFAULT_TIMEOUT = 60
 
@@ -57,8 +58,8 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     def __init__(self, uri):
         EntropyUriHandler.__init__(self, uri)
 
-        import socket, ftplib
-        self.socket, self.ftplib = socket, ftplib
+        import ftplib
+        self.ftplib = ftplib
         self.__connected = False
         self.__ftpconn = None
         self.__currentdir = '.'
@@ -142,9 +143,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 self.__ftpconn = self.ftplib.FTP()
                 self.__ftpconn.connect(self.__ftphost, self.__ftpport, timeout)
                 break
-            except (self.socket.gaierror,) as e:
+            except (socket.gaierror,) as e:
                 raise ConnectionError('ConnectionError: %s' % (e,))
-            except (self.socket.error,) as e:
+            except (socket.error,) as e:
                 if not count:
                     raise ConnectionError('ConnectionError: %s' % (e,))
             except:
@@ -185,7 +186,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             # try to disconnect
             try:
                 self.__ftpconn.quit()
-            except (EOFError, self.socket, self.socket.timeout,
+            except (EOFError, socket.error, socket.timeout,
                 self.ftplib.error_reply,):
                 # AttributeError is raised when socket gets trashed
                 # EOFError is raised when the connection breaks
@@ -343,12 +344,14 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         tries = 10
         while tries:
-            tries -= 1
 
+            tries -= 1
             self._init_vars()
+            self.__filekbcount = 0
+            rc = ''
+
             try:
 
-                self.__filekbcount = 0
                 # get the file size
                 self.__filesize = self._get_file_size_compat(path)
                 if (self.__filesize):
@@ -363,16 +366,9 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 with open(tmp_save_path, "wb") as f:
                     rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 8192)
                     f.flush()
-                self._update_progress(force = True)
 
-                done = rc.find("226") != -1
-                if done:
-                    # download complete, atomic mv
-                    os.rename(tmp_save_path, save_path)
-
-                return done
-
-            except Exception as e: # connection reset by peer
+            except (IOError, self.ftplib.error_reply, socket.error) as e:
+                # connection reset by peer
 
                 print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (
@@ -388,6 +384,22 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     header = "  "
                     )
                 self._reconnect() # reconnect
+                continue
+
+            finally:
+                try:
+                    os.remove(tmp_save_path)
+                except OSError:
+                    pass
+
+            self._update_progress(force = True)
+            done = rc.find("226") != -1
+            if done:
+                # download complete, atomic mv
+                os.rename(tmp_save_path, save_path)
+
+            return done
+
 
     def download_many(self, remote_paths, save_dir):
         for remote_path in remote_paths:

@@ -14,10 +14,6 @@ from entropy.output import TextInterface
 
 class EntropyUriHandler(object, TextInterface):
 
-    BASE_PLUGIN_API_VERSION = 1
-
-    TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
-
     """
     Base class for EntropyTransceiver URI handler interfaces. This provides
     a common API for implementing custom URI handlers.
@@ -26,6 +22,11 @@ class EntropyUriHandler(object, TextInterface):
     >>> EntropyTransceiver.add_uri_handler(my_entropy_transceiver_based_instance)
     "add_uri_handler" is a EntropyTransceiver static method.
     """
+
+    BASE_PLUGIN_API_VERSION = 1
+
+    TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
+
     def __init__(self, uri):
         """
         EntropyUriHandler constructor.

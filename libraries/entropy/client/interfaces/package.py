@@ -17,19 +17,16 @@ import shutil
 import tempfile
 import time
 
-from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
+from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _
-from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
+from entropy.output import brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred, teal
-from entropy.misc import TimeScheduled
-from entropy.db import EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.client.mirrors import StatusInterface
 from entropy.core.settings.base import SystemSettings
-from entropy.security import System as SystemSecurity, \
-    Repository as RepositorySecurity
+from entropy.security import Repository as RepositorySecurity
 
 import entropy.tools
 
@@ -131,7 +128,6 @@ class Package:
 
         for url, dest_path, cksum in url_data_list:
             count += 1
-            filename = os.path.basename(url)
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
                 os.makedirs(dest_dir, 0o775)
@@ -205,7 +201,7 @@ class Package:
                 return False
             # set to 30 for convenience
             mirror_status.set_failing_mirror_status(best_mirror, 30)
-            mirrorcount = repo_uris[repo].index(best_mirror)+1
+            mirrorcount = repo_uris[repository].index(best_mirror)+1
             mytxt = "( mirror #%s ) " % (mirrorcount,)
             mytxt += blue(" %s: ") % (_("Mirror"),)
             mytxt += red(entropy.tools.spliturl(best_mirror)[1])
@@ -381,7 +377,6 @@ class Package:
                 pass
 
         fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
-        filename = os.path.basename(url)
         filepath_dir = os.path.dirname(save_path)
         # symlink support
         if not os.path.isdir(os.path.realpath(filepath_dir)):
@@ -689,7 +684,7 @@ class Package:
             if isinstance(signatures, dict):
                 for hash_type in sorted(signatures):
                     hash_val = signatures[hash_type]
-                    # XXX workaround bug on unreleased
+                    # NOTE: workaround bug on unreleased
                     # entropy versions
                     if hash_val in signatures:
                         continue
@@ -1815,7 +1810,7 @@ class Package:
 
                 # symlink doesn't need permissions, also
                 # until os.walk ends they might be broken
-                # XXX also, added os.access() check because
+                # NOTE: also, added os.access() check because
                 # there might be directories/files unwritable
                 # what to do otherwise?
                 user = os.stat(imagepath_dir)[stat.ST_UID]
@@ -2123,7 +2118,6 @@ class Package:
         """
 
         protected = False
-        tofile_before_protect = tofile
         do_continue = False
         in_mask = False
         encoded_protect = [x.encode('raw_unicode_escape') for x in protect]

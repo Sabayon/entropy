@@ -27,8 +27,7 @@ import pwd
 import hashlib
 import random
 import traceback
-from entropy.output import TextInterface, print_generic, red, \
-    darkgreen, green, blue, purple, teal, brown
+from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
     const_cmp, const_israwstring, const_cmp
@@ -73,7 +72,7 @@ def is_user_in_entropy_group(uid = None):
 
     if not etp_group_users or \
         username not in etp_group_users:
-            return False
+        return False
 
     return True
 
@@ -175,21 +174,21 @@ def get_traceback(tb_obj = None):
         #traceback.print_last(file = buf)
     return buf.getvalue()
 
-def print_exception(returndata = False, tb_data = None, all_frame_data = False):
+def print_exception(silent = False, tb_data = None, all_frame_data = False):
     """
     Print last Python exception and frame variables values (if available)
     to stdout.
 
-    @keyword returndata: do not print data but return
-    @type returndata: bool
+    @keyword silent: do not print to stdout
+    @type silent: bool
     @keyword tb_data: Python traceback object
     @type tb_data: Python traceback instance
     @keyword all_frame_data: print all variables in every frame
     @type all_frame_data: bool
     @return: exception data
-    @rtype: string
+    @rtype: list of strings
     """
-    if not returndata:
+    if not silent:
         traceback.print_last()
     data = []
     if tb_data is not None:
@@ -212,30 +211,26 @@ def print_exception(returndata = False, tb_data = None, all_frame_data = False):
 
     #if not returndata: print
     for frame in stack:
-        if not returndata:
-            sys.stdout.write("\n")
+        if not silent:
+            print_generic("")
             print_generic("Frame %s in %s at line %s" % (frame.f_code.co_name,
-                                             frame.f_code.co_filename,
-                                             frame.f_lineno))
-        else:
-            data.append("Frame %s in %s at line %s\n" % (frame.f_code.co_name,
-                                             frame.f_code.co_filename,
-                                             frame.f_lineno))
+                frame.f_code.co_filename, frame.f_lineno))
+        data.append("Frame %s in %s at line %s\n" % (frame.f_code.co_name,
+            frame.f_code.co_filename, frame.f_lineno))
+
         for key, value in list(frame.f_locals.items()):
             cur_str = ''
             cur_str = "\t%20s = " % key
             try:
                 cur_str += repr(value) + "\n"
-            except:
+            except (AttributeError, NameError, TypeError):
                 cur_str += "<ERROR WHILE PRINTING VALUE>\n"
 
-            if not returndata:
+            if not silent:
                 sys.stdout.write(cur_str)
-            else:
-                data.append(cur_str)
+            data.append(cur_str)
 
-    if returndata:
-        return data
+    return data
 
 # Get the content of an online page
 # @returns content: if the file exists
@@ -276,14 +271,21 @@ def get_remote_data(url, timeout = 5):
         # unset
         urlmod._opener = None
 
+    item = None
     try:
         item = urlmod.urlopen(url, timeout = timeout)
-
         result = item.readlines()
-        item.close()
-    except:
+    except Exception:
+        # urllib2.HTTPError
+        # urllib2.URLError
+        # httplib.BadStatusLine
+        # httplib.InvalidURL
+        # ValueError
+        # IOError
         return False
     finally:
+        if item is not None:
+            item.close()
         socket.setdefaulttimeout(2)
 
     if not result:
@@ -542,7 +544,8 @@ def getstatusoutput(cmd):
     pipe = os.popen('{ ' + cmd + '; } 2>&1', 'r')
     text = pipe.read()
     sts = pipe.close()
-    if sts is None: sts = 0
+    if sts is None:
+        sts = 0
     if text[-1:] == '\n':
         text = text[:-1]
     return sts, text
@@ -566,7 +569,6 @@ def movefile(src, dest, src_basedir = None):
     @return: True, if file was moved successfully
     @rtype: bool
     """
-
     sstat = os.lstat(src)
     destexists = 1
     try:
@@ -607,7 +609,7 @@ def movefile(src, dest, src_basedir = None):
         try:
             os.rename(src, dest)
             renamefailed = False
-        except Exception as e:
+        except OSError as e:
             if e[0] != errno.EXDEV:
                 # Some random error.
                 print_generic("!!! Failed to move", src, "to", dest)
@@ -628,7 +630,7 @@ def movefile(src, dest, src_basedir = None):
                 didcopy = True
             except SystemExit as e:
                 raise
-            except Exception as e:
+            except (OSError, IOError, shutil.Error) as e:
                 print_generic('!!! copy', src, '->', dest, 'failed.')
                 print_generic("!!!", repr(e))
                 return False
@@ -2238,10 +2240,12 @@ def spawn_function(f, *args, **kwds):
     """
 
     uid = kwds.get('spf_uid')
-    if uid is not None: kwds.pop('spf_uid')
+    if uid is not None:
+        kwds.pop('spf_uid')
 
     gid = kwds.get('spf_gid')
-    if gid is not None: kwds.pop('spf_gid')
+    if gid is not None:
+        kwds.pop('spf_gid')
 
     write_pid_func = kwds.get('write_pid_func')
     if write_pid_func is not None:
@@ -2315,7 +2319,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         except ValueError:
             ugdata_valid = True
         try:
-            if ugdata_valid: # FIXME: will be removed in 2011
+            if ugdata_valid: # NOTE: backward compat. remove after 2012
                 # get uid/gid
                 # if not found, returns -1 that won't change anything
                 uid, gid = get_uid_from_user(uname), \
@@ -2560,7 +2564,8 @@ def is_valid_string(string):
     @rtype: bool
     """
     invalid = [ord(x) for x in string if ord(x) not in list(range(32, 127))]
-    if invalid: return False
+    if invalid:
+        return False
     return True
 
 valid_path_regexp = re.compile("^([A-Za-z0-9/\.:\-_]+)$")
@@ -2783,7 +2788,8 @@ def xml_from_dict_extended(dictionary):
         elif value is None:
             mytype = "None"
             value = "None"
-        else: TypeError
+        else:
+            raise TypeError()
         item.setAttribute('type', mytype)
         item_value = doc.createTextNode("%s" % (value,))
         item.appendChild(item_value)
@@ -3050,7 +3056,7 @@ def recursive_directory_relative_listing(empty_list, base_directory,
             recursive_directory_relative_listing(empty_list, x_path,
                 _nested = True)
         elif x_path not in empty_list:
-                empty_list.append(x_path)
+            empty_list.append(x_path)
 
     if not _nested:
         for idx in xrange(len(empty_list)):

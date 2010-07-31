@@ -11,10 +11,9 @@
 """
 import time
 from entropy.const import const_isstring, etpUi
-from entropy.exceptions import *
+from entropy.exceptions import ConnectionError
 from entropy.i18n import _
 from entropy.misc import TimeScheduled
-from entropy.i18n import _
 
 class Client:
 
@@ -70,7 +69,7 @@ class Client:
         self.shutdown = False
         self.connection_killer = None
 
-        # XXX actually session cache doesn't work when the connection is closed and re-opened
+        # NOTE actually session cache doesn't work when the connection is closed and re-opened
         # when the server is spawning requests under a child process (fork_requests = True)
         # this should be fixed by pushing the cache to disk but triggers a possible security issue
         # since sessions and their password are stored in memory and kept alive there until those
@@ -127,7 +126,7 @@ class Client:
         if self.do_cache_connection:
             key = self.get_connection_cache_key()
             srv = self.connection_cache.get(key)
-            # FIXME: if you enable cache connection, you should also
+            # NOTE: if you enable cache connection, you should also
             #        consider to clear the socket buffer
             #  srv.sock_conn
             #  srv.real_sock_conn
@@ -207,7 +206,7 @@ class Client:
         else:
             kwargs['socket_timeout'] = timeout
         from entropy.services.ugc.interfaces import Client
-        srv = Client(*args,**kwargs)
+        srv = Client(*args, **kwargs)
         srv.connect(self.hostname, self.hostport)
         return srv
 

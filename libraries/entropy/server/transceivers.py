@@ -10,11 +10,10 @@
 
 """
 import os
-import sys
-import time
+
 from entropy.const import const_isstring, const_isnumber, etpConst
 from entropy.output import darkred, blue, brown, darkgreen, red, bold
-from entropy.exceptions import *
+from entropy.exceptions import ConnectionError
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.transceivers import EntropyTransceiver
@@ -187,7 +186,6 @@ class TransceiverServerHandler:
 
                 base_dir = self.txc_basedir
 
-                mycwd = None
                 if isinstance(mypath, tuple):
                     if len(mypath) < 2:
                         continue

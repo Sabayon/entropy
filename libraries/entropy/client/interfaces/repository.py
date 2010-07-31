@@ -11,11 +11,8 @@
 """
 
 import os
-import sys
-import subprocess
 
 from entropy.i18n import _
-from entropy.const import etpConst, const_debug_write
 from entropy.exceptions import RepositoryError, PermissionDenied
 from entropy.output import blue, darkred, red, darkgreen, bold, purple, teal, \
     brown
@@ -34,7 +31,6 @@ class Repository:
 
         if repo_identifiers is None:
             repo_identifiers = []
-
         self._entropy = entropy_client_instance
         self._settings = SystemSettings()
         self._pkg_size_warning_th = 512*1024000 # 500mb
@@ -61,7 +57,6 @@ class Repository:
     def _run_sync(self):
 
         self.updated = False
-        repolength = len(self.repo_ids)
         for repo in self.repo_ids:
 
             # handle

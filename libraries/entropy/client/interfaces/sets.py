@@ -103,8 +103,6 @@ class Sets:
 
         while True:
 
-            # check inside SystemSettings
-            # XXX: remove this in future
             # ALLOW server-side caller to match sets in /etc/entropy/sets
             # if not server_repos:
             sys_pkgsets = self._settings['system_package_sets']
@@ -168,7 +166,8 @@ class Sets:
             raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (
                 set_name, _("cannot start with"), etpConst['packagesetprefix'],))
         set_match, rc = self.match(set_name)
-        if rc: return -1, _("Name already taken")
+        if rc:
+            return -1, _("Name already taken")
 
         _ensure_package_sets_dir()
         set_file = os.path.join(etpConst['confsetsdir'], set_name)
@@ -181,7 +180,8 @@ class Sets:
             return -3, _("Cannot create the element")
 
         f = open(set_file, "w")
-        for x in set_atoms: f.write("%s\n" % (x,))
+        for x in set_atoms:
+            f.write("%s\n" % (x,))
         f.flush()
         f.close()
         self._settings['system_package_sets'][set_name] = set(set_atoms)
@@ -201,7 +201,8 @@ class Sets:
                     etpConst['packagesetprefix'],))
 
         set_match, rc = self.match(set_name)
-        if not rc: return -1, _("Already removed")
+        if not rc:
+            return -1, _("Already removed")
         set_id, set_x, set_y = set_match
 
         if set_id != etpConst['userpackagesetsid']:
