@@ -568,6 +568,7 @@ def _do_text_cleanup(main_cmd, options):
         return 1
 
     acquired = False
+    client = None
     try:
 
         import text_tools
@@ -593,6 +594,8 @@ def _do_text_cleanup(main_cmd, options):
     finally:
         if acquired:
             text_tools.release_entropy_locks(client)
+        if client is not None:
+            client.shutdown()
 
 def do_moo(*args):
     t = """ _____________
