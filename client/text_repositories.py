@@ -156,6 +156,8 @@ def _add_repository(entropy_client, repo_strings):
         print_info("[%s] %s" % (
             purple(repoid), blue(_("repository added succesfully")),))
 
+    return 0
+
 def _remove_repository(entropy_client, repo_ids):
 
     excluded_repos = SystemSettings['repositories']['excluded']
@@ -170,6 +172,8 @@ def _remove_repository(entropy_client, repo_ids):
         entropy_client.remove_repository(repo_id)
         print_info("[%s] %s" % (
             purple(repo_id), blue(_("repository removed succesfully")),))
+
+    return 0
 
 def _enable_repositories(entropy_client, repos):
     excluded_repos = SystemSettings['repositories']['excluded']
