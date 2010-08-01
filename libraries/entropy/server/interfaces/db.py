@@ -17,7 +17,11 @@
     are subject to this automation (revision file update on commit).
 
 """
+from entropy.const import etpConst
 from entropy.core import Singleton
+from entropy.db import EntropyRepository
+
+import entropy.tools
 
 class ServerRepositoryStatus(Singleton):
 
@@ -142,3 +146,124 @@ class ServerRepositoryStatus(Singleton):
         if db not in self.__updates_log:
             self.__updates_log[db] = {}
         return self.__updates_log[db]
+
+
+class ServerPackagesRepository(EntropyRepository):
+    """
+    This class represents the installed packages repository and is a direct
+    subclass of EntropyRepository.
+    """
+
+    @staticmethod
+    def revision(repository_id):
+        """
+        Reimplemented from EntropyRepository
+        """
+        from entropy.server.interfaces import Server
+        srv = Server()
+        return srv.get_local_repository_revision(repo = repository_id)
+
+    @staticmethod
+    def remote_revision(repository_id):
+        """
+        Reimplemented from EntropyRepository
+        """
+        from entropy.server.interfaces import Server
+        srv = Server()
+        return srv.get_remote_repository_revision(repo = repository_id)
+
+    @staticmethod
+    def update(entropy_client, repository_id, force, gpg):
+        """
+        Reimplemented from EntropyRepository
+        """
+        return ServerPackagesRepositoryUpdater(entropy_client, repository_id,
+            force, gpg).update()
+
+    def maskFilter(self, package_id, live = True):
+        """
+        Reimplemented from EntropyRepository.
+        Server-side repositories do not feature any masked package. So, it's
+        safe to always consider package_id valid.
+        """
+        return package_id, 0
+
+    def handlePackage(self, pkg_data, forcedRevision = -1,
+        formattedContent = False):
+        """
+        Reimplemented from EntropyRepository.
+        """
+
+        # Remove entries in the same scope.
+        manual_deps = set()
+        removelist = self.getPackagesToRemove(
+            pkg_data['name'], pkg_data['category'],
+            pkg_data['slot'], pkg_data['injected']
+        )
+
+        for r_package_id in removelist:
+            manual_deps |= self.retrieveManualDependencies(r_package_id)
+            self.removePackage(r_package_id, do_cleanup = False,
+                do_commit = False)
+
+        # inject old manual dependencies back to package metadata
+        for manual_dep in manual_deps:
+            if manual_dep in pkg_data['dependencies']:
+                continue
+            pkg_data['dependencies'][manual_dep] = \
+                etpConst['dependency_type_ids']['mdepend_id']
+
+        # build atom string, server side
+        pkgatom = entropy.tools.create_package_atom_string(
+            pkg_data['category'], pkg_data['name'], pkg_data['version'],
+            pkg_data['versiontag'])
+
+        package_ids = self.getPackageIds(pkgatom)
+        current_rev = forcedRevision
+
+        for package_id in package_ids:
+
+            if forcedRevision == -1:
+                myrev = self.retrieveRevision(package_id)
+                if myrev > current_rev:
+                    current_rev = myrev
+
+            # injected packages wouldn't be removed by addPackage
+            self.removePackage(package_id, do_cleanup = False,
+                do_commit = False)
+
+        if forcedRevision == -1:
+            current_rev += 1
+
+        # add the new one
+        return self.addPackage(pkg_data, revision = current_rev,
+            formatted_content = formattedContent)
+
+
+class ServerPackagesRepositoryUpdater(object):
+
+    """
+    This class handles the repository update across all the configured mirrors.
+    It is used by entropy.server.interfaces.mirrors module and called from
+    inside ServerPackagesRepository class.
+    """
+
+    def __init__(self, entropy_server, repository_id, force, gpg):
+        """
+        ServerPackagesRepositoryUpdater constructor, called by
+        ServerPackagesRepository.
+        """
+        self._entropy = entropy_server
+        self._repository_id = repository_id
+        self._force = force
+        self._gpg = gpg
+
+    def update(self):
+        """
+        Executes the repository update by calling
+        Server.Mirrors.sync_repositories().
+        TODO: move logic here.
+        """
+        rc, x, y = self._entropy.Mirrors.sync_repositories(
+            repo = self._repository_id)
+        return rc

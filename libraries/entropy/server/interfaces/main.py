@@ -32,7 +32,8 @@ from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import EntropyRepository
 from entropy.db.skel import EntropyRepositoryPlugin
-from entropy.server.interfaces.db import ServerRepositoryStatus
+from entropy.server.interfaces.db import ServerRepositoryStatus, \
+    ServerPackagesRepository
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class
 from entropy.qa import QAInterfacePlugin
@@ -44,85 +45,6 @@ import entropy.tools
 import entropy.dump
 
 SERVER_QA_PLUGIN = "ServerQAInterfacePlugin"
-
-class ServerPackagesRepository(EntropyRepository):
-    """
-    This class represents the installed packages repository and is a direct
-    subclass of EntropyRepository.
-    """
-
-    @staticmethod
-    def revision(repository_id):
-        srv = Server()
-        return srv.get_local_repository_revision(repo = repository_id)
-
-    @staticmethod
-    def remote_revision(repository_id):
-        srv = Server()
-        return srv.get_remote_repository_revision(repo = repository_id)
-
-    @staticmethod
-    def update(entropy_client, repository_id, force, gpg):
-        raise NotImplementedError()
-
-    def maskFilter(self, package_id, live = True):
-        """
-        Reimplemented from EntropyRepository.
-        Server-side repositories do not feature any masked package. So, it's
-        safe to always consider package_id valid.
-        """
-        return package_id, 0
-
-    def handlePackage(self, pkg_data, forcedRevision = -1,
-        formattedContent = False):
-        """
-        Reimplemented from EntropyRepository.
-        """
-
-        # Remove entries in the same scope.
-        manual_deps = set()
-        removelist = self.getPackagesToRemove(
-            pkg_data['name'], pkg_data['category'],
-            pkg_data['slot'], pkg_data['injected']
-        )
-
-        for r_package_id in removelist:
-            manual_deps |= self.retrieveManualDependencies(r_package_id)
-            self.removePackage(r_package_id, do_cleanup = False,
-                do_commit = False)
-
-        # inject old manual dependencies back to package metadata
-        for manual_dep in manual_deps:
-            if manual_dep in pkg_data['dependencies']:
-                continue
-            pkg_data['dependencies'][manual_dep] = \
-                etpConst['dependency_type_ids']['mdepend_id']
-
-        # build atom string, server side
-        pkgatom = entropy.tools.create_package_atom_string(
-            pkg_data['category'], pkg_data['name'], pkg_data['version'],
-            pkg_data['versiontag'])
-
-        package_ids = self.getPackageIds(pkgatom)
-        current_rev = forcedRevision
-
-        for package_id in package_ids:
-
-            if forcedRevision == -1:
-                myrev = self.retrieveRevision(package_id)
-                if myrev > current_rev:
-                    current_rev = myrev
-
-            # injected packages wouldn't be removed by addPackage
-            self.removePackage(package_id, do_cleanup = False,
-                do_commit = False)
-
-        if forcedRevision == -1:
-            current_rev += 1
-
-        # add the new one
-        return self.addPackage(pkg_data, revision = current_rev,
-            formatted_content = formattedContent)
 
 
 class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
