@@ -938,6 +938,8 @@ def const_drop_privileges():
     if os.getgid() != unpriv_gid:
         raise OSError("privileges (gid) have not been dropped")
 
+    etpConst['uid'] = unpriv_uid
+
 def const_regain_privileges():
     """
     This function should be called if, and only if, a previous
@@ -971,6 +973,8 @@ def const_regain_privileges():
         raise OSError("privileges (uid) have not been dropped")
     if os.getgid() != 0:
         raise OSError("privileges (gid) have not been dropped")
+
+    etpConst['uid'] = 0
 
 def const_chmod_entropy_pid():
     """
