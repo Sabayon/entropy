@@ -36,6 +36,8 @@ import fcntl
 import signal
 import gzip
 import bz2
+import grp
+import pwd
 from entropy.i18n import _
 
 
@@ -519,7 +521,10 @@ def const_default_settings(rootdir):
         'systemroot': rootdir, # default system root
         'uid': os.getuid(), # current running UID
         'entropygid': None,
+        'entropygid_nopriv': None,
         'sysgroup': "entropy",
+        'sysgroup_nopriv': "entropy-nopriv",
+        'sysuser_nopriv': "entropy-nopriv",
         'defaultumask': 0o22,
         'storeumask': 0o02,
         'gentle_nice': 15,
@@ -924,24 +929,31 @@ def const_create_working_dirs():
     if not os.path.exists(piddir) and (etpConst['uid'] == 0):
         os.makedirs(piddir)
 
-    # create tmp dir
-    #if not os.path.isdir(xpakpath_dir):
-    #    os.makedirs(xpakpath_dir,0775)
-    #    const_setup_file(xpakpath_dir, 
-
     # create user if it doesn't exist
     gid = None
     try:
         gid = const_get_entropy_gid()
     except KeyError:
         if etpConst['uid'] == 0:
-            # create group
-            # avoid checking cause it's not mandatory for entropy/equo itself
-            const_add_entropy_group()
+            _const_add_entropy_group(etpConst['sysgroup'])
             try:
                 gid = const_get_entropy_gid()
             except KeyError:
                 pass
+
+    # create unprivileged entropy-nopriv group
+    nopriv_gid = None
+    try:
+        nopriv_gid = const_get_entropy_nopriv_gid()
+    except KeyError:
+        if etpConst['uid'] == 0:
+            _const_add_entropy_group(etpConst['sysgroup_nopriv'])
+            try:
+                nopriv_gid = const_get_entropy_nopriv_gid()
+            except KeyError:
+                pass
+    if nopriv_gid:
+        etpConst['entropygid_nopriv'] = nopriv_gid
 
     # Create paths
     keys = [x for x in etpConst if const_isstring(etpConst[x])]
@@ -1099,7 +1111,6 @@ def const_setup_file(myfile, gid, chmod, uid = -1):
         os.chown(myfile, uid, gid)
     const_set_chmod(myfile, chmod)
 
-# you need to convert to int
 def const_get_chmod(myfile):
     """
     This function get the current permissions of the specified
@@ -1135,25 +1146,34 @@ def const_get_entropy_gid():
     This function tries to retrieve the "entropy" user group
     GID.
 
-    @rtype: None
-    @return: None
+    @rtype: int
+    @return: entropy group id
     @raise KeyError: when "entropy" system GID is not available
     """
-    group_file = etpConst['systemroot']+'/etc/group'
-    if not os.path.isfile(group_file):
-        raise KeyError
+    return grp.getgrnam(etpConst['sysgroup']).gr_gid
 
-    with open(group_file, "r") as group_f:
-        for line in group_f.readlines():
-            if line.startswith('%s:' % (etpConst['sysgroup'],)):
-                try:
-                    gid = int(line.split(":")[2])
-                except ValueError:
-                    raise KeyError
-                return gid
-    raise KeyError
+def const_get_entropy_nopriv_gid():
+    """
+    This function tries to retrieve the "entropy-nopriv" user group
+    GID. This is the unprivileged entropy users group.
 
-def const_add_entropy_group():
+    @rtype: int
+    @return: entropy-nopriv group id
+    @raise KeyError: when "entropy-nopriv" system GID is not available
+    """
+    return grp.getgrnam(etpConst['sysgroup_nopriv']).gr_gid
+
+def const_get_entropy_nopriv_uid():
+    """
+    This function tries to retrieve the "entropy-nopriv" user id (uid).
+
+    @rtype: int
+    @return: entropy-nopriv user id
+    @raise KeyError: when "entropy-nopriv" system UID is not available
+    """
+    return pwd.getpwnam(etpConst['sysuser_nopriv']).pw_uid
+
+def _const_add_entropy_group(group_name):
     """
     This function looks for an "entropy" user group.
     If not available, it tries to create one.
@@ -1187,7 +1207,7 @@ def const_add_entropy_group():
 
     with open(group_file, "a") as group_fw:
         group_fw.seek(0, 2)
-        app_line = "entropy:x:%s:\n" % (new_id,)
+        app_line = "%s:x:%s:\n" % (group_name, new_id,)
         group_fw.write(app_line)
         group_fw.flush()
 
