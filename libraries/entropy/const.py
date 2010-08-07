@@ -904,11 +904,15 @@ def const_secure_config_file(config_file):
     except (OSError, IOError,):
         pass
 
-def const_drop_privileges():
+def const_drop_privileges(unpriv_uid = None, unpriv_gid = None):
     """
     This function does its best to drop process privileges. If it fails, an
     exception is raised. You can consider this function security-safe.
 
+    @param unpriv_uid: override default unprivileged uid
+    @type unpriv_uid: int
+    @param unpriv_gid: override default unprivileged gid
+    @type unpriv_gid: int
     @raise entropy.exceptions.SecurityError: if unprivileged uid/gid cannot
         be retrieived.
     @raise ValueError: if program is already running as unprivileged user,
@@ -919,8 +923,10 @@ def const_drop_privileges():
     """
     cur_uid = os.getuid()
 
-    unpriv_uid = const_get_lazy_nopriv_uid()
-    unpriv_gid = const_get_lazy_nopriv_gid()
+    if unpriv_uid is None:
+        unpriv_uid = const_get_lazy_nopriv_uid()
+    if unpriv_gid is None:
+        unpriv_gid = const_get_lazy_nopriv_gid()
 
     if cur_uid in (unpriv_uid, etpConst['sysuser_nopriv_fallback']):
         # already unprivileged
@@ -954,19 +960,14 @@ def const_regain_privileges():
     """
     cur_uid = os.getuid()
 
-    unpriv_uid = const_get_lazy_nopriv_uid()
-    unpriv_gid = const_get_lazy_nopriv_gid()
-
     if cur_uid == 0:
         # already running privileged
-        return
-    elif cur_uid not in (unpriv_uid, etpConst['sysuser_nopriv_fallback']):
-        # cannot regain
-        raise ValueError("already running as another unprivileged user")
+        raise ValueError("already running as privileged user")
 
     # privileges can be dropped
-    os.setreuid(0, unpriv_uid) # real uid, effective uid
-    os.setregid(0, unpriv_gid)
+    # set like this, otherwise we won't get back all our privs!
+    os.setreuid(0, 0) # real uid, effective uid
+    os.setregid(0, 0)
 
     # make sure
     if os.getuid() != 0:
