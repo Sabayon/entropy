@@ -525,6 +525,7 @@ def const_default_settings(rootdir):
         'sysgroup': "entropy",
         'sysgroup_nopriv': "entropy-nopriv",
         'sysuser_nopriv': "entropy-nopriv",
+        'sysuser_nopriv_fallback': "nobody",
         'defaultumask': 0o22,
         'storeumask': 0o02,
         'gentle_nice': 15,
@@ -903,6 +904,74 @@ def const_secure_config_file(config_file):
     except (OSError, IOError,):
         pass
 
+def const_drop_privileges():
+    """
+    This function does its best to drop process privileges. If it fails, an
+    exception is raised. You can consider this function security-safe.
+
+    @raise entropy.exceptions.SecurityError: if unprivileged uid/gid cannot
+        be retrieived.
+    @raise ValueError: if program is already running as unprivileged user,
+        but this differs from the usual entropy unprivileged user.
+    @raise OSError: if privileges can't be dropped, the underlying syscall
+        fails.
+    @todo: when Python 2.7, see os.setresuid()
+    """
+    cur_uid = os.getuid()
+
+    unpriv_uid = const_get_lazy_nopriv_uid()
+    unpriv_gid = const_get_lazy_nopriv_gid()
+
+    if cur_uid in (unpriv_uid, etpConst['sysuser_nopriv_fallback']):
+        # already unprivileged
+        return
+    elif cur_uid != 0:
+        raise ValueError("already running as another unprivileged user")
+
+    # privileges can be dropped
+    os.setregid(unpriv_gid, 0)
+    os.setreuid(unpriv_uid, 0) # real uid, effective uid
+
+    # make sure
+    if os.getuid() != unpriv_uid:
+        raise OSError("privileges (uid) have not been dropped")
+    if os.getgid() != unpriv_gid:
+        raise OSError("privileges (gid) have not been dropped")
+
+def const_regain_privileges():
+    """
+    This function should be called if, and only if, a previous
+    const_drop_privileges() has been called. It makes the program able to
+    get back privileges that were dropped previously.
+
+    @raise entropy.exceptions.SecurityError: if unprivileged uid/gid cannot
+        be retrieived.
+    @raise ValueError: if program is already running as unsupported unprivileged
+        users.
+    @todo: when Python 2.7, see os.getresuid()
+    """
+    cur_uid = os.getuid()
+
+    unpriv_uid = const_get_lazy_nopriv_uid()
+    unpriv_gid = const_get_lazy_nopriv_gid()
+
+    if cur_uid == 0:
+        # already running privileged
+        return
+    elif cur_uid not in (unpriv_uid, etpConst['sysuser_nopriv_fallback']):
+        # cannot regain
+        raise ValueError("already running as another unprivileged user")
+
+    # privileges can be dropped
+    os.setreuid(0, unpriv_uid) # real uid, effective uid
+    os.setregid(0, unpriv_gid)
+
+    # make sure
+    if os.getuid() != 0:
+        raise OSError("privileges (uid) have not been dropped")
+    if os.getgid() != 0:
+        raise OSError("privileges (gid) have not been dropped")
+
 def const_chmod_entropy_pid():
     """
     Setup entropy pid file permissions, if possible.
@@ -1150,7 +1219,7 @@ def const_get_entropy_gid():
     @return: entropy group id
     @raise KeyError: when "entropy" system GID is not available
     """
-    return grp.getgrnam(etpConst['sysgroup']).gr_gid
+    return int(grp.getgrnam(etpConst['sysgroup']).gr_gid)
 
 def const_get_entropy_nopriv_gid():
     """
@@ -1161,7 +1230,7 @@ def const_get_entropy_nopriv_gid():
     @return: entropy-nopriv group id
     @raise KeyError: when "entropy-nopriv" system GID is not available
     """
-    return grp.getgrnam(etpConst['sysgroup_nopriv']).gr_gid
+    return int(grp.getgrnam(etpConst['sysgroup_nopriv']).gr_gid)
 
 def const_get_entropy_nopriv_uid():
     """
@@ -1171,7 +1240,74 @@ def const_get_entropy_nopriv_uid():
     @return: entropy-nopriv user id
     @raise KeyError: when "entropy-nopriv" system UID is not available
     """
-    return pwd.getpwnam(etpConst['sysuser_nopriv']).pw_uid
+    return int(pwd.getpwnam(etpConst['sysuser_nopriv']).pw_uid)
+
+def const_get_fallback_nopriv_uid():
+    """
+    Fallback function that tries to retrieve the "nobody" user id (uid).
+    It is used when const_get_entropy_nopriv_uid() fails.
+
+    @rtype: int
+    @return: nobody user id
+    @raise KeyError: when "nobody" system UID is not available
+    """
+    return int(pwd.getpwnam("nobody").pw_uid)
+
+def const_get_lazy_nopriv_uid():
+    """
+    This function returns an unprivileged uid by first trying to call
+    const_get_entropy_nopriv_uid() and then const_get_fallback_nopriv_uid()
+
+    @return: uid
+    @rtype: int
+    @raise entropy.exceptions.SecurityError: if unprivileged user id is not
+        available.
+    """
+    unpriv_uid = None
+    try:
+        unpriv_uid = const_get_entropy_nopriv_uid()
+    except KeyError:
+        # fallback to "nobody"
+        try:
+            unpriv_uid = const_get_fallback_nopriv_uid()
+        except KeyError:
+            from entropy.exceptions import SecurityError
+            raise SecurityError("cannot find unprivileged user")
+
+    return unpriv_uid
+
+def const_get_lazy_nopriv_gid():
+    """
+    This function returns an unprivileged gid by first trying to call
+    const_get_entropy_nopriv_gid() and then const_get_fallback_nopriv_gid()
+
+    @return: uid
+    @rtype: int
+    @raise entropy.exceptions.SecurityError: if unprivileged group id is not
+        available.
+    """
+    unpriv_gid = None
+    try:
+        unpriv_gid = const_get_entropy_nopriv_gid()
+    except KeyError:
+        try:
+            unpriv_gid = const_get_fallback_nopriv_gid()
+        except KeyError:
+            from entropy.exceptions import SecurityError
+            raise SecurityError("cannot find unprivileged group")
+
+    return unpriv_gid
+
+def const_get_fallback_nopriv_gid():
+    """
+    Fallback function that tries to retrieve the "nogroup" group id (gid).
+    It is used when const_get_entropy_nopriv_gid() fails.
+
+    @rtype: int
+    @return: nogroup user id
+    @raise KeyError: when "nogroup" system GID is not available
+    """
+    return grp.getgrnam("nogroup").gr_gid
 
 def _const_add_entropy_group(group_name):
     """
