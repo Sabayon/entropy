@@ -16,64 +16,15 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import os, sys
+import os
+import sys
 from entropy.const import etpConst
 from entropy.i18n import _
 import entropy.tools
 
 class const:
 
-    ''' This Class contains all the Constants in Yumex'''
     __sulfur_version__   = etpConst['entropyversion']
-    # Paths
-    MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) )
-    GLADE_FILE = MAIN_PATH+'/sulfur.glade'
-
-    if not os.path.isfile(GLADE_FILE):
-        GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
-
-    if not os.path.isfile(GLADE_FILE):
-        MAIN_PATH = '/usr/lib/entropy/sulfur'
-        GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
-
-    if MAIN_PATH == '/usr/lib/entropy/sulfur':
-        PIXMAPS_PATH = '/usr/share/pixmaps/sulfur'
-    else:
-        PIXMAPS_PATH = MAIN_PATH+'/../gfx'
-    if MAIN_PATH == '/usr/lib/entropy/sulfur':
-        ICONS_PATH = '/usr/share/pixmaps/sulfur'
-    else:
-        ICONS_PATH = MAIN_PATH+'/pixmaps'
-
-    debug = '--debug' in sys.argv
-    if os.getenv('SULFUR_DEBUG') is not None:
-        debug = True
-
-    home = os.getenv("HOME")
-    if not home: home = "/tmp"
-    SETTINGS_FILE = os.path.join(home, ".config/entropy/sulfur.conf")
-
-    pkg_pixmap = PIXMAPS_PATH+'/package-x-generic.png'
-    ugc_small_pixmap = PIXMAPS_PATH+'/ugc.png'
-    ugc_pixmap = PIXMAPS_PATH+'/ugc/icon.png'
-    ugc_pixmap_small = PIXMAPS_PATH+'/ugc/icon_small.png'
-    refresh_pixmap = PIXMAPS_PATH+'/ugc/refresh.png'
-    star_normal_pixmap = PIXMAPS_PATH+'/star.png'
-    star_selected_pixmap = PIXMAPS_PATH+'/star_selected.png'
-    star_half_pixmap = PIXMAPS_PATH+'/star_half.png'
-    star_empty_pixmap = PIXMAPS_PATH+'/star_empty.png'
-    empty_background = PIXMAPS_PATH+'/empty.png'
-    loading_pix = PIXMAPS_PATH+'/loading.gif'
-    loading_pix_small = PIXMAPS_PATH+'/loading_small.gif'
-
-    # UGC
-    ugc_ok_pix = PIXMAPS_PATH+'/ugc/ok.png'
-    ugc_error_pix = PIXMAPS_PATH+'/ugc/error.png'
-    ugc_generic_pix = PIXMAPS_PATH+'/ugc/generic.png'
-    ugc_text_pix = PIXMAPS_PATH+'/ugc/text.png'
-    ugc_video_pix = PIXMAPS_PATH+'/ugc/video.png'
-    ugc_image_pix = PIXMAPS_PATH+'/ugc/image.png'
-    ugc_view_pix = PIXMAPS_PATH+'/ugc/view.png'
 
     DAY_IN_SECONDS = 86400
     # Page -> Notebook page numbers
@@ -145,6 +96,90 @@ class const:
 
           )
 
+    debug = '--debug' in sys.argv
+    if os.getenv('SULFUR_DEBUG') is not None:
+        debug = True
+
+    home = os.getenv("HOME")
+    if not home:
+        home = "/tmp"
+    SETTINGS_FILE = os.path.join(home, ".config/entropy/sulfur.conf")
+
+    MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) )
+    GLADE_FILE = MAIN_PATH+'/sulfur.glade'
+
+    if not os.path.isfile(GLADE_FILE):
+        GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
+
+    if not os.path.isfile(GLADE_FILE):
+        MAIN_PATH = '/usr/lib/entropy/sulfur'
+        GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
+
+    ORIG_PIXMAPS_PATH = '/usr/share/pixmaps/sulfur'
+    ORIG_ICONS_PATH = '/usr/share/pixmaps/sulfur'
+    PIXMAPS_PATH = None
+    ICONS_PATH = None
+    pkg_pixmap = None
+    ugc_small_pixmap = None
+    ugc_pixmap = None
+    ugc_pixmap_small = None
+    refresh_pixmap = None
+    star_normal_pixmap = None
+    star_selected_pixmap = None
+    star_half_pixmap = None
+    star_empty_pixmap = None
+    empty_background = None
+    loading_pix = None
+    loading_pix_small = None
+    ugc_ok_pix = None
+    ugc_error_pix = None
+    ugc_generic_pix = None
+    ugc_text_pix = None
+    ugc_video_pix = None
+    ugc_image_pix = None
+    ugc_view_pix = None
+
+    @staticmethod
+    def setup():
+
+        if const.MAIN_PATH == '/usr/lib/entropy/sulfur':
+            const.ICONS_PATH = const.ORIG_ICONS_PATH
+        else:
+            const.ICONS_PATH = const.MAIN_PATH+'/pixmaps'
+            if (not os.access(const.ICONS_PATH, os.R_OK)) and \
+                os.access(const.ORIG_ICONS_PATH, os.R_OK):
+                const.ICONS_PATH = const.ORIG_ICONS_PATH
+
+        if const.MAIN_PATH == '/usr/lib/entropy/sulfur':
+            const.PIXMAPS_PATH = const.ORIG_PIXMAPS_PATH
+        else:
+            const.PIXMAPS_PATH = const.MAIN_PATH+'/../gfx'
+            if (not os.access(const.PIXMAPS_PATH, os.R_OK)) and \
+                os.access(const.ORIG_PIXMAPS_PATH, os.R_OK):
+                const.PIXMAPS_PATH = const.ORIG_PIXMAPS_PATH
+
+        const.pkg_pixmap = const.PIXMAPS_PATH+'/package-x-generic.png'
+        const.ugc_small_pixmap = const.PIXMAPS_PATH+'/ugc.png'
+        const.ugc_pixmap = const.PIXMAPS_PATH+'/ugc/icon.png'
+        const.ugc_pixmap_small = const.PIXMAPS_PATH+'/ugc/icon_small.png'
+        const.refresh_pixmap = const.PIXMAPS_PATH+'/ugc/refresh.png'
+        const.star_normal_pixmap = const.PIXMAPS_PATH+'/star.png'
+        const.star_selected_pixmap = const.PIXMAPS_PATH+'/star_selected.png'
+        const.star_half_pixmap = const.PIXMAPS_PATH+'/star_half.png'
+        const.star_empty_pixmap = const.PIXMAPS_PATH+'/star_empty.png'
+        const.empty_background = const.PIXMAPS_PATH+'/empty.png'
+        const.loading_pix = const.PIXMAPS_PATH+'/loading.gif'
+        const.loading_pix_small = const.PIXMAPS_PATH+'/loading_small.gif'
+
+        const.ugc_ok_pix = const.PIXMAPS_PATH+'/ugc/ok.png'
+        const.ugc_error_pix = const.PIXMAPS_PATH+'/ugc/error.png'
+        const.ugc_generic_pix = const.PIXMAPS_PATH+'/ugc/generic.png'
+        const.ugc_text_pix = const.PIXMAPS_PATH+'/ugc/text.png'
+        const.ugc_video_pix = const.PIXMAPS_PATH+'/ugc/video.png'
+        const.ugc_image_pix = const.PIXMAPS_PATH+'/ugc/image.png'
+        const.ugc_view_pix = const.PIXMAPS_PATH+'/ugc/view.png'
+
+const.setup()
 
 class SulfurConf:
 
