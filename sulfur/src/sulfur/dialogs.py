@@ -917,8 +917,12 @@ class PkgInfoMenu(MenuSkel):
                     mydoc['iddoc'], self.repository, mydoc['store_url'])
 
                 if store_path is None:
-                    self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'],
-                        self.repository, mydoc['store_url'])
+                    try:
+                        self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'],
+                            self.repository, mydoc['store_url'])
+                    except PermissionDenied:
+                        # not enough privileges
+                        continue
                     store_path = self.Entropy.UGC.UGCCache.get_stored_document(
                         mydoc['iddoc'], self.repository, mydoc['store_url'])
 
