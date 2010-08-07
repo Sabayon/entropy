@@ -65,13 +65,16 @@ class SulfurApplicationEventsMixin:
 
     def on_dbRestoreButton_clicked(self, widget):
         model, myiter = self.dbBackupView.get_selection().get_selected()
-        if myiter == None: return
+        if myiter == None:
+            return
         dbpath = model.get_value(myiter, 0)
+
         self.start_working()
-        status, err_msg = self._entropy.restore_repository(dbpath,
-            etpConst['etpdatabaseclientfilepath'])
-        self.end_working()
-        self._entropy.reopen_installed_repository()
+        with self._privileges:
+            status, err_msg = self._entropy.restore_repository(dbpath,
+                etpConst['etpdatabaseclientfilepath'])
+            self.end_working()
+            self._entropy.reopen_installed_repository()
         self.reset_cache_status()
         self.show_packages()
         if not status:
@@ -84,14 +87,17 @@ class SulfurApplicationEventsMixin:
 
     def on_dbDeleteButton_clicked(self, widget):
         model, myiter = self.dbBackupView.get_selection().get_selected()
-        if myiter == None: return
-        dbpath = model.get_value(myiter, 0)
-        try:
-            if os.path.isfile(dbpath) and os.access(dbpath, os.W_OK):
-                os.remove(dbpath)
-        except OSError as e:
-            okDialog( self.ui.main, "%s: %s" % (_("Error during removal"), e,) )
+        if myiter == None:
             return
+        dbpath = model.get_value(myiter, 0)
+
+        with self._privileges:
+            try:
+                if os.path.isfile(dbpath) and os.access(dbpath, os.W_OK):
+                    os.remove(dbpath)
+            except OSError as e:
+                okDialog( self.ui.main, "%s: %s" % (_("Error during removal"), e,) )
+                return
         self.fill_pref_db_backup_page()
         self.dbBackupView.queue_draw()
 
@@ -142,43 +148,47 @@ class SulfurApplicationEventsMixin:
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        try:
-            self._entropy.FileUpdates.remove(identifier)
-        except KeyError:
-            pass # cope with multithreading requests
-        self.filesView.populate(self._entropy.FileUpdates.scan())
+        with self._privileges:
+            try:
+                self._entropy.FileUpdates.remove(identifier)
+            except KeyError:
+                pass # cope with multithreading requests
+            self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_filesMerge_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        try:
-            self._entropy.FileUpdates.merge(identifier)
-        except KeyError:
-            pass # code with multithreaded requests
-        self.filesView.populate(self._entropy.FileUpdates.scan())
+        with self._privileges:
+            try:
+                self._entropy.FileUpdates.merge(identifier)
+            except KeyError:
+                pass # code with multithreaded requests
+            self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_mergeFiles_clicked( self, widget ):
-        self._entropy.FileUpdates.scan(dcache = True)
-        keys = list(self._entropy.FileUpdates.scan().keys())
-        for key in keys:
-            try:
-                self._entropy.FileUpdates.merge(key)
-                # it's cool watching it runtime
-            except KeyError:
-                pass
-        self.filesView.populate(self._entropy.FileUpdates.scan())
+        with self._privileges:
+            self._entropy.FileUpdates.scan(dcache = True)
+            keys = list(self._entropy.FileUpdates.scan().keys())
+            for key in keys:
+                try:
+                    self._entropy.FileUpdates.merge(key)
+                    # it's cool watching it runtime
+                except KeyError:
+                    pass
+            self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_deleteFiles_clicked( self, widget ):
-        self._entropy.FileUpdates.scan(dcache = True)
-        keys = list(self._entropy.FileUpdates.scan().keys())
-        for key in keys:
-            try:
-                self._entropy.FileUpdates.remove(key)
-                # it's cool watching it runtime
-            except KeyError:
-                pass
-        self.filesView.populate(self._entropy.FileUpdates.scan())
+        with self._privileges:
+            self._entropy.FileUpdates.scan(dcache = True)
+            keys = list(self._entropy.FileUpdates.scan().keys())
+            for key in keys:
+                try:
+                    self._entropy.FileUpdates.remove(key)
+                    # it's cool watching it runtime
+                except KeyError:
+                    pass
+            self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_filesEdit_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
@@ -220,8 +230,9 @@ class SulfurApplicationEventsMixin:
         TextReadDialog(dest, mybuffer)
 
     def on_filesViewRefresh_clicked( self, widget ):
-        self._entropy.FileUpdates.scan(dcache = False)
-        self.filesView.populate(self._entropy.FileUpdates.scan())
+        with self._privileges:
+            self._entropy.FileUpdates.scan(dcache = False)
+            self.filesView.populate(self._entropy.FileUpdates.scan())
 
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self._get_selected_repo_index()
@@ -304,10 +315,14 @@ class SulfurApplicationEventsMixin:
         for config_file in self._preferences:
             for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self._preferences[config_file]:
                 if mytype == list:
-                    savefunc(config_file, name, setting, mytype, wgwrite, wgread)
+                    with self._privileges:
+                        savefunc(config_file, name, setting, mytype,
+                            wgwrite, wgread)
                 else:
                     data = wgread()
-                    result = savefunc(config_file, name, setting, mytype, data)
+                    with self._privileges:
+                        result = savefunc(config_file, name, setting,
+                            mytype, data)
                     if not result:
                         errorMessage(
                             self.ui.main,

@@ -17,8 +17,13 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # Base Python Imports
-import sys, os, pty, random, signal
+import os
+import sys
+import pty
+import random
+import signal
 import time
+import threading
 
 # Entropy Imports
 if "../../libraries" not in sys.path:
@@ -36,7 +41,8 @@ from entropy.exceptions import OnlineMirrorError, QueueError, TimeoutError, \
     SSLError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
-    initconfig_entropy_constants, const_convert_to_unicode
+    initconfig_entropy_constants, const_convert_to_unicode, \
+    const_drop_privileges, const_regain_privileges
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
@@ -63,8 +69,53 @@ from sulfur.event import SulfurSignals
 
 class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
-    def __init__(self):
+    class Privileges:
 
+        def __init__(self, drop_privs = True):
+            self.__drop_privs = drop_privs
+            self.__drop_privs_lock = threading.RLock()
+            self.__with_stmt = 0
+
+        def __enter__(self):
+            """
+            Hold the lock.
+            """
+            self.__drop_privs_lock.acquire()
+            if self.__with_stmt < 1:
+                self.regain()
+            self.__with_stmt += 1
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            """
+            Drop the lock.
+            """
+            if self.__with_stmt == 1:
+                self.drop()
+            self.__with_stmt -= 1
+            self.__drop_privs_lock.release()
+
+        def drop(self):
+            """
+            Drop process privileges. Setting unpriv_gid to etpConst['entropygid']
+            makes Entropy UGC/Data cache handling working.
+            """
+            if self.__drop_privs:
+                with self.__drop_privs_lock:
+                    const_drop_privileges(unpriv_gid = etpConst['entropygid'])
+                    const.setup()
+
+        def regain(self):
+            """
+            Regain previously dropped process privileges.
+            """
+            if self.__drop_privs:
+                with self.__drop_privs_lock:
+                    const_regain_privileges()
+                    const.setup()
+
+    def __init__(self, drop_privs = True):
+
+        self._privileges = self.Privileges(drop_privs = drop_privs)
         self._entropy = Equo()
         self._cacher = EntropyCacher()
         self._settings = SystemSettings()
@@ -73,8 +124,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._ugc_status = "--nougc" not in sys.argv
         self._RESOURCES_LOCKED = False
         locked = self._entropy.another_entropy_running()
-        is_root = os.getuid() == 0
-        if locked or (not is_root):
+        self._effective_root = os.getuid() == 0
+        if self._effective_root:
+            self._privileges.drop()
+
+        if locked or (not self._effective_root):
             self._RESOURCES_LOCKED = True
             if locked:
                 okDialog( None,
@@ -710,13 +764,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             pix = self.ui.rbSearchImage
 
         if pix is not None:
+            pix_path = os.path.join(const.PIXMAPS_PATH, tag+".png")
             try:
-                pix_path = os.path.join(const.PIXMAPS_PATH, tag+".png")
                 p = gtk.gdk.pixbuf_new_from_file(pix_path)
                 pix.set_from_pixbuf(p)
                 pix.show()
-            except gobject.GError:
-                pass
+            except gobject.GError as err:
+                if self.do_debug:
+                    print_generic("Error loading %s: %s" % (pix_path, err,))
 
         self.packageRB[tag] = widget
 
@@ -744,14 +799,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def create_sidebar_button( self, image, icon, page):
 
         iconpath = os.path.join(const.PIXMAPS_PATH, icon)
-        pix = None
         if os.path.isfile(iconpath) and os.access(iconpath, os.R_OK):
             try:
                 p = gtk.gdk.pixbuf_new_from_file(iconpath)
                 image.set_from_pixbuf(p)
                 image.show()
-            except gobject.GError:
-                pass
+            except gobject.GError as err:
+                if self.do_debug:
+                    print_generic("Error loading %s: %s" % (iconpath, err,))
 
         page_widget = self.ui.notebook.get_nth_page(const.PAGES[page])
         self._notebook_tabs_cache[page] = page_widget
@@ -765,7 +820,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 p = gtk.gdk.pixbuf_new_from_file(iconpath)
                 self.ui.progressImage.set_from_pixbuf(p)
             except gobject.GError:
-                pass
+                if self.do_debug:
+                    print_generic("Error loading %s: %s" % (iconpath, err,))
 
         # setup Update All icon
         iconpath = os.path.join(const.PIXMAPS_PATH, "update-all.png")
@@ -1292,9 +1348,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _populate_files_update(self):
         # load filesUpdate interface and fill self.filesView
-        cached = self._entropy.FileUpdates.scan(quiet = True)
-        if cached:
-            self.filesView.populate(cached)
+        with self._privileges:
+            cached = self._entropy.FileUpdates.scan(quiet = True)
+            if cached:
+                self.filesView.populate(cached)
 
     def show_sulfur_tips(self):
         if SulfurConf.show_startup_tips:
@@ -1328,93 +1385,93 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if self._RESOURCES_LOCKED:
             return False
 
-        force = self.ui.forceRepoUpdate.get_active()
+        with self._privileges:
+            force = self.ui.forceRepoUpdate.get_active()
+            try:
+                repoConn = self._entropy.Repositories(repos, force = force)
+            except AttributeError:
+                msg = "%s: %s" % (_('No repositories specified in'),
+                    etpConst['repositoriesconf'],)
+                self.progress_log( msg, extra = "repositories")
+                return 127
+            except Exception as e:
+                msg = "%s: %s" % (_('Unhandled exception'), e,)
+                self.progress_log(msg, extra = "repositories")
+                return 2
 
-        try:
-            repoConn = self._entropy.Repositories(repos, force = force)
-        except AttributeError:
-            msg = "%s: %s" % (_('No repositories specified in'),
-                etpConst['repositoriesconf'],)
-            self.progress_log( msg, extra = "repositories")
-            return 127
-        except Exception as e:
-            msg = "%s: %s" % (_('Unhandled exception'), e,)
-            self.progress_log(msg, extra = "repositories")
-            return 2
+            self.disable_ugc = True
 
-        self.disable_ugc = True
+            # this is in EXACT order to avoid GTK complaining
 
-        # this is in EXACT order to avoid GTK complaining
+            self.show_progress_bars()
+            self.progress.set_mainLabel(_('Updating repositories...'))
 
-        self.show_progress_bars()
-        self.progress.set_mainLabel(_('Updating repositories...'))
+            self.hide_notebook_tabs_for_install()
+            self.set_status_ticker(_("Running tasks"))
 
-        self.hide_notebook_tabs_for_install()
-        self.set_status_ticker(_("Running tasks"))
+            self.start_working(do_busy = True)
+            normal_cursor(self.ui.main)
+            self.progress.show()
+            self.switch_notebook_page('output')
+            self.ui_lock(True)
 
-        self.start_working(do_busy = True)
-        normal_cursor(self.ui.main)
-        self.progress.show()
-        self.switch_notebook_page('output')
-        self.ui_lock(True)
+            self.__repo_update_rc = -1000
+            def run_up():
+                self.__repo_update_rc = repoConn.sync()
 
-        self.__repo_update_rc = -1000
-        def run_up():
-            self.__repo_update_rc = repoConn.sync()
+            t = ParallelTask(run_up)
+            t.start()
+            while t.isAlive():
+                time.sleep(0.2)
+                if self.do_debug:
+                    print_generic("update_repositories: update thread still alive")
+                self.gtk_loop()
+            rc = self.__repo_update_rc
 
-        t = ParallelTask(run_up)
-        t.start()
-        while t.isAlive():
-            time.sleep(0.2)
-            if self.do_debug:
-                print_generic("update_repositories: update thread still alive")
-            self.gtk_loop()
-        rc = self.__repo_update_rc
+            for repo in repos:
+                # inform UGC that we are syncing this repo
+                if self._entropy.UGC is not None:
+                    try:
+                        self._entropy.UGC.add_download_stats(repo, [repo])
+                    except (TimeoutError, SSLError,):
+                        continue
 
-        for repo in repos:
-            # inform UGC that we are syncing this repo
-            if self._entropy.UGC is not None:
-                try:
-                    self._entropy.UGC.add_download_stats(repo, [repo])
-                except (TimeoutError, SSLError,):
-                    continue
-
-        if repoConn.sync_errors or (rc != 0):
-            self.progress.set_mainLabel(_('Errors updating repositories.'))
-            self.progress.set_subLabel(
-                _('Please check logs below for more info'))
-        else:
-            if repoConn.already_updated == 0:
-                self.progress.set_mainLabel(
-                    _('Repositories updated successfully'))
+            if repoConn.sync_errors or (rc != 0):
+                self.progress.set_mainLabel(_('Errors updating repositories.'))
+                self.progress.set_subLabel(
+                    _('Please check logs below for more info'))
             else:
-                if len(repos) == repoConn.already_updated:
+                if repoConn.already_updated == 0:
                     self.progress.set_mainLabel(
-                        _('All the repositories were already up to date.'))
+                        _('Repositories updated successfully'))
                 else:
-                    msg = "%s %s" % (repoConn.already_updated,
-                        _("repositories were already up to date. Others have been updated."),)
-                    self.progress.set_mainLabel(msg)
-            if repoConn.new_entropy:
-                self.progress.set_extraLabel(
-                    _('sys-apps/entropy needs to be updated as soon as possible.'))
+                    if len(repos) == repoConn.already_updated:
+                        self.progress.set_mainLabel(
+                            _('All the repositories were already up to date.'))
+                    else:
+                        msg = "%s %s" % (repoConn.already_updated,
+                            _("repositories were already up to date. Others have been updated."),)
+                        self.progress.set_mainLabel(msg)
+                if repoConn.new_entropy:
+                    self.progress.set_extraLabel(
+                        _('sys-apps/entropy needs to be updated as soon as possible.'))
 
-        self.end_working()
+            self.end_working()
 
-        self.progress.reset_progress()
-        self.reset_cache_status()
-        self.setup_repoView()
-        self.gtk_loop()
-        self.setup_application()
-        self.set_package_radio('updates')
-        initconfig_entropy_constants(etpSys['rootdir'])
-        self.ui_lock(False)
+            self.progress.reset_progress()
+            self.reset_cache_status()
+            self.setup_repoView()
+            self.gtk_loop()
+            self.setup_application()
+            self.set_package_radio('updates')
+            initconfig_entropy_constants(etpSys['rootdir'])
+            self.ui_lock(False)
 
-        self.disable_ugc = False
-        self.show_notebook_tabs_after_install()
-        if self._ugc_status:
-            gobject.timeout_add(20*1000,
-                self.spawn_user_generated_content_first)
+            self.disable_ugc = False
+            self.show_notebook_tabs_after_install()
+            if self._ugc_status:
+                gobject.timeout_add(20*1000,
+                    self.spawn_user_generated_content_first)
 
         return not repoConn.sync_errors
 
@@ -2000,228 +2057,228 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             direct_remove_matches = []
         if direct_install_matches is None:
             direct_install_matches = []
-
         self.show_progress_bars()
 
-        # preventive check against other instances
-        locked = self._entropy.another_entropy_running()
-        if locked or not entropy.tools.is_root():
-            okDialog(self.ui.main,
-                _("Another Entropy instance is running. Cannot process queue."))
-            self.progress.reset_progress()
-            self.switch_notebook_page('packages')
-            return False
+        with self._privileges:
+            # preventive check against other instances
+            locked = self._entropy.another_entropy_running()
+            if locked or not entropy.tools.is_root():
+                okDialog(self.ui.main,
+                    _("Another Entropy instance is running. Cannot process queue."))
+                self.progress.reset_progress()
+                self.switch_notebook_page('packages')
+                return False
 
-        self.disable_ugc = True
-        # acquire Entropy resources here to avoid surpises afterwards
-        acquired = self._entropy.lock_resources()
-        if not acquired:
-            okDialog(self.ui.main,
-                _("Another Entropy instance is locking this task at the moment. Try in a few minutes."))
-            self.disable_ugc = False
-            return False
+            self.disable_ugc = True
+            # acquire Entropy resources here to avoid surpises afterwards
+            acquired = self._entropy.lock_resources()
+            if not acquired:
+                okDialog(self.ui.main,
+                    _("Another Entropy instance is locking this task at the moment. Try in a few minutes."))
+                self.disable_ugc = False
+                return False
 
-        switch_back_page = None
-        self.hide_notebook_tabs_for_install()
-        self.set_status_ticker(_("Running tasks"))
-        total = 0
-        if direct_install_matches or direct_remove_matches:
-            total = len(direct_install_matches) + len(direct_remove_matches)
-        else:
-            for key in pkgs:
-                total += len(pkgs[key])
-
-        def do_file_updates_check():
-            self._entropy.FileUpdates.scan(dcache = False, quiet = True)
-            fs_data = self._entropy.FileUpdates.scan()
-            if fs_data:
-                if len(fs_data) > 0:
-                    switch_back_page = 'filesconf'
-
-        state = True
-        if total > 0:
-
-            self.start_working(do_busy = True)
-            normal_cursor(self.ui.main)
-            self.progress.show()
-            self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-            self.switch_notebook_page('output')
-
+            switch_back_page = None
+            self.hide_notebook_tabs_for_install()
+            self.set_status_ticker(_("Running tasks"))
+            total = 0
             if direct_install_matches or direct_remove_matches:
-                install_queue = direct_install_matches
-                selected_by_user = set(install_queue)
-                removal_queue = direct_remove_matches
-                do_purge_cache = set()
+                total = len(direct_install_matches) + len(direct_remove_matches)
             else:
-                queue = []
                 for key in pkgs:
-                    if key == "r":
-                        continue
-                    queue += pkgs[key]
-                install_queue = [x.matched_atom for x in queue]
-                selected_by_user = set([x.matched_atom for x in queue if \
-                    x.selected_by_user])
-                removal_queue = [x.matched_atom[0] for x in pkgs['r']]
-                do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
-                    x.do_purge])
+                    total += len(pkgs[key])
 
-            # look for critical updates
-            crit_block = False
-            if install_queue and ((not fetch_only) and (not download_sources)):
-                crit_block = self.critical_updates_warning()
-            # check if we also need to restart this application
-            restart_needed = self.check_restart_needed(install_queue)
+            def do_file_updates_check():
+                self._entropy.FileUpdates.scan(dcache = False, quiet = True)
+                fs_data = self._entropy.FileUpdates.scan()
+                if fs_data:
+                    if len(fs_data) > 0:
+                        switch_back_page = 'filesconf'
 
-            if (install_queue or removal_queue) and not crit_block:
+            state = True
+            if total > 0:
 
-                # activate UI lock
-                self.ui_lock(True)
+                self.start_working(do_busy = True)
+                normal_cursor(self.ui.main)
+                self.progress.show()
+                self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
+                self.switch_notebook_page('output')
 
-                controller = QueueExecutor(self)
-                self.my_inst_error = 0
-                self.my_inst_abort = False
-                def run_tha_bstrd():
-                    try:
-                        e = controller.run(install_queue[:],
-                            removal_queue[:], do_purge_cache,
-                            fetch_only = fetch_only,
-                            download_sources = download_sources,
-                            selected_by_user = selected_by_user)
-                    except QueueError:
-                        self.my_inst_abort = True
-                        e, i = 1, None
-                        # make sure that bool is reset back to False
-                    except:
-                        entropy.tools.print_traceback()
-                        e, i = 1, None
-                    self.my_inst_error = e
+                if direct_install_matches or direct_remove_matches:
+                    install_queue = direct_install_matches
+                    selected_by_user = set(install_queue)
+                    removal_queue = direct_remove_matches
+                    do_purge_cache = set()
+                else:
+                    queue = []
+                    for key in pkgs:
+                        if key == "r":
+                            continue
+                        queue += pkgs[key]
+                    install_queue = [x.matched_atom for x in queue]
+                    selected_by_user = set([x.matched_atom for x in queue if \
+                        x.selected_by_user])
+                    removal_queue = [x.matched_atom[0] for x in pkgs['r']]
+                    do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
+                        x.do_purge])
 
-                t = ParallelTask(run_tha_bstrd)
-                t.start()
-                dbg_count = 0
-                while t.isAlive():
-                    if dbg_count > 2000:
-                        dbg_count = 0
-                    dbg_count += 1
-                    time.sleep(0.2)
-                    if self.do_debug and (dbg_count % 500 == 0):
-                        print_generic("process_queue: QueueExecutor thread still alive")
-                    self.gtk_loop()
-                    if self.do_debug and (dbg_count % 500 == 0):
-                        print_generic("process_queue: after QueueExecutor loop")
+                # look for critical updates
+                crit_block = False
+                if install_queue and ((not fetch_only) and (not download_sources)):
+                    crit_block = self.critical_updates_warning()
+                # check if we also need to restart this application
+                restart_needed = self.check_restart_needed(install_queue)
 
-                err = self.my_inst_error
+                if (install_queue or removal_queue) and not crit_block:
+
+                    # activate UI lock
+                    self.ui_lock(True)
+
+                    controller = QueueExecutor(self)
+                    self.my_inst_error = 0
+                    self.my_inst_abort = False
+                    def run_tha_bstrd():
+                        try:
+                            e = controller.run(install_queue[:],
+                                removal_queue[:], do_purge_cache,
+                                fetch_only = fetch_only,
+                                download_sources = download_sources,
+                                selected_by_user = selected_by_user)
+                        except QueueError:
+                            self.my_inst_abort = True
+                            e, i = 1, None
+                            # make sure that bool is reset back to False
+                        except:
+                            entropy.tools.print_traceback()
+                            e, i = 1, None
+                        self.my_inst_error = e
+
+                    t = ParallelTask(run_tha_bstrd)
+                    t.start()
+                    dbg_count = 0
+                    while t.isAlive():
+                        if dbg_count > 2000:
+                            dbg_count = 0
+                        dbg_count += 1
+                        time.sleep(0.2)
+                        if self.do_debug and (dbg_count % 500 == 0):
+                            print_generic("process_queue: QueueExecutor thread still alive")
+                        self.gtk_loop()
+                        if self.do_debug and (dbg_count % 500 == 0):
+                            print_generic("process_queue: after QueueExecutor loop")
+
+                    err = self.my_inst_error
+                    if self.do_debug:
+                        print_generic("process_queue: left all")
+
+                    self.ui.skipMirror.hide()
+                    self.ui.abortQueue.hide()
+                    if self.do_debug:
+                        print_generic("process_queue: buttons now hidden")
+
+                    # deactivate UI lock
+                    if self.do_debug:
+                        print_generic("process_queue: unlocking gui?")
+                    self.ui_lock(False)
+                    if self.do_debug:
+                        print_generic("process_queue: gui unlocked")
+
+                    if (err == 0) and ((not fetch_only) and (not download_sources)):
+                        # this triggers post-branch upgrade function inside
+                        # Entropy Client SystemSettings plugin
+                        self._settings.clear()
+
+                    if self.my_inst_abort:
+                        okDialog(self.ui.main,
+                            _("Attention. You chose to abort the processing."))
+                    elif err == 1: # install failed
+                        okDialog(self.ui.main,
+                            _("Attention. An error occured while processing the queue."
+                            "\nPlease have a look at the terminal.")
+                        )
+                        state = False
+                    elif err in (2, 3):
+                        # 2: masked package cannot be unmasked
+                        # 3: license not accepted, move back to queue page
+                        switch_back_page = 'packages'
+                        state = False
+                    elif err != 0:
+                        # wtf?
+                        okDialog(self.ui.main,
+                            _("Attention. Something really bad happened."
+                            "\nPlease have a look at the terminal.")
+                        )
+                        state = False
+
+                    elif (err == 0) and restart_needed and \
+                        ((not fetch_only) and (not download_sources)):
+                        okDialog(self.ui.main,
+                            _("Attention. You have updated Entropy."
+                            "\nSulfur will be reloaded.")
+                        )
+                        self._entropy.unlock_resources()
+                        self.quit(sysexit = 99)
+
                 if self.do_debug:
-                    print_generic("process_queue: left all")
-
-                self.ui.skipMirror.hide()
-                self.ui.abortQueue.hide()
+                    print_generic("process_queue: end_working?")
+                self.end_working()
+                self.progress.reset_progress()
                 if self.do_debug:
-                    print_generic("process_queue: buttons now hidden")
+                    print_generic("process_queue: end_working")
 
-                # deactivate UI lock
-                if self.do_debug:
-                    print_generic("process_queue: unlocking gui?")
-                self.ui_lock(False)
-                if self.do_debug:
-                    print_generic("process_queue: gui unlocked")
+                if (not fetch_only) and (not download_sources) and not \
+                    (direct_install_matches or direct_remove_matches):
 
-                if (err == 0) and ((not fetch_only) and (not download_sources)):
-                    # this triggers post-branch upgrade function inside
-                    # Entropy Client SystemSettings plugin
-                    self._settings.clear()
+                    if self.do_debug:
+                        print_generic("process_queue: cleared caches")
 
-                if self.my_inst_abort:
-                    okDialog(self.ui.main,
-                        _("Attention. You chose to abort the processing."))
-                elif err == 1: # install failed
-                    okDialog(self.ui.main,
-                        _("Attention. An error occured while processing the queue."
-                        "\nPlease have a look at the terminal.")
-                    )
-                    state = False
-                elif err in (2, 3):
-                    # 2: masked package cannot be unmasked
-                    # 3: license not accepted, move back to queue page
-                    switch_back_page = 'packages'
-                    state = False
-                elif err != 0:
-                    # wtf?
-                    okDialog(self.ui.main,
-                        _("Attention. Something really bad happened."
-                        "\nPlease have a look at the terminal.")
-                    )
-                    state = False
+                    for myrepo in remove_repos:
+                        self._entropy.remove_repository(myrepo)
 
-                elif (err == 0) and restart_needed and \
-                    ((not fetch_only) and (not download_sources)):
-                    okDialog(self.ui.main,
-                        _("Attention. You have updated Entropy."
-                        "\nSulfur will be reloaded.")
-                    )
-                    self._entropy.unlock_resources()
-                    self.quit(sysexit = 99)
+                    self.reset_cache_status()
+                    if self.do_debug:
+                        print_generic("process_queue: closed repo dbs")
+                    self._entropy.reopen_installed_repository()
+                    if self.do_debug:
+                        print_generic("process_queue: cleared caches (again)")
+                    # regenerate packages information
+                    if self.do_debug:
+                        print_generic("process_queue: setting up Sulfur")
+                    self.setup_application()
+                    if self.do_debug:
+                        print_generic("process_queue: scanning for new files")
+                    do_file_updates_check()
+                    if self.do_debug:
+                        print_generic("process_queue: all done")
 
-            if self.do_debug:
-                print_generic("process_queue: end_working?")
-            self.end_working()
-            self.progress.reset_progress()
-            if self.do_debug:
-                print_generic("process_queue: end_working")
+                if direct_install_matches or direct_remove_matches:
+                    do_file_updates_check()
 
-            if (not fetch_only) and (not download_sources) and not \
-                (direct_install_matches or direct_remove_matches):
+            else:
+                self.set_status_ticker( _( "No packages selected" ) )
 
-                if self.do_debug:
-                    print_generic("process_queue: cleared caches")
+            self.show_notebook_tabs_after_install()
+            self.disable_ugc = False
+            if switch_back_page is not None:
+                self.switch_notebook_page(switch_back_page)
+            elif state:
+                self.switch_notebook_page('packages')
+                # switch back to updates tab also
+                rb = self.packageRB["updates"]
+                gobject.timeout_add(0, rb.clicked)
 
-                for myrepo in remove_repos:
-                    self._entropy.remove_repository(myrepo)
+            self._entropy.unlock_resources()
 
-                self.reset_cache_status()
-                if self.do_debug:
-                    print_generic("process_queue: closed repo dbs")
-                self._entropy.reopen_installed_repository()
-                if self.do_debug:
-                    print_generic("process_queue: cleared caches (again)")
-                # regenerate packages information
-                if self.do_debug:
-                    print_generic("process_queue: setting up Sulfur")
-                self.setup_application()
-                if self.do_debug:
-                    print_generic("process_queue: scanning for new files")
-                do_file_updates_check()
-                if self.do_debug:
-                    print_generic("process_queue: all done")
+            if state:
+                self.progress.set_mainLabel(_("Tasks completed successfully."))
+                self.progress.set_subLabel(_("Please make sure to read all the messages in the terminal below."))
+                self.progress.set_extraLabel("Have phun!")
+            else:
+                self.progress.set_mainLabel(_("Oh, a fairytale gone bad!"))
+                self.progress.set_subLabel(_("Something bad happened, have a look at the messages in the terminal below."))
+                self.progress.set_extraLabel(_("Don't feel guilty, it's all my fault!"))
 
-            if direct_install_matches or direct_remove_matches:
-                do_file_updates_check()
-
-        else:
-            self.set_status_ticker( _( "No packages selected" ) )
-
-        self.show_notebook_tabs_after_install()
-        self.disable_ugc = False
-        if switch_back_page is not None:
-            self.switch_notebook_page(switch_back_page)
-        elif state:
-            self.switch_notebook_page('packages')
-            # switch back to updates tab also
-            rb = self.packageRB["updates"]
-            gobject.timeout_add(0, rb.clicked)
-
-        self._entropy.unlock_resources()
-
-        if state:
-            self.progress.set_mainLabel(_("Tasks completed successfully."))
-            self.progress.set_subLabel(_("Please make sure to read all the messages in the terminal below."))
-            self.progress.set_extraLabel("Have phun!")
-        else:
-            self.progress.set_mainLabel(_("Oh, a fairytale gone bad!"))
-            self.progress.set_subLabel(_("Something bad happened, have a look at the messages in the terminal below."))
-            self.progress.set_extraLabel(_("Don't feel guilty, it's all my fault!"))
-
-        return state
+            return state
 
     def ui_lock(self, lock):
         self.ui.menubar.set_sensitive(not lock)
