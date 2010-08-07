@@ -402,7 +402,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # configuration files update cache generation
         def file_updates_cache_gen():
-            self._entropy.FileUpdates.scan(quiet = True)
+            with self._privileges:
+                self._entropy.FileUpdates.scan(quiet = True)
             self._cacher.sync()
             return False
 
@@ -1155,7 +1156,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             ],
             etpConst['clientconf']: [
                 (
-                    'collisionprotect',
+                    'collision-protect',
                     self._settings[sys_settings_plg_id]['misc']['collisionprotect'],
                     int,
                     fill_setting,
@@ -1164,7 +1165,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.ui.collisionProtectionCombo.get_active,
                 ),
                 (
-                    'configprotect',
+                    'config-protect',
                     self._settings[sys_settings_plg_id]['misc']['configprotect'],
                     list,
                     fill_setting_view,
@@ -1173,7 +1174,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.configProtectView,
                 ),
                 (
-                    'configprotectmask',
+                    'config-protect-mask',
                     self._settings[sys_settings_plg_id]['misc']['configprotectmask'],
                     list,
                     fill_setting_view,
@@ -1182,7 +1183,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.configProtectMaskView,
                 ),
                 (
-                    'configprotectskip',
+                    'config-protect-skip',
                     self._settings[sys_settings_plg_id]['misc']['configprotectskip'],
                     list,
                     fill_setting_view,
@@ -1191,7 +1192,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.configProtectSkipView,
                 ),
                 (
-                    'filesbackup',
+                    'files-backup',
                     self._settings[sys_settings_plg_id]['misc']['filesbackup'],
                     bool,
                     fill_setting,
