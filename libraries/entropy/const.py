@@ -954,15 +954,13 @@ def const_regain_privileges():
 
     @raise entropy.exceptions.SecurityError: if unprivileged uid/gid cannot
         be retrieived.
-    @raise ValueError: if program is already running as unsupported unprivileged
-        users.
     @todo: when Python 2.7, see os.getresuid()
     """
     cur_uid = os.getuid()
 
     if cur_uid == 0:
         # already running privileged
-        raise ValueError("already running as privileged user")
+        return
 
     # privileges can be dropped
     # set like this, otherwise we won't get back all our privs!
