@@ -32,6 +32,9 @@ class EntropyException(Exception):
             return self.value
         return repr(self.value)
 
+class SecurityError(EntropyException):
+    """ Security related error """
+
 class CorruptionError(EntropyException):
     """Corruption indication"""
 
