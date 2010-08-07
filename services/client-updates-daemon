@@ -21,7 +21,7 @@ import dbus
 import dbus.service
 import dbus.mainloop.glib
 import signal
-from threading import Lock
+from threading import Lock, RLock
 
 DAEMON_DEBUG = False
 if "--debug" in sys.argv:
@@ -46,7 +46,8 @@ import entropy.tools as entropy_tools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
 from entropy.const import etpConst, const_setup_entropy_pid, \
-    const_remove_entropy_pid, const_convert_to_rawstring
+    const_remove_entropy_pid, const_convert_to_rawstring, \
+    const_drop_privileges, const_regain_privileges
 from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.misc import ParallelTask
 from entropy.output import TextInterface, nocolor
@@ -97,6 +98,48 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
 install_exception_handler()
 
+class Privileges:
+
+    def __init__(self, drop_privs = True):
+        self.__drop_privs = drop_privs
+        self.__drop_privs_lock = RLock()
+        self.__with_stmt = 0
+
+    def __enter__(self):
+        """
+        Hold the lock.
+        """
+        self.__drop_privs_lock.acquire()
+        if self.__with_stmt < 1:
+            self.regain()
+        self.__with_stmt += 1
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Drop the lock.
+        """
+        if self.__with_stmt == 1:
+            self.drop()
+        self.__with_stmt -= 1
+        self.__drop_privs_lock.release()
+
+    def drop(self):
+        """
+        Drop process privileges. Setting unpriv_gid to etpConst['entropygid']
+        makes Entropy UGC/Data cache handling working.
+        """
+        if self.__drop_privs:
+            with self.__drop_privs_lock:
+                const_drop_privileges(unpriv_gid = etpConst['entropygid'])
+
+    def regain(self):
+        """
+        Regain previously dropped process privileges.
+        """
+        if self.__drop_privs:
+            with self.__drop_privs_lock:
+                const_regain_privileges()
+
 class DaemonUrlFetcher(UrlFetcher):
 
     daemon_last_avg = 100
@@ -144,6 +187,8 @@ class UpdatesDaemon(dbus.service.Object):
     def __init__(self):
 
         gobject.threads_init()
+        self._privileges = Privileges()
+        self._privileges.drop()
         self.__alive = False
         self.__is_working_mutex = Lock()
         self.__updater = None
@@ -246,23 +291,24 @@ class UpdatesDaemon(dbus.service.Object):
 
         with self.__is_working_mutex:
 
-            entropy = None
-            try:
+            with self._privileges:
+                entropy = None
+                try:
 
-                entropy = Entropy()
-                acquired = self.__acquire_entropy_locks(entropy,
-                    pid_lock = False)
-                if not acquired:
-                    return True # respawn later
+                    entropy = Entropy()
+                    acquired = self.__acquire_entropy_locks(entropy,
+                        pid_lock = False)
+                    if not acquired:
+                        return True # respawn later
 
-                if hasattr(entropy, 'clean_downloaded_packages'):
-                    entropy.clean_downloaded_packages()
-                return False
+                    if hasattr(entropy, 'clean_downloaded_packages'):
+                        entropy.clean_downloaded_packages()
+                    return False
 
-            finally:
-                if entropy is not None:
-                    self.__release_entropy_locks(entropy, pid_lock = False)
-                    entropy.shutdown()
+                finally:
+                    if entropy is not None:
+                        self.__release_entropy_locks(entropy, pid_lock = False)
+                        entropy.shutdown()
 
     def check_system_changes(self):
         if self.__trigger_oncall_updater:
@@ -400,88 +446,92 @@ class UpdatesDaemon(dbus.service.Object):
 
         with self.__is_working_mutex:
 
-            rc_fetch = 0
-            entropy = None
+            with self._privileges:
 
-            try:
-
-                entropy = Entropy()
-                acquired = self.__acquire_entropy_locks(entropy,
-                    pid_lock = update_repos)
-                if not acquired:
-                    return rc_fetch
-
-                if DAEMON_DEBUG:
-                    write_output("__run_fetcher: called %s" % (time.time(),))
-
-                if update_repos:
-                    repos_to_up = self.get_repo_status()
-                    if repos_to_up:
-
-                        self.do_alert(
-                            _("Repositories to update"),
-                            unicode(repos_to_up),
-                            urgency = 'critical'
-                        )
-
-                        if not self.__trigger_startup_check:
-                            gobject.timeout_add(0, self.signal_updating)
-                            repos = repos_to_up.keys()
-                            rc_fetch = self.__run_sync(repos, entropy)
-                            if rc_fetch != 0:
-                                return rc_fetch
-                            if DAEMON_DEBUG:
-                                write_output("__run_fetcher: sync closed, rc: %s" % (
-                                    rc_fetch,))
-                        else:
-                            self.__trigger_startup_check = False
-                            if DAEMON_DEBUG:
-                                write_output("__run_fetcher: not syncing atm, "
-                                    "trigger startup check is ON, waiting next "
-                                    "round, repos: %s" % (repos_to_up,))
+                rc_fetch = 0
+                entropy = None
 
                 try:
-                    update, remove, fine, spm_fine = \
-                        entropy.calculate_updates(use_cache = False)
-                    del fine, remove
-                except Exception, err:
-                    entropy_tools.print_traceback(f = DAEMON_LOG)
-                    msg = "%s: %s" % (_("Updates: error"), err,)
-                    self.do_alert(_("Updates: error"), msg)
-                    del self.__updates[:]
-                    self.__updates_atoms = None
-                    return 1
 
-                self.__system_db_hash = entropy.installed_repository().checksum(
-                    do_order = True, strict = False)
-                self.__updates = update[:]
-                self.__updates_atoms = None
-
-                if update:
-                    self.do_alert(
-                        _("Updates available"),
-                        "%s %d %s" % (
-                            _("There are"), len(update),
-                            _("updates available."),),
-                        urgency = 'critical'
-                    )
-                    gobject.timeout_add(0, self.signal_updates)
-                else:
-                    self.do_alert(
-                        _("No updates"),
-                        "%s" % (update,),
-                        urgency = 'critical'
-                    )
-                    gobject.timeout_add(0, self.signal_updates)
-
-                return 0
-
-            finally:
-                if entropy is not None:
-                    self.__release_entropy_locks(entropy,
+                    entropy = Entropy()
+                    acquired = self.__acquire_entropy_locks(entropy,
                         pid_lock = update_repos)
-                    # say goodbye
-                    entropy.shutdown()
+                    if not acquired:
+                        return rc_fetch
+
+                    if DAEMON_DEBUG:
+                        write_output("__run_fetcher: called %s" % (
+                            time.time(),))
+
+                    if update_repos:
+                        repos_to_up = self.get_repo_status()
+                        if repos_to_up:
+
+                            self.do_alert(
+                                _("Repositories to update"),
+                                unicode(repos_to_up),
+                                urgency = 'critical'
+                            )
+
+                            if not self.__trigger_startup_check:
+                                gobject.timeout_add(0, self.signal_updating)
+                                repos = repos_to_up.keys()
+                                rc_fetch = self.__run_sync(repos, entropy)
+                                if rc_fetch != 0:
+                                    return rc_fetch
+                                if DAEMON_DEBUG:
+                                    write_output("__run_fetcher: sync closed, rc: %s" % (
+                                        rc_fetch,))
+                            else:
+                                self.__trigger_startup_check = False
+                                if DAEMON_DEBUG:
+                                    write_output("__run_fetcher: not syncing atm, "
+                                        "trigger startup check is ON, waiting next "
+                                        "round, repos: %s" % (repos_to_up,))
+
+                    try:
+                        update, remove, fine, spm_fine = \
+                            entropy.calculate_updates(use_cache = False)
+                        del fine, remove
+                    except Exception, err:
+                        entropy_tools.print_traceback(f = DAEMON_LOG)
+                        msg = "%s: %s" % (_("Updates: error"), err,)
+                        self.do_alert(_("Updates: error"), msg)
+                        del self.__updates[:]
+                        self.__updates_atoms = None
+                        return 1
+
+                    self.__system_db_hash = \
+                        entropy.installed_repository().checksum(
+                            do_order = True, strict = False)
+                    self.__updates = update[:]
+                    self.__updates_atoms = None
+
+                    if update:
+                        self.do_alert(
+                            _("Updates available"),
+                            "%s %d %s" % (
+                                _("There are"), len(update),
+                                _("updates available."),),
+                            urgency = 'critical'
+                        )
+                        gobject.timeout_add(0, self.signal_updates)
+                    else:
+                        self.do_alert(
+                            _("No updates"),
+                            "%s" % (update,),
+                            urgency = 'critical'
+                        )
+                        gobject.timeout_add(0, self.signal_updates)
+
+                    return 0
+
+                finally:
+                    if entropy is not None:
+                        self.__release_entropy_locks(entropy,
+                            pid_lock = update_repos)
+                        # say goodbye
+                        entropy.shutdown()
 
     # compare repos status for updates
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
