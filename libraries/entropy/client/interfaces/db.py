@@ -670,11 +670,6 @@ class AvailablePackagesRepositoryUpdater(object):
             return False, myitem
         return True, myitem
 
-    def __database_revdeps_setup(self):
-        dbconn = self._entropy.open_repository(self.__repository_id)
-        dbconn.generateReverseDependenciesMetadata(verbose = False)
-        dbconn.commitChanges(force = True)
-
     def __update_repository_revision(self):
         cur_rev = AvailablePackagesRepository.revision(self.__repository_id)
         repo_data = self._settings['repositories']
@@ -1995,7 +1990,6 @@ class AvailablePackagesRepositoryUpdater(object):
                 continue
 
         self.__update_repository_revision()
-        self.__database_revdeps_setup()
         if self._entropy.indexing:
             self.__database_indexing()
 
