@@ -11,10 +11,14 @@
     This module contains Entropy (user) Output classes and routines.
 
 """
-import sys, os
+import os
+import sys
+import errno
 import curses
+
 from entropy.const import etpUi, const_convert_to_rawstring, const_isstring
 from entropy.i18n import _
+
 stuff = {}
 stuff['cols'] = 30
 try:
@@ -446,25 +450,30 @@ def reset_cursor():
     _flush_stdouterr()
 
 def _flush_stdouterr():
-    try:
-        sys.stdout.flush()
-        sys.stderr.flush()
-    except IOError:
-        return
+    for obj in (sys.stdout, sys.stderr,):
+        try:
+            obj.flush()
+        except IOError:
+            continue
 
-def _stdout_write(msg):
+def _std_write(msg, stderr = False):
     if not const_isstring(msg):
         msg = repr(msg)
+    obj = sys.stdout
+    if stderr:
+        obj = sys.stderr
+
     try:
-        sys.stdout.write(msg)
+        obj.write(msg)
     except UnicodeEncodeError:
         msg = msg.encode('utf-8')
         if sys.hexversion >= 0x3000000:
-            sys.stdout.buffer.write(msg)
+            obj.buffer.write(msg)
         else:
-            sys.stdout.write(msg)
+            obj.write(msg)
 
-def _print_prio(msg, color_func, back = False, flush = True, end = '\n'):
+def _print_prio(msg, color_func, back = False, flush = True, end = '\n',
+    stderr = False):
     if etpUi['mute']:
         return
     if not back:
@@ -472,16 +481,16 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n'):
     reset_cursor()
     is_tty = is_stdout_a_tty()
     if is_tty:
-        writechar("\r")
+        writechar("\r", stderr = stderr)
     if back:
         msg = color_func(">>") + " " + msg
     else:
         msg = color_func(">>") + " " + msg + end
 
-    _stdout_write(msg)
+    _std_write(msg, stderr = stderr)
     if back and (not is_tty):
         # in this way files are properly written
-        writechar("\n")
+        writechar("\n", stderr = stderr)
     if flush:
         _flush_stdouterr()
 
@@ -500,7 +509,8 @@ def print_error(msg, back = False, flush = True, end = '\n'):
     @return: None
     @rtype: None
     """
-    return _print_prio(msg, darkred, back = back, flush = flush, end = end)
+    return _print_prio(msg, darkred, back = back, flush = flush, end = end, 
+        stderr = True)
 
 def print_info(msg, back = False, flush = True, end = '\n'):
     """
@@ -534,7 +544,8 @@ def print_warning(msg, back = False, flush = True, end = '\n'):
     @return: None
     @rtype: None
     """
-    return _print_prio(msg, brown, back = back, flush = flush, end = end)
+    return _print_prio(msg, brown, back = back, flush = flush, end = end,
+        stderr = True)
 
 def print_generic(*args, **kwargs):
     """
@@ -544,17 +555,17 @@ def print_generic(*args, **kwargs):
     """
     if etpUi['mute']:
         return
-    # disabled, because it causes quite a mess when writing to files
-    # writechar("\r")
+
+    stderr = kwargs.get('stderr', False)
     for msg in args:
-        _stdout_write(msg)
+        _std_write(msg, stderr = stderr)
         sys.stdout.write(" ")
 
     end = kwargs.get('end', '\n')
-    _stdout_write(end)
+    _std_write(end, stderr = stderr)
     _flush_stdouterr()
 
-def writechar(chars):
+def writechar(chars, stderr = False):
     """
     Write characters to stdout (will be moved from here).
 
@@ -563,11 +574,14 @@ def writechar(chars):
     """
     if etpUi['mute']:
         return
+    obj = sys.stdout
+    if stderr:
+        obj = sys.stderr
     try:
-        sys.stdout.write(chars)
-        sys.stdout.flush()
+        obj.write(chars)
+        obj.flush()
     except IOError as e:
-        if e.errno == 32:
+        if e.errno == errno.EPIPE:
             return
         raise
 
