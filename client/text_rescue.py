@@ -18,6 +18,7 @@ from entropy.const import etpConst, etpSys, etpUi
 from entropy.output import red, bold, brown, blue, darkred, darkgreen, purple, \
     print_info, print_warning, print_error
 from entropy.exceptions import SystemDatabaseError
+from entropy.db.exceptions import OperationalError
 import entropy.tools
 from entropy.client.interfaces import Client
 from entropy.i18n import _
@@ -725,11 +726,23 @@ def _database_check(entropy_client):
             importance = 2,
             level = "warning"
         )
-        idpkgs = entropy_client.installed_repository().listAllPackageIds()
-        length = len(idpkgs)
         count = 0
         errors = False
         scanning_txt = _("Scanning...")
+        length = 0
+        idpkgs = []
+        try:
+            idpkgs = entropy_client.installed_repository().listAllPackageIds()
+            length = len(idpkgs)
+        except OperationalError as err:
+            entropy.tools.print_traceback()
+            errors = True
+            entropy_client.output(
+                "%s: %s" % (darkred(_("Error")), err,),
+                importance = 1,
+                level = "warning"
+            )
+
         for x in idpkgs:
             count += 1
             entropy_client.output(
@@ -746,7 +759,7 @@ def _database_check(entropy_client):
                 entropy.tools.print_traceback()
                 errors = True
                 entropy_client.output(
-                    darkred(_("Errors on idpackage %s, error: %s")) % (x, e),
+                    darkred(_("Errors on package id %s, error: %s")) % (x, e),
                     importance = 0,
                     level = "warning"
                 )
