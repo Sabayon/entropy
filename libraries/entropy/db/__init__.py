@@ -4260,6 +4260,15 @@ class EntropyRepository(EntropyRepositoryBase):
         elif rslt[0] != 4:
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
+        # execute checksum
+        try:
+            self.checksum()
+        except (OperationalError, DatabaseError,) as err:
+            mytxt = "Repository is corrupted, checksum error"
+            raise SystemDatabaseError("SystemDatabaseError: %s: %s" % (
+                mytxt, err,)
+            )
+
     def _getIdpackagesDifferences(self, foreign_package_ids):
         """
         Return differences between in-repository package identifiers and
