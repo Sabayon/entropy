@@ -11,10 +11,13 @@
 """
 import os
 import shutil
-from entropy.const import etpConst, const_setup_perms
+
+from entropy.i18n import _
+from entropy.output import purple
+from entropy.const import etpConst, const_setup_perms, const_convert_to_unicode
 from entropy.exceptions import RepositoryError
 from entropy.cache import EntropyCacher
-from entropy.db.exceptions import OperationalError
+from entropy.db.exceptions import OperationalError, DatabaseError
 
 class CacheMixin:
 
@@ -108,8 +111,15 @@ class CacheMixin:
                 continue # repo not available
             try:
                 sum_hashes += dbconn.checksum()
-            except OperationalError:
-                pass
+            except (OperationalError, DatabaseError):
+                txt = _("Repository") + " " + const_convert_to_unicode(repo) \
+                    + " " + _("is corrupted") + ". " + \
+                    _("Cannot calculate the checksum")
+                self.output(
+                    purple(txt),
+                    importance = 1,
+                    level = "warning"
+                )
         return sum_hashes
 
     def _get_available_packages_cache(self, myhash = None):
