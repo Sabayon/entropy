@@ -3113,7 +3113,7 @@ class ServerPackagesHandlingMixin:
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo, lock_remote = False)
         try:
-            dbconn.validateDatabase()
+            dbconn.validate()
         except SystemDatabaseError:
             self._handle_uninitialized_repository(repo)
             dbconn = self.open_server_repository(read_only = False,
@@ -3666,7 +3666,7 @@ class ServerRepositoryMixin:
 
         def do_validate(dbc):
             try:
-                dbc.validateDatabase()
+                dbc.validate()
                 return True
             except SystemDatabaseError:
                 return False
@@ -3904,7 +3904,7 @@ class ServerRepositoryMixin:
 
         valid = True
         try:
-            conn.validateDatabase()
+            conn.validate()
         except SystemDatabaseError:
             valid = False
 

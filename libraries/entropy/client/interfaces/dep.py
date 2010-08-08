@@ -1572,7 +1572,7 @@ class CalculatorsMixin:
         for repo in self._enabled_repos:
             try:
                 dbconn = self.open_repository(repo)
-                dbconn.validateDatabase()
+                dbconn.validate()
             except (RepositoryError, SystemDatabaseError):
                 continue
             try:

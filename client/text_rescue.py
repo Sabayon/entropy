@@ -60,7 +60,7 @@ def test_spm(entropy_client):
 
 def test_clientdb(entropy_client):
     try:
-        entropy_client.installed_repository().validateDatabase()
+        entropy_client.installed_repository().validate()
     except SystemDatabaseError:
         mytxt = _("Installed packages database not available")
         print_error(darkred(" * ")+red("%s !" % (mytxt,)))
@@ -783,7 +783,7 @@ def _database_check(entropy_client):
 
     try:
         valid = True
-        entropy_client.installed_repository().validateDatabase()
+        entropy_client.installed_repository().validate()
     except SystemDatabaseError:
         valid = False
     if valid:

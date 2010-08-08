@@ -42,7 +42,7 @@ class ToolsTest(unittest.TestCase):
             et.dump_entropy_metadata(test_pkg, tmp_path)
             self.assertNotEqual(tmp_path, None)
             dbconn = client.open_generic_repository(tmp_path)
-            dbconn.validateDatabase()
+            dbconn.validate()
             dbconn.listAllPackageIds()
             dbconn.closeDB()
 

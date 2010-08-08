@@ -871,7 +871,7 @@ class EntropyPackages:
         for repo in self.Entropy.repositories():
             try:
                 dbconn = self.Entropy.open_repository(repo)
-                dbconn.validateDatabase()
+                dbconn.validate()
             except (RepositoryError, SystemDatabaseError):
                 continue
             idpackages = dbconn.listAllPackageIds()

@@ -3243,7 +3243,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def validateDatabase(self):
+    def validate(self):
         """
         Validates Entropy repository by doing basic integrity checks.
 

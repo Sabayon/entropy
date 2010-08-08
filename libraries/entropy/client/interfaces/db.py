@@ -207,7 +207,7 @@ class AvailablePackagesRepositoryUpdater(object):
         try:
             dbconn = self._entropy.open_generic_repository(dbfile,
                 xcache = False, indexing_override = False)
-            dbconn.validateDatabase()
+            dbconn.validate()
         except (OperationalError, IntegrityError, SystemDatabaseError,
             IOError, OSError,):
             dbconn = None

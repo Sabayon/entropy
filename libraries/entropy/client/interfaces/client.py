@@ -234,7 +234,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         mask_installed_keys = {}
         while (self._helper.installed_repository() != None):
             try:
-                self._helper.installed_repository().validateDatabase()
+                self._helper.installed_repository().validate()
             except SystemDatabaseError:
                 break
             mc_cache = set()

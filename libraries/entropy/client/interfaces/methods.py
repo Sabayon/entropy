@@ -62,7 +62,7 @@ class RepositoryMixin:
 
                 dbc = self.open_repository(repoid)
                 dbc.listConfigProtectEntries()
-                dbc.validateDatabase()
+                dbc.validate()
                 self._enabled_repos.append(repoid)
 
             except RepositoryError:
@@ -624,7 +624,7 @@ class RepositoryMixin:
                 # validate database
                 if not self.noclientdb:
                     try:
-                        conn.validateDatabase()
+                        conn.validate()
                     except SystemDatabaseError:
                         try:
                             conn.closeDB()

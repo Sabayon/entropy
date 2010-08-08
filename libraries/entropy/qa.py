@@ -1105,7 +1105,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         valid = True
         try:
-            dbc.validateDatabase()
+            dbc.validate()
         except SystemDatabaseError:
             valid = False
 

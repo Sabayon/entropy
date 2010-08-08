@@ -644,11 +644,6 @@ class EntropyRepository(EntropyRepositoryBase):
             except Error:
                 pass
 
-    def initializeDatabase(self):
-        """ @deprecated """
-        warnings.warn("deprecated call!")
-        return self.initializeRepository()
-
     def initializeRepository(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4221,11 +4216,16 @@ class EntropyRepository(EntropyRepositoryBase):
         self._connection().commit()
 
     def validateDatabase(self):
+        """ @deprecated """
+        warnings.warn("EntropyRepository.validateDatabase: deprecated call!")
+        return self.validate()
+
+    def validate(self):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         with self.__live_cache_lock:
-            live_cache_id = ("validateDatabase",)
+            live_cache_id = ("validate",)
             cached = self.__live_cache.get(live_cache_id)
             if cached is not None:
                 return
@@ -4234,7 +4234,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # use sqlite3 pragma
         pingus = MtimePingus()
         # since quick_check is slow, run it every 72 hours
-        action_str = "EntropyRepository.validateDatabase(%s)" % (
+        action_str = "EntropyRepository.validate(%s)" % (
             self.reponame,)
         passed = pingus.hours_passed(action_str, 72)
         if passed:
