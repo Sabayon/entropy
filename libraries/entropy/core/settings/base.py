@@ -1150,6 +1150,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'timeout': etpConst['default_download_timeout'],
             'security_advisories_url': etpConst['securityurl'],
             'developer_repo': False,
+            'differential_update': True,
         }
 
         repo_conf = etpConst['repositoriesconf']
@@ -1246,6 +1247,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 dev_repo = split_line[1]
                 if dev_repo in ("enable", "enabled", "true", "1", "yes",):
                     data['developer_repo'] = True
+
+            elif (line.find("differential-update|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                dev_repo = split_line[1]
+                if dev_repo in ("disable", "disabled", "false", "0", "no",):
+                    data['differential_update'] = False
 
             elif (line.find("downloadspeedlimit|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):

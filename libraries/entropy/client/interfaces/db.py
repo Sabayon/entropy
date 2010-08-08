@@ -140,6 +140,8 @@ class AvailablePackagesRepositoryUpdater(object):
         )
         self._developer_repo = \
             self._settings['repositories']['developer_repo']
+        self._differential_update = \
+            self._settings['repositories']['differential_update']
         if self._developer_repo:
             const_debug_write(__name__,
                 "__init__: developer repo mode enabled")
@@ -295,6 +297,14 @@ class AvailablePackagesRepositoryUpdater(object):
             elif sqlite3_rc != 0:
                 repo_eapi = 1
 
+        # if differential update is disabled and FORCE_EAPI is not overriding
+        # we cannot use EAPI=3
+        if (eapi_env_clear is None) and (not self._differential_update) and \
+            (repo_eapi == 3):
+            const_debug_write(__name__,
+                "__get_repo_eapi: differential update is disabled !")
+            repo_eapi -= 1
+
         # check EAPI
         if eapi_env_clear is not None:
             repo_eapi = eapi_env_clear
@@ -303,7 +313,7 @@ class AvailablePackagesRepositoryUpdater(object):
             # developer_repo mode
             self._developer_repo = False
             const_debug_write(__name__,
-                "_setup_repo_eapi: developer repo mode disabled FORCE_EAPI")
+                "__get_repo_eapi: developer repo mode disabled FORCE_EAPI")
 
         elif repo_eapi > 1 and self._developer_repo:
             # enforce EAPI=1
