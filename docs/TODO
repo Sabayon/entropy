@@ -7,6 +7,7 @@
 
   1.0:
 
+    - rename "equo database"
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
     - per-repository mirrors on repo database dir?
     - uniform config files options to this-and-that (keeping backward compat)
