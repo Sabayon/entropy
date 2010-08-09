@@ -397,7 +397,7 @@ class CalculatorsMixin:
                     available_tags.add(t_ver_tag)
                 elif t_ver_tag in installed_tags:
                     available_tags.add(t_ver_tag)
-            return available_tags
+            return sorted(available_tags, reverse = True)
 
         unsatisfied = set()
         for dependency in dependencies:
