@@ -486,7 +486,6 @@ class EntropyPackageView:
         self.pkgcolumn_text = _("Sel") # as in Selection
         self.pkgcolumn_text_rating = _("Rating")
         self.stars_col_size = 100
-        self.selection_width = 34
         self.show_reinstall = True
         self.show_purge = True
         self.show_mask = True
@@ -570,7 +569,6 @@ class EntropyPackageView:
         self.img_pkg_update_undopurge = gtk.Image()
         self.set_pixbuf_to_image(self.img_pkg_update_undopurge, self.pkg_purge)
 
-        treeview.set_fixed_height_mode(True)
         self.view_expanded = True
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
@@ -922,8 +920,8 @@ class EntropyPackageView:
 
         tv_abs_x = abs_x - tv_x
         tv_abs_y = abs_y - tv_y
-        tv_abs_x += self.selection_width/2 - self.selection_width/4
-        tv_abs_y += EntropyPackageView.ROW_HEIGHT/2 + 9
+        tv_abs_x += (self._get_row_height()-1)/2 - (self._get_row_height()-1)/4
+        tv_abs_y += self._get_row_height()/2 + 9
 
         return int(tv_abs_x), int(tv_abs_y), True
 
@@ -1629,16 +1627,24 @@ class EntropyPackageView:
         self.view.collapse_all()
         self.view_expanded = True
 
+    def _get_row_height(self):
+        tv_col = self.view.get_column(0)
+        if tv_col is None:
+            return EntropyPackageView.ROW_HEIGHT
+        rect, x, y, width, height = tv_col.cell_get_size()
+        if height < 35:
+            return EntropyPackageView.ROW_HEIGHT
+        return height + 1 # bias
+
     def setupView(self):
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         self.view.set_model( store )
-        myheight = EntropyPackageView.ROW_HEIGHT
+        myheight = self._get_row_height()
 
         # package UGC icon pixmap
         cell_icon = gtk.CellRendererPixbuf()
-        cell_icon.set_property('height', myheight)
         self.set_pixbuf_to_cell(cell_icon, self.ugc_generic_icon,
             pix_dir = "ugc")
         column_icon = gtk.TreeViewColumn("", cell_icon)
@@ -1652,12 +1658,11 @@ class EntropyPackageView:
 
         # selection pixmap
         cell1 = gtk.CellRendererPixbuf()
-        cell1.set_property('height', myheight)
         self.set_pixbuf_to_cell(cell1, self.pkg_install_ok)
         column1 = gtk.TreeViewColumn(self.pkgcolumn_text, cell1)
         column1.set_cell_data_func(cell1, self.new_pixbuf)
         column1.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
-        column1.set_fixed_width(self.selection_width)
+        column1.set_fixed_width(myheight)
         column1.set_sort_column_id(-1)
         column1.set_clickable(True)
         column1.connect("clicked", self.on_selection_column_clicked)
@@ -1666,12 +1671,12 @@ class EntropyPackageView:
 
 
         self.create_text_column( _( "Application" ), 'namedesc', size = 300,
-            expand = True, set_height = myheight, clickable = True,
+            expand = True, clickable = True,
             click_cb = self.on_package_column_clicked)
 
         # vote event box
         cell2 = CellRendererStars()
-        cell2.set_property('height', myheight)
+        #cell2.set_property('height', myheight)
         column2 = gtk.TreeViewColumn( self.pkgcolumn_text_rating, cell2 )
         column2.set_resizable( True )
         column2.set_cell_data_func( cell2, self.get_stars_rating )
@@ -1973,14 +1978,12 @@ class EntropyPackageView:
             pass
 
     def create_text_column( self, hdr, property, size, sortcol = None,
-            expand = False, set_height = 0, clickable = False, click_cb = None):
+            expand = False, clickable = False, click_cb = None):
         """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
         """
         cell = gtk.CellRendererText()    # Size Column
-        if set_height:
-            cell.set_property('height', set_height)
         column = gtk.TreeViewColumn( hdr, cell )
         column.set_resizable( True )
         column.set_cell_data_func( cell, self.get_data_text, property )
@@ -2122,7 +2125,7 @@ class EntropyPackageView:
             if not (os.path.isfile(icon_path) and \
                 os.access(icon_path, os.R_OK)):
                 try:
-                    resize_image(EntropyPackageView.ROW_HEIGHT, store_path,
+                    resize_image(self._get_row_height(), store_path,
                         icon_path)
                 except (ValueError, OSError,):
                     # OSError = source file moved while copying
@@ -2205,7 +2208,7 @@ class EntropyPackageView:
                     # use this icon
                     try:
                         pixbuf = icon_theme.load_icon(name,
-                            EntropyPackageView.ROW_HEIGHT,
+                            self._get_row_height(),
                             gtk.ICON_LOOKUP_USE_BUILTIN)
                     except (gio.Error, gobject.GError):
                         # no such file or directory (gio.Error)
