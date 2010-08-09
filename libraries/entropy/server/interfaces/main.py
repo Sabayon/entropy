@@ -4806,7 +4806,7 @@ class ServerMiscMixin:
                         compiled_pattern.subn(replace, dep_string)
                     if number_of_subs_made:
                         dep_string_matched = True
-                        if new_dep_string:
+                        if new_dep_string and (new_dep_string != "-"):
                             pkg_meta['dependencies'][new_dep_string] = dep_value
                             self.output(
                                 "%s: %s => %s" % (
