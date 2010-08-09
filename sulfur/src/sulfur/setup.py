@@ -85,6 +85,7 @@ class const:
                 "pt - Lucas Paulino Azevedo",
                 "ru - Maksim Belyanovskiy",
                 "sk - Bystrík Pešl",
+                "sv - Patrik Karlsson",
                 "zh - N/A",
                 )
             ),
