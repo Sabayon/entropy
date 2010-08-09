@@ -17,6 +17,9 @@
 ../libraries/entropy/spm/plugins/factory.py
 ../libraries/entropy/spm/plugins/__init__.py
 ../libraries/entropy/spm/plugins/skel.py
+../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py
+../libraries/entropy/spm/plugins/interfaces/portage_plugin/xpak.py
+../libraries/entropy/spm/plugins/interfaces/portage_plugin/xpaktools.py
 ../libraries/entropy/spm/plugins/interfaces/__init__.py
 ../libraries/entropy/services/system/commands.py
 ../libraries/entropy/services/system/executors.py
@@ -79,8 +82,9 @@
 ../libraries/entropy/qa.py
 ../libraries/entropy/security.py
 ../libraries/entropy/tools.py
-../libraries/check_lic.py
+../libraries/entropy-miner.py
 ../libraries/test.py
+../libraries/test_sec.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
@@ -98,10 +102,8 @@
 ../server/server_key.py
 ../server/server_query.py
 ../server/server_reagent.py
-../sulfur/src/read_test_app_stats.py
 ../sulfur/src/repo-manager-client.py
 ../sulfur/src/sulfur_client.py
-../sulfur/src/test_app.py
 ../sulfur/src/sulfur/core.py
 ../sulfur/src/sulfur/dialogs.py
 ../sulfur/src/sulfur/entropyapi.py
