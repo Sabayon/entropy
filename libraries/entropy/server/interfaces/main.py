@@ -872,9 +872,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         return False
 
     def __extract_edb_analyze_metadata(self, package_path):
-        tmp_fd, tmp_f = tempfile.mkstemp()
-        os.close(tmp_fd)
-
+        tmp_fd, tmp_f = tempfile.mkstemp(prefix = 'entropy.server')
         dbc = None
         try:
             found_edb = entropy.tools.dump_entropy_metadata(package_path, tmp_f)
@@ -896,10 +894,8 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         finally:
             if dbc is not None:
                 dbc.closeDB()
-            try:
-                os.remove(tmp_f)
-            except OSError:
-                pass
+            os.close(tmp_fd)
+            os.remove(tmp_f)
 
         return True
 
@@ -1620,7 +1616,7 @@ class ServerPackagesHandlingMixin:
 
 
         all_fine = True
-        tmp_down_dir = tempfile.mkdtemp()
+        tmp_down_dir = tempfile.mkdtemp(prefix = "entropy.server")
 
         download_queue = {}
         dbconn = self.open_server_repository(read_only = False,
@@ -3382,7 +3378,7 @@ class ServerQAMixin:
 
         pkg_list_path = None
         if dump_results_to_file:
-            tmp_dir = tempfile.mkdtemp()
+            tmp_dir = tempfile.mkdtemp(prefix = "entropy.server")
             pkg_list_path = os.path.join(tmp_dir, "libtest_broken.txt")
             dmp_data = [
                 (_("Broken and matched packages list"), pkg_list_path,),
@@ -3808,7 +3804,8 @@ class ServerRepositoryMixin:
         @type output_interface: entropy.output.TextInterface based instance
         """
         if temp_file is None:
-            temp_file = entropy.tools.get_random_temp_file()
+            tmp_fd, temp_file = tempfile.mkstemp(prefix = 'entropy.server')
+            os.close(tmp_fd)
 
         conn = ServerPackagesRepository(
             readOnly = False,

@@ -39,7 +39,7 @@ class ServerNoticeBoardMixin:
             repo = self._entropy.default_repository
         mirrors = self._entropy.get_remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
-        mytmpdir = tempfile.mkdtemp()
+        mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
 
         self._entropy.output(
             "[repo:%s] %s %s" % (
@@ -340,7 +340,7 @@ class Server(ServerNoticeBoardMixin):
                         # nothing to do, not a file
                         continue
 
-                    tmp_dir = tempfile.mkdtemp()
+                    tmp_dir = tempfile.mkdtemp(prefix = "entropy.server")
                     down_path = os.path.join(tmp_dir,
                         os.path.basename(filename))
                     tries = 4
@@ -819,33 +819,48 @@ class Server(ServerNoticeBoardMixin):
             if not (rc1 and rc2):
                 return [uri, revision]
 
-            tmp_fd, rev_tmp_path = tempfile.mkstemp()
+            tmp_fd, rev_tmp_path = tempfile.mkstemp(prefix = "entropy.server")
+            try:
 
-            dlcount = 5
-            dled = False
-            while dlcount:
-                remote_rev_path = os.path.join(remote_dir, revfilename)
-                dled = handler.download(remote_rev_path, rev_tmp_path)
-                if dled:
-                    break
-                dlcount -= 1
-            os.close(tmp_fd)
+                dlcount = 5
+                dled = False
+                while dlcount:
+                    remote_rev_path = os.path.join(remote_dir, revfilename)
+                    dled = handler.download(remote_rev_path, rev_tmp_path)
+                    if dled:
+                        break
+                    dlcount -= 1
 
-            crippled_uri = EntropyTransceiver.get_uri_name(uri)
+                crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-            if os.access(rev_tmp_path, os.R_OK) and \
-                os.path.isfile(rev_tmp_path):
+                if os.access(rev_tmp_path, os.R_OK) and \
+                    os.path.isfile(rev_tmp_path):
 
-                f_rev = open(rev_tmp_path, "r")
-                try:
-                    revision = int(f_rev.readline().strip())
-                except ValueError:
-                    mytxt = _("mirror hasn't valid database revision file")
+                    f_rev = open(rev_tmp_path, "r")
+                    try:
+                        revision = int(f_rev.readline().strip())
+                    except ValueError:
+                        mytxt = _("mirror hasn't valid database revision file")
+                        self._entropy.output(
+                            "[repo:%s|%s] %s: %s" % (
+                                brown(repo),
+                                darkgreen(crippled_uri),
+                                blue(mytxt),
+                                bold(revision),
+                            ),
+                            importance = 1,
+                            level = "error",
+                            header = darkred(" !!! ")
+                        )
+                        revision = 0
+                    f_rev.close()
+
+                elif dlcount == 0:
                     self._entropy.output(
                         "[repo:%s|%s] %s: %s" % (
                             brown(repo),
                             darkgreen(crippled_uri),
-                            blue(mytxt),
+                            blue(_("unable to download repository revision")),
                             bold(revision),
                         ),
                         importance = 1,
@@ -853,37 +868,25 @@ class Server(ServerNoticeBoardMixin):
                         header = darkred(" !!! ")
                     )
                     revision = 0
-                f_rev.close()
 
-            elif dlcount == 0:
-                self._entropy.output(
-                    "[repo:%s|%s] %s: %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        blue(_("unable to download repository revision")),
-                        bold(revision),
-                    ),
-                    importance = 1,
-                    level = "error",
-                    header = darkred(" !!! ")
-                )
-                revision = 0
+                else:
+                    self._entropy.output(
+                        "[repo:%s|%s] %s: %s" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            blue(_("mirror doesn't have valid revision file")),
+                            bold(revision),
+                        ),
+                        importance = 1,
+                        level = "error",
+                        header = darkred(" !!! ")
+                    )
+                    revision = 0
 
-            else:
-                self._entropy.output(
-                    "[repo:%s|%s] %s: %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        blue(_("mirror doesn't have valid revision file")),
-                        bold(revision),
-                    ),
-                    importance = 1,
-                    level = "error",
-                    header = darkred(" !!! ")
-                )
-                revision = 0
+            finally:
+                os.close(tmp_fd)
+                os.remove(rev_tmp_path)
 
-            os.remove(rev_tmp_path)
             return [uri, revision]
 
     def get_remote_repositories_status(self, repo = None, mirrors = None):
@@ -1266,10 +1269,11 @@ class Server(ServerNoticeBoardMixin):
         # NOTE: for symlinks, we read their link and send a file with that
         # content. This is the default behaviour for now and allows to send
         # /etc/make.profile link pointer correctly.
+        tmp_dirs = []
         for symname, symfile in spm_syms.items():
 
-            tmp_file = entropy.tools.get_random_temp_file()
-            mytmpdir = os.path.dirname(tmp_file)
+            mytmpdir = tempfile.mkdtemp(dir = etpConst['entropyunpackdir'])
+            tmp_dirs.append(mytmpdir)
             mytmpfile = os.path.join(mytmpdir, os.path.basename(symfile))
             mylink = os.readlink(symfile)
             f_mkp = open(mytmpfile, "w")
@@ -1281,7 +1285,7 @@ class Server(ServerNoticeBoardMixin):
                 data[symname] = mytmpfile
             extra_text_files.append(mytmpfile)
 
-        return data, critical, extra_text_files, gpg_signed_files
+        return data, critical, extra_text_files, tmp_dirs, gpg_signed_files
 
     def _show_package_sets_messages(self, repo):
 
@@ -1710,7 +1714,7 @@ class Server(ServerNoticeBoardMixin):
         # create pkglist service file
         self._create_repository_pkglist(repo)
 
-        upload_data, critical, text_files, gpg_to_sign_files = \
+        upload_data, critical, text_files, tmp_dirs, gpg_to_sign_files = \
             self._get_files_to_sync(cmethod, repo = repo,
                 disabled_eapis = disabled_eapis)
 
@@ -1883,6 +1887,14 @@ class Server(ServerNoticeBoardMixin):
 
         if not fine_uris:
             upload_errors = True
+
+        # remove temporary directories
+        for tmp_dir in tmp_dirs:
+            try:
+                shutil.rmtree(tmp_dir, True)
+            except shutil.Error:
+                continue
+
         return upload_errors, broken_uris, fine_uris
 
 
@@ -1909,111 +1921,122 @@ class Server(ServerNoticeBoardMixin):
             database_path = self._entropy._get_local_database_file(repo)
             database_dir_path = os.path.dirname(
                 self._entropy._get_local_database_file(repo))
-            download_data, critical, text_files, gpg_to_verify_files = \
-                self._get_files_to_sync(cmethod, download = True,
-                    repo = repo, disabled_eapis = disabled_eapis)
-            mytmpdir = tempfile.mkdtemp()
 
-            self._entropy.output(
-                "[repo:%s|%s|%s] %s" % (
-                    brown(repo),
-                    darkgreen(crippled_uri),
-                    red(_("download")),
-                    blue(_("preparing to download database from mirror")),
-                ),
-                importance = 1,
-                level = "info",
-                header = darkgreen(" * ")
-            )
-            files_to_sync = sorted(download_data.keys())
-            for myfile in files_to_sync:
+            download_data, critical, text_files, tmp_dirs, \
+                gpg_to_verify_files = self._get_files_to_sync(cmethod,
+                    download = True, repo = repo,
+                        disabled_eapis = disabled_eapis)
+            try:
+
+                mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
+
                 self._entropy.output(
-                    "%s: %s" % (
-                        blue(_("download path")),
-                        brown(download_data[myfile]),
+                    "[repo:%s|%s|%s] %s" % (
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        red(_("download")),
+                        blue(_("preparing to download database from mirror")),
                     ),
-                    importance = 0,
+                    importance = 1,
                     level = "info",
-                    header = brown("    # ")
+                    header = darkgreen(" * ")
                 )
-
-            if lock_check:
-                given_up = self._mirror_lock_check(uri, repo = repo)
-                if given_up:
-                    download_errors = True
-                    broken_uris.add(uri)
-                    continue
-
-            # avoid having others messing while we're downloading
-            self.lock_mirrors(True, [uri], repo = repo)
-
-            if not pretend:
-                # download
-                downloader = self.TransceiverServerHandler(
-                    self._entropy, [uri],
-                    [download_data[x] for x in download_data], download = True,
-                    local_basedir = mytmpdir, critical_files = critical,
-                    repo = repo
-                )
-                errors, m_fine_uris, m_broken_uris = downloader.go()
-                if errors:
-                    my_broken_uris = sorted([
-                        (EntropyTransceiver.get_uri_name(x[0]),
-                            x[1]) for x in m_broken_uris])
+                files_to_sync = sorted(download_data.keys())
+                for myfile in files_to_sync:
                     self._entropy.output(
-                        "[repo:%s|%s|%s] %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            red(_("errors")),
-                            blue(_("failed to download from mirror")),
+                        "%s: %s" % (
+                            blue(_("download path")),
+                            brown(download_data[myfile]),
                         ),
                         importance = 0,
-                        level = "error",
-                        header = darkred(" !!! ")
+                        level = "info",
+                        header = brown("    # ")
                     )
-                    # get reason
-                    reason = my_broken_uris[0][1]
-                    self._entropy.output(
-                        blue("%s: %s" % (_("reason"), reason,)),
-                        importance = 0,
-                        level = "error",
-                        header = blue("    # ")
+
+                if lock_check:
+                    given_up = self._mirror_lock_check(uri, repo = repo)
+                    if given_up:
+                        download_errors = True
+                        broken_uris.add(uri)
+                        continue
+
+                # avoid having others messing while we're downloading
+                self.lock_mirrors(True, [uri], repo = repo)
+
+                if not pretend:
+                    # download
+                    downloader = self.TransceiverServerHandler(
+                        self._entropy, [uri],
+                        [download_data[x] for x in download_data], download = True,
+                        local_basedir = mytmpdir, critical_files = critical,
+                        repo = repo
                     )
-                    download_errors = True
-                    broken_uris |= m_broken_uris
-                    self.lock_mirrors(False, [uri], repo = repo)
-                    continue
+                    errors, m_fine_uris, m_broken_uris = downloader.go()
+                    if errors:
+                        my_broken_uris = sorted([
+                            (EntropyTransceiver.get_uri_name(x[0]),
+                                x[1]) for x in m_broken_uris])
+                        self._entropy.output(
+                            "[repo:%s|%s|%s] %s" % (
+                                brown(repo),
+                                darkgreen(crippled_uri),
+                                red(_("errors")),
+                                blue(_("failed to download from mirror")),
+                            ),
+                            importance = 0,
+                            level = "error",
+                            header = darkred(" !!! ")
+                        )
+                        # get reason
+                        reason = my_broken_uris[0][1]
+                        self._entropy.output(
+                            blue("%s: %s" % (_("reason"), reason,)),
+                            importance = 0,
+                            level = "error",
+                            header = blue("    # ")
+                        )
+                        download_errors = True
+                        broken_uris |= m_broken_uris
+                        self.lock_mirrors(False, [uri], repo = repo)
+                        continue
 
-                # all fine then, we need to move data from mytmpdir
-                # to database_dir_path
+                    # all fine then, we need to move data from mytmpdir
+                    # to database_dir_path
 
-                # EAPI 1 -- unpack database
-                if 1 not in disabled_eapis:
-                    compressed_db_filename = os.path.basename(
-                        download_data['compressed_database_path'])
-                    uncompressed_db_filename = os.path.basename(database_path)
-                    compressed_file = os.path.join(mytmpdir,
-                        compressed_db_filename)
-                    uncompressed_file = os.path.join(mytmpdir,
-                        uncompressed_db_filename)
-                    entropy.tools.uncompress_file(compressed_file,
-                        uncompressed_file, cmethod[0])
+                    # EAPI 1 -- unpack database
+                    if 1 not in disabled_eapis:
+                        compressed_db_filename = os.path.basename(
+                            download_data['compressed_database_path'])
+                        uncompressed_db_filename = os.path.basename(database_path)
+                        compressed_file = os.path.join(mytmpdir,
+                            compressed_db_filename)
+                        uncompressed_file = os.path.join(mytmpdir,
+                            uncompressed_db_filename)
+                        entropy.tools.uncompress_file(compressed_file,
+                            uncompressed_file, cmethod[0])
 
-                # now move
-                for myfile in os.listdir(mytmpdir):
-                    fromfile = os.path.join(mytmpdir, myfile)
-                    tofile = os.path.join(database_dir_path, myfile)
-                    shutil.move(fromfile, tofile)
-                    const_setup_file(tofile, etpConst['entropygid'], 0o664)
+                    # now move
+                    for myfile in os.listdir(mytmpdir):
+                        fromfile = os.path.join(mytmpdir, myfile)
+                        tofile = os.path.join(database_dir_path, myfile)
+                        shutil.move(fromfile, tofile)
+                        const_setup_file(tofile, etpConst['entropygid'], 0o664)
 
-            if os.path.isdir(mytmpdir):
-                shutil.rmtree(mytmpdir)
-            if os.path.isdir(mytmpdir):
-                os.rmdir(mytmpdir)
+                if os.path.isdir(mytmpdir):
+                    shutil.rmtree(mytmpdir)
+                if os.path.isdir(mytmpdir):
+                    os.rmdir(mytmpdir)
 
+                fine_uris.add(uri)
+                self.lock_mirrors(False, [uri], repo = repo)
 
-            fine_uris.add(uri)
-            self.lock_mirrors(False, [uri], repo = repo)
+            finally:
+                # remove temporary directories
+                for tmp_dir in tmp_dirs:
+                    try:
+                        shutil.rmtree(tmp_dir, True)
+                    except shutil.Error:
+                        continue
 
         return download_errors, fine_uris, broken_uris
 

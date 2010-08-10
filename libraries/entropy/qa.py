@@ -1077,49 +1077,51 @@ class QAInterface(TextInterface, EntropyPluginStore):
         from entropy.db import EntropyRepository
         from entropy.db.exceptions import Error
         fd, tmp_path = tempfile.mkstemp()
-        dump_rc = entropy.tools.dump_entropy_metadata(pkg_path, tmp_path)
-        if not dump_rc:
-            os.remove(tmp_path)
-            os.close(fd)
-            return False # error!
+        dbc = None
         try:
-            dbc = EntropyRepository(
-                readOnly = False,
-                dbFile = tmp_path,
-                dbname = 'qa_testing',
-                xcache = False,
-                indexing = False,
-                skipChecks = False
-            )
-            etp_repo_meta = {
-                'output_interface': self,
-            }
-            repo_plug = QAEntropyRepositoryPlugin(self,
-                metadata = etp_repo_meta)
-            dbc.add_plugin(repo_plug)
+            dump_rc = entropy.tools.dump_entropy_metadata(pkg_path, tmp_path)
+            if not dump_rc:
+                return False # error!
 
-        except Error:
-            os.remove(tmp_path)
-            os.close(fd)
-            return False
-
-        valid = True
-        try:
-            dbc.validate()
-        except SystemDatabaseError:
-            valid = False
-
-        if valid:
+            valid = True
             try:
-                for idpackage in dbc.listAllPackageIds():
-                    dbc.retrieveContent(idpackage, extended = True,
-                        formatted = True, insert_formatted = True)
+                dbc = EntropyRepository(
+                    readOnly = False,
+                    dbFile = tmp_path,
+                    dbname = 'qa_testing',
+                    xcache = False,
+                    indexing = False,
+                    skipChecks = False
+                )
+                etp_repo_meta = {
+                    'output_interface': self,
+                }
+                repo_plug = QAEntropyRepositoryPlugin(self,
+                    metadata = etp_repo_meta)
+                dbc.add_plugin(repo_plug)
+
             except Error:
                 valid = False
 
-        dbc.closeDB()
-        os.remove(tmp_path)
-        os.close(fd)
+            if valid:
+                try:
+                    dbc.validate()
+                except SystemDatabaseError:
+                    valid = False
+
+            if valid:
+                try:
+                    for idpackage in dbc.listAllPackageIds():
+                        dbc.retrieveContent(idpackage, extended = True,
+                            formatted = True, insert_formatted = True)
+                except Error:
+                    valid = False
+
+        finally:
+            if dbc is not None:
+                dbc.closeDB()
+            os.remove(tmp_path)
+            os.close(fd)
 
         return valid
 

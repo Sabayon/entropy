@@ -16,6 +16,7 @@
 #
 import os
 import shutil
+import tempfile
 
 from entropy.exceptions import SystemDatabaseError, DependenciesNotRemovable
 from entropy.db.exceptions import OperationalError
@@ -1490,12 +1491,12 @@ def install_packages(entropy_client,
     def get_text_license(license_name, repoid):
         dbconn = entropy_client.open_repository(repoid)
         text = dbconn.retrieveLicenseText(license_name)
-        tempfile = entropy.tools.get_random_temp_file()
-        f = open(tempfile, "w")
-        f.write(text)
-        f.flush()
-        f.close()
-        return tempfile
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        tmp_f = os.fdopen(tmp_fd, "w")
+        tmp_f.write(text)
+        tmp_f.flush()
+        tmp_f.close()
+        return tmp_path
 
     if licenses:
         print_info(red(" @@ ")+blue("%s:" % (_("You need to accept the licenses below"),) ))

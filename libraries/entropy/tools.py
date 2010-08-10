@@ -1020,9 +1020,8 @@ def unpack_gzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
     fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
-    os.close(fd)
 
-    item = open(tmp_path, "wb")
+    item = os.fdopen(fd, "wb")
     filegz = gzip.GzipFile(gzipfilepath, "rb")
     chunk = filegz.read(8192)
     while chunk:
@@ -1046,8 +1045,7 @@ def unpack_bzip2(bzip2filepath):
     import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
     fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
-    os.close(fd)
-    item = open(tmp_path, "wb")
+    item = os.fdopen(fd, "wb")
     filebz2 = bz2.BZ2File(bzip2filepath, "rb")
     chunk = filebz2.read(16384)
     while chunk:
@@ -2409,6 +2407,7 @@ def bytes_into_human(xbytes):
 def get_random_temp_file():
     """
     Return random temporary file path.
+    @deprecated
 
     @return: temporary, random file path
     @rtype: string

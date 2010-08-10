@@ -801,17 +801,18 @@ class UGC(SocketCommands):
         for key in keys_to_file:
             if key not in mydict:
                 continue
+
             fd, path = tempfile.mkstemp(suffix = "__%s.txt" % (key,))
             try:
-                f_path = open(path, "w")
-                f_path.write(mydict.get(key, ''))
-                f_path.flush()
-                f_path.close()
+                with os.fdopen(fd, "w") as f_path:
+                    f_path.write(mydict.get(key, ''))
+                    f_path.flush()
             except IOError:
                 continue
-            os.close(fd)
+            finally:
+                rm_paths.append(path)
+
             files.append(path)
-            rm_paths.append(path)
 
         sender = EmailSender()
         sender.send_mime_email(sender_email, [UGC.ERROR_REPORT_MAIL], subject,

@@ -87,8 +87,7 @@ def sync(options, just_tidy = False):
 
                 if (not do_noask) and rss_enabled:
                     tmp_fd, tmp_commit_path = tempfile.mkstemp()
-                    os.close(tmp_fd)
-                    with open(tmp_commit_path, "w") as tmp_f:
+                    with os.fdopen(tmp_fd, "w") as tmp_f:
                         tmp_f.write(DEFAULT_REPO_COMMIT_MSG)
                         if successfull_mirrors:
                             tmp_f.write("# Changes to be committed:\n")

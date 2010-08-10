@@ -11,6 +11,7 @@
 """
 import sys
 import os
+import tempfile
 import select
 import shutil
 import time
@@ -1909,9 +1910,12 @@ class SocketHost:
             self.sessions[rng]['compression'] = None
             self.sessions[rng]['stream_mode'] = False
             try:
-                self.sessions[rng]['stream_path'] = entropy.tools.get_random_temp_file()
+                tmp_fd, self.sessions[rng]['stream_path'] = tempfile.mkstemp()
+                self.sessions[rng]['steam_stat'] = os.fstat(tmp_fd)
+                os.close(tmp_fd)
             except (IOError, OSError,):
                 self.sessions[rng]['stream_path'] = ''
+                self.sessions[rng]['steam_stat'] = None
             self.sessions[rng]['t'] = time.time()
             self.sessions[rng]['ip_address'] = ip_address
             return rng
@@ -1939,12 +1943,25 @@ class SocketHost:
     def _destroy_session(self, session):
         if session in self.sessions:
             stream_path = self.sessions[session]['stream_path']
+            orig_st_data = self.sessions[session]['stream_stat']
             del self.sessions[session]
-            if os.path.isfile(stream_path) and os.access(stream_path, os.W_OK) and not os.path.islink(stream_path):
+            if os.path.isfile(stream_path) and os.access(stream_path, os.W_OK) \
+                and not os.path.islink(stream_path):
+                ack_remove = False
                 try:
-                    os.remove(stream_path)
-                except OSError:
-                    pass
+                    st_data = os.lstat(stream_path)
+                    st_data_t = (st_data.st_ino, st_data.st_dev)
+                    orig_st_data_t = (orig_st_data.st_ino, orig_st_data.st_dev)
+                    if st_data_t == orig_st_data_t:
+                        ack_remove = True
+                except (OSError, IOError):
+                    # cannot get enough info to safely remove file
+                    ack_remove = False
+                if ack_remove:
+                    try:
+                        os.remove(stream_path)
+                    except OSError:
+                        pass
             return True
         return False
 

@@ -740,17 +740,21 @@ class PortagePlugin(SpmPlugin):
         def read_kern_vermagic(ko_path):
 
             tmp_fd, tmp_file = tempfile.mkstemp()
-            os.close(tmp_fd)
+            try:
+                with os.fdopen(tmp_fd, "w") as tmp_fw:
+                    rc = subprocess.call((modinfo_path, "-F", "vermagic",
+                        ko_path), stdout = tmp_fw, stderr = tmp_fw)
+                    tmp_fw.flush()
 
-            tmp_fw = open(tmp_file, "w")
-            rc = subprocess.call((modinfo_path, "-F", "vermagic",
-                ko_path), stdout = tmp_fw, stderr = tmp_fw)
-            tmp_fw.flush()
-            tmp_fw.close()
-            tmp_r = open(tmp_file, "r")
-            modinfo_output = tmp_r.read().strip()
-            tmp_r.close()
-            os.remove(tmp_file)
+                tmp_r = open(tmp_file, "r")
+                modinfo_output = tmp_r.read().strip()
+                tmp_r.close()
+            finally:
+                try:
+                    os.close(tmp_fd)
+                except OSError:
+                    pass
+                os.remove(tmp_file)
 
             if rc != 0:
                 import warnings
@@ -811,19 +815,23 @@ class PortagePlugin(SpmPlugin):
         cmd = "/bin/bash -c \"source " + env_file + \
             " && echo ${" + env_var + "}\""
         tmp_fd, tmp_file = tempfile.mkstemp(prefix = "etp_portage")
-        os.close(tmp_fd)
-        std_f = open(tmp_file, "w")
+        try:
+            with os.fdopen(tmp_fd, "w") as std_f:
+                cmd = const_convert_to_rawstring(cmd)
+                proc = subprocess.Popen(shlex.split(cmd), stdout = std_f,
+                    stderr = std_f)
+                sts = proc.wait()
+                std_f.flush()
 
-        cmd = const_convert_to_rawstring(cmd)
-        proc = subprocess.Popen(shlex.split(cmd), stdout = std_f, stderr = std_f)
-        sts = proc.wait()
-        std_f.flush()
-        std_f.close()
+            with open(tmp_file, "r") as std_f:
+                output = std_f.read()
+        finally:
+            try:
+                os.close(tmp_fd)
+            except OSError:
+                pass
+            os.remove(tmp_file)
 
-        std_f = open(tmp_file, "r")
-        output = std_f.read()
-        std_f.close()
-        os.remove(tmp_file)
         if sts != 0:
             raise IOError("cannot source %s and get %s => %s" % (env_file,
                 env_var, repr(output)))
@@ -1692,18 +1700,6 @@ class PortagePlugin(SpmPlugin):
         if licenses is None:
             licenses = []
 
-        ### SETUP ENVIRONMENT
-        # if mute, supress portage output
-        if etpUi['mute']:
-            tmp_fd, tmp_file = tempfile.mkstemp()
-            os.close(tmp_fd)
-            tmp_fw = open(tmp_file, "w")
-
-            oldsysstdout = sys.stdout
-            oldsysstderr = sys.stderr
-            sys.stdout = tmp_fw
-            sys.stderr = tmp_fw
-
         root = etpConst['systemroot'] + os.path.sep
 
         # old way to avoid loop of deaths for entropy portage hooks
@@ -1816,6 +1812,15 @@ class PortagePlugin(SpmPlugin):
                 importance = 0,
                 header = ""
             )
+
+        # if mute, supress portage output
+        if etpUi['mute']:
+            tmp_fd, tmp_file = tempfile.mkstemp()
+            tmp_fw = os.fdopen(tmp_fd, "w")
+            oldsysstdout = sys.stdout
+            oldsysstderr = sys.stderr
+            sys.stdout = tmp_fw
+            sys.stderr = tmp_fw
 
         try:
             rc = self._portage.doebuild(

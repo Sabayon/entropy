@@ -667,7 +667,8 @@ class RepositoryMixin:
         if dbname is None:
             dbname = etpConst['genericdbid']
         if temp_file is None:
-            temp_file = entropy.tools.get_random_temp_file()
+            tmp_fd, temp_file = tempfile.mkstemp()
+            os.close(tmp_fd)
 
         dbc = GenericRepository(
             readOnly = False,
@@ -1443,48 +1444,50 @@ class MiscMixin:
 
         pkg_mirrors = repo_data['plain_packages']
         mirror_stats = {}
-        tmp_fd, tmp_path = tempfile.mkstemp()
-        os.close(tmp_fd)
         retries = 3
 
         for mirror in pkg_mirrors:
 
-            url_data = entropy.tools.spliturl(mirror)
-            mytxt = "%s: %s" % (
-                blue(_("Checking response time of")),
-                purple(url_data.hostname),
-            )
-            self.output(
-                mytxt,
-                importance = 1,
-                level = "info",
-                header = purple(" @@ "),
-                back = True
-            )
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            try:
 
-            start_time = time.time()
-            for idx in range(retries):
-                fetcher = self.urlFetcher(mirror, tmp_path, resume = False,
-                    show_speed = False)
-                fetcher.download()
-            end_time = time.time()
+                url_data = entropy.tools.spliturl(mirror)
+                mytxt = "%s: %s" % (
+                    blue(_("Checking response time of")),
+                    purple(url_data.hostname),
+                )
+                self.output(
+                    mytxt,
+                    importance = 1,
+                    level = "info",
+                    header = purple(" @@ "),
+                    back = True
+                )
 
-            result_time = (end_time - start_time)/retries
-            mirror_stats[mirror] = result_time
+                start_time = time.time()
+                for idx in range(retries):
+                    fetcher = self.urlFetcher(mirror, tmp_path, resume = False,
+                        show_speed = False)
+                    fetcher.download()
+                end_time = time.time()
 
-            mytxt = "%s: %s, %s" % (
-                blue(_("Mirror response time")),
-                purple(url_data.hostname),
-                teal(str(result_time)),
-            )
-            self.output(
-                mytxt,
-                importance = 1,
-                level = "info",
-                header = brown(" @@ ")
-            )
+                result_time = (end_time - start_time)/retries
+                mirror_stats[mirror] = result_time
 
-        os.remove(tmp_path)
+                mytxt = "%s: %s, %s" % (
+                    blue(_("Mirror response time")),
+                    purple(url_data.hostname),
+                    teal(str(result_time)),
+                )
+                self.output(
+                    mytxt,
+                    importance = 1,
+                    level = "info",
+                    header = brown(" @@ ")
+                )
+            finally:
+                os.close(tmp_fd)
+                os.remove(tmp_path)
 
         # calculate new order
         new_pkg_mirrors = sorted(mirror_stats.keys(),
@@ -1597,16 +1600,18 @@ class MiscMixin:
     def _inject_entropy_database_into_package(self, package_filename, data,
         treeupdates_actions = None):
         tmp_fd, tmp_path = tempfile.mkstemp()
-        os.close(tmp_fd)
-        dbconn = self.open_generic_repository(tmp_path)
-        dbconn.initializeRepository()
-        dbconn.addPackage(data, revision = data['revision'])
-        if treeupdates_actions != None:
-            dbconn.bumpTreeUpdatesActions(treeupdates_actions)
-        dbconn.commitChanges()
-        dbconn.closeDB()
-        entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
-        os.remove(tmp_path)
+        try:
+            dbconn = self.open_generic_repository(tmp_path)
+            dbconn.initializeRepository()
+            dbconn.addPackage(data, revision = data['revision'])
+            if treeupdates_actions != None:
+                dbconn.bumpTreeUpdatesActions(treeupdates_actions)
+            dbconn.commitChanges()
+            dbconn.closeDB()
+            entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
+        finally:
+            os.close(tmp_fd)
+            os.remove(tmp_path)
 
     def quickpkg(self, pkgdata, dirpath, edb = True, fake = False,
         compression = "bz2", shiftpath = ""):
@@ -1909,10 +1914,9 @@ class MatchMixin:
         for mask_file in new_mask_list:
 
             tmp_fd, tmp_path = tempfile.mkstemp()
-            os.close(tmp_fd)
 
             with open(mask_file, "r") as mask_f:
-                with open(tmp_path, "w") as tmp_f:
+                with os.fdopen(tmp_fd, "w") as tmp_f:
                     for line in mask_f.readlines():
                         strip_line = line.strip()
 

@@ -315,11 +315,10 @@ def showdiff(fromfile, tofile):
         coloured.append(line + "\n")
 
     fd, tmp_path = tempfile.mkstemp()
-    f = open(tmp_path, "w")
+    f = os.fdopen(fd, "w")
     f.writelines(coloured)
     f.flush()
     f.close()
-    os.close(fd)
 
     print("")
     args = ["less", "--no-init", "--QUIT-AT-EOF", tmp_path]
@@ -330,7 +329,7 @@ def showdiff(fromfile, tofile):
             raise
         args = ["cat", tmp_path]
         subprocess.call(args)
-        
+
     os.remove(tmp_path)
 
     if output == ['']:

@@ -175,24 +175,20 @@ class EntropySshUriHandler(EntropyUriHandler):
 
         fd, tmp_path = tempfile.mkstemp()
         fd_err, tmp_path_err = tempfile.mkstemp()
-        os.close(fd)
-        os.close(fd_err)
+        try:
+            with os.fdopen(fd, "wb") as std_f:
+                with os.fdopen(fd_err, "wb") as std_f_err:
+                    proc = self._subprocess.Popen(args, stdout = std_f,
+                        stderr = std_f_err)
+                    exec_rc = proc.wait()
+            with open(tmp_path, "rb") as std_f:
+                output = std_f.read()
+            with open(tmp_path_err, "rb") as std_f:
+                error = std_f.read()
+        finally:
+            os.remove(tmp_path)
+            os.remove(tmp_path_err)
 
-        with open(tmp_path, "wb") as std_f:
-            with open(tmp_path_err, "wb") as std_f_err:
-                proc = self._subprocess.Popen(args, stdout = std_f,
-                    stderr = std_f_err)
-                exec_rc = proc.wait()
-
-        std_f = open(tmp_path, "rb")
-        output = std_f.read()
-        std_f.close()
-        std_f = open(tmp_path_err, "rb")
-        error = std_f.read()
-        std_f.close()
-
-        os.remove(tmp_path)
-        os.remove(tmp_path_err)
         return exec_rc, output, error
 
     def _setup_common_args(self, remote_path):
@@ -293,48 +289,49 @@ class EntropySshUriHandler(EntropyUriHandler):
 
         # first of all, copy files renaming them
         tmp_file_map = {}
-        for load_path in load_path_list:
-            tmp_fd, tmp_path = tempfile.mkstemp(
-                suffix = EntropyUriHandler.TMP_TXC_FILE_EXT,
-                prefix = "._%s" % (os.path.basename(load_path),))
-            os.close(tmp_fd)
-            shutil.copy2(load_path, tmp_path)
-            tmp_file_map[tmp_path] = load_path
+        try:
+            for load_path in load_path_list:
+                tmp_fd, tmp_path = tempfile.mkstemp(
+                    suffix = EntropyUriHandler.TMP_TXC_FILE_EXT,
+                    prefix = "._%s" % (os.path.basename(load_path),))
+                os.close(tmp_fd)
+                shutil.copy2(load_path, tmp_path)
+                tmp_file_map[tmp_path] = load_path
 
-        args = [EntropySshUriHandler._TXC_CMD]
-        c_args, remote_str = self._setup_common_args(remote_dir)
+            args = [EntropySshUriHandler._TXC_CMD]
+            c_args, remote_str = self._setup_common_args(remote_dir)
 
-        args += c_args
-        args += ["-B", "-P", str(self.__port)]
-        args += sorted(tmp_file_map.keys())
-        args += [remote_str]
+            args += c_args
+            args += ["-B", "-P", str(self.__port)]
+            args += sorted(tmp_file_map.keys())
+            args += [remote_str]
 
-        upload_sts = self._fork_cmd(args) == 0
-        if not upload_sts:
+            upload_sts = self._fork_cmd(args) == 0
+            if not upload_sts:
+                return False
+
+            # atomic rename
+            rename_fine = True
+            for tmp_path, orig_path in tmp_file_map.items():
+                tmp_file = os.path.basename(tmp_path)
+                orig_file = os.path.basename(orig_path)
+                tmp_remote_path = os.path.join(remote_dir, tmp_file)
+                remote_path = os.path.join(remote_dir, orig_file)
+                self.output(
+                    "<-> %s %s %s" % (
+                        brown(tmp_file),
+                        teal("=>"),
+                        darkgreen(orig_file),
+                    ),
+                    header = "    ",
+                    back = True
+                )
+                rc = self.rename(tmp_remote_path, remote_path)
+                if not rc:
+                    rename_fine = False
+        finally:
             for path in tmp_file_map.keys():
                 do_rm(path)
-            return False
-
-        # atomic rename
-        rename_fine = True
-        for tmp_path, orig_path in tmp_file_map.items():
-            tmp_file = os.path.basename(tmp_path)
-            orig_file = os.path.basename(orig_path)
-            tmp_remote_path = os.path.join(remote_dir, tmp_file)
-            remote_path = os.path.join(remote_dir, orig_file)
-            self.output(
-                "<-> %s %s %s" % (
-                    brown(tmp_file),
-                    teal("=>"),
-                    darkgreen(orig_file),
-                ),
-                header = "    ",
-                back = True
-            )
-            rc = self.rename(tmp_remote_path, remote_path)
-            if not rc:
-                rename_fine = False
-            do_rm(tmp_path)
 
         return rename_fine
 
