@@ -1,3 +1,362 @@
+commit a09714f49fb1ad5d91b4dd4e25e422f27196c28b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 10 18:11:38 2010 +0200
+
+    [entropy*] improve mkdtemp/mkstemp usage
+
+commit f21f4b55ebf00cde01f569bc318700a07bb41b99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 10 08:41:39 2010 +0200
+
+    [po] update translation files
+
+commit cc01fee65b98eca78375a4b1c0f14e797b23ea83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 9 23:00:53 2010 +0200
+
+    [entropy.server] dep_rewrite: make possible to remove dependencies by providing "-" as replacement
+
+commit 3f141d73404e0f214308f56eb8b484b9fe36e2dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 9 21:51:16 2010 +0200
+
+    [entropy.client.interfaces.dep] improve dep calculation performance for tagged packages by providing tags in reverse alphabetical order
+
+commit 1ce64ba6c8b848ee39503f039bcbc235e3be81cd
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Mon Aug 9 21:52:36 2010 +0100
+
+    [i18n] Add sv translation file and add Patrik Karlsson to translators list
+
+commit a1e808f41331eee58172293072d62715eabafcf6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 9 21:24:12 2010 +0200
+
+    [po] update translations, fix portage_plugin support (module was not listed in POTFILES.in)
+
+commit bc03f7ef48c547fafbb9f04f3a4b38c975883a9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 14:26:06 2010 +0200
+
+    [entropy.client] make possible to disable differential repository update feature
+
+commit 91adc88f1b2bcf75355216dd418d786b45fbd68d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 14:18:01 2010 +0200
+
+    [entropy.client.interfaces.db] remove dead code, EntropyRepository.generateReverseDependenciesMetadata does not exist anymore
+
+commit 959263529cebdddbb6e18194c5c37607dabbbaaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 9 17:46:37 2010 +0200
+
+    [sulfur.views] make main treeview working with any font DPI
+
+commit a25309be1190d38cd90d2003933aa09b3d942af8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 11:19:42 2010 +0200
+
+    [todo] update TODO
+
+commit 788847585007b5d5037925ab2585e6f494f7d367
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 11:06:29 2010 +0200
+
+    [entropy.db] EntropyRepository: rename validateDatabase() to validate(), deprecate validateDatabase()
+
+commit 0c7e75c13141db19adc8179b4cf6899d56fae8b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 11:02:15 2010 +0200
+
+    [entropy.output] write warning and error messages to stderr by default
+
+commit 2fb3f559cb9782cb37cbfd3aab153532ce9ab011
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 10:51:50 2010 +0200
+
+    [entropy.client.interfaces.cache] when checksum() fails in _all_repositories_checksum() report to user
+
+commit e7ef727840c1e8c10992d6ba5341d05d1c848dff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 10:46:07 2010 +0200
+
+    [entropy.db] EntropyRepository: when calling validateDatabase() also call checksum()
+
+commit 291cf97f02ac7d53d034e0ace87dd0c20fe9cb22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 8 10:37:42 2010 +0200
+
+    [equo] handle OperationalError exceptions on listAllPackageIds() in text_rescue._database_check()
+
+commit c5b77f09642ccec6e04811ff0c44d258d05b845f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 22:59:15 2010 +0200
+
+    [todo] update TODO
+
+commit 2ab35b3c3c548b41c7e3fac3791d5bc6420487d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 19:35:07 2010 +0200
+
+    [services] client-updates-daemon: always run unprivileged, gain privileges only when strictly required
+
+commit fc92891bf7e387c53765131fab24b27bc885d586
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 19:15:11 2010 +0200
+
+    [sulfur] fix regression that caused configuration file values to be handled incorrectly
+
+commit e4c25b6e5c919d4d05c796f1597b3755f88ed838
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 19:11:26 2010 +0200
+
+    [sulfur] major: run application as unprivileged user, regain privileges only when needed
+
+commit cd62ed35b12905d4206542a136ecd4edffa32497
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 19:10:26 2010 +0200
+
+    [entropy.const] const_regain_privileges: do not raise ValueError if process is already privileged
+
+commit 721f1439fd0ed9e285aa0f124852513208fc7218
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 18:30:40 2010 +0200
+
+    [sulfur.dialogs] catch PermissionDenied exception when storing UGC data fails
+
+commit a499094ecf00f3b635481ff2342b6427addd7208
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 18:30:12 2010 +0200
+
+    [entropy.const] improve const_drop_privileges and const_regain_privileges reliability and usability
+
+commit 47e42eb891d2ace9edd1ad507d9b67fb0354246c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 18:29:31 2010 +0200
+
+    [sulfur.setup] improve const class, make possible to reset variables by calling const.setup()
+
+commit 4e52e1161c88be4047083ed8fef7443346317d0d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 16:22:55 2010 +0200
+
+    [entropy.const] const_drop_privileges/const_regain_privileges: keep etpConst['uid'] up-to-date
+
+commit 4a5f3a5e20188777656a42be3b7f9d897fe29509
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 16:06:38 2010 +0200
+
+    [entropy.const] add built-in drop/gain privileges functions
+
+commit e9da541a42fc44afb6b62389c7699f29ff65f7e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 15:17:25 2010 +0200
+
+    [entropy.exceptions] add SecurityError exception
+
+commit eec9d6cdd1227c5a6e74c78a28d08f76d4c60eef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 15:07:11 2010 +0200
+
+    [entropy.const] add unprivileged user/group handling
+
+commit d8822d18f18a6b2c29b577b7e5fc628eab304eb9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 7 09:16:41 2010 +0200
+
+    [conf] add id-REPO mirror to repositories.conf
+
+commit ef8929cf8a8ebbc404c0edbea8f40657d9019e3e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 22:41:43 2010 +0200
+
+    [conf] add mirror.aarnet.edu.au to repositories.conf
+
+commit 53f80631ad33ac1bcd90b2aa13634c7d2fbacf5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 10:23:35 2010 +0200
+
+    [entropy.server] move ServerPackagesRepository and implement basic update() method
+
+commit 2a89dde8d8d0a5ae9e4da93114d0f3bfe4e2e27d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 01:16:45 2010 +0200
+
+    [todo] update TODO
+
+commit 0f42721e43beabbe76cc4b1dc73c86e65f411c03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 01:16:20 2010 +0200
+
+    [equo] text_rescue: acquire Entropy locks when needed
+
+commit 15ff49b82b9762c0d4dbdf3cd75c282de2b435ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 01:16:02 2010 +0200
+
+    [equo] text_smart: acquire Entropy locks when needed
+
+commit 3277ad4ebc1fd70d71e4917ea12b1d36c4618885
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 01:15:14 2010 +0200
+
+    [equo] text_repositories: add return to _remove_repository and _add_repository
+
+commit 422aeec80b13ab66e75c0eb14d5f56e3bc940b53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 01:04:07 2010 +0200
+
+    [equo] text_security: acquire Entropy locks when calling "equo security install"
+
+commit bde58b19a3ad66c83391831c0a4b2fa07f67cefa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 00:43:48 2010 +0200
+
+    [entropy.db] EntropyRepository: remove @deprecated methods
+
+commit 77c010889c657349cc3577e905187a0812179902
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 00:42:43 2010 +0200
+
+    [todo] update TODO
+
+commit 0b28ce42ed313d0e26076786713b1b80b36f948d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 00:41:55 2010 +0200
+
+    [entropy.db] move handlePackage() implementation to entropy.server's ServerPackagesRepository
+
+commit 571beaaf12faecafac6e9da75a2062f943a5bec1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 1 00:29:18 2010 +0200
+
+    [entropy.db] several EntropyRepository changes, listed below
+    
+    - overridden handlePackage, addPackage, removePackage in respective
+      entropy.client.interfaces.db classes in a proper, secure way.
+    - overridden maskFilter in entropy.client.interfaces.db, the final
+      goal will be removing its logic from EntropyRepository and move
+      it to AvailablePackagesRepository only.
+    - removed any evidence of "client_repo" EntropyRepositoryPlugin(s)
+      metadatum.
+
+commit 063d6fe7407499c89938092e79fa093ef71f952f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 16:14:24 2010 +0200
+
+    [todo] update TODO
+
+commit 4fbb0683956f3c1d34f46699e3b3fbfc3b36c7aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 16:13:49 2010 +0200
+
+    [entropy.db.skel] update todos
+
+commit 6edf4c331cec052d4b88f1f1b219e429f8b8754c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 15:15:32 2010 +0200
+
+    [todo] update TODO
+
+commit fe18e38f324b97ea2d23059ea896c71669a1a1ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 15:14:54 2010 +0200
+
+    [entropy] several QA improvements and API changes (trivial, but still)
+
+commit b0a34a77c6b347397449b2339abb3ffacf70c4b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 13:10:30 2010 +0200
+
+    [equo] text_ui: always acquire entropy lock before doing anything
+
+commit 8782df8ae13fb7dab45af9d84b70ee179b2c5d39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 12:57:33 2010 +0200
+
+    [equo] avoid race condition in try/finally in _do_text_cleanup
+
+commit 7cd67e4d7932920a2661a70b9df5d0982382aa1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 12:56:47 2010 +0200
+
+    [equo] when running "equo cleanup", make sure no other Entropy instances are running
+
+commit 71f1b63a1320b718b8d0f313c15585186d47e759
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 12:55:04 2010 +0200
+
+    [text_tools] make acquire_entropy_locks() and release_entropy_locks() actually working
+
+commit e21b636bf686755fb7124801508c0a9a50a89484
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 12:43:20 2010 +0200
+
+    [text_tools] add acquire_entropy_locks() and release_entropy_locks() functions
+
+commit 6993271143bb5a928d3ef3d2ea127cac7d211f75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 12:41:39 2010 +0200
+
+    [services] client-updates-daemon: only release pid lock if it has been acquired
+
+commit 62b48972d419698936002ec39317815f32f6ead8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 10:27:59 2010 +0200
+
+    [entropy.db] EntropyRepository: listAllFiles() wasn't properly overridden
+
+commit 07de0b5cc51f6e00d7e5ab22bbc4902e9c1017a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 31 09:33:18 2010 +0200
+
+    [entropy.spm] PortagePlugin: remove linux-info pkg_setup() hack that fixed KV_OUT_DIR, no longer needed
+
+commit 5c5a6c369a7556d8f2a104d0f8470e7f65aaeafd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 30 23:48:30 2010 +0200
+
+    [equo] when running with --pretend, disable --ask
+
+commit c288cd80b69f60bb7f08f697042d6b98cf6204fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 29 19:34:04 2010 +0200
+
+    [entropy.db] remove reverse dependencies SQL, generate reverse dependencies metadata dynamically (also using on-disk cache)
+    
+    This avoids repository database write access requirements and
+    improves reverse dependencies metadata reliability.
+
+commit 749a1b82639e97bf5d4317e2549c3f245baaa509
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 29 19:33:45 2010 +0200
+
+    [tests] db: add reverse dependencies test
+
+commit b95ec5d4f14b85ca187f128859313396bf2c8fac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 29 19:07:14 2010 +0200
+
+    [entropy.db] EntropyRepositoryBase: directly use checksum value returned by checksum()
+
+commit 4e003f81bca02e09eabddfaa34237f18744a3678
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 29 19:04:34 2010 +0200
+
+    [entropy.db] EntropyRepositoryBase.checksum() make "strings" the default
+
+commit bba8ab945d94e20f33db6d9d778315f3aa50e578
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 29 11:23:57 2010 +0200
+
+    [entropy.const] add const_get_int() and use it in const_convert_to_unicode
+
+commit 09f5c76b91b7f2ca0e91e4a38ca8da6d50868b1f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 28 08:19:38 2010 +0200
+
+    Tagging Entropy version 0.99.49.6
+
 commit 9af987aa8c3b4b4a9438a661710cfbb0d1304fea
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jul 28 08:18:26 2010 +0200
