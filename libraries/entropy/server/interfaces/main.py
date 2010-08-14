@@ -4256,7 +4256,8 @@ class ServerRepositoryMixin:
         idpackages_added = set()
         to_be_injected = set()
         blacklisted_deps = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
-        repo_blacklist = self._get_missing_dependencies_blacklist(repo = repo)
+        repo_blacklist = sorted(self._get_missing_dependencies_blacklist(
+            repo = repo))
 
         def get_blacklisted_deps(package_ids, repo_db):
             my_blacklist = []
