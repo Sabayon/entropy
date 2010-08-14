@@ -1,3 +1,32 @@
+commit 018b851ce72194c582716192f8c7909d11e2069b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 02:23:56 2010 +0200
+
+    [entropy.client.interfaces.package] remove unneeded logging
+
+commit 73174f96fd8646490df1421214c2ba3f63daa76a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 02:17:47 2010 +0200
+
+    [entropy.client.interfaces.package] properly move preremove step after install
+    
+    In order to avoid issues with Source Package Managers requiring stricter
+    conditions of live filesystem during install/remove steps, improve
+    package phases by separating install and removal, preremove and
+    postremove code.
+
+commit 0a014d32fb6288bdfaabfa38c2deae2358c1a4e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 12 20:58:25 2010 +0200
+
+    [tests] also run const tests
+
+commit 2c46e97d4fd93459ada403990cdc740058ae3426
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 12 20:51:22 2010 +0200
+
+    Tagging Entropy version 0.99.49.10
+
 commit a09714f49fb1ad5d91b4dd4e25e422f27196c28b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 10 18:11:38 2010 +0200
