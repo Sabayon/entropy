@@ -4256,16 +4256,16 @@ class ServerRepositoryMixin:
         idpackages_added = set()
         to_be_injected = set()
         blacklisted_deps = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
-        repo_blacklist = sorted(self._get_missing_dependencies_blacklist(
-            repo = repo))
+        repo_blacklist = self._get_missing_dependencies_blacklist(
+            repo = repo)
 
         def get_blacklisted_deps(package_ids, repo_db):
-            my_blacklist = []
+            my_blacklist = set()
             for pkg_dep, bl_pkg_deps in blacklisted_deps.items():
                 pkg_ids, rc = repo_db.atomMatch(pkg_dep, multiMatch = True)
                 for package_id in package_ids:
                     if package_id in pkg_ids:
-                        my_blacklist += bl_pkg_deps
+                        my_blacklist.update(bl_pkg_deps)
                         break
             return my_blacklist
 
@@ -4313,13 +4313,14 @@ class ServerRepositoryMixin:
                         no_upload = True, repo = repo)
                     pkg_blacklisted_deps = get_blacklisted_deps(
                         idpackages_added, dbconn)
+                    pkg_blacklisted_deps |= repo_blacklist
                     my_qa.test_missing_dependencies(
                         idpackages_added,
                         dbconn,
                         ask = ask,
                         repo = repo,
                         self_check = True,
-                        black_list = repo_blacklist + pkg_blacklisted_deps,
+                        black_list = pkg_blacklisted_deps,
                         black_list_adder = \
                             self._add_missing_dependencies_blacklist_items
                     )
@@ -4342,13 +4343,14 @@ class ServerRepositoryMixin:
                 no_upload = True, repo = repo)
             pkg_blacklisted_deps = get_blacklisted_deps(
                 idpackages_added, dbconn)
+            pkg_blacklisted_deps |= repo_blacklist
             my_qa.test_missing_dependencies(
                 idpackages_added,
                 dbconn,
                 ask = ask,
                 repo = repo,
                 self_check = True,
-                black_list = repo_blacklist + pkg_blacklisted_deps,
+                black_list = pkg_blacklisted_deps,
                 black_list_adder = \
                     self._add_missing_dependencies_blacklist_items
             )
