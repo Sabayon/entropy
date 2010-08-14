@@ -82,9 +82,6 @@
 ../libraries/entropy/qa.py
 ../libraries/entropy/security.py
 ../libraries/entropy/tools.py
-../libraries/entropy-miner.py
-../libraries/test.py
-../libraries/test_sec.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
