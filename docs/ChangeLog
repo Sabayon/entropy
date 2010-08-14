@@ -1,3 +1,21 @@
+commit a6aa09f63d41c3f8747bc38dee31d58980924135
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 08:41:11 2010 +0200
+
+    [entropy.server] fix regression, remove duplicated os.remove()
+
+commit 72b4d37bf9ced949c47b025c752115448ee49a3a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 02:44:46 2010 +0200
+
+    [po] update translations
+
+commit eb771eee0aa06cb4561d8031b3fcf262e7d442e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 02:34:51 2010 +0200
+
+    Tagging Entropy version 0.99.49.11
+
 commit 018b851ce72194c582716192f8c7909d11e2069b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 14 02:23:56 2010 +0200
