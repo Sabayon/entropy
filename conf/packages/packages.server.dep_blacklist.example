@@ -1,0 +1,12 @@
+# Server side packages.server.dep_rewrite file (this has to stay in /etc/entropy/packages)
+# Using this file, you can blacklist arbitrary broken dependencies
+# detected by Entropy broken libraries QA routine.
+
+# LINE CONSTRUCTION:
+# <pkg> <blacklisted_dependency_1> [<blacklisted_dependency_1> ...]
+# pkg = package containing dependency to match
+# blacklisted_dependency_n = blacklisted dependency string
+# See examples below
+
+# EXAMPLES:
+# app-admin/anaconda x11-libs/gtk+:2

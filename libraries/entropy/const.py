@@ -270,8 +270,10 @@ def const_default_settings(rootdir):
         'etpdatabaseupdatefile': default_etp_dbfile+".repo_updates",
         'etpdatabaselicwhitelistfile': default_etp_dbfile+".lic_whitelist",
         'etpdatabasecriticalfile': default_etp_dbfile+".critical",
-        # server-side per-repository package dependencies rewrite rules file
+        # server-side package dependencies rewrite rules file
         'etpdatabasedeprewritefile': default_etp_packagesdir+"/packages.server.dep_rewrite",
+        # server-side package broken dependency blacklist file
+        'etpdatabasedepblackistfile': default_etp_packagesdir+"/packages.server.dep_blacklist",
         # per-repository configuration file to list legally sensible pkgs
         'etpdatabaserestrictedfile': default_etp_dbfile+".restricted",
         # the local/remote database revision file

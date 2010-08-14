@@ -7,6 +7,7 @@
 
   1.0:
 
+    - rename idpackage(s)
     - rename "equo database"
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
     - per-repository mirrors on repo database dir?

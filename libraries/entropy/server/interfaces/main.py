@@ -480,10 +480,12 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         if cached is not None:
             return cached
 
+        data = {}
         rewrite_file = etpConst['etpdatabasedeprewritefile']
+        if not os.path.isfile(rewrite_file):
+            return data
         rewrite_content = self.__generic_parser(rewrite_file)
 
-        data = {}
         for line in rewrite_content:
             params = line.split()
             if len(params) < 3:
@@ -498,6 +500,25 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             data[(pkg_match, pattern)] = (compiled_pattern, replaces)
 
         self._mod_rewrite_data = data
+        return data
+
+    def dep_blacklist_parser(self, sys_set):
+
+        data = {}
+        blacklist_file = etpConst['etpdatabasedepblackistfile']
+        if not os.path.isfile(blacklist_file):
+            return data
+        blacklist_content = self.__generic_parser(blacklist_file)
+
+        for line in blacklist_content:
+            params = line.split()
+            if len(params) < 2:
+                continue
+            pkg_match, blacklisted_deps = params[0], params[1:]
+            # use this key to make sure to not overwrite similar entries
+            obj = data.setdefault(pkg_match, [])
+            obj.extend(blacklisted_deps)
+
         return data
 
     def server_parser(self, sys_set):
@@ -1032,6 +1053,12 @@ class ServerSettingsMixin:
             repo = self.default_repository
         return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasedeprewritefile'])
+
+    def _get_local_database_dep_blacklist_file(self, repo = None, branch = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self._get_local_database_dir(repo, branch),
+            etpConst['etpdatabasedepblackistfile'])
 
     def _get_local_database_rss_file(self, repo = None, branch = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -4228,6 +4255,19 @@ class ServerRepositoryMixin:
         maxcount = len(packages_data)
         idpackages_added = set()
         to_be_injected = set()
+        blacklisted_deps = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
+        repo_blacklist = self._get_missing_dependencies_blacklist(repo = repo)
+
+        def get_blacklisted_deps(package_ids, repo_db):
+            my_blacklist = []
+            for pkg_dep, bl_pkg_deps in blacklisted_deps.items():
+                pkg_ids, rc = repo_db.atomMatch(pkg_dep, multiMatch = True)
+                for package_id in package_ids:
+                    if package_id in pkg_ids:
+                        my_blacklist += bl_pkg_deps
+                        break
+            return my_blacklist
+
         my_qa = self.QA()
         for package_filepath, inject in packages_data:
 
@@ -4270,15 +4310,15 @@ class ServerRepositoryMixin:
                 if idpackages_added:
                     dbconn = self.open_server_repository(read_only = False,
                         no_upload = True, repo = repo)
+                    pkg_blacklisted_deps = get_blacklisted_deps(
+                        idpackages_added, dbconn)
                     my_qa.test_missing_dependencies(
                         idpackages_added,
                         dbconn,
                         ask = ask,
                         repo = repo,
                         self_check = True,
-                        black_list = \
-                            self._get_missing_dependencies_blacklist(
-                                repo = repo),
+                        black_list = repo_blacklist + pkg_blacklisted_deps,
                         black_list_adder = \
                             self._add_missing_dependencies_blacklist_items
                     )
@@ -4299,14 +4339,15 @@ class ServerRepositoryMixin:
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo)
+            pkg_blacklisted_deps = get_blacklisted_deps(
+                idpackages_added, dbconn)
             my_qa.test_missing_dependencies(
                 idpackages_added,
                 dbconn,
                 ask = ask,
                 repo = repo,
                 self_check = True,
-                black_list = \
-                    self._get_missing_dependencies_blacklist(repo = repo),
+                black_list = repo_blacklist + pkg_blacklisted_deps,
                 black_list_adder = \
                     self._add_missing_dependencies_blacklist_items
             )
