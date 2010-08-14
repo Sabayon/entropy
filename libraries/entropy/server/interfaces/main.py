@@ -895,7 +895,6 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
             if dbc is not None:
                 dbc.closeDB()
             os.close(tmp_fd)
-            os.remove(tmp_f)
 
         return True
 
