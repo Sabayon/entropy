@@ -127,6 +127,20 @@ class Trigger:
 
         functions = []
 
+        if self.spm_support:
+            spm_class = self.Entropy.Spm_class()
+            phases_map = spm_class.package_phases_map()
+
+            # doing here because we need /var/db/pkg stuff
+            # in place and also because doesn't make any difference
+            while True:
+                if self.pkgdata['spm_phases'] != None:
+                    if phases_map.get('postremove') not \
+                        in self.pkgdata['spm_phases']:
+                        break
+                functions.append(self.trigger_spm_postremove)
+                break
+
         cont_dirs = set((os.path.dirname(x) for x in \
             self.pkgdata['removecontent']))
 
@@ -155,16 +169,6 @@ class Trigger:
                         in self.pkgdata['spm_phases']:
                         break
                 functions.append(self.trigger_spm_preremove)
-                break
-
-            # doing here because we need /var/db/pkg stuff
-            # in place and also because doesn't make any difference
-            while True:
-                if self.pkgdata['spm_phases'] != None:
-                    if phases_map.get('postremove') not \
-                        in self.pkgdata['spm_phases']:
-                        break
-                functions.append(self.trigger_spm_postremove)
                 break
 
         if self.pkgdata['trigger']:

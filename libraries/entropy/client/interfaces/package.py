@@ -1000,33 +1000,6 @@ class Package:
         # all the db entries in, so we need to commit at every iteration
         self._entropy.installed_repository().commitChanges()
 
-        # if another package with the same atom is installed in
-        # Entropy db, do not call SPM at all because it would cause
-        # to get that package removed from there resulting in matching
-        # inconsistencies.
-        # -- of course, we need to drop versiontag before being able to look
-        # for other pkgs with same atom but different tag (which is an
-        # entropy-only metadatum)
-        test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
-        others_installed = self._entropy.installed_repository().getPackageIds(test_atom)
-
-        # It's obvious that clientdb cannot have more than one idpackage
-        # featuring the same "atom" value, but still, let's be fault-tolerant.
-        spm_rc = 0
-
-        if not others_installed:
-            spm_rc = self._spm_remove_package()
-
-        for other_installed in others_installed:
-            # we have one installed, we need to update SPM uid
-            spm_rc = self._spm_update_package_uid(other_installed,
-                self.pkgmeta['removeatom'])
-            if spm_rc != 0:
-                break # ohi ohi ohi
-
-        if spm_rc != 0:
-            return spm_rc
-
         self._remove_content_from_system(self.pkgmeta['removeidpackage'],
             automerge_metadata)
 
@@ -1291,9 +1264,8 @@ class Package:
             "Installing package: %s" % (self.pkgmeta['atom'],)
         )
 
-        already_protected_config_files = {}
         if self.pkgmeta['removeidpackage'] != -1:
-            already_protected_config_files = \
+            self.pkgmeta['already_protected_config_files'] = \
                 self._entropy.installed_repository().retrieveAutomergefiles(
                     self.pkgmeta['removeidpackage'], get_dict = True
                 )
@@ -1301,7 +1273,7 @@ class Package:
         # copy files over - install
         # use fork? (in this case all the changed structures
         # need to be pushed back)
-        rc = self._move_image_to_system(already_protected_config_files)
+        rc = self._move_image_to_system()
         if rc != 0:
             return rc
 
@@ -1316,33 +1288,8 @@ class Package:
             level = "info",
             header = red("   ## ")
         )
-        idpackage = self._add_installed_package()
-
-        # remove old files and spm stuff
-        if self.pkgmeta['removeidpackage'] != -1:
-
-            # doing a diff removal
-            self._entropy.clientLog.log(
-                "[Package]",
-                etpConst['logging']['normal_loglevel_id'],
-                "Remove old package: %s" % (self.pkgmeta['removeatom'],)
-            )
-
-            self._entropy.output(
-                blue(_("Cleaning previously installed information...")),
-                importance = 1,
-                level = "info",
-                header = red("   ## ")
-            )
-
-            spm_rc = self._spm_remove_package()
-            if spm_rc != 0:
-                return spm_rc
-
-            self._remove_content_from_system(self.pkgmeta['removeidpackage'],
-                automerge_metadata = already_protected_config_files)
-
-        return self._spm_install_package(idpackage)
+        self.pkgmeta['installed_package_id'] = self._add_installed_package()
+        return 0
 
     def _spm_install_package(self, installed_package_id):
         """
@@ -1677,7 +1624,7 @@ class Package:
         return self.pkgmeta.get('unittest_root', '') + \
             etpConst['systemroot']
 
-    def _move_image_to_system(self, already_protected_config_files):
+    def _move_image_to_system(self):
 
         # load CONFIG_PROTECT and its mask
         protect = self.__get_package_match_config_protect()
@@ -1872,7 +1819,7 @@ class Package:
             if protected:
 
                 # second task
-                oldprot_md5 = already_protected_config_files.get(
+                oldprot_md5 = self.pkgmeta['already_protected_config_files'].get(
                     prot_old_tofile)
 
                 if oldprot_md5 and os.path.exists(pre_tofile) and \
@@ -2675,7 +2622,72 @@ class Package:
         del remdata
         return 0
 
+    def _package_install_clean(self):
+        """
+        Cleanup package files not used anymore by newly installed version.
+        This is part of the atomic install, which overwrites the live fs with
+        new files and removes old afterwards.
+        """
+        self._entropy.clientLog.log(
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
+            "Remove old package (entropy data): %s" % (
+                self.pkgmeta['removeatom'],)
+        )
+        self._entropy.output(
+            blue(_("Cleaning previously installed application data.")),
+            importance = 1,
+            level = "info",
+            header = red("   ## ")
+        )
+        self._remove_content_from_system(self.pkgmeta['removeidpackage'],
+            automerge_metadata = self.pkgmeta['already_protected_config_files'])
+        return 0
+
+    def _post_remove_step_install(self):
+        """
+        Post-remove phase of package install, this step removes older SPM
+        package entries from SPM db.
+        """
+        self._entropy.clientLog.log(
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
+            "Remove old package (spm data): %s" % (self.pkgmeta['removeatom'],)
+        )
+        return self._spm_remove_package()
+
+    def _post_remove_step_remove(self):
+        # remove pkg
+        # -- now it's possible to remove SPM package entry.
+        # if another package with the same atom is installed in
+        # Entropy db, do not call SPM at all because it would cause
+        # to get that package removed from there resulting in matching
+        # inconsistencies.
+        # -- of course, we need to drop versiontag before being able to look
+        # for other pkgs with same atom but different tag (which is an
+        # entropy-only metadatum)
+        test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
+        others_installed = self._entropy.installed_repository().getPackageIds(
+            test_atom)
+
+        # It's obvious that clientdb cannot have more than one idpackage
+        # featuring the same "atom" value, but still, let's be fault-tolerant.
+        spm_rc = 0
+
+        if not others_installed:
+            spm_rc = self._spm_remove_package()
+
+        for other_installed in others_installed:
+            # we have one installed, we need to update SPM uid
+            spm_rc = self._spm_update_package_uid(other_installed,
+                self.pkgmeta['removeatom'])
+            if spm_rc != 0:
+                break # ohi ohi ohi
+
+        return spm_rc
+
     def _post_remove_step(self):
+
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
 
@@ -2850,6 +2862,13 @@ class Package:
             self._entropy.set_title(self._xterm_title)
             return self._install_step()
 
+        def do_install_clean():
+            return self._package_install_clean()
+
+        def do_install_spm():
+            return self._spm_install_package(
+                self.pkgmeta['installed_package_id'])
+
         def do_remove():
             self._xterm_title += ' %s: %s' % (
                 _("Removing"),
@@ -2898,6 +2917,12 @@ class Package:
             self._entropy.set_title(self._xterm_title)
             return self._post_remove_step()
 
+        def do_postremove_install():
+            return self._post_remove_step_install()
+
+        def do_postremove_remove():
+            return self._post_remove_step_remove()
+
         def do_config():
             self._xterm_title += ' %s: %s' % (
                 _("Configuring"),
@@ -2915,11 +2940,15 @@ class Package:
             "unpack": do_unpack,
             "remove_conflicts": do_remove_conflicts,
             "install": do_install,
+            "install_spm": do_install_spm,
+            "install_clean": do_install_clean,
             "remove": do_remove,
             "cleanup": do_cleanup,
             "postinstall": do_postinstall,
             "preinstall": do_preinstall,
             "postremove": do_postremove,
+            "postremove_install": do_postremove_install,
+            "postremove_remove": do_postremove_remove,
             "preremove": do_preremove,
             "config": do_config,
         }
@@ -3072,7 +3101,8 @@ class Package:
 
         self.pkgmeta['triggers']['remove']['accept_license'] = pkg_license
 
-        self.pkgmeta['steps'] = ["preremove", "remove", "postremove"]
+        self.pkgmeta['steps'] = ["preremove", "remove", "postremove",
+            "postremove_remove"]
 
         return 0
 
@@ -3140,6 +3170,7 @@ class Package:
             install_source = meta_inst_source
         self.pkgmeta['install_source'] = install_source
 
+        self.pkgmeta['already_protected_config_files'] = {}
         self.pkgmeta['configprotect_data'] = []
         dbconn = self._entropy.open_repository(repository)
         self.pkgmeta['triggers'] = {}
@@ -3173,11 +3204,14 @@ class Package:
                 description += "..."
         self.pkgmeta['description'] = description
 
+        # this is set by __install_package() and required by spm_install
+        # phase
+        self.pkgmeta['installed_package_id'] = None
         # fill action queue
         self.pkgmeta['removeidpackage'] = -1
-        removeConfig = False
+        remove_config = False
         if 'removeconfig' in self.metaopts:
-            removeConfig = self.metaopts.get('removeconfig')
+            remove_config = self.metaopts.get('removeconfig')
 
         self.pkgmeta['remove_metaopts'] = {
             'removeconfig': True,
@@ -3190,7 +3224,7 @@ class Package:
         mf = self.metaopts.get('merge_from')
         if mf != None:
             self.pkgmeta['merge_from'] = const_convert_to_unicode(mf)
-        self.pkgmeta['removeconfig'] = removeConfig
+        self.pkgmeta['removeconfig'] = remove_config
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
         inst_idpackage, inst_rc = inst_repo.atomMatch(pkgkey,
@@ -3282,11 +3316,14 @@ class Package:
         # preinstall placed before preremove in order
         # to respect Spm order
         self.pkgmeta['steps'].append("preinstall")
-        if (self.pkgmeta['removeidpackage'] != -1):
-            self.pkgmeta['steps'].append("preremove")
         self.pkgmeta['steps'].append("install")
         if (self.pkgmeta['removeidpackage'] != -1):
+            self.pkgmeta['steps'].append("preremove")
+        self.pkgmeta['steps'].append("install_clean")
+        if (self.pkgmeta['removeidpackage'] != -1):
             self.pkgmeta['steps'].append("postremove")
+            self.pkgmeta['steps'].append("postremove_install")
+        self.pkgmeta['steps'].append("install_spm")
         self.pkgmeta['steps'].append("postinstall")
         self.pkgmeta['steps'].append("cleanup")
 
