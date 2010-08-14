@@ -2628,12 +2628,6 @@ class Package:
         This is part of the atomic install, which overwrites the live fs with
         new files and removes old afterwards.
         """
-        self._entropy.clientLog.log(
-            "[Package]",
-            etpConst['logging']['normal_loglevel_id'],
-            "Remove old package (entropy data): %s" % (
-                self.pkgmeta['removeatom'],)
-        )
         self._entropy.output(
             blue(_("Cleaning previously installed application data.")),
             importance = 1,
