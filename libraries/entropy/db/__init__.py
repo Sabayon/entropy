@@ -425,9 +425,6 @@ class EntropyRepository(EntropyRepositoryBase):
         # setup service interface
         self.__skip_checks = skipChecks
         self.__live_cache = {}
-        # this instance will set this to True if reverse dependencies
-        # metadata is generated runtime
-        self._temp_reverse_deps = False
 
         self.__structure_update = False
         if not self.__skip_checks:
