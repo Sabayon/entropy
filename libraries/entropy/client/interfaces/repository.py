@@ -11,7 +11,10 @@
 """
 
 import os
+import sys
+import subprocess
 
+from entropy.const import const_debug_write, etpConst
 from entropy.i18n import _
 from entropy.exceptions import RepositoryError, PermissionDenied
 from entropy.output import blue, darkred, red, darkgreen, bold, purple, teal, \
@@ -54,6 +57,36 @@ class Repository:
         if not self.repo_ids:
             self.repo_ids.extend(list(avail_data.keys()))
 
+    def _run_post_update_repository_hook(self, repository_id):
+
+        my_repos = self._settings['repositories']
+        branch = my_repos['branch']
+        avail_data = my_repos['available']
+        repo_data = avail_data[repository_id]
+        post_update_script = repo_data['post_repo_update_script']
+
+        if not (os.path.isfile(post_update_script) and \
+            os.access(post_update_script, os.R_OK)):
+            # not found!
+            const_debug_write(__name__,
+                "_run_post_update_repository_hook: not found")
+            return 0
+
+        args = ["/bin/sh", post_update_script, repository_id,
+            etpConst['systemroot'] + os.path.sep, branch]
+        const_debug_write(__name__,
+            "_run_post_update_repository_hook: run: %s" % (args,))
+        proc = subprocess.Popen(args, stdin = sys.stdin,
+            stdout = sys.stdout, stderr = sys.stderr)
+        # it is possible to ignore errors because
+        # if it's a critical thing, upstream dev just have to fix
+        # the script and will be automagically re-run
+        br_rc = proc.wait()
+        const_debug_write(__name__,
+            "_run_post_update_repository_hook: rc: %s" % (br_rc,))
+
+        return br_rc
+
     def _run_sync(self):
 
         self.updated = False
@@ -78,6 +111,10 @@ class Repository:
                 self.sync_errors = True
             else: # fallback
                 self.not_available += 1
+
+            if status == EntropyRepositoryBase.REPOSITORY_UPDATED_OK:
+                # execute post update repo hook
+                self._run_post_update_repository_hook(repo)
 
         # keep them closed
         self._entropy.close_repositories()

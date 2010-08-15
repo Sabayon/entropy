@@ -1709,36 +1709,6 @@ class AvailablePackagesRepositoryUpdater(object):
         mydbconn.closeDB()
         return result
 
-    def _run_post_update_repository_hook(self):
-
-        my_repos = self._settings['repositories']
-        branch = my_repos['branch']
-        avail_data = my_repos['available']
-        repo_data = avail_data[self.__repository_id]
-        post_update_script = repo_data['post_repo_update_script']
-
-        if not (os.path.isfile(post_update_script) and \
-            os.access(post_update_script, os.R_OK)):
-            # not found!
-            const_debug_write(__name__,
-                "_run_post_update_repository_hook: not found")
-            return 0
-
-        args = ["/bin/sh", post_update_script, self.__repository_id,
-            etpConst['systemroot'] + "/", branch]
-        const_debug_write(__name__,
-            "_run_post_update_repository_hook: run: %s" % (args,))
-        proc = subprocess.Popen(args, stdin = sys.stdin,
-            stdout = sys.stdout, stderr = sys.stderr)
-        # it is possible to ignore errors because
-        # if it's a critical thing, upstream dev just have to fix
-        # the script and will be automagically re-run
-        br_rc = proc.wait()
-        const_debug_write(__name__,
-            "_run_post_update_repository_hook: rc: %s" % (br_rc,))
-
-        return br_rc
-
     def remote_revision(self):
 
         if self._repo_eapi == 3:
@@ -2015,9 +1985,6 @@ class AvailablePackagesRepositoryUpdater(object):
             )
             self._entropy.output(mytxt, importance = 0,
                 level = "info", header = blue("  # "),)
-
-        # execute post update repo hook
-        self._run_post_update_repository_hook()
 
         # remove garbage
         if os.access(dbfile_old, os.R_OK) and os.path.isfile(dbfile_old):
