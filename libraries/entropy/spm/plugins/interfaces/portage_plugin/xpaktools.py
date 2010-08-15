@@ -10,6 +10,7 @@
 
 """
 import sys
+import tempfile
 import os
 import shutil
 from entropy.output import TextInterface
@@ -59,22 +60,26 @@ def unpack_xpak(xpakfile, tmpdir = None):
     @return: 
     @rtype: 
     """
-    try:
-        if tmpdir is None:
-            tmpdir = os.path.join(etpConst['packagestmpdir'],
-                os.path.basename(xpakfile)[:-5])
-        if os.path.isdir(tmpdir):
-            shutil.rmtree(tmpdir, True)
+    if tmpdir is None:
+        tmpdir = tempfile.mkdtemp(dir = etpConst['packagestmpdir'])
+    elif os.path.isdir(tmpdir):
+        shutil.rmtree(tmpdir, True)
+        try:
+            os.remove(tmpdir)
+        except OSError:
+            pass
         os.makedirs(tmpdir)
+    try:
         xpakdata = xpak.getboth(xpakfile)
         xpak.xpand(xpakdata, tmpdir)
+        return tmpdir
+    except TypeError:
+        return None
+    finally:
         try:
             os.remove(xpakfile)
         except OSError:
             pass
-    except TypeError:
-        return None
-    return tmpdir
 
 def suck_xpak(tbz2file, outputpath):
     """
