@@ -633,11 +633,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # usually used server side btw
             return removelist
 
-        searchsimilar = self.searchNameCategory(
-            name = name,
-            category = category,
-            sensitive = True
-        )
+        searchsimilar = self.searchNameCategory(name = name,
+            category = category)
 
         # support for expiration-based packages handling, also internally
         # called Fat Scope.
@@ -3060,17 +3057,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def searchNameCategory(self, name, category, sensitive = False,
-        just_id = False):
+    def searchNameCategory(self, name, category, just_id = False):
         """
         Search packages matching given name and category strings.
+        The search is always considered case sensitive.
 
         @param name: package name to search
         @type name: string
         @param category: package category to search
         @type category: string
-        @keyword sensitive: case sensitive?
-        @type sensitive: bool
         @keyword just_id: return list of package identifiers (set()) otherwise
             return a list of tuples of length 2 containing atom and package_id
             values
@@ -4253,7 +4248,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 just_id = True)
         else:
             results = self.searchNameCategory(name = pkgname,
-                sensitive = True, category = pkgcat, just_id = True)
+                category = pkgcat, just_id = True)
 
         old_style_virtuals = None
         # if it's a PROVIDE, search with searchProvide
@@ -4283,8 +4278,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     virtual_cat, virtual_name = self.retrieveKeySplit(package_id)
                     v_result = self.searchNameCategory(
                         name = virtual_name, category = virtual_cat,
-                        sensitive = True, just_id = True
-                    )
+                        just_id = True)
                     v_results.update(v_result)
                 return set(v_results), old_style_virtuals
 
@@ -4318,9 +4312,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             if (not multiMatch) and (pkgcat == "null"):
                 # we searched by name, we need to search using category
                 results = self.searchNameCategory(
-                    name = pkgname, category = pkgcat,
-                    sensitive = True, just_id = True
-                )
+                    name = pkgname, category = pkgcat, just_id = True)
 
             # if we get here, we have found the needed IDs
             return set(results), old_style_virtuals

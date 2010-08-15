@@ -2444,13 +2444,18 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT categories.category, baseinfo.name
-        FROM baseinfo, categories
-        WHERE baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory LIMIT 1
-        """, (package_id,))
-        return cur.fetchone()
+        cached = self.__live_cache.get("retrieveKeySplit")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage, categories.category, baseinfo.name
+            FROM baseinfo, categories
+            WHERE categories.idcategory = baseinfo.idcategory
+            """)
+            cached = dict((pkg_id, (category, name)) for pkg_id, category,
+                name in cur.fetchall())
+            self.__live_cache['retrieveKeySplit'] = cached
+
+        return cached.get(package_id)
 
     def retrieveKeySlot(self, package_id):
         """
@@ -2494,23 +2499,27 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT version FROM baseinfo WHERE idpackage = (?) LIMIT 1
-        """, (package_id,))
-        ver = cur.fetchone()
-        if ver:
-            return ver[0]
+        cached = self.__live_cache.get("retrieveVersion")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, version FROM baseinfo
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache['retrieveVersion'] = cached
+        return cached.get(package_id)
 
     def retrieveRevision(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT revision FROM baseinfo WHERE idpackage = (?) LIMIT 1
-        """, (package_id,))
-        rev = cur.fetchone()
-        if rev:
-            return rev[0]
+        cached = self.__live_cache.get("retrieveRevision")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, revision FROM baseinfo
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache['retrieveRevision'] = cached
+        return cached.get(package_id)
 
     def retrieveCreationDate(self, package_id):
         """
@@ -2538,12 +2547,19 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT flagname FROM useflags,useflagsreference
-        WHERE useflags.idpackage = (?) AND 
-        useflags.idflag = useflagsreference.idflag
-        """, (package_id,))
-        return self._cur2set(cur)
+        cached = self.__live_cache.get("retrieveUseflags")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT useflags.idpackage, useflagsreference.flagname
+            FROM useflags, useflagsreference
+            WHERE useflags.idflag = useflagsreference.idflag
+            """)
+            cached = {}
+            for pkg_id, flag in cur.fetchall():
+                obj = cached.setdefault(pkg_id, set())
+                obj.add(flag)
+            self.__live_cache['retrieveUseflags'] = cached
+        return cached.get(package_id)
 
     def retrieveEclasses(self, package_id):
         """
@@ -2975,23 +2991,28 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT slot FROM baseinfo WHERE idpackage = (?) LIMIT 1
-        """, (package_id,))
-        slot = cur.fetchone()
-        if slot:
-            return slot[0]
+        cached = self.__live_cache.get("retrieveSlot")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, slot FROM baseinfo
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache['retrieveSlot'] = cached
+        return cached.get(package_id)
 
     def retrieveTag(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT versiontag FROM baseinfo WHERE idpackage = (?) LIMIT 1
-        """, (package_id,))
-        vtag = cur.fetchone()
-        if vtag:
-            return vtag[0]
+        cached = self.__live_cache.get("retrieveTag")
+        # gain 2% speed on atomMatch()
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, versiontag FROM baseinfo
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache['retrieveTag'] = cached
+        return cached.get(package_id)
 
     def retrieveMirrorData(self, mirrorname):
         """
@@ -3006,15 +3027,17 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT category FROM baseinfo,categories
-        WHERE baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory LIMIT 1
-        """, (package_id,))
-
-        cat = cur.fetchone()
-        if cat:
-            return cat[0]
+        cached = self.__live_cache.get("retrieveCategory")
+        # this gives 14% speed boost in atomMatch()
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage, categories.category
+            FROM baseinfo,categories WHERE
+            baseinfo.idcategory = categories.idcategory
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache["retrieveCategory"] = cached
+        return cached.get(package_id)
 
     def retrieveCategoryDescription(self, category):
         """
@@ -3901,35 +3924,27 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return cur.fetchall()
 
-    def searchNameCategory(self, name, category, sensitive = False,
-        just_id = False):
+    def searchNameCategory(self, name, category, just_id = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        atomstring = ''
-        if not just_id:
-            atomstring = 'atom,'
-
-        if sensitive:
+        cached = self.__live_cache.get("searchNameCategory")
+        # this gives 30% speed boost on atomMatch()
+        if cached is None:
             cur = self._cursor().execute("""
-            SELECT %s idpackage FROM baseinfo
-            WHERE name = (?) AND
-            idcategory IN (
-                SELECT idcategory FROM categories
-                WHERE category = (?)
-            )""" % (atomstring,), (name, category,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT %s idpackage FROM baseinfo
-            WHERE LOWER(name) = (?) AND
-            idcategory IN (
-                SELECT idcategory FROM categories
-                WHERE LOWER(category) = (?)
-            )""" % (atomstring,), (name.lower(), category.lower(),))
-
+            SELECT baseinfo.name,categories.category,
+            baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
+            WHERE baseinfo.idcategory = categories.idcategory
+            """)
+            cached = {}
+            for nam, cat, atom, pkg_id in cur.fetchall():
+                obj = cached.setdefault((nam, cat), [])
+                obj.append((atom, pkg_id))
+            self.__live_cache['searchNameCategory'] = cached
+        data = cached.get((name, category), [])
         if just_id:
-            return self._cur2list(cur)
-        return cur.fetchall()
+            return [y for x, y in data]
+        return data
 
     def isPackageScopeAvailable(self, atom, slot, revision):
         """
