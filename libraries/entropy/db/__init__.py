@@ -681,6 +681,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
+        self.clearCache() # we do live_cache.clear() here too
         if revision == -1:
             try:
                 revision = int(pkg_data['revision'])
@@ -847,7 +848,6 @@ class EntropyRepository(EntropyRepositoryBase):
         if pkg_data.get('systempackage'):
             self._setSystemPackage(package_id, do_commit = False)
 
-        self.clearCache() # we do live_cache.clear() here too
         if do_commit:
             self.commitChanges()
 
