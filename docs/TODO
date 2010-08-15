@@ -2,7 +2,6 @@
   0.99.50:
 
     EntropyRepositoryBase:
-    - 3. move update() code to Entropy server db class (change semantic?)
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
 
   1.0:
