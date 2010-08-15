@@ -166,7 +166,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         # taint the database status
         taint_file = self._server._get_local_database_taint_file(repo = repo)
         f = open(taint_file, "w")
-        f.write(etpConst['currentarch']+" database tainted\n")
+        f.write(etpConst['currentarch']+" repository tainted\n")
         f.flush()
         f.close()
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
@@ -200,7 +200,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             self._server.output(
                 "[repo:%s|%s] %s" % (
                         blue(repo),
-                        red(_("database")),
+                        red(_("repository")),
                         blue(_("syncing package sets")),
                     ),
                 importance = 1,
@@ -369,7 +369,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 blue(str(new_atom)),
                 red(_("has been injected")),
                 red(_("quickpkg manually to update embedded db")),
-                red(_("Repository database updated anyway")),
+                red(_("Repository repository updated anyway")),
             )
             self._server.output(
                 mytxt,
@@ -707,7 +707,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         if self._helper.community_repo:
             data['repositories'][etpConst['clientserverrepoid']] = {}
             mydata = {}
-            mydata['description'] = "Community Repositories System Database"
+            mydata['description'] = "Community Repositories System Repository"
             mydata['pkg_mirrors'] = []
             mydata['repo_mirrors'] = []
             mydata['community'] = False
@@ -1276,7 +1276,7 @@ class ServerSettingsMixin:
             self.output(
                 "[repo:%s] %s: %s - %s" % (
                         darkgreen(repo),
-                        blue(_("invalid database revision")),
+                        blue(_("invalid repository revision")),
                         bold(rev),
                         blue(_("defaulting to 0")),
                     ),
@@ -1484,7 +1484,7 @@ class ServerPackagesHandlingMixin:
 
         self.close_repositories()
 
-        mytxt = red("%s ...") % (_("Initializing Entropy database"),)
+        mytxt = red("%s ...") % (_("Initializing Entropy repository"),)
         self.output(
             mytxt, importance = 1,
             level = "info", header = darkgreen(" * "),
@@ -1501,7 +1501,7 @@ class ServerPackagesHandlingMixin:
 
                 mytxt = "%s: %s: %s" % (
                     bold(_("WARNING")),
-                    red(_("database already exists")),
+                    red(_("repository already exists")),
                     self._get_local_database_file(repo),
                 )
                 self.output(
@@ -1910,7 +1910,7 @@ class ServerPackagesHandlingMixin:
         if etpConst['clientserverrepoid'] in (to_repo, from_repo):
             self.output(
                 "%s: %s" % (
-                    blue(_("Cannot touch system database")),
+                    blue(_("Cannot touch system repository")),
                     red(etpConst['clientserverrepoid']),
                 ),
                 importance = 2, level = "warning", header = darkred(" @@ ")
@@ -2174,7 +2174,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(repo),
                     darkred(to_repo),
                     brown(branch),
-                    blue(_("loading data from source database")),
+                    blue(_("loading data from source repository")),
                     darkgreen(repo),
                 ),
                 importance = 0,
@@ -2221,7 +2221,7 @@ class ServerPackagesHandlingMixin:
                     darkgreen(repo),
                     darkred(to_repo),
                     brown(branch),
-                    blue(_("injecting data to destination database")),
+                    blue(_("injecting data to destination repository")),
                     darkgreen(to_repo),
                 ),
                 importance = 0,
@@ -2239,7 +2239,7 @@ class ServerPackagesHandlingMixin:
                         darkgreen(repo),
                         darkred(to_repo),
                         brown(branch),
-                        blue(_("removing entry from source database")),
+                        blue(_("removing entry from source repository")),
                         darkgreen(repo),
                     ),
                     importance = 0,
@@ -3092,7 +3092,7 @@ class ServerPackagesHandlingMixin:
             )
             return None
 
-        mytxt = red("%s ...") % (_("Copying database (if not exists)"),)
+        mytxt = red("%s ...") % (_("Copying repository (if not exists)"),)
         self.output(
             mytxt,
             importance = 1,
@@ -3711,14 +3711,14 @@ class ServerRepositoryMixin:
         lock_file = self._get_database_lockfile(repo)
         if os.path.isfile(lock_file):
             self.output(
-                red(_("Entropy database is already locked by you :-)")),
+                red(_("Entropy repository is already locked by you :-)")),
                 importance = 1,
                 level = "info",
                 header = red(" * ")
             )
         else:
             # check if the database is locked REMOTELY
-            mytxt = "%s ..." % (_("Locking and Syncing Entropy database"),)
+            mytxt = "%s ..." % (_("Locking and Syncing Entropy repository"),)
             self.output(
                 red(mytxt),
                 importance = 1,
@@ -3752,7 +3752,7 @@ class ServerRepositoryMixin:
                         self.output(
                             "%s: [%s: %s] [%s: %s]" % (
                                 bold(crippled_uri),
-                                brown(_("database")),
+                                brown(_("repository")),
                                 db_st1_info,
                                 brown(_("download")),
                                 db_st2_info,
@@ -3955,8 +3955,8 @@ class ServerRepositoryMixin:
             self.output(
                 "[repo:%s|%s] %s" % (
                         blue(repo),
-                        red(_("database")),
-                        blue(_("indexing database")),
+                        red(_("repository")),
+                        blue(_("indexing repository")),
                     ),
                 importance = 1,
                 level = "info",
@@ -3997,7 +3997,7 @@ class ServerRepositoryMixin:
         if not os.path.isdir(dbdir):
             os.makedirs(dbdir)
 
-        mytxt = red("%s ...") % (_("Initializing an empty database"),)
+        mytxt = red("%s ...") % (_("Initializing an empty repository"),)
         self.output(
             mytxt,
             importance = 1,
@@ -4010,7 +4010,7 @@ class ServerRepositoryMixin:
         dbconn.commitChanges()
         dbconn.closeDB()
         mytxt = "%s %s %s." % (
-            red(_("Entropy database file")),
+            red(_("Entropy repository file")),
             bold(dbpath),
             red(_("successfully initialized")),
         )
@@ -4370,7 +4370,7 @@ class ServerRepositoryMixin:
         db_file = self._get_local_database_file(repo = repo)
         taint_file = self._get_local_database_taint_file(repo = repo)
         f = open(taint_file, "w")
-        f.write("database tainted\n")
+        f.write("repository tainted\n")
         f.flush()
         f.close()
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)

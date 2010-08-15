@@ -799,7 +799,7 @@ class Server(ServerNoticeBoardMixin):
         db_format = sys_set['database_file_format']
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
-            raise AttributeError("Wrong database compression method passed")
+            raise AttributeError("Wrong repository compression method passed")
         remote_dir = os.path.join(
             self._entropy._get_remote_database_relative_path(repo),
             self._settings['repositories']['branch'])
@@ -840,7 +840,7 @@ class Server(ServerNoticeBoardMixin):
                     try:
                         revision = int(f_rev.readline().strip())
                     except ValueError:
-                        mytxt = _("mirror hasn't valid database revision file")
+                        mytxt = _("mirror hasn't valid repository revision file")
                         self._entropy.output(
                             "[repo:%s|%s] %s: %s" % (
                                 brown(repo),
@@ -1324,14 +1324,14 @@ class Server(ServerNoticeBoardMixin):
                 darkgreen(crippled_uri),
                 red("EAPI"),
                 bold("3"),
-                blue(_("preparing uncompressed database for the upload")),
+                blue(_("preparing uncompressed repository for the upload")),
             ),
             importance = 0,
             level = "info",
             header = darkgreen(" * ")
         )
         self._entropy.output(
-            "%s: %s" % (_("database path"), blue(database_path),),
+            "%s: %s" % (_("repository path"), blue(database_path),),
             importance = 0,
             level = "info",
             header = brown("    # ")
@@ -1349,14 +1349,14 @@ class Server(ServerNoticeBoardMixin):
                 darkgreen(crippled_uri),
                 red("EAPI"),
                 bold("2"),
-                blue(_("creating compressed database dump + checksum")),
+                blue(_("creating compressed repository dump + checksum")),
             ),
             importance = 0,
             level = "info",
             header = darkgreen(" * ")
         )
         self._entropy.output(
-            "%s: %s" % (_("database path"), blue(database_path),),
+            "%s: %s" % (_("repository path"), blue(database_path),),
             importance = 0,
             level = "info",
             header = brown("    # ")
@@ -1396,7 +1396,7 @@ class Server(ServerNoticeBoardMixin):
                 darkgreen(crippled_uri),
                 red("EAPI"),
                 bold("1"),
-                blue(_("compressing database + checksum")),
+                blue(_("compressing repository + checksum")),
             ),
             importance = 0,
             level = "info",
@@ -1404,14 +1404,14 @@ class Server(ServerNoticeBoardMixin):
             back = True
         )
         self._entropy.output(
-            "%s: %s" % (_("database path"), blue(database_path),),
+            "%s: %s" % (_("repository path"), blue(database_path),),
             importance = 0,
             level = "info",
             header = brown("    # ")
         )
         self._entropy.output(
             "%s: %s" % (
-                _("compressed database path"),
+                _("compressed repository path"),
                 blue(upload_data['compressed_database_path']),
             ),
             importance = 0,
@@ -1420,7 +1420,7 @@ class Server(ServerNoticeBoardMixin):
         )
         self._entropy.output(
             "%s: %s" % (
-                _("database checksum"),
+                _("repository checksum"),
                 blue(upload_data['database_path_digest']),
             ),
             importance = 0,
@@ -1693,7 +1693,7 @@ class Server(ServerNoticeBoardMixin):
         db_format = srv_set['database_file_format']
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
-            raise AttributeError("wrong database compression method passed")
+            raise AttributeError("wrong repository compression method passed")
         database_path = self._entropy._get_local_database_file(repo)
 
         if disabled_eapis:
@@ -1722,7 +1722,7 @@ class Server(ServerNoticeBoardMixin):
             "[repo:%s|%s] %s" % (
                 blue(repo),
                 darkgreen(_("upload")),
-                darkgreen(_("preparing to upload database to mirror")),
+                darkgreen(_("preparing to upload repository to mirror")),
             ),
             importance = 1,
             level = "info",
@@ -1915,7 +1915,7 @@ class Server(ServerNoticeBoardMixin):
             db_format = srv_set['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
             if cmethod is None:
-                raise AttributeError("wrong database compression method passed")
+                raise AttributeError("wrong repository compression method passed")
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             database_path = self._entropy._get_local_database_file(repo)
@@ -1935,7 +1935,7 @@ class Server(ServerNoticeBoardMixin):
                         brown(repo),
                         darkgreen(crippled_uri),
                         red(_("download")),
-                        blue(_("preparing to download database from mirror")),
+                        blue(_("preparing to download repository from mirror")),
                     ),
                     importance = 1,
                     level = "info",
@@ -2113,7 +2113,7 @@ class Server(ServerNoticeBoardMixin):
                 "[repo:%s|%s] %s" % (
                     brown(repo),
                     red(_("sync")), # something short please
-                    blue(_("database already in sync")),
+                    blue(_("repository already in sync")),
                 ),
                 importance = 1,
                 level = "info",
@@ -2132,7 +2132,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         red(_("sync")),
-                        blue(_("database sync failed")),
+                        blue(_("repository sync failed")),
                         red(_("download issues")),
                     ),
                     importance = 1,
@@ -2164,7 +2164,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         red(_("sync")),
-                        blue(_("database sync forbidden")),
+                        blue(_("repository sync forbidden")),
                         red(_("dependencies_test() reported errors")),
                     ),
                     importance = 1,
@@ -2198,7 +2198,7 @@ class Server(ServerNoticeBoardMixin):
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
                         red(_("sync")),
-                        blue(_("database sync failed")),
+                        blue(_("repository sync failed")),
                         red(_("upload issues")),
                     ),
                     importance = 1,
@@ -2212,7 +2212,7 @@ class Server(ServerNoticeBoardMixin):
             "[repo:%s|%s] %s" % (
                 brown(repo),
                 red(_("sync")),
-                blue(_("database sync completed successfully")),
+                blue(_("repository sync completed successfully")),
             ),
             importance = 1,
             level = "info",
