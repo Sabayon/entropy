@@ -957,6 +957,7 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT into categories VALUES (NULL,?)
         """, (category,))
+        self.__clearLiveCache("retrieveCategory")
         return cur.lastrowid
 
     def _addProtect(self, protect):
@@ -1181,6 +1182,8 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)
         """, (catid, package_id,))
+        self.__clearLiveCache("retrieveCategory")
+        self.__clearLiveCache("searchNameCategory")
         self.commitChanges()
 
     def setCategoryDescription(self, category, description_data):
@@ -1205,6 +1208,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET name = (?) WHERE idpackage = (?)
         """, (name, package_id,))
+        self.__clearLiveCache("searchNameCategory")
         self.commitChanges()
 
     def setDependency(self, iddependency, dependency):
@@ -1224,6 +1228,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)
         """, (atom, package_id,))
+        self.__clearLiveCache("searchNameCategory")
         self.commitChanges()
 
     def setSlot(self, package_id, slot):
@@ -1233,6 +1238,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)
         """, (slot, package_id,))
+        self.__clearLiveCache("retrieveSlot")
         self.commitChanges()
 
     def setRevision(self, package_id, revision):
@@ -1242,6 +1248,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET revision = (?) WHERE idpackage = (?)
         """, (revision, package_id,))
+        self.__clearLiveCache("retrieveRevision")
         self.commitChanges()
 
     def removeDependencies(self, package_id):
@@ -1459,6 +1466,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().executemany("""
         INSERT into useflags VALUES (?,?)
         """, list(map(mymf, useflags)))
+        self.__clearLiveCache("retrieveUseflags")
 
     def _insertSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
         """
@@ -1937,23 +1945,6 @@ class EntropyRepository(EntropyRepositoryBase):
         dep = cur.fetchone()
         if dep:
             return dep[0]
-
-    def _getCategory(self, idcategory):
-        """
-        Get category name from category identifier.
-
-        @param idcategory: category identifier
-        @type idcategory: int
-        @return: category name
-        @rtype: string
-        """
-        cur = self._cursor().execute("""
-        SELECT category from categories WHERE idcategory = (?) LIMIT 1
-        """, (idcategory,))
-        cat = cur.fetchone()
-        if cat:
-            return cat[0]
-        return cat
 
     def getPackageIds(self, atom):
         """
@@ -4237,7 +4228,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         with self.__live_cache_lock:
-            live_cache_id = ("validate",)
+            live_cache_id = "validate"
             cached = self.__live_cache.get(live_cache_id)
             if cached is not None:
                 return
