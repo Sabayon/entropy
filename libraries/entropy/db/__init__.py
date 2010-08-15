@@ -2433,10 +2433,10 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT name FROM baseinfo WHERE idpackage = (?) LIMIT 1
         """, (package_id,))
-        name = self._cursor().fetchone()
+        name = cur.fetchone()
         if name:
             return name[0]
 
