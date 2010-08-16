@@ -1144,6 +1144,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)
         """, (digest, package_id,))
+        self.__clearLiveCache("retrieveDigest")
         self.commitChanges()
 
     def setSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
@@ -1184,6 +1185,10 @@ class EntropyRepository(EntropyRepositoryBase):
         """, (catid, package_id,))
         self.__clearLiveCache("retrieveCategory")
         self.__clearLiveCache("searchNameCategory")
+        self.__clearLiveCache("retrieveKeySlot")
+        self.__clearLiveCache("searchKeySlot")
+        self.__clearLiveCache("retrieveKeySlotAggregated")
+        self.__clearLiveCache("getStrictData")
         self.commitChanges()
 
     def setCategoryDescription(self, category, description_data):
@@ -1209,6 +1214,10 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE baseinfo SET name = (?) WHERE idpackage = (?)
         """, (name, package_id,))
         self.__clearLiveCache("searchNameCategory")
+        self.__clearLiveCache("retrieveKeySlot")
+        self.__clearLiveCache("searchKeySlot")
+        self.__clearLiveCache("retrieveKeySlotAggregated")
+        self.__clearLiveCache("getStrictData")
         self.commitChanges()
 
     def setDependency(self, iddependency, dependency):
@@ -1229,6 +1238,8 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)
         """, (atom, package_id,))
         self.__clearLiveCache("searchNameCategory")
+        self.__clearLiveCache("getStrictScopeData")
+        self.__clearLiveCache("getStrictData")
         self.commitChanges()
 
     def setSlot(self, package_id, slot):
@@ -1239,6 +1250,11 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)
         """, (slot, package_id,))
         self.__clearLiveCache("retrieveSlot")
+        self.__clearLiveCache("retrieveKeySlot")
+        self.__clearLiveCache("searchKeySlot")
+        self.__clearLiveCache("retrieveKeySlotAggregated")
+        self.__clearLiveCache("getStrictScopeData")
+        self.__clearLiveCache("getStrictData")
         self.commitChanges()
 
     def setRevision(self, package_id, revision):
@@ -1249,6 +1265,9 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE baseinfo SET revision = (?) WHERE idpackage = (?)
         """, (revision, package_id,))
         self.__clearLiveCache("retrieveRevision")
+        self.__clearLiveCache("getVersioningData")
+        self.__clearLiveCache("getStrictScopeData")
+        self.__clearLiveCache("getStrictData")
         self.commitChanges()
 
     def removeDependencies(self, package_id):
@@ -1980,38 +1999,51 @@ class EntropyRepository(EntropyRepositoryBase):
             return package_id[0]
         return -1
 
-    def getVersioningData(self, package_id):
+    def getVersioningData(self, package_id): 
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT version, versiontag, revision FROM baseinfo
-        WHERE idpackage = (?)
-        LIMIT 1
-        """, (package_id,))
-        return cur.fetchone()
+        cached = self.__live_cache.get("getVersioningData")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, version, versiontag, revision FROM baseinfo
+            """)
+            cached = dict((pkg_id, (ver, tag, rev)) for pkg_id, ver, tag,
+                rev in cur.fetchall())
+            self.__live_cache['getVersioningData'] = cached
+        return cached.get(package_id)
 
     def getStrictData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute("""
-        SELECT categories.category || "/" || baseinfo.name,
-        baseinfo.slot,baseinfo.version,baseinfo.versiontag,
-        baseinfo.revision,baseinfo.atom FROM baseinfo, categories
-        WHERE baseinfo.idpackage = (?) AND 
-        baseinfo.idcategory = categories.idcategory""", (package_id,))
-        return self._cursor().fetchone()
+        cached = self.__live_cache.get("getStrictData")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage, categories.category || "/" ||
+                baseinfo.name, baseinfo.slot, baseinfo.version,
+                baseinfo.versiontag, baseinfo.revision, baseinfo.atom
+            FROM baseinfo, categories
+            WHERE baseinfo.idcategory = categories.idcategory
+            """)
+            cached = dict((pkg_id, (key, slot, version, tag, rev, atom)) for
+                pkg_id, key, slot, version, tag, rev, atom in cur.fetchall())
+            self.__live_cache['getStrictData'] = cached
+        return cached.get(package_id)
 
     def getStrictScopeData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute("""
-        SELECT atom, slot, revision FROM baseinfo
-        WHERE idpackage = (?)""", (package_id,))
-        rslt = self._cursor().fetchone()
-        return rslt
+        cached = self.__live_cache.get("getStrictScopeData")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, atom, slot, revision FROM baseinfo
+            """)
+            cached = dict((pkg_id, (atom, slot, rev)) for pkg_id, atom, slot,
+                rev in cur.fetchall())
+            self.__live_cache['getStrictScopeData'] = cached
+        return cached.get(package_id)
 
     def getScopeData(self, package_id):
         """
@@ -2387,12 +2419,14 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT digest FROM extrainfo WHERE idpackage = (?) LIMIT 1
-        """, (package_id,))
-        digest = cur.fetchone()
-        if digest:
-            return digest[0]
+        cached = self.__live_cache.get("retrieveDigest")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT idpackage, digest FROM extrainfo
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache['retrieveDigest'] = cached
+        return cached.get(package_id)
 
     def retrieveSignatures(self, package_id):
         """
@@ -2452,27 +2486,34 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT categories.category || "/" || baseinfo.name,baseinfo.slot
-        FROM baseinfo,categories
-        WHERE baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory LIMIT 1
-        """, (package_id,))
-        return cur.fetchone()
+        cached = self.__live_cache.get("retrieveKeySlot")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage,
+                categories.category || "/" || baseinfo.name, baseinfo.slot
+            FROM baseinfo, categories
+            WHERE baseinfo.idcategory = categories.idcategory
+            """)
+            cached = dict((pkg_id, (key, slot)) for pkg_id, key, slot in \
+                cur.fetchall())
+            self.__live_cache['retrieveKeySlot'] = cached
+        return cached.get(package_id)
 
     def retrieveKeySlotAggregated(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cur = self._cursor().execute("""
-        SELECT categories.category || "/" || baseinfo.name || "%s" ||
-        baseinfo.slot FROM baseinfo,categories
-        WHERE baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory LIMIT 1
-        """ % (etpConst['entropyslotprefix'],), (package_id,))
-        data = cur.fetchone()
-        if data:
-            return data[0]
+        cached = self.__live_cache.get("retrieveKeySlotAggregated")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage, categories.category || "/" ||
+                baseinfo.name || "%s" || baseinfo.slot
+            FROM baseinfo, categories
+            WHERE baseinfo.idcategory = categories.idcategory
+            """ % (etpConst['entropyslotprefix'],))
+            cached = dict((pkg_id, key) for pkg_id, key in cur.fetchall())
+            self.__live_cache['retrieveKeySlotAggregated'] = cached
+        return cached.get(package_id)
 
     def retrieveKeySlotTag(self, package_id):
         """
@@ -3648,15 +3689,21 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cat, name = key.split("/")
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo, categories
-        WHERE baseinfo.idcategory = categories.idcategory AND
-        categories.category = (?) AND
-        baseinfo.name = (?) AND
-        baseinfo.slot = (?)""", (cat, name, slot,))
-
-        return self._cur2list(cur)
+        cached = self.__live_cache.get("searchKeySlot")
+        if cached is None:
+            cur = self._cursor().execute("""
+            SELECT categories.category, baseinfo.name, baseinfo.slot,
+                baseinfo.idpackage
+            FROM baseinfo, categories
+            WHERE baseinfo.idcategory = categories.idcategory
+            """)
+            cached = {}
+            for d_cat, d_name, d_slot, pkg_id in cur.fetchall():
+                obj = cached.setdefault((d_cat, d_name, d_slot), [])
+                obj.append(pkg_id)
+            self.__live_cache['searchKeySlot'] = cached
+        cat, name = key.split("/", 1)
+        return cached.get((cat, name, slot), [])
 
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """
@@ -4633,6 +4680,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        self.__clearLiveCache("getInstalledPackageRepository")
         self._cursor().execute('INSERT into installedtable VALUES (?,?,?)',
             (package_id, repoid, source,))
 
@@ -4640,13 +4688,14 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        try:
+        cached = self.__live_cache.get("getInstalledPackageRepository")
+        if cached is None:
             cur = self._cursor().execute("""
-            SELECT repositoryname FROM installedtable
-            WHERE idpackage = (?) LIMIT 1""", (package_id,))
-            return cur.fetchone()[0]
-        except (OperationalError, TypeError,):
-            return None
+            SELECT idpackage, repositoryname FROM installedtable
+            """)
+            cached = dict(cur.fetchall())
+            self.__live_cache['getInstalledPackageRepository'] = cached
+        return cached.get(package_id)
 
     def dropInstalledPackageFromStore(self, package_id):
         """
@@ -4655,6 +4704,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (package_id,))
+        self.__clearLiveCache("getInstalledPackageRepository")
 
     def storeSpmMetadata(self, package_id, blob):
         """
@@ -5298,6 +5348,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE installedtable SET source = (?)
         """, (etpConst['install_sources']['unknown'],))
+        self.__clearLiveCache("getInstalledPackageRepository")
         self.__clearLiveCache("_doesTableExist")
 
     def _createPackagechangelogsTable(self):
