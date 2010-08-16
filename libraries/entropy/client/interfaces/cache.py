@@ -46,7 +46,8 @@ class CacheMixin:
             shutil.rmtree(etpConst['dumpstoragedir'], True)
             os.makedirs(etpConst['dumpstoragedir'], 0o775)
             const_setup_perms(etpConst['dumpstoragedir'],
-                etpConst['entropygid']) 
+                etpConst['entropygid'])
+            self._clear_repositories_live_cache()
         except (shutil.Error, IOError, OSError,):
             pass # ignore cache purge errors?
         finally:
@@ -90,6 +91,12 @@ class CacheMixin:
             return False
 
         return True
+
+    def _clear_repositories_live_cache(self):
+        if self._installed_repository is not None:
+            self._installed_repository.clearCache()
+        for repo_db in self._repodb_cache.values():
+            repo_db.clearCache()
 
     def _get_available_packages_chash(self):
         # client digest not needed, cache is kept updated

@@ -1302,6 +1302,13 @@ class MiscMixin:
                     # wait for other process to exit
                     # 5 seconds should be enough
                     time.sleep(5)
+                    # cannot consider any cache valid, better clearing
+                    # everything
+                    self.clear_cache()
+                    self._settings.clear()
+                    self._cacher.discard()
+                    self.clear_cache()
+                    self._cacher.sync()
                 break
             if lock_count >= max_lock_count:
                 mycalc = max_lock_count*sleep_seconds/60
