@@ -25,12 +25,12 @@ def acquire_entropy_locks(entropy_client):
     """
     Acquire Entropy Client/Server file locks.
     """
-    gave_up = entropy_client.wait_resources()
-    if gave_up:
-        return False
-
     locked = entropy_client.another_entropy_running()
     if locked:
+        return False
+
+    gave_up = entropy_client.wait_resources()
+    if gave_up:
         return False
 
     # entropy resources locked?
