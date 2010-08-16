@@ -1765,7 +1765,7 @@ class CalculatorsMixin:
                 order_by = 'atom')
         except OperationalError:
             # client db is broken!
-            raise SystemDatabaseError("installed packages database is broken")
+            raise SystemDatabaseError("installed packages repository is broken")
 
         maxlen = len(idpackages)
         count = 0
