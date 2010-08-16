@@ -3656,7 +3656,7 @@ class EntropyRepository(EntropyRepositoryBase):
         baseinfo.name = (?) AND
         baseinfo.slot = (?)""", (cat, name, slot,))
 
-        return cur.fetchall()
+        return self._cur2list(cur)
 
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """

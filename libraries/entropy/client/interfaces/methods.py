@@ -1711,7 +1711,7 @@ class MatchMixin:
         if not results:
             return 1
 
-        installed_idpackage = results[0][0]
+        installed_idpackage = results[0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(package_match[0])
         installed_ver, installed_tag, installed_rev = \
             self._installed_repository.getVersioningData(installed_idpackage)
