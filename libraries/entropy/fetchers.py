@@ -647,7 +647,7 @@ class MultipleUrlFetcher(TextInterface):
                 self.__multiple_fetcher = multiple
 
             def update(self):
-                return self.__multiple_fetcher.output()
+                return self.__multiple_fetcher.update()
 
             def _push_progress_to_output(self):
                 return
