@@ -1,3 +1,141 @@
+commit 1b02cbb7e029fee73a19b3b3f03c034c8312dd87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 17 18:27:53 2010 +0200
+
+    [entropy.transceivers] FTP plugin: fix temporary file handling in EntropyFtpUriHandler.download()
+
+commit f2e4a8f2b2f1913c8b543e9e3758d9d3c522b346
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 17 17:47:14 2010 +0200
+
+    [entropoy.client.interfaces.package] add docstring
+
+commit 0860909befc04a8aadec5e8fdc474336de8de848
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 16 22:25:51 2010 +0200
+
+    [equo] text_tools.acquire_entropy_locks: determine if another entropy is running before any other check, more nazism ftw
+
+commit 91d9476758d0d7f8a1b4270342ed42b94c712fbc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 16 20:08:38 2010 +0200
+
+    [entropy.db] EntropyRepository: introduce more on-RAM caching, improving Entropy Client queries speed
+
+commit f225a7dab5eb49bf2a2cc71f35919f3dd09029a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 16 19:58:09 2010 +0200
+
+    [entropy.fetchers] fix MultipleUrlFetcher output update function
+
+commit 526da6ba81c13cff4208086654ef82b5d0e24d77
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 16 19:49:24 2010 +0200
+
+    [entropy.client] trivial string update
+
+commit 16ef7d892e08eab6552191ce061521c772aae2d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 16 19:29:26 2010 +0200
+
+    [entropy.db] EntropyRepository: fix bogus implementation of searchKeySlot
+
+commit 59d499df6f1cdfb69ba9d50750ce35ae5c1ca4c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 16 16:31:23 2010 +0200
+
+    [entropy.client] when waiting in Client.wait_resources() and resources get unlocked, throw all cache away
+
+commit 11126779c2a00f79bf35e944b8d293799514e214
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 23:23:59 2010 +0200
+
+    [entropy.db] EntropyRepository: taint live cache items when updating them
+
+commit 01784d79e1e5c262895e85674d3f9f729100f2af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 17:29:29 2010 +0200
+
+    [entropy.db] update API (changed searchNameCategory arguments) and 2x speed of atomMatch() by caching several functions
+
+commit 46ba83ace21dab117b0363dab65d3a11711916aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 16:59:57 2010 +0200
+
+    [entropy.db] EntropyRepository.retrieveName: use cursor object returned by execute()
+
+commit e792796b4fc20eec125ab52738971787b01e6d59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 16:30:13 2010 +0200
+
+    [todo] update TODO
+
+commit c719ec4f74f6a386c539cbc0f6b5fe61f9c22d7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 16:25:26 2010 +0200
+
+    [entropy.db] EntropyRepository.addPackage: clear cache at the beginning of the function
+
+commit 3749ed5486a4f80efe7ad1e323ab25ccf3b99ce3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 16:21:59 2010 +0200
+
+    [entropy.db] EntropyRepository: remove unused attribute
+
+commit 6b8b7ab3d1bdc1ff0f697d84133367850d8867ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 15:41:32 2010 +0200
+
+    [entropy.spm] PortagePlugin: improve unpack_xpak() reliability
+
+commit 1dd0a2cfdfbc2718886734c1fe59a46f23099d45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 15:32:51 2010 +0200
+
+    [po] update translations
+
+commit 0d6dbc3f0ac20b7e8029017dde26c13454ef5711
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 15:32:25 2010 +0200
+
+    [entropy.server] replace "database" with "repository" in ui messages
+
+commit 80c85b55d8ecf8ebc4419bf38f92cc66224cc554
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 15:18:01 2010 +0200
+
+    [entropy.client.interfaces.repository] move back post update repository hook execution to Repository class
+
+commit b7a8dfc30ad2866c15a9ed5b86a4ba82c4718854
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 15 00:41:17 2010 +0200
+
+    [entropy.server] Server.add_packages_to_repository: fix blacklisted dependencies handling
+
+commit ab0cc98a52da58920db3bac73462a0ea56ea2555
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 22:32:39 2010 +0200
+
+    [entropy.server] repo_blacklist object must be list
+
+commit dd622c18e5d02e0182b988c73e49c8e794f1648f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 19:18:17 2010 +0200
+
+    [entropy.server] add support for per-package dependency blacklist
+
+commit 38690a69bc98f9104890a0e5c14413eff842f5ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 17:51:29 2010 +0200
+
+    [po] update translations
+
+commit 24bb03cffe17247f1191a9a5f316ce4120da5a93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 14 08:42:06 2010 +0200
+
+    Tagging Entropy version 0.99.49.12
+
 commit a6aa09f63d41c3f8747bc38dee31d58980924135
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 14 08:41:11 2010 +0200
