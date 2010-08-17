@@ -2651,6 +2651,10 @@ class Package:
         return self._spm_remove_package()
 
     def _post_remove_step_remove(self):
+        """
+        Post-remove phase of package remove action, this step removes SPM
+        package entries if there are no other Entropy-tagged packages installed.
+        """
         # remove pkg
         # -- now it's possible to remove SPM package entry.
         # if another package with the same atom is installed in
