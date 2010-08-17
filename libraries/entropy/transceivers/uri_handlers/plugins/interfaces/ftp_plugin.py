@@ -367,6 +367,12 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 8192)
                     f.flush()
 
+                self._update_progress(force = True)
+                done = rc.find("226") != -1
+                if done:
+                    # download complete, atomic mv
+                    os.rename(tmp_save_path, save_path)
+
             except (IOError, self.ftplib.error_reply, socket.error) as e:
                 # connection reset by peer
 
@@ -387,16 +393,8 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 continue
 
             finally:
-                try:
+                if os.path.isfile(tmp_save_path):
                     os.remove(tmp_save_path)
-                except OSError:
-                    pass
-
-            self._update_progress(force = True)
-            done = rc.find("226") != -1
-            if done:
-                # download complete, atomic mv
-                os.rename(tmp_save_path, save_path)
 
             return done
 
