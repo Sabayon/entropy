@@ -787,26 +787,25 @@ def search_eclass(eclasses, dbconn = None, Equo = None):
 
     if dbconn is None:
         dbconn = Equo.installed_repository()
-    key_sorter = lambda x: dbconn.retrieveAtom(x[1])
+    key_sorter = lambda x: dbconn.retrieveAtom(x)
 
     for eclass in eclasses:
-        matches = dbconn.searchEclassedPackages(eclass, atoms = True)
-        for match in sorted(matches, key = key_sorter):
+        pkg_ids = dbconn.searchEclassedPackages(eclass)
+        for pkg_id in sorted(pkg_ids, key = key_sorter):
             # print info
-            myatom = match[0]
-            idpackage = match[1]
+            myatom = dbconn.retrieveAtom(pkg_id)
             if etpUi['quiet']:
                 print_generic(myatom)
                 continue
 
-            print_package_info(idpackage, dbconn, clientSearch = True,
+            print_package_info(pkg_id, dbconn, clientSearch = True,
                 Equo = Equo, extended = etpUi['verbose'],
                 strictOutput = not etpUi['verbose'])
 
         if not etpUi['quiet']:
             toc = []
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(matches), brown(_("packages")),)))
+                len(pkg_ids), brown(_("packages")),)))
             print_table(toc)
 
     return 0
