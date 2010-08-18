@@ -25,6 +25,7 @@
 """
 import sys
 import os
+import copy
 import hashlib
 import time
 import thread
@@ -583,12 +584,12 @@ class EntropyRepository(EntropyRepositoryBase):
     def __setLiveCache(self, key, value):
         master_key = etpConst['systemroot'] + "_" + self._db_path + "_" + \
             self.reponame + "_"
-        EntropyRepository._LIVE_CACHE[master_key + key] = value
+        EntropyRepository._LIVE_CACHE[master_key + key] = copy.copy(value)
 
     def __getLiveCache(self, key):
         master_key = etpConst['systemroot'] + "_" + self._db_path + "_" + \
             self.reponame + "_"
-        return EntropyRepository._LIVE_CACHE.get(master_key + key)
+        return copy.copy(EntropyRepository._LIVE_CACHE.get(master_key + key))
 
     def __del__(self):
         self.closeDB()
