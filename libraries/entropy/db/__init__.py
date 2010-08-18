@@ -3614,16 +3614,19 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         if atoms:
             cur = self._cursor().execute("""
-            SELECT baseinfo.atom,eclasses.idpackage
+            SELECT baseinfo.atom
             FROM baseinfo, eclasses, eclassesreference
             WHERE eclassesreference.classname = (?) AND
             eclassesreference.idclass = eclasses.idclass AND
             eclasses.idpackage = baseinfo.idpackage""", (eclass,))
-            return cur.fetchall()
-
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo WHERE versiontag = (?)""", (eclass,))
-        return self._cur2set(cur)
+        else:
+            cur = self._cursor().execute("""
+            SELECT eclasses.idpackage
+            FROM eclasses, eclassesreference
+            WHERE eclassesreference.classname = (?) AND
+            eclassesreference.idclass = eclasses.idclass
+            """, (eclass,))
+        return self._cur2list(cur)
 
     def searchTaggedPackages(self, tag, atoms = False):
         """
