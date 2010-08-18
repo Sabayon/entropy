@@ -2816,7 +2816,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword atoms: return list of atoms instead of package identifiers
         @type atoms: bool
         @return: list of packages using given eclass
-        @rtype: set or list
+        @rtype: list
         """
         raise NotImplementedError()
 
