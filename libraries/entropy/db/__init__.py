@@ -26,6 +26,7 @@
 import sys
 import os
 import hashlib
+import itertools
 import time
 import thread
 import threading
@@ -2070,8 +2071,8 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute("""
-        SELECT 
+        cur = self._cursor().execute("""
+        SELECT
             baseinfo.atom,
             categories.category,
             baseinfo.name,
@@ -2088,7 +2089,7 @@ class EntropyRepository(EntropyRepositoryBase):
             baseinfo.idpackage = (?)
             and baseinfo.idcategory = categories.idcategory
         """, (package_id,))
-        return self._cursor().fetchone()
+        return cur.fetchone()
 
     def getBaseData(self, package_id):
         """
@@ -2128,8 +2129,8 @@ class EntropyRepository(EntropyRepositoryBase):
             and extrainfo.idflags = flags.idflags
             and baseinfo.idlicense = licenses.idlicense
         """
-        self._cursor().execute(sql, (package_id,))
-        return self._cursor().fetchone()
+        cur = self._cursor().execute(sql, (package_id,))
+        return cur.fetchone()
 
     def _cur2frozenset(self, cur):
         mycontent = set()
@@ -2137,17 +2138,8 @@ class EntropyRepository(EntropyRepositoryBase):
             mycontent |= set(x)
         return frozenset(mycontent)
 
-    def _fetchall2list(self, item):
-        content = []
-        for x in item:
-            content += x
-        return content
-
-    def _cur2list(self, cur):
-        content = []
-        for x in cur:
-            content += x
-        return content
+    def _cur2tuple(self, cur):
+        return tuple(itertools.chain.from_iterable(cur))
 
     def clearCache(self):
         """
@@ -2175,12 +2167,12 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         if no_ids_repos:
-            self._cursor().execute("""
+            cur = self._cursor().execute("""
             SELECT command, branch, date FROM treeupdatesactions
             """)
         else:
-            self._cursor().execute('SELECT * FROM treeupdatesactions')
-        return self._cursor().fetchall()
+            cur = self._cursor().execute('SELECT * FROM treeupdatesactions')
+        return tuple(cur)
 
     def retrieveTreeUpdatesActions(self, repository):
         """
@@ -2188,10 +2180,10 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         params = (repository,)
 
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT command FROM treeupdatesactions WHERE 
         repository = (?) order by date""", params)
-        return self._fetchall2list(self._cursor().fetchall())
+        return self._cur2tuple(cur)
 
     def bumpTreeUpdatesActions(self, updates):
         """
@@ -2262,12 +2254,12 @@ class EntropyRepository(EntropyRepositoryBase):
         @return: if True, provided treeupdates action already exists
         @rtype: bool
         """
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT * FROM treeupdatesactions 
         WHERE repository = (?) and command = (?)
         and branch = (?)""", (repository, command, branch,))
 
-        result = self._cursor().fetchone()
+        result = cur.fetchone()
         if result:
             return True
         return False
@@ -2700,7 +2692,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE needed.idpackage = (?) AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (package_id,))
-            needed = cur.fetchall()
+            needed = tuple(cur)
 
         else:
 
@@ -2709,7 +2701,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE needed.idpackage = (?) AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (package_id,))
-            needed = self._cur2list(cur)
+            needed = self._cur2tuple(cur)
 
         if extended and formatted:
             return dict((lib, elfclass,) for lib, elfclass in needed)
@@ -2821,7 +2813,7 @@ class EntropyRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return cur.fetchall()
+            return tuple(cur)
         else:
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency 
@@ -2862,13 +2854,13 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT protect FROM configprotectmask,configprotectreference 
         WHERE idpackage = (?) AND 
         configprotectmask.idprotect = configprotectreference.idprotect
         """, (package_id,))
 
-        protect = self._cursor().fetchone()
+        protect = cur.fetchone()
         if protect:
             return protect[0]
         return ''
@@ -2955,7 +2947,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     searchkeywords)
 
                 if extended and insert_formatted:
-                    fl = cur.fetchall()
+                    fl = tuple(cur)
 
                 elif extended and formatted:
                     fl = {}
@@ -2965,11 +2957,11 @@ class EntropyRepository(EntropyRepositoryBase):
                         items = cur.fetchone()
 
                 elif extended:
-                    fl = cur.fetchall()
+                    fl = tuple(cur)
 
                 else:
                     if order_by:
-                        fl = self._cur2list(cur)
+                        fl = self._cur2tuple(cur)
                     else:
                         fl = self._cur2frozenset(cur)
 
@@ -3185,11 +3177,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT chost,cflags,cxxflags FROM flags,extrainfo 
         WHERE extrainfo.idpackage = (?) AND 
         extrainfo.idflags = flags.idflags""", (package_id,))
-        flags = self._cursor().fetchone()
+        flags = cur.fetchone()
         if not flags:
             flags = ("N/A", "N/A", "N/A",)
         return flags
@@ -3206,7 +3198,7 @@ class EntropyRepository(EntropyRepositoryBase):
         dep_ids = set((k for k, v in cached.items() if package_id in v))
         if not dep_ids:
             if key_slot:
-                return []
+                return tuple()
             return frozenset()
 
         dep_ids_str = ', '.join((str(x) for x in dep_ids))
@@ -3231,7 +3223,7 @@ class EntropyRepository(EntropyRepositoryBase):
             categories.idcategory = baseinfo.idcategory %s AND
             dependencies.iddependency IN ( %s )""" % (
                 excluded_deptypes_query, dep_ids_str,))
-            result = cur.fetchall()
+            result = tuple(cur)
         elif excluded_deptypes_query:
             cur = self._cursor().execute("""
             SELECT dependencies.idpackage FROM dependencies
@@ -3258,7 +3250,7 @@ class EntropyRepository(EntropyRepositoryBase):
         for v in cached.values():
             pkg_ids |= v
         if not pkg_ids:
-            return []
+            return tuple()
         pkg_ids_str = ', '.join((str(x) for x in pkg_ids))
 
         cur = self._cursor().execute("""
@@ -3266,7 +3258,7 @@ class EntropyRepository(EntropyRepositoryBase):
         WHERE idpackage NOT IN ( %s )
         ORDER BY atom
         """ % (pkg_ids_str,))
-        return self._cur2list(cur)
+        return self._cur2tuple(cur)
 
     def arePackageIdsAvailable(self, package_ids):
         """
@@ -3637,7 +3629,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE eclassesreference.classname = (?) AND
             eclassesreference.idclass = eclasses.idclass
             """, (eclass,))
-        return self._cur2list(cur)
+        return self._cur2tuple(cur)
 
     def searchTaggedPackages(self, tag, atoms = False):
         """
@@ -3799,14 +3791,14 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         # FIXME: remove this before 31-12-2011
         if not self._doesTableExist("provided_mime"):
-            return []
+            return tuple()
         cur = self._cursor().execute("""
         SELECT provided_mime.idpackage FROM provided_mime, baseinfo
         WHERE provided_mime.mimetype = (?)
         AND baseinfo.idpackage = provided_mime.idpackage
         ORDER BY baseinfo.atom""",
         (mimetype,))
-        return self._cur2list(cur)
+        return self._cur2tuple(cur)
 
     def searchSimilarPackages(self, keyword, atom = False):
         """
@@ -3816,11 +3808,11 @@ class EntropyRepository(EntropyRepositoryBase):
         if atom:
             s_item = 'atom'
         cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo 
+        SELECT idpackage FROM baseinfo
         WHERE soundex(%s) = soundex((?)) ORDER BY %s
         """ % (s_item, s_item,), (keyword,))
 
-        return self._cur2list(cur)
+        return self._cur2tuple(cur)
 
     def searchPackages(self, keyword, sensitive = False, slot = None,
             tag = None, order_by = None, just_id = False):
@@ -3868,8 +3860,8 @@ class EntropyRepository(EntropyRepositoryBase):
             )
 
         if just_id:
-            return self._cur2list(cur)
-        return cur.fetchall()
+            return self._cur2tuple(cur)
+        return tuple(cur)
 
     def searchProvidedVirtualPackage(self, keyword):
         """
@@ -3893,7 +3885,7 @@ class EntropyRepository(EntropyRepositoryBase):
         provide.idpackage = baseinfo.idpackage""" % (get_def_string,),
             (keyword,))
 
-        return cur.fetchall()
+        return tuple(cur)
 
     def searchDescription(self, keyword, just_id = False):
         """
@@ -3953,8 +3945,8 @@ class EntropyRepository(EntropyRepositoryBase):
             """ % (atomstring,), (keyword.lower(),))
 
         if just_id:
-            return self._cur2list(cur)
-        return cur.fetchall()
+            return self._cur2tuple(cur)
+        return tuple(cur)
 
 
     def searchCategory(self, keyword, like = False):
@@ -3974,7 +3966,7 @@ class EntropyRepository(EntropyRepositoryBase):
             baseinfo.idcategory = categories.idcategory
             """, (keyword,))
 
-        return cur.fetchall()
+        return tuple(cur)
 
     def searchNameCategory(self, name, category, just_id = False):
         """
@@ -4067,14 +4059,14 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT atom,idpackage,branch FROM baseinfo""" + order_by_string)
 
-        return cur.fetchall()
+        return tuple(cur)
 
     def listAllSpmUids(self):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         cur = self._cursor().execute('SELECT counter, idpackage FROM counters')
-        return cur.fetchall()
+        return tuple(cur)
 
     def listAllPackageIds(self, order_by = None):
         """
@@ -4095,11 +4087,11 @@ class EntropyRepository(EntropyRepositoryBase):
 
         try:
             if order_by:
-                return self._cur2list(cur)
+                return self._cur2tuple(cur)
             return self._cur2frozenset(cur)
         except OperationalError:
             if order_by:
-                return []
+                return tuple()
             return frozenset()
 
     def _listAllDependencies(self):
@@ -4112,7 +4104,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cur = self._cursor().execute("""
         SELECT iddependency, dependency FROM dependenciesreference""")
-        return cur.fetchall()
+        return tuple(cur)
 
     def listAllDownloads(self, do_sort = True, full_path = False):
         """
@@ -4128,12 +4120,12 @@ class EntropyRepository(EntropyRepositoryBase):
         """ % (order_string,))
 
         if do_sort:
-            results = self._cur2list(cur)
+            results = self._cur2tuple(cur)
         else:
             results = self._cur2frozenset(cur)
 
         if not full_path:
-            results = [os.path.basename(x) for x in results]
+            results = tuple((os.path.basename(x) for x in results))
 
         return results
 
@@ -4152,7 +4144,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return cur.fetchone()[0]
         if clean:
             return self._cur2frozenset(cur)
-        return self._cur2list(cur)
+        return self._cur2tuple(cur)
 
     def listAllCategories(self, order_by = None):
         """
@@ -4167,10 +4159,10 @@ class EntropyRepository(EntropyRepositoryBase):
                 order_by = "idcategory"
             order_by_string = 'ORDER BY %s' % (order_by,)
 
-        self._cursor().execute(
+        cur = self._cursor().execute(
             "SELECT idcategory, category FROM categories %s" % (
                 order_by_string,))
-        return self._cursor().fetchall()
+        return tuple(cur)
 
     def listConfigProtectEntries(self, mask = False):
         """
@@ -4208,13 +4200,13 @@ class EntropyRepository(EntropyRepositoryBase):
         if setting_name not in self._SETTING_KEYS:
             raise KeyError
         try:
-            self._cursor().execute("""
+            cur = self._cursor().execute("""
             SELECT setting_value FROM settings WHERE setting_name = (?)
             """, (setting_name,))
         except Error:
-            raise KeyError
+            raise KeyError("cannot find %s" % (setting_name,))
 
-        setting = self._cursor().fetchone()
+        setting = cur.fetchone()
         if setting is None:
             raise KeyError
         return setting[0]
@@ -4306,12 +4298,12 @@ class EntropyRepository(EntropyRepositoryBase):
             pingus.ping(action_str)
 
         mytxt = "Repository is corrupted, missing SQL tables!"
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND (
             name = "extrainfo" OR name = "baseinfo" OR name = "keywords"
             OR name = "categories" )
         """)
-        rslt = self._cursor().fetchone()
+        rslt = cur.fetchone()
         if rslt is None:
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
         elif rslt[0] != 4:
@@ -4460,11 +4452,11 @@ class EntropyRepository(EntropyRepositoryBase):
         toraw = const_convert_to_rawstring
 
         dumpfile.write(toraw("BEGIN TRANSACTION;\n"))
-        self._cursor().execute("""
+        cur = self._cursor().execute("""
         SELECT name, type, sql FROM sqlite_master
         WHERE sql NOT NULL AND type=='table'
         """)
-        for name, x, sql in self._cursor().fetchall():
+        for name, x, sql in cur.fetchall():
 
             self.output(
                 red("%s " % (
@@ -4486,21 +4478,21 @@ class EntropyRepository(EntropyRepositoryBase):
             if name in exclude_tables:
                 continue
 
-            self._cursor().execute("PRAGMA table_info('%s')" % name)
-            cols = [r[1] for r in self._cursor().fetchall()]
+            cur2 = self._cursor().execute("PRAGMA table_info('%s')" % name)
+            cols = [r[1] for r in cur2.fetchall()]
             q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
             q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
             q += ")' FROM '%(tbl_name)s'"
-            self._cursor().execute(q % {'tbl_name': name})
             self._connection().text_factory = const_convert_to_unicode
-            for row in self._cursor():
+            cur3 = self._cursor().execute(q % {'tbl_name': name})
+            for row in cur3:
                 dumpfile.write(toraw("%s;\n" % (row[0],)))
 
-        self._cursor().execute("""
+        cur4 = self._cursor().execute("""
         SELECT name, type, sql FROM sqlite_master
         WHERE sql NOT NULL AND type!='table' AND type!='meta'
         """)
-        for name, x, sql in self._cursor().fetchall():
+        for name, x, sql in cur4.fetchall():
             dumpfile.write(toraw("%s;\n" % sql))
 
         dumpfile.write(toraw("COMMIT;\n"))
@@ -4525,7 +4517,7 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "table"
         """)
-        return self._cur2list(cur)
+        return self._cur2tuple(cur)
 
     def _doesTableExist(self, table, temporary = False):
 
@@ -4624,7 +4616,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if strings:
             do_update_md5(m, cur)
         else:
-            a_hash = hash(tuple(cur.fetchall()))
+            a_hash = hash(tuple(cur))
 
 
         cur = self._cursor().execute("""
@@ -4634,7 +4626,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if strings:
             do_update_md5(m, cur)
         else:
-            b_hash = hash(tuple(cur.fetchall()))
+            b_hash = hash(tuple(cur))
 
         if include_signatures:
             # TODO: remove this before 31-12-2011
@@ -4647,7 +4639,7 @@ class EntropyRepository(EntropyRepositoryBase):
             if strings:
                 do_update_md5(m, cur)
             else:
-                b_hash = "%s%s" % (b_hash, hash(tuple(cur.fetchall())),)
+                b_hash = "%s%s" % (b_hash, hash(tuple(cur)),)
 
         cur = self._cursor().execute("""
         SELECT category FROM categories %s
@@ -4655,7 +4647,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if strings:
             do_update_md5(m, cur)
         else:
-            c_hash = hash(tuple(cur.fetchall()))
+            c_hash = hash(tuple(cur))
 
 
         d_hash = '0'
@@ -4666,13 +4658,13 @@ class EntropyRepository(EntropyRepositoryBase):
             if strings:
                 do_update_md5(m, cur)
             else:
-                d_hash = hash(tuple(cur.fetchall()))
+                d_hash = hash(tuple(cur))
 
             cur = self._cursor().execute('select * from flags %s' % (flags_order,))
             if strings:
                 do_update_md5(m, cur)
             else:
-                e_hash = hash(tuple(cur.fetchall()))
+                e_hash = hash(tuple(cur))
 
         if strings:
             result = m.hexdigest()

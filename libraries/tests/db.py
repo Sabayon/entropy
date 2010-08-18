@@ -52,22 +52,95 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db.clearCache()
 
     def test_treeupdates_actions(self):
-        self.assertEqual(self.test_db.listAllTreeUpdatesActions(), [])
+        self.assertEqual(self.test_db.listAllTreeUpdatesActions(), tuple())
 
-        updates = [
+        updates = (
             ('move media-libs/x264-svn media-libs/x264', '2020', '1210199116.46'),
             ('slotmove x11-libs/lesstif 2.1 0', '2020', '1210753863.16')
-        ]
-        actions = sorted(['move media-libs/x264-svn media-libs/x264',
-            'slotmove x11-libs/lesstif 2.1 0'])
+        )
+        updates_out = (
+            (1, 'repo__test_suite', 'move media-libs/x264-svn media-libs/x264', '2020', '1210199116.46'),
+            (2, 'repo__test_suite', 'slotmove x11-libs/lesstif 2.1 0', '2020', '1210753863.16')
+        )
+        actions = tuple(sorted(['move media-libs/x264-svn media-libs/x264',
+            'slotmove x11-libs/lesstif 2.1 0']))
 
         self.test_db.insertTreeUpdatesActions(updates, self.test_db_name)
         db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name)
         self.assertEqual(actions, db_actions)
+        self.assertEqual(updates_out, self.test_db.listAllTreeUpdatesActions())
 
         self.test_db.removeTreeUpdatesActions(self.test_db_name)
         db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name)
-        self.assertEqual([], db_actions)
+        self.assertEqual(tuple(), db_actions)
+
+    def test_needed(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(data, db_data)
+        db_needed = self.test_db.retrieveNeeded(idpackage, extended = True)
+        self.assertEqual(db_needed, data['needed'])
+        db_needed = self.test_db.retrieveNeeded(idpackage)
+        self.assertEqual(db_needed, tuple((lib for lib, elf_c in data['needed'])))
+
+    def test_dependencies(self):
+        test_pkg = _misc.get_test_package3()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(data, db_data)
+        pkg_deps = self.test_db.retrieveDependencies(idpackage, extended = True)
+        orig_pkg_deps = (('=dev-libs/apr-1*', 0),
+            ('dev-libs/openssl', 0), ('dev-libs/libpcre', 0),
+            ('=dev-libs/apr-util-1*', 0))
+        self.assertEqual(pkg_deps, orig_pkg_deps)
+
+    def test_content(self):
+        test_pkg = _misc.get_test_package3()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(data, db_data)
+        content = self.test_db.retrieveContent(idpackage, extended = True)
+        orig_content = (('/usr/sbin/ab2-ssl', 'sym'),
+            ('/usr/sbin/logresolve2', 'sym'),
+            ('/usr/sbin/log_server_status', 'obj'),
+            ('/usr/sbin/checkgid2', 'sym'),
+            ('/usr/sbin/htdbm', 'obj'),
+            ('/usr/sbin/rotatelogs2', 'sym'),
+            ('/usr/share/man/man1/htpasswd.1.bz2', 'obj'),
+            ('/usr/sbin/ab-ssl', 'sym'),
+            ('/usr/sbin/htcacheclean2', 'sym'),
+            ('/usr/sbin/split-logfile2', 'sym'),
+            ('/usr/share/man/man8', 'dir'),
+            ('/usr/sbin/htcacheclean', 'obj'),
+            ('/usr/sbin', 'dir'), ('/usr/sbin/ab', 'obj'),
+            ('/usr/share/doc/apache-tools-2.2.11/CHANGES.bz2', 'obj'),
+            ('/usr/sbin/htpasswd', 'obj'), ('/usr', 'dir'),
+            ('/usr/bin/htpasswd', 'sym'),
+            ('/usr/share/man/man1/htdigest.1.bz2', 'obj'),
+            ('/usr/sbin/dbmmanage', 'obj'), ('/usr/share', 'dir'),
+            ('/usr/share/man/man1', 'dir'), ('/usr/sbin/htdbm2', 'sym'),
+            ('/usr/sbin/log_server_status2', 'sym'),
+            ('/usr/share/man/man1/dbmmanage.1.bz2', 'obj'),
+            ('/usr/share/man', 'dir'), ('/usr/sbin/htpasswd2', 'sym'),
+            ('/usr/sbin/htdigest2', 'sym'), ('/usr/sbin/httxt2dbm2', 'sym'),
+            ('/usr/bin', 'dir'), ('/usr/sbin/logresolve', 'obj'),
+            ('/usr/share/doc', 'dir'), ('/usr/share/man/man8/ab.8.bz2', 'obj'),
+            ('/usr/share/man/man8/logresolve.8.bz2', 'obj'),
+            ('/usr/share/man/man8/htcacheclean.8.bz2', 'obj'),
+            ('/usr/sbin/rotatelogs', 'obj'), ('/usr/sbin/checkgid', 'obj'),
+            ('/usr/share/man/man1/htdbm.1.bz2', 'obj'),
+            ('/usr/sbin/dbmmanage2', 'sym'), ('/usr/sbin/httxt2dbm', 'obj'),
+            ('/usr/sbin/split-logfile', 'obj'),
+            ('/usr/sbin/htdigest', 'obj'),
+            ('/usr/share/doc/apache-tools-2.2.11', 'dir'),
+            ('/usr/sbin/ab2', 'sym'),
+            ('/usr/share/man/man8/rotatelogs.8.bz2', 'obj')
+        )
+        self.assertEqual(content, orig_content)
 
     def test_db_creation(self):
         self.assert_(isinstance(self.test_db, EntropyRepository))
@@ -447,7 +520,89 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         self.assert_(idpackage in rev_deps2)
         self.assert_(idpackage2 in rev_deps)
+        rev_deps_t = self.test_db.retrieveReverseDependencies(idpackage,
+            key_slot = True)
+        self.assertEqual(rev_deps_t, (('app-dicts/aspell-es', '0'),))
 
+        pkg_data = self.test_db.retrieveUnusedPackageIds()
+        self.assertEqual(pkg_data, tuple())
+
+    def test_similar(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        self.assertEqual(new_data, data)
+        out = self.test_db.searchSimilarPackages(_misc.get_test_package_name())
+        self.assertEqual(out, (1,))
+
+    def test_search(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        self.assertEqual(new_data, data)
+        out = self.test_db.searchPackages(_misc.get_test_package_name())
+        self.assertEqual(out, (('sys-libs/zlib-1.2.3-r1', 1, '5'),))
+
+    def test_list_packages(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        out = self.test_db.listAllPackages()
+        self.assertEqual(out, (('sys-libs/zlib-1.2.3-r1', 1, '5'),))
+
+    def test_spmuids(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        out = self.test_db.listAllSpmUids()
+        self.assertEqual(out, ((22331, 1),))
+
+    def test_list_pkg_ids(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        out = self.test_db.listAllPackageIds(order_by="atom")
+        self.assertEqual(out, (1,))
+
+    def test_list_files(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        out = self.test_db.listAllFiles()
+        self.assertEqual(out, (
+            '/lib64/libz.so', '/usr/share/doc/zlib-1.2.3-r1',
+            '/usr/share/doc/zlib-1.2.3-r1/algorithm.txt.bz2',
+            '/usr/share/doc/zlib-1.2.3-r1/FAQ.bz2',
+            '/usr/share/doc/zlib-1.2.3-r1/ChangeLog.bz2',
+            '/usr', '/usr/include', '/usr/lib64',
+            '/usr/share/man/man3/zlib.3.bz2', '/usr/lib64/libz.a', '/lib64',
+            '/usr/share', '/usr/share/doc/zlib-1.2.3-r1/README.bz2',
+            '/usr/lib64/libz.so', '/usr/share/man', '/usr/include/zconf.h',
+            '/lib64/libz.so.1.2.3', '/usr/include/zlib.h', '/usr/share/doc',
+            '/usr/share/man/man3', '/lib64/libz.so.1')
+        )
+
+    def test_list_categories(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        out = self.test_db.listAllCategories()
+        self.assertEqual(out, ((1, 'sys-libs'),))
+
+    def test_list_downloads(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        out = self.test_db.listAllDownloads()
+        self.assertEqual(out, ('sys-libs:zlib-1.2.3-r1.tbz2',))
+
+    def test_search_name(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        self.assertEqual(new_data, data)
+        out = self.test_db.searchName(_misc.get_test_package_name())
+        self.assertEqual(out, (('sys-libs/zlib-1.2.3-r1', 1),))
 
     def test_db_import_export(self):
 

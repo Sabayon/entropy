@@ -4198,7 +4198,7 @@ class PortagePlugin(SpmPlugin):
                     #if lib.find(".so") != -1:
                     pkg_needed.add((lib, ownelf))
 
-        return sorted(pkg_needed)
+        return tuple(sorted(pkg_needed))
 
     def _extract_pkg_metadata_provided_libs(self, pkg_dir, content):
 
