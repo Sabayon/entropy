@@ -2597,7 +2597,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 obj = cached.setdefault(pkg_id, set())
                 obj.add(flag)
             self.__setLiveCache("retrieveUseflags", cached)
-        return cached.get(package_id)
+        return frozenset(cached.get(package_id, frozenset()))
 
     def retrieveEclasses(self, package_id):
         """
