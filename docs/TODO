@@ -3,11 +3,14 @@
 
     EntropyRepositoryBase:
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
+    - searchEclassedPackages...
+    - _connection() (used in contentDiff)
+    - rename dropAllIndexes to pack
+    - rename "equo database"
+    - remove "branch" from EntropyRepository.searchPackages
 
   1.0:
 
-    - rename idpackage(s)
-    - rename "equo database"
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
     - per-repository mirrors on repo database dir?
     - uniform config files options to this-and-that (keeping backward compat)
@@ -15,7 +18,6 @@
     - sulfur: ask password as user and allow installation?
     - implement system snapshots (as snapshots, sets).
     - Client.urlFetcher/MultipleUrlFetcher/clientLog? ugly!
-    - entropy.db.search* unittest
     - entropy package metadata .dtd specs
     - entropy.client API docs
 
