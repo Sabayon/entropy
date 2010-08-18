@@ -1044,7 +1044,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             repository
         @type dbconn_package_id: int
         @return: content difference
-        @rtype: set
+        @rtype: frozenset
         @raise AttributeError: when self instance and dbconn are the same
         """
         raise NotImplementedError()
@@ -1092,7 +1092,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param atom: package atom
         @type atom: string
         @return: list of matching package_ids found
-        @rtype: set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -1893,7 +1893,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param setname: Package set name
         @type setname: string
         @return: list (set) of dependencies belonging to given package set name
-        @rtype: set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2151,7 +2151,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param package_id: package indentifier
         @type package_id: int
         @return: list (set) of eclasses for given package identifier
-        @rtype: set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2196,8 +2196,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of mimetypes
-        @rtype: set
+        @return: list (frozenset) of mimetypes
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2208,9 +2208,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of "NEEDED" entries contained in ELF objects
+        @return: list (frozenset) of "NEEDED" entries contained in ELF objects
             packed into package file
-        @rtype: set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2227,7 +2227,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             library name as key and ELF class as value
         @type formatted: bool
         @return: "NEEDED" metadata for libraries contained in given package.
-        @rtype: list or set
+        @rtype: list or dict
         """
         raise NotImplementedError()
 
@@ -2238,9 +2238,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list of tuples of length 2 composed by library name and ELF
-            class
-        @rtype: list
+        @return: list (frozenset) of tuples of length 2 composed by library
+            name and ELF class
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2250,8 +2250,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of conflicting package dependencies
-        @rtype: set
+        @return: list (frozenset) of conflicting package dependencies
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2262,8 +2262,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of atoms provided by package
-        @rtype: set
+        @return: list (frozenset) of atoms provided by package
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2278,8 +2278,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             data. Please see etpConst['dependency_type_ids'] for valid values.
             Anything != int will raise AttributeError
         @type exclude_deptypes: list
-        @return: list (set) of dependencies of package
-        @rtype: set
+        @return: list (frozenset) of dependencies of package
+        @rtype: frozenset
         @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
@@ -2295,6 +2295,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
+        @return: list (frozenset) of build dependencies of package
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2309,6 +2311,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
+        @return: list (frozenset) of post dependencies of package
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2322,6 +2326,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
+        @return: list (frozenset) of manual dependencies of package
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2344,7 +2350,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             Anything != int will raise AttributeError
         @type exclude_deptypes: list
         @return: dependencies of given package
-        @rtype: list or set
+        @rtype: list or frozenset
         @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
@@ -2355,8 +2361,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of keywords for given package identifier
-        @rtype: set
+        @return: list (frozenset) of keywords for given package identifier
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2396,9 +2402,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword extended: 
         @type extended: bool
         @return: if extended is True, dict composed by source URLs as key
-            and list of mirrors as value, otherwise just a list (set) of
+            and list of mirrors as value, otherwise just a list (frozenset) of
             source package URLs.
-        @rtype: dict or set
+        @rtype: dict or frozenset
         """
         raise NotImplementedError()
 
@@ -2416,7 +2422,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             and md5 hash as value
         @type get_dict: bool
         @return: automerge metadata for given package identifier
-        @rtype: list or set
+        @rtype: frozenset or dict
         """
         raise NotImplementedError()
 
@@ -2437,7 +2443,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             "type" (if extended is True), "file" or "package_id"
         @type order_by: string
         @return: content metadata
-        @rtype: dict or list or set
+        @rtype: dict or list or frozenset
         @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
@@ -2499,8 +2505,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param mirrorname: mirror name (for eg. "openoffice")
         @type mirrorname: string
-        @return: list (set) of URLs providing the "openoffice" mirroring service
-        @rtype: set
+        @return: list (frozenset) of URLs providing the "openoffice"
+            mirroring service
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2544,9 +2551,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of license names which text is available in
+        @return: list (frozenset) of license names which text is available in
             repository
-        @rtype: set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2601,7 +2608,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             Anything != int will raise AttributeError
         @type exclude_deptypes: iterable of ints
         @return: reverse dependency list
-        @rtype: list or set
+        @rtype: list or frozenset
         @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
@@ -2649,8 +2656,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword get_id: return list (set) of package_ids owning myfile
         @type get_id: bool
         @return: availability (True if available), when get_id is True,
-            it returns a list (set) of package_ids owning myfile
-        @rtype: bool or set
+            it returns a list (frozenset) of package_ids owning myfile
+        @rtype: bool or frozenset
         """
         raise NotImplementedError()
 
@@ -2663,11 +2670,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type needed: string
         @keyword elfclass: look for library name matching given ELF class
         @type elfclass: int
-        @keyword extended: return a list of tuple of length 2, first element
-            is package_id, second is actual library path
+        @keyword extended: return a frozenset of tuple of length 2, first
+            element is package_id, second is actual library path
         @type extended: bool
         @return: list of packages owning given library
-        @rtype: list or set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2800,8 +2807,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type bfile: string
         @keyword like: do not match exact case
         @type like: bool
-        @return: list (set) of package identifiers owning given file
-        @rtype: set
+        @return: list (frozenset) of package identifiers owning given file
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2828,7 +2835,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword atoms: return list of atoms instead of package identifiers
         @type atoms: bool
         @return: list of packages using given tag
-        @rtype: set or list
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2838,8 +2845,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param revision: Entropy revision to search
         @type revision: string
-        @return: list of packages using given tag
-        @rtype: set
+        @return: list (frozenset) of packages using given tag
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2849,11 +2856,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param keyword: license name to search
         @type keyword: string
-        @keyword just_id: just return package identifiers (returning set())
+        @keyword just_id: just return package identifiers, otherwise a frozenset
+            of tuples of length 2 is returned
         @type just_id: bool
-        @return: list of packages using given license
-        @rtype: set or list
-        @todo: check if is_valid_string is really required
+        @return: list (frozenset) of packages using given license
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2863,10 +2870,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param keyword: slot to search
         @type keyword: string
-        @keyword just_id: just return package identifiers (returning set())
+        @keyword just_id: just return package identifiers, otherwise a frozenset
+            of tuples of length 2 is returned
         @type just_id: bool
-        @return: list of packages using given slot
-        @rtype: set or list
+        @return: list (frozenset) of packages using given slot
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2878,8 +2886,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type key: string
         @param slot: package slot
         @type slot: string
-        @return: list (set) of package identifiers
-        @rtype: set
+        @return: list (frozenset) of package identifiers
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2894,8 +2902,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type elfclass: int
         @keyword like: do not match exact case
         @type like: bool
-        @return: list (set) of package identifiers
-        @rtype: set
+        @return: list (frozenset) of package identifiers
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2915,9 +2923,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword strings: return dependency names rather than dependency
             identifiers
         @type strings: bool
-        @return: list of dependency identifiers (if multi is True) or
-            strings (if strings is True) or dependency identifier
-        @rtype: int or set
+        @return: list (frozenset) of dependency identifiers (if multi is True)
+            or strings (if strings is True) or dependency identifier
+        @rtype: int or frozenset
         """
         raise NotImplementedError()
 
@@ -2928,9 +2936,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param dependency_id: dependency identifier
         @type dependency_id: int
-        @return: list (set) of package identifiers owning given dependency
+        @return: list (frozenset) of package identifiers owning given dependency
             identifier
-        @rtype: set
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2940,8 +2948,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param keyword: package set name to search
         @type keyword: string
-        @return: list (set) of package sets available matching given keyword
-        @rtype: set
+        @return: list (frozenset) of package sets available matching given
+            keyword
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -2967,7 +2976,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword atom: return full atoms instead of package names
         @type atom: bool
         @return: list of similar package names
-        @rtype: set
+        @rtype: list
         """
         raise NotImplementedError()
 
@@ -2987,10 +2996,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword order_by: order results by "atom", "package_id", "branch",
             "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
-        @keyword just_id: just return package identifiers (returning set())
+        @keyword just_id: just return package identifiers
         @type just_id: bool
         @return: packages found matching given search criterias
-        @rtype: set or list
+        @rtype: list
         @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
@@ -3004,9 +3013,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword just_id: if True, only return a list of Entropy package
             identifiers
         @type just_id: bool
-        @return: list of tuples of length 2 containing atom and package_id
-            values. While if just_id is True, return a list (set) of package_ids
-        @rtype: list or set
+        @return: frozenset of tuples of length 2 containing atom and package_id
+            values. While if just_id is True, return a list (frozenset) of
+            package_ids
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -3019,9 +3029,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword just_id: if True, only return a list of Entropy package
             identifiers
         @type just_id: bool
-        @return: list of tuples of length 2 containing atom and package_id
-            values. While if just_id is True, return a list (set) of package_ids
-        @rtype: list or set
+        @return: frozenset of tuples of length 2 containing atom and package_id
+            values. While if just_id is True, return a list (frozenset) of
+            package_ids
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -3038,7 +3049,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             values
         @type just_id: bool
         @return: list of packages found
-        @rtype: list or set
+        @rtype: list
         """
         raise NotImplementedError()
 
@@ -3070,7 +3081,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             values
         @type just_id: bool
         @return: list of packages found
-        @rtype: list or set
+        @rtype: list
         """
         raise NotImplementedError()
 
@@ -3134,8 +3145,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
             "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
-        @return: list (set) of available package identifiers in category.
-        @rtype: set
+        @return: list (frozenset) of available package identifiers in category.
+        @rtype: frozenset
         @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()
@@ -3147,8 +3158,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
             "name", "version", "versiontag", "revision", "slot"
         @type order_by: string
-        @return: list (if order_by) or set of package identifiers
-        @rtype: list or set
+        @return: list (if order_by) or frozenset of package identifiers
+        @rtype: list or frozenset
         @raise AttributeError: if order_by value is invalid
         """
 
@@ -3170,7 +3181,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword full_path: return full URL (not just package file name)
         @type full_path: bool
         @return: list (or set if do_sort is True) of package download URLs
-        @rtype: list or set
+        @rtype: list or frozenset
         """
         raise NotImplementedError()
 
@@ -3183,7 +3194,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @keyword count: count elements and return number
         @type count: bool
         @return: list of files available or their count
-        @rtype: int or list or set
+        @rtype: int or list or frozenset
         """
         raise NotImplementedError()
 
