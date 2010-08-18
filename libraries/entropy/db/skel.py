@@ -2139,8 +2139,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (set) of USE flags for given package identifier.
-        @rtype: set
+        @return: list (frozenset) of USE flags for given package identifier.
+        @rtype: frozenset
         """
         raise NotImplementedError()
 

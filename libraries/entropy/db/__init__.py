@@ -2430,7 +2430,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, digest FROM extrainfo
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("retrieveDigest", cached)
         return cached.get(package_id)
 
@@ -2542,7 +2542,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, version FROM baseinfo
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("retrieveVersion", cached)
         return cached.get(package_id)
 
@@ -2555,7 +2555,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, revision FROM baseinfo
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("retrieveRevision", cached)
         return cached.get(package_id)
 
@@ -2719,7 +2719,7 @@ class EntropyRepository(EntropyRepositoryBase):
         SELECT library, path, elfclass FROM provided_libs
         WHERE idpackage = (?)
         """, (package_id,))
-        return frozenset(cur.fetchall())
+        return frozenset(cur)
 
     def retrieveConflicts(self, package_id):
         """
@@ -2743,7 +2743,7 @@ class EntropyRepository(EntropyRepositoryBase):
         SELECT atom%s FROM provide WHERE idpackage = (?)
         """ % (is_default_str,), (package_id,))
         if is_default_str:
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
         return self._cur2frozenset(cur)
 
     def retrieveDependenciesList(self, package_id, exclude_deptypes = None):
@@ -2910,7 +2910,7 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)
         """, (package_id,))
-        data = frozenset(cur.fetchall())
+        data = frozenset(cur)
 
         if get_dict:
             data = dict(((x, y,) for x, y in data))
@@ -3034,7 +3034,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, slot FROM baseinfo
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("retrieveSlot", cached)
         return cached.get(package_id)
 
@@ -3048,7 +3048,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, versiontag FROM baseinfo
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("retrieveTag", cached)
         return cached.get(package_id)
 
@@ -3073,7 +3073,7 @@ class EntropyRepository(EntropyRepositoryBase):
             FROM baseinfo,categories WHERE
             baseinfo.idcategory = categories.idcategory
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("retrieveCategory", cached)
         return cached.get(package_id)
 
@@ -3354,7 +3354,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, path FROM provided_libs
             WHERE library = (?)""" + elfclass_txt, args)
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM provided_libs
@@ -3639,7 +3639,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT atom, idpackage FROM baseinfo WHERE versiontag = (?)
             """, (tag,))
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
 
         cur = self._cursor().execute("""
         SELECT idpackage FROM baseinfo WHERE versiontag = (?)
@@ -3675,7 +3675,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE LOWER(licenses.license) LIKE (?) AND
             licenses.idlicense = baseinfo.idlicense
             """, ("%"+keyword+"%".lower(),))
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
 
     def searchSlotted(self, keyword, just_id = False):
         """
@@ -3689,7 +3689,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT atom,idpackage FROM baseinfo WHERE slot = (?)
             """, (keyword,))
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
 
     def searchKeySlot(self, key, slot):
         """
@@ -3904,7 +3904,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE LOWER(extrainfo.description) LIKE (?) AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+keyword.lower()+"%",))
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
 
     def searchHomepage(self, keyword, just_id = False):
         """
@@ -3923,7 +3923,7 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE LOWER(extrainfo.homepage) LIKE (?) AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+keyword.lower()+"%",))
-            return frozenset(cur.fetchall())
+            return frozenset(cur)
 
     def searchName(self, keyword, sensitive = False, just_id = False):
         """
@@ -4692,7 +4692,7 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT idpackage, repositoryname FROM installedtable
             """)
-            cached = dict(cur.fetchall())
+            cached = dict(cur)
             self.__setLiveCache("getInstalledPackageRepository", cached)
         return cached.get(package_id)
 
