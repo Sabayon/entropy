@@ -1,3 +1,33 @@
+commit 26c80211a458ee3874a70de919fdb107409c29f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 14:01:58 2010 +0200
+
+    [entropy.db] EntropyRepository: rewrite live cache support to improve robustness, cache object is now static
+
+commit 051ca2bfce616f2eed390fc02269fc4a141d00a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 09:03:16 2010 +0200
+
+    [entropy.db] EntropyRepository: fix searchEclassedPackages(), it didn't work
+
+commit 6523d778a5a6f6c7d6f4407c78499149c16e494a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 09:02:29 2010 +0200
+
+    [entropy.db.skel] EntropyRepositoryBase.searchEclassedPackages always returns list
+
+commit 0fd5df58906be69de6dbf5109372600914ec2b95
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 09:01:59 2010 +0200
+
+    [equo] text_query.search_eclass: improve function reliability
+
+commit 0a3148308bb6055b2e60def759ee90e84c721186
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 17 18:29:53 2010 +0200
+
+    Tagging Entropy version 0.99.49.20
+
 commit 1b02cbb7e029fee73a19b3b3f03c034c8312dd87
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 17 18:27:53 2010 +0200
