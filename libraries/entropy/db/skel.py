@@ -633,8 +633,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # usually used server side btw
             return removelist
 
-        searchsimilar = self.searchNameCategory(name = name,
-            category = category)
+        searchsimilar = self.searchNameCategory(name, category)
 
         # support for expiration-based packages handling, also internally
         # called Fat Scope.
@@ -4247,8 +4246,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             results = self.searchName(pkgname, sensitive = True,
                 just_id = True)
         else:
-            results = self.searchNameCategory(name = pkgname,
-                category = pkgcat, just_id = True)
+            results = self.searchNameCategory(pkgname, pkgcat, just_id = True)
 
         old_style_virtuals = None
         # if it's a PROVIDE, search with searchProvide
@@ -4277,8 +4275,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 for package_id in results:
                     virtual_cat, virtual_name = self.retrieveKeySplit(package_id)
                     v_result = self.searchNameCategory(
-                        name = virtual_name, category = virtual_cat,
-                        just_id = True)
+                        virtual_name, virtual_cat, just_id = True)
                     v_results.update(v_result)
                 return set(v_results), old_style_virtuals
 
@@ -4312,7 +4309,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             if (not multiMatch) and (pkgcat == "null"):
                 # we searched by name, we need to search using category
                 results = self.searchNameCategory(
-                    name = pkgname, category = pkgcat, just_id = True)
+                    pkgname, pkgcat, just_id = True)
 
             # if we get here, we have found the needed IDs
             return set(results), old_style_virtuals
