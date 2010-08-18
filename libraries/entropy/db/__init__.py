@@ -25,13 +25,11 @@
 """
 import sys
 import os
-import shutil
 import hashlib
 import time
 import thread
 import threading
 import subprocess
-import warnings
 from sqlite3 import dbapi2
 
 from entropy.const import etpConst, const_setup_file, \
@@ -4286,11 +4284,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self.readonly = old_readonly
         self._connection().commit()
 
-    def validateDatabase(self):
-        """ @deprecated """
-        warnings.warn("EntropyRepository.validateDatabase: deprecated call!")
-        return self.validate()
-
     def validate(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4626,7 +4619,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 result = m.hexdigest()
             else:
                 result = "~empty_db~"
-                self.__setLiveCache(cache_key, result[:])
+                self.__setLiveCache(cache_key, result)
             return result
 
         cur = self._cursor().execute("""
@@ -4692,7 +4685,7 @@ class EntropyRepository(EntropyRepositoryBase):
             result = "%s:%s:%s:%s:%s" % (a_hash, b_hash, c_hash, d_hash,
                 e_hash,)
 
-        self.__setLiveCache(cache_key, result[:])
+        self.__setLiveCache(cache_key, result)
         return result
 
     def storeInstalledPackage(self, package_id, repoid, source = 0):
