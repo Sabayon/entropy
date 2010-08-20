@@ -194,8 +194,32 @@ class ServerPackagesRepository(EntropyRepository):
         Reimplemented from EntropyRepository.
         """
 
-        # Remove entries in the same scope.
+        # build atom string, server side
+        pkgatom = entropy.tools.create_package_atom_string(
+            pkg_data['category'], pkg_data['name'], pkg_data['version'],
+            pkg_data['versiontag'])
+
+        current_rev = forcedRevision
+
         manual_deps = set()
+        # Remove entries in the same scope.
+        for package_id in self.getPackageIds(pkgatom):
+
+            if forcedRevision == -1:
+                myrev = self.retrieveRevision(package_id)
+                if myrev > current_rev:
+                    current_rev = myrev
+
+            #
+            manual_deps |= self.retrieveManualDependencies(package_id)
+            # injected packages wouldn't be removed by addPackage
+            self.removePackage(package_id, do_cleanup = False,
+                do_commit = False)
+
+        if forcedRevision == -1:
+            current_rev += 1
+
+        # manual dependencies handling
         removelist = self.getPackagesToRemove(
             pkg_data['name'], pkg_data['category'],
             pkg_data['slot'], pkg_data['injected']
@@ -212,28 +236,6 @@ class ServerPackagesRepository(EntropyRepository):
                 continue
             pkg_data['dependencies'][manual_dep] = \
                 etpConst['dependency_type_ids']['mdepend_id']
-
-        # build atom string, server side
-        pkgatom = entropy.tools.create_package_atom_string(
-            pkg_data['category'], pkg_data['name'], pkg_data['version'],
-            pkg_data['versiontag'])
-
-        package_ids = self.getPackageIds(pkgatom)
-        current_rev = forcedRevision
-
-        for package_id in package_ids:
-
-            if forcedRevision == -1:
-                myrev = self.retrieveRevision(package_id)
-                if myrev > current_rev:
-                    current_rev = myrev
-
-            # injected packages wouldn't be removed by addPackage
-            self.removePackage(package_id, do_cleanup = False,
-                do_commit = False)
-
-        if forcedRevision == -1:
-            current_rev += 1
 
         # add the new one
         return self.addPackage(pkg_data, revision = current_rev,
