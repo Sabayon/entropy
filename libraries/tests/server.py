@@ -58,6 +58,20 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(rev, 0)
         self.assertEqual(rev2, 1)
 
+    def test_rev_bump_2(self):
+        spm = self.Server.Spm()
+        test_db = self.Server.open_server_repository()
+        test_pkg = _misc.get_test_package()
+        data = spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = test_db.handlePackage(data)
+        test_db.removePackage(idpackage)
+        idpackage2, rev2, new_data2 = test_db.handlePackage(data)
+        self.assertEqual(new_data, new_data2)
+        self.assertEqual(idpackage, 1)
+        self.assertEqual(idpackage2, 2)
+        self.assertEqual(rev, 0)
+        self.assertEqual(rev2, 0)
+
     def test_package_injection(self):
         test_pkg = _misc.get_test_entropy_package()
         tmp_test_pkg = test_pkg+".tmp"
