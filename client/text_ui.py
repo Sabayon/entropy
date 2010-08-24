@@ -438,12 +438,22 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
     # Filter out packages installed from unavailable repositories, this is
     # mainly required to allow 3rd party packages installation without
     # erroneously inform user about unavailability.
-    remove = [x for x in remove if \
-        entropy_client.installed_repository().getInstalledPackageRepository(x) in \
-            entropy_client.repositories()]
+    unavail_pkgs = [x for x in remove if \
+        entropy_client.installed_repository().getInstalledPackageRepository(x) \
+        not in entropy_client.repositories()]
+    remove = [x for x in remove if x not in unavail_pkgs]
+    # drop system packages for automatic removal, user has to do it manually.
+    system_unavail_pkgs = [x for x in remove if \
+        not entropy_client.validate_package_removal(x)]
+    remove = [x for x in remove if x not in system_unavail_pkgs]
 
-    if remove and entropy_client.repositories() and (not onlyfetch):
-        remove = sorted(remove)
+    allow_run = entropy_client.repositories() and (not onlyfetch)
+
+    if (unavail_pkgs or remove or system_unavail_pkgs) and allow_run:
+        remove.sort()
+        unavail_pkgs.sort()
+        system_unavail_pkgs.sort()
+
         print_info(red(" @@ ") + \
             blue("%s." % (
                     _("On the system there are packages that are not available anymore in the online repositories"),
@@ -451,9 +461,16 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
             )
         )
         print_info(red(" @@ ")+blue(
-            _("Even if they are usually harmless, it is suggested to remove them.")))
+            _("Even if they are usually harmless, it is suggested (after proper verification) to remove them.")))
 
-        _show_package_removal_info(entropy_client, remove)
+        if unavail_pkgs:
+            _show_package_removal_info(entropy_client, unavail_pkgs, manual = True)
+        if system_unavail_pkgs:
+            _show_package_removal_info(entropy_client, system_unavail_pkgs, manual = True)
+        if remove:
+            _show_package_removal_info(entropy_client, remove)
+
+    if remove and allow_run:
 
         do_run = True
         if not etpUi['pretend']:
@@ -718,10 +735,14 @@ def _scan_packages(entropy_client, packages, etp_pkg_files):
 
     return found_pkg_atoms
 
-def _show_package_removal_info(entropy_client, package_identifiers):
+def _show_package_removal_info(entropy_client, package_identifiers, manual = False):
 
-    print_info(red(" @@ ") + \
-        blue("%s:" % (_("These are the packages that would be removed"),) ))
+    if manual:
+        print_info(red(" @@ ") + \
+            blue("%s:" % (_("These are the packages that should be MANUALLY removed"),) ))
+    else:
+        print_info(red(" @@ ") + \
+            blue("%s:" % (_("These are the packages that would be removed"),) ))
     totalatoms = str(len(package_identifiers))
 
     atomscounter = 0
