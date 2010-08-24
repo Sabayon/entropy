@@ -336,7 +336,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         return rename_fine
 
     def _setup_fs_args(self):
-        args = [EntropySshUriHandler._SSH_CMD]
+        args = [EntropySshUriHandler._SSH_CMD, "-p", str(self.__port)]
         remote_str = ""
         if self.__user:
             remote_str += self.__user + "@"
