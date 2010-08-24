@@ -2074,7 +2074,7 @@ class CalculatorsMixin:
         @type package_id: int
         @keyword repo_id: Entropy Repository identifier
         @type repo_id: string
-        @return: return True, if package can be removed, otherwise false.
+        @return: return True, if package can be removed, otherwise False.
         @rtype: bool
         """
 
