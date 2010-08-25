@@ -21,6 +21,7 @@ entropy-install:
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)/etc/env.d
 	mkdir -p $(DESTDIR)/etc/init.d
+	mkdir -p $(DESTDIR)/etc/logrotate.d
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
 
 	cp libraries/entropy $(DESTDIR)/$(LIBDIR)/entropy/libraries/ -Ra
@@ -31,6 +32,7 @@ entropy-install:
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
 	install -m 755 services/smartapp_wrapper $(DESTDIR)/$(LIBDIR)/entropy/services/
 	install -m 755 misc/entropy_hwgen.sh $(DESTDIR)$(BINDIR)/
+	install -m 644 misc/entropy.logrotate $(DESTDIR)/etc/logrotate.d/entropy
 
 	install -m 644 conf/entropy.conf $(DESTDIR)/etc/entropy/
 	install -m 644 conf/fsdirs.conf $(DESTDIR)/etc/entropy/

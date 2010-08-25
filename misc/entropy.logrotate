@@ -1,0 +1,6 @@
+/var/log/entropy/*.log {
+   rotate 5
+   size=50M
+   copytruncate
+   compress
+}
