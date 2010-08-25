@@ -1726,23 +1726,44 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         return True
 
-    def _show_orphans_message(self, orphans):
+    def _show_orphans_message(self, orphans, syspkg_orphans, unavail_repo_pkgs):
 
-        confirm = ConfirmationDialog( self.ui.main,
-            orphans,
-            top_text = _("These packages are no longer available"),
-            sub_text = _("These packages should be removed because support has been dropped. Do you want to remove them?"),
-            bottom_text = '',
-            bottom_data = ''
-        )
-        result = confirm.run()
-        ok = False
-        if result == -5: # ok
-            ok = True
-        confirm.destroy()
+        if orphans:
+            confirm = ConfirmationDialog(self.ui.main,
+                orphans,
+                top_text = _("These packages are no longer available"),
+                sub_text = _("These packages should be removed (if you agree) because support has been dropped. Do you want to remove them?"),
+                bottom_text = '',
+                bottom_data = ''
+            )
+            result = confirm.run()
+            ok = False
+            if result == -5: # ok
+                ok = True
+            confirm.destroy()
 
-        if ok:
-            self.add_to_queue(orphans, "r", False, accept = True)
+            if ok:
+                self.add_to_queue(orphans, "r", False, accept = True)
+
+        if syspkg_orphans:
+            d = ConfirmationDialog(self.ui.main, syspkg_orphans,
+                top_text = _("These are orphaned vital packages"),
+                sub_text = _("You should make sure that they are no longer needed and remove manually."),
+                bottom_text = '',
+                bottom_data = '',
+                cancel = False)
+            d.run()
+            d.destroy()
+        if unavail_repo_pkgs:
+            d = ConfirmationDialog(self.ui.main, unavail_repo_pkgs,
+                top_text = _("These are packages from unavailable repositories"),
+                sub_text = _("You are not going to receive updates for the following packages."),
+                bottom_text = '',
+                bottom_data = '',
+                cancel = False)
+            d.run()
+            d.destroy()
+
         return False
 
     def _set_updates_label(self, updates_count):
@@ -1813,13 +1834,21 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.pkgSorter.set_property('sensitive', True)
 
         orphans = None
+        syspkg_orphans = None
+        unavail_repo_pkgs = None
         if (not self._orphans_message_shown) and (not self._RESOURCES_LOCKED):
             if action == "updates" and \
                 (not self.etpbase.get_raw_groups('updates')):
 
                 orphans = self.etpbase.get_raw_groups('orphans')
+                syspkg_orphans = self.etpbase.get_raw_groups('syspkg_orphans')
+                unavail_repo_pkgs = self.etpbase.get_raw_groups('unavail_orphans')
                 if self.do_debug:
                     print_generic("show_packages: found orphans %s" % (orphans,))
+                    print_generic("show_packages: found syspkg orphans %s" % (
+                        syspkg_orphans,))
+                    print_generic("show_packages: found unavail repo pkgs %s" % (
+                        unavail_repo_pkgs,))
                 self._orphans_message_shown = True
 
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
@@ -1835,10 +1864,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             rb = self.packageRB[do_switch_to]
             gobject.timeout_add(200, rb.clicked)
 
-        if orphans:
+        if orphans or syspkg_orphans or unavail_repo_pkgs:
             # enqueue in the main loop, better!
             # avoid actions button to not show up
-            gobject.timeout_add(2000, self._show_orphans_message, orphans)
+            gobject.timeout_add(2000, self._show_orphans_message, orphans,
+                syspkg_orphans, unavail_repo_pkgs)
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = None):
 

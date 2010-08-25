@@ -715,7 +715,13 @@ class EntropyPackages:
         yp.color = SulfurConf.color_install
         return yp
 
-    def _pkg_get_orphans(self):
+    def _pkg_get_syspkg_orphans(self):
+        return self._pkg_get_orphans(get_syspkgs = True)
+
+    def _pkg_get_unavailable_orphans(self):
+        return self._pkg_get_orphans(get_unavailable = False)
+
+    def _pkg_get_orphans(self, get_syspkgs = False, get_unavailable = False):
 
         # make sure we have these configured
         self.get_groups("installed")
@@ -724,14 +730,32 @@ class EntropyPackages:
         with self.Entropy.Cacher():
             updates, remove, fine, spm_fine = self.Entropy.calculate_updates(
                     critical_updates = False)
+
+        # verify that client database idpackage still exist,
+        # validate here before passing removePackage() wrong info
+        remove = [x for x in remove if \
+            self.Entropy.installed_repository().isPackageIdAvailable(x)]
         # Filter out packages installed from unavailable repositories, this is
         # mainly required to allow 3rd party packages installation without
         # erroneously inform user about unavailability.
-        remove = [x for x in remove if \
-            self.Entropy.installed_repository().getInstalledPackageRepository(x) in \
-                self.Entropy.repositories()]
-        return [x for x in map(self.__inst_pkg_setup, remove) if not \
-            isinstance(x, int)]
+        unavail_pkgs = [x for x in remove if \
+            self.Entropy.installed_repository().getInstalledPackageRepository(x) \
+            not in self.Entropy.repositories()]
+        remove = [x for x in remove if x not in unavail_pkgs]
+        # drop system packages for automatic removal, user has to do it manually.
+        system_unavail_pkgs = [x for x in remove if \
+            not self.Entropy.validate_package_removal(x)]
+        remove = [x for x in remove if x not in system_unavail_pkgs]
+
+        if get_syspkgs:
+            return [x for x in map(self.__inst_pkg_setup, unavail_pkgs) if not \
+                isinstance(x, int)]
+        elif get_unavailable:
+            return [x for x in map(self.__inst_pkg_setup, system_unavail_pkgs) \
+                if not isinstance(x, int)]
+        else:
+            return [x for x in map(self.__inst_pkg_setup, remove) if not \
+                isinstance(x, int)]
 
     def _pkg_get_installed(self):
         return [x for x in map(self.__inst_pkg_setup,
@@ -1155,6 +1179,8 @@ class EntropyPackages:
             "available": self._pkg_get_available,
             "updates": self._pkg_get_updates,
             "orphans": self._pkg_get_orphans,
+            "syspkg_orphans": self._pkg_get_syspkg_orphans,
+            "unavail_orphans": self._pkg_get_unavailable_orphans,
             "unfiltered_updates": self._pkg_get_updates_raw,
             "reinstallable": self._pkg_get_reinstallable,
             "masked": self._pkg_get_masked,
