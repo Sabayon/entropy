@@ -971,7 +971,9 @@ class PortagePlugin(SpmPlugin):
             # fake package_file, need to tweak pkg_dir to systemroot
             pkg_dir = etpConst['systemroot'] + os.path.sep
 
-        data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
+        data['disksize'] = entropy.tools.sum_file_sizes([
+                os.path.join(pkg_dir, x) for x in data['content']])
+        print data['disksize']
         data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
             pkg_dir, data['content'])
 
