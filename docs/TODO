@@ -8,6 +8,7 @@
     - rename dropAllIndexes to pack
     - rename "equo database"
     - remove "branch" from EntropyRepository.searchPackages
+    - equo security filescheck (--generate-hashes)
 
   1.0:
 
