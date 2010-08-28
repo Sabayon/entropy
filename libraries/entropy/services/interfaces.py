@@ -1911,11 +1911,11 @@ class SocketHost:
             self.sessions[rng]['stream_mode'] = False
             try:
                 tmp_fd, self.sessions[rng]['stream_path'] = tempfile.mkstemp()
-                self.sessions[rng]['steam_stat'] = os.fstat(tmp_fd)
+                self.sessions[rng]['stream_stat'] = os.fstat(tmp_fd)
                 os.close(tmp_fd)
             except (IOError, OSError,):
                 self.sessions[rng]['stream_path'] = ''
-                self.sessions[rng]['steam_stat'] = None
+                self.sessions[rng]['stream_stat'] = None
             self.sessions[rng]['t'] = time.time()
             self.sessions[rng]['ip_address'] = ip_address
             return rng
