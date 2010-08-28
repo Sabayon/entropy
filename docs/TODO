@@ -3,7 +3,6 @@
 
     EntropyRepositoryBase:
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
-    - md5/sha of pkg files in db
     - searchEclassedPackages...
     - _connection() (used in contentDiff)
     - rename dropAllIndexes to pack

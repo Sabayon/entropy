@@ -583,6 +583,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 'messages': [],
                 'branch': '4',
                 'content': {},
+                'content_safety': {},
                 'needed': [('libc.so.6', 2)],
                 'version': '1.2.3-r1',
                 'keywords': set(),
@@ -1302,6 +1303,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             'conflicts': self.retrieveConflicts(package_id),
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,
+            'content_safety': {},
             'dependencies': dict((x, y,) for x, y in \
                 self.retrieveDependencies(package_id, extended = True)),
             'mirrorlinks': [[x,self.retrieveMirrorData(x)] for x in mirrornames],
@@ -1400,6 +1402,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             'conflicts': self.retrieveConflicts(package_id),
             'licensedata': self.retrieveLicenseData(package_id),
             'content': content,
+            'content_safety': self.retrieveContentSafety(package_id),
             'dependencies': dict((x, y,) for x, y in \
                 self.retrieveDependencies(package_id, extended = True)),
             'mirrorlinks': [[x, self.retrieveMirrorData(x)] for x in mirrornames],
@@ -2448,6 +2451,22 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
+    def retrieveContentSafety(self, package_id):
+        """
+        Return supported content safety metadata for given package.
+        Data returned is a dictionary, using package file path as key and
+        dictionary as value. The latter, contains supported SPM content
+        safety metadata, such as "sha256" (string) checksum, and "mtime"
+        (float). The barely minimum is in fact, supporting sha256 and mtime
+        of package files.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @return: content safety metadata
+        @rtype: dict
+        """
+        raise NotImplementedError()
+
     def retrieveChangelog(self, package_id):
         """
         Return Source Package Manager ChangeLog for given package identifier.
@@ -2809,6 +2828,20 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type like: bool
         @return: list (frozenset) of package identifiers owning given file
         @rtype: frozenset
+        """
+        raise NotImplementedError()
+
+    def searchContentSafety(self, sfile):
+        """
+        Search content safety metadata (usually, sha256 and mtime) related to
+        given file path. A list of dictionaries is returned, each dictionary
+        item contains at least the following fields "package_id", "path",
+        "sha256", "mtime").
+
+        @param sfile: file path to search
+        @type sfile: string
+        @return: content safety metadata list (tuple)
+        @rtype: tuple
         """
         raise NotImplementedError()
 

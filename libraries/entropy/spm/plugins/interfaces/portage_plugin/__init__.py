@@ -12,6 +12,7 @@
 import os
 import bz2
 import shlex
+import stat
 import sys
 import shutil
 import stat
@@ -959,7 +960,7 @@ class PortagePlugin(SpmPlugin):
         # packages emerge with -B, because for those, we also get the
         # full package_file (not a fake one).
         data['content'] = self._extract_pkg_metadata_content(content_file,
-            package_file, pkg_dir)
+                package_file, pkg_dir)
         # There are packages providing no files, even if given package_file
         # is complete (meaning, it contains real file. Not a fake one, like
         # it can happen with "equo rescue spmsync", to make things quicker).
@@ -971,9 +972,14 @@ class PortagePlugin(SpmPlugin):
             # fake package_file, need to tweak pkg_dir to systemroot
             pkg_dir = etpConst['systemroot'] + os.path.sep
 
+        # at this point, pkg_dir must point to a valid "root" directory
+        # because checksums have to be calculated against files being available
+        # in the package. The case above (when using equo rescue spmsync) is
+        # fine too.
+        data['content_safety'] = self._extract_pkg_metadata_content_safety(
+            data['content'], pkg_dir)
         data['disksize'] = entropy.tools.sum_file_sizes([
                 os.path.join(pkg_dir, x) for x in data['content']])
-        print data['disksize']
         data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
             pkg_dir, data['content'])
 
@@ -4113,6 +4119,29 @@ class PortagePlugin(SpmPlugin):
             },
         }
         return data
+
+    def _extract_pkg_metadata_content_safety(self, content_data, pkg_dir):
+
+        def is_reg(file_path):
+            try:
+                st = os.lstat(file_path)
+            except OSError:
+                return False
+            return stat.S_ISREG(st.st_mode)
+
+        def gen_meta(real_path, repo_path):
+            return {
+                'sha256': entropy.tools.sha256(real_path),
+                'mtime': os.path.getmtime(real_path),
+            }
+
+        pkg_files = [(os.path.join(pkg_dir, k), k) for k, v in \
+            content_data.items() if v == "obj"]
+        pkg_files = [(real_path, repo_path) for real_path, repo_path in \
+            pkg_files if is_reg(real_path)]
+        return dict((repo_path, gen_meta(real_path, repo_path)) \
+            for real_path, repo_path in pkg_files)
+
 
     def _extract_pkg_metadata_content(self, content_file, package_path, pkg_dir):
 

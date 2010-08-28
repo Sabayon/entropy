@@ -104,6 +104,14 @@ class EntropyRepository(EntropyRepositoryBase):
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
+                CREATE TABLE contentsafety (
+                    idpackage INTEGER,
+                    file VARCHAR,
+                    mtime FLOAT,
+                    sha256 VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+
                 CREATE TABLE provide (
                     idpackage INTEGER,
                     atom VARCHAR,
@@ -834,6 +842,10 @@ class EntropyRepository(EntropyRepositoryBase):
         # not depending on other tables == no select done
         self.insertContent(package_id, pkg_data['content'],
             already_formatted = formatted_content)
+        # insert content safety metadata (checksum, mtime), if metadatum exists
+        content_safety = pkg_data.get('content_safety')
+        if content_safety is not None:
+            self._insertContentSafety(package_id, content_safety)
 
         # handle SPM UID<->package_id binding
         pkg_data['counter'] = int(pkg_data['counter'])
@@ -1341,6 +1353,16 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().executemany("""
             INSERT INTO content VALUES (?,?,?)
             """, [(package_id, x, content[x],) for x in content])
+
+    def _insertContentSafety(self, package_id, content_safety):
+        """
+        Currently supported: sha256, mtime.
+        Insert into contentsafety table package files sha256sum and mtime.
+        """
+        self._cursor().executemany("""
+        INSERT into contentsafety VALUES (?,?,?,?)
+        """, [(package_id, k, v['mtime'], v['sha256']) for k, v in \
+            content_safety.items()])
 
     def _insertProvidedLibraries(self, package_id, libs_metadata):
         """
@@ -2981,6 +3003,20 @@ class EntropyRepository(EntropyRepositoryBase):
 
         return fl
 
+    def retrieveContentSafety(self, package_id):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        # TODO: remove this before 31-12-2012
+        if not self._doesTableExist('contentsafety'):
+            return {}
+
+        cur = self._cursor().execute("""
+        SELECT file, sha256, mtime from contentsafety where idpackage = (?)
+        """, (package_id,))
+        return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
+            sha256, mtime in cur.fetchall())
+
     def retrieveChangelog(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3610,6 +3646,23 @@ class EntropyRepository(EntropyRepositoryBase):
             AND content.idpackage = baseinfo.idpackage""", (bfile,))
 
         return self._cur2frozenset(cur)
+
+    def searchContentSafety(self, sfile):
+        """
+        Search content safety metadata (usually, sha256 and mtime) related to
+        given file path. A list of dictionaries is returned, each dictionary
+        item contains at least the following fields "path", "sha256", "mtime").
+
+        @param sfile: file path to search
+        @type sfile: string
+        @return: content safety metadata list
+        @rtype: tuple
+        """
+        cur = self._cursor().execute("""
+        SELECT idpackage, file, sha256, mtime
+        FROM contentsafety WHERE file = (?)""", (sfile,))
+        return tuple(({'package_id': x, 'path': y, 'sha256': z, 'mtime': m} for
+            x, y, z, m in cur))
 
     def searchEclassedPackages(self, eclass, atoms = False):
         """
@@ -4265,6 +4318,10 @@ class EntropyRepository(EntropyRepositoryBase):
 
         if not self._doesTableExist("settings"):
             self._createSettingsTable()
+
+        # added on Aug, 2010
+        if not self._doesTableExist("contentsafety"):
+            self._createContentSafetyTable()
 
         self._foreignKeySupport()
 
@@ -5463,6 +5520,19 @@ class EntropyRepository(EntropyRepositoryBase):
     def _createLicensesAcceptedTable(self):
         self._cursor().execute("""
         CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );
+        """)
+        self.__clearLiveCache("_doesTableExist")
+        self.__clearLiveCache("_doesColumnInTableExist")
+
+    def _createContentSafetyTable(self):
+        self._cursor().execute("""
+        CREATE TABLE contentsafety (
+            idpackage INTEGER,
+            file VARCHAR,
+            mtime FLOAT,
+            sha256 VARCHAR,
+            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+        );
         """)
         self.__clearLiveCache("_doesTableExist")
         self.__clearLiveCache("_doesColumnInTableExist")

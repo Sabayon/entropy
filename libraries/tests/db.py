@@ -74,6 +74,20 @@ class EntropyRepositoryTest(unittest.TestCase):
         db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name)
         self.assertEqual(tuple(), db_actions)
 
+    def test_contentsafety(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(data, db_data)
+        content_safety = self.test_db.searchContentSafety("/usr/include/zconf.h")
+        self.assertEqual(content_safety, (
+            {'package_id': 1,
+             'sha256': '2969cdfba8290da429a6cde4d145e627beb839deca14578c2a430212cbaf91fb',
+             'path': '/usr/include/zconf.h',
+             'mtime': 1276241305.0},)
+        )
+
     def test_needed(self):
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
