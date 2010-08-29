@@ -40,6 +40,9 @@ class SocketHost:
     import socket
     from threading import Thread
 
+    LOG_FILE = os.path.join(etpConst['syslogdir'], "socket.log")
+    LOG_FILE_SSL = os.path.join(etpConst['syslogdir'], "ssl.socket.log")
+
     class BasicPamAuthenticator(SocketAuthenticator):
 
         def __init__(self, HostInterface, *args, **kwargs):
@@ -1524,11 +1527,14 @@ class SocketHost:
         self.__ssl_enabled = False
         if "ssl" in self.kwds:
             self.__ssl_enabled = self.kwds.pop('ssl')
+        log_file = SocketHost.LOG_FILE
+        if self.__ssl_enabled:
+            log_file = SocketHost.LOG_FILE_SSL
 
         from entropy.misc import LogFile
         self.socketLog = LogFile(
             level = etpConst['socketloglevel'],
-            filename = etpConst['socketlogfile'],
+            filename = log_file,
             header = "[Socket]"
         )
 

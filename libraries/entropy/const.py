@@ -449,7 +449,6 @@ def const_default_settings(rootdir):
         'securitylogfile': default_etp_syslogdir+"security.log",
         'equologfile': default_etp_syslogdir+"equo.log",
         'spmlogfile': default_etp_syslogdir+"spm.log",
-        'socketlogfile': default_etp_syslogdir+"socket.log",
 
         'etpdatabaseclientdir': default_etp_dir + default_etp_client_repodir + \
             default_etp_dbdir,
