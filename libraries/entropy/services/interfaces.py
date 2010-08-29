@@ -204,7 +204,7 @@ class SocketHost:
             self.real_sock = None
             self.ssl_authorized_clients_only = authorized_clients_only
 
-            if self.SSL:
+            if self.HostInterface.is_ssl_enabled():
                 socketserver.BaseServer.__init__(self, server_address,
                     RequestHandlerClass)
                 self.load_ssl_context()
@@ -392,7 +392,8 @@ class SocketHost:
                 client_address, server)
             self.__data_counter = None
 
-        def data_receiver(self):
+        def _data_receiver(self, ssl_enabled, ssl_exceptions, eos,
+            max_command_length):
 
             if self.timed_out:
                 return True
@@ -422,7 +423,7 @@ class SocketHost:
 
                 try:
 
-                    if self.ssl and hasattr(self.request, 'setblocking'):
+                    if ssl_enabled and hasattr(self.request, 'setblocking'):
                         # set SSL socket in blocking mode
                         # this fixes bugs related to data stream flooding
                         # with SSL - pyOpenSSL, probably because handshake
@@ -431,7 +432,7 @@ class SocketHost:
                         self.request.setblocking(True)
 
                     data = self.request.recv(buf_len)
-                    if self.ssl:
+                    if ssl_enabled:
                         while self.request.pending():
                             data += self.request.recv(buf_len)
 
@@ -440,7 +441,7 @@ class SocketHost:
                             return True
                         elif data == self.server.processor.HostInterface.answers['noop']:
                             return False
-                        elif len(data) < len(self.myeos):
+                        elif len(data) < len(eos):
                             self.server.processor.HostInterface.output(
                                 'interrupted: %s, reason: %s - from client: %s - data: "%s" - counter: %s' % (
                                     self.server.server_address,
@@ -452,24 +453,24 @@ class SocketHost:
                             )
                             self.__buffered_data = const_convert_to_rawstring('')
                             return True
-                        mystrlen = data.split(self.myeos)[0]
+                        mystrlen = data.split(eos)[0]
                         self.__data_counter = int(mystrlen)
                         data = data[len(mystrlen)+1:]
                         self.__data_counter -= len(data)
                         self.__buffered_data += data
 
                     # command length exceeds our command length limit
-                    if self.__data_counter > self.max_command_length:
+                    if self.__data_counter > max_command_length:
                         raise InterruptError(
                             'InterruptError: command too long: %s, limit: %s' % (
-                                self.__data_counter, self.max_command_length,))
+                                self.__data_counter, max_command_length,))
 
                     buf_empty_watchdog_count = 50 # * 0.05 = 2,5 seconds
                     while self.__data_counter > 0:
                         data_buf = buf_len
                         if self.__data_counter < buf_len:
                             data_buf = self.__data_counter
-                        if self.ssl:
+                        if ssl_enabled:
                             x = self.request.recv(data_buf)
                         else:
                             x = self.request.recv(data_buf)
@@ -519,19 +520,19 @@ class SocketHost:
                         )
                     )
                     return True
-                except self.ssl_exceptions['WantX509LookupError']:
+                except ssl_exceptions['WantX509LookupError']:
                     return False
-                except self.ssl_exceptions['WantReadError']:
+                except ssl_exceptions['WantReadError']:
                     self.server.processor.HostInterface._ssl_poll(
                         self.request, select.POLLIN, 'read')
                     return False
-                except self.ssl_exceptions['WantWriteError']:
+                except ssl_exceptions['WantWriteError']:
                     self.server.processor.HostInterface._ssl_poll(
                         self.request, select.POLLOUT, 'read')
                     return False
-                except self.ssl_exceptions['ZeroReturnError']:
+                except ssl_exceptions['ZeroReturnError']:
                     return True
-                except self.ssl_exceptions['Error'] as e:
+                except ssl_exceptions['Error'] as e:
                     self.server.processor.HostInterface.output(
                         'interrupted: SSL Error, reason: %s - from client: %s' % (
                             e,
@@ -629,10 +630,11 @@ class SocketHost:
         def do_handle(self):
 
             self.default_timeout = self.server.processor.HostInterface.timeout
-            self.ssl = self.server.processor.HostInterface.SSL
-            self.ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
-            self.myeos = self.server.processor.HostInterface.answers['eos']
-            self.max_command_length = self.server.processor.HostInterface.max_command_length
+            ssl_enabled = self.server.processor.HostInterface.is_ssl_enabled()
+            ssl_exceptions = self.server.processor.HostInterface.SSL_exceptions
+            eos = self.server.processor.HostInterface.answers['eos']
+            max_command_length = \
+                self.server.processor.HostInterface.max_command_length
 
             while True:
 
@@ -643,7 +645,8 @@ class SocketHost:
                                 self.client_address,
                             )
                         )
-                    dobreak = self.data_receiver()
+                    dobreak = self._data_receiver(ssl_enabled, ssl_exceptions,
+                        eos, max_command_length)
                     if self.__DEBUG:
                         self.server.processor.HostInterface.output(
                             '[from: %s] quitting data_receiver :: dobreak: %s' % (
@@ -1518,6 +1521,10 @@ class SocketHost:
 
         self.args = args[:]
         self.kwds = kwds.copy()
+        self.__ssl_enabled = False
+        if "ssl" in self.kwds:
+            self.__ssl_enabled = self.kwds.pop('ssl')
+
         from entropy.misc import LogFile
         self.socketLog = LogFile(
             level = etpConst['socketloglevel'],
@@ -1584,7 +1591,8 @@ class SocketHost:
         self.setup_commands()
         self.disable_commands()
         self.start_session_garbage_collector()
-        self.setup_ssl()
+        if self.is_ssl_enabled():
+            self.setup_ssl()
         self.start_python_garbage_collector()
 
     def killall(self):
@@ -1602,14 +1610,10 @@ class SocketHost:
             self.answers['eos'] + \
                 data
 
+    def is_ssl_enabled(self):
+        return self.__ssl_enabled
+
     def setup_ssl(self):
-
-        do_ssl = False
-        if 'ssl' in self.kwds:
-            do_ssl = self.kwds.pop('ssl')
-
-        if not do_ssl:
-            return
 
         try:
             from OpenSSL import SSL, crypto
@@ -2018,7 +2022,7 @@ class SocketHost:
             raise TimeoutError("Connection timed out on %s" % caller_name)
 
     def transmit(self, channel, data):
-        if self.SSL:
+        if self.is_ssl_enabled():
             if sys.hexversion >= 0x3000000:
                 data = const_convert_to_rawstring(data)
             mydata = self.append_eos(data)
