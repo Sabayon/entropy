@@ -2724,8 +2724,8 @@ def read_elf_broken_symbols(elf_file):
             FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in \
-        getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if \
-            (x.find("undefined symbol:") != -1)])
+        getstatusoutput('/usr/bin/ldd -r "%s"' % (elf_file,))[1].split("\n") \
+            if (x.find("undefined symbol:") != -1)])
 
 def read_elf_linker_paths(elf_file):
     """
