@@ -2702,7 +2702,7 @@ def read_elf_dynamic_libraries(elf_file):
     """
     global readelf_avail_check
     if not readelf_avail_check:
-        if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
+        if not os.access("/usr/bin/readelf", os.X_OK):
             FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     return set([x.strip().split()[-1][1:-1] for x in \
