@@ -2733,7 +2733,8 @@ def read_elf_real_dynamic_libraries(elf_file):
     sts, output = getstatusoutput('/usr/bin/ldd "%s"' % (elf_file,))
     if sts != 0:
         raise LibraryNotFound("cannot properly execute ldd")
-    return set((x.split()[0].strip() for x in output.split("\n") if "=>" in x))
+    return set((x.split()[0].strip() for x in output.split("\n") if "=>" in x \
+        and not x.split()[-1].startswith("(")))
 
 def read_elf_broken_symbols(elf_file):
     """
