@@ -901,6 +901,12 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                 return False
             dbc = self._server._open_temp_repository("test", temp_file = tmp_f)
             for package_id in dbc.listAllPackageIds():
+                # test content
+                dbc.retrieveContent(package_id, extended = True,
+                    formatted = True, insert_formatted = True)
+                # test content safety
+                dbc.retrieveContentSafety(package_id)
+                # test keywords
                 keywords = dbc.retrieveKeywords(package_id)
                 if not keywords:
                     atom = dbc.retrieveAtom(package_id)

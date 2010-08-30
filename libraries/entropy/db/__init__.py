@@ -4812,6 +4812,8 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute('DELETE FROM content')
+        if self._doesTableExist("contentsafety"):
+            self._cursor().execute('DELETE FROM contentsafety')
 
     def dropChangelog(self):
         """

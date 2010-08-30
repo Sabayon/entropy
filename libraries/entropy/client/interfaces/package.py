@@ -1447,7 +1447,8 @@ class Package:
 
             # it is safe to consider that package dbs coming from repos
             # contain only one entry
-            pkg_idpackage = sorted(pkg_dbconn.listAllPackageIds())[0]
+            pkg_idpackage = sorted(pkg_dbconn.listAllPackageIds(),
+                reverse = True)[0]
             content = pkg_dbconn.retrieveContent(
                 pkg_idpackage, extended = True,
                 formatted = True, insert_formatted = True
@@ -1455,6 +1456,10 @@ class Package:
             real_idpk = self.pkgmeta['idpackage']
             content = [(real_idpk, x, y,) for orig_idpk, x, y in content]
             data['content'] = content
+
+            # setup content safety metadata, get from package
+            data['content_safety'] = pkg_dbconn.retrieveContentSafety(
+                pkg_idpackage)
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
