@@ -2665,8 +2665,8 @@ def resolve_dynamic_library(library, requiring_executable):
     """
     def do_resolve(mypaths, elf_class):
         found_path = None
-        for mypath in mypaths:
-            mypath = os.path.join(etpConst['systemroot']+mypath, library)
+        for ld_dir in mypaths:
+            mypath = os.path.join(ld_dir, library)
             if not os.access(mypath, os.R_OK):
                 continue
             if os.path.isdir(mypath):
@@ -2680,12 +2680,12 @@ def resolve_dynamic_library(library, requiring_executable):
         return found_path
 
     elf_class = read_elf_class(requiring_executable)
-    mypaths = collect_linker_paths()
-    found_path = do_resolve(mypaths, elf_class)
+    ld_paths = collect_linker_paths()
+    found_path = do_resolve(ld_paths, elf_class)
 
     if not found_path:
-        mypaths = read_elf_linker_paths(requiring_executable)
-        found_path = do_resolve(mypaths, elf_class)
+        ld_paths = read_elf_linker_paths(requiring_executable)
+        found_path = do_resolve(ld_paths, elf_class)
 
     return found_path
 
@@ -2764,7 +2764,7 @@ def read_elf_linker_paths(elf_file):
     """
     global readelf_avail_check
     if not readelf_avail_check:
-        if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
+        if not os.access("/usr/bin/readelf", os.X_OK):
             FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     data = [x.strip().split()[-1][1:-1].split(":") for x in \
