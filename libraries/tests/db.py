@@ -337,17 +337,23 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package2()
         data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
-        data['changelog'] = const_convert_to_unicode(
+        unicode_msg = const_convert_to_unicode(
             "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
+        data['changelog'] = unicode_msg
         data['license'] = const_convert_to_unicode('GPL-2')
         data['licensedata'] = {
-            const_convert_to_unicode('GPL-2'): \
-                const_convert_to_unicode(
-                    "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
+            const_convert_to_unicode('GPL-2'): unicode_msg,
+        }
+        data['content_safety'] = {
+            unicode_msg: {
+                'sha256': "abcdbbcdbcdbcdbcdbcdbcdbcbd",
+                'mtime': 1024.0,
+            }
         }
         idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
+        self.assertEqual(data, db_data)
 
         # match
         nf_match = (-1, 1)
