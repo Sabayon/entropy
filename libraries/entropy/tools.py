@@ -2720,7 +2720,7 @@ def read_elf_broken_symbols(elf_file):
     """
     global ldd_avail_check
     if not ldd_avail_check:
-        if not os.access(etpConst['systemroot']+"/usr/bin/ldd", os.X_OK):
+        if not os.access("/usr/bin/ldd", os.X_OK):
             FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in \
