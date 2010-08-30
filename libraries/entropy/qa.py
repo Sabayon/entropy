@@ -26,7 +26,8 @@ import tempfile
 from entropy.output import TextInterface
 from entropy.misc import Lifo
 from entropy.const import etpConst, etpSys, const_debug_write, const_debug_write
-from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
+from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown, \
+    teal
 from entropy.exceptions import PermissionDenied, SystemDatabaseError
 from entropy.i18n import _
 from entropy.core import EntropyPluginStore
@@ -356,21 +357,19 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             header = blue("     # ")
                     )
 
-            if (not missing) or (not missing_extended):
-                continue
-
-            self.output(
-                "[repo:%s] %s: %s %s:" % (
-                            darkgreen(repo),
-                            blue("package"),
-                            darkgreen(atom),
-                            blue(_("is missing the following dependencies")),
-                        ),
-                importance = 1,
-                level = "info",
-                header = red(" @@ "),
-                count = (count, maxcount,)
-            )
+            if missing:
+                self.output(
+                    "[repo:%s] %s: %s %s:" % (
+                        darkgreen(repo),
+                        blue("package"),
+                        darkgreen(atom),
+                        blue(_("is missing the following dependencies")),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = red(" @@ "),
+                    count = (count, maxcount,)
+                )
             for missing_data in missing_extended:
                 self.output(
                         "%s:" % (brown(repr(missing_data)),),
@@ -385,7 +384,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             level = "info",
                             header = blue("     # ")
                     )
-            if ask:
+            if ask and missing:
                 rc_ask = self.ask_question(_("Do you want to add them?"))
                 if rc_ask == _("No"):
                     continue
@@ -432,6 +431,55 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     header = red(" @@ "),
                     count = (count, maxcount,)
                 )
+
+            # check for untracked missing sonames (using less reliable
+            # ldd check, but just warn)
+            missing_sonames = self._get_unresolved_sonames(dbconn,
+                idpackage)
+            if missing_sonames:
+                self.output(
+                    "[repo:%s] %s: %s %s:" % (
+                        darkgreen(repo),
+                        blue("package"),
+                        darkgreen(atom),
+                        blue(_("is probably missing these other dependencies")),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = red(" @@ "),
+                    count = (count, maxcount,)
+                )
+            for executable, sonames in missing_sonames.items():
+                elf_class = entropy.tools.read_elf_class(executable)
+                self.output(
+                    "%s (elf class: %s):" % (
+                        brown(executable),
+                        teal(str(elf_class)),
+                    ),
+                    importance = 0,
+                    level = "info",
+                    header = purple("   ## ")
+                )
+                for soname in sonames:
+                    # try to resolve soname
+                    pkg_ids = dbconn.resolveNeeded(soname,
+                        elf_class = elf_class)
+                    if pkg_ids:
+                        pkg_atoms = sorted((
+                            dbconn.retrieveKeySlotAggregated(x) for x in \
+                                pkg_ids))
+                        pkg_atoms_string = ', '.join(pkg_atoms)
+                    else:
+                        pkg_atoms_string = _("no packages")
+                    self.output(
+                        "%s [%s]" % (
+                            teal(soname),
+                            pkg_atoms_string,
+                        ),
+                        importance = 0,
+                        level = "info",
+                        header = brown("     # ")
+                    )
 
         return taint
 
@@ -869,6 +917,96 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 broken_libs[mylib].add(myneeded)
 
         return broken_libs
+
+    def _get_unresolved_sonames(self, entropy_repository, package_id,
+        content_root = None):
+        """
+        This runtime dependencies function uses ldd to determine what missing
+        runtime dependencies a package may expose. ldd implicitly expands the
+        list (graph) of shared objects connected with an ELF using ld.so.conf
+        and LD* env vars information. This is useful to warn about pontentially
+        broken packages, containing untracked runtime dependencies.
+        Unfortunately, this is (as opposed to _get_missing_rdepends) not rocket
+        science and cannot be used automatically add dependencies to
+        a specific package. It's not even 100% reliable because the linking
+        depends on the environment (ld.so.conf and LD*). So, just use it to
+        warn developers or users.
+
+        @param entropy_repository: entropy.db.EntropyRepository instance from
+            which package_id argument belongs
+        @type entropy_repository: entropy.db.EntropyRepository instance
+        @param package_id: entropy.db.EntropyRepository package identifier
+        @type package_id: int
+        @keyword content_root: alternative root directory containing content
+        @return: dictionary composed by package ELF file path as key, and
+            list (set) of missing sonames as value.
+        @rtype: dict
+        """
+        if content_root is None:
+            content_root = etpConst['systemroot']
+        elif not content_root.endswith(os.path.sep):
+            content_root += os.path.sep
+
+        pkg_dep_ids = self.get_deep_dependency_list(entropy_repository,
+            package_id)
+
+        def is_valid_elf(path):
+            if not os.path.lexists(path):
+                return False
+            if not os.path.isfile(path):
+                return False
+            if os.path.islink(path):
+                return False
+            if not os.access(path, os.X_OK | os.R_OK):
+                return False
+            if not entropy.tools.is_elf_file(path):
+                return False
+            return True
+
+        package_content = entropy_repository.retrieveContent(package_id)
+        all_content = set()
+        for pkg_id in pkg_dep_ids:
+            all_content.update(entropy_repository.retrieveContent(pkg_id))
+        all_content.update(package_content)
+
+        resolve_cache = {}
+        unresolved_sonames = {}
+        content = [os.path.normpath(content_root + x) for x in package_content]
+        content_dirs = set((x for x in content if os.path.isdir(x)))
+        elf_files = list(filter(is_valid_elf, content))
+
+        def soname_in_package_content(soname):
+            for content_dir in content_dirs:
+                if is_valid_elf(os.path.join(content_dir, soname)):
+                    return True
+            return False
+
+        for elf_file in elf_files:
+            sonames = entropy.tools.read_elf_real_dynamic_libraries(elf_file)
+            for soname in sonames:
+                resolved_soname_path = resolve_cache.setdefault(soname,
+                    entropy.tools.resolve_dynamic_library(soname, elf_file))
+                if resolved_soname_path is None:
+                    # library not found on system
+                    # maybe it's into our package?
+                    if not soname_in_package_content(soname):
+                        obj = unresolved_sonames.setdefault(elf_file, set())
+                        obj.add(soname)
+                else:
+
+                    # fixup library dir, multilib systems
+                    real_dir = os.path.realpath(os.path.dirname(
+                        resolved_soname_path))
+                    resolved_soname_path = os.path.join(real_dir,
+                        os.path.basename(resolved_soname_path))
+
+                    # library found on system, need to check if it's in our
+                    # package dependencies, "all_content"
+                    if resolved_soname_path not in all_content:
+                        obj = unresolved_sonames.setdefault(elf_file, set())
+                        obj.add(soname)
+
+        return unresolved_sonames
 
     def _get_missing_rdepends(self, dbconn, idpackage, self_check = False):
         """
