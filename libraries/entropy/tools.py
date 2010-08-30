@@ -2723,7 +2723,6 @@ def read_elf_real_dynamic_libraries(elf_file):
     @type elf_file: string
     @return: list (set) of strings in NEEDED metadatum
     @rtype: set
-    @raise LibraryNotFound: if ldd cannot run
     @raise FileNotFound: if ldd is not found
     """
     global ldd_avail_check
@@ -2732,7 +2731,9 @@ def read_elf_real_dynamic_libraries(elf_file):
             FileNotFound('FileNotFound: no ldd')
     sts, output = getstatusoutput('/usr/bin/ldd "%s"' % (elf_file,))
     if sts != 0:
-        raise LibraryNotFound("cannot properly execute ldd")
+        # garbage file
+        # non-dynamic executables cause this
+        return []
     return set((x.split()[0].strip() for x in output.split("\n") if "=>" in x \
         and not x.split()[-1].startswith("(")))
 
