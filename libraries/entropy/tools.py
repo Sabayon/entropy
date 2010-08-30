@@ -2709,6 +2709,32 @@ def read_elf_dynamic_libraries(elf_file):
         getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") \
             if (x.find("(NEEDED)") != -1)])
 
+def read_elf_real_dynamic_libraries(elf_file):
+    """
+    This function is similar to read_elf_dynamic_libraries but uses ldd to
+    retrieve a list of "real" .so library dependencies used by the ELF file.
+    This is useful to ensure that there are no .so libraries missing in the
+    dependencies, because ldd expands and resolves the .so dependency graph.
+    This is anyway dangerous because the output returned by ldd is somehow
+    environment-dependent, so make sure this function is only used for
+    informative purposes, and not for adding real dependencies to a package.
+
+    @param elf_file: path to ELF file
+    @type elf_file: string
+    @return: list (set) of strings in NEEDED metadatum
+    @rtype: set
+    @raise LibraryNotFound: if ldd cannot run
+    @raise FileNotFound: if ldd is not found
+    """
+    global ldd_avail_check
+    if not ldd_avail_check:
+        if not os.access("/usr/bin/ldd", os.X_OK):
+            FileNotFound('FileNotFound: no ldd')
+    sts, output = getstatusoutput('/usr/bin/ldd "%s"' % (elf_file,))
+    if sts != 0:
+        raise LibraryNotFound("cannot properly execute ldd")
+    return set((x.split()[0].strip() for x in output.split("\n") if "=>" in x))
+
 def read_elf_broken_symbols(elf_file):
     """
     Extract broken symbols from ELF file.
