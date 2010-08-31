@@ -4159,6 +4159,8 @@ class ServerRepositoryMixin:
             # update revision for pkg now
             dbconn.setRevision(idpackage, revision)
 
+        # make sure that info have been written to disk
+        dbconn.commitChanges()
 
         # set trashed counters
         trashing_counters = set()
@@ -4228,7 +4230,9 @@ class ServerRepositoryMixin:
         except OSError:
             shutil.move(package_file, destination_path)
 
+        # make sure that info have been written to disk, again
         dbconn.commitChanges()
+
         return idpackage, destination_path
 
     # this function changes the final repository package filename
