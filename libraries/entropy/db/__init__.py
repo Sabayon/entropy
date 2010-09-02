@@ -590,16 +590,14 @@ class EntropyRepository(EntropyRepositoryBase):
             pass
 
     def __setLiveCache(self, key, value):
-        if self.xcache:
-            master_key = etpConst['systemroot'] + "_" + self._db_path + "_" + \
-                self.reponame + "_"
-            EntropyRepository._LIVE_CACHE[master_key + key] = value
+        master_key = etpConst['systemroot'] + "_" + self._db_path + "_" + \
+            self.reponame + "_"
+        EntropyRepository._LIVE_CACHE[master_key + key] = value
 
     def __getLiveCache(self, key):
-        if self.xcache:
-            master_key = etpConst['systemroot'] + "_" + self._db_path + "_" + \
-                self.reponame + "_"
-            return EntropyRepository._LIVE_CACHE.get(master_key + key)
+        master_key = etpConst['systemroot'] + "_" + self._db_path + "_" + \
+            self.reponame + "_"
+        return EntropyRepository._LIVE_CACHE.get(master_key + key)
 
     def __del__(self):
         self.closeDB()
