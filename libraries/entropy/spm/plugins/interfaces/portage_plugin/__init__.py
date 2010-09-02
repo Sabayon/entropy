@@ -2818,8 +2818,6 @@ class PortagePlugin(SpmPlugin):
                         continue
                     do_rm_path_atomic(mydir)
 
-                return 0
-
         with self._PortageWorldSetLocker(self):
 
             # otherwise update Portage world file
