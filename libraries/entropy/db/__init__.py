@@ -888,10 +888,10 @@ class EntropyRepository(EntropyRepositoryBase):
         Needs to call superclass method.
         """
         self.clearCache()
-
         super(EntropyRepository, self).removePackage(package_id,
             do_cleanup = do_cleanup, do_commit = do_commit,
             from_add_package = from_add_package)
+        self.clearCache()
 
         try:
             new_way = self.getSetting("on_delete_cascade")
