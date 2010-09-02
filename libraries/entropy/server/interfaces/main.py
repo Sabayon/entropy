@@ -336,6 +336,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 package_data['category'], descdata)
         except (IOError, OSError, EOFError,):
             pass
+        entropy_repository_instance.commitChanges()
 
         return 0
 
@@ -1880,6 +1881,7 @@ class ServerPackagesHandlingMixin:
 
                 # update database
                 dbconn.setDownloadURL(idpackage, download_url)
+                dbconn.commitChanges()
                 dbconn.switchBranch(idpackage, branch)
                 dbconn.commitChanges()
 
@@ -2352,6 +2354,7 @@ class ServerPackagesHandlingMixin:
             dbconn.setSignatures(idpackage, signatures['sha1'],
                 signatures['sha256'], signatures['sha512'],
                 gpg_sign)
+            dbconn.commitChanges()
             entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
             self.output(
@@ -2365,7 +2368,6 @@ class ServerPackagesHandlingMixin:
                 level = "info",
                 header = red(" @@ ")
             )
-            dbconn.commitChanges()
 
     def remove_packages(self, idpackages, repo = None):
 
@@ -2387,6 +2389,7 @@ class ServerPackagesHandlingMixin:
                 header = brown(" @@ ")
             )
             dbconn.removePackage(idpackage)
+            dbconn.commitChanges()
         self.close_repository(dbconn)
         self.output(
             "[repo:%s] %s" % (
@@ -2891,6 +2894,8 @@ class ServerPackagesHandlingMixin:
                 gpg = gpg_sign)
 
             fine += 1
+
+        dbconn.commitChanges()
 
         # print stats
         self.output(
@@ -4129,6 +4134,8 @@ class ServerRepositoryMixin:
         self._pump_extracted_package_metadata(mydata, repo,
             {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
+        # make sure that info have been written to disk
+        dbconn.commitChanges()
 
         myserver_repos = list(srv_set['repositories'].keys())
 
@@ -4159,7 +4166,7 @@ class ServerRepositoryMixin:
             # update revision for pkg now
             dbconn.setRevision(idpackage, revision)
 
-        # make sure that info have been written to disk
+        # make sure that info have been written to disk, again
         dbconn.commitChanges()
 
         # set trashed counters
@@ -4179,6 +4186,9 @@ class ServerRepositoryMixin:
 
         for mycounter in trashing_counters:
             dbconn.setTrashedUid(mycounter)
+
+        # make sure that info have been written to disk, again
+        dbconn.commitChanges()
 
         # add package info to our current server repository
         dbconn.dropInstalledPackageFromStore(idpackage)
@@ -4250,6 +4260,7 @@ class ServerRepositoryMixin:
 
         # update url
         dbconn.setDownloadURL(idpackage, downloadurl)
+        dbconn.commitChanges()
 
         return downloadurl
 
@@ -4773,6 +4784,7 @@ class ServerMiscMixin:
         counter = dbconn.getFakeSpmUid()
         dbconn.setSpmUid(idpackage, counter)
         dbconn.setInjected(idpackage)
+        dbconn.commitChanges()
 
     def _pump_extracted_package_metadata(self, pkg_meta, repo, extra_metadata):
         """
