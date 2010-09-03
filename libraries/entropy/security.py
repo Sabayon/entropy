@@ -1749,9 +1749,13 @@ class Repository:
         except KeyError:
             return False
 
-        if self.is_pubkey_expired(repository_identifier):
-            raise Repository.KeyExpired("Key for %s is expired !" % (
-                repository_identifier,))
+        try:
+            if self.is_pubkey_expired(repository_identifier):
+                raise Repository.KeyExpired("Key for %s is expired !" % (
+                    repository_identifier,))
+        except Repository.GPGError:
+            # wtf! something like => GPGError: cannot list keys, exit status 2
+            return False
 
         return True
 
