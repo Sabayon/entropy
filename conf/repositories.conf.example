@@ -3,11 +3,13 @@
 #
 #  syntax for repositories (content in square brackets not mandatory):
 #
-#    repository: where the available packages and its database are stored 
+#    repository: where the available packages and its database are stored
 #|   repository|repository_id|repository description|<packages mirror 1> <packages mirror 2> <...>|<database uri>[,<UGC service URI>][#compression_method][#<service port,ssl service port>]
 #
 #    example (content in square brackets not mandatory):
 #|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db[,sabayon.org][#bz2][#1026,1027]
+#
+# NOTE: supported protocols are: file, http, https, ftp, ftps, rsync
 #
 # Sabayon Linux Official Repository
 repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org

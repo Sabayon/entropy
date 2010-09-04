@@ -551,6 +551,8 @@ def const_default_settings(rootdir):
 
         # entropy client packages download speed limit (in kb/sec)
         'downloadspeedlimit': None,
+        'supported_download_protocols': ["file", "http", "https", "ftp",
+            "ftps", "rsync"],
 
         # data storage directory, useful to speed up
         # entropy client across multiple issued commands

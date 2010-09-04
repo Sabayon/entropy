@@ -36,6 +36,7 @@ from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
 
+
 class UrlFetcher(TextInterface):
 
     """
@@ -75,6 +76,8 @@ class UrlFetcher(TextInterface):
         @keyword speed_limit: speed limit in kb/sec
         @type speed_limit: int
         """
+        # advertised supported protocols are at:
+        # etpConst['supported_download_protocols']
         self.__supported_uris = {
             'http': self._urllib_download,
             'https': self._urllib_download,

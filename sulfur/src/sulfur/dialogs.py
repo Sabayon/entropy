@@ -168,6 +168,11 @@ class AddRepositoryWindow(MenuSkel):
         return repodata
 
     def _validate_repo_submit(self, repodata, edit = False):
+
+        def is_supported_protocol(uri):
+            protocol = uri.split(":")[0]
+            return protocol in etpConst['supported_download_protocols']
+
         errors = []
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
@@ -182,12 +187,12 @@ class AddRepositoryWindow(MenuSkel):
         if not repodata['plain_packages']:
             errors.append(_("No download mirrors"))
 
-        if not repodata['plain_database'] or not \
-            (repodata['plain_database'].startswith("http://") or \
-            repodata['plain_database'].startswith("ftp://") or \
-            repodata['plain_database'].startswith("file://")):
+        if not repodata['plain_database'] or (not is_supported_protocol(repodata['plain_database'])):
 
-            errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
+            errors.append("%s: %s" % (
+                _("Database URL must start either with:"),
+                ', '.join(etpConst['supported_download_protocols']),)
+            )
 
         if not repodata['service_port']:
             repodata['service_port'] = int(etpConst['socket_service']['port'])
@@ -246,15 +251,19 @@ class AddRepositoryWindow(MenuSkel):
             self.repoMirrorsView.remove(urldata)
 
     def on_repoMirrorAdd_clicked( self, widget ):
+
+        def is_supported_protocol(uri):
+            protocol = uri.split(":")[0]
+            return protocol in etpConst['supported_download_protocols']
+
         text = input_box(self.addrepo_ui.addRepoWin, _("Insert URL"),
-            _("Enter a download mirror, HTTP or FTP")+"   ")
+            _("Enter a download mirror URL")+"   ")
         # call liststore and tell to add
         if text:
             # validate url
-            if not (text.startswith("http://") or text.startswith("ftp://") or \
-                text.startswith("file://")):
+            if not is_supported_protocol(text):
                 okDialog( self.addrepo_ui.addRepoWin,
-                    _("You must enter either a HTTP or a FTP url.") )
+                    _("You must enter either a supported URL.") )
             else:
                 self.repoMirrorsView.add(text)
 

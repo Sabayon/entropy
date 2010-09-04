@@ -1121,9 +1121,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
         # will be filled the first time the db will be opened
         mydata['configprotect'] = None
         mydata['configprotectmask'] = None
+
+        def is_supported_protocol(uri):
+            protocol = uri.split(":")[0]
+            return protocol in etpConst['supported_download_protocols']
+
         repopackages = [x.strip() for x in repopackages.split() if x.strip()]
-        repopackages = [x for x in repopackages if (x.startswith('http://') or \
-            x.startswith('ftp://') or x.startswith('file://'))]
+        repopackages = [x for x in repopackages if is_supported_protocol(x)]
 
         for repo_package in repopackages:
             try:
