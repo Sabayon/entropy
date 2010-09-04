@@ -16,6 +16,7 @@
     - Client.urlFetcher/MultipleUrlFetcher/clientLog? ugly!
     - entropy package metadata .dtd specs
     - entropy.client API docs
+    - entropy.fetchers => pluggable uri handlers support?
 
   1.1:
 
