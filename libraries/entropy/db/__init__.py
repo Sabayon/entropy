@@ -244,17 +244,6 @@ class EntropyRepository(EntropyRepositoryBase):
                     counter INTEGER
                 );
 
-                CREATE TABLE eclasses (
-                    idpackage INTEGER,
-                    idclass INTEGER,
-                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
-                );
-
-                CREATE TABLE eclassesreference (
-                    idclass INTEGER PRIMARY KEY AUTOINCREMENT,
-                    classname VARCHAR
-                );
-
                 CREATE TABLE needed (
                     idpackage INTEGER,
                     idneeded INTEGER,
@@ -799,7 +788,6 @@ class EntropyRepository(EntropyRepositoryBase):
         ### critical as these above
 
         # tables using a select
-        self._insertEclasses(package_id, pkg_data['eclasses'])
         self._insertNeeded(package_id, pkg_data['needed'])
         self.insertDependencies(package_id, pkg_data['dependencies'])
         self._insertSources(package_id, pkg_data['sources'])
@@ -918,7 +906,6 @@ class EntropyRepository(EntropyRepositoryBase):
                 DELETE FROM content WHERE idpackage = %d;
                 DELETE FROM counters WHERE idpackage = %d;
                 DELETE FROM sizes WHERE idpackage = %d;
-                DELETE FROM eclasses WHERE idpackage = %d;
                 DELETE FROM needed WHERE idpackage = %d;
                 DELETE FROM triggers WHERE idpackage = %d;
                 DELETE FROM systempackages WHERE idpackage = %d;
@@ -1064,21 +1051,6 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT into useflagsreference VALUES (NULL,?)
         """, (useflag,))
-        return cur.lastrowid
-
-    def _addEclass(self, eclass):
-        """
-        Add package SPM Eclass string to repository.
-        Return its identifier (ideclass).
-
-        @param eclass: eclass string
-        @type eclass: string
-        @return: eclass identifier (ideclass)
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        INSERT into eclassesreference VALUES (NULL,?)
-        """, (eclass,))
         return cur.lastrowid
 
     def _addNeeded(self, needed):
@@ -1700,34 +1672,12 @@ class EntropyRepository(EntropyRepositoryBase):
             needed, elfclass = needed_data
             idneeded = self.isNeededAvailable(needed)
             if idneeded == -1:
-                # create eclass
                 idneeded = self._addNeeded(needed)
             return (package_id, idneeded, elfclass,)
 
         self._cursor().executemany("""
         INSERT into needed VALUES (?,?,?)
         """, list(map(mymf, neededs)))
-
-    def _insertEclasses(self, package_id, eclasses):
-        """
-        Insert Source Package Manager used build specification file classes.
-        The term "eclasses" is derived from Portage.
-
-        @param package_id: package indentifier
-        @type package_id: int
-        @param eclasses: list of classes
-        @type eclasses: list
-        """
-
-        def mymf(eclass):
-            idclass = self._isEclassAvailable(eclass)
-            if idclass == -1:
-                idclass = self._addEclass(eclass)
-            return (package_id, idclass,)
-
-        self._cursor().executemany("""
-        INSERT into eclasses VALUES (?,?)
-        """, list(map(mymf, eclasses)))
 
     def _insertOnDiskSize(self, package_id, mysize):
         """
@@ -1907,7 +1857,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._cleanupUseflags()
         self._cleanupSources()
-        self._cleanupEclasses()
         self._cleanupNeeded()
         self._cleanupDependencies()
         self._cleanupChangelogs()
@@ -1927,14 +1876,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM sourcesreference
         WHERE idsource NOT IN (SELECT idsource FROM sources)""")
-
-    def _cleanupEclasses(self):
-        """
-        Cleanup "eclass" metadata unused references to save space.
-        """
-        self._cursor().execute("""
-        DELETE FROM eclassesreference
-        WHERE idclass NOT IN (SELECT idclass FROM eclasses)""")
 
     def _cleanupNeeded(self):
         """
@@ -2620,16 +2561,6 @@ class EntropyRepository(EntropyRepositoryBase):
                 obj.add(flag)
             self.__setLiveCache("retrieveUseflags", cached)
         return frozenset(cached.get(package_id, frozenset()))
-
-    def retrieveEclasses(self, package_id):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        cur = self._cursor().execute("""
-        SELECT classname FROM eclasses,eclassesreference
-        WHERE eclasses.idpackage = (?) AND
-        eclasses.idclass = eclassesreference.idclass""", (package_id,))
-        return self._cur2frozenset(cur)
 
     def retrieveSpmPhases(self, package_id):
         """
@@ -3469,24 +3400,6 @@ class EntropyRepository(EntropyRepositoryBase):
             return result[0]
         return -1
 
-    def _isEclassAvailable(self, eclass):
-        """
-        Return whether eclass name is available in repository.
-        Returns Eclass identifier (idclass)
-
-        @param eclass: eclass name
-        @type eclass: string
-        @return: Eclass identifier or -1 if not found
-        @rtype: int
-        """
-        cur = self._cursor().execute("""
-        SELECT idclass FROM eclassesreference WHERE classname = (?) LIMIT 1
-        """, (eclass,))
-        result = cur.fetchone()
-        if result:
-            return result[0]
-        return -1
-
     def isNeededAvailable(self, needed):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3663,26 +3576,6 @@ class EntropyRepository(EntropyRepositoryBase):
         FROM contentsafety WHERE file = (?)""", (sfile,))
         return tuple(({'package_id': x, 'path': y, 'sha256': z, 'mtime': m} for
             x, y, z, m in cur))
-
-    def searchEclassedPackages(self, eclass, atoms = False):
-        """
-        Reimplemented from EntropyRepositoryBase.
-        """
-        if atoms:
-            cur = self._cursor().execute("""
-            SELECT baseinfo.atom
-            FROM baseinfo, eclasses, eclassesreference
-            WHERE eclassesreference.classname = (?) AND
-            eclassesreference.idclass = eclasses.idclass AND
-            eclasses.idpackage = baseinfo.idpackage""", (eclass,))
-        else:
-            cur = self._cursor().execute("""
-            SELECT eclasses.idpackage
-            FROM eclasses, eclassesreference
-            WHERE eclassesreference.classname = (?) AND
-            eclassesreference.idclass = eclasses.idclass
-            """, (eclass,))
-        return self._cur2tuple(cur)
 
     def searchTaggedPackages(self, tag, atoms = False):
         """
@@ -4859,7 +4752,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._createConfigProtectReferenceIndex()
         self._createSourcesIndex()
         self._createCountersIndex()
-        self._createEclassesIndex()
         self._createCategoriesIndex()
         self._createCompileFlagsIndex()
         self._createPackagesetsIndex()
@@ -5086,17 +4978,6 @@ class EntropyRepository(EntropyRepositoryBase):
                 ON extrainfo ( idpackage );
             """)
 
-    def _createEclassesIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS eclassesindex_idpackage
-                ON eclasses ( idpackage );
-            CREATE INDEX IF NOT EXISTS eclassesindex_idclass
-                ON eclasses ( idclass );
-            CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname
-                ON eclassesreference ( classname );
-            """)
-
     def regenerateSpmUidMapping(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -5186,7 +5067,7 @@ class EntropyRepository(EntropyRepositoryBase):
         tables = ("extrainfo", "dependencies" , "provide",
             "conflicts", "configprotect", "configprotectmask", "sources",
             "useflags", "keywords", "content", "counters", "sizes",
-            "eclasses", "needed", "triggers", "systempackages", "injected",
+            "needed", "triggers", "systempackages", "injected",
             "installedtable", "automergefiles", "packagesignatures",
             "packagespmphases", "provided_libs"
         )

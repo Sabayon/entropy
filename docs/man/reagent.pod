@@ -121,10 +121,6 @@ show from what package the provided files belong
 
 search packages by description
 
-=item B<eclass>
-
-search packages using the provided eclasses
-
 =item B<list>
 
 list all the packages in the default repository

@@ -6,11 +6,7 @@
     - searchEclassedPackages...
     - _connection() (used in contentDiff)
     - rename "equo database"
-    - equo security filescheck (--generate-hashes)
     - .etp?
-    - QA.test_missing_dependencies for injected packages
-        _get_missing_rdepends
-        _get_unresolved_sonames
     - entropy.fetchers; rsync:// support
 
   1.0:
@@ -20,6 +16,7 @@
     - uniform config files options to this-and-that (keeping backward compat)
       alternatively use "=" instead of "|"
     - sulfur: ask password as user and allow installation?
+    - equo security filescheck (--generate-hashes)
     - implement system snapshots (as snapshots, sets).
     - Client.urlFetcher/MultipleUrlFetcher/clientLog? ugly!
     - entropy package metadata .dtd specs

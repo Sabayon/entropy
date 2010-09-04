@@ -776,40 +776,6 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
 
     return 0
 
-def search_eclass(eclasses, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
-
-
-    if not etpUi['quiet']:
-        print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Eclass Search"),)))
-
-    if dbconn is None:
-        dbconn = Equo.installed_repository()
-    key_sorter = lambda x: dbconn.retrieveAtom(x)
-
-    for eclass in eclasses:
-        pkg_ids = dbconn.searchEclassedPackages(eclass)
-        for pkg_id in sorted(pkg_ids, key = key_sorter):
-            # print info
-            myatom = dbconn.retrieveAtom(pkg_id)
-            if etpUi['quiet']:
-                print_generic(myatom)
-                continue
-
-            print_package_info(pkg_id, dbconn, clientSearch = True,
-                Equo = Equo, extended = etpUi['verbose'],
-                strictOutput = not etpUi['verbose'])
-
-        if not etpUi['quiet']:
-            toc = []
-            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(pkg_ids), brown(_("packages")),)))
-            print_table(toc)
-
-    return 0
-
 def search_files(atoms, dbconn = None, Equo = None):
 
     if Equo is None:
@@ -1728,7 +1694,6 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
 
             chost, cflags, cxxflags = dbconn.retrieveCompileFlags(idpackage)
             sources = dbconn.retrieveSources(idpackage)
-            eclasses = dbconn.retrieveEclasses(idpackage)
             etpapi = dbconn.retrieveApi(idpackage)
 
             toc.append((darkgreen("       %s:" % (_("CHOST"),)),
@@ -1737,13 +1702,6 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 blue(cflags)))
             toc.append((darkgreen("       %s:" % (_("CXXFLAGS"),)),
                 blue(cxxflags)))
-
-            eclass_txt = "       %s:" % (_("Portage eclasses"),)
-            eclass_lines = _my_formatted_print(eclasses, "", "", color = red,
-                get_data = True)
-            for eclass_line in eclass_lines:
-                toc.append((darkgreen(eclass_txt), eclass_line))
-                eclass_txt = " "
 
             if sources:
                 sources_txt = "       %s:" % (_("Sources"),)

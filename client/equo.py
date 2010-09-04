@@ -324,7 +324,6 @@ help_opts_extended = [
             (3, 'changelog', 2, _('show packages changelog')),
             (3, 'revdeps', 2, _('show what packages depend on the provided atoms')),
             (3, 'description', 2, _('search packages by description')),
-            (3, 'eclass', 3, _('search packages using the provided eclasses')),
             (3, 'files', 3, _('show files owned by the provided atoms')),
             (3, 'list', 3, _('list all the packages in the default repository')),
             (3, 'needed', 3, _('show runtime libraries needed by the provided atoms')),

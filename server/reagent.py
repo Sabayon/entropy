@@ -64,7 +64,6 @@ help_opts = [
         (2, 'files', 3, _('show files owned by the provided atoms')),
         (2, 'belongs', 2, _('show from what package the provided files belong')),
         (2, 'description', 2, _('search packages by description')),
-        (2, 'eclass', 3, _('search packages using the provided eclasses')),
         (2, 'list', 3, _('list all the packages in the default repository')),
         (2, 'graph', 3, _('show direct depdendencies tree for provided installable atoms')),
             (3, '--complete', 1, _('include system packages, build deps and circularity information')),

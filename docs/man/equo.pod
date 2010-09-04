@@ -1118,10 +1118,6 @@ show what packages depend on the provided atoms
 
 search packages by description
 
-=item B<eclass>
-
-search packages using the provided eclasses
-
 =item B<files>
 
 show files owned by the provided atoms

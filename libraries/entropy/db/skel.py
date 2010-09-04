@@ -558,7 +558,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 'datecreation': '1247681752.93',
                 'description': 'Standard (de)compression library',
                 'useflags': set(['kernel_linux']),
-                'eclasses': set(['multilib']),
                 'config_protect_mask': 'string string', 'etpapi': 3,
                 'mirrorlinks': [],
                 'cxxflags': '-Os -march=x86-64 -pipe',
@@ -1209,7 +1208,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 'cxxflags': cxxflags,
                 'etpapi': etpapi,
                 'trigger': self.retrieveTrigger(package_id),
-                'eclasses': self.retrieveEclasses(package_id),
                 'content': pkg_content,
                 'spm_phases': self.retrieveSpmPhases(package_id),
             }
@@ -1241,7 +1239,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             'cxxflags': cxxflags,
             'etpapi': etpapi,
             'trigger': self.retrieveTrigger(package_id),
-            'eclasses': self.retrieveEclasses(package_id),
             'content': pkg_content,
             'spm_phases': self.retrieveSpmPhases(package_id),
         }
@@ -1295,7 +1292,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             'useflags': self.retrieveUseflags(package_id),
             'keywords': self.retrieveKeywords(package_id),
             'sources': sources,
-            'eclasses': self.retrieveEclasses(package_id),
             'needed': self.retrieveNeeded(package_id, extended = True),
             'provided_libs': self.retrieveProvidedLibraries(package_id),
             'provide': provide (the old provide metadata version)
@@ -1394,7 +1390,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             'useflags': self.retrieveUseflags(package_id),
             'keywords': self.retrieveKeywords(package_id),
             'sources': sources,
-            'eclasses': self.retrieveEclasses(package_id),
             'needed': self.retrieveNeeded(package_id, extended = True),
             'provided_libs': self.retrieveProvidedLibraries(package_id),
             'provide': old_provide,
@@ -2147,17 +2142,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def retrieveEclasses(self, package_id):
-        """
-        Return "eclass" metadatum for given package identifier.
-
-        @param package_id: package indentifier
-        @type package_id: int
-        @return: list (set) of eclasses for given package identifier
-        @rtype: frozenset
-        """
-        raise NotImplementedError()
-
     def retrieveSpmPhases(self, package_id):
         """
         Return "Source Package Manager install phases" for given package
@@ -2841,20 +2825,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param sfile: file path to search
         @type sfile: string
         @return: content safety metadata list (tuple)
-        @rtype: tuple
-        """
-        raise NotImplementedError()
-
-    def searchEclassedPackages(self, eclass, atoms = False):
-        """
-        Search packages which their Source Package Manager counterpar are using
-        given eclass.
-
-        @param eclass: eclass name to search
-        @type eclass: string
-        @keyword atoms: return list of atoms instead of package identifiers
-        @type atoms: bool
-        @return: list (tuple) of packages using given eclass
         @rtype: tuple
         """
         raise NotImplementedError()

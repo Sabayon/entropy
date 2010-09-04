@@ -88,8 +88,6 @@ def query(myopts):
     elif cmd == "revdeps":
         rc = text_query.search_reverse_dependencies(myopts, dbconn = dbconn,
             Equo = Entropy)
-    elif cmd == "eclass":
-        rc = text_query.search_eclass(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "list":
         rc = text_query.search_installed_packages(myopts, dbconn = dbconn,
             Equo = Entropy)

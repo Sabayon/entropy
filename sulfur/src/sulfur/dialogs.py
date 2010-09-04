@@ -1124,14 +1124,6 @@ class PkgInfoMenu(MenuSkel):
         self.useflagsView.append_column( column )
         self.useflagsView.set_model( self.useflagsModel )
 
-        # eclasses view
-        self.eclassesView = self.pkginfo_ui.eclassesView
-        self.eclassesModel = gtk.ListStore( gobject.TYPE_STRING )
-        cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Eclasses" ), cell, markup = 0 )
-        self.eclassesView.append_column( column )
-        self.eclassesView.set_model( self.eclassesModel )
-
         # dependencies view
         self.dependenciesView = self.pkginfo_ui.dependenciesView
         self.dependenciesModel = gtk.TreeStore( gobject.TYPE_STRING )
@@ -1399,12 +1391,6 @@ class PkgInfoMenu(MenuSkel):
         self.useflagsView.set_model( self.useflagsModel )
         for x in pkg.useflags:
             self.useflagsModel.append([cleanMarkupString(x)])
-
-        # eclasses view
-        self.eclassesModel.clear()
-        self.eclassesView.set_model( self.eclassesModel )
-        for x in pkg.eclasses:
-            self.eclassesModel.append([cleanMarkupString(x)])
 
         # dependencies view
         self.dependenciesModel.clear()

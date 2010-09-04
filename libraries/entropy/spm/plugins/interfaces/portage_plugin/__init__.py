@@ -934,7 +934,6 @@ class PortagePlugin(SpmPlugin):
             # force to None, because metadatum can be '', which is valid
             data['spm_phases'] = None
 
-        data['eclasses'] = set(data['eclasses'].split())
         try:
             data['counter'] = int(data['counter'])
         except ValueError:
@@ -4094,10 +4093,6 @@ class PortagePlugin(SpmPlugin):
             'sources': {
                 'path': PortagePlugin.xpak_entries['src_uri'],
                 'critical': False, # we deal with it afterwards
-            },
-            'eclasses': {
-                'path': PortagePlugin.xpak_entries['inherited'],
-                'critical': False,
             },
             'counter': {
                 'path': PortagePlugin.xpak_entries['counter'],

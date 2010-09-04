@@ -288,10 +288,6 @@ class Trigger:
 
             # Not mandatory variables
 
-            eclasses = ' '.join(pkgdata.get('eclasses', []))
-            if const_isunicode(eclasses):
-                eclasses = eclasses.encode('utf-8')
-
             unpackdir = pkgdata.get('unpackdir', '')
             if const_isunicode(unpackdir):
                 unpackdir = unpackdir.encode('utf-8')
@@ -326,7 +322,6 @@ class Trigger:
                 "CFLAGS": cflags, # compile flags
                 "CXXFLAGS": cxxflags, # compile flags
                 "CHOST": chost, # *nix CHOST
-                "PORTAGE_ECLASSES": eclasses, # portage eclasses, " " separated
                 "ROOT": etpConst['systemroot'],
                 "SANDBOX_WRITE": sb_write,
             }

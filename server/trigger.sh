@@ -23,7 +23,6 @@
 # CFLAGS: Entropy package CFLAGS
 # CXXFLAGS: Entropy package CXXFLAGS
 # CHOST: Entropy package CHOST
-# PORTAGE_ECLASSES: Portage package used eclasses
 # WORKDIR: Entropy temporary package unpack/work dir (matching Portage)
 # B: Entropy temporary package unpack/work dir
 # D: Entropy temporary final package destination dir (before merging to system)

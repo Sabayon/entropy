@@ -488,11 +488,6 @@ class EntropyPackage:
             return []
         return self.dbconn.retrieveSources(self.matched_id)
 
-    def get_eclasses(self):
-        if self.pkgset:
-            return []
-        return self.dbconn.retrieveEclasses(self.matched_id)
-
     def get_homepage(self):
         if self.pkgset:
             return ""
@@ -711,7 +706,6 @@ class EntropyPackage:
     api = property(fget=get_api)
     content = property(fget=get_filelist)
     contentExt = property(fget=get_filelist_ext)
-    eclasses = property(fget=get_eclasses)
     lic = property(fget=get_license)
     sources = property(fget=get_sources)
     keyslot = property(fget=get_key_slot)

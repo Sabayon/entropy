@@ -239,7 +239,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(scope_data, dbverdata)
 
         trigger_info = self.test_db.getTriggerData(idpackage)
-        trigger_keys = ['version', 'eclasses', 'etpapi', 'cxxflags', 'cflags',
+        trigger_keys = ['version', 'etpapi', 'cxxflags', 'cflags',
             'chost', 'atom', 'category', 'name', 'versiontag', 'content',
             'trigger', 'branch', 'spm_phases', 'revision']
         self.assertEqual(sorted(trigger_keys), sorted(trigger_info.keys()))

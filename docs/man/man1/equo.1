@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2010-07-19" "perl v5.10.1" "Entropy"
+.TH EQUO 1 "2010-09-04" "perl v5.10.1" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -446,7 +446,7 @@ when used with \-\-deep, helps the removal of virtual packages
 makes configuration files to be removed
 .IP "\fB\-\-force\-system\fR" 4
 .IX Item "--force-system"
-dangerous: forces system packages removal (passed as arguments)
+dangerous: forces system packages removal, do not use this
 .IP "\fB\-\-resume\fR" 4
 .IX Item "--resume"
 resume previously interrupted operations
@@ -731,9 +731,6 @@ generate installed packages database using Source Package Manager repositories
 .IP "\fBresurrect\fR" 4
 .IX Item "resurrect"
 generate installed packages database using files on the system [last hope]
-.IP "\fBrevdeps\fR" 4
-.IX Item "revdeps"
-regenerate reverse dependencies metadata
 .IP "\fBspmuids\fR" 4
 .IX Item "spmuids"
 regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
@@ -981,9 +978,6 @@ show what packages depend on the provided atoms
 .IP "\fBdescription\fR" 4
 .IX Item "description"
 search packages by description
-.IP "\fBeclass\fR" 4
-.IX Item "eclass"
-search packages using the provided eclasses
 .IP "\fBfiles\fR" 4
 .IX Item "files"
 show files owned by the provided atoms
@@ -1079,9 +1073,6 @@ look for unsatisfied dependencies across community repositories
 .IP "\fBpkgtest\fR" 4
 .IX Item "pkgtest"
 verify the integrity of local package files
-.IP "\fBrevdeps\fR" 4
-.IX Item "revdeps"
-regenerate reverse dependencies metadata
 .IP "\fBugc\fR" 4
 .IX Item "ugc"
 handles User Generated Content features
