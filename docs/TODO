@@ -3,10 +3,7 @@
 
     EntropyRepositoryBase:
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
-    - searchEclassedPackages...
-    - _connection() (used in contentDiff)
     - rename "equo database"
-    - .etp?
     - entropy.fetchers; rsync:// support
 
   1.0:
@@ -26,5 +23,4 @@
 
     - PackageKit replacement
     - UGC based on XML requests (all the commands into one string)
-
-
+    - more specific extension? (.etp)

@@ -1816,7 +1816,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if self is dbconn:
             raise AttributeError("cannot diff inside the same db")
 
-        self._connection().text_factory = const_convert_to_unicode
+        content = set((x,) for x in dbconn.retrieveContent(dbconn_package_id))
 
         # setup random table name
         randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
@@ -1829,14 +1829,12 @@ class EntropyRepository(EntropyRepositoryBase):
         )
 
         try:
-            # FIXME: bad usage, protected method ahead
-            dbconn._connection().text_factory = const_convert_to_unicode
 
-            cur = dbconn._cursor().execute("""
-            SELECT file FROM content WHERE idpackage = (?)
-            """, (dbconn_package_id,))
             self._cursor().executemany("""
-            INSERT INTO %s VALUES (?)""" % (randomtable,), cur)
+            INSERT INTO %s VALUES (?)""" % (randomtable,), content)
+
+            # remove this when the one in retrieveContent will be removed
+            self._connection().text_factory = const_convert_to_unicode
 
             # now compare
             cur = self._cursor().execute("""
