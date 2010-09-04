@@ -77,7 +77,9 @@ class UrlFetcher(TextInterface):
         """
         self.__download_table = {
             'http': self._urllib_download,
+            'https': self._urllib_download,
             'ftp': self._urllib_download,
+            'ftps': self._urllib_download,
             'rsync': self._rsync_download,
         }
 
