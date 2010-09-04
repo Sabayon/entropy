@@ -11,6 +11,7 @@
     - QA.test_missing_dependencies for injected packages
         _get_missing_rdepends
         _get_unresolved_sonames
+    - entropy.fetchers; rsync:// support
 
   1.0:
 
