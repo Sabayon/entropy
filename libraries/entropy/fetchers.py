@@ -75,7 +75,7 @@ class UrlFetcher(TextInterface):
         @keyword speed_limit: speed limit in kb/sec
         @type speed_limit: int
         """
-        self.__download_table = {
+        self.__supported_uris = {
             'http': self._urllib_download,
             'https': self._urllib_download,
             'ftp': self._urllib_download,
@@ -253,7 +253,7 @@ class UrlFetcher(TextInterface):
         @todo: improve return data
         """
         protocol = self.__get_url_protocol()
-        downloader = self.__download_table.get(protocol)
+        downloader = self.__supported_uris.get(protocol)
         if downloader is None:
             # return error, protocol not supported
             self._update_speed()
