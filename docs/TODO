@@ -3,8 +3,6 @@
 
     EntropyRepositoryBase:
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
-    - rename "equo database"
-    - entropy.fetchers; rsync:// support
 
   1.0:
 

@@ -14,6 +14,8 @@ import sys
 import time
 import httplib
 import socket
+import pty
+import subprocess
 
 if sys.hexversion >= 0x3000000:
     import urllib.request as urlmod
@@ -26,7 +28,7 @@ from entropy.exceptions import InterruptError
 from entropy.tools import print_traceback, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl, \
     add_proxy_opener, md5sum
-from entropy.const import etpConst, const_isfileobj
+from entropy.const import etpConst, const_isfileobj, const_debug_write
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red
 
@@ -73,6 +75,11 @@ class UrlFetcher(TextInterface):
         @keyword speed_limit: speed limit in kb/sec
         @type speed_limit: int
         """
+        self.__download_table = {
+            'http': self._urllib_download,
+            'ftp': self._urllib_download,
+            'rsync': self._rsync_download,
+        }
 
         self.__system_settings = SystemSettings()
         if speed_limit == None:
@@ -108,6 +115,9 @@ class UrlFetcher(TextInterface):
             uname[2],
         )
 
+    def __get_url_protocol(self):
+        return self.__url.split(":")[0]
+
     def _init_vars(self):
         self.__resumed = False
         self.__buffersize = 8192
@@ -131,10 +141,8 @@ class UrlFetcher(TextInterface):
         self.__existed_before = False
         if os.path.lexists(self.__path_to_save):
             self.__existed_before = True
-        self.__setup_resume_support()
-        self._setup_proxy()
 
-    def __setup_resume_support(self):
+    def __setup_urllib_resume_support(self):
         # if client uses this instance more than
         # once, make sure we close previously opened
         # files.
@@ -159,8 +167,206 @@ class UrlFetcher(TextInterface):
 
         self.__localfile = open(self.__path_to_save, "wb")
 
-    def _setup_proxy(self):
-        # setup proxy, doing here because config is dynamic
+    def __encode_url(self, url):
+        if sys.hexversion >= 0x3000000:
+            import urllib.parse as encurl
+        else:
+            import urllib as encurl
+        url = os.path.join(os.path.dirname(url),
+            encurl.quote(os.path.basename(url)))
+        return url
+
+    def __prepare_return(self):
+        if self.__checksum:
+            self.__status = md5sum(self.__path_to_save)
+            return self.__status
+        self.__status = "-2"
+        return self.__status
+
+    def __fork_cmd(self, args, environ, update_output_callback):
+
+        def _line_reader(std_r):
+            read_buf = ""
+            try:
+                char = std_r.read(1)
+                while char:
+                    if (char == "\r") and read_buf:
+                        update_output_callback(read_buf)
+                        read_buf = ""
+                    elif (char != "\r"):
+                        read_buf += char
+                    char = std_r.read(1)
+            except IOError:
+                return
+
+        pid, fd = pty.fork()
+
+        if pid == 0:
+            proc = subprocess.Popen(args, env = environ)
+            rc = proc.wait()
+            os._exit(rc)
+        elif pid == -1:
+            raise SystemError("cannot forkpty()")
+        else:
+            dead = False
+            return_code = 1
+            std_r = os.fdopen(fd, "r")
+            while not dead:
+
+                try:
+                    dead, return_code = os.waitpid(pid, os.WNOHANG)
+                except OSError as e:
+                    if e.errno != 10:
+                        raise
+                    dead = True
+
+                # wait a bit
+                time.sleep(0.5)
+                _line_reader(std_r)
+
+                if self.__abort_check_func != None:
+                    self.__abort_check_func()
+                if self.__thread_stop_func != None:
+                    self.__thread_stop_func()
+
+            std_r.close()
+            return return_code
+
+    def set_id(self, th_id):
+        """
+        Set instance id (usually the thread identifier).
+        @param th_id: id to set
+        @type th_id: int
+        """
+        self.__th_id = th_id
+
+    def download(self):
+        """
+        Start downloading URL given at construction time.
+
+        @return: download status in string format. "-3" or "-4" mean error.
+        "-2" means "ok but unable to calculate md5 of file.
+        Otherwise returns md5 hash.
+        @rtype: string
+        @todo: improve return data
+        """
+        protocol = self.__get_url_protocol()
+        downloader = self.__download_table.get(protocol)
+        if downloader is None:
+            # return error, protocol not supported
+            self._update_speed()
+            self.__status = "-3"
+            return self.__status
+
+        self._init_vars()
+        status = downloader()
+        self._push_progress_to_output()
+        return status
+
+    def _rsync_download(self):
+        """
+        rsync based downloader. It uses rsync executable.
+        """
+        _rsync_exec = "/usr/bin/rsync"
+        args = (_rsync_exec, "--no-motd", "--compress", "--progress",
+            "--stats", "--timeout=%d" % (self.__timeout,))
+        if self.__speedlimit:
+            args += ("--bwlimit=%d" % (self.__speedlimit,),)
+        if not self.__resume:
+            args += ("--whole-file",)
+        args += (self.__url, self.__path_to_save,)
+
+        # args to rsync to get remote file size
+        list_args = (_rsync_exec, "--no-motd", "--list-only", self.__url)
+
+        # rsync executable environment
+        rsync_environ = {}
+
+        # setup proxy support
+        proxy_data = self.__system_settings['system']['proxy']
+        if proxy_data['rsync']:
+            rsync_environ['RSYNC_PROXY'] = proxy_data['rsync']
+
+        def rsync_stats_extractor(output_line):
+            data = output_line.split()
+            if len(data) != 4:
+                # it's just garbage here
+                self._update_speed()
+                return
+
+            bytes_read, pct, speed_kbsec, eta = data
+            try:
+                bytes_read = int(bytes_read)
+            except ValueError:
+                bytes_read = 0
+            try:
+                average = int(pct.strip("%"))
+            except ValueError:
+                average = 0
+
+            # update progress info
+            # _rsync_commit
+            self.__downloadedsize = bytes_read
+            if average > 100:
+                average = 100
+            self.__average = average
+            self._update_speed()
+
+            if self.__show_speed:
+                self.handle_statistics(self.__th_id, self.__downloadedsize,
+                    self.__remotesize, self.__average, self.__oldaverage,
+                    self.__updatestep, self.__show_speed, self.__datatransfer,
+                    self.__time_remaining, self.__time_remaining_secs
+                )
+                self.update()
+                self.__oldaverage = self.__average
+
+        def rsync_list_extractor(output_line):
+            data = output_line.split()
+            if len(data) == 5:
+                try:
+                    # perms, size, date, time, file name
+                    self.__remotesize = float(data[1])/1024
+                except ValueError:
+                    pass
+
+        const_debug_write(__name__,
+            "spawning rsync fetch(%s): %s, %s, %s" % (
+                self.__th_id, list_args, rsync_environ, rsync_list_extractor,))
+        sts = self.__fork_cmd(list_args, rsync_environ, rsync_list_extractor)
+        const_debug_write(__name__,
+            "spawned rsync fetch(%s): status: %s" % (self.__th_id, sts,))
+        if sts != 0:
+            self.__rsync_close(True)
+            self.__status = "-3"
+            return self.__status
+
+        const_debug_write(__name__,
+            "spawning rsync fetch(%s): %s, %s, %s" % (
+                self.__th_id, args, rsync_environ, rsync_stats_extractor,))
+        sts = self.__fork_cmd(args, rsync_environ, rsync_stats_extractor)
+        const_debug_write(__name__,
+            "spawned rsync fetch(%s): status: %s" % (self.__th_id, sts,))
+        if sts != 0:
+            self.__rsync_close(True)
+            self.__status = "-3"
+            return self.__status
+
+        # kill thread
+        self.__rsync_close(False)
+        return self.__prepare_return()
+
+    def __rsync_close(self, errored):
+        if (not self.__existed_before) and errored:
+            try:
+                os.remove(self.__path_to_save)
+            except OSError:
+                pass
+
+    def _setup_urllib_proxy(self):
+        """
+        Setup urllib proxy data
+        """
         mydict = {}
         proxy_data = self.__system_settings['system']['proxy']
         if proxy_data['ftp']:
@@ -175,36 +381,12 @@ class UrlFetcher(TextInterface):
             # unset
             urlmod._opener = None
 
-    def __encode_url(self, url):
-        if sys.hexversion >= 0x3000000:
-            import urllib.parse as encurl
-        else:
-            import urllib as encurl
-        url = os.path.join(os.path.dirname(url),
-            encurl.quote(os.path.basename(url)))
-        return url
-
-    def set_id(self, th_id):
+    def _urllib_download(self):
         """
-        Set instance id (usually the thread identifier).
-        @param th_id: id to set
-        @type th_id: int
+        urrlib2 based downloader. This is the default for HTTP and FTP urls.
         """
-        self.__th_id = th_id
-
-    def download(self):
-
-        """
-        Start downloading URL given at construction time.
-
-        @return: download status in string format. "-3" or "-4" mean error.
-        "-2" means "ok but unable to calculate md5 of file.
-        Otherwise returns md5 hash.
-        @rtype: string
-        @todo: improve return data
-        """
-
-        self._init_vars()
+        self._setup_urllib_proxy()
+        self.__setup_urllib_resume_support()
 
         if self.__url.startswith("http://"):
             headers = { 'User-Agent' : self.user_agent }
@@ -220,7 +402,7 @@ class UrlFetcher(TextInterface):
             try:
                 self.__remotefile = urlmod.urlopen(req, None, self.__timeout)
             except KeyboardInterrupt:
-                self.__close(False)
+                self.__urllib_close(False)
                 raise
 
             except urlmod_error.HTTPError as e:
@@ -229,29 +411,29 @@ class UrlFetcher(TextInterface):
                     req = self.__url
                     u_agent_error = True
                     continue
-                self.__close(True)
+                self.__urllib_close(True)
                 self.__status = "-3"
                 do_return = True
 
             except urlmod_error.URLError as err: # timeout error
-                self.__close(True)
+                self.__urllib_close(True)
                 self.__status = "-3"
                 do_return = True
 
             except httplib.BadStatusLine:
                 # obviously, something to cope with
-                self.__close(True)
+                self.__urllib_close(True)
                 self.__status = "-3"
                 do_return = True
 
             except socket.timeout:
                 # arghv!!
-                self.__close(True)
+                self.__urllib_close(True)
                 self.__status = "-3"
                 do_return = True
 
             except ValueError: # malformed, unsupported URL? raised by urllib
-                self.__close(True)
+                self.__urllib_close(True)
                 self.__status = "-3"
                 do_return = True
 
@@ -268,7 +450,7 @@ class UrlFetcher(TextInterface):
                 "content-length"))
             self.__remotefile.close()
         except KeyboardInterrupt:
-            self.__close(False)
+            self.__urllib_close(False)
             raise
         except Exception:
             pass
@@ -289,21 +471,21 @@ class UrlFetcher(TextInterface):
                         }
                     )
                 except KeyboardInterrupt:
-                    self.__close(False)
+                    self.__urllib_close(False)
                     raise
                 except:
                     pass
             elif (self.__startingposition == self.__remotesize):
                 # all fine then!
-                self.__close(False)
+                self.__urllib_close(False)
                 return self.__prepare_return()
 
             self.__remotefile = urlmod.urlopen(request, None, self.__timeout)
         except KeyboardInterrupt:
-            self.__close(False)
+            self.__urllib_close(False)
             raise
         except:
-            self.__close(True)
+            self.__urllib_close(True)
             self.__status = "-3"
             return self.__status
 
@@ -313,7 +495,7 @@ class UrlFetcher(TextInterface):
         if self.__disallow_redirect and \
             (self.__url != self.__remotefile.geturl()):
 
-            self.__close(True)
+            self.__urllib_close(True)
             self.__status = "-3"
             return self.__status
 
@@ -327,19 +509,19 @@ class UrlFetcher(TextInterface):
                 if self.__thread_stop_func != None:
                     self.__thread_stop_func()
             except KeyboardInterrupt:
-                self.__close(False)
+                self.__urllib_close(False)
                 raise
             except socket.timeout:
-                self.__close(False)
+                self.__urllib_close(False)
                 self.__status = "-4"
                 return self.__status
             except:
                 # python 2.4 timeouts go here
-                self.__close(True)
+                self.__urllib_close(True)
                 self.__status = "-3"
                 return self.__status
 
-            self._commit(rsx)
+            self.__urllib_commit(rsx)
             if self.__show_speed:
                 self.handle_statistics(self.__th_id, self.__downloadedsize,
                     self.__remotesize, self.__average, self.__oldaverage,
@@ -356,20 +538,11 @@ class UrlFetcher(TextInterface):
                         self.update()
                         self.__oldaverage = self.__average
 
-        self._push_progress_to_output()
         # kill thread
-        self.__close(False)
+        self.__urllib_close(False)
         return self.__prepare_return()
 
-
-    def __prepare_return(self):
-        if self.__checksum:
-            self.__status = md5sum(self.__path_to_save)
-            return self.__status
-        self.__status = "-2"
-        return self.__status
-
-    def _commit(self, mybuffer):
+    def __urllib_commit(self, mybuffer):
         # writing file buffer
         self.__localfile.write(mybuffer)
         # update progress info
@@ -381,7 +554,7 @@ class UrlFetcher(TextInterface):
         self.__average = average
         self._update_speed()
 
-    def __close(self, errored):
+    def __urllib_close(self, errored):
         self._update_speed()
         try:
             if const_isfileobj(self.__localfile):
@@ -395,10 +568,12 @@ class UrlFetcher(TextInterface):
                 os.remove(self.__path_to_save)
             except OSError:
                 pass
-        try:
-            self.__remotefile.close()
-        except:
-            pass
+
+        if self.__remotefile is not None:
+            try:
+                self.__remotefile.close()
+            except socket.error:
+                pass
 
     def _update_speed(self):
         cur_time = time.time()

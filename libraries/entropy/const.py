@@ -433,6 +433,7 @@ def const_default_settings(rootdir):
         'proxy': {
             'ftp': os.getenv("FTP_PROXY"),
             'http': os.getenv("HTTP_PROXY"),
+            'rsync': os.getenv("RSYNC_PROXY"),
             'username': None,
             'password': None
         },

@@ -952,6 +952,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 if httpproxy:
                     data['proxy']['http'] = httpproxy[-1]
 
+            elif line.startswith("rsync-proxy|") and \
+                (split_line_len == 2):
+
+                httpproxy = split_line[1].strip().split()
+                if httpproxy:
+                    data['proxy']['rsync'] = httpproxy[-1]
+
             elif line.startswith("proxy-username|") and \
                 (split_line_len == 2):
 
