@@ -93,6 +93,7 @@ class UrlFetcher(TextInterface):
         self.__timeout = \
             self.__system_settings['repositories']['timeout']
         self.__th_id = 0
+
         self.__resume = resume
         self.__url = self.__encode_url(url)
         self.__path_to_save = path_to_save
@@ -102,12 +103,9 @@ class UrlFetcher(TextInterface):
         self.__thread_stop_func = thread_stop_func
         self.__disallow_redirect = disallow_redirect
         self.__speedlimit = speed_limit # kbytes/sec
-        self.__existed_before = False
-        self.__localfile = None
 
-        # important to have this here too
-        self.__datatransfer = 0
-        self.__resumed = False
+        self._init_vars()
+        self.__init_urllib()
 
         uname = os.uname()
         self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
@@ -121,6 +119,10 @@ class UrlFetcher(TextInterface):
 
     def __get_url_protocol(self):
         return self.__url.split(":")[0]
+
+    def __init_urllib(self):
+        # this will be moved away soon anyway
+        self.__localfile = None
 
     def _init_vars(self):
         self.__resumed = False
