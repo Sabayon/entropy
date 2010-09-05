@@ -2007,7 +2007,7 @@ class EntropyPackageView:
             try:
                 mydata = getattr( obj, property )
                 cell.set_property('markup', mydata)
-            except (ProgrammingError, OperationalError,):
+            except (ProgrammingError, OperationalError, TypeError,):
                 self.do_refresh_view = True
 
             self.set_line_status(obj, cell)
@@ -2062,7 +2062,7 @@ class EntropyPackageView:
         try:
             repoid = pkg.repoid_clean
             key = pkg.key
-        except (ProgrammingError, OperationalError,):
+        except (ProgrammingError, OperationalError):
             return
 
         #const_debug_write(__name__, "_get_cached_pkg_ugc_icon called")
@@ -2255,7 +2255,8 @@ class EntropyPackageView:
                     if inst_status is None:
                         try:
                             inst_status = pkg.install_status
-                        except (ProgrammingError, OperationalError,):
+                        except (ProgrammingError, OperationalError, TypeError,):
+                            # TypeError => dep_gettag after check_package_update
                             inst_status = 0
                         self.__install_statuses[pkg.matched_atom] = inst_status
 
