@@ -1122,12 +1122,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         mydata['configprotect'] = None
         mydata['configprotectmask'] = None
 
-        def is_supported_protocol(uri):
-            protocol = uri.split(":")[0]
-            return protocol in etpConst['supported_download_protocols']
-
+        # protocol filter takes place inside entropy.fetchers
         repopackages = [x.strip() for x in repopackages.split() if x.strip()]
-        repopackages = [x for x in repopackages if is_supported_protocol(x)]
+        repopackages = [x for x in repopackages if \
+            entropy.tools.is_valid_uri(x)]
 
         for repo_package in repopackages:
             try:
