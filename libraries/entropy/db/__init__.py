@@ -3305,10 +3305,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('provided_libs'):
-            self._createProvidedLibs()
-
         args = (needed,)
         elfclass_txt = ''
         if elfclass != -1:
@@ -4213,6 +4209,8 @@ class EntropyRepository(EntropyRepositoryBase):
         # added on Aug, 2010
         if not self._doesTableExist("contentsafety"):
             self._createContentSafetyTable()
+        if not self._doesTableExist('provided_libs'):
+            self._createProvidedLibs()
 
         self._foreignKeySupport()
 
