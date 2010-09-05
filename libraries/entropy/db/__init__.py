@@ -891,7 +891,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute(
                 "DELETE FROM baseinfo WHERE idpackage = (?)", (package_id,))
         else:
-            r_tup = (package_id,)*19
+            r_tup = (package_id,)*18
             self._cursor().executescript("""
                 DELETE FROM baseinfo WHERE idpackage = %d;
                 DELETE FROM extrainfo WHERE idpackage = %d;
