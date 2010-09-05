@@ -2468,10 +2468,7 @@ class PortagePlugin(SpmPlugin):
         dir_t = const_convert_to_rawstring("dir")
         fif_t = const_convert_to_rawstring("fif")
         dev_t = const_convert_to_rawstring("dev")
-        utf_sys_root = etpConst['systemroot']
-        if utf_sys_root:
-            utf_sys_root += os.path.sep
-        sys_root = const_convert_to_rawstring(utf_sys_root)
+        sys_root = const_convert_to_rawstring(etpConst['systemroot'])
 
         content_meta = {}
         for path_orig in sorted(entropy_content):
@@ -2521,6 +2518,7 @@ class PortagePlugin(SpmPlugin):
         self._bump_vartree_mtime(portage_cpv)
 
         with open(cont_path, "wb") as cont_f:
+            utf_sys_root = etpConst['systemroot'] + os.path.sep
             # NOTE: content_meta contains paths with ROOT prefix, it's ok
             write_contents(content_meta, utf_sys_root, cont_f)
             cont_f.flush()
