@@ -1221,7 +1221,12 @@ class MiscMixin:
 
         lock_file = etpConst['locks']['using_resources']
         if os.path.isfile(lock_file):
-            os.remove(lock_file)
+            try:
+                os.remove(lock_file)
+            except OSError as err:
+                # cope with possible race conditions
+                if err.errno != errno.ENOENT:
+                    raise
 
     def resources_locked(self):
         """
