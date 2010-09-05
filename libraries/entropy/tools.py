@@ -2197,6 +2197,21 @@ def spliturl(url):
         import urlparse as urlmod
     return urlmod.urlsplit(url)
 
+def is_valid_uri(url):
+    """
+    Determine whether given url string is a valid URI, this function internally
+    calls spliturl and looks for a set scheme. Anything that matches the
+    string "something://" will be considered valid.
+
+    @param url: URL sto split
+    @type url: string
+    @return: True if URI
+    @rtype: bool
+    """
+    if spliturl(url).scheme:
+        return True
+    return False
+
 def compress_tar_bz2(store_path, path_to_compress):
     """
     Compress path_to_compress path into store_path path using tar and bzip2.
