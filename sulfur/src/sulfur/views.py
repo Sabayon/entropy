@@ -2255,7 +2255,7 @@ class EntropyPackageView:
                     if inst_status is None:
                         try:
                             inst_status = pkg.install_status
-                        except ProgrammingError:
+                        except (ProgrammingError, OperationalError,):
                             inst_status = 0
                         self.__install_statuses[pkg.matched_atom] = inst_status
 
