@@ -5071,6 +5071,7 @@ class EntropyRepository(EntropyRepositoryBase):
         )
 
         done_something = False
+        foreign_keys_supported = False
         for table in tables:
             if not self._doesTableExist(table): # wtf
                 continue
@@ -5080,6 +5081,8 @@ class EntropyRepository(EntropyRepositoryBase):
 
             # print table, "foreign keys", foreign_keys
             if foreign_keys is not None:
+                # seems so, more or less
+                foreign_keys_supported = True
                 continue
 
             if not done_something:
@@ -5124,6 +5127,15 @@ class EntropyRepository(EntropyRepositoryBase):
             """)
             # recreate indexes
             self.createAllIndexes()
+        elif foreign_keys_supported:
+            # some devel version didn't have this set
+            try:
+                self.getSetting("on_delete_cascade")
+            except KeyError:
+                self._cursor().execute("""
+                    INSERT OR REPLACE INTO settings
+                    VALUES ("on_delete_cascade", "1")
+                """)
 
     def _moveContent(self, from_table, to_table):
         self._cursor().execute("""
