@@ -76,9 +76,8 @@ class UrlFetcher(TextInterface):
         @keyword speed_limit: speed limit in kb/sec
         @type speed_limit: int
         """
-        # advertised supported protocols are at:
-        # etpConst['supported_download_protocols']
         self.__supported_uris = {
+            'file': self._urllib_download,
             'http': self._urllib_download,
             'https': self._urllib_download,
             'ftp': self._urllib_download,
