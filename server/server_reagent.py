@@ -829,15 +829,14 @@ def update(options):
 
 
                 # this is a spm atom
+                spm_key = entropy.tools.dep_getkey(item)
                 try:
                     spm_slot = Entropy.Spm().get_installed_package_metadata(
                         item, "SLOT")
                     spm_repo = Entropy.Spm().get_installed_package_metadata(
                         item, "repository")
-                    spm_key = entropy.tools.dep_getkey(item)
                 except KeyError:
                     spm_slot = None
-                    spm_key = None
                     spm_repo = None
 
                 #
