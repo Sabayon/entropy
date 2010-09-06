@@ -399,6 +399,16 @@ class CalculatorsMixin:
                     available_tags.add(t_ver_tag)
             return sorted(available_tags, reverse = True)
 
+        def _is_matching_tag(c_ids, pkg_dep, tag):
+            for c_id in c_ids:
+                c_slot = self._installed_repository.retrieveSlot(c_id)
+                # pkg_dep already contains the tag part
+                a_id, a_repo_id = self.atom_match(pkg_dep, match_slot = c_slot)
+                if a_repo_id == 1:
+                    continue
+                return True
+            return False
+
         unsatisfied = set()
         for dependency in dependencies:
 
@@ -442,18 +452,17 @@ class CalculatorsMixin:
                     av_tags = [x for x in \
                         _my_get_available_tags(dependency, None) if x]
                     if av_tags:
-                        # NOTE: since tags replace slots, use them as slots
-                        i_key = entropy.tools.dep_getkey(dependency)
                         matching_tags = set()
+                        i_key = entropy.tools.dep_getkey(dependency)
                         for a_tag in av_tags:
-                            c_id, c_rc = self._installed_repository.atomMatch(
-                                i_key, matchSlot = a_tag)
+                            a_dep_tag = i_key + \
+                                etpConst['entropytagprefix'] + a_tag
+                            c_ids, c_rc = self._installed_repository.atomMatch(
+                                a_dep_tag, multiMatch = True)
                             if c_rc != 0:
                                 continue
-                            # make sure we get a valid tag
-                            c_tag = self._installed_repository.retrieveTag(c_id)
-                            if c_tag == a_tag:
-                                matching_tags.add(c_tag)
+                            if _is_matching_tag(c_ids, a_dep_tag, a_tag):
+                                matching_tags.add(a_tag)
 
                         if matching_tags:
                             best_tag = entropy.tools.sort_entropy_package_tags(
