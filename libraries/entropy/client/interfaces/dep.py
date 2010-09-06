@@ -402,9 +402,6 @@ class CalculatorsMixin:
         unsatisfied = set()
         for dependency in dependencies:
 
-            if dependency == "~x11-drivers/xf86-video-virtualbox-3.2.8":
-                import pdb; pdb.set_trace()
-
             if dependency in depcache:
                 # already analized ?
                 is_unsat = depcache[dependency]
