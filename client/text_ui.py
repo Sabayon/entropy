@@ -695,6 +695,53 @@ def _show_masked_pkg_info(entropy_client, package, from_user = True):
                 print_error(red("        # ")+" ["+blue(_("from"))+":" + \
                     brown(c_repo)+"] "+darkred(c_atom))
 
+def _scan_packages_expand_tag(entropy_client, packages):
+    """
+    This function assists the user automatically adding package tags to
+    package names passed in order to correctly select installed packages
+    in case of multiple package tags available.
+    A real-world example is kernel-dependent packages. We don't want to
+    implicitly propose user new packages using newer kernels.
+    """
+    inst_repo = entropy_client.installed_repository()
+
+    def expand_package(dep):
+        tag = entropy.tools.dep_gettag(dep)
+        if tag is not None:
+            # do not override packages already providing a tag
+            return dep
+
+        # can dep be resolved as it is?
+        pkg_match, pkg_repo = entropy_client.atom_match(dep)
+        if pkg_repo == 1:
+            # no, ignoring
+            return dep
+
+        pkg_ids, rc = inst_repo.atomMatch(dep, multiMatch = True)
+        if rc != 0:
+            # not doing anything then
+            return dep
+
+        tags = set()
+        for pkg_id in pkg_ids:
+            pkg_tag = inst_repo.retrieveTag(pkg_id)
+            if not pkg_tag:
+                # at least one not tagged, abort
+                return dep
+            tags.add(pkg_tag)
+
+        best_tag = entropy.tools.sort_entropy_package_tags(
+            tags)[-1]
+
+        proposed_dep = "%s%s%s" % (dep, etpConst['entropytagprefix'], best_tag)
+        # make sure this can be resolved == if package is still available
+        pkg_match, repo_id = entropy_client.atom_match(proposed_dep)
+        if repo_id == 1:
+            return dep
+
+        return proposed_dep
+
+    return list(map(expand_package, packages))
 
 def _scan_packages(entropy_client, packages, etp_pkg_files):
 
@@ -703,7 +750,7 @@ def _scan_packages(entropy_client, packages, etp_pkg_files):
     # expand package
     packages = entropy_client.packages_expand(packages)
 
-    for package in packages:
+    for package in _scan_packages_expand_tag(entropy_client, packages):
         # clear masking reasons
         match = entropy_client.atom_match(package)
         if match[0] != -1:
