@@ -19,6 +19,7 @@
     - entropy package metadata .dtd specs
     - entropy.client API docs
     - entropy.fetchers => pluggable uri handlers support?
+    - complete README
 
   1.1:
 
