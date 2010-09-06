@@ -3,6 +3,8 @@
 
     EntropyRepositoryBase:
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
+    - entropy.fetchers: add delta packages update support via rsync
+    - entropy.fetchers: test https, add ssh:// (pubkey)
 
   1.0:
 
