@@ -711,12 +711,6 @@ class PortagePlugin(SpmPlugin):
                 else:
                     tar.addfile(tarinfo)
 
-        # make really sure that our fd is closed
-        try:
-            os.close(tmp_fd)
-        except OSError:
-            pass
-
         # appending xpak informations
         tbz2 = xpak.tbz2(tmp_file)
         tbz2.recompose(dbdir)
