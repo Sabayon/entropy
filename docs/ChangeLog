@@ -1,3 +1,520 @@
+commit dfd44c6903497e9f959aab92027305e7597d82c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 23:34:10 2010 +0200
+
+    [repo] adding AUTHORS, COPYING and README files, update TODO
+
+commit f78ecd08a17f19e2b22ca9c51bae63c1c35e6faa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 23:25:26 2010 +0200
+
+    [entropy.client.interfaces.dep] update tagged packages binding logic, when tag != None, tag is not == slot anymore
+
+commit 653f5514c8bbf3e5106c59b29531b1606cb8d6c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 15:30:49 2010 +0200
+
+    [equo] behaviour change: automatically bind non-tagged package strings to tagged
+    
+    A simple use case: "equo install nvidia-drivers" will now pull in
+    packages providing the tag of the latest installed package if
+    available. In this way, newer kernel packages (for example) will
+    not be implicitly pulled in anymore. To override this: just append
+    a valid tag to your package string "nvidia-drivers#2.6.34-sabayon"
+
+commit 3c5d0fb6845eee341ebdf7861b028c6e2c609ae8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 15:09:10 2010 +0200
+
+    [entropy.client] remove debugging code
+
+commit 04f8f67b1e27f9751485cbd4f732dfea1e6f9919
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 13:25:58 2010 +0200
+
+    [todo] update TODO
+
+commit 52372dc357583473520fbc2c5a115b23a6067d5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 11:03:11 2010 +0200
+
+    [entropy.client.interfaces.package] move URL name retrieval code into separate function, add scheme information to string
+
+commit 86402f18b0bb88e404488db20c4798053df40a72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 10:57:19 2010 +0200
+
+    [entropy.fetchers] fine tune rsync:// download function parameters
+
+commit 797bd279db3615bee30f752cc596f7ce6e08b011
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 10:49:22 2010 +0200
+
+    [entropy.fetchers] UrlFetcher: urlencode "url" constructor argument only in urllib function
+
+commit 6339ed1b8f477aec70d5992f5f45574baf9122de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 10:15:30 2010 +0200
+
+    [entropy.spm] PortagePlugin.generate_package: remove unnecessary os.close() call
+
+commit 808e64d618fda8f154b0ca58ae0d74feab0066f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 10:14:31 2010 +0200
+
+    [entropy.spm] PortagePlugin: make generate_package() package file generation atomic
+
+commit 5546e04d982c354a68edfe8a441184faa7aece97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 09:47:48 2010 +0200
+
+    [reagent] fix pontential uninitialized variable spm_key
+
+commit 638d1db1a8aca094dfeb75be54d663ffa7643a07
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 21:16:41 2010 +0200
+
+    [entropy.fetchers] rework UrlFetcher variables initialization, make it more robust
+
+commit 65606273ca8f301491e349bf7bbe40a13614510d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 21:16:19 2010 +0200
+
+    [entropy.fetchers] add back support for file:// URIs in UrlFetcher
+
+commit 46b3be4ef426b107af11397fe2e3f505e1750c23
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 21:15:13 2010 +0200
+
+    [entropy.const] drop etpConst['supported_download_protocols'], accept any URI, entropy.fetchers.UrlFetcher will handle them using a whitelist
+
+commit 7e478643255b11d344f5d96de6ef957df53eed3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 21:14:25 2010 +0200
+
+    [entropy.tools] add is_valid_uri function
+
+commit 6aa3d86fecccabd34ef7fae990fb59a09cca86a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 19:41:01 2010 +0200
+
+    [sulfur] catch TypeError exception in new_pixbuf when retrieving install_status
+
+commit 2dcadd4b798bfc30a35b9674b15c5d421a06ccd0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 19:39:05 2010 +0200
+
+    [entropy.db] EntropyRepository: create provided_libs table on _databaseStructureUpdate call rather than around in the code
+
+commit e8637df846c8aae2705f3522cb4dc8e1b5e72141
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 19:33:36 2010 +0200
+
+    [sulfur] catch OperationalError on views.new_pixbuf
+
+commit 7bb12def2bdbcdd768d8817809471648057d1c34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 19:19:03 2010 +0200
+
+    [entropy.client] Client.unlock_resources: make lock handling fully resistent to race conditions
+
+commit 26498d2d97d12f81c6bf3e1c7317994e732162a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 19:02:14 2010 +0200
+
+    [entropy.client] Client.unlock_resources: fix possible race condition on removing lock file
+
+commit 165bd0173301542500b99d11170e088b2abe5572
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 14:49:43 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix write_contents call in _create_contents_file_if_not_available
+    
+    write_contents root parameter was passed without a trailing "/".
+    This caused injected packages (server-side) not writing Portage
+    CONTENTS metadata correctly.
+
+commit 6fba685d976f0cc957055394a7aa37610365d3e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 14:36:08 2010 +0200
+
+    [entropy.db] EntropyRepository._foreignKeySupport: on_delete_cascade checks
+    
+    Some Entropy development versions had foreign keys support but no
+    on_delete_cascade setting stored. This commit copes with that
+
+commit 3c4d86380767a22400eeba9d4bdf8fc9ad3f33fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 5 14:23:05 2010 +0200
+
+    [entropy.db] EntropyRepository.removePackage: fix regression, properly execute removal script
+
+commit 0bc7c0288c4f0415fa40bd0a9d68c7e0836be0b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 19:29:23 2010 +0200
+
+    [todo] update TODO
+
+commit d32cba9fab349f306de82435cb370045600440c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 19:25:34 2010 +0200
+
+    [entropy.fetchers] list supported entropy.fetchers protocols in entropy.const
+
+commit 3d7503623487c3c32e5c8868c0a36f39bb6373b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 19:08:56 2010 +0200
+
+    [entropy.fetchers] trivial variable name change
+
+commit 40e7a97566357faabc0385a043aa546b763424ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 18:41:33 2010 +0200
+
+    [entropy.fetchers] add back support for https and ftps
+
+commit 8938b24667ef3b75458f0fa8489d2dccbb99c1e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 18:38:39 2010 +0200
+
+    [entropy.fetchers] implement support for rsync:// protocol using /usr/bin/rsync
+
+commit efd32ede4ed25be8acc17572e2fee47d3224d611
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 16:04:52 2010 +0200
+
+    [entropy.db] remove usage of illegale protected methods inside EntropyRepository.contentDiff
+
+commit 1198a24290b3d3005ff226d247aad0c8d425693b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 15:26:16 2010 +0200
+
+    [entropy.*] remove "eclasses" metadata support
+    
+    "eclasses" package metadata is not in use in Entropy and is too
+    tight with Portage. Dropping.
+
+commit b749e30a93d2047d04d68ae325560c24c4e4bd80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 4 14:06:34 2010 +0200
+
+    [todo] update TODO
+
+commit f2d92793d084cf1af97182189db3cd86f3bc0aae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 3 23:49:46 2010 +0200
+
+    [entropy.security] Repository.is_pubkey_available: catch GPGError exceptions
+
+commit c5cfeec3cd94adf4454d39548941ee49cf812ae4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 2 20:13:23 2010 +0200
+
+    Revert "[entropy.db] if EntropyRepository caching is disable, do not use live cache at all"
+    
+    This reverts commit ef586a5ae57600895c834d6f0974943f84b87c0c.
+
+commit ef586a5ae57600895c834d6f0974943f84b87c0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 2 19:09:37 2010 +0200
+
+    [entropy.db] if EntropyRepository caching is disable, do not use live cache at all
+
+commit 146f127740a6caba98e029c304e6412728283aaa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 2 19:06:09 2010 +0200
+
+    [entropy.db] ensure that removePackage keeps live cache clean
+
+commit 5183a77deaed4efffcf843fc22db8a9886052d45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 2 19:04:48 2010 +0200
+
+    [entropy.server] when adding packages, commit EntropyRepository changes to disk as soon as possible
+
+commit f184c8d779bed1f631f2b438a8c27232cccc658e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 2 16:45:53 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix world file handling, typo in function
+
+commit fef265dab3e3192a0bd3cba127a3cbdf8eb726fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 31 17:41:51 2010 +0200
+
+    [entropy.server] really make sure that db data is flushed to disk during Server._package_injector
+
+commit 3888fff5ebf91ac72d21eccaa78edb813edc079c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 31 15:57:54 2010 +0200
+
+    [todo] update TODO
+
+commit 4575a792efaf0fe294c8aac96348efa85c13e7c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 31 15:22:54 2010 +0200
+
+    [entropy.server] improve reliability of Server._setup_repository_package_filename
+    
+    Providing the EntropyRepository instance currently in use is much
+    better than opening a new one.
+
+commit 5cb8e11810b5f9f01216e2375889ce00eb89df08
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 23:10:21 2010 +0200
+
+    [todo] update TODO
+
+commit 8ad0650dac5efad2680ea6a4d6d9116b490cc28d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 23:06:02 2010 +0200
+
+    [entropy.qa] add extra (ldd based) unresolved soname QA check
+    
+    Using ldd to check if an executable has automagic dependencies
+    server-side, under controlled circumstances (such as checking against
+    the files provided by the package it belongs) is a good (not best)
+    way to make sure there are no breakages visible to user.
+    Unfortunately, these kind of missing dependencies have to be checked
+    and verified manually, besides, it's a good thing to have them
+    reported.
+
+commit 14bcfbf0ce4dc49b1d02b957141d64ef994b58cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 23:05:12 2010 +0200
+
+    [entropy.tools] read_elf_real_dynamic_libraries: some final fixes
+
+commit b6ca4ed514d44430eb51330e8e01857a43d1738e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 21:52:10 2010 +0200
+
+    [entropy.tools] read_elf_real_dynamic_libraries filter out bogus lines
+
+commit 6702f7a33289d7cd066f6307ca15c9766467b253
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 21:49:07 2010 +0200
+
+    [entropy.tools] some minor fixups to read_elf_dynamic_libraries and resolve_dynamic_library
+
+commit 0acc74ac625e66d7110aac457c93a2ccf5faef73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 20:33:09 2010 +0200
+
+    [entropy.tools] add read_elf_real_dynamic_libraries function
+
+commit 825d9bd02de4277e3897549c676201b8be8d1f8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 17:59:14 2010 +0200
+
+    [entropy.tools] read_elf_broken_symbols: quote elf_file passed to getstatusoutput
+
+commit 2c157bc6c5c9dfff318a5724701ecb002bfccff5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 16:06:41 2010 +0200
+
+    [entropy.tools] read_elf_dynamic_libraries no need to consider another ROOT=
+
+commit 2f93f2a214443b03e075b4914ffccf5bf4190666
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 16:06:08 2010 +0200
+
+    [entropy.tools] read_elf_broken_symbols: no need to consider another ROOT=
+
+commit 778fa6c23e289a0e0d7fa51a305a71163556085e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 12:50:26 2010 +0200
+
+    [tests] test "content safety" metadata
+
+commit 21413531fac9ac7f0758ce5cb81bf668d489d042
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 30 12:49:33 2010 +0200
+
+    [entropy.server,entropy.client] complete "content safety" feature support
+
+commit 80fff1ed39a212776df612c0cffb442cdbb11e7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 29 12:20:11 2010 +0200
+
+    [entropy.services.interfaces] SocketHost: separate non-SSL and SSL log files
+
+commit 5d860aa17d6e476577ba2ce119458806e19457c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 29 12:15:08 2010 +0200
+
+    [entropy.services.interfaces] improve ssl handling code, make some variables protected
+
+commit dce7a38c693565b3e469f977acab653b8dc4d0ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 29 09:49:05 2010 +0200
+
+    [entropy.misc] LogFile: remove loggers cache, does more harm than good
+
+commit 720e2ed55a43c39971d0e9fe411146dcf5c3e575
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 29 08:46:01 2010 +0200
+
+    [todo] update TODO
+
+commit 70ade04ff6731f43fc2fbb4b0bb0f9e6252c4468
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 28 18:43:39 2010 +0200
+
+    [entropy.services.interfaces] fix typo in session's stream_stat item
+
+commit 13b897cbc8fedee8c89aeafec7a370174b406417
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 28 17:19:18 2010 +0200
+
+    [todo] update TODO
+
+commit 821d810aa33228452927d89fca8f466a38c0bde6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 28 17:07:15 2010 +0200
+
+    [entropy.db/entropy.spm] introduce content safety metadata collection (sha256, mtime)
+    
+    The following changes add more security features to Entropy repository
+    files. Every package will have new security metadata associated, like
+    sha256 and mtime of package files. Once all packages will contain
+    such information, the feature can be used, for example, to determine
+    if a system has been compromised by changing critical executables.
+    This is not a replacement for rootkit tools such as rkhunter or chkrootkit,
+    but instead, the base support for their file checking mechanism.
+    
+    Entropy Client support (equo, mainly) is planned in the near future.
+
+commit a6da16e9f0f2a9cd4efd4ed1c8c2a15b4d868809
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 28 16:08:25 2010 +0200
+
+    [entropy.spm] PortagePlugin: properly calculate package size even when package is injected
+
+commit 0ea090b2595d206cc21b629d49e33603f0187383
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 26 11:40:24 2010 +0200
+
+    [todo] update TODO
+
+commit 44020f6d405418ee81130432ac169529a3595282
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 25 03:45:32 2010 +0200
+
+    [po] update translations
+
+commit 630d069c52e27346bb9103c8c68643d021c5c02e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 25 03:44:25 2010 +0200
+
+    [sulfur] show warnings for orphaned system packages and packages unavailable in repositories
+
+commit e099600132945f204dade28bec8aae65c9875ee9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 25 03:21:27 2010 +0200
+
+    [entropy] add logrotate file
+
+commit b3716a6555023a59af8e4d3bfdf03423770c4e74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 24 13:48:17 2010 +0200
+
+    [equo] warn user about orphaned packages not in repos anymore and orphaned system packages
+
+commit 4be9cb5a94a0713d56a69c7aab8171d1bbf304f1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 24 13:24:06 2010 +0200
+
+    [entropy.client.interfaces.dep] trivial docstring update
+
+commit b4488b1a598e885ce181468b069b00e43c98e96d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 24 09:53:23 2010 +0200
+
+    [entropy.transceivers] make SSH transceiver working on non-standard SSH ports (regression)
+
+commit 1970a36d143fbe713bad6bf295c67470de2940b3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 20 15:37:02 2010 +0200
+
+    [tests] add another revision bump test
+
+commit 3fcf104316ea3f00c441915786d1e841f8c5b7c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 20 14:14:36 2010 +0200
+
+    [entropy.server] fix revision bumping support
+    
+    Packages were removed before the revision bumping logic code had
+    a chance to calculate the new package revision.
+
+commit 4352f39d1b56a161f1c0ebe649b79ceebb4374ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 20 14:14:15 2010 +0200
+
+    [tests] server: add package revision bumping test
+
+commit 28b3913c2df272a4849f5eeb6ce35222f3511f00
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 21:57:08 2010 +0200
+
+    [todo] update TODO
+
+commit a2649b34133105de48c29c38d4bb643b95388fe7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 21:42:29 2010 +0200
+
+    [entropy.db] fix regression in EntropyRepository.retrieveUseflags
+
+commit 47690cea4bf72d18926c62d7fa479329a2d2b993
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 21:41:49 2010 +0200
+
+    [entropy.db] more list to tuple conversion, see previous commit
+
+commit c86ba293f578be6b22147d159d2383b347d9f4dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 20:58:15 2010 +0200
+
+    [entropy.db] EntropyRepositoryBase: prefer tuple over list when returning objects
+    
+    This commit drastically changes EntropyRepository API, return object
+    are now either tuple or frozenset for most functions. This aims to
+    improve metadata reliability across function calls, making impossible
+    to change their content. Frozenset and tuple are immutable types.
+
+commit 72b14eb71e4257fc7184ba4929424f5932a1b8b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 17:35:37 2010 +0200
+
+    [entropy.db] EntropyRepositoryBase: return frozenset objects instead of set
+
+commit 9d3f9420956213b2ce98aaf8cb261e742028e2f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 15:59:38 2010 +0200
+
+    Revert "[entropy.db] copy objects before pushing/popping to/from on-RAM cache"
+    
+    This reverts commit 38c875a72ed1fd3ace3c14dda0067cda92421fb5.
+
+commit 38c875a72ed1fd3ace3c14dda0067cda92421fb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 15:54:33 2010 +0200
+
+    [entropy.db] copy objects before pushing/popping to/from on-RAM cache
+
+commit 4042bf9a4f5056cf349fe7bec3ecc8530ba831f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 15:49:55 2010 +0200
+
+    [entropy.db] EntropyRepository: drop deprecated methods
+
+commit 20f5be83aefd1e42b35ab82eefd88e160919ab74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 18 14:40:50 2010 +0200
+
+    Tagging Entropy version 0.99.49.21
+
 commit 26c80211a458ee3874a70de919fdb107409c29f9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 18 14:01:58 2010 +0200
