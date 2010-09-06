@@ -217,7 +217,7 @@ class UrlFetcher(TextInterface):
                     dead = True
 
                 # wait a bit
-                time.sleep(0.5)
+                time.sleep(0.2)
                 _line_reader(std_r)
 
                 if self.__abort_check_func != None:
@@ -263,6 +263,7 @@ class UrlFetcher(TextInterface):
         """
         rsync based downloader. It uses rsync executable.
         """
+        url = self.__url
         _rsync_exec = "/usr/bin/rsync"
         args = (_rsync_exec, "--no-motd", "--compress", "--progress",
             "--stats", "--timeout=%d" % (self.__timeout,))
@@ -270,10 +271,10 @@ class UrlFetcher(TextInterface):
             args += ("--bwlimit=%d" % (self.__speedlimit,),)
         if not self.__resume:
             args += ("--whole-file",)
-        args += (self.__url, self.__path_to_save,)
+        args += (url, self.__path_to_save,)
 
         # args to rsync to get remote file size
-        list_args = (_rsync_exec, "--no-motd", "--list-only", self.__url)
+        list_args = (_rsync_exec, "--no-motd", "--list-only", url)
 
         # rsync executable environment
         rsync_environ = {}
