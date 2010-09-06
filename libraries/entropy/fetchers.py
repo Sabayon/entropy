@@ -53,7 +53,7 @@ class UrlFetcher(TextInterface):
         """
         Entropy URL downloader constructor.
 
-        @param url: download URL
+        @param url: download URL (do not URL-encode it!)
         @type url: string
         @param path_to_save: file path where to save downloaded data
         @type path_to_save: string
@@ -95,7 +95,7 @@ class UrlFetcher(TextInterface):
         self.__th_id = 0
 
         self.__resume = resume
-        self.__url = self.__encode_url(url)
+        self.__url = url
         self.__path_to_save = path_to_save
         self.__checksum = checksum
         self.__show_speed = show_speed
@@ -106,16 +106,6 @@ class UrlFetcher(TextInterface):
 
         self._init_vars()
         self.__init_urllib()
-
-        uname = os.uname()
-        self.user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
-            etpConst['entropyversion'],
-            "Entropy",
-            os.path.basename(self.__url),
-            uname[0],
-            uname[4],
-            uname[2],
-        )
 
     def __get_url_protocol(self):
         return self.__url.split(":")[0]
@@ -294,6 +284,8 @@ class UrlFetcher(TextInterface):
             rsync_environ['RSYNC_PROXY'] = proxy_data['rsync']
 
         def rsync_stats_extractor(output_line):
+            const_debug_write(__name__,
+                "rsync_stats_extractor(%s): %s" % (self.__th_id, output_line,))
             data = output_line.split()
             if len(data) != 4:
                 # it's just garbage here
@@ -393,12 +385,22 @@ class UrlFetcher(TextInterface):
         """
         self._setup_urllib_proxy()
         self.__setup_urllib_resume_support()
+        url = self.__encode_url(self.__url)
+        uname = os.uname()
+        user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
+            etpConst['entropyversion'],
+            "Entropy",
+            os.path.basename(url),
+            uname[0],
+            uname[4],
+            uname[2],
+        )
 
-        if self.__url.startswith("http://"):
-            headers = { 'User-Agent' : self.user_agent }
-            req = urlmod.Request(self.__url, headers = headers)
+        if url.startswith("http://"):
+            headers = {'User-Agent': user_agent,}
+            req = urlmod.Request(url, headers = headers)
         else:
-            req = self.__url
+            req = url
 
         u_agent_error = False
         do_return = False
@@ -414,7 +416,7 @@ class UrlFetcher(TextInterface):
             except urlmod_error.HTTPError as e:
                 if (e.code == 405) and not u_agent_error:
                     # server doesn't like our user agent
-                    req = self.__url
+                    req = url
                     u_agent_error = True
                     continue
                 self.__urllib_close(True)
@@ -463,13 +465,13 @@ class UrlFetcher(TextInterface):
 
         # handle user stupidity
         try:
-            request = self.__url
+            request = url
             if ((self.__startingposition > 0) and (self.__remotesize > 0)) \
                 and (self.__startingposition < self.__remotesize):
 
                 try:
                     request = urlmod.Request(
-                        self.__url,
+                        url,
                         headers = {
                             "Range" : "bytes=" + \
                                 str(self.__startingposition) + "-" + \
@@ -499,7 +501,7 @@ class UrlFetcher(TextInterface):
             self.__remotesize = float(int(self.__remotesize))/1024
 
         if self.__disallow_redirect and \
-            (self.__url != self.__remotefile.geturl()):
+            (url != self.__remotefile.geturl()):
 
             self.__urllib_close(True)
             self.__status = "-3"
