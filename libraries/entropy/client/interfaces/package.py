@@ -169,6 +169,22 @@ class Package:
 
         return 0, diff_map, data_transfer
 
+    def _get_url_name(self, url):
+        """
+        Given a mirror URL, returns a smaller string representing the URL name.
+
+        @param url: URL string
+        @type url: string
+        @return: representative URL string
+        @rtype: string
+        """
+        url_data = entropy.tools.spliturl(url)
+        url_name = url_data.netloc
+        url_scheme = url_data.scheme
+        if not url_scheme:
+            url_scheme = "unknown"
+        return "%s://%s" % (url_scheme, url_name,)
+
     def _download_packages(self, download_list, checksum = False):
 
         avail_data = self._settings['repositories']['available']
@@ -204,7 +220,7 @@ class Package:
             mirrorcount = repo_uris[repository].index(best_mirror)+1
             mytxt = "( mirror #%s ) " % (mirrorcount,)
             mytxt += blue(" %s: ") % (_("Mirror"),)
-            mytxt += red(entropy.tools.spliturl(best_mirror)[1])
+            mytxt += red(self._get_url_name(best_mirror))
             mytxt += " - %s." % (_("maximum failure threshold reached"),)
             self._entropy.output(
                 mytxt,
@@ -230,7 +246,7 @@ class Package:
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 basef = os.path.basename(fname)
                 mytxt += "[%s] %s " % (brown(basef), blue("@"),)
-                mytxt += red(entropy.tools.spliturl(best_mirror)[1])
+                mytxt += red(self._get_url_name(best_mirror))
                 # now fetch the new one
                 self._entropy.output(
                     mytxt,
@@ -247,7 +263,7 @@ class Package:
                 basef = os.path.basename(fname)
                 mytxt += "[%s] %s %s " % (brown(basef),
                     darkred(_("success")), blue("@"),)
-                mytxt += red(entropy.tools.spliturl(best_mirror)[1])
+                mytxt += red(self._get_url_name(best_mirror))
                 self._entropy.output(
                     mytxt,
                     importance = 1,
@@ -274,7 +290,7 @@ class Package:
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 mytxt += blue("%s: %s") % (
                     _("Error downloading from"),
-                    red(entropy.tools.spliturl(best_mirror)[1]),
+                    red(self._get_url_name(best_mirror)),
                 )
                 if rc == -1:
                     mytxt += " - %s." % (_("data not available on this mirror"),)
@@ -463,7 +479,7 @@ class Package:
                 mirror_status.set_failing_mirror_status(uri, 30)
                 mytxt = mirror_count_txt
                 mytxt += blue(" %s: ") % (_("Mirror"),)
-                mytxt += red(entropy.tools.spliturl(uri)[1])
+                mytxt += red(self._get_url_name(uri))
                 mytxt += " - %s." % (_("maximum failure threshold reached"),)
                 self._entropy.output(
                     mytxt,
@@ -493,7 +509,7 @@ class Package:
                 try:
                     mytxt = mirror_count_txt
                     mytxt += blue("%s: ") % (_("Downloading from"),)
-                    mytxt += red(entropy.tools.spliturl(uri)[1])
+                    mytxt += red(self._get_url_name(uri))
                     # now fetch the new one
                     self._entropy.output(
                         mytxt,
@@ -512,7 +528,7 @@ class Package:
                         mytxt += "%s: " % (
                             blue(_("Successfully downloaded from")),
                         )
-                        mytxt += red(entropy.tools.spliturl(uri)[1])
+                        mytxt += red(self._get_url_name(uri))
                         human_bytes = entropy.tools.bytes_into_human(
                             data_transfer)
                         mytxt += " %s %s/%s" % (_("at"),
@@ -533,7 +549,7 @@ class Package:
                         error_message = mirror_count_txt
                         error_message += blue("%s: %s") % (
                             _("Error downloading from"),
-                            red(entropy.tools.spliturl(uri)[1]),
+                            red(self._get_url_name(uri)),
                         )
                         # something bad happened
                         if rc == -1:
@@ -2287,7 +2303,7 @@ class Package:
             )
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
-                mytxt += red(entropy.tools.spliturl(url)[1])
+                mytxt += red(self._get_url_name(url))
                 human_bytes = entropy.tools.bytes_into_human(data_transfer)
                 mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
                 self._entropy.output(
@@ -2305,7 +2321,7 @@ class Package:
             else:
                 error_message = blue("%s: %s") % (
                     _("Error downloading from"),
-                    red(entropy.tools.spliturl(url)[1]),
+                    red(self._get_url_name(url)),
                 )
                 # something bad happened
                 if rc == -1:
