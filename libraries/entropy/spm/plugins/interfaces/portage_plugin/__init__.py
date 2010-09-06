@@ -674,47 +674,62 @@ class PortagePlugin(SpmPlugin):
             treetype="vartree", vartree=vartree)
         if etpConst['uid'] == 0:
             dblnk.lockdb()
-        tar = tarfile.open(file_save_path, "w:bz2")
 
-        contents = dblnk.getcontents()
-        paths = sorted(contents.keys())
+        # store package file in temporary directory, then move
+        # atomicity ftw
+        tmp_fd, tmp_file = tempfile.mkstemp(dir = etpConst['entropyunpackdir'])
+        with os.fdopen(tmp_fd, "w") as tmp_save_f:
+            tar = tarfile.open(fileobj = tmp_save_f, mode = "w:bz2")
 
-        for path in paths:
-            try:
-                exist = os.lstat(path)
-            except OSError:
-                continue # skip file
-            ftype = contents[path][0]
-            lpath = path
-            arcname = path[1:]
-            if 'dir' == ftype and \
-                not stat.S_ISDIR(exist.st_mode) and \
-                os.path.isdir(lpath):
-                lpath = os.path.realpath(lpath)
-            tarinfo = tar.gettarinfo(lpath, arcname)
+            contents = dblnk.getcontents()
+            paths = sorted(contents.keys())
 
-            if stat.S_ISREG(exist.st_mode):
-                tarinfo.mode = stat.S_IMODE(exist.st_mode)
-                tarinfo.type = tarfile.REGTYPE
-                f = None
+            for path in paths:
                 try:
-                    f = open(path, "rb")
-                    tar.addfile(tarinfo, f)
-                finally:
-                    if f is not None:
-                        f.close()
-            else:
-                tar.addfile(tarinfo)
+                    exist = os.lstat(path)
+                except OSError:
+                    continue # skip file
+                ftype = contents[path][0]
+                lpath = path
+                arcname = path[1:]
+                if 'dir' == ftype and \
+                    not stat.S_ISDIR(exist.st_mode) and \
+                    os.path.isdir(lpath):
+                    lpath = os.path.realpath(lpath)
+                tarinfo = tar.gettarinfo(lpath, arcname)
 
-        tar.close()
+                if stat.S_ISREG(exist.st_mode):
+                    tarinfo.mode = stat.S_IMODE(exist.st_mode)
+                    tarinfo.type = tarfile.REGTYPE
+                    f = None
+                    try:
+                        f = open(path, "rb")
+                        tar.addfile(tarinfo, f)
+                    finally:
+                        if f is not None:
+                            f.close()
+                else:
+                    tar.addfile(tarinfo)
+
+        # make really sure that our fd is closed
+        try:
+            os.close(tmp_fd)
+        except OSError:
+            pass
 
         # appending xpak informations
-        tbz2 = xpak.tbz2(file_save_path)
+        tbz2 = xpak.tbz2(tmp_file)
         tbz2.recompose(dbdir)
-
         dblnk.unlockdb()
+        # now do atomic move
+        try:
+            os.rename(tmp_file, file_save_path)
+        except OSError:
+            # atomicity not possible
+            shutil.move(tmp_file, file_save_path)
 
-        if os.path.isfile(file_save_path):
+        if os.path.isfile(file_save_path) and \
+            os.access(file_save_path, os.F_OK | os.R_OK):
             return file_save_path
 
         raise SPMError("SPMError: Spm:generate_package %s: %s %s" % (
