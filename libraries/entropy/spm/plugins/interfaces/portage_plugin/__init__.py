@@ -678,39 +678,40 @@ class PortagePlugin(SpmPlugin):
         # store package file in temporary directory, then move
         # atomicity ftw
         tmp_fd, tmp_file = tempfile.mkstemp(dir = etpConst['entropyunpackdir'])
-        with os.fdopen(tmp_fd, "w") as tmp_save_f:
-            tar = tarfile.open(fileobj = tmp_save_f, mode = "w:bz2")
+        # cannot use fdopen with tarfile
+        tar = tarfile.open(tmp_file, mode = "w:bz2")
 
-            contents = dblnk.getcontents()
-            paths = sorted(contents.keys())
+        contents = dblnk.getcontents()
+        paths = sorted(contents.keys())
 
-            for path in paths:
+        for path in paths:
+            try:
+                exist = os.lstat(path)
+            except OSError:
+                continue # skip file
+            ftype = contents[path][0]
+            lpath = path
+            arcname = path[1:]
+            if 'dir' == ftype and \
+                not stat.S_ISDIR(exist.st_mode) and \
+                os.path.isdir(lpath):
+                lpath = os.path.realpath(lpath)
+            tarinfo = tar.gettarinfo(lpath, arcname)
+
+            if stat.S_ISREG(exist.st_mode):
+                tarinfo.mode = stat.S_IMODE(exist.st_mode)
+                tarinfo.type = tarfile.REGTYPE
+                f = None
                 try:
-                    exist = os.lstat(path)
-                except OSError:
-                    continue # skip file
-                ftype = contents[path][0]
-                lpath = path
-                arcname = path[1:]
-                if 'dir' == ftype and \
-                    not stat.S_ISDIR(exist.st_mode) and \
-                    os.path.isdir(lpath):
-                    lpath = os.path.realpath(lpath)
-                tarinfo = tar.gettarinfo(lpath, arcname)
+                    f = open(path, "rb")
+                    tar.addfile(tarinfo, f)
+                finally:
+                    if f is not None:
+                        f.close()
+            else:
+                tar.addfile(tarinfo)
 
-                if stat.S_ISREG(exist.st_mode):
-                    tarinfo.mode = stat.S_IMODE(exist.st_mode)
-                    tarinfo.type = tarfile.REGTYPE
-                    f = None
-                    try:
-                        f = open(path, "rb")
-                        tar.addfile(tarinfo, f)
-                    finally:
-                        if f is not None:
-                            f.close()
-                else:
-                    tar.addfile(tarinfo)
-
+        tar.close()
         # appending xpak informations
         tbz2 = xpak.tbz2(tmp_file)
         tbz2.recompose(dbdir)
