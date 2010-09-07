@@ -258,8 +258,10 @@ class PortagePlugin(SpmPlugin):
     ENV_FILE_COMP = "environment.bz2"
     EBUILD_EXT = ".ebuild"
     KERNEL_CATEGORY = "sys-kernel"
+    _PORTAGE_ENTROPY_PACKAGE_NAME = "sys-apps/portage"
 
-    sys.path.append("/usr/lib/gentoolkit/pym")
+    if "/usr/lib/gentoolkit/pym" not in sys.path:
+        sys.path.append("/usr/lib/gentoolkit/pym")
 
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce
@@ -300,6 +302,7 @@ class PortagePlugin(SpmPlugin):
     def init_singleton(self, output_interface):
 
         self.__output = output_interface
+        self.__entropy_repository_treeupdate_digests = {}
 
         # setup color status
         if not getcolor():
@@ -311,46 +314,38 @@ class PortagePlugin(SpmPlugin):
         # importing portage stuff
         import portage
         self._portage = portage
-        try:
-            import portage.const as portage_const
-        except ImportError:
-            import portage_const
-        self._portage_const = portage_const
 
-        from portage.versions import best
-        self._portage_best = best
+    def _reload_modules(self):
 
-        try:
-            import portage.util as portage_util
-        except ImportError:
-            import portage_util
-        self._portage_util = portage_util
+        """
+        WARNING: this function reloads Portage modules in RAM
+        it brutally kills the current instance by removing
+        it from sys.modules and calling a new import.
+        There may be resource leaks but since this can only be run
+        once per "session", that's nothing to worry about.
+        TODO: check if there are resource leaks
+        """
 
-        try:
-            import portage.sets as portage_sets
-            self._portage_sets = portage_sets
-        except ImportError:
-            self._portage_sets = None
+        for obj in PortagePlugin.CACHE.values():
+            obj.clear()
 
-        try:
-            from portage.sets.files import WorldSelectedSet
-            self._WorldSelectedSet = WorldSelectedSet
-        except ImportError:
-            self._WorldSelectedSet = None
+        port_key = "portage"
+        emerge_key = "_emerge"
+        # we have a portage module instance in here too
+        # need to kill it
+        current_module_name = __name__ + "." + port_key
+        if current_module_name in sys.modules:
+            del sys.modules[current_module_name]
 
-        try:
-            from portage._global_updates import _global_updates
-        except ImportError:
-            _global_updates = self._portage._global_updates
-        self._portage_global_updates = _global_updates
-
-        try:
-            import glsa
-            self.glsa = glsa
-        except ImportError:
-            self.glsa = None
-
-        self.__entropy_repository_treeupdate_digests = {}
+        for key in sys.modules.keys():
+            if key.startswith(port_key):
+                del sys.modules[key]
+            elif key.startswith(emerge_key):
+                del sys.modules[key]
+        # now reimport everything
+        import portage
+        # reassign portage variable, pointing to a fresh object
+        self._portage = portage
 
     @staticmethod
     def get_package_groups():
@@ -382,7 +377,7 @@ class PortagePlugin(SpmPlugin):
         """
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
-        cache_path = self._portage_const.CACHE_PATH.lstrip(os.path.sep)
+        cache_path = self._portage.const.CACHE_PATH.lstrip(os.path.sep)
         return os.path.join(root, cache_path)
 
     def get_package_metadata(self, package, key):
@@ -461,18 +456,27 @@ class PortagePlugin(SpmPlugin):
                         longdesc.firstChild.data.strip().split("\n")])
         return data
 
+    def _get_glsa(self):
+        try:
+            import glsa
+            glsa_mod = glsa
+        except ImportError:
+            glsa_mod = None
+        return glsa_mod
+
     def get_security_packages(self, security_property):
         """
         Reimplemented from SpmPlugin class.
         """
-        if not self.glsa:
+        _glsa = self._get_glsa()
+        if not _glsa:
             return []
         if security_property not in ['new', 'all', 'affected']:
             return []
 
-        glsaconfig = self.glsa.checkconfig(
+        glsaconfig = _glsa.checkconfig(
             self._portage.config(clone=self._portage.settings))
-        completelist = self.glsa.get_glsa_list(
+        completelist = _glsa.get_glsa_list(
             glsaconfig["GLSA_DIR"], glsaconfig)
 
         glsalist = []
@@ -493,9 +497,8 @@ class PortagePlugin(SpmPlugin):
             # maybe this should be todolist instead
             for glsa_item in completelist:
                 try:
-                    myglsa = self.glsa.Glsa(glsa_item, glsaconfig)
-                except (self.glsa.GlsaTypeException,
-                    self.glsa.GlsaFormatException,):
+                    myglsa = _glsa.Glsa(glsa_item, glsaconfig)
+                except (_glsa.GlsaTypeException, _glsa.GlsaFormatException,):
                     continue
 
                 if not myglsa.isVulnerable():
@@ -509,14 +512,15 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        if not self.glsa:
+        _glsa = self._get_glsa()
+        if not _glsa:
             return {}
 
-        glsaconfig = self.glsa.checkconfig(
+        glsaconfig = _glsa.checkconfig(
             self._portage.config(clone=self._portage.settings))
         try:
-            myglsa = self.glsa.Glsa(advisory_id, glsaconfig)
-        except (self.glsa.GlsaTypeException, self.glsa.GlsaFormatException):
+            myglsa = _glsa.Glsa(advisory_id, glsaconfig)
+        except (_glsa.GlsaTypeException, _glsa.GlsaFormatException):
             return {}
 
         mydict = {
@@ -561,7 +565,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        world_file = self._portage_const.WORLD_FILE
+        world_file = self._portage.const.WORLD_FILE
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
         return os.path.join(root, world_file)
@@ -588,6 +592,13 @@ class PortagePlugin(SpmPlugin):
         if mirror_name in self._portage.thirdpartymirrors:
             mirrors.extend(self._portage.thirdpartymirrors[mirror_name])
         return mirrors
+
+    def _get_global_updates(self):
+        try:
+            from portage._global_updates import _global_updates
+        except ImportError:
+            _global_updates = self._portage._global_updates
+        return _global_updates
 
     def packages_repositories_metadata_update(self):
         """
@@ -616,7 +627,7 @@ class PortagePlugin(SpmPlugin):
                 sys.stdout = log
                 sys.stderr = log
 
-                self._portage_global_updates(mydb, {})
+                self._get_global_updates()(mydb, {})
 
                 sys.stdout = old_stdout
                 sys.stderr = old_stderr
@@ -624,7 +635,7 @@ class PortagePlugin(SpmPlugin):
                 log.close()
                 os._exit(0)
         else:
-            self._portage_global_updates(mydb, {}) # always force
+            self._get_global_updates()(mydb, {}) # always force
 
     def match_package(self, package, match_type = None):
         """
@@ -1706,6 +1717,16 @@ class PortagePlugin(SpmPlugin):
 
         return matches
 
+    def _reload_portage_if_required(self, phase, package_metadata):
+        # filter out unwanted phases
+        if phase not in ("postrm", "postinst"):
+            return
+        category, name = package_metadata['category'], package_metadata['name']
+        key = category + "/" + name
+        # reload portage modules only if we're dealing with sys-apps/portage
+        if key == PortagePlugin._PORTAGE_ENTROPY_PACKAGE_NAME:
+            self._reload_modules()
+
     def _portage_doebuild(self, myebuild, mydo, tree, cpv,
         portage_tmpdir = None, licenses = None):
 
@@ -2016,6 +2037,7 @@ class PortagePlugin(SpmPlugin):
                     " phase for %s. Something bad happened." % (
                         phase, package,)
                 )
+            self._reload_portage_if_required(phase, package_metadata)
 
         except Exception as e:
 
@@ -2092,6 +2114,7 @@ class PortagePlugin(SpmPlugin):
             package.replace("/", "_"))
 
         try:
+            self._reload_portage_if_required(phase, package_metadata)
             rc = self._portage_doebuild(ebuild, phase, "bintree",
                 package, portage_tmpdir = work_dir,
                 licenses = package_metadata.get('accept_license'))
@@ -2539,6 +2562,14 @@ class PortagePlugin(SpmPlugin):
     def __remove_kernel_tag_from_slot(self, slot):
         return slot[::-1].split(",", 1)[-1][::-1]
 
+    def _get_world_set_object(self):
+        try:
+            from portage.sets.files import WorldSelectedSet
+            world_set = WorldSelectedSet
+        except ImportError:
+            world_set = None
+        return world_set
+
     class _PortageVdbLocker(object):
 
         def __init__(self, parent):
@@ -2565,9 +2596,10 @@ class PortagePlugin(SpmPlugin):
 
         def __init__(self, parent):
             self.__world_set = None
-            if parent._WorldSelectedSet is not None:
+            world_set = parent._get_world_set_object()
+            if world_set is not None:
                 self.__root = etpConst['systemroot'] + os.path.sep
-                self.__world_set = parent._WorldSelectedSet(self.__root)
+                self.__world_set = world_set(self.__root)
             self.__locked = 0
 
         def __enter__(self):
@@ -3334,7 +3366,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mysettings = self._portage.config(config_root = config_root,
                 target_root = root,
-                config_incrementals = self._portage_const.INCREMENTALS)
+                config_incrementals = self._portage.const.INCREMENTALS)
         except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception, e,))
         if use_cache:
@@ -3343,7 +3375,7 @@ class PortagePlugin(SpmPlugin):
         return mysettings
 
     def _get_package_use_file(self):
-        return os.path.join(self._portage_const.USER_CONFIG_PATH, 'package.use')
+        return os.path.join(self._portage.const.USER_CONFIG_PATH, 'package.use')
 
     def _handle_new_useflags(self, atom, useflags, mark):
         matched_atom = self.match_package(atom)
@@ -3502,7 +3534,7 @@ class PortagePlugin(SpmPlugin):
 
         plus = const_convert_to_rawstring("+")
         minus = const_convert_to_rawstring("-")
-        use_data = self._portage_util.grabdict(use_file)
+        use_data = self._portage.util.grabdict(use_file)
         for myatom in use_data:
             mymatch = self.match_package(myatom)
             if mymatch != matched_atom:
@@ -4015,22 +4047,19 @@ class PortagePlugin(SpmPlugin):
     def _get_vdb_path(self, root = None):
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
-        return os.path.join(root, self._portage_const.VDB_PATH)
+        return os.path.join(root, self._portage.const.VDB_PATH)
 
     def _load_sets_config(self, settings, trees):
 
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
-        setconfigpaths = [os.path.join(self._portage_const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
+        setconfigpaths = [os.path.join(self._portage.const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
         setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
         setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
-            self._portage_const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
-        return self._portage_sets.SetConfig(setconfigpaths, settings, trees)
+            self._portage.const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
+        return self._portage.sets.SetConfig(setconfigpaths, settings, trees)
 
     def _get_set_config(self):
-        # old portage
-        if self._portage_sets is None:
-            return
         myroot = etpConst['systemroot'] + os.path.sep
         return self._load_sets_config(
             self._portage.settings,
