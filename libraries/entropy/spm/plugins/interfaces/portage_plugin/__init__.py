@@ -665,7 +665,8 @@ class PortagePlugin(SpmPlugin):
         pkgcat, pkgname = package.split("/", 1)
         if not os.path.isdir(file_save_path):
             os.makedirs(file_save_path)
-        file_save_path += "/" + pkgname + etpConst['packagesext']
+        file_save_path += os.path.sep + pkgcat + ":" + \
+            pkgname + etpConst['packagesext']
         dbdir = os.path.join(self._get_vdb_path(), pkgcat, pkgname)
 
         trees = self._portage.db["/"]
