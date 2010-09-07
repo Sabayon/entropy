@@ -873,11 +873,11 @@ def update(options):
 
         # package them
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
+        store_dir = Entropy._get_local_store_directory()
         for x in to_be_added:
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
-                Entropy.Spm().generate_package(x[0],
-                    Entropy._get_local_store_directory())
+                Entropy.Spm().generate_package(x[0], store_dir)
             except OSError:
                 entropy.tools.print_traceback()
                 print_info(brown("    !!! ")+bold("%s..." % (
