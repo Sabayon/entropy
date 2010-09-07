@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-09-04 15:07+0200\n"
+"POT-Creation-Date: 2010-09-08 00:29+0200\n"
 "PO-Revision-Date: 2010-03-10 19:30+0100\n"
 "Last-Translator: Bystrík Pešl <bystrik.pesl@gmail.com>\n"
 "Language-Team: \n"
@@ -16,60 +16,60 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../../libraries/entropy/db/__init__.py:4309
+#: ../../libraries/entropy/db/__init__.py:4305
 msgid "Syncing current database"
 msgstr "Synchronizácia aktuálnej databázy"
 
-#: ../../libraries/entropy/db/__init__.py:4310
+#: ../../libraries/entropy/db/__init__.py:4306
 #: ../../libraries/entropy/client/interfaces/db.py:262
 msgid "please wait"
 msgstr "prosím čakajte"
 
-#: ../../libraries/entropy/db/__init__.py:4325
+#: ../../libraries/entropy/db/__init__.py:4321
 msgid "Removing entry"
 msgstr "Odstraňovanie položky"
 
-#: ../../libraries/entropy/db/__init__.py:4344
+#: ../../libraries/entropy/db/__init__.py:4340
 msgid "Adding entry"
 msgstr "Pridávanie položky"
 
-#: ../../libraries/entropy/db/__init__.py:4413
+#: ../../libraries/entropy/db/__init__.py:4409
 msgid "Exporting database table"
 msgstr "Exportovanie tabuľky databázy"
 
-#: ../../libraries/entropy/db/__init__.py:4453
+#: ../../libraries/entropy/db/__init__.py:4449
 msgid "Database Export complete."
 msgstr "Export datábazy dokončený."
 
-#: ../../libraries/entropy/db/__init__.py:5004
-#: ../../libraries/entropy/db/__init__.py:5017
-#: ../../libraries/entropy/db/__init__.py:5089
-#: ../../libraries/entropy/db/__init__.py:5192
-#: ../../libraries/entropy/db/__init__.py:5205
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2251
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2345
+#: ../../libraries/entropy/db/__init__.py:5000
+#: ../../libraries/entropy/db/__init__.py:5013
+#: ../../libraries/entropy/db/__init__.py:5088
+#: ../../libraries/entropy/db/__init__.py:5200
+#: ../../libraries/entropy/db/__init__.py:5213
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2292
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2386
 #: ../../libraries/entropy/client/interfaces/client.py:807
 #: ../../client/text_rescue.py:219 ../../client/text_rescue.py:224
 #: ../../client/text_rescue.py:605 ../../client/text_rescue.py:792
-#: ../../client/text_ui.py:726 ../../client/text_ui.py:1635
-#: ../../client/text_ui.py:1694 ../../client/text_ui.py:1720
-#: ../../client/text_ui.py:1813
+#: ../../client/text_ui.py:773 ../../client/text_ui.py:1682
+#: ../../client/text_ui.py:1741 ../../client/text_ui.py:1767
+#: ../../client/text_ui.py:1860
 msgid "ATTENTION"
 msgstr "POZOR"
 
-#: ../../libraries/entropy/db/__init__.py:5005
+#: ../../libraries/entropy/db/__init__.py:5001
 msgid "Spm error occured"
 msgstr "Vyskytla sa Spm chyba"
 
-#: ../../libraries/entropy/db/__init__.py:5018
+#: ../../libraries/entropy/db/__init__.py:5014
 msgid "Spm Unique Identifier not found for"
 msgstr ""
 
-#: ../../libraries/entropy/db/__init__.py:5091
+#: ../../libraries/entropy/db/__init__.py:5090
 msgid "updating repository metadata layout, please wait!"
 msgstr ""
 
-#: ../../libraries/entropy/db/__init__.py:5193
+#: ../../libraries/entropy/db/__init__.py:5201
 msgid "generating provided_libs metadata, please wait!"
 msgstr ""
 
@@ -101,8 +101,8 @@ msgid "package move actions complete"
 msgstr "Operácia presunu balíčku dokončená"
 
 #: ../../libraries/entropy/db/skel.py:1509
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2231
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2382
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2272
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2423
 #: ../../libraries/entropy/server/interfaces/main.py:1510
 msgid "WARNING"
 msgstr "VAROVANIE"
@@ -243,7 +243,11 @@ msgstr ""
 msgid "Applications and libraries for X11"
 msgstr "Aplikácie k zmazaniu"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:721
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:328
+msgid "Reloading Portage modules"
+msgstr ""
+
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:750
 #: ../../libraries/entropy/server/transceivers.py:281
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1648
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3160
@@ -251,54 +255,54 @@ msgstr "Aplikácie k zmazaniu"
 msgid "error"
 msgstr "chyba"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:723
-#: ../../libraries/entropy/client/interfaces/package.py:285
-#: ../../libraries/entropy/client/interfaces/package.py:554
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:752
+#: ../../libraries/entropy/client/interfaces/package.py:301
+#: ../../libraries/entropy/client/interfaces/package.py:570
 #: ../../server/server_reagent.py:118 ../../server/server_reagent.py:135
 msgid "not found"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2021
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2098
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2165
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2483
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2645
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4390
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2061
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2139
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2206
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2521
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2700
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4443
 #: ../../libraries/entropy/client/interfaces/trigger.py:207
 msgid "QA"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2022
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2099
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2062
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2140
 #, fuzzy
 msgid "Cannot run Source Package Manager trigger for"
 msgstr "Manažér zdroja balíčka"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2031
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2108
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2071
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2149
 #: ../../libraries/entropy/client/interfaces/trigger.py:210
 msgid "Please report it"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2032
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2109
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2072
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2150
 msgid "Attach this"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2166
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2207
 #, fuzzy
 msgid "Cannot run SPM configure phase for"
 msgstr "Nie je možne spustiť vyčistenie SPM, chyba"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2170
-#: ../../libraries/entropy/client/interfaces/package.py:2360
-#: ../../libraries/entropy/client/interfaces/package.py:2397
-#: ../../libraries/entropy/client/interfaces/package.py:2478
-#: ../../libraries/entropy/client/interfaces/package.py:2485
-#: ../../libraries/entropy/client/interfaces/package.py:2529
-#: ../../libraries/entropy/client/interfaces/package.py:2557
-#: ../../libraries/entropy/client/interfaces/package.py:2754
-#: ../../libraries/entropy/client/interfaces/package.py:2774
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2211
+#: ../../libraries/entropy/client/interfaces/package.py:2376
+#: ../../libraries/entropy/client/interfaces/package.py:2413
+#: ../../libraries/entropy/client/interfaces/package.py:2494
+#: ../../libraries/entropy/client/interfaces/package.py:2501
+#: ../../libraries/entropy/client/interfaces/package.py:2545
+#: ../../libraries/entropy/client/interfaces/package.py:2573
+#: ../../libraries/entropy/client/interfaces/package.py:2770
+#: ../../libraries/entropy/client/interfaces/package.py:2790
 #: ../../libraries/entropy/client/interfaces/trigger.py:48
 #: ../../libraries/entropy/security.py:643 ../../client/text_rescue.py:741
 #: ../../server/server_reagent.py:595 ../../sulfur/src/sulfur/events.py:917
@@ -307,159 +311,159 @@ msgstr "Nie je možne spustiť vyčistenie SPM, chyba"
 msgid "Error"
 msgstr "Chyba"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2215
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2256
 #, fuzzy
 msgid "repackaging"
 msgstr "Rozbaľovanie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2232
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2273
 msgid "Cannot complete quickpkg for atom"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2234
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2385
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2275
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2426
 msgid "do it manually"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2252
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2293
 msgid "package files rebuild did not run properly"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2253
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2294
 msgid "Please update packages manually"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2346
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2387
 #, fuzzy
 msgid "forcing package updates"
 msgstr "označenie balíčka"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2347
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2388
 msgid "Syncing with"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2383
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2424
 msgid "Cannot complete quickpkg for atoms"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2484
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2522
 #, fuzzy
 msgid "Cannot stat path"
 msgstr "Nie je možné nainštalovať"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2646
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2701
 msgid "Cannot update Portage database to destination"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2669
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2724
 msgid "SPM uid update error"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2737
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2792
 msgid "Cannot update SPM installed pkgs file"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2945
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3097
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3000
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3152
 #: ../../libraries/entropy/server/interfaces/mirrors.py:705
 #: ../../client/text_security.py:98 ../../client/text_smart.py:112
 msgid "does not exist"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2945
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3000
 #, fuzzy
 msgid "Overwriting"
 msgstr "Prepísať?"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2993
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3048
 #, fuzzy
 msgid "variable differs"
 msgstr "Dostupné aktualizácie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2993
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3082
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3048
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3137
 #, fuzzy
 msgid "Updating"
 msgstr "Hodnotenie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3008
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3063
 #, fuzzy
 msgid "updating critical variables"
 msgstr "dostupných aktualizácií"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3082
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3137
 msgid "differs"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3097
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3152
 #, fuzzy
 msgid "Reverting"
 msgstr "Hodnotenie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3112
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3167
 #, fuzzy
 msgid "Skipping configuration files update, you are not root."
 msgstr "Skúmanie konfiguračných súborov k aktualizácii"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3581
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3633
 #, fuzzy
 msgid "Error calculating dependencies"
 msgstr "Výpočet závislostí"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3730
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3782
 msgid "missing right parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3800
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3852
 msgid "missing atom list in"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3803
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3855
 msgid "Conditional without target in"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3833
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3885
 msgid "Conditional with no target"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3838
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3890
 msgid "Empty target in string"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3838
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3847
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3890
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3899
 #, fuzzy
 msgid "Deprecated"
 msgstr "Venované:"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3847
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3899
 msgid "Nested use flags without parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3887
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3939
 #, fuzzy
 msgid "Conditional without flag"
 msgstr "Aplikácie bez skupiny"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3903
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3955
 msgid "Conditional without parenthesis"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4170
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4223
 #: ../../libraries/entropy/server/interfaces/main.py:2512
 msgid "not supported"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4171
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4224
 msgid "Probably Portage API has changed"
 msgstr ""
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4255
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4308
 #, fuzzy
 msgid "IOError while reading"
 msgstr "Chyba sťahovania z"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4391
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4444
 #, fuzzy
 msgid "illegal Entropy package tag in ebuild"
 msgstr "Entropy Správca balíčkov"
@@ -759,9 +763,9 @@ msgstr ""
 #: ../../libraries/entropy/client/interfaces/db.py:517
 #: ../../libraries/entropy/client/interfaces/db.py:1772
 #: ../../libraries/entropy/qa.py:677 ../../client/text_rescue.py:284
-#: ../../client/text_rescue.py:297 ../../client/text_ui.py:1415
-#: ../../client/text_ui.py:1416 ../../client/text_ui.py:1418
-#: ../../client/text_ui.py:1419 ../../sulfur/src/sulfur/dialogs.py:2747
+#: ../../client/text_rescue.py:297 ../../client/text_ui.py:1462
+#: ../../client/text_ui.py:1463 ../../client/text_ui.py:1465
+#: ../../client/text_ui.py:1466 ../../sulfur/src/sulfur/dialogs.py:2746
 #: ../../sulfur/src/sulfur/__init__.py:1243
 #: ../../sulfur/src/sulfur/packages.py:99
 #: ../../sulfur/src/sulfur/packages.py:415
@@ -794,7 +798,7 @@ msgstr "Chcete pokračovať ?"
 #: ../../libraries/entropy/server/interfaces/main.py:3008
 #: ../../libraries/entropy/server/interfaces/main.py:3607
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3091
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3406
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3416
 #: ../../libraries/entropy/output.py:721 ../../libraries/entropy/qa.py:389
 #: ../../client/equo.py:904 ../../client/text_configuration.py:115
 #: ../../client/text_configuration.py:143 ../../client/text_rescue.py:230
@@ -803,15 +807,15 @@ msgstr "Chcete pokračovať ?"
 #: ../../client/text_rescue.py:611 ../../client/text_rescue.py:614
 #: ../../client/text_rescue.py:618 ../../client/text_smart.py:145
 #: ../../client/text_smart.py:327 ../../client/text_smart.py:479
-#: ../../client/text_ui.py:480 ../../client/text_ui.py:879
-#: ../../client/text_ui.py:1423 ../../client/text_ui.py:1682
-#: ../../client/text_ui.py:1760 ../../client/text_ui.py:1892
-#: ../../client/text_ui.py:1978 ../../client/text_ui.py:2150
-#: ../../client/text_ui.py:2233 ../../server/server_activator.py:124
+#: ../../client/text_ui.py:480 ../../client/text_ui.py:926
+#: ../../client/text_ui.py:1470 ../../client/text_ui.py:1729
+#: ../../client/text_ui.py:1807 ../../client/text_ui.py:1939
+#: ../../client/text_ui.py:2025 ../../client/text_ui.py:2197
+#: ../../client/text_ui.py:2280 ../../server/server_activator.py:124
 #: ../../server/server_key.py:222 ../../server/server_key.py:309
 #: ../../server/server_reagent.py:293 ../../server/server_reagent.py:446
 #: ../../server/server_reagent.py:494 ../../server/server_reagent.py:552
-#: ../../server/server_reagent.py:868 ../../sulfur/src/sulfur/dialogs.py:1349
+#: ../../server/server_reagent.py:867 ../../sulfur/src/sulfur/dialogs.py:1348
 #: ../../sulfur/src/sulfur/entropyapi.py:379
 msgid "No"
 msgstr ""
@@ -841,8 +845,8 @@ msgstr ""
 #: ../../libraries/entropy/server/interfaces/main.py:2059
 #: ../../libraries/entropy/server/interfaces/main.py:2454
 #: ../../libraries/entropy/server/interfaces/main.py:3007
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3405
-#: ../../client/text_ui.py:878 ../../server/server_reagent.py:445
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3415
+#: ../../client/text_ui.py:925 ../../server/server_reagent.py:445
 #: ../../server/server_reagent.py:493 ../../server/server_reagent.py:551
 msgid "Would you like to continue ?"
 msgstr ""
@@ -869,7 +873,7 @@ msgstr ""
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1993
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2819
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2897
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3468
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3478
 msgid "reason"
 msgstr "dôvod"
 
@@ -925,9 +929,9 @@ msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:2001
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2361
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3392
-#: ../../libraries/entropy/client/interfaces/package.py:1112
-#: ../../client/text_ui.py:2041
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3402
+#: ../../libraries/entropy/client/interfaces/package.py:1128
+#: ../../client/text_ui.py:2088
 msgid "remove"
 msgstr ""
 
@@ -1045,13 +1049,13 @@ msgid "This is the list of broken packages"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:2552
-#: ../../libraries/entropy/client/interfaces/package.py:206
-#: ../../libraries/entropy/client/interfaces/package.py:465
+#: ../../libraries/entropy/client/interfaces/package.py:222
+#: ../../libraries/entropy/client/interfaces/package.py:481
 msgid "Mirror"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:2571
-#: ../../server/server_reagent.py:903
+#: ../../server/server_reagent.py:902
 msgid "Statistics"
 msgstr ""
 
@@ -1227,12 +1231,12 @@ msgid "Running dependencies test"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:3368
-#: ../../client/text_ui.py:2140
+#: ../../client/text_ui.py:2187
 msgid "These are the dependencies not found"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:3375
-#: ../../client/text_ui.py:2144
+#: ../../client/text_ui.py:2191
 msgid "Needed by"
 msgstr ""
 
@@ -1254,7 +1258,7 @@ msgid "Dumping results into these files"
 msgstr ""
 
 #: ../../libraries/entropy/server/interfaces/main.py:3453
-#: ../../client/text_ui.py:2196
+#: ../../client/text_ui.py:2243
 msgid "System is healthy"
 msgstr ""
 
@@ -1905,39 +1909,39 @@ msgstr ""
 msgid "at least one mirror synced properly!"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3312
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3322
 msgid "tidy"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3314
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3324
 msgid "collecting expired packages"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3329
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3339
 msgid "collecting expired packages in the selected branches"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3371
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3381
 msgid "nothing to remove on this branch"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3382
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3392
 msgid "these are the expired packages"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3434
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3444
 msgid "removing packages remotely"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3466
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3476
 msgid "remove errors"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3481
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3491
 msgid "removing packages locally"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3510
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3520
 msgid "removing"
 msgstr ""
 
@@ -2049,8 +2053,8 @@ msgstr ""
 #: ../../server/server_reagent.py:764 ../../server/server_reagent.py:765
 #: ../../server/server_reagent.py:790 ../../server/server_reagent.py:803
 #: ../../server/server_reagent.py:804 ../../server/server_reagent.py:819
-#: ../../sulfur/src/sulfur/dialogs.py:1352
-#: ../../sulfur/src/sulfur/dialogs.py:1813
+#: ../../sulfur/src/sulfur/dialogs.py:1351
+#: ../../sulfur/src/sulfur/dialogs.py:1812
 #: ../../sulfur/src/sulfur/entropyapi.py:379
 #: ../../sulfur/src/sulfur/events.py:723
 msgid "Yes"
@@ -2280,7 +2284,7 @@ msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:216
 #: ../../libraries/entropy/client/services/system/methods.py:225
-#: ../../client/text_query.py:1684 ../../sulfur/src/sulfur/dialogs.py:1123
+#: ../../client/text_query.py:1684 ../../sulfur/src/sulfur/dialogs.py:1122
 msgid "USE flags"
 msgstr ""
 
@@ -2330,7 +2334,7 @@ msgstr ""
 #: ../../libraries/entropy/client/services/system/methods.py:381
 #: ../../libraries/entropy/client/services/system/methods.py:388
 #: ../../libraries/entropy/client/services/system/methods.py:397
-#: ../../sulfur/src/sulfur/views.py:2834
+#: ../../sulfur/src/sulfur/views.py:2835
 msgid "Repository Identifier"
 msgstr "Identifikátor repozitáru"
 
@@ -2471,8 +2475,8 @@ msgstr ""
 #: ../../client/text_repositories.py:457 ../../client/text_security.py:113
 #: ../../client/text_ugc.py:387 ../../client/text_ugc.py:578
 #: ../../server/server_activator.py:203 ../../server/server_activator.py:235
-#: ../../server/server_activator.py:267 ../../sulfur/src/sulfur/dialogs.py:380
-#: ../../sulfur/src/sulfur/dialogs.py:632
+#: ../../server/server_activator.py:267 ../../sulfur/src/sulfur/dialogs.py:379
+#: ../../sulfur/src/sulfur/dialogs.py:631
 #: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "Title"
 msgstr "Názov"
@@ -2501,7 +2505,7 @@ msgstr ""
 #: ../../libraries/entropy/client/interfaces/methods.py:93
 #: ../../client/text_ui.py:485 ../../server/server_reagent.py:113
 #: ../../server/server_reagent.py:130 ../../sulfur/src/sulfur/__init__.py:1011
-#: ../../sulfur/src/sulfur/views.py:2764
+#: ../../sulfur/src/sulfur/views.py:2765
 msgid "Repository"
 msgstr "Repozitár"
 
@@ -2834,24 +2838,24 @@ msgstr ""
 msgid "Checking %s"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1210
+#: ../../libraries/entropy/client/interfaces/dep.py:1216
 msgid "Sorting dependencies"
 msgstr "Triedenie závislostí"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1343
+#: ../../libraries/entropy/client/interfaces/dep.py:1349
 msgid "Calculating inverse dependencies for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1574
+#: ../../libraries/entropy/client/interfaces/dep.py:1580
 msgid "Calculating available packages for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1772
+#: ../../libraries/entropy/client/interfaces/dep.py:1778
 msgid "Calculating updates"
 msgstr "Výpočet aktualizácií"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:74
-#: ../../client/text_ui.py:1637
+#: ../../client/text_ui.py:1684
 msgid "is not available"
 msgstr "nie je dostupný"
 
@@ -2906,7 +2910,7 @@ msgstr ""
 #: ../../libraries/entropy/client/interfaces/methods.py:812
 #: ../../libraries/entropy/client/interfaces/sets.py:188
 #: ../../libraries/entropy/client/interfaces/sets.py:215
-#: ../../libraries/entropy/const.py:567
+#: ../../libraries/entropy/const.py:568
 msgid "All fine"
 msgstr ""
 
@@ -2927,39 +2931,39 @@ msgid "Database restored successfully"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/methods.py:896
-#: ../../libraries/entropy/client/interfaces/package.py:2877
+#: ../../libraries/entropy/client/interfaces/package.py:2893
 #: ../../client/text_rescue.py:511 ../../sulfur/src/sulfur/entropyapi.py:227
 msgid "Removing"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1297
+#: ../../libraries/entropy/client/interfaces/methods.py:1301
 msgid "Resources unlocked, let's go!"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1316
+#: ../../libraries/entropy/client/interfaces/methods.py:1320
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1325
+#: ../../libraries/entropy/client/interfaces/methods.py:1329
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1349
+#: ../../libraries/entropy/client/interfaces/methods.py:1353
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1463
+#: ../../libraries/entropy/client/interfaces/methods.py:1467
 msgid "Checking response time of"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1485
+#: ../../libraries/entropy/client/interfaces/methods.py:1489
 msgid "Mirror response time"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1815
+#: ../../libraries/entropy/client/interfaces/methods.py:1819
 msgid "not a valid method"
 msgstr ""
 
@@ -2971,409 +2975,409 @@ msgstr ""
 msgid "Not yet prepared"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:208
-#: ../../libraries/entropy/client/interfaces/package.py:467
+#: ../../libraries/entropy/client/interfaces/package.py:224
+#: ../../libraries/entropy/client/interfaces/package.py:483
 msgid "maximum failure threshold reached"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:249
+#: ../../libraries/entropy/client/interfaces/package.py:265
 msgid "success"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:258
+#: ../../libraries/entropy/client/interfaces/package.py:274
 msgid "Aggregated transfer rate"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:261
-#: ../../libraries/entropy/client/interfaces/package.py:519
-#: ../../libraries/entropy/client/interfaces/package.py:2292
+#: ../../libraries/entropy/client/interfaces/package.py:277
+#: ../../libraries/entropy/client/interfaces/package.py:535
+#: ../../libraries/entropy/client/interfaces/package.py:2308
 msgid "second"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:276
-#: ../../libraries/entropy/client/interfaces/package.py:535
-#: ../../libraries/entropy/client/interfaces/package.py:2307
+#: ../../libraries/entropy/client/interfaces/package.py:292
+#: ../../libraries/entropy/client/interfaces/package.py:551
+#: ../../libraries/entropy/client/interfaces/package.py:2323
 msgid "Error downloading from"
 msgstr "Chyba sťahovania z"
 
-#: ../../libraries/entropy/client/interfaces/package.py:280
+#: ../../libraries/entropy/client/interfaces/package.py:296
 msgid "data not available on this mirror"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:283
-#: ../../libraries/entropy/client/interfaces/package.py:544
+#: ../../libraries/entropy/client/interfaces/package.py:299
+#: ../../libraries/entropy/client/interfaces/package.py:560
 msgid "wrong checksum"
 msgstr ""
 
 #. timeout!
-#: ../../libraries/entropy/client/interfaces/package.py:287
+#: ../../libraries/entropy/client/interfaces/package.py:303
 msgid "timeout error"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:289
-#: ../../libraries/entropy/client/interfaces/package.py:565
-#: ../../libraries/entropy/client/interfaces/package.py:2318
+#: ../../libraries/entropy/client/interfaces/package.py:305
+#: ../../libraries/entropy/client/interfaces/package.py:581
+#: ../../libraries/entropy/client/interfaces/package.py:2334
 msgid "discarded download"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:292
-#: ../../libraries/entropy/client/interfaces/package.py:568
-#: ../../libraries/entropy/client/interfaces/package.py:2320
+#: ../../libraries/entropy/client/interfaces/package.py:308
+#: ../../libraries/entropy/client/interfaces/package.py:584
+#: ../../libraries/entropy/client/interfaces/package.py:2336
 msgid "unknown reason"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:495
+#: ../../libraries/entropy/client/interfaces/package.py:511
 msgid "Downloading from"
 msgstr "Sťahovanie z"
 
-#: ../../libraries/entropy/client/interfaces/package.py:513
-#: ../../libraries/entropy/client/interfaces/package.py:2289
+#: ../../libraries/entropy/client/interfaces/package.py:529
+#: ../../libraries/entropy/client/interfaces/package.py:2305
 msgid "Successfully downloaded from"
 msgstr "Úspešne stiahnuté z"
 
-#: ../../libraries/entropy/client/interfaces/package.py:518
-#: ../../libraries/entropy/client/interfaces/package.py:2292
+#: ../../libraries/entropy/client/interfaces/package.py:534
+#: ../../libraries/entropy/client/interfaces/package.py:2308
 msgid "at"
 msgstr "pri"
 
-#: ../../libraries/entropy/client/interfaces/package.py:541
-#: ../../libraries/entropy/client/interfaces/package.py:2313
+#: ../../libraries/entropy/client/interfaces/package.py:557
+#: ../../libraries/entropy/client/interfaces/package.py:2329
 msgid "file not available on this mirror"
 msgstr "súbor nie je dostupný na tomto zrkadle"
 
-#: ../../libraries/entropy/client/interfaces/package.py:549
+#: ../../libraries/entropy/client/interfaces/package.py:565
 msgid "Disabling resume"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:559
+#: ../../libraries/entropy/client/interfaces/package.py:575
 msgid "timeout, retrying on this mirror"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:562
+#: ../../libraries/entropy/client/interfaces/package.py:578
 msgid "timeout, giving up"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:664
+#: ../../libraries/entropy/client/interfaces/package.py:680
 msgid "Package signature verification error for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:696
+#: ../../libraries/entropy/client/interfaces/package.py:712
 msgid "disabled"
 msgstr "vypnuté"
 
-#: ../../libraries/entropy/client/interfaces/package.py:709
+#: ../../libraries/entropy/client/interfaces/package.py:725
 msgid "Checking package signature"
 msgstr "Kontrolovanie podpisu balíčka"
 
-#: ../../libraries/entropy/client/interfaces/package.py:720
+#: ../../libraries/entropy/client/interfaces/package.py:736
 msgid "Package signature verification"
 msgstr "Overenie podpisu balíčka"
 
-#: ../../libraries/entropy/client/interfaces/package.py:722
+#: ../../libraries/entropy/client/interfaces/package.py:738
 msgid "temporarily unavailable"
 msgstr "dočasne nedostupný"
 
-#: ../../libraries/entropy/client/interfaces/package.py:732
+#: ../../libraries/entropy/client/interfaces/package.py:748
 msgid "Package signature"
 msgstr "Podpis balíčka"
 
-#: ../../libraries/entropy/client/interfaces/package.py:734
+#: ../../libraries/entropy/client/interfaces/package.py:750
 msgid "does not match the recorded one"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:744
+#: ../../libraries/entropy/client/interfaces/package.py:760
 msgid "matches"
 msgstr "sa zhoduje"
 
-#: ../../libraries/entropy/client/interfaces/package.py:758
+#: ../../libraries/entropy/client/interfaces/package.py:774
 msgid "Checking package checksum..."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:771
+#: ../../libraries/entropy/client/interfaces/package.py:787
 msgid "Package checksum matches"
 msgstr "Kontrolný súčet balíčka sa zhoduje"
 
-#: ../../libraries/entropy/client/interfaces/package.py:792
+#: ../../libraries/entropy/client/interfaces/package.py:808
 #, python-format
 msgid "Checksum does not match. Download attempt #%s"
 msgstr "Kontrolný súčet balíčka sa nezhoduje. Pokus stiahnutia #%s"
 
-#: ../../libraries/entropy/client/interfaces/package.py:809
+#: ../../libraries/entropy/client/interfaces/package.py:825
 msgid "Cannot properly fetch package! Quitting."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:821
+#: ../../libraries/entropy/client/interfaces/package.py:837
 msgid "Cannot fetch package or checksum does not match"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:822
+#: ../../libraries/entropy/client/interfaces/package.py:838
 msgid "Try to download latest repositories"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:966
+#: ../../libraries/entropy/client/interfaces/package.py:982
 msgid "configuration phase"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:982
+#: ../../libraries/entropy/client/interfaces/package.py:998
 msgid "Removing from Entropy"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1090
+#: ../../libraries/entropy/client/interfaces/package.py:1106
 msgid "Removing config file, never modified"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1113
-#: ../../libraries/entropy/client/interfaces/package.py:2193
+#: ../../libraries/entropy/client/interfaces/package.py:1129
+#: ../../libraries/entropy/client/interfaces/package.py:2209
 msgid "Protecting config file"
 msgstr "Chránený konfiguračný súbor"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1132
+#: ../../libraries/entropy/client/interfaces/package.py:1148
 msgid "This package contains a badly encoded file !!!"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1186
+#: ../../libraries/entropy/client/interfaces/package.py:1202
 msgid "Collision found during removal of"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1282
+#: ../../libraries/entropy/client/interfaces/package.py:1298
 msgid "Updating database"
 msgstr "aktualizácia dababázy"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1686
+#: ../../libraries/entropy/client/interfaces/package.py:1702
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1711
+#: ../../libraries/entropy/client/interfaces/package.py:1727
 msgid "directory expected, symlink found"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1714
-#: ../../libraries/entropy/client/interfaces/package.py:1937
+#: ../../libraries/entropy/client/interfaces/package.py:1730
+#: ../../libraries/entropy/client/interfaces/package.py:1953
 msgid "Removing in 20 seconds !!"
 msgstr ""
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
 #. by the user
-#: ../../libraries/entropy/client/interfaces/package.py:1843
+#: ../../libraries/entropy/client/interfaces/package.py:1859
 msgid "Automerging config file, never modified"
 msgstr "Automatické zlučovanie konfiguračného súúboru, nikdy nemenené"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1872
-#: ../../libraries/entropy/client/interfaces/package.py:1894
+#: ../../libraries/entropy/client/interfaces/package.py:1888
+#: ../../libraries/entropy/client/interfaces/package.py:1910
 msgid "Circular symlink issue"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1934
+#: ../../libraries/entropy/client/interfaces/package.py:1950
 msgid "file expected, directory found"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1988
+#: ../../libraries/entropy/client/interfaces/package.py:2004
 msgid "File move error"
 msgstr "Chyba pri presúvaní súboru"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1991
+#: ../../libraries/entropy/client/interfaces/package.py:2007
 msgid "please report"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2149
+#: ../../libraries/entropy/client/interfaces/package.py:2165
 msgid "Skipping file installation/removal"
 msgstr "Preskočenie inštalácie/odstránenia súboru"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2210
+#: ../../libraries/entropy/client/interfaces/package.py:2226
 msgid "Collision found during install for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2213
+#: ../../libraries/entropy/client/interfaces/package.py:2229
 msgid "cannot overwrite"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2273
-#: ../../libraries/entropy/client/interfaces/package.py:2376
+#: ../../libraries/entropy/client/interfaces/package.py:2289
+#: ../../libraries/entropy/client/interfaces/package.py:2392
 msgid "Downloading"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2300
+#: ../../libraries/entropy/client/interfaces/package.py:2316
 msgid "Local path"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2335
+#: ../../libraries/entropy/client/interfaces/package.py:2351
 msgid "Downloading archive"
 msgstr "Sťahovanie archívu"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2359
+#: ../../libraries/entropy/client/interfaces/package.py:2375
 msgid "Package cannot be fetched. Try to update repositories"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2378
+#: ../../libraries/entropy/client/interfaces/package.py:2394
 msgid "archives"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2395
+#: ../../libraries/entropy/client/interfaces/package.py:2411
 msgid "Some packages cannot be fetched"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2396
+#: ../../libraries/entropy/client/interfaces/package.py:2412
 msgid "Try to update your repositories and retry"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2424
+#: ../../libraries/entropy/client/interfaces/package.py:2440
 msgid "Package cannot be downloaded, unknown error."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2433
+#: ../../libraries/entropy/client/interfaces/package.py:2449
 msgid "Installed package in queue vanished, skipping."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2452
+#: ../../libraries/entropy/client/interfaces/package.py:2468
 msgid "Unpacking package"
 msgstr "Rozbaľovanie balíčka"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2463
+#: ../../libraries/entropy/client/interfaces/package.py:2479
 msgid "Merging package"
 msgstr "Zlučovanie balíčka"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2476
+#: ../../libraries/entropy/client/interfaces/package.py:2492
 msgid "You are running out of disk space"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2477
+#: ../../libraries/entropy/client/interfaces/package.py:2493
 msgid "I bet, you're probably Michele"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2481
+#: ../../libraries/entropy/client/interfaces/package.py:2497
 msgid "An error occured while trying to unpack the package"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2484
-#: ../../libraries/entropy/client/interfaces/package.py:2528
+#: ../../libraries/entropy/client/interfaces/package.py:2500
+#: ../../libraries/entropy/client/interfaces/package.py:2544
 msgid "Check if your system is healthy"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2498
+#: ../../libraries/entropy/client/interfaces/package.py:2514
 msgid "Installing package"
 msgstr "Inštalácia balíčka"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2516
+#: ../../libraries/entropy/client/interfaces/package.py:2532
 #, fuzzy
 msgid "<3 debug files installation enabled <3"
 msgstr "Preskočenie inštalácie/odstránenia súboru"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2527
+#: ../../libraries/entropy/client/interfaces/package.py:2543
 msgid "An error occured while trying to install the package"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2542
+#: ../../libraries/entropy/client/interfaces/package.py:2558
 msgid "Removing data"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2555
+#: ../../libraries/entropy/client/interfaces/package.py:2571
 msgid "An error occured while trying to remove the package"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2556
+#: ../../libraries/entropy/client/interfaces/package.py:2572
 msgid "Check if you have enough disk space on your hard disk"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2570
-#: ../../libraries/entropy/client/interfaces/package.py:2885
+#: ../../libraries/entropy/client/interfaces/package.py:2586
+#: ../../libraries/entropy/client/interfaces/package.py:2901
 #: ../../client/text_tools.py:67
 msgid "Cleaning"
 msgstr "Čistenie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2637
+#: ../../libraries/entropy/client/interfaces/package.py:2653
 #, fuzzy
 msgid "Cleaning previously installed application data."
 msgstr "Čistenie predošlých nainštalovaných informácií..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:2739
+#: ../../libraries/entropy/client/interfaces/package.py:2755
 msgid "Configuring package"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2751
-#: ../../libraries/entropy/client/interfaces/package.py:2771
+#: ../../libraries/entropy/client/interfaces/package.py:2767
+#: ../../libraries/entropy/client/interfaces/package.py:2787
 msgid "An error occured while trying to configure the package"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2753
+#: ../../libraries/entropy/client/interfaces/package.py:2769
 msgid "Make sure that your system is healthy"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2773
+#: ../../libraries/entropy/client/interfaces/package.py:2789
 msgid "It seems that Source Package Manager entry is missing"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2797
+#: ../../libraries/entropy/client/interfaces/package.py:2813
 msgid "Installed package vanished"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2803
+#: ../../libraries/entropy/client/interfaces/package.py:2819
 msgid "Fetch not available"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2810
+#: ../../libraries/entropy/client/interfaces/package.py:2826
 #: ../../sulfur/src/sulfur/entropyapi.py:130
 msgid "Fetching"
 msgstr "Získavanie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2817
+#: ../../libraries/entropy/client/interfaces/package.py:2833
 msgid "Multi Fetching"
 msgstr "Viacnásobné prinášanie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2818
-#: ../../libraries/entropy/client/interfaces/package.py:2837
-#: ../../client/text_query.py:774 ../../client/text_ui.py:1038
+#: ../../libraries/entropy/client/interfaces/package.py:2834
+#: ../../libraries/entropy/client/interfaces/package.py:2853
+#: ../../client/text_query.py:774 ../../client/text_ui.py:1085
 #: ../../server/server_reagent.py:549
 msgid "packages"
 msgstr "balíčky"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2824
+#: ../../libraries/entropy/client/interfaces/package.py:2840
 msgid "Fetching sources"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2830
+#: ../../libraries/entropy/client/interfaces/package.py:2846
 msgid "Verifying"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2836
+#: ../../libraries/entropy/client/interfaces/package.py:2852
 msgid "Multi Verification"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2843
+#: ../../libraries/entropy/client/interfaces/package.py:2859
 msgid "Unpacking"
 msgstr "Rozbaľovanie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2849
+#: ../../libraries/entropy/client/interfaces/package.py:2865
 msgid "Merging"
 msgstr "Zlučovanie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2862
+#: ../../libraries/entropy/client/interfaces/package.py:2878
 #: ../../sulfur/src/sulfur/entropyapi.py:269
 msgid "Installing"
 msgstr "Inštalovanie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2893
+#: ../../libraries/entropy/client/interfaces/package.py:2909
 msgid "Postinstall"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2901
+#: ../../libraries/entropy/client/interfaces/package.py:2917
 msgid "Preinstall"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2909
+#: ../../libraries/entropy/client/interfaces/package.py:2925
 msgid "Preremove"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2917
+#: ../../libraries/entropy/client/interfaces/package.py:2933
 msgid "Postremove"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2931
+#: ../../libraries/entropy/client/interfaces/package.py:2947
 msgid "Configuring"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:2978
+#: ../../libraries/entropy/client/interfaces/package.py:2994
 #: ../../libraries/entropy/client/interfaces/repository.py:259
 #: ../../libraries/entropy/security.py:1026 ../../client/equo.py:579
 #: ../../client/text_rescue.py:88 ../../client/text_security.py:67
@@ -3382,11 +3386,11 @@ msgstr ""
 msgid "Another Entropy is currently running."
 msgstr "Beží ina výzva Entropy. Nie je možné spracovať frontu."
 
-#: ../../libraries/entropy/client/interfaces/package.py:2989
+#: ../../libraries/entropy/client/interfaces/package.py:3005
 msgid "Cannot acquire Entropy resources lock."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:3002
+#: ../../libraries/entropy/client/interfaces/package.py:3018
 msgid "An error occured. Action aborted."
 msgstr ""
 
@@ -3494,146 +3498,146 @@ msgstr "pred-odstraňovacia fáza"
 msgid "post-remove phase"
 msgstr "po-odstraňovacia fáza"
 
-#: ../../libraries/entropy/const.py:545
+#: ../../libraries/entropy/const.py:546
 #, fuzzy
 msgid "Runtime dependency"
 msgstr "závislosť"
 
-#: ../../libraries/entropy/const.py:546
+#: ../../libraries/entropy/const.py:547
 #, fuzzy
 msgid "Post dependency"
 msgstr "závislosť"
 
-#: ../../libraries/entropy/const.py:547
+#: ../../libraries/entropy/const.py:548
 msgid "Manually added (by staff) dependency"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:548
+#: ../../libraries/entropy/const.py:549
 #, fuzzy
 msgid "Build dependency"
 msgstr "závislosť"
 
-#: ../../libraries/entropy/const.py:568
+#: ../../libraries/entropy/const.py:569
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../libraries/entropy/const.py:637
+#: ../../libraries/entropy/const.py:638
 msgid "reason not available"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:638
+#: ../../libraries/entropy/const.py:639
 msgid "user package.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:639
+#: ../../libraries/entropy/const.py:640
 msgid "system keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:640
+#: ../../libraries/entropy/const.py:641
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:641
+#: ../../libraries/entropy/const.py:642
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:642
+#: ../../libraries/entropy/const.py:643
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:643
+#: ../../libraries/entropy/const.py:644
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:644
+#: ../../libraries/entropy/const.py:645
 msgid "completely masked (by keyword?)"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:645
+#: ../../libraries/entropy/const.py:646
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:646
+#: ../../libraries/entropy/const.py:647
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:647
+#: ../../libraries/entropy/const.py:648
 msgid "user license.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:648
+#: ../../libraries/entropy/const.py:649
 msgid "user live unmask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:649
+#: ../../libraries/entropy/const.py:650
 msgid "user live mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:675
+#: ../../libraries/entropy/const.py:676
 msgid "Comments"
 msgstr "Komentáre"
 
-#: ../../libraries/entropy/const.py:676
+#: ../../libraries/entropy/const.py:677
 #, fuzzy
 msgid "BBcode Documents"
 msgstr "BBcode Dokumenty"
 
-#: ../../libraries/entropy/const.py:677
+#: ../../libraries/entropy/const.py:678
 msgid "Images/Screenshots"
 msgstr "Obrázky/Snímky obrazovky"
 
-#: ../../libraries/entropy/const.py:678
+#: ../../libraries/entropy/const.py:679
 msgid "Generic Files"
 msgstr "Všeobecné súbory"
 
-#: ../../libraries/entropy/const.py:679
+#: ../../libraries/entropy/const.py:680
 msgid "YouTube(tm) Videos"
 msgstr "YouTube(tm) videá"
 
-#: ../../libraries/entropy/const.py:682
+#: ../../libraries/entropy/const.py:683
 msgid "Comment"
 msgstr "Komentár"
 
-#: ../../libraries/entropy/const.py:683
+#: ../../libraries/entropy/const.py:684
 #, fuzzy
 msgid "BBcode Document"
 msgstr "BBcode Dokument"
 
-#: ../../libraries/entropy/const.py:684
+#: ../../libraries/entropy/const.py:685
 msgid "Image/Screenshot"
 msgstr "Obrázok/Snímok obrazovky"
 
-#: ../../libraries/entropy/const.py:685
+#: ../../libraries/entropy/const.py:686
 msgid "Generic File"
 msgstr "Všeobecný súbor"
 
-#: ../../libraries/entropy/const.py:686
+#: ../../libraries/entropy/const.py:687
 msgid "YouTube(tm) Video"
 msgstr "YouTube(tm) video"
 
-#: ../../libraries/entropy/fetchers.py:436
+#: ../../libraries/entropy/fetchers.py:670
 msgid "infinite"
 msgstr ""
 
-#: ../../libraries/entropy/fetchers.py:508
+#: ../../libraries/entropy/fetchers.py:742
 msgid "[F]"
 msgstr ""
 
-#: ../../libraries/entropy/fetchers.py:509
-#: ../../libraries/entropy/fetchers.py:842
+#: ../../libraries/entropy/fetchers.py:743
+#: ../../libraries/entropy/fetchers.py:1076
 msgid "ETA"
 msgstr ""
 
-#: ../../libraries/entropy/fetchers.py:510
-#: ../../libraries/entropy/fetchers.py:843
+#: ../../libraries/entropy/fetchers.py:744
+#: ../../libraries/entropy/fetchers.py:1077
 msgid "sec"
 msgstr "s"
 
-#: ../../libraries/entropy/fetchers.py:724
+#: ../../libraries/entropy/fetchers.py:958
 msgid "Aggregated download"
 msgstr ""
 
-#: ../../libraries/entropy/fetchers.py:726
+#: ../../libraries/entropy/fetchers.py:960
 #: ../../sulfur/src/sulfur/__init__.py:1820
 msgid "items"
 msgstr "položiek"
@@ -3655,7 +3659,7 @@ msgstr ""
 msgid "Selected number"
 msgstr ""
 
-#: ../../libraries/entropy/output.py:825 ../../client/text_ui.py:1491
+#: ../../libraries/entropy/output.py:825 ../../client/text_ui.py:1538
 msgid "Please select an option"
 msgstr ""
 
@@ -5176,9 +5180,9 @@ msgstr ""
 #: ../../client/text_query.py:313 ../../client/text_query.py:1562
 #: ../../client/text_query.py:1563 ../../server/server_key.py:365
 #: ../../server/server_key.py:369 ../../server/server_reagent.py:210
-#: ../../sulfur/src/sulfur/dialogs.py:505
-#: ../../sulfur/src/sulfur/dialogs.py:601
-#: ../../sulfur/src/sulfur/dialogs.py:604
+#: ../../sulfur/src/sulfur/dialogs.py:504
+#: ../../sulfur/src/sulfur/dialogs.py:600
+#: ../../sulfur/src/sulfur/dialogs.py:603
 msgid "N/A"
 msgstr ""
 
@@ -5199,7 +5203,7 @@ msgstr ""
 msgid "No match for"
 msgstr ""
 
-#: ../../client/text_query.py:607 ../../sulfur/src/sulfur/dialogs.py:2834
+#: ../../client/text_query.py:607 ../../sulfur/src/sulfur/dialogs.py:2833
 msgid "Atom"
 msgstr ""
 
@@ -5215,7 +5219,7 @@ msgstr ""
 msgid "Inverse Dependencies Search"
 msgstr ""
 
-#: ../../client/text_query.py:697 ../../client/text_ui.py:2209
+#: ../../client/text_query.py:697 ../../client/text_ui.py:2256
 msgid "Matched"
 msgstr ""
 
@@ -5237,8 +5241,8 @@ msgid "Needed Search"
 msgstr ""
 
 #: ../../client/text_query.py:737 ../../client/text_query.py:808
-#: ../../client/text_query.py:1580 ../../sulfur/src/sulfur/dialogs.py:1468
-#: ../../sulfur/src/sulfur/dialogs.py:2348
+#: ../../client/text_query.py:1580 ../../sulfur/src/sulfur/dialogs.py:1467
+#: ../../sulfur/src/sulfur/dialogs.py:2347
 msgid "Package"
 msgstr "Balíček"
 
@@ -5314,10 +5318,10 @@ msgstr ""
 msgid "Removal Search"
 msgstr ""
 
-#: ../../client/text_query.py:1002 ../../client/text_ui.py:950
-#: ../../client/text_ui.py:1095 ../../client/text_ui.py:1185
-#: ../../client/text_ui.py:1646 ../../client/text_ui.py:1731
-#: ../../client/text_ui.py:1824 ../../server/server_reagent.py:431
+#: ../../client/text_query.py:1002 ../../client/text_ui.py:997
+#: ../../client/text_ui.py:1142 ../../client/text_ui.py:1232
+#: ../../client/text_ui.py:1693 ../../client/text_ui.py:1778
+#: ../../client/text_ui.py:1871 ../../server/server_reagent.py:431
 #: ../../server/server_reagent.py:481
 msgid "No packages found"
 msgstr ""
@@ -5330,11 +5334,11 @@ msgstr ""
 msgid "These are the packages that would added to the removal queue"
 msgstr ""
 
-#: ../../client/text_query.py:1035 ../../client/text_ui.py:760
-#: ../../client/text_ui.py:804 ../../client/text_ui.py:814
-#: ../../client/text_ui.py:1262 ../../client/text_ui.py:1280
-#: ../../client/text_ui.py:1341 ../../client/text_ui.py:1747
-#: ../../client/text_ui.py:1863 ../../sulfur/src/sulfur/package.py:307
+#: ../../client/text_query.py:1035 ../../client/text_ui.py:807
+#: ../../client/text_ui.py:851 ../../client/text_ui.py:861
+#: ../../client/text_ui.py:1309 ../../client/text_ui.py:1327
+#: ../../client/text_ui.py:1388 ../../client/text_ui.py:1794
+#: ../../client/text_ui.py:1910 ../../sulfur/src/sulfur/package.py:307
 #: ../../sulfur/src/sulfur/package.py:314 ../../sulfur/src/sulfur/views.py:342
 #: ../../sulfur/src/sulfur/views.py:382
 msgid "Not available"
@@ -5342,8 +5346,8 @@ msgstr ""
 
 #: ../../client/text_query.py:1036 ../../client/text_smart.py:141
 #: ../../client/text_smart.py:324 ../../client/text_smart.py:474
-#: ../../client/text_ui.py:695 ../../client/text_ui.py:1342
-#: ../../client/text_ui.py:1530 ../../sulfur/src/sulfur/package.py:273
+#: ../../client/text_ui.py:695 ../../client/text_ui.py:1389
+#: ../../client/text_ui.py:1577 ../../sulfur/src/sulfur/package.py:273
 msgid "from"
 msgstr ""
 
@@ -5357,8 +5361,8 @@ msgstr ""
 
 #: ../../client/text_query.py:1150 ../../client/text_query.py:1718
 #: ../../client/text_ugc.py:397 ../../client/text_ugc.py:590
-#: ../../sulfur/src/sulfur/dialogs.py:638
-#: ../../sulfur/src/sulfur/dialogs.py:1115
+#: ../../sulfur/src/sulfur/dialogs.py:637
+#: ../../sulfur/src/sulfur/dialogs.py:1114
 #: ../../sulfur/src/sulfur/sulfur.glade.h:118
 msgid "Keywords"
 msgstr "Kľúčové slová"
@@ -5408,8 +5412,8 @@ msgid "Description Search"
 msgstr ""
 
 #. client info
-#: ../../client/text_query.py:1561 ../../client/text_ui.py:801
-#: ../../client/text_ui.py:841
+#: ../../client/text_query.py:1561 ../../client/text_ui.py:848
+#: ../../client/text_ui.py:888
 msgid "Not installed"
 msgstr ""
 
@@ -5447,13 +5451,13 @@ msgid "Slot"
 msgstr "Slot"
 
 #: ../../client/text_query.py:1634 ../../client/text_ugc.py:595
-#: ../../sulfur/src/sulfur/dialogs.py:623
+#: ../../sulfur/src/sulfur/dialogs.py:622
 #: ../../sulfur/src/sulfur/sulfur.glade.h:236
 msgid "Size"
 msgstr ""
 
 #: ../../client/text_query.py:1637 ../../client/text_ugc.py:602
-#: ../../client/text_ui.py:1098
+#: ../../client/text_ui.py:1145
 msgid "Download"
 msgstr ""
 
@@ -5462,7 +5466,7 @@ msgid "Checksum"
 msgstr ""
 
 #: ../../client/text_query.py:1645 ../../server/server_reagent.py:280
-#: ../../sulfur/src/sulfur/dialogs.py:1131
+#: ../../sulfur/src/sulfur/dialogs.py:1130
 msgid "Dependencies"
 msgstr "Závislosti"
 
@@ -5476,8 +5480,8 @@ msgstr ""
 
 #: ../../client/text_query.py:1676 ../../client/text_security.py:118
 #: ../../client/text_ugc.py:392 ../../server/server_key.py:372
-#: ../../sulfur/src/sulfur/dialogs.py:634
-#: ../../sulfur/src/sulfur/views.py:2609 ../../sulfur/src/sulfur/views.py:2835
+#: ../../sulfur/src/sulfur/dialogs.py:633
+#: ../../sulfur/src/sulfur/views.py:2610 ../../sulfur/src/sulfur/views.py:2836
 #: ../../sulfur/src/sulfur/sulfur.glade.h:63
 msgid "Description"
 msgstr "Popis"
@@ -5494,7 +5498,7 @@ msgstr ""
 msgid "CXXFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1707 ../../sulfur/src/sulfur/dialogs.py:1099
+#: ../../client/text_query.py:1707 ../../sulfur/src/sulfur/dialogs.py:1098
 msgid "Sources"
 msgstr "Zdroje"
 
@@ -5510,8 +5514,8 @@ msgstr ""
 msgid "Created"
 msgstr ""
 
-#: ../../client/text_query.py:1735 ../../client/text_ui.py:1526
-#: ../../sulfur/src/sulfur/dialogs.py:3139
+#: ../../client/text_query.py:1735 ../../client/text_ui.py:1573
+#: ../../sulfur/src/sulfur/dialogs.py:3138
 msgid "License"
 msgstr "Licencia"
 
@@ -5631,8 +5635,8 @@ msgid "never synced"
 msgstr ""
 
 #: ../../client/text_repositories.py:247
-#: ../../sulfur/src/sulfur/dialogs.py:361
-#: ../../sulfur/src/sulfur/views.py:2586
+#: ../../sulfur/src/sulfur/dialogs.py:360
+#: ../../sulfur/src/sulfur/views.py:2587
 msgid "Status"
 msgstr "Stav"
 
@@ -5686,7 +5690,7 @@ msgstr ""
 
 #: ../../client/text_repositories.py:376 ../../client/text_ugc.py:587
 #: ../../server/server_activator.py:209
-#: ../../sulfur/src/sulfur/dialogs.py:1190
+#: ../../sulfur/src/sulfur/dialogs.py:1189
 #: ../../sulfur/src/sulfur/sulfur.glade.h:48
 msgid "Content"
 msgstr "Obsah"
@@ -6131,7 +6135,7 @@ msgstr ""
 msgid "directory does not exist"
 msgstr ""
 
-#: ../../client/text_smart.py:193 ../../client/text_ui.py:722
+#: ../../client/text_smart.py:193 ../../client/text_ui.py:769
 #: ../../sulfur/src/sulfur/events.py:439
 msgid "is not a valid Entropy package"
 msgstr ""
@@ -6317,7 +6321,7 @@ msgstr "Chcete poslať?"
 msgid "Vote added, thank you!"
 msgstr ""
 
-#: ../../client/text_ugc.py:298 ../../sulfur/src/sulfur/dialogs.py:1244
+#: ../../client/text_ugc.py:298 ../../sulfur/src/sulfur/dialogs.py:1243
 msgid "Number of downloads"
 msgstr "Počet stiahnutí"
 
@@ -6421,8 +6425,8 @@ msgstr ""
 #: ../../client/text_ui.py:207 ../../client/text_ui.py:231
 #: ../../client/text_ui.py:243 ../../client/text_ui.py:250
 #: ../../client/text_ui.py:258 ../../client/text_ui.py:266
-#: ../../client/text_ui.py:1200 ../../client/text_ui.py:1879
-#: ../../server/server_reagent.py:1092
+#: ../../client/text_ui.py:1247 ../../client/text_ui.py:1926
+#: ../../server/server_reagent.py:1091
 msgid "Nothing to do"
 msgstr ""
 
@@ -6465,19 +6469,19 @@ msgid "Packages matching already up to date"
 msgstr ""
 
 #. None or {}
-#: ../../client/text_ui.py:370 ../../client/text_ui.py:1452
-#: ../../client/text_ui.py:2001
+#: ../../client/text_ui.py:370 ../../client/text_ui.py:1499
+#: ../../client/text_ui.py:2048
 msgid "Nothing to resume"
 msgstr ""
 
-#: ../../client/text_ui.py:381 ../../client/text_ui.py:1467
-#: ../../client/text_ui.py:2008
+#: ../../client/text_ui.py:381 ../../client/text_ui.py:1514
+#: ../../client/text_ui.py:2055
 msgid "Resume cache corrupted"
 msgstr ""
 
-#: ../../client/text_ui.py:396 ../../client/text_ui.py:1085
-#: ../../client/text_ui.py:1147 ../../client/text_ui.py:1624
-#: ../../client/text_ui.py:1708 ../../client/text_ui.py:1789
+#: ../../client/text_ui.py:396 ../../client/text_ui.py:1132
+#: ../../client/text_ui.py:1194 ../../client/text_ui.py:1671
+#: ../../client/text_ui.py:1755 ../../client/text_ui.py:1836
 msgid "Running with"
 msgstr ""
 
@@ -6576,333 +6580,333 @@ msgstr ""
 msgid "Probably needed by"
 msgstr ""
 
-#: ../../client/text_ui.py:724 ../../sulfur/src/sulfur/events.py:441
+#: ../../client/text_ui.py:771 ../../sulfur/src/sulfur/events.py:441
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
-#: ../../client/text_ui.py:729
+#: ../../client/text_ui.py:776
 msgid "Skipped"
 msgstr ""
 
-#: ../../client/text_ui.py:742
+#: ../../client/text_ui.py:789
 #, fuzzy
 msgid "These are the packages that should be MANUALLY removed"
 msgstr "Toto sú balíčky, ktoré by boli skryté"
 
-#: ../../client/text_ui.py:745 ../../client/text_ui.py:1329
+#: ../../client/text_ui.py:792 ../../client/text_ui.py:1376
 #: ../../sulfur/src/sulfur/packages.py:591
 msgid "These are the packages that would be removed"
 msgstr ""
 
 #. now print the selected packages
-#: ../../client/text_ui.py:780 ../../client/text_ui.py:1832
+#: ../../client/text_ui.py:827 ../../client/text_ui.py:1879
 msgid "These are the chosen packages"
 msgstr ""
 
-#: ../../client/text_ui.py:829
+#: ../../client/text_ui.py:876
 msgid "Versions"
 msgstr ""
 
-#: ../../client/text_ui.py:850
+#: ../../client/text_ui.py:897
 msgid "Switch repo"
 msgstr ""
 
-#: ../../client/text_ui.py:851 ../../client/text_ui.py:854
+#: ../../client/text_ui.py:898 ../../client/text_ui.py:901
 #: ../../sulfur/src/sulfur/sulfur.glade.h:188
 msgid "Reinstall"
 msgstr "Preinštalovať"
 
-#: ../../client/text_ui.py:856 ../../sulfur/src/sulfur/__init__.py:388
+#: ../../client/text_ui.py:903 ../../sulfur/src/sulfur/__init__.py:388
 #: ../../sulfur/src/sulfur/sulfur.glade.h:106
 msgid "Install"
 msgstr "Nainštalovať"
 
-#: ../../client/text_ui.py:858
+#: ../../client/text_ui.py:905
 msgid "Upgrade"
 msgstr ""
 
-#: ../../client/text_ui.py:860
+#: ../../client/text_ui.py:907
 msgid "Downgrade"
 msgstr ""
 
-#: ../../client/text_ui.py:866
+#: ../../client/text_ui.py:913
 msgid "Action"
 msgstr ""
 
-#: ../../client/text_ui.py:869 ../../client/text_ui.py:1754
-#: ../../client/text_ui.py:1876
+#: ../../client/text_ui.py:916 ../../client/text_ui.py:1801
+#: ../../client/text_ui.py:1923
 msgid "Packages involved"
 msgstr ""
 
-#: ../../client/text_ui.py:875
+#: ../../client/text_ui.py:922
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr ""
 
-#: ../../client/text_ui.py:893
+#: ../../client/text_ui.py:940
 msgid "When you wrote"
 msgstr ""
 
-#: ../../client/text_ui.py:895
+#: ../../client/text_ui.py:942
 msgid "You Meant(tm)"
 msgstr ""
 
-#: ../../client/text_ui.py:896
+#: ../../client/text_ui.py:943
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:920
+#: ../../client/text_ui.py:967
 msgid "Calculating dependencies"
 msgstr "Výpočet závislostí"
 
-#: ../../client/text_ui.py:926
+#: ../../client/text_ui.py:973
 msgid "Cannot find needed dependencies"
 msgstr ""
 
-#: ../../client/text_ui.py:953
+#: ../../client/text_ui.py:1000
 msgid "Source code download"
 msgstr ""
 
-#: ../../client/text_ui.py:981
+#: ../../client/text_ui.py:1028
 msgid "sources fetch"
 msgstr ""
 
-#: ../../client/text_ui.py:1036 ../../client/text_ui.py:1062
+#: ../../client/text_ui.py:1083 ../../client/text_ui.py:1109
 msgid "fetch"
 msgstr ""
 
-#: ../../client/text_ui.py:1111 ../../client/text_ui.py:2065
+#: ../../client/text_ui.py:1158 ../../client/text_ui.py:2112
 msgid "All done"
 msgstr "Všetko hotovo"
 
-#: ../../client/text_ui.py:1164 ../../sulfur/src/sulfur/__init__.py:2045
+#: ../../client/text_ui.py:1211 ../../sulfur/src/sulfur/__init__.py:2045
 msgid "Please update the following critical packages"
 msgstr ""
 
-#: ../../client/text_ui.py:1170 ../../sulfur/src/sulfur/__init__.py:2046
+#: ../../client/text_ui.py:1217 ../../sulfur/src/sulfur/__init__.py:2046
 msgid "You should install them as soon as possible"
 msgstr ""
 
-#: ../../client/text_ui.py:1216
+#: ../../client/text_ui.py:1263
 msgid "These are the packages that would be installed"
 msgstr "Toto sú balíčky, ktoré budú nainštalované"
 
-#: ../../client/text_ui.py:1330
+#: ../../client/text_ui.py:1377
 msgid "conflicting/substituted"
 msgstr ""
 
 #. show download info
-#: ../../client/text_ui.py:1347
+#: ../../client/text_ui.py:1394
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Balíčky, ktoré jepotrebné nainštalovať/aktualizovať/downgradovať"
 
-#: ../../client/text_ui.py:1349 ../../client/text_ui.py:1938
+#: ../../client/text_ui.py:1396 ../../client/text_ui.py:1985
 msgid "Packages needing to be removed"
 msgstr "Balíčky, ktoré je treba odstrániť"
 
-#: ../../client/text_ui.py:1353
+#: ../../client/text_ui.py:1400
 msgid "Packages needing to be installed"
 msgstr "Balíčky, ktoré je treba nainštalovať"
 
-#: ../../client/text_ui.py:1358
+#: ../../client/text_ui.py:1405
 msgid "Packages needing to be reinstalled"
 msgstr "Balíčky, ktoré je treba preinštalovať"
 
-#: ../../client/text_ui.py:1363
+#: ../../client/text_ui.py:1410
 msgid "Packages needing to be updated"
 msgstr "Balíčky, ktoré je treba aktualizovať"
 
-#: ../../client/text_ui.py:1368
+#: ../../client/text_ui.py:1415
 msgid "Packages needing to be downgraded"
 msgstr "Balíčky, ktoré je treba downgradovať"
 
-#: ../../client/text_ui.py:1378
+#: ../../client/text_ui.py:1425
 msgid "Download size"
 msgstr "Veľkosť na stiahnutie"
 
-#: ../../client/text_ui.py:1384
+#: ../../client/text_ui.py:1431
 msgid "Used disk space"
 msgstr "Veľkosť použitého miesta na disku"
 
-#: ../../client/text_ui.py:1386 ../../client/text_ui.py:1957
+#: ../../client/text_ui.py:1433 ../../client/text_ui.py:2004
 #: ../../sulfur/src/sulfur/packages.py:488
 msgid "Freed disk space"
 msgstr "Veľkosť uvoľneného miesta na disku"
 
-#: ../../client/text_ui.py:1398
+#: ../../client/text_ui.py:1445
 msgid "You need at least"
 msgstr "Potrebujete najmenej"
 
-#: ../../client/text_ui.py:1400
+#: ../../client/text_ui.py:1447
 msgid "of free space"
 msgstr "voľného miesta"
 
-#: ../../client/text_ui.py:1412
+#: ../../client/text_ui.py:1459
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr "Nemáte dostatok miesta na inštaláciu. Uvoľnite miesto na"
 
-#: ../../client/text_ui.py:1422
+#: ../../client/text_ui.py:1469
 msgid "Would you like to execute the queue ?"
 msgstr "Chcete spracovať frontu?"
 
-#: ../../client/text_ui.py:1465 ../../client/text_ui.py:2006
+#: ../../client/text_ui.py:1512 ../../client/text_ui.py:2053
 msgid "Resuming previous operations"
 msgstr "Obnovenie predchádzajúcich operácií"
 
-#: ../../client/text_ui.py:1492
+#: ../../client/text_ui.py:1539
 msgid "Read the license"
 msgstr "Prečítajte licenciu"
 
-#: ../../client/text_ui.py:1493
+#: ../../client/text_ui.py:1540
 msgid "Accept the license (I've read it)"
 msgstr "Prijať licenciu (čítal som ju)"
 
-#: ../../client/text_ui.py:1494
+#: ../../client/text_ui.py:1541
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr "Prijať licenciu a viac už sa nepýtať (čítal som ju)"
 
-#: ../../client/text_ui.py:1495
+#: ../../client/text_ui.py:1542
 msgid "Quit"
 msgstr "Ukončiť"
 
 #. wait user interaction
-#: ../../client/text_ui.py:1497
+#: ../../client/text_ui.py:1544
 msgid "Your choice (type a number and press enter)"
 msgstr "Vaša voľba (napíšte číslo a stlačte enter)"
 
-#: ../../client/text_ui.py:1523
+#: ../../client/text_ui.py:1570
 msgid "You need to accept the licenses below"
 msgstr "Je potrebné prijať nasledujúce licencie"
 
-#: ../../client/text_ui.py:1526
+#: ../../client/text_ui.py:1573
 msgid "needed by"
 msgstr "potrebný pre"
 
-#: ../../client/text_ui.py:1545
+#: ../../client/text_ui.py:1592
 msgid "No file viewer"
 msgstr "Žiaden prehliadač súboru"
 
-#: ../../client/text_ui.py:1545
+#: ../../client/text_ui.py:1592
 msgid "License saved into"
 msgstr "Licencia je uložená"
 
-#: ../../client/text_ui.py:1562
+#: ../../client/text_ui.py:1609
 msgid "Download incomplete"
 msgstr "Sťahovanie nedokončené"
 
-#: ../../client/text_ui.py:1567
+#: ../../client/text_ui.py:1614
 msgid "Download complete"
 msgstr "Sťahovanie dokončené"
 
-#: ../../client/text_ui.py:1584
+#: ../../client/text_ui.py:1631
 msgid "install"
 msgstr "nainštalovať"
 
-#: ../../client/text_ui.py:1612
+#: ../../client/text_ui.py:1659
 msgid "Installation complete"
 msgstr "Inštalácia dokončená"
 
-#: ../../client/text_ui.py:1650
+#: ../../client/text_ui.py:1697
 msgid "These are the packages that would be masked"
 msgstr "Toto sú balíčky, ktoré by boli skryté"
 
-#: ../../client/text_ui.py:1681 ../../server/server_key.py:221
+#: ../../client/text_ui.py:1728 ../../server/server_key.py:221
 msgid "Would you like to continue?"
 msgstr "Chcete pokračovať ?"
 
-#: ../../client/text_ui.py:1696
+#: ../../client/text_ui.py:1743
 msgid "action not executed"
 msgstr "činnosť nebola vykonaná"
 
-#: ../../client/text_ui.py:1722 ../../client/text_ui.py:1815
+#: ../../client/text_ui.py:1769 ../../client/text_ui.py:1862
 msgid "is not installed"
 msgstr "nie je nainštalované"
 
-#: ../../client/text_ui.py:1748
+#: ../../client/text_ui.py:1795
 msgid "Installed from"
 msgstr "Inštalované z"
 
-#: ../../client/text_ui.py:1759
+#: ../../client/text_ui.py:1806
 msgid "Would you like to configure them now ?"
 msgstr "Chcete ich nakonfigurovať teraz?"
 
-#: ../../client/text_ui.py:1767
+#: ../../client/text_ui.py:1814
 msgid "configure"
 msgstr "konfigurovať"
 
-#: ../../client/text_ui.py:1852
+#: ../../client/text_ui.py:1899
 msgid "vital package"
 msgstr "zásadný balík"
 
-#: ../../client/text_ui.py:1853
+#: ../../client/text_ui.py:1900
 msgid "Removal forbidden"
 msgstr "Odstraňovanie bolo zakázané"
 
-#: ../../client/text_ui.py:1884
+#: ../../client/text_ui.py:1931
 msgid "Would you like to calculate dependencies ?"
 msgstr "Chcete vypočítať závislosti?"
 
-#: ../../client/text_ui.py:1887 ../../server/server_reagent.py:801
+#: ../../client/text_ui.py:1934 ../../server/server_reagent.py:801
 msgid "Would you like to remove them now ?"
 msgstr "Chcete ich odstrániť teraz?"
 
-#: ../../client/text_ui.py:1911
+#: ../../client/text_ui.py:1958
 msgid "Ouch!"
 msgstr ""
 
-#: ../../client/text_ui.py:1912
+#: ../../client/text_ui.py:1959
 msgid "the following system packages were pulled in"
 msgstr ""
 
-#: ../../client/text_ui.py:1926
+#: ../../client/text_ui.py:1973
 #, fuzzy
 msgid "Cannot calculate dependencies"
 msgstr "Výpočet závislostí"
 
-#: ../../client/text_ui.py:1927
+#: ../../client/text_ui.py:1974
 msgid "please run equo as superuser"
 msgstr ""
 
-#: ../../client/text_ui.py:1964
+#: ../../client/text_ui.py:2011
 msgid "Total bandwidth wasted"
 msgstr ""
 
-#: ../../client/text_ui.py:1976
+#: ../../client/text_ui.py:2023
 msgid "Would you like to proceed ?"
 msgstr ""
 
-#: ../../client/text_ui.py:1982
+#: ../../client/text_ui.py:2029
 msgid "Starting removal in"
 msgstr ""
 
-#: ../../client/text_ui.py:2071
+#: ../../client/text_ui.py:2118
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 
-#: ../../client/text_ui.py:2097
+#: ../../client/text_ui.py:2144
 msgid "Running dependency test"
 msgstr ""
 
-#: ../../client/text_ui.py:2149
+#: ../../client/text_ui.py:2196
 msgid "Would you like to install the available packages ?"
 msgstr ""
 
-#: ../../client/text_ui.py:2154 ../../client/text_ui.py:2238
+#: ../../client/text_ui.py:2201 ../../client/text_ui.py:2285
 msgid "Installing available packages in"
 msgstr ""
 
-#: ../../client/text_ui.py:2155 ../../client/text_ui.py:2239
+#: ../../client/text_ui.py:2202 ../../client/text_ui.py:2286
 msgid "10 seconds"
 msgstr "10 sekúnd"
 
-#: ../../client/text_ui.py:2202
+#: ../../client/text_ui.py:2249
 msgid "Libraries/Executables statistics"
 msgstr ""
 
-#: ../../client/text_ui.py:2204
+#: ../../client/text_ui.py:2251
 msgid "Not matched"
 msgstr ""
 
-#: ../../client/text_ui.py:2232
+#: ../../client/text_ui.py:2279
 msgid "Would you like to install them ?"
 msgstr ""
 
@@ -7237,7 +7241,7 @@ msgstr ""
 msgid "Enabling"
 msgstr ""
 
-#: ../../server/server_reagent.py:109 ../../sulfur/src/sulfur/dialogs.py:2114
+#: ../../server/server_reagent.py:109 ../../sulfur/src/sulfur/dialogs.py:2113
 msgid "Enabled"
 msgstr ""
 
@@ -7424,66 +7428,66 @@ msgstr ""
 msgid "These are the packages that would be added/updated"
 msgstr "Toto sú balíčky, ktoré by boli nainštalované/aktualizované"
 
-#: ../../server/server_reagent.py:856
+#: ../../server/server_reagent.py:855
 msgid "warning"
 msgstr "upozornenie"
 
-#: ../../server/server_reagent.py:863
+#: ../../server/server_reagent.py:862
 msgid "Would you like to package them now ?"
 msgstr ""
 
-#: ../../server/server_reagent.py:864
+#: ../../server/server_reagent.py:863
 msgid "inside"
 msgstr ""
 
 #. package them
-#: ../../server/server_reagent.py:876
+#: ../../server/server_reagent.py:875
 msgid "Compressing packages"
 msgstr ""
 
-#: ../../server/server_reagent.py:885
+#: ../../server/server_reagent.py:884
 msgid "Ignoring broken Spm entry, please recompile it"
 msgstr ""
 
-#: ../../server/server_reagent.py:892
+#: ../../server/server_reagent.py:891
 msgid "Nothing to do, check later."
 msgstr ""
 
-#: ../../server/server_reagent.py:903
+#: ../../server/server_reagent.py:902
 msgid "Entries handled"
 msgstr ""
 
-#: ../../server/server_reagent.py:927
+#: ../../server/server_reagent.py:926
 #, fuzzy
 msgid "local revision"
 msgstr "Revízia"
 
-#: ../../server/server_reagent.py:929
+#: ../../server/server_reagent.py:928
 #, fuzzy
 msgid "local packages"
 msgstr "zásadný balík"
 
-#: ../../server/server_reagent.py:936
+#: ../../server/server_reagent.py:935
 #, fuzzy
 msgid "stored packages"
 msgstr "označené balíčky"
 
-#: ../../server/server_reagent.py:941
+#: ../../server/server_reagent.py:940
 #, fuzzy
 msgid "upload packages"
 msgstr "balíčky"
 
-#: ../../server/server_reagent.py:1002
+#: ../../server/server_reagent.py:1001
 #, fuzzy
 msgid ""
 "These are the newly available packages, either updatable or not installed"
 msgstr "Toto sú balíčky, ktoré budú nainštalované"
 
-#: ../../server/server_reagent.py:1055
+#: ../../server/server_reagent.py:1054
 msgid "No package sets found"
 msgstr ""
 
-#: ../../server/server_reagent.py:1063
+#: ../../server/server_reagent.py:1062
 msgid "package set not found"
 msgstr ""
 
@@ -7532,67 +7536,72 @@ msgstr ""
 "Vedeli ste, že si môžete upraviť farby rozhrania na karte Predvoľby po "
 "zapnutí Pokročilého režimu?"
 
-#: ../../sulfur/src/sulfur/dialogs.py:173
+#: ../../sulfur/src/sulfur/dialogs.py:174
 msgid "No Repository Identifier"
 msgstr "Žiaden identifikátor repozitáru"
 
-#: ../../sulfur/src/sulfur/dialogs.py:177
+#: ../../sulfur/src/sulfur/dialogs.py:178
 msgid "Duplicated Repository Identifier"
 msgstr "Duplicitný identifikátor repozitára"
 
-#: ../../sulfur/src/sulfur/dialogs.py:183
+#: ../../sulfur/src/sulfur/dialogs.py:184
 msgid "No download mirrors"
 msgstr "Nesťahovať zrkadlá"
 
-#: ../../sulfur/src/sulfur/dialogs.py:190
-msgid "Database URL must start either with http:// or ftp:// or file://"
-msgstr "URL databázy musí začínať s http:// alebo ftp:// alebo file://"
+#: ../../sulfur/src/sulfur/dialogs.py:189
+msgid "Repository URL must be a valid URL"
+msgstr ""
 
-#: ../../sulfur/src/sulfur/dialogs.py:198
+#: ../../sulfur/src/sulfur/dialogs.py:197
 msgid "Repository Services Port not valid"
 msgstr "Port služby repozitáru nie je platný"
 
-#: ../../sulfur/src/sulfur/dialogs.py:206
+#: ../../sulfur/src/sulfur/dialogs.py:205
 msgid "Secure Services Port not valid"
 msgstr "Port bečnostných služieb nie je platný"
 
-#: ../../sulfur/src/sulfur/dialogs.py:236
+#: ../../sulfur/src/sulfur/dialogs.py:235
 #: ../../sulfur/src/sulfur/dialogs.py:249
 msgid "Insert URL"
 msgstr "Vložte URL"
 
-#: ../../sulfur/src/sulfur/dialogs.py:237
-#: ../../sulfur/src/sulfur/dialogs.py:250
+#: ../../sulfur/src/sulfur/dialogs.py:236
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Vložte a stiahnite zrkadlo, HTTP alebo FTP"
 
-#: ../../sulfur/src/sulfur/dialogs.py:257
-msgid "You must enter either a HTTP or a FTP url."
+#: ../../sulfur/src/sulfur/dialogs.py:250
+#, fuzzy
+msgid "Enter a download mirror URL"
+msgstr "Vložte a stiahnite zrkadlo, HTTP alebo FTP"
+
+#: ../../sulfur/src/sulfur/dialogs.py:256
+#, fuzzy
+msgid "You must enter either a valid URL."
 msgstr "Musíte vložiť buď HTTP alebo FTP url."
 
-#: ../../sulfur/src/sulfur/dialogs.py:262
+#: ../../sulfur/src/sulfur/dialogs.py:261
 msgid "Insert Repository"
 msgstr "Vložiť repozitár"
 
-#: ../../sulfur/src/sulfur/dialogs.py:263
+#: ../../sulfur/src/sulfur/dialogs.py:262
 msgid "Insert Repository identification string"
 msgstr "Vložte indentifikačný reťazec repozitáru"
 
-#: ../../sulfur/src/sulfur/dialogs.py:274
+#: ../../sulfur/src/sulfur/dialogs.py:273
 msgid "This Repository identification string is malformed"
 msgstr "Identifikačný reťazec repozitáru je poškodený"
 
-#: ../../sulfur/src/sulfur/dialogs.py:290
-#: ../../sulfur/src/sulfur/dialogs.py:297
+#: ../../sulfur/src/sulfur/dialogs.py:289
+#: ../../sulfur/src/sulfur/dialogs.py:296
 msgid "Wrong entries, errors"
 msgstr "Nesprávne položky, chyby"
 
-#: ../../sulfur/src/sulfur/dialogs.py:326
+#: ../../sulfur/src/sulfur/dialogs.py:325
 #: ../../sulfur/src/sulfur/sulfur.glade.h:204
 msgid "Repositories Notice Board"
 msgstr "Vývesná tabuľa repozitárov"
 
-#: ../../sulfur/src/sulfur/dialogs.py:327
+#: ../../sulfur/src/sulfur/dialogs.py:326
 msgid ""
 "Here below you will find a list of important news directly issued by your "
 "applications maintainers.\n"
@@ -7601,295 +7610,295 @@ msgstr ""
 "Tu nájdete zoznam dôležitých správ práve vydaných vašim správcom aplikácií.\n"
 "Dvojtým kliknutím na jednotlivé položky získate podrobnejšie informácie."
 
-#: ../../sulfur/src/sulfur/dialogs.py:356
+#: ../../sulfur/src/sulfur/dialogs.py:355
 msgid "Notice"
 msgstr "Poznámka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:598
+#: ../../sulfur/src/sulfur/dialogs.py:597
 msgid "Expand to browse"
 msgstr "Rozbaľ k prehliadaniu"
 
-#: ../../sulfur/src/sulfur/dialogs.py:621
+#: ../../sulfur/src/sulfur/dialogs.py:620
 #: ../../sulfur/src/sulfur/sulfur.glade.h:102
 msgid "Identifier"
 msgstr "Názov"
 
-#: ../../sulfur/src/sulfur/dialogs.py:627
+#: ../../sulfur/src/sulfur/dialogs.py:626
 #: ../../sulfur/src/sulfur/sulfur.glade.h:16
 msgid "Author"
 msgstr "Autor"
 
-#: ../../sulfur/src/sulfur/dialogs.py:800
+#: ../../sulfur/src/sulfur/dialogs.py:799
 msgid "Timeout Error"
 msgstr "Chyba časového limitu"
 
-#: ../../sulfur/src/sulfur/dialogs.py:801
+#: ../../sulfur/src/sulfur/dialogs.py:800
 msgid "Connection timed out, sorry!"
 msgstr "Časový limit pripojenia vypršal, prepáčte!"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1022
+#: ../../sulfur/src/sulfur/dialogs.py:1021
 msgid "Package ChangeLog"
 msgstr "Denník zmien balíčka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1076
+#: ../../sulfur/src/sulfur/dialogs.py:1075
 #: ../../sulfur/src/sulfur/views.py:1847
 msgid "Vote registered successfully"
 msgstr "Hlas bol úspešne započítaný"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1078
+#: ../../sulfur/src/sulfur/dialogs.py:1077
 #: ../../sulfur/src/sulfur/views.py:1851
 msgid "Error registering vote"
 msgstr "Chyba pri započítavaní hlasu"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1091
+#: ../../sulfur/src/sulfur/dialogs.py:1090
 msgid "License name"
 msgstr "Meno licencie"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1107
+#: ../../sulfur/src/sulfur/dialogs.py:1106
 #: ../../sulfur/src/sulfur/sulfur.glade.h:134
 msgid "Mirrors"
 msgstr "Zrkadlá"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1139
+#: ../../sulfur/src/sulfur/dialogs.py:1138
 msgid "Depends"
 msgstr "Závisí"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1147
+#: ../../sulfur/src/sulfur/dialogs.py:1146
 msgid "Needed libraries"
 msgstr "Potrebné knižnice"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1155
+#: ../../sulfur/src/sulfur/dialogs.py:1154
 msgid "Protected item"
 msgstr "Chránená položka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1158
-#: ../../sulfur/src/sulfur/dialogs.py:1170
-#: ../../sulfur/src/sulfur/dialogs.py:1182
+#: ../../sulfur/src/sulfur/dialogs.py:1157
+#: ../../sulfur/src/sulfur/dialogs.py:1169
+#: ../../sulfur/src/sulfur/dialogs.py:1181
 msgid "Type"
 msgstr "Typ"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1166
+#: ../../sulfur/src/sulfur/dialogs.py:1165
 msgid "File"
 msgstr "Súbor"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1276
+#: ../../sulfur/src/sulfur/dialogs.py:1275
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr "Zdieľajte váš názor, vaše dokumenty, vaše snímky obrazovky!"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1277
+#: ../../sulfur/src/sulfur/dialogs.py:1276
 msgid "Be part of our Community!"
 msgstr "Buď te súčasťou našej Komunity!"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1314
+#: ../../sulfur/src/sulfur/dialogs.py:1313
 msgid "Remotely"
 msgstr "Vzdialene"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1318
+#: ../../sulfur/src/sulfur/dialogs.py:1317
 msgid "Removed repository"
 msgstr "Zmazaný repozitár"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1476
+#: ../../sulfur/src/sulfur/dialogs.py:1475
 msgid "Bug"
 msgstr "Chyba"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1484
+#: ../../sulfur/src/sulfur/dialogs.py:1483
 msgid "Reference"
 msgstr "Posudok"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1561
+#: ../../sulfur/src/sulfur/dialogs.py:1560
 msgid "impact"
 msgstr "vplyv"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1565
+#: ../../sulfur/src/sulfur/dialogs.py:1564
 msgid "access"
 msgstr "prístup"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1580
+#: ../../sulfur/src/sulfur/dialogs.py:1579
 msgid "Vulnerables"
 msgstr "Zraniteľnosti"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1584
+#: ../../sulfur/src/sulfur/dialogs.py:1583
 msgid "Unaffected"
 msgstr "Nedoktnuté"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1672
+#: ../../sulfur/src/sulfur/dialogs.py:1671
 msgid "Id"
 msgstr "Id"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1772
+#: ../../sulfur/src/sulfur/dialogs.py:1771
 msgid "Write your"
 msgstr "Napíšte vaše"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1775
+#: ../../sulfur/src/sulfur/dialogs.py:1774
 msgid "Select your"
 msgstr "Vyberte váš"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1782
+#: ../../sulfur/src/sulfur/dialogs.py:1781
 msgid "Submit issue"
 msgstr "Odovzdať problém"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1795
+#: ../../sulfur/src/sulfur/dialogs.py:1794
 msgid "Empty Document"
 msgstr "Prázdny dokument"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1799
+#: ../../sulfur/src/sulfur/dialogs.py:1798
 msgid "Invalid Description"
 msgstr "Neplatný popis"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1805
+#: ../../sulfur/src/sulfur/dialogs.py:1804
 msgid "Invalid Document Type"
 msgstr "Neplatný typ dokumentu"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1808
+#: ../../sulfur/src/sulfur/dialogs.py:1807
 msgid "Invalid Title"
 msgstr "Neplatný nadpis"
 
 #. confirm ?
-#: ../../sulfur/src/sulfur/dialogs.py:1812
+#: ../../sulfur/src/sulfur/dialogs.py:1811
 msgid "Do you confirm your submission?"
 msgstr "Potvrdzujete vaše podanie?"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1838
+#: ../../sulfur/src/sulfur/dialogs.py:1837
 msgid "UGC Error"
 msgstr "OVU Chyba"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1842
+#: ../../sulfur/src/sulfur/dialogs.py:1841
 msgid "Document added successfully. Thank you"
 msgstr "Dokument bol úspešne pridaný. Ďakujeme"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1842
+#: ../../sulfur/src/sulfur/dialogs.py:1841
 msgid "Success!"
 msgstr "Úspech!"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1896
+#: ../../sulfur/src/sulfur/dialogs.py:1895
 msgid "Write your document"
 msgstr "Napíšte váš dokument"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1904
+#: ../../sulfur/src/sulfur/dialogs.py:1903
 msgid "Select your file"
 msgstr "Vyberte váš súbor"
 
-#: ../../sulfur/src/sulfur/dialogs.py:1944
+#: ../../sulfur/src/sulfur/dialogs.py:1943
 msgid "On repository"
 msgstr "V repozitári"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2017
+#: ../../sulfur/src/sulfur/dialogs.py:2016
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
 "Toto sú balíčky, ktoré musia byť aktivované, aby bola splnená vaša požiadavka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2019
+#: ../../sulfur/src/sulfur/dialogs.py:2018
 msgid "Some packages are masked"
 msgstr "Niektoré balíčky sú skryté"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2106
+#: ../../sulfur/src/sulfur/dialogs.py:2105
 msgid "Masked package"
 msgstr "Skrytý balíček"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2187
-#: ../../sulfur/src/sulfur/dialogs.py:2420
-#: ../../sulfur/src/sulfur/dialogs.py:2431
-#: ../../sulfur/src/sulfur/dialogs.py:2442
-#: ../../sulfur/src/sulfur/dialogs.py:2453
-#: ../../sulfur/src/sulfur/dialogs.py:2464
+#: ../../sulfur/src/sulfur/dialogs.py:2186
+#: ../../sulfur/src/sulfur/dialogs.py:2419
+#: ../../sulfur/src/sulfur/dialogs.py:2430
+#: ../../sulfur/src/sulfur/dialogs.py:2441
+#: ../../sulfur/src/sulfur/dialogs.py:2452
+#: ../../sulfur/src/sulfur/dialogs.py:2463
 #: ../../sulfur/src/sulfur/package.py:283 ../../sulfur/src/sulfur/views.py:88
-#: ../../sulfur/src/sulfur/views.py:148 ../../sulfur/src/sulfur/views.py:2484
+#: ../../sulfur/src/sulfur/views.py:148 ../../sulfur/src/sulfur/views.py:2485
 msgid "No description"
 msgstr "Žiaden popis"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2310
+#: ../../sulfur/src/sulfur/dialogs.py:2309
 msgid "Please confirm the actions above"
 msgstr "Prosím potvrď te hore zobrazené činnosti"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2354
+#: ../../sulfur/src/sulfur/dialogs.py:2353
 #: ../../sulfur/src/sulfur/__init__.py:939
 #: ../../sulfur/src/sulfur/__init__.py:949
 #: ../../sulfur/src/sulfur/__init__.py:959
 msgid "Item"
 msgstr "Položka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2371
-#: ../../sulfur/src/sulfur/dialogs.py:2425
+#: ../../sulfur/src/sulfur/dialogs.py:2370
+#: ../../sulfur/src/sulfur/dialogs.py:2424
 msgid "To be downgraded"
 msgstr "Bude downgradované"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2377
-#: ../../sulfur/src/sulfur/dialogs.py:2414
+#: ../../sulfur/src/sulfur/dialogs.py:2376
+#: ../../sulfur/src/sulfur/dialogs.py:2413
 msgid "To be removed"
 msgstr "Bude zmazané"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2383
-#: ../../sulfur/src/sulfur/dialogs.py:2436
+#: ../../sulfur/src/sulfur/dialogs.py:2382
+#: ../../sulfur/src/sulfur/dialogs.py:2435
 msgid "To be reinstalled"
 msgstr "Bude preinštalované"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2389
-#: ../../sulfur/src/sulfur/dialogs.py:2447
+#: ../../sulfur/src/sulfur/dialogs.py:2388
+#: ../../sulfur/src/sulfur/dialogs.py:2446
 msgid "To be installed"
 msgstr "Bude nainštalované"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2395
-#: ../../sulfur/src/sulfur/dialogs.py:2458
+#: ../../sulfur/src/sulfur/dialogs.py:2394
+#: ../../sulfur/src/sulfur/dialogs.py:2457
 msgid "To be updated"
 msgstr "Bude aktualizované"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2595
+#: ../../sulfur/src/sulfur/dialogs.py:2594
 msgid "About"
 msgstr "O..."
 
 #. open file selector
-#: ../../sulfur/src/sulfur/dialogs.py:2680
+#: ../../sulfur/src/sulfur/dialogs.py:2679
 msgid "Sulfur file chooser"
 msgstr "Volič súboru Sulfur"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2716
+#: ../../sulfur/src/sulfur/dialogs.py:2715
 msgid "Sulfur Question"
 msgstr "Sulfur otázka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2721
+#: ../../sulfur/src/sulfur/dialogs.py:2720
 msgid "Hey!"
 msgstr "Hej!"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2763
+#: ../../sulfur/src/sulfur/dialogs.py:2762
 msgid "Please fill the following form"
 msgstr "Prosím vyplnte nasledujúci formulár"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2833
+#: ../../sulfur/src/sulfur/dialogs.py:2832
 msgid "Add atom"
 msgstr "Pridať atom"
 
-#: ../../sulfur/src/sulfur/dialogs.py:2989
-#: ../../sulfur/src/sulfur/dialogs.py:2991
+#: ../../sulfur/src/sulfur/dialogs.py:2988
+#: ../../sulfur/src/sulfur/dialogs.py:2990
 msgid "Invalid entry"
 msgstr "Neplatný vstup"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3051
+#: ../../sulfur/src/sulfur/dialogs.py:3050
 msgid "Cancel"
 msgstr "Zrušiť"
 
 #. new
-#: ../../sulfur/src/sulfur/dialogs.py:3142
+#: ../../sulfur/src/sulfur/dialogs.py:3141
 msgid "Accepted"
 msgstr "Prijatá"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3209
+#: ../../sulfur/src/sulfur/dialogs.py:3208
 #: ../../sulfur/src/sulfur/events.py:711
 msgid "license text"
 msgstr "text licencie"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3248
+#: ../../sulfur/src/sulfur/dialogs.py:3247
 msgid "Exception caught"
 msgstr "Chytená výnimka"
 
-#: ../../sulfur/src/sulfur/dialogs.py:3249
+#: ../../sulfur/src/sulfur/dialogs.py:3248
 msgid "Sulfur crashed! An unexpected error occured."
 msgstr "Sulfur spadol! Vyskytkla sa neočakavaná chyba."
 
-#: ../../sulfur/src/sulfur/dialogs.py:3270
+#: ../../sulfur/src/sulfur/dialogs.py:3269
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr "Vaše známenie bolo úspešne odovzdané! Ďakujeme pekne."
 
-#: ../../sulfur/src/sulfur/dialogs.py:3272
+#: ../../sulfur/src/sulfur/dialogs.py:3271
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "Nie je možné odovzdať vaše oznámenie. Ste pripojení na internet?"
 
@@ -8083,7 +8092,7 @@ msgid "Oh oh ooooh... Merry Xmas!"
 msgstr "Oh oh ooooh... Veselé Vianoce!"
 
 #: ../../sulfur/src/sulfur/__init__.py:384
-#: ../../sulfur/src/sulfur/views.py:2396
+#: ../../sulfur/src/sulfur/views.py:2397
 #: ../../sulfur/src/sulfur/sulfur.glade.h:14
 msgid "Applications"
 msgstr "Aplikácie"
@@ -8538,7 +8547,7 @@ msgid "It seems that your system is already up-to-date. Good!"
 msgstr "Vyzerá, že váš systém je už aktuálny. Výborne!"
 
 #: ../../sulfur/src/sulfur/packages.py:1101
-#: ../../sulfur/src/sulfur/views.py:2679
+#: ../../sulfur/src/sulfur/views.py:2680
 msgid "Please wait, loading..."
 msgstr "Prosím čakajte, načítavanie..."
 
@@ -8625,73 +8634,73 @@ msgstr "Sú tu nekompletné balíčky častí, pokračujte na vlastné riziko"
 msgid "Application"
 msgstr "Aplikácie"
 
-#: ../../sulfur/src/sulfur/views.py:2434
+#: ../../sulfur/src/sulfur/views.py:2435
 msgid "Applications to remove"
 msgstr "Aplikácie k zmazaniu"
 
-#: ../../sulfur/src/sulfur/views.py:2439
+#: ../../sulfur/src/sulfur/views.py:2440
 msgid "Applications to downgrade"
 msgstr "Balíčky k downgrade"
 
-#: ../../sulfur/src/sulfur/views.py:2444
+#: ../../sulfur/src/sulfur/views.py:2445
 msgid "Applications to install"
 msgstr "Aplikácie k inštalácii"
 
-#: ../../sulfur/src/sulfur/views.py:2449
+#: ../../sulfur/src/sulfur/views.py:2450
 msgid "Applications to update"
 msgstr "Aktualizácie aplikácií"
 
-#: ../../sulfur/src/sulfur/views.py:2454
+#: ../../sulfur/src/sulfur/views.py:2455
 msgid "Applications to reinstall"
 msgstr "Aplikácie k preinštalovaniu"
 
-#: ../../sulfur/src/sulfur/views.py:2523
+#: ../../sulfur/src/sulfur/views.py:2524
 msgid "Proposed"
 msgstr "Navrhnutý"
 
-#: ../../sulfur/src/sulfur/views.py:2530
+#: ../../sulfur/src/sulfur/views.py:2531
 msgid "Destination"
 msgstr "Cieľ"
 
-#: ../../sulfur/src/sulfur/views.py:2537
+#: ../../sulfur/src/sulfur/views.py:2538
 msgid "Rev."
 msgstr "Rev."
 
-#: ../../sulfur/src/sulfur/views.py:2593
+#: ../../sulfur/src/sulfur/views.py:2594
 msgid "Security id."
 msgstr "Bezpečnostné id."
 
-#: ../../sulfur/src/sulfur/views.py:2601
+#: ../../sulfur/src/sulfur/views.py:2602
 msgid "Application name"
 msgstr "Meno aplikácie"
 
-#: ../../sulfur/src/sulfur/views.py:2680
+#: ../../sulfur/src/sulfur/views.py:2681
 msgid "Advisories are being loaded"
 msgstr "Odporúčania sa načítavajú"
 
-#: ../../sulfur/src/sulfur/views.py:2737
+#: ../../sulfur/src/sulfur/views.py:2738
 msgid "No advisories"
 msgstr "Žiadne odporúčania"
 
-#: ../../sulfur/src/sulfur/views.py:2738
+#: ../../sulfur/src/sulfur/views.py:2739
 msgid "There are no items to show"
 msgstr "Nie sú žiadne položky k zobrazeniu"
 
-#: ../../sulfur/src/sulfur/views.py:2764
+#: ../../sulfur/src/sulfur/views.py:2765
 msgid "Filename"
 msgstr "Názov súboru"
 
-#: ../../sulfur/src/sulfur/views.py:2813
+#: ../../sulfur/src/sulfur/views.py:2814
 msgid "Active"
 msgstr "Aktívny"
 
-#: ../../sulfur/src/sulfur/views.py:2823
+#: ../../sulfur/src/sulfur/views.py:2824
 #: ../../sulfur/src/sulfur/sulfur.glade.h:276
 msgid "Update"
 msgstr "Aktualizuj"
 
 #. Setup revision column
-#: ../../sulfur/src/sulfur/views.py:2831
+#: ../../sulfur/src/sulfur/views.py:2832
 #: ../../sulfur/src/sulfur/sulfur.glade.h:211
 msgid "Revision"
 msgstr "Revízia"
@@ -10005,6 +10014,9 @@ msgstr "Magneto oznamovač aktualizácií"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Spustiť Správcu _Balíčkov"
+
+#~ msgid "Database URL must start either with http:// or ftp:// or file://"
+#~ msgstr "URL databázy musí začínať s http:// alebo ftp:// alebo file://"
 
 #~ msgid "database"
 #~ msgstr "databáza"
