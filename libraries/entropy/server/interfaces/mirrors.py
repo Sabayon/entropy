@@ -3241,10 +3241,20 @@ class Server(ServerNoticeBoardMixin):
             dest_pkg_dir = os.path.dirname(dest_pkg)
             self._entropy._ensure_dir_path(dest_pkg_dir)
 
-            try:
-                os.rename(source_pkg, dest_pkg)
-            except OSError: # on different hard drives?
-                shutil.move(source_pkg, dest_pkg)
+            source_pkgs = [source_pkg]
+            gpg_file = source_pkg + etpConst['etpgpgextension']
+            md5_file = source_pkg + etpConst['packagesmd5fileext']
+            if os.path.isfile(gpg_file):
+                source_pkgs.append(gpg_file)
+            if os.path.isfile(md5_file):
+                source_pkgs.append(md5_file)
+
+            for pkg_path in source_pkgs:
+                dest_pkg_path = os.path.join(dest_pkg_dir, pkg_path)
+                try:
+                    os.rename(pkg_path, dest_pkg_path)
+                except OSError: # on different hard drives?
+                    shutil.move(pkg_path, dest_pkg_path)
 
             # clear expiration file
             dest_expiration = dest_pkg + etpConst['packagesexpirationfileext']
