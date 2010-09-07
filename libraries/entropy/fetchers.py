@@ -83,6 +83,7 @@ class UrlFetcher(TextInterface):
             'ftp': self._urllib_download,
             'ftps': self._urllib_download,
             'rsync': self._rsync_download,
+            'ssh': self._rsync_download,
         }
 
         self.__system_settings = SystemSettings()
@@ -259,23 +260,72 @@ class UrlFetcher(TextInterface):
         self._push_progress_to_output()
         return status
 
+    def _setup_rsync_args(self):
+        protocol = self.__get_url_protocol()
+        url = self.__url
+        _rsync_exec = "/usr/bin/rsync"
+        _default_ssh_port = 22
+
+        list_args, args = None, None
+        if protocol == "rsync":
+            args = (_rsync_exec, "--no-motd", "--compress", "--progress",
+                "--stats", "--timeout=%d" % (self.__timeout,))
+            if self.__speedlimit:
+                args += ("--bwlimit=%d" % (self.__speedlimit,),)
+            if not self.__resume:
+                args += ("--whole-file",)
+            args += (url, self.__path_to_save,)
+            # args to rsync to get remote file size
+            list_args = (_rsync_exec, "--no-motd", "--list-only", url)
+
+        elif protocol == "ssh":
+
+            def _extract_ssh_port_url(url):
+                start_t = url.find("<")
+                if start_t == -1:
+                    return _default_ssh_port, url
+
+                start_t += 1
+                end_t = start_t - 1
+                try:
+                    for x in url[start_t:]:
+                        end_t += 1
+                        if x == ">":
+                            break
+                except IndexError:
+                    return _default_ssh_port, url
+
+                try:
+                    port = int(url[start_t:end_t])
+                    url = url[:start_t-1] + url[end_t+1:]
+                except ValueError:
+                    port = _default_ssh_port
+                return port, url
+
+            # SUPPORTED URL form: ssh://username@host<PORT>:/path
+            # strip ssh:// from url
+            url = url.lstrip("ssh://")
+            # get port
+            port, url = _extract_ssh_port_url(url)
+            args = (_rsync_exec, "--no-motd", "--compress", "--progress",
+                "--stats", "--timeout=%d" % (self.__timeout,),
+                "-e", "ssh -p %s" % (port,))
+            if self.__speedlimit:
+                args += ("--bwlimit=%d" % (self.__speedlimit,),)
+            if not self.__resume:
+                args += ("--whole-file",)
+            args += (url, self.__path_to_save,)
+            # args to rsync to get remote file size
+            list_args = (_rsync_exec, "--no-motd", "--list-only", "-e",
+                "ssh -p %s" % (port,), url)
+
+        return list_args, args
+
     def _rsync_download(self):
         """
         rsync based downloader. It uses rsync executable.
         """
-        url = self.__url
-        _rsync_exec = "/usr/bin/rsync"
-        args = (_rsync_exec, "--no-motd", "--compress", "--progress",
-            "--stats", "--timeout=%d" % (self.__timeout,))
-        if self.__speedlimit:
-            args += ("--bwlimit=%d" % (self.__speedlimit,),)
-        if not self.__resume:
-            args += ("--whole-file",)
-        args += (url, self.__path_to_save,)
-
-        # args to rsync to get remote file size
-        list_args = (_rsync_exec, "--no-motd", "--list-only", url)
-
+        list_args, args = self._setup_rsync_args()
         # rsync executable environment
         rsync_environ = {}
 
