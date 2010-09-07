@@ -1,3 +1,27 @@
+commit f71f7d2cc8342c017b1f3f9b4e4f6fe89f321779
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 00:30:32 2010 +0200
+
+    [tests] spm: add package sets test
+
+commit 84f97ae2282c8d58f8215a768d679be85d79523c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 00:29:52 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix sets module loading, improve Portage reload code
+
+commit 5223c153a399617b08f4660bbd5cbab3ef3cba01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 00:29:29 2010 +0200
+
+    [po] update translations
+
+commit f0d33efe8916e1870e0bc7861fc597faf61cdcfa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 7 23:08:12 2010 +0200
+
+    Tagging Entropy version 0.99.49.52
+
 commit a7df773d1ea16db9becfb3f4d33dd0169ac206c7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Sep 7 22:58:22 2010 +0200
