@@ -139,6 +139,11 @@ class SpmTest(unittest.TestCase):
 
         shutil.rmtree(tmp_path, True)
 
+    def test_sets_load(self):
+        spm = self.Client.Spm()
+        sets = spm.get_package_sets(True)
+        self.assertNotEqual(sets, None)
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")
