@@ -323,8 +323,15 @@ class PortagePlugin(SpmPlugin):
         it from sys.modules and calling a new import.
         There may be resource leaks but since this can only be run
         once per "session", that's nothing to worry about.
-        TODO: check if there are resource leaks
         """
+        mytxt = "%s..." % (
+            brown(_("Reloading Portage modules")),
+        )
+        self.__output.output(
+            mytxt,
+            importance = 0,
+            header = red("   ## ")
+        )
 
         for obj in PortagePlugin.CACHE.values():
             obj.clear()
@@ -469,7 +476,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         _glsa = self._get_glsa()
-        if not _glsa:
+        if _glsa is None:
             return []
         if security_property not in ['new', 'all', 'affected']:
             return []
@@ -513,7 +520,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         _glsa = self._get_glsa()
-        if not _glsa:
+        if _glsa is None:
             return {}
 
         glsaconfig = _glsa.checkconfig(
@@ -2562,6 +2569,13 @@ class PortagePlugin(SpmPlugin):
     def __remove_kernel_tag_from_slot(self, slot):
         return slot[::-1].split(",", 1)[-1][::-1]
 
+    def _get_portage_sets_object(self):
+        try:
+            import portage.sets as sets
+        except ImportError:
+            sets = None
+        return sets
+
     def _get_world_set_object(self):
         try:
             from portage.sets.files import WorldSelectedSet
@@ -3188,10 +3202,7 @@ class PortagePlugin(SpmPlugin):
             package_metadata['xpakstatus'] = True
 
             try:
-                try:
-                    import portage.const as pc
-                except ImportError:
-                    import portage_const as pc
+                import portage.const as pc
                 portdbdir = pc.VDB_PATH
             except ImportError:
                 portdbdir = 'var/db/pkg'
@@ -4051,13 +4062,17 @@ class PortagePlugin(SpmPlugin):
 
     def _load_sets_config(self, settings, trees):
 
+        sets = self._get_portage_sets_object()
+        if sets is None:
+            return None
+
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
         setconfigpaths = [os.path.join(self._portage.const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
         setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
         setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
             self._portage.const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
-        return self._portage.sets.SetConfig(setconfigpaths, settings, trees)
+        return sets.SetConfig(setconfigpaths, settings, trees)
 
     def _get_set_config(self):
         myroot = etpConst['systemroot'] + os.path.sep
