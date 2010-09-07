@@ -1,3 +1,15 @@
+commit c711ade2ed80f4ddc51a4759471f2af702c15c7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 7 11:15:09 2010 +0200
+
+    [entropy.spm] PortagePlugin: revert some safety changes to generate_package, they don't play well with tarfile
+
+commit 86eaf08bad16dfcac2e44b0b7d7ea9476e5aea38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 6 23:40:16 2010 +0200
+
+    Tagging Entropy version 0.99.49.50
+
 commit dfd44c6903497e9f959aab92027305e7597d82c7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Sep 6 23:34:10 2010 +0200
