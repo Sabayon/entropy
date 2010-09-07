@@ -35,6 +35,16 @@ repository|sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/ent
 repository|sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
 repository|sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
 repository|sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+# NOTE: delta package download support works over rsync://, please find some rsync
+# sources below
+repository|sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
+repository|sabayonlinux.org||rsync://gd.tuwien.ac.at/linux/sabayonlinux/entropy|
+repository|sabayonlinux.org||rsync://ftp.nluug.nl/sabayonlinux/entropy|
+repository|sabayonlinux.org||rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
+repository|sabayonlinux.org||rsync://ftp.fsn.hu/ftp/pub/linux/distributions/sabayon/entropy|
+repository|sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
+repository|sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
+repository|sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
 
 # syntax for differential-update
 # differential-update: This setting controls the way Entropy client updates
