@@ -1,3 +1,27 @@
+commit d9c0214a0c48556e72a7a7b794d20343e3b9677b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 14:04:54 2010 +0200
+
+    [todo] update TODO
+
+commit 14e243fe21736ebd2898417a70c3933b47ed2539
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 14:01:30 2010 +0200
+
+    [entropy.spm] PortagePlugin: add compatibility with latest Portage 2.2, portage.sets has been moved to portage._sets
+
+commit 2b80649bd2759d992dd6d1ef43a9ea4b48b94bf8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 13:34:18 2010 +0200
+
+    [entropy.server] fix regression in _move_files_over_from_upload(), move package file to correct location
+
+commit cd57e27fdf79bd260fb1ce406a3c9925cf9bdcf3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 00:31:30 2010 +0200
+
+    Tagging Entropy version 0.99.49.53
+
 commit f71f7d2cc8342c017b1f3f9b4e4f6fe89f321779
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Sep 8 00:30:32 2010 +0200
