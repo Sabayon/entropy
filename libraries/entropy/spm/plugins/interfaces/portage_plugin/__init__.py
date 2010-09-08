@@ -313,6 +313,8 @@ class PortagePlugin(SpmPlugin):
 
         # importing portage stuff
         import portage
+        import portage.const
+        import portage.util
         self._portage = portage
 
     def _reload_modules(self):
@@ -351,6 +353,8 @@ class PortagePlugin(SpmPlugin):
                 del sys.modules[key]
         # now reimport everything
         import portage
+        import portage.const
+        import portage.util
         # reassign portage variable, pointing to a fresh object
         self._portage = portage
 

@@ -3250,7 +3250,8 @@ class Server(ServerNoticeBoardMixin):
                 source_pkgs.append(md5_file)
 
             for pkg_path in source_pkgs:
-                dest_pkg_path = os.path.join(dest_pkg_dir, pkg_path)
+                dest_pkg_path = os.path.join(dest_pkg_dir,
+                    os.path.basename(pkg_path))
                 try:
                     os.rename(pkg_path, dest_pkg_path)
                 except OSError: # on different hard drives?
