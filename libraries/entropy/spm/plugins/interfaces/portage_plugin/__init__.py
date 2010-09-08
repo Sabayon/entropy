@@ -2575,18 +2575,25 @@ class PortagePlugin(SpmPlugin):
 
     def _get_portage_sets_object(self):
         try:
-            import portage.sets as sets
+            import portage._sets as sets
         except ImportError:
-            sets = None
+            try:
+                # older portage, <= 2.2_rc67
+                import portage.sets as sets
+            except ImportError:
+                sets = None
         return sets
 
     def _get_world_set_object(self):
         try:
-            from portage.sets.files import WorldSelectedSet
-            world_set = WorldSelectedSet
+            from portage._sets.files import WorldSelectedSet
         except ImportError:
-            world_set = None
-        return world_set
+            try:
+                # older portage, <= 2.2_rc67
+                from portage.sets.files import WorldSelectedSet
+            except ImportError:
+                WorldSelectedSet = None
+        return WorldSelectedSet
 
     class _PortageVdbLocker(object):
 
@@ -4071,11 +4078,15 @@ class PortagePlugin(SpmPlugin):
             return None
 
         # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
-        setconfigpaths = [os.path.join(self._portage.const.GLOBAL_CONFIG_PATH, etpConst['setsconffilename'])]
-        setconfigpaths.append(os.path.join(settings["PORTDIR"], etpConst['setsconffilename']))
-        setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) for x in settings["PORTDIR_OVERLAY"].split()]
+        setconfigpaths = [os.path.join(self._portage.const.GLOBAL_CONFIG_PATH,
+            etpConst['setsconffilename'])]
+        setconfigpaths.append(os.path.join(settings["PORTDIR"],
+            etpConst['setsconffilename']))
+        setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) \
+            for x in settings["PORTDIR_OVERLAY"].split()]
         setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
-            self._portage.const.USER_CONFIG_PATH.lstrip(os.path.sep), etpConst['setsconffilename']))
+            self._portage.const.USER_CONFIG_PATH.lstrip(os.path.sep),
+                etpConst['setsconffilename']))
         return sets.SetConfig(setconfigpaths, settings, trees)
 
     def _get_set_config(self):
