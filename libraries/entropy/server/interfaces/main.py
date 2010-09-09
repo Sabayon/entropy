@@ -4399,6 +4399,7 @@ class ServerRepositoryMixin:
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
         self._taint_database(repo = repo)
+        dbconn.commitChanges()
         self.close_repository(dbconn)
 
 class ServerMiscMixin:
