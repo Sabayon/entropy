@@ -1742,9 +1742,9 @@ def _my_formatted_print(data, header, reset_columns, min_chars = 25,
 
     out_data = []
 
-    if isinstance(data, set):
-        mydata = list(data)
-    elif not isinstance(data, list):
+    if isinstance(data, (frozenset, set)):
+        mydata = sorted(data)
+    elif not isinstance(data, (list, tuple)):
         mydata = data.split()
     else:
         mydata = data
