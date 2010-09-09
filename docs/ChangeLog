@@ -1,3 +1,45 @@
+commit 0d6ef852a9558b93dfb113dd855427fcd881f102
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 10:45:55 2010 +0200
+
+    [entropy.qa] fix incorrect argument in EntropyRepository.resolveNeeded call
+
+commit 98f577e9f9fb38b78b7b74040364569e5bb5ef49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 08:40:37 2010 +0200
+
+    [entropy.spm] PortagePlugin: catch OSError exception that newer Portage releases can raise in get_installed_package_metadata
+
+commit 85a0de1f22cbbe40dd35cfd058ebf696dd3ac498
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 08:21:00 2010 +0200
+
+    [entropy.server] when bumping repository, also trigger commit hooks (and thus, spawn a commitChanges())
+
+commit e23c5d8c647bd019cf52fbde216c436824648f07
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 08:09:48 2010 +0200
+
+    [sulfur] hide installed packages repository backup tool while running unprivileged
+
+commit 8feef2560909189d3667eb6cbda15cfae2689fda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 08:00:51 2010 +0200
+
+    [sulfur] remove background caches generation, it's slowing down a bit and doesn't work as user
+
+commit 29ba1a71e6c6ae15dc31a22f180a0dbe348a8018
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 07:45:48 2010 +0200
+
+    [equo] fix _my_formatted_print(), make it work with frozenset and tuple objects
+
+commit e8a907a74ad747940e66742d1df3812312ffc4a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 8 14:05:15 2010 +0200
+
+    Tagging Entropy version 0.99.49.54
+
 commit d9c0214a0c48556e72a7a7b794d20343e3b9677b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Sep 8 14:04:54 2010 +0200
