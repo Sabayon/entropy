@@ -367,9 +367,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_preferences()
         self.setup_events_handling()
 
-        # can lead to sqlite3 db corruptions?
-        self.setup_background_cache_generators()
-
     def setup_resources_locked(self):
         self.ui.repoRefreshButton.set_sensitive(not self._RESOURCES_LOCKED)
         self.ui.queueTabBox.set_sensitive(not self._RESOURCES_LOCKED)
@@ -397,25 +394,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for widget in small_widgets:
             txt = widget.get_text()
             widget.set_markup("<small>%s</small>" % (txt,))
-
-    def setup_background_cache_generators(self):
-
-        # configuration files update cache generation
-        def file_updates_cache_gen():
-            with self._privileges:
-                self._entropy.FileUpdates.scan(quiet = True)
-            self._cacher.sync()
-            return False
-
-        def file_updates_fill_view():
-            try:
-                self._populate_files_update()
-            except AttributeError: # it is really necessary
-                return
-            gobject.idle_add(file_updates_cache_gen)
-            return False
-
-        gobject.idle_add(file_updates_fill_view)
 
     def setup_events_handling(self):
 
