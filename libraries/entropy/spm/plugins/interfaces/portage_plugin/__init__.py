@@ -433,6 +433,8 @@ class PortagePlugin(SpmPlugin):
             return vartree.dbapi.aux_get(package, [key])[0]
         except KeyError: # make clear that we raise KeyError
             raise
+        except OSError as err:
+            raise KeyError("Original OSError: %s" % (err,))
 
     def get_system_packages(self):
         """
