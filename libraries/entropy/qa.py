@@ -463,7 +463,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 for soname in sonames:
                     # try to resolve soname
                     pkg_ids = dbconn.resolveNeeded(soname,
-                        elf_class = elf_class)
+                        elfclass = elf_class)
                     if pkg_ids:
                         pkg_atoms = sorted((
                             dbconn.retrieveKeySlotAggregated(x) for x in \
