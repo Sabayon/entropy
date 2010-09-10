@@ -688,6 +688,9 @@ def update(options):
     to_be_removed = set()
     to_be_injected = set()
 
+    key_sorter = lambda x: Entropy.open_server_repository(read_only = True,
+        no_upload = True, repo = x[1]).retrieveAtom(x[0])
+
     if not r_request_seek_store:
 
         if repackage_items:
@@ -754,7 +757,7 @@ def update(options):
 
         if to_be_injected:
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be changed to injected status"),) ))
-            for idpackage, repoid in to_be_injected:
+            for idpackage, repoid in sorted(to_be_injected, key = key_sorter):
                 dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
@@ -763,7 +766,7 @@ def update(options):
             else:
                 rc = _("Yes")
             if rc == _("Yes"):
-                for idpackage, repoid in to_be_injected:
+                for idpackage, repoid in sorted(to_be_injected, key = key_sorter):
                     dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                     atom = dbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("%s: " % (_("Transforming from database"),) )+red(atom))
@@ -784,7 +787,7 @@ def update(options):
         if r_request_interactive and to_be_removed:
             print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to remove ?")))
             new_to_be_removed = set()
-            for idpackage, repoid in to_be_removed:
+            for idpackage, repoid in sorted(to_be_removed, key = key_sorter):
                 show_rm(idpackage, repoid)
                 rc = Entropy.ask_question(">>   %s" % (_("Remove this package?"),))
                 if rc == _("Yes"):
@@ -794,7 +797,7 @@ def update(options):
         if to_be_removed:
 
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be removed from the database"),) ))
-            for idpackage, repoid in to_be_removed:
+            for idpackage, repoid in sorted(to_be_removed, key = key_sorter):
                 show_rm(idpackage, repoid)
 
             if r_request_ask:
@@ -813,7 +816,7 @@ def update(options):
         if r_request_interactive and to_be_added:
             print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to add ?")))
             new_to_be_added = set()
-            for tb_atom, tb_counter in to_be_added:
+            for tb_atom, tb_counter in sorted(to_be_added, key = lambda x: x[0]):
                 print_info(brown("    # ")+red(tb_atom))
                 rc = Entropy.ask_question(">>   %s" % (_("Add this package?"),))
                 if rc == _("Yes"):
