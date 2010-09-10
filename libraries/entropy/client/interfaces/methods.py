@@ -25,7 +25,8 @@ from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_setup_perms, const_setup_entropy_pid, \
-    const_isstring, const_convert_to_unicode, const_isnumber
+    const_isstring, const_convert_to_unicode, const_isnumber, \
+    const_convert_to_rawstring
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     RepositoryPluginError
 from entropy.db import EntropyRepository
@@ -1645,13 +1646,13 @@ class MiscMixin:
 
         if not fake:
 
-            contents = sorted([x for x in pkgdata['content']])
+            contents = sorted(pkgdata['content'])
 
             # collect files
             for path in contents:
                 # convert back to filesystem str
                 encoded_path = path
-                path = path.encode('raw_unicode_escape')
+                path = const_convert_to_rawstring(path)
                 path = shiftpath+path
                 try:
                     exist = os.lstat(path)
@@ -1676,12 +1677,8 @@ class MiscMixin:
                     tarinfo.mode = stat.S_IMODE(exist.st_mode)
                     tarinfo.type = tarfile.REGTYPE
                     f = None
-                    try:
-                        f = open(path, "rb")
+                    with open(path, "rb") as f:
                         tar.addfile(tarinfo, f)
-                    finally:
-                        if f is not None:
-                            f.close()
                 else:
                     tar.addfile(tarinfo)
 

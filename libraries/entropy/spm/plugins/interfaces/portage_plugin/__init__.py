@@ -707,7 +707,7 @@ class PortagePlugin(SpmPlugin):
         tar = tarfile.open(tmp_file, mode = "w:bz2")
 
         contents = dblnk.getcontents()
-        paths = sorted(contents.keys())
+        paths = sorted(contents)
 
         for path in paths:
             try:
@@ -726,13 +726,8 @@ class PortagePlugin(SpmPlugin):
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.mode = stat.S_IMODE(exist.st_mode)
                 tarinfo.type = tarfile.REGTYPE
-                f = None
-                try:
-                    f = open(path, "rb")
+                with open(path, "rb") as f:
                     tar.addfile(tarinfo, f)
-                finally:
-                    if f is not None:
-                        f.close()
             else:
                 tar.addfile(tarinfo)
 
