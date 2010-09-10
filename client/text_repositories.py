@@ -34,12 +34,15 @@ def repositories(options):
     myopts = options[1:]
     cmd = options[0]
     e_req_force_update = False
+    e_req_conflicts = False
     rc = 0
     repo_names = []
 
     for opt in myopts:
         if opt == "--force":
             e_req_force_update = True
+        if (opt == "--conflicts") and (cmd == "repo"):
+            e_req_conflicts = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
@@ -91,6 +94,10 @@ def repositories(options):
                     rc = _remove_repository(entropy_client, myopts)
                 elif repo_opt == "mirrorsort":
                     rc = _mirror_sort(entropy_client, myopts)
+                elif repo_opt == "merge":
+                    myopts = [x for x in myopts if x not in ("--conflicts",)]
+                    rc = _merge_repository(entropy_client, myopts,
+                        remove_conflicts = e_req_conflicts)
                 else:
                     rc = -10
 
@@ -212,6 +219,88 @@ def _disable_repositories(entropy_client, repos):
         entropy_client.disable_repository(repo)
         print_info("[%s] %s" % (
             teal(repo), blue(_("repository disabled")),))
+    return 0
+
+def _merge_repository(entropy_client, repo_ids, remove_conflicts = False):
+    if len(repo_ids) < 2:
+        print_error("[%s] %s" % (
+            purple('x'), blue(_("not enough repositories specified")),))
+        return 1
+
+    source_repos, dest_repo = repo_ids[:-1], repo_ids[-1]
+
+    # validate source repos
+    available_repos = SystemSettings['repositories']['available']
+    not_found = [x for x in source_repos if x not in available_repos]
+    if dest_repo not in available_repos:
+        not_found.append(dest_repo)
+    if not_found:
+        print_error("[%s] %s" % (
+            purple(', '.join(not_found)),
+            blue(_("repositories not found")),))
+        return 2
+
+    # source = dest?
+    if dest_repo in source_repos:
+        print_error("[%s] %s" % (
+            purple(dest_repo),
+            blue(_("repository cannot be source and destination")),))
+        return 3
+
+    print_info("[%s] %s" % (
+        teal(', '.join(source_repos)) + "=>" + purple(dest_repo),
+        blue(_("merging repositories")),))
+
+    repo_meta = SystemSettings['repositories']['available'][dest_repo]
+    repo_path = os.path.join(repo_meta['dbpath'], etpConst['etpdatabasefile'])
+    # make sure all the repos are closed
+    entropy_client.close_repositories()
+    # this way it's open read/write
+    dest_db = entropy_client.open_generic_repository(repo_path)
+
+    for source_repo in source_repos:
+        print_info("[%s] %s" % (
+            teal(source_repo), blue(_("working on repository")),))
+        source_db = entropy_client.open_repository(source_repo)
+        pkg_ids = source_db.listAllPackageIds(order_by = 'atom')
+        total = len(pkg_ids)
+        count = 0
+        conflict_cache = set()
+        for pkg_id in pkg_ids:
+            count += 1
+            pkg_meta = source_db.getPackageData(pkg_id, get_content = True,
+                content_insert_formatted = True)
+
+            print_info("[%s:%s|%s] %s" % (
+                purple(str(count)),
+                darkgreen(str(total)),
+                teal(pkg_meta['atom']), blue(_("merging package")),),
+                    back = True)
+
+            target_pkg_ids = dest_db.getPackagesToRemove(
+                pkg_meta['name'], pkg_meta['category'],
+                pkg_meta['slot'], pkg_meta['injected'])
+            if remove_conflicts:
+                for conflict in pkg_meta['conflicts']:
+                    if conflict in conflict_cache:
+                        continue
+                    conflict_cache.add(conflict)
+                    matches, rc = dest_db.atomMatch(conflict,
+                        multiMatch = True)
+                    target_pkg_ids |= matches
+            for target_pkg_id in target_pkg_ids:
+                dest_db.removePackage(target_pkg_id)
+            dest_db.addPackage(pkg_meta, do_commit = False,
+                formatted_content = True)
+
+        print_info("[%s] %s" % (
+            teal(source_repo), blue(_("done merging packages")),))
+
+    dest_db.commitChanges()
+    dest_db.closeDB()
+    # close all repos again
+    entropy_client.close_repositories()
+
     return 0
 
 def _mirror_sort(entropy_client, repo_ids):

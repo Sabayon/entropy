@@ -73,6 +73,8 @@ help_opts = [
         (2, 'add <string>', 1, _('add repository (pass repository string)')),
         (2, 'remove <id>', 1, _('remove repository')),
         (2, 'mirrorsort <id>', 0, _('reorder mirrors basing on response time')),
+        (2, 'merge [sources] <dest>', 0, _('merge content of source repos to dest [for developers]')),
+        (3, '--conflicts', 0, _('also remove dependency conflicts during merge')),
     (1, 'notice [repos]', 1, _('repository notice board reader')),
     (1, 'status', 2, _('show respositories status')),
     None,

@@ -90,6 +90,18 @@ remove repository
 
 reorder mirrors basing on response time
 
+=item B<merge [sources] <dest>>
+
+merge content of source repos to dest [for developers]
+
+=over
+
+=item B<--conflicts>
+
+also remove dependency conflicts during merge
+
+=back
+
 =back
 
 =item B<notice [repos]>
