@@ -45,6 +45,25 @@ class EntropyRepositoryTest(unittest.TestCase):
         dbconn = self.Server.open_server_repository()
         self.assertEqual(dbconn.temporary, True)
 
+    def test_server_repo_internal_cache(self):
+        spm = self.Server.Spm()
+        dbconn = self.Server.open_server_repository()
+        test_pkg = _misc.get_test_package()
+        data = spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = dbconn.handlePackage(data)
+        # now it should be empty
+        self.assertEqual(EntropyRepository._LIVE_CACHE, {})
+        self.assertNotEqual(dbconn.retrieveRevision(idpackage), None)
+        # now it should be filled
+        cache_key = dbconn._EntropyRepository__getLiveCacheKey() + \
+            'retrieveRevision'
+        self.assertEqual(
+            EntropyRepository._LIVE_CACHE[cache_key],
+            {1: 0})
+        # clear again
+        dbconn.clearCache()
+        self.assertEqual(EntropyRepository._LIVE_CACHE, {})
+
     def test_rev_bump(self):
         spm = self.Server.Spm()
         test_db = self.Server.open_server_repository()
