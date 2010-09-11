@@ -45,6 +45,19 @@ class UrlFetcher(TextInterface):
     dependencies are required (including wget).
     """
 
+    # this dict must be kept in sync with
+    # the __supported_uris variable below
+    # until plugins support is implemented
+    _supported_differential_download = {
+        'file': False,
+        'http': False,
+        'https': False,
+        'ftp': False,
+        'ftps': False,
+        'rsync': True,
+        'ssh': True,
+    }
+
     def __init__(self, url, path_to_save, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
@@ -108,8 +121,9 @@ class UrlFetcher(TextInterface):
         self._init_vars()
         self.__init_urllib()
 
-    def __get_url_protocol(self):
-        return self.__url.split(":")[0]
+    @staticmethod
+    def _get_url_protocol(url):
+        return url.split(":")[0]
 
     def __init_urllib(self):
         # this will be moved away soon anyway
@@ -229,6 +243,22 @@ class UrlFetcher(TextInterface):
             std_r.close()
             return return_code
 
+    @staticmethod
+    def supports_differential_download(url):
+        """
+        Return whether the current protocol handler for given URL supports
+        differential download. It's up to UrlFetcher users to implement
+        the logic to provide a previously downloaded file to "path_to_save"
+        location (argument passed to UrlFetcher constructor).
+
+        @param url: download URL
+        @type url: string
+        @return: differential download support status
+        @rtype: bool
+        """
+        protocol = UrlFetcher._get_url_protocol(url)
+        return UrlFetcher._supported_differential_download.get(protocol, False)
+
     def set_id(self, th_id):
         """
         Set instance id (usually the thread identifier).
@@ -247,7 +277,7 @@ class UrlFetcher(TextInterface):
         @rtype: string
         @todo: improve return data
         """
-        protocol = self.__get_url_protocol()
+        protocol = UrlFetcher._get_url_protocol(self.__url)
         downloader = self.__supported_uris.get(protocol)
         if downloader is None:
             # return error, protocol not supported
@@ -261,7 +291,7 @@ class UrlFetcher(TextInterface):
         return status
 
     def _setup_rsync_args(self):
-        protocol = self.__get_url_protocol()
+        protocol = UrlFetcher._get_url_protocol(self.__url)
         url = self.__url
         _rsync_exec = "/usr/bin/rsync"
         _default_ssh_port = 22
@@ -269,11 +299,13 @@ class UrlFetcher(TextInterface):
         list_args, args = None, None
         if protocol == "rsync":
             args = (_rsync_exec, "--no-motd", "--compress", "--progress",
-                "--stats", "--timeout=%d" % (self.__timeout,))
+                "--stats", "--inplace", "--timeout=%d" % (self.__timeout,))
             if self.__speedlimit:
                 args += ("--bwlimit=%d" % (self.__speedlimit,),)
             if not self.__resume:
                 args += ("--whole-file",)
+            else:
+                args += ("--partial",)
             args += (url, self.__path_to_save,)
             # args to rsync to get remote file size
             list_args = (_rsync_exec, "--no-motd", "--list-only", url)
@@ -308,12 +340,14 @@ class UrlFetcher(TextInterface):
             # get port
             port, url = _extract_ssh_port_url(url)
             args = (_rsync_exec, "--no-motd", "--compress", "--progress",
-                "--stats", "--timeout=%d" % (self.__timeout,),
+                "--stats", "--inplace", "--timeout=%d" % (self.__timeout,),
                 "-e", "ssh -p %s" % (port,))
             if self.__speedlimit:
                 args += ("--bwlimit=%d" % (self.__speedlimit,),)
             if not self.__resume:
                 args += ("--whole-file",)
+            else:
+                args += ("--partial",)
             args += (url, self.__path_to_save,)
             # args to rsync to get remote file size
             list_args = (_rsync_exec, "--no-motd", "--list-only", "-e",
@@ -854,6 +888,21 @@ class MultipleUrlFetcher(TextInterface):
         self.__time_remaining_sec = 0
         self.__progress_update_t = time.time()
         self.__startup_time = time.time()
+
+    @staticmethod
+    def supports_differential_download(url):
+        """
+        Return whether the current protocol handler for given URL supports
+        differential download. It's up to UrlFetcher users to implement
+        the logic to provide a previously downloaded file to "path_to_save"
+        location (argument passed to UrlFetcher constructor).
+
+        @param url: download URL
+        @type url: string
+        @return: differential download support status
+        @rtype: bool
+        """
+        return UrlFetcher.supports_differential_download(url)
 
     def download(self):
         """
