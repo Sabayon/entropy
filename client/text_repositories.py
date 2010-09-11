@@ -41,7 +41,7 @@ def repositories(options):
     for opt in myopts:
         if opt == "--force":
             e_req_force_update = True
-        if (opt == "--conflicts") and (cmd == "repo"):
+        elif (opt == "--conflicts") and (cmd == "repo"):
             e_req_conflicts = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
