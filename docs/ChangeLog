@@ -1,3 +1,66 @@
+commit 23b970efa12bff3736c96c49ecad35b3460419c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 15:42:18 2010 +0200
+
+    [tests] add a new live cache unit test
+
+commit a64c873284d50a537aa68ce824bbd6dc05694e2c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 15:38:05 2010 +0200
+
+    [entropy.db] EntropyRepository: commit to disk (calling Connection.commit()) before calling plugin hooks
+    
+    To avoid EntropyRepositoryBase plugin hooks to not see changes
+    in repository not yet committed (leading to tricky hard to debug
+    situations) call Connection.commit() before plugin hooks.
+
+commit a533faeff840f46e3edbb19c0a05528ec9f2e1b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 15:37:06 2010 +0200
+
+    [entropy.db] EntropyRepository: create __getLiveCacheKey method
+
+commit d5c1aab425faa464a6bc85cbbb65dd85b8cd05a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 10 23:23:48 2010 +0200
+
+    [po] update translations
+
+commit f9598010d1693d31d3bdf0b3565b89f515dac131
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 10 23:23:05 2010 +0200
+
+    [equo] implement developers-only feature "equo repo merge <source repos> <dest repo>"
+    
+    This feature helps Entropy repository developers to simulate client
+    side repository status by merging packages in one repository into another.
+    Doing this client-side makes possible to distribute the testing effort
+    and avoid touching critical data server-side.
+
+commit a47ac7e7a3e3b87c9ad3e6f2c72f5afcd2f34ab9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 10 21:56:32 2010 +0200
+
+    [reagent] show packages to be removed, injected and added in alphabetical order (reagent update)
+
+commit 90abd0c00817f7334cffb5541c86cf0409afd104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 10 11:51:35 2010 +0200
+
+    [entropy.spm,entropy.client] slightly improve code quality of package generation functions
+
+commit b57da0d7eff2291b23f3456e87bae4a1fb2e54d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 23:45:45 2010 +0200
+
+    [todo] update TODO
+
+commit 1c9119298d9c28db5e423ede9e236a26f0a13220
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 9 10:46:36 2010 +0200
+
+    Tagging Entropy version 0.99.49.55
+
 commit 0d6ef852a9558b93dfb113dd855427fcd881f102
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Sep 9 10:45:55 2010 +0200
