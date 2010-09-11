@@ -636,14 +636,20 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
-        super(EntropyRepository, self).commitChanges(force = force,
-            no_plugins = no_plugins)
-
         if force or (not self.readonly):
+            # NOTE: the actual commit MUST be executed before calling
+            # the superclass method (that is going to call EntropyRepositoryBase
+            # plugins). This to avoid that other connection to the same exact
+            # database file are opened and used before data is actually written
+            # to disk, causing a tricky race condition hard to exploit.
+            # So, FIRST commit changes, then call plugins.
             try:
                 self._connection().commit()
             except Error:
                 pass
+
+        super(EntropyRepository, self).commitChanges(force = force,
+            no_plugins = no_plugins)
 
     def initializeRepository(self):
         """
