@@ -1,3 +1,27 @@
+commit d1571bb8baac8578ced2d7c930d9991fc6ce63f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 17:07:40 2010 +0200
+
+    [entropy.client.interfaces.package] implement foundation support for differential package file download
+
+commit 4d646aa16ac7616d8d535f11b6fba18f48bc8e4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 16:51:18 2010 +0200
+
+    [equo] fix regression in text_repositories module, s/if/elif/
+
+commit c17469b1baff6643e4f6aec52b4b0245e058bead
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 16:46:17 2010 +0200
+
+    [entropy.fetchers] implement foundations for differential packages download support
+
+commit 1cdbe349ddbc0e0a3c289847dab2c1ee77dbc115
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 15:43:12 2010 +0200
+
+    Tagging Entropy version 0.99.49.56
+
 commit 23b970efa12bff3736c96c49ecad35b3460419c7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 11 15:42:18 2010 +0200
