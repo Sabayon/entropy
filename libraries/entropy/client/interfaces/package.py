@@ -18,7 +18,7 @@ import tempfile
 import time
 
 from entropy.const import etpConst, etpUi, const_setup_perms, \
-    const_isunicode, const_convert_to_unicode
+    const_isunicode, const_convert_to_unicode, const_debug_write
 from entropy.exceptions import PermissionDenied, SPMError
 from entropy.i18n import _
 from entropy.output import brown, blue, bold, darkgreen, \
@@ -126,7 +126,7 @@ class Package:
         checksum_map = {}
         count = 0
 
-        for url, dest_path, cksum in url_data_list:
+        for pkg_id, repo, url, dest_path, cksum in url_data_list:
             count += 1
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
@@ -136,6 +136,9 @@ class Package:
             url_path_list.append((url, dest_path,))
             if cksum is not None:
                 checksum_map[count] = cksum
+
+            self._setup_differential_download(self._entropy.MultipleUrlFetcher,
+                url, resume, dest_path, repo, pkg_id)
 
         # load class
         fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
@@ -188,7 +191,7 @@ class Package:
     def _download_packages(self, download_list, checksum = False):
 
         avail_data = self._settings['repositories']['available']
-        repo_uris = dict(((x[0], avail_data[x[0]]['packages'][::-1],) for x \
+        repo_uris = dict(((x[1], avail_data[x[1]]['packages'][::-1],) for x \
             in download_list))
         remaining = repo_uris.copy()
         my_download_list = download_list[:]
@@ -202,12 +205,12 @@ class Package:
 
         def update_download_list(down_list, failed_down):
             newlist = []
-            for repo, fname, cksum, signatures in down_list:
+            for pkg_id, repo, fname, cksum, signatures in down_list:
                 myuri = get_best_mirror(repo)
                 myuri = os.path.join(myuri, fname)
                 if myuri not in failed_down:
                     continue
-                newlist.append((repo, fname, cksum, signatures,))
+                newlist.append((pkg_id, repo, fname, cksum, signatures,))
             return newlist
 
         # return True: for failing, return False: for fine
@@ -240,7 +243,7 @@ class Package:
             return True
 
         def show_download_summary(down_list):
-            for repo, fname, cksum, signatures in down_list:
+            for pkg_id, repo, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -256,7 +259,7 @@ class Package:
                 )
 
         def show_successful_download(down_list, data_transfer):
-            for repo, fname, cksum, signatures in down_list:
+            for pkg_id, repo, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -284,7 +287,7 @@ class Package:
             )
 
         def show_download_error(down_list, rc):
-            for repo, fname, cksum, signatures in down_list:
+            for pkg_id, repo, fname, cksum, signatures in down_list:
                 best_mirror = get_best_mirror(repo)
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
@@ -329,7 +332,7 @@ class Package:
             while True:
 
                 fetch_files_list = []
-                for repo, fname, cksum, signatures in my_download_list:
+                for pkg_id, repo, fname, cksum, signatures in my_download_list:
                     best_mirror = get_best_mirror(repo)
                     # set working mirror, dont care if its None
                     mirror_status.set_working_mirror(best_mirror)
@@ -342,7 +345,8 @@ class Package:
                         return 3, my_download_list
                     myuri = os.path.join(best_mirror, fname)
                     pkg_path = Package.get_standard_fetch_disk_path(fname)
-                    fetch_files_list.append((myuri, pkg_path, cksum,))
+                    fetch_files_list.append(
+                        (pkg_id, repo, myuri, pkg_path, cksum,))
 
                 try:
 
@@ -372,7 +376,7 @@ class Package:
                                 continue
                         elif rc == -100: # user discarded fetch
                             return 1, []
-                        myrepos = set([x[0] for x in my_download_list])
+                        myrepos = set([x[1] for x in my_download_list])
                         remove_failing_mirrors(myrepos)
                         # make sure we don't have nasty issues
                         remaining_failure = check_remaining_mirror_failure(
@@ -380,11 +384,103 @@ class Package:
                         if remaining_failure:
                             return 3, my_download_list
                         break
+
                 except KeyboardInterrupt:
                     return 1, []
+
         return 0, []
 
-    def __fetch_file(self, url, save_path, digest = None, resume = True):
+    def _setup_differential_download(self, fetcher, url, resume,
+        fetch_path, repository, package_id):
+        """
+        Setup differential download in case of URL supporting it.
+        Internal function.
+
+        @param fetcher: UrlFetcher or MultipleUrlFetcher class
+        @param url: URL to check differential download against
+        @type url: string
+        @param resume: resume support
+        @type resume: bool
+        @param fetch_path: path where package file will be saved
+        @type fetch_path: string
+        @param repository: repository identifier belonging to package file
+        @type repository: string
+        @param package_id: package identifier belonging to repository identifier
+        @type package_id: int
+        """
+        # no resume? no party?
+        if not resume:
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s" % (
+                    url, "resume disabled"))
+            return
+
+        if not fetcher.supports_differential_download(url):
+            # no differential download support
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s" % (
+                    url, "no differential download support"))
+            return
+
+        # this is the fetch path of the file that is going to be downloaded
+        # not going to overwrite it if a file is located there because
+        # user would want a resume for sure in first place
+        if os.path.isfile(fetch_path):
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s" % (
+                    url, "fetch path already exists, not overwriting"))
+            return
+
+        pkg_repo = self._entropy.open_repository(repository)
+        keyslot = pkg_repo.retrieveKeySlot(package_id)
+        if keyslot is None:
+            # fucked up entry, not dealing with it here
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s" % (
+                    url, "key, slot fucked up"))
+            return
+
+        key, slot = keyslot
+        inst_repo = self._entropy.installed_repository()
+        pkg_ids = inst_repo.searchKeySlot(key, slot)
+        if not pkg_ids:
+            # not installed, nothing to use as diff download
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s" % (
+                    url, "no installed packages"))
+            return
+
+        # grab the highest, we don't know if user was able to mess up
+        # its installed packages repository
+        pkg_id = max(pkg_ids)
+        download_url = inst_repo.retrieveDownloadURL(pkg_id)
+        installed_fetch_path = self.__get_fetch_disk_path(download_url)
+
+        if os.path.isfile(installed_fetch_path) and \
+            os.access(installed_fetch_path, os.R_OK | os.F_OK):
+            copied = False
+            try:
+                shutil.copyfile(installed_fetch_path, fetch_path)
+                user = os.stat(installed_fetch_path)[stat.ST_UID]
+                group = os.stat(installed_fetch_path)[stat.ST_GID]
+                os.chown(fetch_path, user, group)
+                shutil.copystat(installed_fetch_path, fetch_path)
+                copied = True
+            except (OSError, IOError, shutil.Error):
+                try:
+                    os.remove(fetch_path)
+                except OSError:
+                    pass
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s %s => %s" % (
+                    url, "copied", copied, fetch_path))
+        else:
+            const_debug_write(__name__,
+                "_setup_differential_download(%s) %s" % (
+                    url, "no installed package file found"))
+
+    def __fetch_file(self, url, save_path, digest = None, resume = True,
+        download = None, package_id = None, repository = None):
 
         def do_stfu_rm(xpath):
             try:
@@ -409,6 +505,11 @@ class Package:
         # load class
         fetch_intf = self._entropy.urlFetcher(url, save_path, resume = resume,
             abort_check_func = fetch_abort_function)
+        if (download is not None) and (package_id is not None) and \
+            (repository is not None):
+            fetch_path = self.__get_fetch_disk_path(download)
+            self._setup_differential_download(self._entropy.urlFetcher, url,
+                resume, fetch_path, repository, package_id)
 
         # start to download
         data_transfer = 0
@@ -451,7 +552,7 @@ class Package:
         return 0, data_transfer, resumed
 
 
-    def _download_package(self, repository, download, save_path,
+    def _download_package(self, package_id, repository, download, save_path,
         digest = False):
 
         avail_data = self._settings['repositories']['available']
@@ -520,6 +621,9 @@ class Package:
                     rc, data_transfer, resumed = self.__fetch_file(
                         url,
                         save_path,
+                        download = download,
+                        package_id = package_id,
+                        repository = repository,
                         digest = digest,
                         resume = do_resume
                     )
@@ -607,7 +711,8 @@ class Package:
         mirror_status.set_working_mirror(None)
         return 0
 
-    def _match_checksum(self, repository, checksum, download, signatures):
+    def _match_checksum(self, package_id, repository, checksum, download,
+        signatures):
 
         sys_settings = self._settings
         sys_set_plg_id = \
@@ -814,7 +919,8 @@ class Package:
                     level = "warning",
                     header = darkred("   ## ")
                 )
-                fetch = self._download_package( 
+                fetch = self._download_package(
+                    package_id,
                     repository,
                     download,
                     pkg_disk_path,
@@ -849,10 +955,11 @@ class Package:
 
     def multi_match_checksum(self):
         rc = 0
-        for repository, download, digest, signatures in \
+        for pkg_id, repository, download, digest, signatures in \
             self.pkgmeta['multi_checksum_list']:
 
-            rc = self._match_checksum(repository, digest, download, signatures)
+            rc = self._match_checksum(pkg_id, repository, digest, download,
+                signatures)
             if rc != 0:
                 break
 
@@ -2362,6 +2469,7 @@ class Package:
         if not self.pkgmeta['verified']:
 
             rc = self._download_package(
+                self.pkgmeta['idpackage'],
                 self.pkgmeta['repository'],
                 self.pkgmeta['download'],
                 pkg_disk_path,
@@ -2425,7 +2533,7 @@ class Package:
             header = red("   ## ")
         )
 
-        for repo, fname, cksum, signatures in err_list:
+        for pkg_id, repo, fname, cksum, signatures in err_list:
             self._entropy.output(
                 "[%s|%s] %s" % (blue(repo), darkgreen(cksum), darkred(fname),),
                 importance = 1,
@@ -2454,9 +2562,9 @@ class Package:
         return 0
 
     def _checksum_step(self):
-        return self._match_checksum(self.pkgmeta['repository'],
-            self.pkgmeta['checksum'], self.pkgmeta['download'],
-            self.pkgmeta['signatures'])
+        return self._match_checksum(self.pkgmeta['idpackage'],
+            self.pkgmeta['repository'], self.pkgmeta['checksum'],
+            self.pkgmeta['download'], self.pkgmeta['signatures'])
 
     def _multi_checksum_step(self):
         return self.multi_match_checksum()
@@ -3513,12 +3621,12 @@ class Package:
 
             repo_size = dbconn.retrieveSize(idpackage)
             if self.__check_pkg_path_download(download, None) < 0:
-                obj = (repository, download, digest, signatures,)
+                obj = (idpackage, repository, download, digest, signatures,)
                 temp_fetch_list.append(obj)
                 continue
 
             elif dochecksum:
-                obj = (repository, download, digest, signatures,)
+                obj = (idpackage, repository, download, digest, signatures,)
                 temp_checksum_list.append(obj)
 
             down_path = self.__get_fetch_disk_path(download)
