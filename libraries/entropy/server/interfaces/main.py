@@ -2240,6 +2240,8 @@ class ServerPackagesHandlingMixin:
             new_idpackage, new_revision, new_data = todbconn.handlePackage(data)
             del data
             todbconn.commitChanges()
+            todbconn.storeInstalledPackage(new_idpackage, to_repo)
+            todbconn.commitChanges()
 
             if not do_copy:
                 self.output(
