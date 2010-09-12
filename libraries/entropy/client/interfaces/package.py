@@ -203,8 +203,10 @@ class Package:
 
             if original_repo in avail_data:
                 uris = avail_data[original_repo]['packages'][::-1]
+                uris += avail_data[repo]['packages'][::-1]
             elif original_repo in excluded_data:
                 uris = excluded_data[original_repo]['packages'][::-1]
+                uris += avail_data[repo]['packages'][::-1]
             else:
                 uris = avail_data[repo]['packages'][::-1]
             obj = repo_uris.setdefault(repo, [])
@@ -585,8 +587,10 @@ class Package:
         original_repo = repo_db.getInstalledPackageRepository(package_id)
         if original_repo in avail_data:
             uris = avail_data[original_repo]['packages'][::-1]
+            uris += avail_data[repository]['packages'][::-1]
         elif original_repo in excluded_data:
             uris = excluded_data[original_repo]['packages'][::-1]
+            uris += avail_data[repository]['packages'][::-1]
         else:
             uris = avail_data[repository]['packages'][::-1]
         remaining = set(uris)
