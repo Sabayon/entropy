@@ -191,8 +191,29 @@ class Package:
     def _download_packages(self, download_list, checksum = False):
 
         avail_data = self._settings['repositories']['available']
-        repo_uris = dict(((x[1], avail_data[x[1]]['packages'][::-1],) for x \
-            in download_list))
+        excluded_data = self._settings['repositories']['excluded']
+
+        repo_uris = {}
+        for pkg_id, repo, fname, cksum, signatures in download_list:
+            repo_db = self._entropy.open_repository(repo)
+            # grab original repo, if any and use it if available
+            # this is done in order to support "equo repo merge" feature
+            # allowing client-side repository package metadata moves.
+            original_repo = repo_db.getInstalledPackageRepository(pkg_id)
+
+            if original_repo in avail_data:
+                uris = avail_data[original_repo]['packages'][::-1]
+            elif original_repo in excluded_data:
+                uris = excluded_data[original_repo]['packages'][::-1]
+            else:
+                uris = avail_data[repo]['packages'][::-1]
+            obj = repo_uris.setdefault(repo, [])
+            # append at the beginning
+            new_ones = [x for x in uris if x not in obj][::-1]
+            for new_obj in new_ones:
+                obj.insert(0, new_obj)
+
+
         remaining = repo_uris.copy()
         my_download_list = download_list[:]
         mirror_status = StatusInterface()
@@ -556,7 +577,18 @@ class Package:
         digest = False):
 
         avail_data = self._settings['repositories']['available']
-        uris = avail_data[repository]['packages'][::-1]
+        excluded_data = self._settings['repositories']['excluded']
+        repo_db = self._entropy.open_repository(repository)
+        # grab original repo, if any and use it if available
+        # this is done in order to support "equo repo merge" feature
+        # allowing client-side repository package metadata moves.
+        original_repo = repo_db.getInstalledPackageRepository(package_id)
+        if original_repo in avail_data:
+            uris = avail_data[original_repo]['packages'][::-1]
+        elif original_repo in excluded_data:
+            uris = excluded_data[original_repo]['packages'][::-1]
+        else:
+            uris = avail_data[repository]['packages'][::-1]
         remaining = set(uris)
         mirror_status = StatusInterface()
 
