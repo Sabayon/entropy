@@ -1,3 +1,49 @@
+commit f053d07fe08eb532d4cdd581853cfdf253fd8f7c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 12 09:22:20 2010 +0200
+
+    [entropy.client.interfaces.package] include real repository URIs when using original repository id for fetching the package file
+
+commit 3b69f9a9a7e54b542549feb170d5eadc407383b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 12 03:15:49 2010 +0200
+
+    [entropy.client.interfaces.package] make "equo repo merge" logic fully working
+    
+    Properly setup package file mirrors to the right location used by
+    the original repository. The trick consists of storing the original
+    repository id inside the installedtable metadata in EntropyRepository,
+    and use it afterwards in entropy.client.interfaces.package.
+
+commit 3c95f72312d84c0337762a7131d0d667101d86b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 12 02:45:41 2010 +0200
+
+    [equo] speedup "equo repo merge", call EntropyRepository.removePackage in a faster way
+
+commit 22940194fba63cea25c4326ed58d13103055615b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 12 02:31:42 2010 +0200
+
+    [equo] when calling "equo repo merge" update installed packages metadata
+    
+    Faking Entropy Client requires that the package URL is generated correctly,
+    in order to comply with this, fake information will be stored inside the
+    "installed package" metadatum, generally used by the installed packages
+    repository only.
+
+commit 40cf08effad3b21f9f30425342168a68e96fb6d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 12 02:28:47 2010 +0200
+
+    [entropy.server] when moving/copying packages, keep track of the originating repository metadata
+
+commit 21ed35a9ed8cb48c87f567796cc18bd477892851
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 11 17:09:43 2010 +0200
+
+    Tagging Entropy version 0.99.49.57
+
 commit d1571bb8baac8578ced2d7c930d9991fc6ce63f8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 11 17:07:40 2010 +0200
