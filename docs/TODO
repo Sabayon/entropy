@@ -20,6 +20,7 @@
     - more entropy.spm, entropy.client unit tests
     - EntropyRepository.closeDB() => close() ?
     - complete README
+    - server-side handling of package deltas
     - more conditional deps support?
             || (
             (
