@@ -1761,10 +1761,10 @@ class Server(ServerNoticeBoardMixin):
             self._show_eapi2_upload_messages("~all~", database_path,
                 upload_data, cmethod, repo)
             # create compressed dump + checksum
+            excluded_tables = ["content", "packagechangelogs", "contentsafety"]
             self._dump_database_to_file(database_path,
                 upload_data['dump_path_light'], cmethod[0],
-                exclude_tables = ["content", "packagechangelogs"],
-                repo = repo)
+                exclude_tables = excluded_tables, repo = repo)
             self._create_file_checksum(upload_data['dump_path_light'],
                 upload_data['dump_path_digest_light'])
 
