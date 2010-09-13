@@ -144,6 +144,57 @@ class SpmTest(unittest.TestCase):
         sets = spm.get_package_sets(True)
         self.assertNotEqual(sets, None)
 
+    def test_dependencies_calculation(self):
+
+        spm_class = self.Client.Spm_class()
+        if spm_class.PLUGIN_NAME != "portage":
+            return
+        spm = self.Client.Spm()
+
+        iuse = "system-sqlite"
+        use = "amd64 dbus elibc_glibc kernel_linux multilib " + \
+            "startup-notification userland_GNU"
+        license = "MPL-1.1 GPL-2"
+        depend = """>=mail-client/thunderbird-3.1.1-r1[system-sqlite=]
+        x11-libs/libXrender x11-libs/libXt x11-libs/libXmu
+        >=sys-libs/zlib-1.1.4 dev-util/pkgconfig x11-libs/libXrender
+        x11-libs/libXt x11-libs/libXmu virtual/jpeg dev-libs/expat
+        app-arch/zip app-arch/unzip >=x11-libs/gtk+-2.8.6
+        >=dev-libs/glib-2.8.2 >=x11-libs/pango-1.10.1 >=dev-libs/libIDL-0.8.0
+        >=dev-libs/dbus-glib-0.72 >=x11-libs/startup-notification-0.8
+        !<x11-base/xorg-x11-6.7.0-r2 >=x11-libs/cairo-1.6.0 app-arch/unzip
+        =sys-devel/automake-1.11* =sys-devel/autoconf-2.1*
+        >=sys-devel/libtool-2.2.6b""".replace("\n", " ")
+        rdepend = """>=mail-client/thunderbird-3.1.1-r1[system-sqlite=] ||
+        ( ( >=app-crypt/gnupg-2.0 || ( app-crypt/pinentry[gtk]
+        app-crypt/pinentry[qt4] ) ) =app-crypt/gnupg-1.4* ) x11-libs/libXrender
+        x11-libs/libXt x11-libs/libXmu >=sys-libs/zlib-1.1.4 x11-libs/libXrender
+        x11-libs/libXt x11-libs/libXmu virtual/jpeg dev-libs/expat app-arch/zip
+        app-arch/unzip >=x11-libs/gtk+-2.8.6 >=dev-libs/glib-2.8.2
+        >=x11-libs/pango-1.10.1 >=dev-libs/libIDL-0.8.0
+        >=dev-libs/dbus-glib-0.72 >=x11-libs/startup-notification-0.8
+        !<x11-base/xorg-x11-6.7.0-r2 >=x11-libs/cairo-1.6.0""".replace("\n", " ")
+        pdepend = ""
+        provide = ""
+        sources = ""
+        eapi = "2"
+
+        portage_metadata = spm._calculate_dependencies(iuse, use, license,
+            depend, rdepend, pdepend, provide, sources, eapi)
+
+        resolved_deps = ['>=mail-client/thunderbird-3.1.1-r1[-system-sqlite]',
+            '>=app-crypt/gnupg-2.0', 'app-crypt/pinentry[gtk]',
+            'x11-libs/libXrender', 'x11-libs/libXt', 'x11-libs/libXmu',
+            '>=sys-libs/zlib-1.1.4', 'x11-libs/libXrender', 'x11-libs/libXt',
+            'x11-libs/libXmu', 'virtual/jpeg', 'dev-libs/expat', 'app-arch/zip',
+            'app-arch/unzip', '>=x11-libs/gtk+-2.8.6', '>=dev-libs/glib-2.8.2',
+            '>=x11-libs/pango-1.10.1', '>=dev-libs/libIDL-0.8.0',
+            '>=dev-libs/dbus-glib-0.72', '>=x11-libs/startup-notification-0.8',
+            '!<x11-base/xorg-x11-6.7.0-r2', '>=x11-libs/cairo-1.6.0']
+        self.assertEqual(portage_metadata['RDEPEND'].split(),
+            resolved_deps)
+
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")
