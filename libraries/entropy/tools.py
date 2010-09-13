@@ -3103,3 +3103,21 @@ def recursive_directory_relative_listing(empty_list, base_directory,
     if not _nested:
         for idx in xrange(len(empty_list)):
             empty_list[idx] = empty_list[idx][len(base_directory)+1:]
+
+def flatten(mylist):
+    """
+    Recursively traverse nested lists and return a single list containing
+    all non-list elements that are found.
+
+    @param mylist: A list containing nested lists and non-list elements.
+    @type mylist: List
+    @rtype: List
+    @return: A single list containing only non-list elements.
+    """
+    newlist = []
+    for x in mylist:
+        if isinstance(x, (list, tuple, set, frozenset)):
+            newlist.extend(flatten(x))
+        else:
+            newlist.append(x)
+    return newlist
