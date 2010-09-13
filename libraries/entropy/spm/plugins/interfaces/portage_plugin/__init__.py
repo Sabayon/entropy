@@ -198,6 +198,7 @@ class PortagePlugin(SpmPlugin):
         'defined_phases': "DEFINED_PHASES",
         'repository': "repository",
         'pf': "PF",
+        'eapi': "EAPI",
         'features': "FEATURES",
     }
 
@@ -262,42 +263,6 @@ class PortagePlugin(SpmPlugin):
 
     if "/usr/lib/gentoolkit/pym" not in sys.path:
         sys.path.append("/usr/lib/gentoolkit/pym")
-
-    class paren_normalize(list):
-        """Take a dependency structure as returned by paren_reduce or use_reduce
-        and generate an equivalent structure that has no redundant lists."""
-        def __init__(self, src):
-            list.__init__(self)
-            self._zap_parens(src, self)
-
-        def _zap_parens(self, src, dest, disjunction=False):
-            if not src:
-                return dest
-            i = iter(src)
-            for x in i:
-                if isinstance(x, const_get_stringtype()):
-                    if x == '||':
-                        x = self._zap_parens(next(i), [], disjunction=True)
-                        if len(x) == 1:
-                            dest.append(x[0])
-                        else:
-                            dest.append("||")
-                            dest.append(x)
-                    elif x.endswith("?"):
-                        dest.append(x)
-                        dest.append(self._zap_parens(next(i), []))
-                    else:
-                        dest.append(x)
-                else:
-                    if disjunction:
-                        x = self._zap_parens(x, [])
-                        if len(x) == 1:
-                            dest.append(x[0])
-                        else:
-                            dest.append(x)
-                    else:
-                        self._zap_parens(x, dest)
-            return dest
 
     def init_singleton(self, output_interface):
 
@@ -1051,9 +1016,12 @@ class PortagePlugin(SpmPlugin):
         except:
             data['changelog'] = None
 
+        if not data['eapi']:
+            data['eapi'] = None
         portage_metadata = self._calculate_dependencies(
             data['iuse'], data['use'], data['license'], data['depend'],
-            data['rdepend'], data['pdepend'], data['provide'], data['sources']
+            data['rdepend'], data['pdepend'], data['provide'], data['sources'],
+            data['eapi']
         )
 
         data['provide'] = set(portage_metadata['PROVIDE'].split())
@@ -1191,7 +1159,7 @@ class PortagePlugin(SpmPlugin):
 
         # clear unused metadata
         del data['use'], data['iuse'], data['depend'], data['pdepend'], \
-            data['rdepend']
+            data['rdepend'], data['eapi']
 
         return data
 
@@ -3596,7 +3564,7 @@ class PortagePlugin(SpmPlugin):
         return use
 
     def _calculate_dependencies(self, my_iuse, my_use, my_license, my_depend,
-        my_rdepend, my_pdepend, my_provide, my_src_uri):
+        my_rdepend, my_pdepend, my_provide, my_src_uri, my_eapi):
 
         metadata = {
             'LICENSE': my_license,
@@ -3621,12 +3589,9 @@ class PortagePlugin(SpmPlugin):
 
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
-                if k == "SRC_URI":
-                    deps = self._src_uri_paren_reduce(metadata[k])
-                else:
-                    deps = self._paren_reduce(metadata[k])
-                deps = self._use_reduce(deps, uselist = raw_use)
-                deps = self.paren_normalize(deps)
+                deps = self._portage.dep.use_reduce(metadata[k],
+                    uselist = enabled_use, masklist = metadata['USE_MASK'],
+                    is_src_uri = (k == "SRC_URI"), eapi = my_eapi)
                 if k == "LICENSE":
                     deps = self._paren_license_choose(deps)
                 else:
@@ -3651,20 +3616,6 @@ class PortagePlugin(SpmPlugin):
                 continue
             metadata[k] = deps
         return metadata
-
-    def _src_uri_paren_reduce(self, src_uris):
-        src_uris = self._paren_reduce(src_uris)
-        newlist = []
-        skip_next = False
-        for src_uri in src_uris:
-            if skip_next:
-                skip_next = False
-                continue
-            if src_uri == "->":
-                skip_next = True
-                continue
-            newlist.append(src_uri)
-        return newlist
 
     def _usedeps_reduce(self, dependencies, enabled_useflags):
         newlist = []
@@ -3751,57 +3702,6 @@ class PortagePlugin(SpmPlugin):
 
         return newlist
 
-    def _paren_reduce(self, mystr):
-        """
-
-            # deps.py -- Portage dependency resolution functions
-            # Copyright 2003-2004 Gentoo Foundation
-            # Distributed under the terms of the GNU General Public License v2
-            # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
-
-        Take a string and convert all paren enclosed entities into sublists, optionally
-        futher splitting the list elements by spaces.
-
-        Example usage:
-                >>> paren_reduce('foobar foo ( bar baz )',1)
-                ['foobar', 'foo', ['bar', 'baz']]
-                >>> paren_reduce('foobar foo ( bar baz )',0)
-                ['foobar foo ', [' bar baz ']]
-
-        @param mystr: The string to reduce
-        @type mystr: String
-        @rtype: Array
-        @return: The reduced string in an array
-        """
-        mylist = []
-        while mystr:
-            left_paren = mystr.find("(")
-            has_left_paren = left_paren != -1
-            right_paren = mystr.find(")")
-            has_right_paren = right_paren != -1
-            if not has_left_paren and not has_right_paren:
-                freesec = mystr
-                subsec = None
-                tail = ""
-            elif mystr[0] == ")":
-                return [mylist, mystr[1:]]
-            elif has_left_paren and not has_right_paren:
-                raise InvalidDependString(
-                        "InvalidDependString: %s: '%s'" % (_("missing right parenthesis"), mystr,))
-            elif has_left_paren and left_paren < right_paren:
-                freesec, subsec = mystr.split("(", 1)
-                subsec, tail = self._paren_reduce(subsec)
-            else:
-                subsec, tail = mystr.split(")", 1)
-                subsec = self._strip_empty(subsec.split(" "))
-                return [mylist+subsec, tail]
-            mystr = tail
-            if freesec:
-                mylist = mylist + self._strip_empty(freesec.split(" "))
-            if subsec is not None:
-                mylist = mylist + [subsec]
-        return mylist
-
     def _strip_empty(self, myarr):
         """
 
@@ -3822,152 +3722,6 @@ class PortagePlugin(SpmPlugin):
                 del myarr[x]
         return myarr
 
-    def _use_reduce(self, deparray, uselist = None, masklist = None,
-        matchall = 0, excludeall = None):
-        """
-
-            # deps.py -- Portage dependency resolution functions
-            # Copyright 2003-2004 Gentoo Foundation
-            # Distributed under the terms of the GNU General Public License v2
-            # $Id: portage_dep.py 9174 2008-01-11 05:49:02Z zmedico $
-
-        Takes a paren_reduce'd array and reduces the use? conditionals out
-        leaving an array with subarrays
-
-        @param deparray: paren_reduce'd list of deps
-        @type deparray: List
-        @param uselist: List of use flags
-        @type uselist: List
-        @param masklist: List of masked flags
-        @type masklist: List
-        @param matchall: Resolve all conditional deps unconditionally.  Used by repoman
-        @type matchall: Integer
-        @rtype: List
-        @return: The use reduced depend array
-        """
-
-        if uselist is None:
-            uselist = []
-        if masklist is None:
-            masklist = []
-        if excludeall is None:
-            excludeall = []
-
-        # Quick validity checks
-        for x in range(len(deparray)):
-            if deparray[x] in ["||", "&&"]:
-                if len(deparray) - 1 == x or not isinstance(deparray[x+1], list):
-                    mytxt = _("missing atom list in")
-                    raise InvalidDependString(deparray[x]+" "+mytxt+" \""+str(deparray)+"\"")
-        if deparray and deparray[-1] and deparray[-1][-1] == "?":
-            mytxt = _("Conditional without target in")
-            raise InvalidDependString("InvalidDependString: "+mytxt+" \""+str(deparray)+"\"")
-
-        # This is just for use by emerge so that it can enable a backward compatibility
-        # mode in order to gracefully deal with installed packages that have invalid
-        # atoms or dep syntax.  For backward compatibility with api consumers, strict
-        # behavior will be explicitly enabled as necessary.
-        _dep_check_strict = False
-
-        mydeparray = deparray[:]
-        rlist = []
-        while mydeparray:
-            head = mydeparray.pop(0)
-
-            if isinstance(head, list):
-                additions = self._use_reduce(head, uselist, masklist, matchall, excludeall)
-                if additions:
-                    rlist.append(additions)
-                elif rlist and rlist[-1] == "||":
-                    # Currently some DEPEND strings have || lists without default atoms.
-                    # raise portage_exception.InvalidDependString("No default atom(s) in \""+paren_enclose(deparray)+"\"")
-                    rlist.append([])
-            else:
-                if head[-1] == "?": # Use reduce next group on fail.
-                    # Pull any other use conditions and the following atom or list into a separate array
-                    newdeparray = [head]
-                    while isinstance(newdeparray[-1], const_get_stringtype()) and newdeparray[-1][-1] == "?":
-                        if mydeparray:
-                            newdeparray.append(mydeparray.pop(0))
-                        else:
-                            raise ValueError(_("Conditional with no target"))
-
-                    # Deprecation checks
-                    warned = 0
-                    if len(newdeparray[-1]) == 0:
-                        mytxt = "%s. (%s)" % (_("Empty target in string"), _("Deprecated"),)
-                        self.__output.output(
-                            darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
-                            importance = 0,
-                            level = "error",
-                            header = bold(" !!! ")
-                        )
-                        warned = 1
-                    if len(newdeparray) != 2:
-                        mytxt = "%s. (%s)" % (_("Nested use flags without parenthesis"), _("Deprecated"),)
-                        self.__output.output(
-                            darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
-                            importance = 0,
-                            level = "error",
-                            header = bold(" !!! ")
-                        )
-                        warned = 1
-                    if warned:
-                        self.__output.output(
-                            darkred("PortagePlugin._use_reduce(): "+" ".join(map(str, [head]+newdeparray))),
-                            importance = 0,
-                            level = "error",
-                            header = bold(" !!! ")
-                        )
-
-                    # Check that each flag matches
-                    ismatch = True
-                    missing_flag = False
-                    for head in newdeparray[:-1]:
-                        head = head[:-1]
-                        if not head:
-                            missing_flag = True
-                            break
-                        if head.startswith("!"):
-                            head_key = head[1:]
-                            if not head_key:
-                                missing_flag = True
-                                break
-                            if not matchall and head_key in uselist or \
-                                head_key in excludeall:
-                                ismatch = False
-                                break
-                        elif head not in masklist:
-                            if not matchall and head not in uselist:
-                                ismatch = False
-                                break
-                        else:
-                            ismatch = False
-                    if missing_flag:
-                        mytxt = _("Conditional without flag")
-                        raise InvalidDependString(
-                                "InvalidDependString: "+mytxt+": \"" + \
-                                str([head+"?", newdeparray[-1]])+"\"")
-
-                    # If they all match, process the target
-                    if ismatch:
-                        target = newdeparray[-1]
-                        if isinstance(target, list):
-                            additions = self._use_reduce(target, uselist, masklist, matchall, excludeall)
-                            if additions:
-                                rlist.append(additions)
-                        elif not _dep_check_strict:
-                            # The old deprecated behavior.
-                            rlist.append(target)
-                        else:
-                            mytxt = _("Conditional without parenthesis")
-                            raise InvalidDependString(
-                                    "InvalidDependString: "+mytxt+": '%s?'" % head)
-
-                else:
-                    rlist += [head]
-        return rlist
-
     def _paren_choose(self, dep_list):
         newlist = []
         do_skip = False
@@ -3980,12 +3734,16 @@ class PortagePlugin(SpmPlugin):
             item = dep_list[idx]
             if item == "||": # or
                 next_item = dep_list[idx+1]
-                if not next_item: # || ( asd? ( atom ) dsa? ( atom ) ) => [] if use asd and dsa are disabled
+                # || ( asd? ( atom ) dsa? ( atom ) )
+                # => [] if use asd and dsa are disabled
+                if not next_item:
                     do_skip = True
                     continue
-                item = self._dep_or_select(next_item) # must be a list
+                # must be a list
+                item = self._dep_or_select(next_item, top_level = True)
                 if not item:
-                    # no matches, transform to string and append, so reagent will fail
+                    # no matches, transform to string and append,
+                    # so reagent will fail
                     newlist.append(str(next_item))
                 else:
                     newlist += item
@@ -4023,45 +3781,69 @@ class PortagePlugin(SpmPlugin):
 
         return newlist
 
-    def _dep_or_select(self, or_list):
+    def _dep_or_select(self, or_list, top_level = False):
+
+        if top_level:
+            simple_or_list = [x for x in or_list if \
+                isinstance(x, const_get_stringtype())] == or_list
+            if simple_or_list:
+                return etpConst['entropyordepsep'].join(or_list) + \
+                    etpConst['entropyordepquestion']
+
+        def select_or_dep(dep_list):
+            for item in dep_list:
+                if isinstance(item, const_get_stringtype()):
+                    # match in currently running system
+                    if self.match_installed_package(item):
+                        return [item]
+                else:
+                    # and deps, all have to match
+                    all_matched = True
+                    for dep in item:
+                        if not self.match_installed_package(dep):
+                            all_matched = False
+                            break
+                    if all_matched:
+                        return item
+
+            # no match found, bailing out
+            return [','.join(entropy.tools.flatten(dep_list))]
 
         deps = []
-        or_selection = False
-        for item in or_list:
-            if or_selection:
-                deps += self._dep_or_select(item)
-                or_selection = False
-            elif item == "||":
-                or_selection = True
+        skip_next = False
+
+        for idx, item in enumerate(or_list):
+            if skip_next:
+                skip_next = False
                 continue
+            if item == "||":
+                # get next item
+                deps += self._dep_or_select(or_list[idx+1])
+                skip_next = True
             elif not isinstance(item, const_get_stringtype()):
-                # list
+                # AND list, all have to match
+                # must append one item that is a list
                 dep = self._dep_and_select(item)
                 if not dep:
                     # holy! add the whole dep as string (so it will fail)
                     dep = ['&'.join(item)]
-                deps += dep
+                deps.append(dep)
             else:
                 deps.append(item)
 
-        or_dep = etpConst['entropyordepsep'].join(deps) + \
-            etpConst['entropyordepquestion']
-        return [or_dep]
+        return select_or_dep(deps)
 
     def _paren_license_choose(self, dep_list):
 
         newlist = set()
         for item in dep_list:
-
-            if isinstance(item, list):
+            if not isinstance(item, const_get_stringtype()):
                 # match the first
-                data = set(self._paren_license_choose(item))
-                newlist.update(data)
-            else:
-                if item not in ["||"]:
-                    newlist.add(item)
+                newlist.update(self._paren_license_choose(item))
+            elif item != "||":
+                newlist.add(item)
 
-        return list(newlist)
+        return sorted(newlist)
 
     def _get_vdb_path(self, root = None):
         if root is None:
@@ -4095,6 +3877,10 @@ class PortagePlugin(SpmPlugin):
 
     def _extract_pkg_metadata_generate_extraction_dict(self):
         data = {
+            'eapi': {
+                'path': PortagePlugin.xpak_entries['eapi'],
+                'critical': False,
+            },
             'pf': {
                 'path': PortagePlugin.xpak_entries['pf'],
                 'critical': True,
