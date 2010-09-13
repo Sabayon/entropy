@@ -1,3 +1,21 @@
+commit d553108df80c372bb10556287af98928909cec3e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 17:38:16 2010 +0200
+
+    [entropy.spm] PortagePlugin: fix simple Entropy "or" dependencies generator code
+
+commit 29a320d5c30d50fa91f129d175684d8c171284f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 14:21:12 2010 +0200
+
+    [entropy.server.mirrors] when dumping repository light database to file, exclude "contentsafety" table too
+
+commit 2826538920ae7659ccbc51eaef209c6974c30c2e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 13:49:27 2010 +0200
+
+    Tagging Entropy version 0.99.49.59
+
 commit 2a5dee74c7fd373ddb152d980cf82551b17cb8e8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Sep 13 13:48:54 2010 +0200
