@@ -194,6 +194,15 @@ class SpmTest(unittest.TestCase):
         self.assertEqual(portage_metadata['RDEPEND'].split(),
             resolved_deps)
 
+    def test_portage_or_selector(self):
+        spm_class = self.Client.Spm_class()
+        if spm_class.PLUGIN_NAME != "portage":
+            return
+        spm = self.Client.Spm()
+
+        or_deps = ['x11-foo/foo', 'x11-bar/bar']
+        self.assertEqual(spm._dep_or_select(or_deps, top_level = True),
+            ["x11-foo/foo;x11-bar/bar?"])
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:

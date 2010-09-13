@@ -3787,8 +3787,8 @@ class PortagePlugin(SpmPlugin):
             simple_or_list = [x for x in or_list if \
                 isinstance(x, const_get_stringtype())] == or_list
             if simple_or_list:
-                return etpConst['entropyordepsep'].join(or_list) + \
-                    etpConst['entropyordepquestion']
+                return [etpConst['entropyordepsep'].join(or_list) + \
+                    etpConst['entropyordepquestion']]
 
         def select_or_dep(dep_list):
             for item in dep_list:
