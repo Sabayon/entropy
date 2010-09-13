@@ -1,9 +1,7 @@
 
   0.99.50:
 
-    EntropyRepositoryBase:
     - entropy.tools: move version checking functions to SPM (and use spm ones?)
-    - entropy.fetchers: add delta packages update support via rsync
 
   1.0:
 
@@ -20,7 +18,19 @@
     - entropy.client API docs
     - entropy.fetchers => pluggable uri handlers support?
     - more entropy.spm, entropy.client unit tests
+    - EntropyRepository.closeDB() => close() ?
     - complete README
+    - more conditional deps support?
+            || (
+            (
+                >=app-crypt/gnupg-2.0
+                || (
+                    app-crypt/pinentry[gtk]
+                    app-crypt/pinentry[qt4]
+                )
+            )
+            =app-crypt/gnupg-1.4*
+        )
 
   1.1:
 
