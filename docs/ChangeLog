@@ -1,3 +1,40 @@
+commit 2a5dee74c7fd373ddb152d980cf82551b17cb8e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 13:48:54 2010 +0200
+
+    [todo] update TODO
+
+commit ddc73401bc6f0ed3ef011c93aad9d41c16dca53f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 13:42:01 2010 +0200
+
+    [todo] update TODO
+
+commit 882cb70eff639242ec9831185ecc16f3ab34e403
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 13:41:11 2010 +0200
+
+    [entropy.spm] PortagePlugin: remove code duplicated from portage.dep and fix nested conditional dependencies (not yet supported by
+    Entropy)
+
+commit 8bebcd65e4566ddce2e800bb3157030014f6f568
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 13:40:24 2010 +0200
+
+    [entropy.tools] add helper function flatten()
+
+commit a4a52e62d860ede00aaf777c2cfb641b29c5261d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 13:40:07 2010 +0200
+
+    [tests] add another Portage related SPM test
+
+commit 0e7f3630b37a8c7f0941f76e68b9cccd08044939
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 12 09:25:17 2010 +0200
+
+    Tagging Entropy version 0.99.49.58
+
 commit f053d07fe08eb532d4cdd581853cfdf253fd8f7c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 12 09:22:20 2010 +0200
