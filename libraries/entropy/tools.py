@@ -1439,8 +1439,8 @@ def isjustname(mypkg):
         >>> isjustname('media-libs/test')
         True
 
-    @param mypkg: The package atom to check
-    @param mypkg: String
+    @param mypkg: the package atom to check
+    @param mypkg: string
     @rtype: int
     @return: if the package string is not just the package name
     """
@@ -1460,12 +1460,12 @@ def _isspecific(mypkg):
         >>> _isspecific('media-libs/test-3.0')
         True
 
-    @param mypkg: The package depstring to check against
-    @type mypkg: String
-    @rtype: Integer
+    @param mypkg: the package depstring to check against
+    @type mypkg: string
+    @rtype: int
     @return: One of the following:
-        1) 0 if the package string is not specific
-        2) 1 if it is
+        1) False if the package string is not specific
+        2) True if it is
     """
     mysplit = mypkg.split("/")
     if not isjustname(mysplit[-1]):
@@ -1477,7 +1477,7 @@ def catpkgsplit(mydata):
     """
     Takes a Category/Package-Version-Rev and returns a list of each.
 
-    @param mydata: Data to split
+    @param mydata: data to split
     @type mydata: string
     @rype: tuple
     @return:
@@ -1523,7 +1523,7 @@ def _pkgsplit(mypkg):
 
     return  (m.group('pn'), m.group('ver'), rev)
 
-def dep_getkey(mydepx):
+def dep_getkey(mydep):
     """
     Return the category/package-name of a depstring.
 
@@ -1531,14 +1531,13 @@ def dep_getkey(mydepx):
         >>> dep_getkey('media-libs/test-3.0')
         'media-libs/test'
 
-    @param mydep: The depstring to retrieve the category/package-name of
-    @type mydep: String
-    @rtype: String
-    @return: The package category/package-version
+    @param mydep: the depstring to retrieve the category/package-name of
+    @type mydep: string
+    @rtype: string
+    @return: the package category/package-version
     """
-    if not mydepx:
-        return mydepx
-    mydep = mydepx[:]
+    if not mydep:
+        return mydep
     mydep = remove_tag(mydep)
     mydep = remove_usedeps(mydep)
 
@@ -1565,12 +1564,11 @@ def dep_getcpv(mydep):
         >>> dep_getcpv('>=media-libs/test-3.0')
         'media-libs/test-3.0'
 
-    @param mydep: The depstring
-    @type mydep: String
-    @rtype: String
-    @return: The depstring with the operator removed
+    @param mydep: the depstring
+    @type mydep: string
+    @rtype: string
+    @return: the depstring with the operator removed
     """
-
     if mydep and mydep[0] == "*":
         mydep = mydep[1:]
     if mydep and mydep[-1] == "*":
@@ -1589,7 +1587,6 @@ def dep_getcpv(mydep):
 
 def dep_getslot(mydep):
     """
-
     # Imported from portage.dep
     # $Id: dep.py 11281 2008-07-30 06:12:19Z zmedico $
 
@@ -1599,10 +1596,10 @@ def dep_getslot(mydep):
             >>> dep_getslot('app-misc/test:3')
             '3'
 
-    @param mydep: The depstring to retrieve the slot of
-    @type mydep: String
-    @rtype: String
-    @return: The slot
+    @param mydep: the depstring to retrieve the slot of
+    @type mydep: string
+    @rtype: string
+    @return: the slot
     """
     colon = mydep.find(":")
     if colon != -1:
@@ -1614,9 +1611,7 @@ def dep_getslot(mydep):
     return None
 
 def dep_getusedeps(depend):
-
     """
-
     # Imported from portage.dep
     # $Id: dep.py 11281 2008-07-30 06:12:19Z zmedico $
 
@@ -1631,7 +1626,6 @@ def dep_getusedeps(depend):
     @rtype: List
     @return: List of use flags ( or [] if no flags exist )
     """
-
     use_list = []
     open_bracket = depend.find('[')
     # -1 = failure (think c++ string::npos)
@@ -1696,7 +1690,6 @@ def remove_usedeps(depend):
 
 def remove_slot(mydep):
     """
-
     # Imported from portage.dep
     # $Id: dep.py 11281 2008-07-30 06:12:19Z zmedico $
 
@@ -1808,7 +1801,6 @@ def dep_get_spm_revision(mydep):
     else:
         return "r0"
 
-
 def dep_get_match_in_repos(mydep):
     """
     docstring_title
@@ -1872,7 +1864,6 @@ def compare_versions(ver1, ver2):
     @return: 
     @rtype: 
     """
-
     if ver1 == ver2:
         return 0
     #mykey=ver1+":"+ver2
@@ -1981,16 +1972,16 @@ def compare_versions(ver1, ver2):
     return r1 - r2
 
 tag_regexp = re.compile("^([A-Za-z0-9+_.-]+)?$")
-def is_valid_package_tag(dep):
+def is_valid_package_tag(tag):
     """
-    docstring_title
+    Return whether string is a valid package tag.
 
-    @param dep: 
-    @type dep: 
-    @return: 
-    @rtype: 
+    @param tag: package tag to test
+    @type tag: string
+    @return: True, if valid
+    @rtype: bool
     """
-    match = tag_regexp.match(dep)
+    match = tag_regexp.match(tag)
     if not match:
         return False
     if not match.groups():
@@ -2022,18 +2013,18 @@ def sort_entropy_package_tags(tags):
     """
     return sorted(tags)
 
-def entropy_compare_versions(listA, listB):
+def entropy_compare_versions(ver_data, ver_data2):
     """
     @description: compare two lists composed by
         [version,tag,revision] and [version,tag,revision]
-        if listA > listB --> positive number
-        if listA == listB --> 0
-        if listA < listB --> negative number
-    @input package: listA[version,tag,rev] and listB[version,tag,rev]
+        if ver_data > ver_data2 --> positive number
+        if ver_data == ver_data2 --> 0
+        if ver_data < ver_data2 --> negative number
+    @input package: ver_data[version,tag,rev] and ver_data2[version,tag,rev]
     @output: integer number
     """
-    a_ver, a_tag, a_rev = listA
-    b_ver, b_tag, b_rev = listB
+    a_ver, a_tag, a_rev = ver_data
+    b_ver, b_tag, b_rev = ver_data2
 
     # if both are tagged, check tag first
     rc = 0
@@ -2147,7 +2138,6 @@ def istext(mystring):
     @return: True, if string is text
     @rtype: bool
     """
-
     if sys.hexversion >= 0x3000000:
         char_map = list(map(chr, list(range(32, 127))))
         text_characters = "".join(char_map + list("\n\r\t\b"))
@@ -2251,7 +2241,6 @@ def spawn_function(f, *args, **kwds):
     @return: function result
     @rtype: Python object
     """
-
     uid = kwds.get('spf_uid')
     if uid is not None:
         kwds.pop('spf_uid')
