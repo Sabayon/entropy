@@ -1335,10 +1335,11 @@ class EntropyRepository(EntropyRepositoryBase):
         Currently supported: sha256, mtime.
         Insert into contentsafety table package files sha256sum and mtime.
         """
-        self._cursor().executemany("""
-        INSERT into contentsafety VALUES (?,?,?,?)
-        """, [(package_id, k, v['mtime'], v['sha256']) for k, v in \
-            content_safety.items()])
+        if self._doesTableExist("contentsafety"):
+            self._cursor().executemany("""
+            INSERT into contentsafety VALUES (?,?,?,?)
+            """, [(package_id, k, v['mtime'], v['sha256']) for k, v in \
+                content_safety.items()])
 
     def _insertProvidedLibraries(self, package_id, libs_metadata):
         """
