@@ -186,10 +186,6 @@ resume previously interrupted operations
 
 used with --resume, makes the first package to be skipped
 
-=item B<--nochecksum>
-
-disable package integrity check
-
 =item B<--multifetch>
 
 download multiple packages in parallel (default 3)
@@ -313,10 +309,6 @@ show more details about what is going on
 =item B<--configfiles>
 
 makes old configuration files to be removed
-
-=item B<--nochecksum>
-
-disable package integrity check
 
 =item B<--multifetch>
 

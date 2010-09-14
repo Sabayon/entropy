@@ -122,8 +122,6 @@ def package(options):
             if myn not in range(2, 11):
                 myn = 10
             e_req_multifetch = myn
-        elif (opt == "--nochecksum"):
-            e_req_checksum = False
         elif (opt == "--skipfirst"):
             e_req_skipfirst = True
         elif (opt.startswith("--")):

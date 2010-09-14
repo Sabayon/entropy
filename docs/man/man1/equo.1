@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2010-09-10" "perl v5.10.1" "Entropy"
+.TH EQUO 1 "2010-09-14" "perl v5.10.1" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -202,6 +202,13 @@ reorder mirrors basing on response time
 .IP "\fBmerge [sources] <dest\fR>" 4
 .IX Item "merge [sources] <dest>"
 merge content of source repos to dest [for developers]
+.RS 4
+.IP "\fB\-\-conflicts\fR" 4
+.IX Item "--conflicts"
+also remove dependency conflicts during merge
+.RE
+.RS 4
+.RE
 .RE
 .RS 4
 .RE
@@ -267,9 +274,6 @@ resume previously interrupted operations
 .IP "\fB\-\-skipfirst\fR" 4
 .IX Item "--skipfirst"
 used with \-\-resume, makes the first package to be skipped
-.IP "\fB\-\-nochecksum\fR" 4
-.IX Item "--nochecksum"
-disable package integrity check
 .IP "\fB\-\-multifetch\fR" 4
 .IX Item "--multifetch"
 download multiple packages in parallel (default 3)
@@ -366,9 +370,6 @@ show more details about what is going on
 .IP "\fB\-\-configfiles\fR" 4
 .IX Item "--configfiles"
 makes old configuration files to be removed
-.IP "\fB\-\-nochecksum\fR" 4
-.IX Item "--nochecksum"
-disable package integrity check
 .IP "\fB\-\-multifetch\fR" 4
 .IX Item "--multifetch"
 download multiple packages in parallel (default 3)
