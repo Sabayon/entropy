@@ -1521,9 +1521,14 @@ class EntropyRepository(EntropyRepositoryBase):
         @keyword gpg: GPG signature file content
         @type gpg: string
         """
-        self._cursor().execute("""
-        INSERT INTO packagesignatures VALUES (?,?,?,?,?)
-        """, (package_id, sha1, sha256, sha512, gpg))
+        if not self._doesColumnInTableExist("packagesignatures", "gpg"):
+            self._cursor().execute("""
+            INSERT INTO packagesignatures VALUES (?,?,?,?)
+            """, (package_id, sha1, sha256, sha512))
+        else:
+            self._cursor().execute("""
+            INSERT INTO packagesignatures VALUES (?,?,?,?,?)
+            """, (package_id, sha1, sha256, sha512, gpg))
 
     def _insertDesktopMime(self, package_id, metadata):
         """
