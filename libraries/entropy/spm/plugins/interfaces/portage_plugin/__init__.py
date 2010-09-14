@@ -31,6 +31,7 @@ from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
 from entropy.spm.plugins.skel import SpmPlugin
+import entropy.dep
 import entropy.tools
 from entropy.spm.plugins.interfaces.portage_plugin import xpak
 from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
@@ -769,7 +770,7 @@ class PortagePlugin(SpmPlugin):
             if kern_vermagic is None:
                 continue
 
-            if not entropy.tools.is_valid_package_tag(kern_vermagic):
+            if not entropy.dep.is_valid_package_tag(kern_vermagic):
                 # argh! wtf, this is invalid!
                 continue
 
@@ -784,7 +785,7 @@ class PortagePlugin(SpmPlugin):
             owner_data = None
             k_atom = None
             for k_atom, k_slot in owners:
-                k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
+                k_cat, k_name, k_ver, k_rev = entropy.dep.catpkgsplit(k_atom)
                 if k_cat == PortagePlugin.KERNEL_CATEGORY:
                     owner_data = (k_cat, k_name, k_ver, k_rev,)
                     break
@@ -913,7 +914,7 @@ class PortagePlugin(SpmPlugin):
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
-        pkgcat, pkgname, pkgver, pkgrev = entropy.tools.catpkgsplit(
+        pkgcat, pkgname, pkgver, pkgrev = entropy.dep.catpkgsplit(
             pf_atom)
         if pkgrev != "r0":
             pkgver += "-%s" % (pkgrev,)
@@ -1124,7 +1125,7 @@ class PortagePlugin(SpmPlugin):
 
         # write only if it's a systempackage
         data['systempackage'] = False
-        system_packages = [entropy.tools.dep_getkey(x) for x in \
+        system_packages = [entropy.dep.dep_getkey(x) for x in \
             self.get_system_packages()]
         if data['category'] + "/" + data['name'] in system_packages:
             data['systempackage'] = True
@@ -1223,7 +1224,7 @@ class PortagePlugin(SpmPlugin):
         matched_slot = self.get_package_metadata(matched_atom, "SLOT")
         try:
             inst_key = "%s%s%s" % (
-                entropy.tools.dep_getkey(package),
+                entropy.dep.dep_getkey(package),
                 etpConst['entropyslotprefix'],
                 matched_slot,
             )
@@ -1568,8 +1569,8 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        spm_name = entropy.tools.remove_tag(entropy_package_name)
-        spm_name = entropy.tools.remove_entropy_revision(spm_name)
+        spm_name = entropy.dep.remove_tag(entropy_package_name)
+        spm_name = entropy.dep.remove_entropy_revision(spm_name)
         return spm_name
 
     def assign_uid_to_installed_package(self, package, root = None):
@@ -2216,7 +2217,7 @@ class PortagePlugin(SpmPlugin):
             if mymatch[0] == -1:
                 continue
             myatom = repo_db.retrieveAtom(mymatch[0])
-            myatom = entropy.tools.remove_tag(myatom)
+            myatom = entropy.dep.remove_tag(myatom)
             runatoms.add(myatom)
 
         for myatom in runatoms:
@@ -2611,7 +2612,7 @@ class PortagePlugin(SpmPlugin):
         """
         atomsfound = set()
         spm_package = PortagePlugin._pkg_compose_atom(package_metadata)
-        key = entropy.tools.dep_getkey(spm_package)
+        key = entropy.dep.dep_getkey(spm_package)
         category = key.split("/")[0]
 
         build = self.get_installed_package_build_script_path(spm_package)
@@ -2624,7 +2625,7 @@ class PortagePlugin(SpmPlugin):
                 os.listdir(cat_dir)]
             # filter by key
             real_findings = [x for x in my_findings if \
-                key == entropy.tools.dep_getkey(x)]
+                key == entropy.dep.dep_getkey(x)]
             atomsfound.update(real_findings)
 
         myslot = package_metadata['slot']
@@ -2780,10 +2781,10 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        atom = entropy.tools.remove_tag(package_metadata['removeatom'])
+        atom = entropy.dep.remove_tag(package_metadata['removeatom'])
         remove_build = self.get_installed_package_build_script_path(atom)
         remove_path = os.path.dirname(remove_build)
-        key = entropy.tools.dep_getkey(atom)
+        key = entropy.dep.dep_getkey(atom)
 
         with self._PortageVdbLocker(self):
 
@@ -3673,22 +3674,22 @@ class PortagePlugin(SpmPlugin):
 
         for raw_dependency in dependencies:
 
-            split_deps = entropy.tools.dep_split_or_deps(raw_dependency)
+            split_deps = entropy.dep.dep_split_or_deps(raw_dependency)
             filtered_deps = []
             for depstring in split_deps:
 
-                use_deps = entropy.tools.dep_getusedeps(depstring)
+                use_deps = entropy.dep.dep_getusedeps(depstring)
                 if use_deps:
 
                     new_use_deps = filter_use_deps(depstring)
 
                     if new_use_deps:
                         depstring = "%s[%s]" % (
-                            entropy.tools.remove_usedeps(depstring),
+                            entropy.dep.remove_usedeps(depstring),
                             ','.join(new_use_deps),
                         )
                     else:
-                        depstring = entropy.tools.remove_usedeps(depstring)
+                        depstring = entropy.dep.remove_usedeps(depstring)
 
                 filtered_deps.append(depstring)
 
@@ -4235,7 +4236,7 @@ responsible in any way.
         tag = tags[-1]
         tag = tag.split("=")[-1].strip('"').strip("'").strip()
 
-        if not entropy.tools.is_valid_package_tag(tag):
+        if not entropy.dep.is_valid_package_tag(tag):
             # invalid
             mytxt = "%s: %s: %s" % (
                 bold(_("QA")),

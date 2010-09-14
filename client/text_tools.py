@@ -19,7 +19,7 @@ from entropy.output import print_info, print_generic, writechar, blue, red, \
     brown, darkblue, purple, teal, darkgreen, decolorize
 from entropy.i18n import _
 
-import entropy.tools
+import entropy.dep
 
 def acquire_entropy_locks(entropy_client):
     """
@@ -313,21 +313,21 @@ def enlightenatom(atom):
     @return: colorized string
     @rtype: string
     """
-    entropy_rev = entropy.tools.dep_get_entropy_revision(atom)
+    entropy_rev = entropy.dep.dep_get_entropy_revision(atom)
     if entropy_rev is None:
         entropy_rev = ''
     else:
         entropy_rev = '~%s' % (str(entropy_rev),)
-    entropy_tag = entropy.tools.dep_gettag(atom)
+    entropy_tag = entropy.dep.dep_gettag(atom)
     if entropy_tag is None:
         entropy_tag = ''
     else:
         entropy_tag = '#%s' % (entropy_tag,)
-    clean_atom = entropy.tools.remove_entropy_revision(atom)
-    clean_atom = entropy.tools.remove_tag(clean_atom)
-    only_cpv = entropy.tools.dep_getcpv(clean_atom)
+    clean_atom = entropy.dep.remove_entropy_revision(atom)
+    clean_atom = entropy.dep.remove_tag(clean_atom)
+    only_cpv = entropy.dep.dep_getcpv(clean_atom)
     operator = clean_atom[:len(clean_atom)-len(only_cpv)]
-    cat, name, pv, rev = entropy.tools.catpkgsplit(only_cpv)
+    cat, name, pv, rev = entropy.dep.catpkgsplit(only_cpv)
     if rev == "r0":
         rev = ''
     else:

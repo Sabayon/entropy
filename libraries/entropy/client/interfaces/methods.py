@@ -1716,7 +1716,7 @@ class MatchMixin:
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(package_match[0])
         installed_ver, installed_tag, installed_rev = \
             self._installed_repository.getVersioningData(installed_idpackage)
-        pkgcmp = entropy.tools.entropy_compare_versions(
+        pkgcmp = entropy.dep.entropy_compare_versions(
             (pkgver, pkgtag, pkgrev),
             (installed_ver, installed_tag, installed_rev))
         if pkgcmp == 0:

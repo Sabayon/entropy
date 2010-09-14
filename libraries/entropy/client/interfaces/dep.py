@@ -24,7 +24,7 @@ from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError, InterfaceError
 from entropy.db.skel import EntropyRepositoryBase
 
-import entropy.tools
+import entropy.dep
 
 class CalculatorsMixin:
 
@@ -95,7 +95,7 @@ class CalculatorsMixin:
                 version_duplicates.add(version)
             versions.add(version)
 
-        newer_ver = entropy.tools.get_newer_version(list(versions))[0]
+        newer_ver = entropy.dep.get_newer_version(list(versions))[0]
         # if no duplicates are found or newer version is not in duplicates we're done
         if (not version_duplicates) or (newer_ver not in version_duplicates):
             reponame = ver_info.get(newer_ver)
@@ -121,9 +121,9 @@ class CalculatorsMixin:
             conflict_entries[repo]['revision'] = pkg_info[repo]['revision']
 
         # tags will always be != []
-        newerTag = entropy.tools.sort_entropy_package_tags(tags)[-1]
-        if newerTag not in tags_duplicates:
-            reponame = tagsInfo.get(newerTag)
+        newer_tag = entropy.dep.sort_entropy_package_tags(tags)[-1]
+        if newer_tag not in tags_duplicates:
+            reponame = tagsInfo.get(newer_tag)
             return (results[reponame], reponame)
 
         # in this case, we have >two packages with the same version and tag
@@ -134,7 +134,7 @@ class CalculatorsMixin:
         revisions_duplicates = set()
         revisionInfo = {}
         for repo in conflict_entries:
-            if conflict_entries[repo]['versiontag'] == newerTag:
+            if conflict_entries[repo]['versiontag'] == newer_tag:
                 conflictingRevisions[repo] = {}
                 versionrev = conflict_entries[repo]['revision']
                 if versionrev in revisions:
@@ -197,7 +197,7 @@ class CalculatorsMixin:
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
-        atom, repos = entropy.tools.dep_get_match_in_repos(atom)
+        atom, repos = entropy.dep.dep_get_match_in_repos(atom)
         if (match_repo is None) and (repos is not None):
             match_repo = repos
 
@@ -376,8 +376,8 @@ class CalculatorsMixin:
             satisfied_data = tmp_satisfied_data
             self._settings[satisfied_kw] = satisfied_data
 
-        etp_cmp = entropy.tools.entropy_compare_versions
-        etp_get_rev = entropy.tools.dep_get_entropy_revision
+        etp_cmp = entropy.dep.entropy_compare_versions
+        etp_get_rev = entropy.dep.dep_get_entropy_revision
 
         if depcache is None:
             depcache = {}
@@ -446,14 +446,14 @@ class CalculatorsMixin:
                 # check if dependency can be matched in available repos and
                 # if it is a tagged package, in this case, we need to rewrite
                 # the dependency string to restrict its scope
-                dependency_tag = entropy.tools.dep_gettag(dependency)
+                dependency_tag = entropy.dep.dep_gettag(dependency)
                 if not dependency_tag:
                     # also filter out empty tags (pkgs without tags)
                     av_tags = [x for x in \
                         _my_get_available_tags(dependency, None) if x]
                     if av_tags:
                         matching_tags = set()
-                        i_key = entropy.tools.dep_getkey(dependency)
+                        i_key = entropy.dep.dep_getkey(dependency)
                         for a_tag in av_tags:
                             a_dep_tag = i_key + \
                                 etpConst['entropytagprefix'] + a_tag
@@ -465,7 +465,7 @@ class CalculatorsMixin:
                                 matching_tags.add(a_tag)
 
                         if matching_tags:
-                            best_tag = entropy.tools.sort_entropy_package_tags(
+                            best_tag = entropy.dep.sort_entropy_package_tags(
                                 matching_tags)[-1]
                             dependency += etpConst['entropytagprefix'] + \
                                 best_tag
@@ -499,7 +499,7 @@ class CalculatorsMixin:
 
             # WARN: unfortunately, need to deal with Portage (and other
             # backends) old-style PROVIDE metadata
-            if entropy.tools.dep_getcat(dependency) == \
+            if entropy.dep.dep_getcat(dependency) == \
                 EntropyRepositoryBase.VIRTUAL_META_PACKAGE_CATEGORY:
                 provide_stop = False
                 for c_id in c_ids:
@@ -566,7 +566,7 @@ class CalculatorsMixin:
             # restrict dependency matching scope inside mutually available
             # package tags. Equals to tags available in both installed and
             # available repositories.
-            dependency_tag = entropy.tools.dep_gettag(dependency)
+            dependency_tag = entropy.dep.dep_gettag(dependency)
             installed_tags = [x[1] for x in client_data if x[1]]
             if installed_tags and not dependency_tag:
 
@@ -579,7 +579,7 @@ class CalculatorsMixin:
                     # NOW, reset variables used here below to make them
                     # pointing to proper tagged package, keeping scoped
                     # handling.
-                    best_tag = entropy.tools.sort_entropy_package_tags(
+                    best_tag = entropy.dep.sort_entropy_package_tags(
                         available_tags)[-1]
 
                     # also change "dependency" to make it pointing to a
@@ -935,7 +935,7 @@ class CalculatorsMixin:
         return mydata
 
     def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
-        if entropy.tools.isjustname(conflict_atom):
+        if entropy.dep.isjustname(conflict_atom):
             return
 
         conflict_match = self.atom_match(conflict_atom)
@@ -2047,8 +2047,8 @@ class CalculatorsMixin:
         matched = None
         if pkg_id != -1:
             myatom = self._installed_repository.retrieveAtom(pkg_id)
-            mytag = entropy.tools.dep_gettag(myatom)
-            myatom = entropy.tools.remove_tag(myatom)
+            mytag = entropy.dep.dep_gettag(myatom)
+            myatom = entropy.dep.remove_tag(myatom)
             myrev = self._installed_repository.retrieveRevision(pkg_id)
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag is not None:
@@ -2057,7 +2057,7 @@ class CalculatorsMixin:
                 deep_deps = deep)
             if pkg_unsatisfied:
                 # does it really exist on current repos?
-                pkg_key = entropy.tools.dep_getkey(myatom)
+                pkg_key = entropy.dep.dep_getkey(myatom)
                 f_pkg_id, pkg_repo = self.atom_match(pkg_key)
                 if f_pkg_id != -1:
                     found = True
@@ -2090,7 +2090,7 @@ class CalculatorsMixin:
             dbconn = self.open_repository(repo_id)
 
         pkgatom = dbconn.retrieveAtom(package_id)
-        pkgkey = entropy.tools.dep_getkey(pkgatom)
+        pkgkey = entropy.dep.dep_getkey(pkgatom)
         cl_set_plg = self.sys_settings_client_plugin_id
         mask_data = self._settings[cl_set_plg]['system_mask']
         mask_installed_keys = mask_data['repos_installed_keys']

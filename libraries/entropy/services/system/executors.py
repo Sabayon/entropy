@@ -20,6 +20,7 @@ from entropy.i18n import _
 from entropy.transceivers import EntropyTransceiver
 from entropy.server.interfaces.rss import ServerRssMetadata
 
+import entropy.dep
 import entropy.tools
 
 def seek_till_newline(f):
@@ -301,7 +302,7 @@ class Base:
         for atom in atoms:
 
             try:
-                key = entropy.tools.dep_getkey(atom)
+                key = entropy.dep.dep_getkey(atom)
                 category = key.split("/")[0]
             except:
                 continue
@@ -330,7 +331,7 @@ class Base:
         package_data = {}
         for package in packages:
             try:
-                key = entropy.tools.dep_getkey(package)
+                key = entropy.dep.dep_getkey(package)
                 category = key.split("/")[0]
             except:
                 continue
@@ -351,7 +352,7 @@ class Base:
         package_data = {}
         for package in packages:
             try:
-                key = entropy.tools.dep_getkey(package)
+                key = entropy.dep.dep_getkey(package)
                 category = key.split("/")[0]
             except:
                 continue
@@ -1211,7 +1212,7 @@ class Base:
     def _get_spm_pkginfo(self, matched_atom, from_installed = False):
         data = {}
         data['atom'] = matched_atom
-        data['key'] = entropy.tools.dep_getkey(matched_atom)
+        data['key'] = entropy.dep.dep_getkey(matched_atom)
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         try:
             if from_installed:

@@ -35,6 +35,7 @@ from entropy.client.mirrors import StatusInterface
 from entropy.exceptions import RepositoryError
 from entropy.db.exceptions import OperationalError, IntegrityError
 
+import entropy.dep
 import entropy.tools
 
 class QueueExecutor:
@@ -163,7 +164,7 @@ class QueueExecutor:
                 if myrepo not in mykeys:
                     mykeys[myrepo] = set()
                 mykeys[myrepo].add(
-                    entropy.tools.dep_getkey(pkg.pkgmeta['atom']))
+                    entropy.dep.dep_getkey(pkg.pkgmeta['atom']))
 
                 self._entropy.output(
                     fetch_string+pkg.pkgmeta['atom'],

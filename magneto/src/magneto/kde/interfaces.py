@@ -26,7 +26,7 @@ from magneto.kde.components import AppletNoticeWindow, AppletIconPixbuf
 
 # Entropy imports
 from entropy.i18n import _
-import entropy.tools
+import entropy.dep
 
 
 class Magneto(MagnetoCore):
@@ -218,12 +218,12 @@ class Magneto(MagnetoCore):
         packages = []
         for atom in self.package_updates:
 
-            key = entropy.tools.dep_getkey(atom)
-            avail_rev = entropy.tools.dep_get_entropy_revision(atom)
-            avail_tag = entropy.tools.dep_gettag(atom)
-            my_pkg = entropy.tools.remove_entropy_revision(atom)
-            my_pkg = entropy.tools.remove_tag(my_pkg)
-            pkgcat, pkgname, pkgver, pkgrev = entropy.tools.catpkgsplit(my_pkg)
+            key = entropy.dep.dep_getkey(atom)
+            avail_rev = entropy.dep.dep_get_entropy_revision(atom)
+            avail_tag = entropy.dep.dep_gettag(atom)
+            my_pkg = entropy.dep.remove_entropy_revision(atom)
+            my_pkg = entropy.dep.remove_tag(my_pkg)
+            pkgcat, pkgname, pkgver, pkgrev = entropy.dep.catpkgsplit(my_pkg)
             ver = pkgver
             if pkgrev != "r0":
                 ver += "-%s" % (pkgrev,)

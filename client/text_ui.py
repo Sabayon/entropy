@@ -30,6 +30,7 @@ from entropy.i18n import _
 from text_tools import countdown, enlightenatom, acquire_entropy_locks, \
     release_entropy_locks
 
+import entropy.dep
 import entropy.tools
 import entropy.dump
 
@@ -706,7 +707,7 @@ def _scan_packages_expand_tag(entropy_client, packages):
     inst_repo = entropy_client.installed_repository()
 
     def expand_package(dep):
-        tag = entropy.tools.dep_gettag(dep)
+        tag = entropy.dep.dep_gettag(dep)
         if tag is not None:
             # do not override packages already providing a tag
             return dep
@@ -730,7 +731,7 @@ def _scan_packages_expand_tag(entropy_client, packages):
                 return dep
             tags.add(pkg_tag)
 
-        best_tag = entropy.tools.sort_entropy_package_tags(
+        best_tag = entropy.dep.sort_entropy_package_tags(
             tags)[-1]
 
         proposed_dep = "%s%s%s" % (dep, etpConst['entropytagprefix'], best_tag)
@@ -850,7 +851,7 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
             installedRev = "NoRev"
             installedRepo = _("Not available")
             pkginstalled = entropy_client.installed_repository().atomMatch(
-                entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):
                 # found
                 idx = pkginstalled[0]
@@ -1078,7 +1079,7 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
                 if myrepo not in downdata:
                     downdata[myrepo] = set()
                 for myatom in myrepo_data[myrepo]:
-                    downdata[myrepo].add(entropy.tools.dep_getkey(myatom))
+                    downdata[myrepo].add(entropy.dep.dep_getkey(myatom))
 
             xterm_header = "equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
             print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
@@ -1104,7 +1105,7 @@ def _fetch_packages(entropy_client, run_queue, downdata, multifetch = 1,
         myrepo = Package.pkgmeta['repository']
         if myrepo not in downdata:
             downdata[myrepo] = set()
-        downdata[myrepo].add(entropy.tools.dep_getkey(Package.pkgmeta['atom']))
+        downdata[myrepo].add(entropy.dep.dep_getkey(Package.pkgmeta['atom']))
 
         xterm_header = "equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
         print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
@@ -1297,7 +1298,7 @@ def install_packages(entropy_client,
                 installedRev = 0
                 installedRepo = None
                 pkginstalled = entropy_client.installed_repository().atomMatch(
-                    entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                    entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if pkginstalled[1] == 0:
                     # found an installed package
                     idx = pkginstalled[0]

@@ -19,6 +19,7 @@ from entropy.output import darkgreen, darkred, red, blue, \
 from entropy.misc import Lifo
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
+import entropy.dep
 import entropy.tools
 from entropy.db.exceptions import DatabaseError
 
@@ -176,10 +177,10 @@ def get_installed_packages(packages, dbconn = None, entropy_intf = None):
     for real_package in packages:
         pkg_data[real_package] = set()
 
-        slot = entropy.tools.dep_getslot(real_package)
-        tag = entropy.tools.dep_gettag(real_package)
-        package = entropy.tools.remove_slot(real_package)
-        package = entropy.tools.remove_tag(package)
+        slot = entropy.dep.dep_getslot(real_package)
+        tag = entropy.dep.dep_gettag(real_package)
+        package = entropy.dep.remove_slot(real_package)
+        package = entropy.dep.remove_tag(package)
 
         idpackages = repo_db.searchPackages(package, slot = slot, tag = tag,
             just_id = True, order_by = "atom")
@@ -420,7 +421,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
     stack_cache = set()
     # ensure package availability in graph, initialize now
     graph.add(start_item, [])
-    depsorter = lambda x: entropy.tools.dep_getcpv(x[0])
+    depsorter = lambda x: entropy.dep.dep_getcpv(x[0])
 
     while stack.is_filled():
 
@@ -1067,7 +1068,7 @@ def list_installed_packages(Equo = None, dbconn = None):
 
     for atom, idpackage, branch in inst_packages:
         if not etpUi['verbose']:
-            atom = entropy.tools.dep_getkey(atom)
+            atom = entropy.dep.dep_getkey(atom)
         branchinfo = ""
         sizeinfo = ""
         if etpUi['verbose']:
@@ -1096,10 +1097,10 @@ def search_package(packages, Equo = None, get_results = False,
     def do_adv_search(dbconn, from_client = False):
         pkg_ids = set()
         for package in packages:
-            slot = entropy.tools.dep_getslot(package)
-            tag = entropy.tools.dep_gettag(package)
-            package = entropy.tools.remove_slot(package)
-            package = entropy.tools.remove_tag(package)
+            slot = entropy.dep.dep_getslot(package)
+            tag = entropy.dep.dep_gettag(package)
+            package = entropy.dep.remove_slot(package)
+            package = entropy.dep.remove_tag(package)
 
             try:
                 result = set(dbconn.searchPackages(package, slot = slot,
@@ -1563,7 +1564,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         installedRev = _("N/A")
         try:
             pkginstalled = Equo.installed_repository().atomMatch(
-                entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
             if pkginstalled[1] == 0:
                 idx = pkginstalled[0]
                 # found
@@ -1629,7 +1630,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             pkgdigest = dbconn.retrieveDigest(idpackage)
             pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
             pkgconflicts = dbconn.retrieveConflicts(idpackage)
-            depsorter = lambda x: entropy.tools.dep_getcpv(x[0])
+            depsorter = lambda x: entropy.dep.dep_getcpv(x[0])
 
             toc.append((darkgreen("       %s:" % (_("Size"),) ),
                 blue(str(pkgsize)),))

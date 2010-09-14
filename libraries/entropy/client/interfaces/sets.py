@@ -19,7 +19,7 @@ from entropy.const import etpConst, const_setup_perms, const_convert_to_unicode
 from entropy.exceptions import InvalidPackageSet
 from entropy.core.settings.base import SystemSettings
 
-import entropy.tools
+import entropy.dep
 
 
 class Sets:
@@ -85,7 +85,7 @@ class Sets:
 
         # support match in repository from shell
         # set@repo1,repo2,repo3
-        package_set, repos = entropy.tools.dep_get_match_in_repos(
+        package_set, repos = entropy.dep.dep_get_match_in_repos(
             package_set)
         if (match_repo is None) and (repos is not None):
             match_repo = repos

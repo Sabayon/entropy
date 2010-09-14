@@ -18,6 +18,7 @@ from entropy.const import etpConst, const_isunicode, etpSys, etpUi
 from entropy.output import brown, bold, darkred, red
 from entropy.i18n import _
 
+import entropy.dep
 import entropy.tools
 
 class Trigger:
@@ -236,7 +237,7 @@ class Trigger:
             if const_isunicode(pv):
                 pv = pv.encode('utf-8')
 
-            pr = entropy.tools.dep_get_spm_revision(pv)
+            pr = entropy.dep.dep_get_spm_revision(pv)
             pvr = pv
             if pr == "r0":
                 pvr += "-%s" % (pr,)
@@ -258,7 +259,7 @@ class Trigger:
                 slot = slot.encode('utf-8')
 
             pkgatom = pkgdata.get('atom')
-            pkgkey = entropy.tools.dep_getkey(pkgatom)
+            pkgkey = entropy.dep.dep_getkey(pkgatom)
             pvrte = pkgatom[len(pkgkey)+1:]
             if const_isunicode(pvrte):
                 pvrte = pvrte.encode('utf-8')

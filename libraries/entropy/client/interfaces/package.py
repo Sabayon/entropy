@@ -28,6 +28,7 @@ from entropy.client.mirrors import StatusInterface
 from entropy.core.settings.base import SystemSettings
 from entropy.security import Repository as RepositorySecurity
 
+import entropy.dep
 import entropy.tools
 
 class Package:
@@ -2829,7 +2830,7 @@ class Package:
         # -- of course, we need to drop versiontag before being able to look
         # for other pkgs with same atom but different tag (which is an
         # entropy-only metadatum)
-        test_atom = entropy.tools.remove_tag(self.pkgmeta['removeatom'])
+        test_atom = entropy.dep.remove_tag(self.pkgmeta['removeatom'])
         others_installed = self._entropy.installed_repository().getPackageIds(
             test_atom)
 
@@ -3389,7 +3390,7 @@ class Package:
             self.pkgmeta['merge_from'] = const_convert_to_unicode(mf)
         self.pkgmeta['removeconfig'] = remove_config
 
-        pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
+        pkgkey = entropy.dep.dep_getkey(self.pkgmeta['atom'])
         inst_idpackage, inst_rc = inst_repo.atomMatch(pkgkey,
             matchSlot = self.pkgmeta['slot'])
 

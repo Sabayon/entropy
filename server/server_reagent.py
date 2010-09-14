@@ -20,6 +20,7 @@ from entropy.server.interfaces import Server
 from entropy.core.settings.base import SystemSettings
 from entropy.i18n import _
 
+import entropy.dep
 import entropy.tools
 Entropy = Server(community_repo = etpConst['community']['mode'])
 SYS_SET = SystemSettings()
@@ -832,7 +833,7 @@ def update(options):
 
 
                 # this is a spm atom
-                spm_key = entropy.tools.dep_getkey(item)
+                spm_key = entropy.dep.dep_getkey(item)
                 try:
                     spm_slot = Entropy.Spm().get_installed_package_metadata(
                         item, "SLOT")
@@ -1034,7 +1035,7 @@ def spm_compile_categories(options, do_list = False):
         oldslots_meta = {}
         for package in packages:
             pkg_slot = spm.get_package_metadata(package, "SLOT")
-            pkg_key = entropy.tools.dep_getkey(package)
+            pkg_key = entropy.dep.dep_getkey(package)
             obj = oldslots_meta.setdefault(pkg_key, set())
             obj.add((pkg_slot, package,))
         del packages[:]

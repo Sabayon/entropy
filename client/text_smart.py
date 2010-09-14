@@ -21,6 +21,7 @@ from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, darkgreen, brown, bold, \
     print_info, print_error, print_warning
 from entropy.i18n import _
+import entropy.dep
 import entropy.tools
 
 from text_tools import acquire_entropy_locks, release_entropy_locks
@@ -269,7 +270,7 @@ def deflate_handler(mytbz2s, savedir):
         if not ext_rc:
             return 1
         tbz2name = os.path.basename(tbz2)[:-len(etpConst['packagesext'])]
-        tbz2name = entropy.tools.remove_tag(tbz2name)+etpConst['packagesext']
+        tbz2name = entropy.dep.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(tbz2)+os.path.sep+tbz2name
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflated package"),))+newtbz2)
 

@@ -29,6 +29,7 @@ from entropy.output import decolorize
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import ParallelTask
+import entropy.dep
 import entropy.tools
 
 from sulfur.event import SulfurSignals
@@ -1262,7 +1263,7 @@ class PkgInfoMenu(MenuSkel):
         pkgatom = pkg.name
         self.vote = int(pkg.vote)
         self.repository = pkg.repoid
-        self.pkgkey = entropy.tools.dep_getkey(pkgatom)
+        self.pkgkey = entropy.dep.dep_getkey(pkgatom)
         self.set_stars_from_repository()
         self.pkginfo_ui.pkgImage.set_from_file(self.pkg_pixmap)
         self.pkginfo_ui.ugcSmallIcon.set_from_file(self.ugc_small_pixmap)

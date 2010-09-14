@@ -23,7 +23,9 @@ from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.output import print_generic
+import entropy.dep
 import entropy.dump
+import entropy.tools
 
 from sulfur.core import UI
 from sulfur.setup import const, cleanMarkupString, fakeoutfile, fakeinfile
@@ -2265,7 +2267,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         add_cats_data = {}
         for spm_atom, spm_counter in data['add_data']:
-            cat = entropy.tools.dep_getkey(spm_atom).split("/")[0]
+            cat = entropy.dep.dep_getkey(spm_atom).split("/")[0]
             if cat not in add_cats_data:
                 add_cats_data[cat] = []
             item = data['add_data'][(spm_atom, spm_counter,)]
@@ -2993,7 +2995,7 @@ class RepositoryManagerMenu(MenuSkel):
         if data['atoms']:
             categories = []
             for atom in data['atoms']:
-                categories.append(entropy.tools.dep_getkey(atom).split("/")[0])
+                categories.append(entropy.dep.dep_getkey(atom).split("/")[0])
             if clear: self.clear_data_store_and_view()
             self.run_get_spm_atoms_info(categories, data['atoms'], clear)
 

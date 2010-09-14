@@ -12,6 +12,7 @@
 
 from entropy.const import *
 from entropy.i18n import _
+import entropy.dep
 import entropy.tools
 
 from sulfur.entropyapi import Equo
@@ -255,7 +256,7 @@ class EntropyPackage:
             atom = self.get_name()
             repo = self.get_repository()
             repo_clean = self.get_repository_clean()
-            key = entropy.tools.dep_getkey(atom)
+            key = entropy.dep.dep_getkey(atom)
             desc = self.get_description(markup = False)
             ver_str = self._get_nameDesc_get_installed_ver()
             self.__cache['get_nameDesc'] = atom, repo, repo_clean, key, desc, \
@@ -264,7 +265,7 @@ class EntropyPackage:
         if atom is None: # wtf!
             return 'N/A'
 
-        key = entropy.tools.dep_getkey(atom)
+        key = entropy.dep.dep_getkey(atom)
         downloads = ENTROPY.UGC.UGCCache.get_package_downloads(repo_clean, key)
         ugc_string = '<small>[%s|<span foreground="%s">%s</span>]</small> ' % (
             downloads, SulfurConf.color_title2, repo_clean,)
@@ -506,7 +507,7 @@ class EntropyPackage:
         if self.pkgset:
             return self.set_name
 
-        key = entropy.tools.dep_getkey(
+        key = entropy.dep.dep_getkey(
             self.dbconn.retrieveAtom(self.matched_id))
         self.__cache['get_key'] = key
         return key
@@ -580,7 +581,7 @@ class EntropyPackage:
         if not atom:
             return None
         return ENTROPY.UGC.UGCCache.get_package_vote(
-            self.get_repository_clean(), entropy.tools.dep_getkey(atom))
+            self.get_repository_clean(), entropy.dep.dep_getkey(atom))
 
     def get_ugc_package_vote_int(self):
         if self.pkgset:
@@ -589,7 +590,7 @@ class EntropyPackage:
         if not atom:
             return 0
         vote = ENTROPY.UGC.UGCCache.get_package_vote(
-            self.get_repository_clean(), entropy.tools.dep_getkey(atom))
+            self.get_repository_clean(), entropy.dep.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0
         return int(vote)
@@ -601,7 +602,7 @@ class EntropyPackage:
         if not atom:
             return 0.0
         vote = ENTROPY.UGC.UGCCache.get_package_vote(
-            self.get_repository_clean(), entropy.tools.dep_getkey(atom))
+            self.get_repository_clean(), entropy.dep.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0.0
         return vote
@@ -615,7 +616,7 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return 0
-        key = entropy.tools.dep_getkey(atom)
+        key = entropy.dep.dep_getkey(atom)
         return ENTROPY.UGC.UGCCache.get_package_downloads(
             self.get_repository_clean(), key)
 

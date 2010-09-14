@@ -24,6 +24,7 @@ from entropy.exceptions import RepositoryPluginError
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.exceptions import OperationalError
 
+import entropy.dep
 import entropy.tools
 
 class EntropyRepositoryPlugin(object):
@@ -475,7 +476,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 atom = doaction[1]
                 from_slot = doaction[2]
                 to_slot = doaction[3]
-                atom_key = entropy.tools.dep_getkey(atom)
+                atom_key = entropy.dep.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, sm_rc = self.atomMatch(atom, matchSlot = from_slot,
                     multiMatch = True)
@@ -502,14 +503,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 dep_atoms = self.searchDependency(atom_key, like = True,
                     multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if x.endswith(":"+from_slot) \
-                    and entropy.tools.dep_getkey(x) == atom_key]
+                    and entropy.dep.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
 
             elif doaction[0] == "move":
 
                 atom = doaction[1] # usually a key
-                atom_key = entropy.tools.dep_getkey(atom)
+                atom_key = entropy.dep.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, m_rc = self.atomMatch(atom, multiMatch = True)
                 if m_rc == 1:
@@ -532,7 +533,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 dep_atoms = self.searchDependency(atom_key, like = True,
                     multi = True, strings = True)
                 dep_atoms = [x for x in dep_atoms if \
-                    entropy.tools.dep_getkey(x) == atom_key]
+                    entropy.dep.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
 
@@ -1552,7 +1553,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @rtype: list
         """
         dep_from = move_command[0]
-        key_from = entropy.tools.dep_getkey(dep_from)
+        key_from = entropy.dep.dep_getkey(dep_from)
         key_to = move_command[1]
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
@@ -1590,7 +1591,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         for iddep in iddeps:
             # update string
             mydep = self.getDependency(iddep)
-            mydep_key = entropy.tools.dep_getkey(mydep)
+            mydep_key = entropy.dep.dep_getkey(mydep)
             # avoid changing wrong atoms -> dev-python/qscintilla-python would
             # become x11-libs/qscintilla if we don't do this check
             if mydep_key != key_from:
@@ -1643,7 +1644,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @rtype: list
         """
         atom = slotmove_command[0]
-        atomkey = entropy.tools.dep_getkey(atom)
+        atomkey = entropy.dep.dep_getkey(atom)
         slot_from = slotmove_command[1]
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
@@ -1666,7 +1667,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             for iddep in iddeps:
                 # update string
                 mydep = self.getDependency(iddep)
-                mydep_key = entropy.tools.dep_getkey(mydep)
+                mydep_key = entropy.dep.dep_getkey(mydep)
                 if mydep_key != atomkey:
                     continue
                 if not mydep.endswith(":"+slot_from): # probably slotted dep
@@ -1717,7 +1718,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
             key = command[1]
             category, name = key.split("/", 1)
-            dep_key = entropy.tools.dep_getkey(key)
+            dep_key = entropy.dep.dep_getkey(key)
 
             try:
                 spm = get_spm(self)
@@ -1733,7 +1734,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
             mydirs = [os.path.join(pkg_path, x) for x in \
                 os.listdir(pkg_path) if \
-                entropy.tools.dep_getkey(os.path.join(category, x)) \
+                entropy.dep.dep_getkey(os.path.join(category, x)) \
                     == dep_key]
             mydirs = [x for x in mydirs if os.path.isdir(x)]
 
@@ -4039,29 +4040,29 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 if rc == 0:
                     return data, rc
 
-        matchTag = entropy.tools.dep_gettag(atom)
+        matchTag = entropy.dep.dep_gettag(atom)
         try:
-            matchUse = entropy.tools.dep_getusedeps(atom)
+            matchUse = entropy.dep.dep_getusedeps(atom)
         except InvalidAtom:
             matchUse = ()
-        atomSlot = entropy.tools.dep_getslot(atom)
-        matchRevision = entropy.tools.dep_get_entropy_revision(atom)
+        atomSlot = entropy.dep.dep_getslot(atom)
+        matchRevision = entropy.dep.dep_get_entropy_revision(atom)
         if isinstance(matchRevision, int):
             if matchRevision < 0:
                 matchRevision = None
 
         # use match
-        scan_atom = entropy.tools.remove_usedeps(atom)
+        scan_atom = entropy.dep.remove_usedeps(atom)
         # tag match
-        scan_atom = entropy.tools.remove_tag(scan_atom)
+        scan_atom = entropy.dep.remove_tag(scan_atom)
 
         # slot match
-        scan_atom = entropy.tools.remove_slot(scan_atom)
+        scan_atom = entropy.dep.remove_slot(scan_atom)
         if (matchSlot is None) and (atomSlot is not None):
             matchSlot = atomSlot
 
         # revision match
-        scan_atom = entropy.tools.remove_entropy_revision(scan_atom)
+        scan_atom = entropy.dep.remove_entropy_revision(scan_atom)
 
         direction = ''
         justname = True
@@ -4077,24 +4078,24 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
             while True:
                 # check for direction
-                scan_cpv = entropy.tools.dep_getcpv(scan_atom)
+                scan_cpv = entropy.dep.dep_getcpv(scan_atom)
                 stripped_atom = scan_cpv
                 if scan_atom.endswith("*"):
                     stripped_atom += "*"
                 direction = scan_atom[0:-len(stripped_atom)]
 
-                justname = entropy.tools.isjustname(stripped_atom)
+                justname = entropy.dep.isjustname(stripped_atom)
                 pkgkey = stripped_atom
                 if justname == 0:
                     # get version
-                    data = entropy.tools.catpkgsplit(scan_cpv)
+                    data = entropy.dep.catpkgsplit(scan_cpv)
                     if data is None:
                         break # badly formatted
                     wildcard = ""
                     if scan_atom.endswith("*"):
                         wildcard = "*"
                     pkgversion = data[2]+wildcard+"-"+data[3]
-                    pkgkey = entropy.tools.dep_getkey(stripped_atom)
+                    pkgkey = entropy.dep.dep_getkey(stripped_atom)
 
                 splitkey = pkgkey.split("/")
                 if (len(splitkey) == 2):
@@ -4236,7 +4237,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 versions = set(((ver, tag, rev) for ver, tag, rev in versions \
                     if not tag))
 
-        newer = entropy.tools.get_entropy_newer_version(list(versions))[0]
+        newer = entropy.dep.get_entropy_newer_version(list(versions))[0]
         x = pkgdata[newer]
         if extendedResults:
             x = (x, 0, newer[0], newer[1], newer[2])
@@ -4373,21 +4374,21 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 # remove gentoo revision (-r0 if none)
                 if (direction == "="):
                     if (pkgversion.split("-")[-1] == "r0"):
-                        pkgversion = entropy.tools.remove_revision(
+                        pkgversion = entropy.dep.remove_revision(
                             pkgversion)
 
                 if (direction == "~"):
-                    pkgrevision = entropy.tools.dep_get_spm_revision(
+                    pkgrevision = entropy.dep.dep_get_spm_revision(
                         pkgversion)
-                    pkgversion = entropy.tools.remove_revision(pkgversion)
+                    pkgversion = entropy.dep.remove_revision(pkgversion)
 
                 for package_id in found_ids:
 
                     dbver = self.retrieveVersion(package_id)
                     if (direction == "~"):
-                        myrev = entropy.tools.dep_get_spm_revision(
+                        myrev = entropy.dep.dep_get_spm_revision(
                             dbver)
-                        myver = entropy.tools.remove_revision(dbver)
+                        myver = entropy.dep.remove_revision(dbver)
                         if myver == pkgversion and pkgrevision <= myrev:
                             # found
                             dbpkginfo.add((package_id, dbver))
@@ -4410,7 +4411,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     # remove revision (-r0 if none)
                     if pkgversion.endswith("r0"):
                         # remove
-                        entropy.tools.remove_revision(pkgversion)
+                        entropy.dep.remove_revision(pkgversion)
 
                     for package_id in found_ids:
 
@@ -4425,7 +4426,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                             tagcmp = const_cmp(matchTag, dbtag)
 
                         dbver = self.retrieveVersion(package_id)
-                        pkgcmp = entropy.tools.compare_versions(
+                        pkgcmp = entropy.dep.compare_versions(
                             pkgversion, dbver)
 
                         if pkgcmp is None:

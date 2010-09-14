@@ -13,6 +13,7 @@ from entropy.misc import ParallelTask
 from entropy.db import EntropyRepository
 import tests._misc as _misc
 
+import entropy.dep
 import entropy.tools
 
 class EntropyRepositoryTest(unittest.TestCase):
@@ -479,7 +480,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         f_match = (1, 0)
 
         for atom, pkg_id, branch in self.test_db.listAllPackages():
-            pkg_key = entropy.tools.dep_getkey(atom)
+            pkg_key = entropy.dep.dep_getkey(atom)
             self.assertEqual(f_match, self.test_db.atomMatch(pkg_key))
             self.assertEqual(f_match, self.test_db.atomMatch(atom))
             self.assertEqual(f_match, self.test_db.atomMatch("~"+atom))

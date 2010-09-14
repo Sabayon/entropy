@@ -19,6 +19,7 @@ from entropy.output import red, bold, brown, blue, darkred, darkgreen, purple, \
     print_info, print_warning, print_error
 from entropy.exceptions import SystemDatabaseError
 from entropy.db.exceptions import OperationalError
+import entropy.dep
 import entropy.tools
 from entropy.client.interfaces import Client
 from entropy.i18n import _
@@ -435,7 +436,7 @@ def _database_spmsync(entropy_client):
                 atom = entropy_client.installed_repository().retrieveAtom(x[1])
                 add = True
                 if atom:
-                    atomkey = entropy.tools.dep_getkey(atom)
+                    atomkey = entropy.dep.dep_getkey(atom)
                     atomslot = entropy_client.installed_repository().retrieveSlot(x[1])
                     add = True
                     for pkgdata in to_be_added:
@@ -444,7 +445,7 @@ def _database_spmsync(entropy_client):
                                 pkgdata[0], "SLOT")
                         except KeyError:
                             continue
-                        addkey = entropy.tools.dep_getkey(pkgdata[0])
+                        addkey = entropy.dep.dep_getkey(pkgdata[0])
                         # workaround for ebuilds not having slot
                         if addslot is None:
                             addslot = '0'

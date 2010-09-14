@@ -41,6 +41,7 @@ from entropy.security import Repository as RepositorySecurity
 from entropy.db.exceptions import ProgrammingError
 from entropy.client.interfaces import Client as _Client
 
+import entropy.dep
 import entropy.tools
 import entropy.dump
 
@@ -3252,7 +3253,7 @@ class ServerQAMixin:
                 count = (count, length),
                 header = darkred(" @@ ")
             )
-            key, slot = (entropy.tools.dep_getkey(installed_package),
+            key, slot = (entropy.dep.dep_getkey(installed_package),
                 self.Spm().get_installed_package_metadata(installed_package,
                     "SLOT"),)
             pkg_atom = "%s%s%s" % (key, ":", slot,)
@@ -3502,7 +3503,7 @@ class ServerQAMixin:
                     )
 
             pkgstring_list = sorted(["%s%s%s" % (
-                entropy.tools.dep_getkey(x[0]), etpConst['entropyslotprefix'],
+                entropy.dep.dep_getkey(x[0]), etpConst['entropyslotprefix'],
                     x[1],) for x in sorted(packages)])
             if pkg_list_path is not None:
                 with open(pkg_list_path, "w") as pkg_f:
@@ -4064,10 +4065,10 @@ class ServerRepositoryMixin:
         if not restricted_pkgs:
             return False
 
-        pkg_key = entropy.tools.dep_getkey(pkg_atom)
+        pkg_key = entropy.dep.dep_getkey(pkg_atom)
         for r_dep in restricted_pkgs:
-            r_key, r_slot = entropy.tools.dep_getkey(r_dep), \
-                entropy.tools.dep_getslot(r_dep)
+            r_key, r_slot = entropy.dep.dep_getkey(r_dep), \
+                entropy.dep.dep_getslot(r_dep)
             if r_slot is None:
                 r_slot = pkg_slot
 
@@ -4677,15 +4678,15 @@ class ServerMiscMixin:
 
                 dorm = False
                 atom = dbconn.retrieveAtom(idpackage)
-                atomkey = entropy.tools.dep_getkey(atom)
-                atomtag = entropy.tools.dep_gettag(atom)
+                atomkey = entropy.dep.dep_getkey(atom)
+                atomtag = entropy.dep.dep_gettag(atom)
                 atomslot = dbconn.retrieveSlot(idpackage)
 
                 add = True
                 for spm_atom, spm_counter in to_be_added:
                     addslot = self.Spm().get_installed_package_metadata(
                         spm_atom, "SLOT")
-                    addkey = entropy.tools.dep_getkey(spm_atom)
+                    addkey = entropy.dep.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
                     if addslot is None:
                         addslot = '0'

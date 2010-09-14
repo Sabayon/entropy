@@ -29,6 +29,7 @@ from entropy.cache import EntropyCacher
 from entropy.i18n import _
 
 import entropy.dump
+import entropy.dep
 import entropy.tools
 
 class ClientSystemSettingsPlugin(SystemSettingsPlugin):
@@ -246,7 +247,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     multiMatch = True)
                 if m_r != 0:
                     continue
-                mykey = entropy.tools.dep_getkey(atom)
+                mykey = entropy.dep.dep_getkey(atom)
                 obj = mask_installed_keys.setdefault(mykey, set())
                 for m_id in m_ids:
                     if m_id in mc_cache:

@@ -71,6 +71,7 @@
 ../libraries/entropy/cache.py
 ../libraries/entropy/const.py
 ../libraries/entropy/debug.py
+../libraries/entropy/dep.py
 ../libraries/entropy/dump.py
 ../libraries/entropy/exceptions.py
 ../libraries/entropy/fetchers.py
