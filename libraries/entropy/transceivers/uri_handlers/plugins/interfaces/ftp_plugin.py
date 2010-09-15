@@ -379,7 +379,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (
                     _("Download issue"),
-                    e,
+                    repr(e),
                     _("retrying"),
                     tries+1,
                 )
@@ -448,7 +448,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (
                     _("Upload issue"),
-                    e,
+                    repr(e),
                     _("retrying"),
                     tries+1,
                 )
