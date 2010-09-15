@@ -473,9 +473,13 @@ class EntropyRepository(EntropyRepositoryBase):
                 try:
                     conn.close()
                 except OperationalError:
-                    # heh, unable to close due to unfinalised statements
-                    # interpreter shutdown?
-                    pass
+                    try:
+                        conn.interrupt()
+                        conn.close()
+                    except OperationalError:
+                        # heh, unable to close due to unfinalised statements
+                        # interpreter shutdown?
+                        pass
             except KeyError:
                 pass
 
