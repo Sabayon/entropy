@@ -709,7 +709,7 @@ class EntropyPackages:
         try:
             yp, new = self.get_package_item((idpackage, 0))
         except RepositoryError:
-            return 0
+            return None
         yp.action = 'r'
         yp.installed_match = (idpackage, 0,)
         yp.color = SulfurConf.color_install
@@ -748,19 +748,19 @@ class EntropyPackages:
         remove = [x for x in remove if x not in system_unavail_pkgs]
 
         if get_syspkgs:
-            return [x for x in map(self.__inst_pkg_setup, unavail_pkgs) if not \
-                isinstance(x, int)]
+            return [x for x in map(self.__inst_pkg_setup, unavail_pkgs) if \
+                x is not None]
         elif get_unavailable:
             return [x for x in map(self.__inst_pkg_setup, system_unavail_pkgs) \
-                if not isinstance(x, int)]
+                if x is not None]
         else:
-            return [x for x in map(self.__inst_pkg_setup, remove) if not \
-                isinstance(x, int)]
+            return [x for x in map(self.__inst_pkg_setup, remove) if \
+                x is not None]
 
     def _pkg_get_installed(self):
         return [x for x in map(self.__inst_pkg_setup,
             self.Entropy.installed_repository().listAllPackageIds(order_by = 'atom')) if \
-                not isinstance(x, int)]
+                x is not None]
 
     def _pkg_get_queued(self):
         data = []
@@ -796,12 +796,12 @@ class EntropyPackages:
             try:
                 yp, new = gp_call(match)
             except RepositoryError:
-                return 0
+                return None
             yp.action = 'i'
             return yp
         with self.Entropy.Cacher():
             return [x for x in map(fm, self.Entropy.calculate_available_packages()) \
-                if not isinstance(x, int)]
+                if x is not None]
 
     def _pkg_get_updates_raw(self):
         return self._pkg_get_updates(critical_updates = False)
@@ -942,7 +942,7 @@ class EntropyPackages:
             try:
                 yp, new = self.get_package_item(matched)
             except RepositoryError:
-                return 0
+                return None
             # added for reliability
             yp.installed_match = (idpackage, 0)
             yp.action = 'rr'
@@ -951,7 +951,7 @@ class EntropyPackages:
         filtered = self.filter_reinstallable(
             self.Entropy.installed_repository().listAllPackages(get_scope = True,
             order_by = 'atom'))
-        return [x for x in map(fm, filtered) if not isinstance(x, int)]
+        return [x for x in map(fm, filtered) if x is not None]
 
     def _pkg_get_masked(self):
 
@@ -963,7 +963,7 @@ class EntropyPackages:
             try:
                 yp, new = self.get_package_item(match)
             except RepositoryError:
-                return 0
+                return None
 
             if yp.action is None:
                 yp.action = gmp_action(match)
@@ -980,7 +980,7 @@ class EntropyPackages:
             return yp
 
         return [x for x in map(fm, self.get_masked_packages()) \
-            if not isinstance(x, int)]
+            if x is not None]
 
     def _pkg_get_user_masked(self):
         masked_objs = self.get_raw_groups("masked")
@@ -1231,8 +1231,8 @@ class EntropyPackages:
                     idpackage)
                 if idpackage_filtered == -1:
                     return ((idpackage, repoid,), idreason)
-                return 0
-            maskdata += [x for x in map(fm, repodata) if not isinstance(x, int)]
+                return None
+            maskdata += [x for x in map(fm, pkg_ids) if x is not None]
 
         # add live unmasked elements too
         unmasks = self.Entropy.Settings()['live_packagemasking']['unmask_matches']
@@ -1296,10 +1296,10 @@ class EntropyPackages:
                 idpackage, idreason = dbconn.maskFilter(idpackage)
                 if idpackage != -1:
                     return (clientdata[item], (mydata[item], repoid,))
-                return 0
+                return None
 
             matched_data |= set([x for x in map(fm, list(filter(fm_pre, clientdata))) \
-                if not isinstance(x, int)])
+                if x is not None])
 
         return matched_data
 
