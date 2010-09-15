@@ -231,29 +231,29 @@ class Client:
         with self.CacheLock:
 
             srv = self.get_connection_cache()
-            if srv == None:
+            if srv is None:
                 srv = self.get_service_connection(timeout = self.socket_timeout)
                 if srv != None:
                     self.cache_connection(srv)
             else:
                 srv = srv['conn']
 
-            if srv == None:
+            if srv is None:
                 return False, 'no connection'
 
             cmd_tuple = (login_required, func,)
             new_session = False
             session = self.get_session_cache(cmd_tuple)
-            if session == None:
+            if session is None:
                 new_session = True
                 session = srv.open_session()
-                if session == None:
+                if session is None:
                     return False, 'no session'
             else:
                 if not srv.is_session_alive(session):
                     new_session = True
                     session = srv.open_session()
-                    if session == None:
+                    if session is None:
                         return False, 'no session'
             self.set_session_cache(cmd_tuple, session)
 

@@ -94,17 +94,17 @@ class Client:
 
         aware = self.UGCCache._get_live_cache_item(repository,
             'is_repository_eapi3_aware')
-        if aware != None:
+        if aware is not None:
             return aware
 
         try:
             srv = self.get_service_connection(repository, check = False,
                 timeout = 6)
-            if srv == None:
+            if srv is None:
                 aware = False
             else:
                 session = srv.open_session()
-                if session != None:
+                if session is not None:
                     srv.close_session(session)
                     srv.disconnect()
                     aware = True
@@ -126,7 +126,7 @@ class Client:
     def do_login(self, repository, force = False):
 
         login_data = self.read_login(repository)
-        if (login_data != None) and not force:
+        if (login_data is not None) and not force:
             return True, _('ok')
 
         aware = self.is_repository_eapi3_aware(repository)
@@ -155,9 +155,11 @@ class Client:
 
             # now verify
             srv = self.get_service_connection(repository)
-            if srv == None:
+            if srv is None:
                 return False, _('connection issues')
             session = srv.open_session()
+            if session is None:
+                return False, _('cannot open a session')
             login_status, login_msg = srv.CmdInterface.service_login(
                 login_data['username'], login_data['password'], session)
             if not login_status:
@@ -206,10 +208,10 @@ class Client:
                     return False, err_msg
 
             srv = self.get_service_connection(repository)
-            if srv == None:
+            if srv is None:
                 return False, 'no connection'
             session = srv.open_session()
-            if session == None:
+            if session is None:
                 return False, 'no session'
             args.insert(0, session)
 
@@ -218,7 +220,7 @@ class Client:
                 while True:
                     # login
                     login_data = self.read_login(repository)
-                    if login_data == None:
+                    if login_data is None:
                         status, msg = self.login(repository)
                         if not status:
                             return status, msg
@@ -415,7 +417,7 @@ class AuthStore(Singleton):
             self.xmldoc = self.minidom.parse(self.access_file)
         except (self.expat.ExpatError, IOError,):
             self.xmldoc = None
-        if self.xmldoc != None:
+        if self.xmldoc is not None:
             try:
                 self.parse_document()
             except self.expat.ExpatError:
@@ -424,7 +426,7 @@ class AuthStore(Singleton):
 
     def setup_store_paths(self):
         myhome = os.getenv("HOME")
-        if myhome != None:
+        if myhome is not None:
             if os.path.isdir(myhome) and os.access(myhome, os.W_OK):
                 self.access_file = os.path.join(myhome, ".config/entropy",
                     os.path.basename(self.access_file))
@@ -650,7 +652,7 @@ class Cache:
 
         try:
             os.chmod(cache_file, 0o664)
-            if etpConst['entropygid'] != None:
+            if etpConst['entropygid'] is not None:
                 os.chown(cache_file, -1, etpConst['entropygid'])
         except OSError:
             raise PermissionDenied("PermissionDenied: %s %s" % (
@@ -666,7 +668,7 @@ class Cache:
 
     def update_vote_cache(self, repository, vote_dict):
         cached = self.get_vote_cache(repository)
-        if cached == None:
+        if cached is None:
             cached = vote_dict.copy()
         else:
             cached.update(vote_dict)
@@ -674,7 +676,7 @@ class Cache:
 
     def update_downloads_cache(self, repository, down_dict):
         cached = self.get_downloads_cache(repository)
-        if cached == None:
+        if cached is None:
             cached = down_dict.copy()
         else:
             cached.update(down_dict)
@@ -713,7 +715,7 @@ class Cache:
     def get_vote_cache(self, repository):
         cache_key = self._get_vote_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
-        if cached != None:
+        if cached is not None:
             return cached
         with self.CacheLock:
             cache_file = self._get_vote_cache_file(repository)
@@ -721,7 +723,7 @@ class Cache:
                 data = entropy.dump.loadobj(
                     cache_file,
                     complete_path = True)
-                if data != None:
+                if data is not None:
                     self._set_live_cache_item(repository, cache_key, data)
             except (IOError, EOFError, OSError):
                 data = None
@@ -748,13 +750,13 @@ class Cache:
     def get_downloads_cache(self, repository):
         cache_key = self._get_downloads_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
-        if cached != None:
+        if cached is not None:
             return cached
         with self.CacheLock:
             cache_file = self._get_downloads_cache_file(repository)
             try:
                 data = entropy.dump.loadobj(cache_file, complete_path = True)
-                if data != None:
+                if data is not None:
                     self._set_live_cache_item(repository, cache_key, data)
             except (IOError, EOFError, OSError):
                 data = None
@@ -790,7 +792,7 @@ class Cache:
             cache_file = self._get_alldocs_cache_file(pkgkey, repository)
             try:
                 data = entropy.dump.loadobj(cache_file, complete_path = True)
-                if data != None:
+                if data is not None:
                     cached[pkgkey] = data
                     self._set_live_cache_item(repository, cache_key, cached)
             except (IOError, EOFError, OSError):

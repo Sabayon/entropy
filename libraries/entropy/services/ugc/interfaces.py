@@ -1995,10 +1995,17 @@ class Client:
         return data
 
     def open_session(self):
+        """
+        Open a remote session, returning a valid session id or None (in case
+        of errors).
+        """
         self.check_socket_connection()
         self.socket.setdefaulttimeout(self.socket_timeout)
-        self.transmit('begin')
-        data = self.receive()
+        try:
+            self.transmit('begin')
+            data = self.receive()
+        except (SSLError, self.socket.error):
+            return None
         return const_convert_to_unicode(data)
 
     def is_session_alive(self, session):

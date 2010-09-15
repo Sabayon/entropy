@@ -1370,6 +1370,8 @@ class AvailablePackagesRepositoryUpdater(object):
             return False
 
         session = eapi3_interface.open_session()
+        if session is None:
+            return False
 
         try:
             mydbconn = self.__get_eapi3_local_database()
@@ -1719,22 +1721,25 @@ class AvailablePackagesRepositoryUpdater(object):
                 self._repo_eapi -= 1
             else:
                 session = eapi3_interface.open_session()
-                repo_metadata = self.__get_eapi3_repository_metadata(
-                    eapi3_interface, session)
-                self.__eapi3_close(eapi3_interface, session = session)
-                repo_rev = repo_metadata.get('revision')
-                if repo_rev is not None:
-                    try:
-                        repo_rev = int(repo_rev)
-                    except (ValueError, TypeError):
-                        repo_rev = None
-                if repo_rev is None:
-                    # cannot reliably detect revision in EAPI=3 world
-                    # so we need to drop EAPI3 in favour of EAPI2
+                if session is None:
                     self._repo_eapi -= 1
                 else:
-                    self._last_rev = repo_rev
-                    return repo_rev
+                    repo_metadata = self.__get_eapi3_repository_metadata(
+                        eapi3_interface, session)
+                    self.__eapi3_close(eapi3_interface, session = session)
+                    repo_rev = repo_metadata.get('revision')
+                    if repo_rev is not None:
+                        try:
+                            repo_rev = int(repo_rev)
+                        except (ValueError, TypeError):
+                            repo_rev = None
+                    if repo_rev is None:
+                        # cannot reliably detect revision in EAPI=3 world
+                        # so we need to drop EAPI3 in favour of EAPI2
+                        self._repo_eapi -= 1
+                    else:
+                        self._last_rev = repo_rev
+                        return repo_rev
 
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self.__repository_id]
