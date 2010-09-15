@@ -697,7 +697,8 @@ class EntropyPackageView:
         self._ugc_load_queue = queue_class(10) # max 10 items at time
         self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
         if self._ugc_status:
-            self._ugc_load_thread.start()
+            # deferred loading, speedup UI init
+            gobject.timeout_add_seconds(15, self._ugc_load_thread.start)
 
     def __update_ugc_event(self, event):
         self.view.queue_draw()
