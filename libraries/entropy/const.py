@@ -235,7 +235,7 @@ def const_default_settings(rootdir):
         'packagesrelativepath_basedir': "packages",
         'packagesrelativepath_basedir_nonfree': "packages-nonfree",
         'packagesrelativepath_basedir_restricted': "packages-restricted",
-        'packagesrelativepaths': ("packages", "pacakges-nonfree",
+        'packagesrelativepaths': ("packages", "packages-nonfree",
             "packages-restricted"),
         'packagesrelativepath_basename': ETP_ARCH_CONST,
 
