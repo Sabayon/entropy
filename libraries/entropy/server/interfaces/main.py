@@ -855,6 +855,7 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
         cli_repodata = sys_set['repositories']
         # remove unavailable server repos in client metadata first
         cli_repodata['available'].clear()
+        del self._helper._enabled_repos[:]
 
         for repoid, repo_data in srv_repodata.items():
             xxx, my_data = sys_set._analyze_client_repo_string(
@@ -866,6 +867,7 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
             my_data['dbrevision'] = self._helper.get_local_repository_revision(
                 repo = repoid)
             cli_repodata['available'][repoid] = my_data
+            self._helper._enabled_repos.append(repoid)
 
         cli_repodata['default_repository'] = \
             srv_parser_data['default_repository_id']
@@ -3859,20 +3861,20 @@ class ServerRepositoryMixin:
         conn.initializeRepository()
         return conn
 
-    def open_repository(self, repoid):
+    def open_repository(self, repository_id):
         """
         This method aims to improve class usability by providing an easier
         method to open Entropy Server-side repositories like it happens
         with Entropy Client-side ones. If you just want open a read-only
         repository, feel free to use this wrapping method.
 
-        @param repoid: repository identifier
-        @type repoid: string
+        @param repository_id: repository identifier
+        @type repository_id: string
         @return: ServerPackagesRepository instance
         @rtype: entropy.server.interfaces.ServerPackagesRepository
         """
-        return self.open_server_repository(repo = repoid, just_reading = True,
-            do_treeupdates = False)
+        return self.open_server_repository(repo = repository_id,
+            just_reading = True, do_treeupdates = False)
 
     def open_server_repository(
             self,

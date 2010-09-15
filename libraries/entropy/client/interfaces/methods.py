@@ -44,6 +44,9 @@ import entropy.tools
 
 class RepositoryMixin:
 
+    def __get_repository_cache_key(self, repository_id):
+        return (repository_id, etpConst['systemroot'],)
+
     def _validate_repositories(self, quiet = False):
 
         StatusInterface().clear()
@@ -55,25 +58,34 @@ class RepositoryMixin:
         if "masking_validation" in client_metadata:
             client_metadata['masking_validation']['cache'].clear()
 
-        # valid repositories
+        def ensure_closed_repo(repoid):
+            key = self.__get_repository_cache_key(repoid)
+            for cache_obj in (self._repodb_cache, self._memory_db_instances):
+                try:
+                    cache_obj.pop(key).closeDB()
+                except (KeyError, AttributeError, OperationalError):
+                    pass
+
+        t2 = _("Please update your repositories now in order to remove this message!")
+
         del self._enabled_repos[:]
+        _enabled_repos = []
+        all_repos = self._settings['repositories']['order'][:]
         for repoid in self._settings['repositories']['order']:
             # open database
             try:
-
-                dbc = self.open_repository(repoid)
+                dbc = self._open_repository(repoid, _enabled_repos = all_repos)
                 dbc.listConfigProtectEntries()
                 dbc.validate()
-                self._enabled_repos.append(repoid)
-
+                _enabled_repos.append(repoid)
             except RepositoryError:
 
+                ensure_closed_repo(repoid)
                 if quiet:
                     continue
 
                 t = _("Repository") + " " + const_convert_to_unicode(repoid) \
                     + " " + _("is not available") + ". " + _("Cannot validate")
-                t2 = _("Please update your repositories now in order to remove this message!")
                 self.output(
                     darkred(t),
                     importance = 1,
@@ -88,6 +100,7 @@ class RepositoryMixin:
                 continue # repo not available
             except (OperationalError, DatabaseError, SystemDatabaseError,):
 
+                ensure_closed_repo(repoid)
                 if quiet:
                     continue
 
@@ -100,8 +113,8 @@ class RepositoryMixin:
                                    )
                 continue
 
-        # to avoid having zillions of open files when loading a lot of EquoInterfaces
-        self.close_repositories(mask_clear = False)
+        # write back correct _enabled_repos
+        self._enabled_repos = _enabled_repos
 
     def _init_generic_temp_repository(self, repoid, description,
         package_mirrors = None, temp_file = None):
@@ -109,7 +122,7 @@ class RepositoryMixin:
             package_mirrors = []
 
         dbc = self.open_temp_repository(dbname = repoid, temp_file = temp_file)
-        repo_key = (repoid, etpConst['systemroot'],)
+        repo_key = self.__get_repository_cache_key(repoid)
         self._memory_db_instances[repo_key] = dbc
 
         # add to self._settings['repositories']['available']
@@ -146,23 +159,32 @@ class RepositoryMixin:
             self._settings.clear()
         self._can_run_sys_set_hooks = old_value
 
-    def open_repository(self, repoid):
-
+    def _open_repository(self, repository_id, _enabled_repos = None):
         # support for installed pkgs repository, got by issuing
         # repoid = etpConst['clientdbid']
-        if repoid == etpConst['clientdbid']:
+        if repository_id == etpConst['clientdbid']:
             return self._installed_repository
 
-        key = (repoid, etpConst['systemroot'],)
+        key = self.__get_repository_cache_key(repository_id)
         cached = self._repodb_cache.get(key)
         if cached is not None:
             return cached
 
-        dbconn = self._load_repository_database(repoid,
-            xcache = self.xcache, indexing = self.indexing)
+        self._repodb_cache[key] = self._load_repository_database(repository_id,
+            xcache = self.xcache, indexing = self.indexing,
+            _enabled_repos = _enabled_repos)
+        return self._repodb_cache[key]
 
-        self._repodb_cache[key] = dbconn
-        return dbconn
+    def open_repository(self, repository_id):
+        """
+        If you just want open a read-only repository, use this method.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: EntropyRepositoryBase based instance
+        @rtype: entropy.db.skel.EntropyRepositoryBase
+        """
+        return self._open_repository(repository_id)
 
     @staticmethod
     def get_repository(repoid):
@@ -183,14 +205,20 @@ class RepositoryMixin:
             return InstalledPackagesRepository
         return AvailablePackagesRepository
 
-    def _load_repository_database(self, repoid, xcache = True, indexing = True):
+    def _load_repository_database(self, repoid, xcache = True, indexing = True,
+        _enabled_repos = None):
 
         if const_isstring(repoid):
             if repoid.endswith(etpConst['packagesext']):
                 xcache = False
+        if _enabled_repos is None:
+            _enabled_repos = self._enabled_repos
 
         repo_data = self._settings['repositories']['available']
-        if repoid not in repo_data:
+        if (repoid not in _enabled_repos) and \
+            (not repo_data.get(repoid, {}).get('__temporary__')) and \
+            (repoid not in repo_data):
+
             t = "%s: %s" % (_("bad repository id specified"), repoid,)
             if repoid not in self._repo_error_messages_cache:
                 self.output(
@@ -202,7 +230,7 @@ class RepositoryMixin:
             raise RepositoryError("RepositoryError: %s" % (t,))
 
         if repo_data[repoid].get('__temporary__'):
-            repo_key = (repoid, etpConst['systemroot'],)
+            repo_key = self.__get_repository_cache_key(repoid)
             conn = self._memory_db_instances.get(repo_key)
         else:
             dbfile = os.path.join(repo_data[repoid]['dbpath'],
@@ -324,7 +352,7 @@ class RepositoryMixin:
                 self.__save_repository_settings(repodata, remove = True)
             self._settings.clear()
 
-        repo_mem_key = (repoid, etpConst['systemroot'],)
+        repo_mem_key = self.__get_repository_cache_key(repoid)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
         if isinstance(mem_inst, EntropyRepository):
             mem_inst.closeDB()
