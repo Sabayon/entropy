@@ -569,7 +569,14 @@ def movefile(src, dest, src_basedir = None):
     @return: True, if file was moved successfully
     @rtype: bool
     """
-    sstat = os.lstat(src)
+    try:
+        sstat = os.lstat(src)
+    except (OSError, IOError,) as err:
+        print_generic("!!! Failed to lstat source in movefile()")
+        print_generic("!!!", src)
+        print_generic("!!!", repr(err))
+        return False
+
     destexists = 1
     try:
         dstat = os.lstat(dest)
