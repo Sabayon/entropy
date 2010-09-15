@@ -1151,7 +1151,7 @@ class PortagePlugin(SpmPlugin):
         data['download'] = entropy.tools.create_package_dirpath(data['branch'],
             nonfree = nonfree, restricted = restricted)
         data['download'] = os.path.join(data['download'],
-            entropy.tools.create_package_filename(
+            entropy.dep.create_package_filename(
                 data['category'], data['name'], data['version'],
                     data['versiontag']))
 

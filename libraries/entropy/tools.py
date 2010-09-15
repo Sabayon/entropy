@@ -2420,52 +2420,18 @@ def dict_from_xml(xml_string):
     return mydict
 
 def create_package_filename(category, name, version, package_tag):
-    """
-    docstring_title
-
-    @param category: 
-    @type category: 
-    @param name: 
-    @type name: 
-    @param version: 
-    @type version: 
-    @param package_tag: 
-    @type package_tag: 
-    @return: 
-    @rtype: 
-    """
-    if package_tag:
-        package_tag = "%s%s" % (etpConst['entropytagprefix'], package_tag,)
-    else:
-        package_tag = ''
-
-    package_name = "%s:%s-%s" % (category, name, version,)
-    package_name += package_tag
-    package_name += etpConst['packagesext']
-    return package_name
+    """@deprecated"""
+    import warnings
+    warnings.warn("deprecated, please use entropy.dep module")
+    return entropy.dep.create_package_filename(category, name, version,
+        package_tag)
 
 def create_package_atom_string(category, name, version, package_tag):
-    """
-    docstring_title
-
-    @param category: 
-    @type category: 
-    @param name: 
-    @type name: 
-    @param version: 
-    @type version: 
-    @param package_tag: 
-    @type package_tag: 
-    @return: 
-    @rtype: 
-    """
-    if package_tag:
-        package_tag = "%s%s" % (etpConst['entropytagprefix'], package_tag,)
-    else:
-        package_tag = ''
-    package_name = "%s/%s-%s" % (category, name, version,)
-    package_name += package_tag
-    return package_name
+    """@deprecated"""
+    import warnings
+    warnings.warn("deprecated, please use entropy.dep module")
+    return entropy.dep.create_package_atom_string(category, name, version,
+        package_tag)
 
 def collect_linker_paths():
     """

@@ -40,6 +40,7 @@ from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
 from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError
 
+import entropy.dep
 import entropy.tools
 
 class RepositoryMixin:
@@ -1664,7 +1665,7 @@ class MiscMixin:
         version = pkgdata['version']
         version += "%s%s" % (etpConst['entropyrevisionprefix'],
             pkgdata['revision'],)
-        pkgname = entropy.tools.create_package_filename(pkgdata['category'],
+        pkgname = entropy.dep.create_package_filename(pkgdata['category'],
             pkgdata['name'], version, pkgdata['versiontag'])
         pkg_path = os.path.join(dirpath, pkgname)
         if os.path.isfile(pkg_path):
@@ -1714,7 +1715,7 @@ class MiscMixin:
 
         # append SPM metadata
         spm = self.Spm()
-        pkgatom = entropy.tools.create_package_atom_string(pkgdata['category'],
+        pkgatom = entropy.dep.create_package_atom_string(pkgdata['category'],
             pkgdata['name'], pkgdata['version'], pkgdata['versiontag'])
         spm.append_metadata_to_package(pkgatom, pkg_path)
         if edb:

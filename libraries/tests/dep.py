@@ -142,6 +142,24 @@ class DepTest(unittest.TestCase):
             ('3.4', '2222', 0), ('1.0', '2222', 1)]
         self.assertEqual(et.get_entropy_newer_version(vers), out_vers)
 
+    def test_create_package_filename(self):
+        category = "app-foo"
+        name = "foo"
+        version = "1.2.3"
+        package_tag = "abc"
+        result = 'app-foo:foo-1.2.3#abc.tbz2'
+        self.assertEqual(et.create_package_filename(category, name, version,
+            package_tag), result)
+
+    def test_create_package_atom_string(self):
+        category = "app-foo"
+        name = "foo"
+        version = "1.2.3"
+        package_tag = "abc"
+        result = 'app-foo/foo-1.2.3#abc'
+        self.assertEqual(et.create_package_atom_string(category, name, version,
+            package_tag), result)
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")

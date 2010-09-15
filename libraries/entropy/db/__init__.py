@@ -46,6 +46,7 @@ from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.i18n import _
 
+import entropy.dep
 import entropy.tools
 import entropy.dump
 
@@ -750,7 +751,7 @@ class EntropyRepository(EntropyRepositoryBase):
             trigger = 1
 
         # baseinfo
-        pkgatom = entropy.tools.create_package_atom_string(
+        pkgatom = entropy.dep.create_package_atom_string(
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
         # add atom metadatum

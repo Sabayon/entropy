@@ -21,6 +21,7 @@ from entropy.const import etpConst
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 
+import entropy.dep
 import entropy.tools
 
 class ServerRepositoryStatus(Singleton):
@@ -195,7 +196,7 @@ class ServerPackagesRepository(EntropyRepository):
         """
 
         # build atom string, server side
-        pkgatom = entropy.tools.create_package_atom_string(
+        pkgatom = entropy.dep.create_package_atom_string(
             pkg_data['category'], pkg_data['name'], pkg_data['version'],
             pkg_data['versiontag'])
 

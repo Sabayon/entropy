@@ -506,24 +506,6 @@ class ToolsTest(unittest.TestCase):
         new_dict = et.dict_from_xml(xml_data)
         self.assertEqual(data, new_dict)
 
-    def test_create_package_filename(self):
-        category = "app-foo"
-        name = "foo"
-        version = "1.2.3"
-        package_tag = "abc"
-        result = 'app-foo:foo-1.2.3#abc.tbz2'
-        self.assertEqual(et.create_package_filename(category, name, version,
-            package_tag), result)
-
-    def test_create_package_atom_string(self):
-        category = "app-foo"
-        name = "foo"
-        version = "1.2.3"
-        package_tag = "abc"
-        result = 'app-foo/foo-1.2.3#abc'
-        self.assertEqual(et.create_package_atom_string(category, name, version,
-            package_tag), result)
-
     def test_uncompress_tarball(self):
 
         pkgs = [_misc.get_test_entropy_package4(),

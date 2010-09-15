@@ -569,7 +569,7 @@ def _database_spmsync(entropy_client):
                 continue
 
             # create atom string
-            myatom = entropy.tools.create_package_atom_string(mydata['category'],
+            myatom = entropy.dep.create_package_atom_string(mydata['category'],
                 mydata['name'], mydata['version'], mydata['versiontag'])
 
             # look for atom in client database
@@ -697,7 +697,7 @@ def _database_generate(entropy_client):
         # Try to see if it's possible to use the revision of a possible old db
         mydata['revision'] = 9999
         # create atom string
-        myatom = entropy.tools.create_package_atom_string(mydata['category'],
+        myatom = entropy.dep.create_package_atom_string(mydata['category'],
             mydata['name'], mydata['version'], mydata['versiontag'])
 
         # now see if a revision is available

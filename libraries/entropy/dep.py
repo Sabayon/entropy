@@ -715,3 +715,51 @@ def get_entropy_newer_version(versions):
     @rtype: list
     """
     return _generic_sorter(versions, entropy_compare_versions)
+
+def create_package_filename(category, name, version, package_tag):
+    """
+    Create package filename string.
+
+    @param category: package category
+    @type category: string
+    @param name: package name
+    @type name: string
+    @param version: package version
+    @type version: string
+    @param package_tag: package tag, if any, or None
+    @type package_tag: string or None
+    @return: package file name string
+    @rtype: string
+    """
+    if package_tag:
+        package_tag = "%s%s" % (etpConst['entropytagprefix'], package_tag,)
+    else:
+        package_tag = ''
+
+    package_name = "%s:%s-%s" % (category, name, version,)
+    package_name += package_tag
+    package_name += etpConst['packagesext']
+    return package_name
+
+def create_package_atom_string(category, name, version, package_tag):
+    """
+    Create Entropy package atom string.
+
+    @param category: package category
+    @type category: string
+    @param name: package name
+    @type name: string
+    @param version: package version
+    @type version: string
+    @param package_tag: package tag, if any, or None
+    @type package_tag: string or None
+    @return: package atom string
+    @rtype: string
+    """
+    if package_tag:
+        package_tag = "%s%s" % (etpConst['entropytagprefix'], package_tag,)
+    else:
+        package_tag = ''
+    package_name = "%s/%s-%s" % (category, name, version,)
+    package_name += package_tag
+    return package_name

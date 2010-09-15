@@ -2116,7 +2116,7 @@ class ServerPackagesHandlingMixin:
                 return self._is_pkg_free(licenses, repo = to_repo)
 
             def _package_injector_check_restricted(pkg_data):
-                pkgatom = entropy.tools.create_package_atom_string(
+                pkgatom = entropy.dep.create_package_atom_string(
                     pkg_data['category'], pkg_data['name'], pkg_data['version'],
                     pkg_data['versiontag'])
                 return self._is_pkg_restricted(pkgatom, pkg_data['slot'],
@@ -2144,7 +2144,7 @@ class ServerPackagesHandlingMixin:
                 match_name = dbconn.retrieveName(idpackage)
                 match_version = dbconn.retrieveVersion(idpackage)
                 tagged_package_filename = \
-                    entropy.tools.create_package_filename(
+                    entropy.dep.create_package_filename(
                         match_category, match_name, match_version, new_tag)
 
                 to_file = self.complete_local_upload_package_path(
@@ -4113,7 +4113,7 @@ class ServerRepositoryMixin:
             return self._is_pkg_free(licenses, repo = repo)
 
         def _package_injector_check_restricted(pkg_data):
-            pkgatom = entropy.tools.create_package_atom_string(
+            pkgatom = entropy.dep.create_package_atom_string(
                 pkg_data['category'], pkg_data['name'], pkg_data['version'],
                 pkg_data['versiontag'])
             return self._is_pkg_restricted(pkgatom, pkg_data['slot'],
