@@ -1219,7 +1219,10 @@ class EntropyPackages:
 
         for repoid in self.Entropy.repositories():
             dbconn = self.Entropy.open_repository(repoid)
-            repodata = dbconn.listAllPackageIds(order_by = 'atom')
+            try:
+                pkg_ids = dbconn.listAllPackageIds(order_by = 'atom')
+            except OperationalError:
+                continue # wtf? empty repo?
             def fm(idpackage):
                 idpackage_filtered, idreason = dbconn.maskFilter(
                     idpackage)
