@@ -697,6 +697,20 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
+        try:
+            return self._addPackage(pkg_data, revision = revision,
+                package_id = package_id, do_commit = do_commit,
+                formatted_content = formatted_content)
+        except:
+            self._connection().rollback()
+            raise
+
+    def _addPackage(self, pkg_data, revision = -1, package_id = None,
+        do_commit = True, formatted_content = False):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        Needs to call superclass method.
+        """
         if revision == -1:
             try:
                 revision = int(pkg_data['revision'])
@@ -878,6 +892,19 @@ class EntropyRepository(EntropyRepositoryBase):
         return package_id, revision, pkg_data
 
     def removePackage(self, package_id, do_cleanup = True, do_commit = True,
+        from_add_package = False):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        Needs to call superclass method.
+        """
+        try:
+            return self._removePackage(package_id, do_cleanup = do_cleanup,
+                do_commit = do_commit, from_add_package = from_add_package)
+        except:
+            self._connection().rollback()
+            raise
+
+    def _removePackage(self, package_id, do_cleanup = True, do_commit = True,
         from_add_package = False):
         """
         Reimplemented from EntropyRepositoryBase.
