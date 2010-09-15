@@ -898,7 +898,10 @@ class EntropyPackages:
                 dbconn.validate()
             except (RepositoryError, SystemDatabaseError):
                 continue
-            idpackages = dbconn.listAllPackageIds()
+            try:
+                idpackages = dbconn.listAllPackageIds()
+            except OperationalError:
+                continue
             matches |= set(((x, repo) for x in idpackages if (x, repo) not in
                 already_in))
 
