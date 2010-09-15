@@ -882,6 +882,10 @@ class EntropyRepository(EntropyRepositoryBase):
         if pkg_data.get('systempackage'):
             self._setSystemPackage(package_id, do_commit = False)
 
+        # baseinfo and extrainfo are tainted
+        # ensure that cache is clear even here
+        self.clearCache()
+
         if do_commit:
             self.commitChanges()
 
