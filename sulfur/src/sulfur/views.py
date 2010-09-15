@@ -908,7 +908,7 @@ class EntropyPackageView:
                 self.spawn_vote_submit(obj)
             return False
 
-        gobject.timeout_add(1000, go, widget, vote)
+        gobject.timeout_add_seconds(1, go, widget, vote)
 
     def reposition_menu(self, menu):
 
@@ -1867,7 +1867,7 @@ class EntropyPackageView:
             return False
 
         gobject.timeout_add(0, do_refresh, msg)
-        gobject.timeout_add(20*1000, remove_ugc_sts)
+        gobject.timeout_add_seconds(20, remove_ugc_sts)
         t = ParallelTask(self.refresh_vote_info, obj)
         t.start()
 
