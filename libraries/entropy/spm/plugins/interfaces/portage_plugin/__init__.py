@@ -172,7 +172,8 @@ class PortagePlugin(SpmPlugin):
     builtin_pkg_sets = [
         "system", "world", "installed", "module-rebuild",
         "security", "preserved-rebuild", "live-rebuild",
-        "downgrade", "unavailable"
+        "downgrade", "unavailable", "rebuilt-binaries",
+        "selected"
     ]
 
     xpak_entries = {
