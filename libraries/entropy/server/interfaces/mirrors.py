@@ -1760,11 +1760,25 @@ class Server(ServerNoticeBoardMixin):
         if 2 not in disabled_eapis:
             self._show_eapi2_upload_messages("~all~", database_path,
                 upload_data, cmethod, repo)
+
+            eapi2_dbfile = self._entropy._get_local_database_file(repo)
+            temp_eapi2_dbfile = eapi2_dbfile+".light_eapi2.tmp"
+            shutil.copy2(eapi2_dbfile, temp_eapi2_dbfile)
+            # open and remove content table
+            eapi2_tmp_dbconn = \
+                self._entropy.open_generic_repository(
+                    temp_eapi2_dbfile, indexing_override = False,
+                    xcache = False)
+            eapi2_tmp_dbconn.dropContent()
+            eapi2_tmp_dbconn.dropChangelog()
+            eapi2_tmp_dbconn.commitChanges()
+            eapi2_tmp_dbconn.closeDB()
+
             # create compressed dump + checksum
-            excluded_tables = ["content", "packagechangelogs", "contentsafety"]
-            self._dump_database_to_file(database_path,
+            self._dump_database_to_file(temp_eapi2_dbfile,
                 upload_data['dump_path_light'], cmethod[0],
-                exclude_tables = excluded_tables, repo = repo)
+                repo = repo)
+            os.remove(temp_eapi2_dbfile)
             self._create_file_checksum(upload_data['dump_path_light'],
                 upload_data['dump_path_digest_light'])
 
