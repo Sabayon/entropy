@@ -1,3 +1,157 @@
+commit 04640671afc20e57d1a0e7f954dfbe332c62158a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 09:21:18 2010 +0200
+
+    [entropy.spm] PortagePlugin: update builtin package sets list
+
+commit 02e07aea6bee4accc9434bad416b07eb0a7cf3a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 09:15:41 2010 +0200
+
+    [entropy.server] Server: remove bogus line in ServerFakeClientSystemSettingsPlugin.fake_cli_parser
+
+commit dc422b4774c0ad8491c68fa8a60d4c880553449d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 09:14:39 2010 +0200
+
+    [entropy.server] Server: remove bogus line in ServerFakeClientSystemSettingsPlugin.fake_cli_parser
+
+commit 904b678ea722da556d6b10da2aecdaa8115f4842
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 09:12:22 2010 +0200
+
+    [entropy.spm] PortagePlugin: completely use Portage code to return package sets configuration object
+
+commit c26d90fb200e4b6d1524eef1d5cd912b6c7e4114
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 22:06:39 2010 +0200
+
+    [entropy.tools] move entropy package strings manipulation functions to entropy.dep
+
+commit a29341c2b22f18b73d9fc2d94c88302ba63200d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 20:11:16 2010 +0200
+
+    [entropy.client] make Client.open_repository only accept validated repository identifiers
+    
+    Enforce restrictions on open_repository() to avoid loading invalid
+    repository (damaged, etc). This will probably expose some new bugs
+    that will be promptly killed.
+
+commit 6e13c30e8e5f12110fc3a805685bc09ebdcf5ae3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 20:08:51 2010 +0200
+
+    [sulfur.views] defer loading of UGC cache thread by 15 seconds to speedup UI init
+
+commit 5322611eb00018ff66b00548cc527effd096c9ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 20:04:02 2010 +0200
+
+    [sulfur.views] use gobject.timeout_add_seconds instead of gobject.timeout_add
+
+commit e27a5978817c86fc407e846a97a09b6768fa766b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 19:58:14 2010 +0200
+
+    [entropy.db] EntropyRepository.addPackage: ensure that live cache is empty at the end of the function, too
+
+commit 4765de8bf5a8997bb3086d79ffdd5d6a4beac919
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 16:22:39 2010 +0200
+
+    [entropy.transceivers] EntropyFtpUriHandler: use repr() when showing error string
+
+commit e9d380c9a9d1bb61616a74822b9cc30cc5c0bbd8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 14:14:11 2010 +0200
+
+    [entropy.db] EntropyRepository: explicitly rollback transaction when calling addPackage and removePackage
+
+commit 3f14d38fde7070b30db8e460a430a3c559dc0ca5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 14:03:40 2010 +0200
+
+    [entropy.db] EntropyRepository: if sqlite3 connection cannot close, interrupt other threads and call close() again
+
+commit f7734e3d771e40fbf4a91525b674b6e1ef762cb3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 07:31:23 2010 +0200
+
+    [sulfur] remove isinstance(x, int) and replace by identity checking against None
+
+commit e6b8fcff81b99e99c8c2e6e7eae259d2e58b7eae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 07:27:31 2010 +0200
+
+    [sulfur] catch another OperationalError on listAllPackageIds()
+
+commit bd3f4e421f4423f68f5a3470d24863e51509beca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 07:25:48 2010 +0200
+
+    [sulfur] catch OperationalError when calling listAllPackageIds()
+
+commit ccb57e05d14be9238e90c7e8aab83fff5f8e16d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 07:20:45 2010 +0200
+
+    [entropy.services] open_session() can return None, state it clearly and handle the case everywhere the function is used
+
+commit c95b27e78e8020b8e0e71c39ac29661dc8bb2368
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 07:08:23 2010 +0200
+
+    [entropy.tools] movefile: catch OSError/IOError exceptions on the first lstat() too (on src)
+
+commit a7d8415ddad23799d786c2a7583cc8fd0b5c4e39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 15 06:59:09 2010 +0200
+
+    [entropy.const] fix typo in etpConst['packagesrelativepaths']
+
+commit 621740f9c8a54b31ed31687691882613b3802cd8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 14 20:05:01 2010 +0200
+
+    [equo] remove --nockecksum option from "equo upgrade" and "equo install". Some people are abusing it.
+
+commit 9d36dcaee482e47334a5921529641c06a1d82faf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 14 20:00:43 2010 +0200
+
+    [entropy.db] EntropyRepository._insertContentSafety: execute query only if contentsafety table is available
+
+commit 7c5927524d181af2e5f2f461f382976157d1b0dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 14 19:53:48 2010 +0200
+
+    [entropy.db] EntropyRepository._insertSignatures: make code more robust and handle the case where gpg column is not available
+
+commit ac28a04e989ba87612e5a76db01341ef7f3a4a9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 14 09:50:33 2010 +0200
+
+    [po] update translations
+
+commit ec94cceacd7195bbe8a2eab4ef6fe176afbd1251
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 14 09:49:34 2010 +0200
+
+    [entropy.tools] start moving Entropy dependency handling functions to entropy.dep module
+
+commit 3bd2c001ea70fba1ce7833dbdc54c12582fc7580
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 14 07:54:49 2010 +0200
+
+    [entropy.tools] trivial code updates
+
+commit 1a301fefddf666d59c892362abaf052db5b471cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 13 17:38:39 2010 +0200
+
+    Tagging Entropy version 0.99.49.60
+
 commit d553108df80c372bb10556287af98928909cec3e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Sep 13 17:38:16 2010 +0200
