@@ -867,7 +867,6 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
             my_data['dbrevision'] = self._helper.get_local_repository_revision(
                 repo = repoid)
             cli_repodata['available'][repoid] = my_data
-            self._helper._enabled_repos.append(repoid)
 
         cli_repodata['default_repository'] = \
             srv_parser_data['default_repository_id']
