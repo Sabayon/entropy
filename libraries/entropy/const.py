@@ -394,7 +394,6 @@ def const_default_settings(rootdir):
         'entropyrepoprefix': "@",
         'entropyrevisionprefix': "~",
         'userpackagesetsid': "__user__",
-        'setsconffilename': "sets.conf",
         'cachedumpext': ".dmp",
         'packagesext': ".tbz2",
         'smartappsext': ".app",

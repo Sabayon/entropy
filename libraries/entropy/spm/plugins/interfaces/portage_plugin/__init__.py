@@ -3856,18 +3856,7 @@ class PortagePlugin(SpmPlugin):
         sets = self._get_portage_sets_object()
         if sets is None:
             return None
-
-        # from portage.const import USER_CONFIG_PATH, GLOBAL_CONFIG_PATH
-        setconfigpaths = [os.path.join(self._portage.const.GLOBAL_CONFIG_PATH,
-            etpConst['setsconffilename'])]
-        setconfigpaths.append(os.path.join(settings["PORTDIR"],
-            etpConst['setsconffilename']))
-        setconfigpaths += [os.path.join(x, etpConst['setsconffilename']) \
-            for x in settings["PORTDIR_OVERLAY"].split()]
-        setconfigpaths.append(os.path.join(settings["PORTAGE_CONFIGROOT"],
-            self._portage.const.USER_CONFIG_PATH.lstrip(os.path.sep),
-                etpConst['setsconffilename']))
-        return sets.SetConfig(setconfigpaths, settings, trees)
+        return sets.load_default_config(settings, trees)
 
     def _get_set_config(self):
         myroot = etpConst['systemroot'] + os.path.sep
