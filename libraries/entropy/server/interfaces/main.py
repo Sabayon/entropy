@@ -855,7 +855,6 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
         cli_repodata = sys_set['repositories']
         # remove unavailable server repos in client metadata first
         cli_repodata['available'].clear()
-        del self._helper._enabled_repos[:]
 
         for repoid, repo_data in srv_repodata.items():
             xxx, my_data = sys_set._analyze_client_repo_string(
