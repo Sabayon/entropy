@@ -1,10 +1,18 @@
 
-  0.99.50:
-
-    - entropy.tools: move version checking functions to SPM (and use spm ones?)
-
   1.0:
 
+    - more conditional deps support? (syntax parser)
+            || (
+            (
+                >=app-crypt/gnupg-2.0
+                || (
+                    app-crypt/pinentry[gtk]
+                    app-crypt/pinentry[qt4]
+                )
+            )
+            =app-crypt/gnupg-1.4*
+        )
+    - entropy.server: don't use "content", "contentsafety" etc
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
     - per-repository mirrors on repo database dir?
@@ -17,21 +25,9 @@
     - entropy package metadata .dtd specs
     - entropy.client API docs
     - entropy.fetchers => pluggable uri handlers support?
-    - more entropy.spm, entropy.client unit tests
     - EntropyRepository.closeDB() => close() ?
     - complete README
-    - server-side handling of package deltas
-    - more conditional deps support?
-            || (
-            (
-                >=app-crypt/gnupg-2.0
-                || (
-                    app-crypt/pinentry[gtk]
-                    app-crypt/pinentry[qt4]
-                )
-            )
-            =app-crypt/gnupg-1.4*
-        )
+    - server-side handling of package deltas (daemon)
 
   1.1:
 
