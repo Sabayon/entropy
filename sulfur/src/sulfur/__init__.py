@@ -720,12 +720,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets")
         self.setup_package_radio_buttons(self.ui.rbPkgQueued, "queued")
         self.setup_package_radio_buttons(self.ui.rbPkgSearch, "search")
+        self.setup_package_radio_buttons(self.ui.repoRefreshButton, "refresh")
+        self.setup_package_radio_buttons(self.ui.rbPkgQueued, "install")
 
     def setup_package_radio_buttons(self, widget, tag):
         widget.connect('clicked', self.on_pkgFilter_toggled, tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
-        widget.set_mode( False )
+        if hasattr(widget, 'set_mode'):
+            widget.set_mode(False)
 
         pix = None
         if tag == "updates":
@@ -742,6 +745,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             pix = self.ui.rbAllImage
         elif tag == "search":
             pix = self.ui.rbSearchImage
+        elif tag == "refresh":
+            pix = self.ui.rbRefreshImage
+        elif tag == "install":
+            pix = self.ui.rbQueuedImage
 
         if pix is not None:
             pix_path = os.path.join(const.PIXMAPS_PATH, tag+".png")
