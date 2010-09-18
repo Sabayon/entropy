@@ -2328,8 +2328,9 @@ class PortagePlugin(SpmPlugin):
 
             updates_dir = etpConst['systemroot'] + \
                 self.get_setting("PORTDIR") + "/profiles/updates"
-            update_files = PortageMetaphor.sort_update_files(
-                os.listdir(updates_dir))
+            update_files_list = [x for x in os.listdir(updates_dir) if x \
+                not in ("CVS", ".svn")]
+            update_files = PortageMetaphor.sort_update_files(update_files_list)
             update_files = [os.path.join(updates_dir, x) for x in update_files]
             # now load actions from files
             update_actions = []
