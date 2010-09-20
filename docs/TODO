@@ -12,7 +12,6 @@
             )
             =app-crypt/gnupg-1.4*
         )
-    - entropy.server: don't use "content", "contentsafety" etc
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
     - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
     - per-repository mirrors on repo database dir?
