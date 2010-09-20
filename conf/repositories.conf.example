@@ -46,6 +46,18 @@ repository|sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
 repository|sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
 repository|sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
 
+# Experimental Sabayon repository "sabayon-limbo"
+# Here you can find in-testing packages that will be merged to
+# the mainline repository soon.
+# You can use any mirror listed for "sabayonlinux.org"
+# repository|sabayon-limbo|Sabayon Limbo Testing Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
+# repository|sabayon-limbo||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
+# repository|sabayon-limbo||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
+# repository|sabayon-limbo||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
+# repository|sabayon-limbo||http://cross-lfs.sabayonlinux.org/entropy|
+# repository|sabayon-limbo||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+
+
 # syntax for differential-update
 # differential-update: This setting controls the way Entropy client updates
 #                      its repositories. If you're on a slow/unstable network
