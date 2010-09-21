@@ -12,6 +12,7 @@
 """
 import os
 import sys
+import errno
 import re
 sys.path.insert(0, '/usr/lib/entropy/libraries')
 sys.path.insert(0, '/usr/lib/entropy/server')
