@@ -852,7 +852,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise exc_instance
 
     if exc_class is IOError:
-        if exc_instance.errno != 32:
+        if exc_instance.errno != errno.EPIPE:
             try_to_kill_cacher()
             raise exc_instance
 
@@ -863,10 +863,16 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
 
     if exc_class is OSError:
-        if exc_instance.errno == 28:
+        if exc_instance.errno == errno.ENOSPC:
             print_generic(t_back)
             print_error("%s %s. %s." % (darkred(" * "), exc_instance,
                 _("Your hard drive is full! Your fault!"),))
+            try_to_kill_cacher()
+            raise SystemExit(5)
+        elif exc_instance.errno == errno.ENOMEM:
+            print_generic(t_back)
+            print_error("%s %s. %s." % (darkred(" * "), exc_instance,
+                _("No more memory dude! Your fault!"),))
             try_to_kill_cacher()
             raise SystemExit(5)
 
