@@ -153,7 +153,7 @@ class EntropyPackage:
     def __del__(self):
         if hasattr(self, 'remote'):
             if self.remote:
-                self.dbconn.closeDB()
+                self.dbconn.close()
 
     def __str__(self):
         if self.pkgset:

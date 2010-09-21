@@ -388,7 +388,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
         EntropyRepositoryPluginStore.__init__(self)
 
-    def closeDB(self):
+    def close(self):
         """
         Close repository storage communication and open disk files.
         You can still use this instance, but closed files will be reopened.
@@ -406,6 +406,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 raise RepositoryPluginError(
                     "[close_repo_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
+
+    def closeDB(self):
+        """
+        @deprecated, please see close()
+        """
+        warnings.warn("EntropyRepositoryBase.closeDB() is now deprecated. " + \
+            "Please use close()")
+        return self.close()
 
     def vacuum(self):
         """

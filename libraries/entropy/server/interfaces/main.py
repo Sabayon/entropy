@@ -922,7 +922,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                     time.sleep(10)
         finally:
             if dbc is not None:
-                dbc.closeDB()
+                dbc.close()
             os.close(tmp_fd)
 
         return True
@@ -3533,7 +3533,7 @@ class ServerRepositoryMixin:
     def close_repositories(self, mask_clear = False):
         for item in self._server_dbcache.keys():
             try:
-                self._server_dbcache[item].closeDB()
+                self._server_dbcache[item].close()
             except ProgrammingError: # already closed?
                 pass
         self._server_dbcache.clear()
@@ -3548,7 +3548,7 @@ class ServerRepositoryMixin:
                 break
         if found:
             instance = self._server_dbcache.pop(found)
-            instance.closeDB()
+            instance.close()
 
     def get_available_repositories(self):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -4022,7 +4022,7 @@ class ServerRepositoryMixin:
         dbconn = self.open_generic_repository(dbpath)
         dbconn.initializeRepository()
         dbconn.commitChanges()
-        dbconn.closeDB()
+        dbconn.close()
         mytxt = "%s %s %s." % (
             red(_("Entropy repository file")),
             bold(dbpath),
@@ -4823,7 +4823,7 @@ class ServerMiscMixin:
             pkg_id, rc = tmp_repo.atomMatch(dep_string_rewrite)
             if rc == 0:
                 rewrites_enabled.append((dep_string_rewrite, dep_pattern))
-        tmp_repo.closeDB()
+        tmp_repo.close()
 
         if not rewrites_enabled:
             return

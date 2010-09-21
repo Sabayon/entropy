@@ -253,7 +253,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
         Qa.test_missing_dependencies([idpackage], mydbconn)
-        mydbconn.closeDB()
+        mydbconn.close()
         entropy.tools.aggregate_entropy_metadata(etptbz2path, dbpath)
         os.remove(dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Inflated package"),))+etptbz2path)
@@ -396,11 +396,11 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
             idpk, rev, y = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
             del y
             mergeDbconn.storeSpmMetadata(idpk, xpakdata)
-        mydbconn.closeDB()
+        mydbconn.close()
         os.remove(tmpdbfile)
 
     # now we have the new database
-    mergeDbconn.closeDB()
+    mergeDbconn.close()
 
     # merge packages
     for package in matched_pkgs:

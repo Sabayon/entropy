@@ -245,8 +245,8 @@ class AvailablePackagesRepositoryUpdater(object):
             upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
         except (OperationalError, IntegrityError, DatabaseError,):
             pass
-        old_dbconn.closeDB()
-        dbconn.closeDB()
+        old_dbconn.close()
+        dbconn.close()
         if upd_rc > 0:
             # -1 means no changes, == force used
             # 0 means too much hassle
@@ -271,7 +271,7 @@ class AvailablePackagesRepositoryUpdater(object):
         dbconn = self._entropy.open_generic_repository(dbfile,
             xcache = False, indexing_override = False)
         rc = dbconn.importRepository(dumpfile, dbfile)
-        dbconn.closeDB()
+        dbconn.close()
         return rc
 
     def __get_repo_eapi(self):
@@ -1385,7 +1385,7 @@ class AvailablePackagesRepositoryUpdater(object):
         try:
             myidpackages = mydbconn.listAllPackageIds()
         except (DatabaseError, IntegrityError, OperationalError,):
-            mydbconn.closeDB()
+            mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             return False
 
@@ -1395,13 +1395,13 @@ class AvailablePackagesRepositoryUpdater(object):
         if (None in (added_ids, removed_ids, secure_checksum)) or \
             (not added_ids and not removed_ids and self.__force):
 
-            mydbconn.closeDB()
+            mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             return False
 
         elif not secure_checksum:
             # {added_ids, removed_ids, secure_checksum} == False
-            mydbconn.closeDB()
+            mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
                 darkred(_("remote database suddenly locked")),)
@@ -1428,7 +1428,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 level = "info",
                 header = blue("  # "),
             )
-            mydbconn.closeDB()
+            mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             return False
 
@@ -1466,7 +1466,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
                 # anti loop protection
                 if fetch_count > max_fetch_count:
-                    mydbconn.closeDB()
+                    mydbconn.close()
                     self.__eapi3_close(eapi3_interface, session)
                     return False
 
@@ -1494,7 +1494,7 @@ class AvailablePackagesRepositoryUpdater(object):
                         mytxt, importance = 1, level = "info",
                         header = "\t", count = (count, maxcount,)
                     )
-                    mydbconn.closeDB()
+                    mydbconn.close()
                     self.__eapi3_close(eapi3_interface, session)
                     return None
 
@@ -1508,7 +1508,7 @@ class AvailablePackagesRepositoryUpdater(object):
                         mytxt, importance = 1, level = "info",
                         header = "\t", count = (count, maxcount,)
                     )
-                    mydbconn.closeDB()
+                    mydbconn.close()
                     self.__eapi3_close(eapi3_interface, session)
                     return None
 
@@ -1529,7 +1529,7 @@ class AvailablePackagesRepositoryUpdater(object):
                         mytxt, importance = 1, level = "info",
                         header = "\t", count = (count, maxcount,)
                     )
-                    mydbconn.closeDB()
+                    mydbconn.close()
                     self.__eapi3_close(eapi3_interface, session)
                     return None
 
@@ -1543,7 +1543,7 @@ class AvailablePackagesRepositoryUpdater(object):
             "treeupdates_digest", "library_idpackages",)
         for elem in metadata_elements:
             if elem not in repo_metadata:
-                mydbconn.closeDB()
+                mydbconn.close()
                 self.__eapi3_close(eapi3_interface, session)
                 mytxt = "%s: %s" % (
                     blue(_("EAPI3 Service status")),
@@ -1564,7 +1564,7 @@ class AvailablePackagesRepositoryUpdater(object):
             mydbconn.bumpTreeUpdatesActions(
                 repo_metadata['treeupdates_actions'])
         except (Error,):
-            mydbconn.closeDB()
+            mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % (
                 blue(_("EAPI3 Service status")),
@@ -1583,7 +1583,7 @@ class AvailablePackagesRepositoryUpdater(object):
             mydbconn.clearPackageSets()
             mydbconn.insertPackageSets(repo_metadata['sets'])
         except (Error,):
-            mydbconn.closeDB()
+            mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % (
                 blue(_("EAPI3 Service status")),
@@ -1617,7 +1617,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     mytxt, importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
-                mydbconn.closeDB()
+                mydbconn.close()
                 return False
 
             mytxt = "%s %s" % (
@@ -1643,7 +1643,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
-                mydbconn.closeDB()
+                mydbconn.close()
                 return False
 
         self._entropy.output(
@@ -1675,7 +1675,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
-                mydbconn.closeDB()
+                mydbconn.close()
                 return False
 
         self._entropy.output(
@@ -1708,7 +1708,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 level = "info", header = "\t",
             )
 
-        mydbconn.closeDB()
+        mydbconn.close()
         return result
 
     def remote_revision(self):

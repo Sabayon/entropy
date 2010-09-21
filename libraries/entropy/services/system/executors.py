@@ -495,13 +495,13 @@ class Base:
                 for idpackage, repoid in to_remove:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                    dbconn.closeDB()
+                    dbconn.close()
 
                 mydict['inject_data'] = {}
                 for idpackage, repoid in to_inject:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                    dbconn.closeDB()
+                    dbconn.close()
 
                 return True, mydict
 
@@ -558,7 +558,7 @@ class Base:
                 for idpackage, repoid in to_remove:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     atoms_removed.append(dbconn.retrieveAtom(idpackage))
-                    dbconn.closeDB()
+                    dbconn.close()
                     if repoid not in remdata:
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
@@ -613,11 +613,11 @@ class Base:
                 for idpackage, repoid in matches_added:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['added_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                    dbconn.closeDB()
+                    dbconn.close()
                 for idpackage, repoid in matches_injected:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
-                    dbconn.closeDB()
+                    dbconn.close()
                 return True, mydict
 
             finally:
@@ -768,7 +768,7 @@ class Base:
                     repo = repoid, do_cache = False,
                     read_only = True
                 )
-                dbconn.closeDB()
+                dbconn.close()
             except Exception as e:
                 entropy.tools.print_traceback()
                 return False, str(e)

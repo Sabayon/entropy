@@ -98,7 +98,7 @@ class Server(SocketHost):
     def close_db(self, dbpath):
         try:
             dbc = self.__dbcache.pop(dbpath)
-            dbc.closeDB()
+            dbc.close()
         except KeyError:
             pass
 
@@ -249,7 +249,7 @@ class Server(SocketHost):
                         importance = 1,
                         level = "info"
                     )
-                    dbc.closeDB()
+                    dbc.close()
                     self.__cacher.discard()
                     self.__drop_cache_now(repository)
                     self.repositories[repo_tuple]['locked'] = False

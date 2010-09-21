@@ -301,7 +301,7 @@ def _merge_repository(entropy_client, repo_ids, remove_conflicts = False):
             teal(source_repo), blue(_("done merging packages")),))
 
     dest_db.commitChanges()
-    dest_db.closeDB()
+    dest_db.close()
     # close all repos again
     entropy_client.close_repositories()
 

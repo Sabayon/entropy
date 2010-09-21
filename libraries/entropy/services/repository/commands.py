@@ -111,7 +111,7 @@ class Repository(SocketCommands):
             cached = std_checksum, secure_checksum, myids
             self.HostInterface.set_dcache(
                 x + ('docmd_dbdiff', mtime, rev_id,), cached, repository)
-            dbconn.closeDB()
+            dbconn.close()
 
         foreign_idpackages = set(foreign_idpackages)
 
@@ -166,7 +166,7 @@ class Repository(SocketCommands):
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_repository_metadata',
                 mtime, rev_id,), metadata, repository)
-        dbconn.closeDB()
+        dbconn.close()
 
         return metadata
 
@@ -205,7 +205,7 @@ class Repository(SocketCommands):
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_package_sets',
                 mtime, rev_id,), data, repository)
-        dbconn.closeDB()
+        dbconn.close()
 
         return data
 
@@ -246,7 +246,7 @@ class Repository(SocketCommands):
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_treeupdates', mtime,
                 rev_id,), data, repository)
-        dbconn.closeDB()
+        dbconn.close()
 
         return data
 
@@ -303,7 +303,7 @@ class Repository(SocketCommands):
                 tb = entropy.tools.get_traceback()
                 print(tb)
                 self.HostInterface.socketLog.write(tb)
-                dbconn.closeDB()
+                dbconn.close()
                 return None
             result[idpackage] = mydata.copy()
 
@@ -311,7 +311,7 @@ class Repository(SocketCommands):
             (repository, arch, product, branch, idpackages,
                 'docmd_pkginfo_strict', mtime, rev_id,),
                     result, repository)
-        dbconn.closeDB()
+        dbconn.close()
         return result
 
     def get_database_path(self, repository, arch, product, branch):

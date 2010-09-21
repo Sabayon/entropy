@@ -63,7 +63,7 @@ class RepositoryMixin:
             key = self.__get_repository_cache_key(repoid)
             for cache_obj in (self._repodb_cache, self._memory_db_instances):
                 try:
-                    cache_obj.pop(key).closeDB()
+                    cache_obj.pop(key).close()
                 except (KeyError, AttributeError, OperationalError):
                     pass
 
@@ -146,7 +146,7 @@ class RepositoryMixin:
             if item in self._memory_db_instances:
                 continue
             try:
-                self._repodb_cache.pop(item).closeDB()
+                self._repodb_cache.pop(item).close()
             except OperationalError as err: # wtf!
                 sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
                     err,))
@@ -356,7 +356,7 @@ class RepositoryMixin:
         repo_mem_key = self.__get_repository_cache_key(repoid)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
         if isinstance(mem_inst, EntropyRepository):
-            mem_inst.closeDB()
+            mem_inst.close()
 
         # reset db cache
         self.close_repositories()
@@ -572,7 +572,7 @@ class RepositoryMixin:
         if basefile not in self._enabled_repos:
             self.remove_repository(basefile)
             return -4, atoms_contained
-        mydbconn.closeDB()
+        mydbconn.close()
         del mydbconn
         return 0, atoms_contained
 
@@ -657,7 +657,7 @@ class RepositoryMixin:
                         conn.validate()
                     except SystemDatabaseError:
                         try:
-                            conn.closeDB()
+                            conn.close()
                         except (RepositoryPluginError, OSError, IOError):
                             pass
                         entropy.tools.print_traceback(f = self.clientLog)
@@ -667,7 +667,7 @@ class RepositoryMixin:
         return conn
 
     def reopen_installed_repository(self):
-        self._installed_repository.closeDB()
+        self._installed_repository.close()
         self._open_installed_repository()
         # make sure settings are in sync
         self._settings.clear()
@@ -1648,7 +1648,7 @@ class MiscMixin:
             if treeupdates_actions != None:
                 dbconn.bumpTreeUpdatesActions(treeupdates_actions)
             dbconn.commitChanges()
-            dbconn.closeDB()
+            dbconn.close()
             entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
         finally:
             os.close(tmp_fd)

@@ -24,7 +24,6 @@
     - entropy package metadata .dtd specs
     - entropy.client API docs
     - entropy.fetchers => pluggable uri handlers support?
-    - EntropyRepository.closeDB() => close() ?
     - complete README
     - server-side handling of package deltas (daemon)
 

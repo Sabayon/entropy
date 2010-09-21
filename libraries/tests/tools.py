@@ -44,7 +44,7 @@ class ToolsTest(unittest.TestCase):
             dbconn = client.open_generic_repository(tmp_path)
             dbconn.validate()
             dbconn.listAllPackageIds()
-            dbconn.closeDB()
+            dbconn.close()
 
         os.close(fd)
         os.remove(tmp_path)

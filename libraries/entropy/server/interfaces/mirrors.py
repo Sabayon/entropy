@@ -1772,7 +1772,7 @@ class Server(ServerNoticeBoardMixin):
             eapi2_tmp_dbconn.dropContent()
             eapi2_tmp_dbconn.dropChangelog()
             eapi2_tmp_dbconn.commitChanges()
-            eapi2_tmp_dbconn.closeDB()
+            eapi2_tmp_dbconn.close()
 
             # create compressed dump + checksum
             self._dump_database_to_file(temp_eapi2_dbfile,
@@ -1812,7 +1812,7 @@ class Server(ServerNoticeBoardMixin):
             eapi1_tmp_dbconn.dropChangelog()
             eapi1_tmp_dbconn.commitChanges()
             eapi1_tmp_dbconn.vacuum()
-            eapi1_tmp_dbconn.closeDB()
+            eapi1_tmp_dbconn.close()
 
             # compress
             self._compress_file(temp_eapi1_dbfile,

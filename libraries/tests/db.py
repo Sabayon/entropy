@@ -41,8 +41,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
-        self.test_db.closeDB()
-        self.test_db2.closeDB()
+        self.test_db.close()
+        self.test_db2.close()
         self.Client.shutdown()
 
     def __open_test_db(self, tmp_path):
@@ -657,7 +657,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db.importRepository(buf_file, new_db_path)
         new_db = self.Client.open_generic_repository(new_db_path)
         new_db_data = new_db.getPackageData(idpackage)
-        new_db.closeDB()
+        new_db.close()
         etpUi['mute'] = False
         self.assertEqual(new_db_data, db_data)
         os.remove(buf_file)

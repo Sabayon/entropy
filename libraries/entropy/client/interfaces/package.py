@@ -1630,7 +1630,7 @@ class Package:
                     )
                 )
 
-            pkg_dbconn.closeDB()
+            pkg_dbconn.close()
 
         # fix removecontent, need to check if we just installed files
         # that resolves at the same directory path (different symlink)

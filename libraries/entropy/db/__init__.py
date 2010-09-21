@@ -616,12 +616,12 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         return EntropyRepositoryBase.remote_revision(repository_id)
 
-    def closeDB(self):
+    def close(self):
         """
         Reimplemented from EntropyRepositoryBase.
         Needs to call superclass method.
         """
-        super(EntropyRepository, self).closeDB()
+        super(EntropyRepository, self).close()
 
         self._cleanup_stale_cur_conn(kill_all = True)
         if self.temporary and os.path.isfile(self._db_path):

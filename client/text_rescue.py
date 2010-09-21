@@ -650,7 +650,7 @@ def _database_generate(entropy_client):
     )
     print_info(mytxt, back = True)
     entropy_client.reopen_installed_repository()
-    entropy_client.installed_repository().closeDB()
+    entropy_client.installed_repository().close()
     entropy_client._open_installed_repository()
     entropy_client.installed_repository().initializeRepository()
     mytxt = darkred("  %s %s") % (

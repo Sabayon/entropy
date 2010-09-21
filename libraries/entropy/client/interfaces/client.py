@@ -723,7 +723,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.__instance_destroyed = True
         if hasattr(self, '_installed_repository'):
             if self._installed_repository != None:
-                self._installed_repository.closeDB()
+                self._installed_repository.close()
         if hasattr(self, 'clientLog'):
             self.clientLog.close()
         if hasattr(self, '_settings') and \

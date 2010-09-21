@@ -1048,7 +1048,7 @@ class Repository(SocketCommands):
             if not data:
                 continue
             package_data['data'][idpackage] = data.copy()
-        dbconn.closeDB()
+        dbconn.close()
         return True, package_data
 
     def docmd_get_entropy_idpackage_information(self, myargs):
@@ -1060,7 +1060,7 @@ class Repository(SocketCommands):
 
         dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
         package_data = dbconn.getPackageData(idpackage)
-        dbconn.closeDB()
+        dbconn.close()
         return True, package_data
 
     def docmd_remove_entropy_packages(self, myargs):
@@ -1350,7 +1350,7 @@ class Repository(SocketCommands):
                     search_results['data'][idpackage] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
 
 
-        dbconn.closeDB()
+        dbconn.close()
         return True, search_results
 
     def docmd_get_notice_board(self, cmd, myargs, authenticator):
