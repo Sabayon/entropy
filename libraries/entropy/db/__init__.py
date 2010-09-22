@@ -405,7 +405,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
         @keyword temporary: if True, dbFile will be automatically removed
-            on closeDB()
+            on close()
         @type temporary: bool
         """
         self.__cursor_cache = {}
@@ -592,7 +592,7 @@ class EntropyRepository(EntropyRepositoryBase):
         return EntropyRepository._LIVE_CACHE.get(self.__getLiveCacheKey() + key)
 
     def __del__(self):
-        self.closeDB()
+        self.close()
 
     @staticmethod
     def update(entropy_client, repository_id, force, gpg):
