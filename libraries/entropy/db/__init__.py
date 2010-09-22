@@ -4801,6 +4801,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._createProvidedLibsIndex()
         self._createDesktopMimeIndex()
         self._createProvidedMimeIndex()
+        self._cursor().execute("ANALYZE")
 
     def _createMirrorlinksIndex(self):
         if self.indexing:

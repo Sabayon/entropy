@@ -625,6 +625,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         out = self.test_db.searchName(_misc.get_test_package_name())
         self.assertEqual(out, (('sys-libs/zlib-1.2.3-r1', 1),))
 
+    def test_db_indexes(self):
+        self.test_db.createAllIndexes()
+
     def test_db_import_export(self):
 
         test_pkg = _misc.get_test_package2()
