@@ -1,3 +1,88 @@
+commit 20a1de45ce8cdec621ab453267781c0372da13f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 23 18:45:14 2010 +0200
+
+    [entropy.spm] PortagePlugin: support per repository profiles/updates
+
+commit 32f251feaee08a2524376ced0f55fa240ce11800
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 22 20:29:33 2010 +0200
+
+    [entropy.db] EntropyRepository.createAllIndexes: call "ANALYZE" stmt after indexes creation
+
+commit e62859c6e1eee21f3109460854d07996f2d668a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 22 20:14:28 2010 +0200
+
+    [entropy.db] EntropyRepository: convert remaining closeDB() calls to close()
+
+commit caff8cc759de1159b74d4a7bafee6b15f2ee476f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 21 14:03:44 2010 +0200
+
+    [entropy.db] rename EntropyRepositoryBase.closeDB() to EntropyRepositoryBase.close() keeping backward compatibility
+
+commit c5747a91e60d68af3bca0f93fadff51335b02243
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 21 13:10:22 2010 +0200
+
+    [equo] handle OSError exception when ENOMEM (Cannot allocate memory) in exception handler
+
+commit b8514a9c2304d5fcc5862e2e002016f7e62019b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 21 13:07:54 2010 +0200
+
+    [equo] do not use hardcoded error numbers but rather errno module
+
+commit 6795f4e4966a349513ad60315be25dd1b1afa8dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 20 20:16:31 2010 +0200
+
+    [todo] update TODO
+
+commit 63a1edbbc92cd4bc1eafaa9594cdc3bf50260ce7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 20 20:15:54 2010 +0200
+
+    [conf] repositories.conf: add sabayon-limbo repository info to config file
+
+commit 3a0001fdf023f66bc36f8fc7a420a5119ddb3eed
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Sat Sep 18 22:24:19 2010 +0100
+
+    [i18n] Update nl translation
+
+commit 5b8fd5e28b156c5f734ad51e652b05f1fad25fba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 18 14:19:35 2010 +0200
+
+    [entropy.spm] PortagePlugin.package_names_update: make it work using portage tree from CVS
+
+commit 3b0aefe12b4cd44df7ce7bf8ba75a6a268f0ab10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 17 22:14:08 2010 +0200
+
+    [sulfur] add built-in icon images, make sulfur look good in KDE
+
+commit 33fe258b4a49d42ed2108610b4c592e15278c10d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 17 01:08:14 2010 +0200
+
+    [entropy.server] do not use EntropyRepository private implementation information, but rather provide a much cleaner implementation of
+    _upload_database
+
+commit 6a70b27784b7c4dbe73352bd7bccdd01edca0260
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 18:27:16 2010 +0200
+
+    [todo] update TODO
+
+commit 7864e6a554e7233249966db2e4563462dcd001ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 09:22:17 2010 +0200
+
+    Tagging Entropy version 0.99.49.70
+
 commit 04640671afc20e57d1a0e7f954dfbe332c62158a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Sep 16 09:21:18 2010 +0200
