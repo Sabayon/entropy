@@ -11,6 +11,7 @@
 """
 import os
 import bz2
+import hashlib
 import shlex
 import stat
 import sys
@@ -2271,6 +2272,84 @@ class PortagePlugin(SpmPlugin):
                 header = darkred(" * ")
             )
 
+    def __portage_updates_md5(self, repo_updates_file):
+
+        root = etpConst['systemroot']
+        if root:
+            root += os.path.sep
+
+        portdb = self._get_portage_portagetree(root).dbapi
+        mdigest = hashlib.md5()
+        # this way, if no matches are found, the same value is returned
+        mdigest.update("begin")
+
+        for repo_name in portdb.getRepositories():
+            repo_path = portdb.getRepositoryPath(repo_name)
+            updates_dir = os.path.join(repo_path, "profiles", "updates")
+            if not os.path.isdir(updates_dir):
+                continue
+
+            # get checksum
+            # update
+            ndigest = entropy.tools.md5obj_directory(updates_dir)
+            mdigest.update(ndigest.digest())
+
+        # also checksum etpConst['etpdatabaseupdatefile']
+        if os.path.isfile(repo_updates_file):
+            with open(repo_updates_file, "rb") as f:
+                block = f.read(1024)
+                while block:
+                    mdigest.update(block)
+                    block = f.read(1024)
+                f.flush()
+
+        return mdigest
+
+    def __get_portage_update_actions(self, repo_updates_file):
+
+        root = etpConst['systemroot']
+        if root:
+            root += os.path.sep
+
+        updates_map = {}
+        portdb = self._get_portage_portagetree(root).dbapi
+
+        for repo_name in portdb.getRepositories():
+            repo_path = portdb.getRepositoryPath(repo_name)
+            updates_dir = os.path.join(repo_path, "profiles", "updates")
+            if not os.path.isdir(updates_dir):
+                continue
+
+            update_files_repo = [x for x in os.listdir(updates_dir) if x \
+                not in ("CVS", ".svn")]
+            for update_id in update_files_repo:
+                obj = updates_map.setdefault(update_id, [])
+                obj.append(os.path.join(updates_dir, update_id))
+
+        update_actions = []
+        sorted_ids = PortageMetaphor.sort_update_files(list(updates_map.keys()))
+        for update_id in sorted_ids:
+            update_files = updates_map[update_id]
+
+            # now load actions from files
+            for update_file in update_files:
+                f = open(update_file, "r")
+                mycontent = f.readlines()
+                f.close()
+                lines = [x.strip() for x in mycontent if x.strip()]
+                update_actions.extend(lines)
+
+        # add entropy packages.db.repo_updates content
+        if os.path.isfile(repo_updates_file):
+            f = open(repo_updates_file, "r")
+            mycontent = f.readlines()
+            f.close()
+            lines = [x.strip() for x in mycontent if x.strip() and \
+                not x.strip().startswith("#")]
+            update_actions.extend(lines)
+
+        return update_actions
+
     def package_names_update(self, entropy_repository, entropy_repository_id,
         entropy_server, entropy_branch):
 
@@ -2294,24 +2373,10 @@ class PortagePlugin(SpmPlugin):
                     self.__entropy_repository_treeupdate_digests.get(
                         entropy_repository_id)
             else:
-
-                # grab portdir
-                updates_dir = etpConst['systemroot'] + \
-                    self.get_setting("PORTDIR") + "/profiles/updates"
-                if os.path.isdir(updates_dir):
-                    # get checksum
-                    mdigest = entropy.tools.md5obj_directory(updates_dir)
-                    # also checksum etpConst['etpdatabaseupdatefile']
-                    if os.path.isfile(repo_updates_file):
-                        f = open(repo_updates_file)
-                        block = f.read(1024)
-                        while block:
-                            mdigest.update(block)
-                            block = f.read(1024)
-                        f.close()
-                    portage_dirs_digest = mdigest.hexdigest()
-                    self.__entropy_repository_treeupdate_digests[entropy_repository_id] = \
-                        portage_dirs_digest
+                mdigest = self.__portage_updates_md5(repo_updates_file)
+                portage_dirs_digest = mdigest.hexdigest()
+                self.__entropy_repository_treeupdate_digests[entropy_repository_id] = \
+                    portage_dirs_digest
 
         if do_rescan or (str(stored_digest) != str(portage_dirs_digest)):
 
@@ -2325,30 +2390,9 @@ class PortagePlugin(SpmPlugin):
 
             # reset database tables
             entropy_repository.clearTreeupdatesEntries(entropy_repository_id)
+            update_actions = self.__get_portage_update_actions(
+                repo_updates_file)
 
-            updates_dir = etpConst['systemroot'] + \
-                self.get_setting("PORTDIR") + "/profiles/updates"
-            update_files_list = [x for x in os.listdir(updates_dir) if x \
-                not in ("CVS", ".svn")]
-            update_files = PortageMetaphor.sort_update_files(update_files_list)
-            update_files = [os.path.join(updates_dir, x) for x in update_files]
-            # now load actions from files
-            update_actions = []
-            for update_file in update_files:
-                f = open(update_file, "r")
-                mycontent = f.readlines()
-                f.close()
-                lines = [x.strip() for x in mycontent if x.strip()]
-                update_actions.extend(lines)
-
-            # add entropy packages.db.repo_updates content
-            if os.path.isfile(repo_updates_file):
-                f = open(repo_updates_file, "r")
-                mycontent = f.readlines()
-                f.close()
-                lines = [x.strip() for x in mycontent if x.strip() and \
-                    not x.strip().startswith("#")]
-                update_actions.extend(lines)
             # now filter the required actions
             update_actions = entropy_repository.filterTreeUpdatesActions(
                 update_actions)
@@ -3326,7 +3370,9 @@ class PortagePlugin(SpmPlugin):
             return cached
 
         try:
-            mytree = self._portage.portagetree(root=root)
+            # settings=self._portage.settings
+            mytree = self._portage.portagetree(root=None,
+                settings=self._portage.settings)
         except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['portagetree'][root] = mytree
