@@ -2402,7 +2402,7 @@ class PortagePlugin(SpmPlugin):
                     bold(_("ATTENTION")),
                     red(_("forcing package updates")),
                     red(_("Syncing with")),
-                    blue(updates_dir),
+                    blue("Portage"),
                 )
                 self.__output.output(
                     mytxt,
