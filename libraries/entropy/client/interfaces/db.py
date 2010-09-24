@@ -407,7 +407,7 @@ class AvailablePackagesRepositoryUpdater(object):
         dbc_format = repo_settings['available'][repo]['dbcformat']
         cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
         if cmethod is None:
-            raise AttributeError("Wrong database compression method")
+            raise AttributeError("Wrong repository compression method")
 
         return cmethod
 
@@ -445,7 +445,7 @@ class AvailablePackagesRepositoryUpdater(object):
         def show_repo_locked_message():
             mytxt = "%s: %s." % (
                 bold(_("Attention")),
-                red(_("remote database got suddenly locked")),
+                red(_("remote repository got suddenly locked")),
             )
             self._entropy.output(
                 mytxt,
@@ -455,7 +455,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
 
         # starting to download
-        mytxt = "%s ..." % (red(_("Downloading repository database")),)
+        mytxt = "%s ..." % (red(_("Downloading repository")),)
         self._entropy.output(
             mytxt,
             importance = 1,
@@ -515,7 +515,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         if not down_status:
             mytxt = "%s: %s." % (bold(_("Attention")),
-                red(_("database does not exist online")),)
+                red(_("repository does not exist online")),)
             self._entropy.output(
                 mytxt,
                 importance = 1,
@@ -562,7 +562,7 @@ class AvailablePackagesRepositoryUpdater(object):
         if not db_down_status:
             mytxt = "%s %s !" % (
                 red(_("Cannot fetch checksum")),
-                red(_("Cannot verify database integrity")),
+                red(_("Cannot verify repository integrity")),
             )
             self._entropy.output(
                 mytxt,
@@ -1071,7 +1071,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         # verify checksum
         mytxt = "%s %s %s" % (
-            red(_("Checking downloaded database")),
+            red(_("Checking downloaded repository")),
             darkgreen(os.path.basename(dbfilename)),
             red("..."),
         )
@@ -1086,7 +1086,7 @@ class AvailablePackagesRepositoryUpdater(object):
         if db_status == -1:
             mytxt = "%s. %s !" % (
                 red(_("Cannot open digest")),
-                red(_("Cannot verify database integrity")),
+                red(_("Cannot verify repository integrity")),
             )
             self._entropy.output(
                 mytxt,
@@ -1096,7 +1096,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
         elif db_status:
             mytxt = "%s: %s" % (
-                red(_("Downloaded database status")),
+                red(_("Downloaded repository status")),
                 bold(_("OK")),
             )
             self._entropy.output(
@@ -1107,7 +1107,7 @@ class AvailablePackagesRepositoryUpdater(object):
             )
         else:
             mytxt = "%s: %s" % (
-                red(_("Downloaded database status")),
+                red(_("Downloaded repository status")),
                 darkred(_("ERROR")),
             )
             self._entropy.output(
@@ -1117,7 +1117,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "\t"
             )
             mytxt = "%s. %s" % (
-                red(_("An error occured while checking database integrity")),
+                red(_("An error occured while checking repository integrity")),
                 red(_("Giving up")),
             )
             self._entropy.output(
@@ -1404,7 +1404,7 @@ class AvailablePackagesRepositoryUpdater(object):
             mydbconn.close()
             self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
-                darkred(_("remote database suddenly locked")),)
+                darkred(_("remote repository suddenly locked")),)
             self._entropy.output(
                 mytxt,
                 importance = 0,
@@ -1488,7 +1488,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 elif not pkgdata: # pkgdata == False
                     mytxt = "%s: %s" % (
                         blue(_("Service status")),
-                        darkred("remote database suddenly locked"),
+                        darkred("remote repository suddenly locked"),
                     )
                     self._entropy.output(
                         mytxt, importance = 1, level = "info",
@@ -1694,7 +1694,7 @@ class AvailablePackagesRepositoryUpdater(object):
             result = True
         else:
             self._entropy.output(
-                blue(_("Database checksum doesn't match remote.")),
+                blue(_("Repository checksum doesn't match remote.")),
                 importance = 0, level = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('local'), mychecksum,)
