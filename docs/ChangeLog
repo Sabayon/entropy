@@ -1,3 +1,57 @@
+commit e857c01a58476aaecd945e60d182fc7b85c2fb01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 14:25:56 2010 +0200
+
+    [sulfur] add (commented out) profiling code, fix MAIN_APP variable handling
+
+commit 9853d41702161a036e98f2cd17b8219360ce44dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 14:02:06 2010 +0200
+
+    [entropy.db] EntropyRepository: fix performance regression, previous code was 10 times slower
+
+commit fbbeeecf803b809a57b45c4448f90d5690130904
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 13:33:19 2010 +0200
+
+    [entropy.client.interfaces.client] improve speed of Client.shutdown() by not touching SystemSettings plugin (see rational in code)
+
+commit 6cdd268dfb07ae9308990da832efad3a6960f5bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 13:27:30 2010 +0200
+
+    [entropy.server.interfaces.mirrors] fix regression in handling repository dump (light version)
+
+commit 4eaba54c38de9976532faea6eed9e9fda48f183b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 13:12:42 2010 +0200
+
+    [entropy.client.interfaces.db] replace "database" with "repository" in messages
+
+commit 5ab0e7acd5b4ec050f6cbf97db14fc162161021c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 13:04:09 2010 +0200
+
+    [sulfur] delay UGC remote data retrieval by 8 seconds by default, avoid UI overloading
+
+commit 4ddf106f4eadc9ae704b25841686f809d798b95e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 12:56:02 2010 +0200
+
+    [sulfur] improve queue handling buttons, effectively stop queue execution on Abort
+
+commit 52cfd29acf978fca5d1148f746ef7201c41d26e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 12:10:13 2010 +0200
+
+    [sulfur] do not show orphaned packages when no repos are available
+
+commit a722e014cc47a542f0c01e9d7fa4c780f79d4e99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 11:36:17 2010 +0200
+
+    Tagging Entropy version 0.99.49.73
+
 commit abd7e4fd331e31f7f86f2d69620e60cb938149ca
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Sep 24 11:31:26 2010 +0200
