@@ -2188,7 +2188,9 @@ class EntropyPackageView:
         elif not self._ugc_status:
             cell.set_property('visible', False)
         else:
-            gobject.idle_add(self.__new_ugc_pixbuf_stash_fetch, pkg)
+            # delay a bit, to avoid overloading the UI
+            gobject.timeout_add_seconds(8,
+                self.__new_ugc_pixbuf_stash_fetch, pkg)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
