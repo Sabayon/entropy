@@ -1015,20 +1015,6 @@ class Server(ServerNoticeBoardMixin):
         EntropyCacher.clear_cache_item(rss_dump_name,
             cache_dir = self._entropy.CACHE_DIR)
 
-
-    def _dump_database_to_file(self, db_path, destination_path, opener,
-        exclude_tables = None, repo = None):
-
-        if not exclude_tables:
-            exclude_tables = []
-
-        f_out = opener(destination_path, "wb")
-        dbconn = self._entropy.open_server_repository(db_path,
-            just_reading = True, repo = repo, do_treeupdates = False)
-        dbconn.exportRepository(f_out, exclude_tables = exclude_tables)
-        self._entropy.close_repository(dbconn)
-        f_out.close()
-
     def _create_file_checksum(self, file_path, checksum_path):
         mydigest = entropy.tools.md5sum(file_path)
         f_ck = open(checksum_path, "w")
@@ -1761,6 +1747,7 @@ class Server(ServerNoticeBoardMixin):
             self._show_eapi2_upload_messages("~all~", database_path,
                 upload_data, cmethod, repo)
 
+            # create compressed dump + checksum
             eapi2_dbfile = self._entropy._get_local_database_file(repo)
             temp_eapi2_dbfile = eapi2_dbfile+".light_eapi2.tmp"
             shutil.copy2(eapi2_dbfile, temp_eapi2_dbfile)
@@ -1772,12 +1759,15 @@ class Server(ServerNoticeBoardMixin):
             eapi2_tmp_dbconn.dropContent()
             eapi2_tmp_dbconn.dropChangelog()
             eapi2_tmp_dbconn.commitChanges()
-            eapi2_tmp_dbconn.close()
 
-            # create compressed dump + checksum
-            self._dump_database_to_file(temp_eapi2_dbfile,
-                upload_data['dump_path_light'], cmethod[0],
-                repo = repo)
+            # opener = cmethod[0]
+            f_out = cmethod[0](upload_data['dump_path_light'], "wb")
+            try:
+                eapi2_tmp_dbconn.exportRepository(f_out)
+            finally:
+                f_out.close()
+                eapi2_tmp_dbconn.close()
+
             os.remove(temp_eapi2_dbfile)
             self._create_file_checksum(upload_data['dump_path_light'],
                 upload_data['dump_path_digest_light'])
