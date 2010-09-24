@@ -376,6 +376,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.installPackageItem.set_sensitive(not self._RESOURCES_LOCKED)
         self.ui.systemVbox.set_sensitive(not self._RESOURCES_LOCKED)
         self.ui.prefSystemRepoBox.set_sensitive(not self._RESOURCES_LOCKED)
+        self.ui.pkgSelect.set_sensitive(not self._RESOURCES_LOCKED)
 
     def setup_labels(self):
 
