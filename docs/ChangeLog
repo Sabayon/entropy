@@ -1,4 +1,45 @@
-<<<<<<< HEAD
+commit 9cb13f6aeffe4d90c61b34a83837e43e08a5cc8b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 20:15:07 2010 +0200
+
+    Tagging Entropy version 0.99.49.75
+
+commit 89f97c21ce49b0df281bf92b2ff1480b7daba8ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 19:47:32 2010 +0200
+
+    [todo] update TODO
+
+commit 37ac11117a64880ff26baead9bd7b9302d2e7083
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 19:25:46 2010 +0200
+
+    [sulfur] lock "Update all" button when application is in locked status
+
+commit 7f9fdb274c5bafce63c4541614edf60d93265ce2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 19:25:22 2010 +0200
+
+    [sulfur] make possible to test application in locked status via "--locked" argv
+
+commit f7dc6786164317a72a1a03880efba314216e7077
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 14:52:10 2010 +0200
+
+    [po] update translations
+
+commit c2e7f3b51b2ea2dab56d0ee394733c2a8bb6127b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 14:27:59 2010 +0200
+
+    [entropy.db] EntropyRepository: small sqlite3 performance improvement, make it store temp tables in RAM
+
+commit 32c887e2989a14ca40346800eefef36dfea1df53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 14:26:50 2010 +0200
+
+    Tagging Entropy version 0.99.49.74
+
 commit e857c01a58476aaecd945e60d182fc7b85c2fb01
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Sep 24 14:25:56 2010 +0200
@@ -131,8 +172,6 @@ Date:   Sat Sep 18 22:24:19 2010 +0100
 
     [i18n] Update nl translation
 
-=======
->>>>>>> Tagging Entropy version 0.99.49.75
 commit 5b8fd5e28b156c5f734ad51e652b05f1fad25fba
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 18 14:19:35 2010 +0200
