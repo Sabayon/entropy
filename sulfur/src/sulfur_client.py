@@ -96,14 +96,23 @@ except gobject.GError:
     pass
 
 def startup():
+    global MAIN_APP
     MAIN_APP = SulfurApplication()
     MAIN_APP.init()
+    #import cProfile
+    #MAIN_APP._entropy.clear_cache()
+    #MAIN_APP.etpbase.clear_groups()
+    #MAIN_APP.etpbase.clear_cache()
+    #cProfile.run("MAIN_APP.setup_application()")
+    #raise SystemExit(1)
     gobject.threads_init()
     gtk.gdk.threads_enter()
     gtk.main()
     gtk.gdk.threads_leave()
     kill_threads()
-    MAIN_APP.quit()
+    app = MAIN_APP
+    MAIN_APP = None
+    app.quit()
 
 if __name__ == "__main__":
     startup()
