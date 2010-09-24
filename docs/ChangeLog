@@ -1,3 +1,34 @@
+commit 5b8fd5e28b156c5f734ad51e652b05f1fad25fba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 18 14:19:35 2010 +0200
+
+    [entropy.spm] PortagePlugin.package_names_update: make it work using portage tree from CVS
+
+commit 3b0aefe12b4cd44df7ce7bf8ba75a6a268f0ab10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 17 22:14:08 2010 +0200
+
+    [sulfur] add built-in icon images, make sulfur look good in KDE
+
+commit 33fe258b4a49d42ed2108610b4c592e15278c10d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 17 01:08:14 2010 +0200
+
+    [entropy.server] do not use EntropyRepository private implementation information, but rather provide a much cleaner implementation of
+    _upload_database
+
+commit 6a70b27784b7c4dbe73352bd7bccdd01edca0260
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 18:27:16 2010 +0200
+
+    [todo] update TODO
+
+commit 7864e6a554e7233249966db2e4563462dcd001ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Sep 16 09:22:17 2010 +0200
+
+    Tagging Entropy version 0.99.49.70
+
 commit 04640671afc20e57d1a0e7f954dfbe332c62158a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Sep 16 09:21:18 2010 +0200
