@@ -514,6 +514,10 @@ class EntropyRepository(EntropyRepositoryBase):
             # !!! enable foreign keys pragma !!! do not remove this
             # otherwise removePackage won't work properly
             cursor.execute("pragma foreign_keys = 1")
+            # setup temporary tables and indices storage
+            # to in-memory value
+            # http://www.sqlite.org/pragma.html#pragma_temp_store
+            cursor.execute("pragma temp_store = 2")
             self.__cursor_cache[c_key] = cursor
             # memory databases are critical because every new cursor brings
             # up a totally empty repository. So, enforce initialization.
