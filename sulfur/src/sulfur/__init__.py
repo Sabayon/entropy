@@ -121,8 +121,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.do_debug = False
         self._ugc_status = "--nougc" not in sys.argv
-        self._RESOURCES_LOCKED = False
-        locked = self._entropy.another_entropy_running()
+        self._RESOURCES_LOCKED = "--locked" in sys.argv
+        if self._RESOURCES_LOCKED:
+            locked = True
+        else:
+            locked = self._entropy.another_entropy_running()
         self._effective_root = os.getuid() == 0
         if self._effective_root:
             self._privileges.drop()
