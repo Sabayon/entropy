@@ -720,11 +720,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets")
         self.setup_package_radio_buttons(self.ui.rbPkgQueued, "queued")
         self.setup_package_radio_buttons(self.ui.rbPkgSearch, "search")
-        self.setup_package_radio_buttons(self.ui.repoRefreshButton, "refresh")
-        self.setup_package_radio_buttons(self.ui.rbPkgQueued, "install")
+        self.setup_package_radio_buttons(self.ui.repoRefreshButton, "refresh",
+            callback = False)
+        self.setup_package_radio_buttons(self.ui.rbPkgQueued, "install",
+            callback = False)
 
-    def setup_package_radio_buttons(self, widget, tag):
-        widget.connect('clicked', self.on_pkgFilter_toggled, tag)
+    def setup_package_radio_buttons(self, widget, tag, callback = True):
+        if callback:
+            widget.connect('clicked', self.on_pkgFilter_toggled, tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
         if hasattr(widget, 'set_mode'):
