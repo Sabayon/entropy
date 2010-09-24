@@ -1379,6 +1379,25 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return False
 
         with self._privileges:
+
+            # preventive check against other instances
+            locked = self._entropy.another_entropy_running()
+            if locked or not entropy.tools.is_root():
+                okDialog(self.ui.main,
+                    _("Another Entropy instance is running. Cannot process queue."))
+                self.progress.reset_progress()
+                self.switch_notebook_page('packages')
+                return False
+
+            self.disable_ugc = True
+            # acquire Entropy resources here to avoid surpises afterwards
+            acquired = self._entropy.lock_resources()
+            if not acquired:
+                okDialog(self.ui.main,
+                    _("Another Entropy instance is locking this task at the moment. Try in a few minutes."))
+                self.disable_ugc = False
+                return False
+
             force = self.ui.forceRepoUpdate.get_active()
             try:
                 repoConn = self._entropy.Repositories(repos, force = force)
@@ -1386,13 +1405,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 msg = "%s: %s" % (_('No repositories specified in'),
                     etpConst['repositoriesconf'],)
                 self.progress_log( msg, extra = "repositories")
+                self._entropy.unlock_resources()
+                self.disable_ugc = False
                 return 127
             except Exception as e:
                 msg = "%s: %s" % (_('Unhandled exception'), e,)
                 self.progress_log(msg, extra = "repositories")
+                self._entropy.unlock_resources()
+                self.disable_ugc = False
                 return 2
-
-            self.disable_ugc = True
 
             # this is in EXACT order to avoid GTK complaining
 
@@ -1449,6 +1470,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.progress.set_extraLabel(
                         _('sys-apps/entropy needs to be updated as soon as possible.'))
 
+            self._entropy.unlock_resources()
             self.end_working()
 
             self.progress.reset_progress()
@@ -1457,7 +1479,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.gtk_loop()
             self.setup_application()
             self.set_package_radio('updates')
-            initconfig_entropy_constants(etpSys['rootdir'])
             self.ui_lock(False)
 
             self.disable_ugc = False
