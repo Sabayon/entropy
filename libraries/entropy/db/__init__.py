@@ -4584,10 +4584,9 @@ class EntropyRepository(EntropyRepositoryBase):
             flags_order = 'order by chost'
 
         def do_update_md5(m, cursor):
-            mydata = cursor.fetchall()
-            for record in mydata:
-                for item in record:
-                    m.update(const_convert_to_rawstring(item))
+            # this could slow things down a lot, so be careful
+            for record in cursor:
+                m.update(str(hash(record)))
 
         if strings:
             m = hashlib.md5()
@@ -5479,7 +5478,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reverse dependencies dynamic metadata generation.
         """
-        checksum = self.checksum(strict = False)
+        checksum = self.checksum()
         cache_key = "__generateReverseDependenciesMetadata_%s_%s_%s" % (
             etpConst['systemroot'], self.reponame, checksum,)
         rev_deps_data = self._cacher.pop(cache_key)
