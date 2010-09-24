@@ -1825,7 +1825,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         orphans = None
         syspkg_orphans = None
         unavail_repo_pkgs = None
-        if (not self._orphans_message_shown) and (not self._RESOURCES_LOCKED):
+        if (not self._orphans_message_shown) and (not self._RESOURCES_LOCKED) \
+            and self._entropy.repositories():
             if action == "updates" and \
                 (not self.etpbase.get_raw_groups('updates')):
 
