@@ -714,7 +714,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         const_debug_write(__name__, "singleton loaded")
 
 
-    def destroy(self):
+    def destroy(self, _from_shutdown = False):
         """
         Destroy this Singleton instance, closing repositories, removing
         SystemSettings plugins added during instance initialization.
@@ -730,11 +730,15 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             hasattr(self, 'sys_settings_client_plugin_id') and \
             hasattr(self._settings, 'remove_plugin'):
 
-            try:
-                self._settings.remove_plugin(
-                    self.sys_settings_client_plugin_id)
-            except KeyError:
-                pass
+            if not _from_shutdown:
+                # shutdown() will terminate the whole process
+                # so there is no need to remove plugins from
+                # SystemSettings, it wouldn't make any diff.
+                try:
+                    self._settings.remove_plugin(
+                        self.sys_settings_client_plugin_id)
+                except KeyError:
+                    pass
 
         self.close_repositories(mask_clear = False)
 
@@ -743,7 +747,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         This method should be called when the whole process is going to be
         killed. It calls destroy() and stops any running thread
         """
-        self.destroy()
+        self.destroy(_from_shutdown = True)
         self._cacher.stop()
         entropy.tools.kill_threads()
 
