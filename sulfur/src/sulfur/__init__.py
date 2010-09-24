@@ -37,8 +37,7 @@ if "/usr/lib/entropy/client" not in sys.path:
 if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
-from entropy.exceptions import OnlineMirrorError, QueueError, TimeoutError, \
-    SSLError
+from entropy.exceptions import OnlineMirrorError, TimeoutError, SSLError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants, const_convert_to_unicode, \
@@ -1585,8 +1584,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def task_bombing():
             if self.abortQueueNow:
                 self.abortQueueNow = False
-                mytxt = _("Aborting queue tasks.")
-                raise QueueError('QueueError %s' % (mytxt,))
+                raise KeyboardInterrupt('Simulated Keyboard Interrupt')
 
         packages_matched, broken_execs = {}, set()
         self.__libtest_abort = False
@@ -1598,7 +1596,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     task_bombing_func = task_bombing)
                 packages_matched.update(x)
                 broken_execs.update(y)
-            except QueueError:
+            except KeyboardInterrupt:
                 self.__libtest_abort = True
 
         t = ParallelTask(run_up)
@@ -2157,7 +2155,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
                     controller = QueueExecutor(self)
                     self.my_inst_error = 0
-                    self.my_inst_abort = False
                     def run_tha_bstrd():
                         try:
                             e = controller.run(install_queue[:],
@@ -2165,10 +2162,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                                 fetch_only = fetch_only,
                                 download_sources = download_sources,
                                 selected_by_user = selected_by_user)
-                        except QueueError:
-                            self.my_inst_abort = True
-                            e, i = 1, None
-                            # make sure that bool is reset back to False
                         except:
                             entropy.tools.print_traceback()
                             e, i = 1, None
@@ -2209,14 +2202,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         # Entropy Client SystemSettings plugin
                         self._settings.clear()
 
-                    if self.my_inst_abort:
-                        okDialog(self.ui.main,
-                            _("Attention. You chose to abort the processing."))
-                    elif err == 1: # install failed
+                    if err == 1: # install failed
                         okDialog(self.ui.main,
                             _("Attention. An error occured while processing the queue."
                             "\nPlease have a look at the terminal.")
                         )
+                        self.reset_cache_status()
                         state = False
                     elif err in (2, 3):
                         # 2: masked package cannot be unmasked
@@ -2229,6 +2220,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                             _("Attention. Something really bad happened."
                             "\nPlease have a look at the terminal.")
                         )
+                        self.reset_cache_status()
                         state = False
 
                     elif (err == 0) and restart_needed and \
@@ -2371,8 +2363,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if self.do_debug:
                 print_generic("queue_bombing: BOMBING !!!")
             self.abortQueueNow = False
-            mytxt = _("Aborting queue tasks.")
-            raise QueueError('QueueError %s' % (mytxt,))
+            raise KeyboardInterrupt('Simulated keyboard interrupt')
 
     def mirror_bombing(self):
 
@@ -2386,7 +2377,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             print_generic("mirror_bombing: queue BOMB !!!")
             # do not reset self.abortQueueNow here, we need
             # mirror_bombing to keep crashing
-            raise QueueError('QueueError %s' % (mytxt,))
+            raise KeyboardInterrupt('Simulated keyboard interrupt')
 
 
     def load_ugc_repositories(self):
