@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 commit e857c01a58476aaecd945e60d182fc7b85c2fb01
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Sep 24 14:25:56 2010 +0200
@@ -130,6 +131,8 @@ Date:   Sat Sep 18 22:24:19 2010 +0100
 
     [i18n] Update nl translation
 
+=======
+>>>>>>> Tagging Entropy version 0.99.49.75
 commit 5b8fd5e28b156c5f734ad51e652b05f1fad25fba
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 18 14:19:35 2010 +0200
