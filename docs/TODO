@@ -26,6 +26,9 @@
     - entropy.fetchers => pluggable uri handlers support?
     - complete README
     - server-side handling of package deltas (daemon)
+    - SQL CONCATENATE vs ||
+    - EntropyRepository.exportRepository args
+    - equo conf update => differential update
 
   1.1:
 
