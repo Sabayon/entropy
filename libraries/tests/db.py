@@ -43,6 +43,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.flush()
         self.test_db.close()
         self.test_db2.close()
+        # calling destroy() and shutdown()
+        # need to call destroy() directly to remove all the SystemSettings
+        # plugins because shutdown() doesn't, since it's meant to be called
+        # right before terminating the process
+        self.Client.destroy()
         self.Client.shutdown()
 
     def __open_test_db(self, tmp_path):

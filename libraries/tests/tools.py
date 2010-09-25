@@ -49,6 +49,13 @@ class ToolsTest(unittest.TestCase):
         os.close(fd)
         os.remove(tmp_path)
 
+        # calling destroy() and shutdown()
+        # need to call destroy() directly to remove all the SystemSettings
+        # plugins because shutdown() doesn't, since it's meant to be called
+        # right before terminating the process
+        client.destroy()
+        client.shutdown()
+
 
     def test_remove_entropy_metadata(self):
 

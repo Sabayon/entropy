@@ -39,6 +39,11 @@ class SecurityTest(unittest.TestCase):
         """
         tearDown is run after each test
         """
+        # calling destroy() and shutdown()
+        # need to call destroy() directly to remove all the SystemSettings
+        # plugins because shutdown() doesn't, since it's meant to be called
+        # right before terminating the process
+        self._entropy.destroy()
         self._entropy.shutdown()
         del self._entropy
         del self._repository

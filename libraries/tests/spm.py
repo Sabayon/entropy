@@ -28,6 +28,11 @@ class SpmTest(unittest.TestCase):
         """
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
+        # calling destroy() and shutdown()
+        # need to call destroy() directly to remove all the SystemSettings
+        # plugins because shutdown() doesn't, since it's meant to be called
+        # right before terminating the process
+        self.Client.destroy()
         self.Client.shutdown()
 
     def test_init(self):
