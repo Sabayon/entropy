@@ -1503,72 +1503,67 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui_lock(False)
             self.gtk_loop()
 
-        self.__deptest_deps_not_matched = None
+        def _deptest_done(deps_not_matched):
+            if not deps_not_matched:
+                okDialog(self.ui.main, _("No missing dependencies found."))
+                deptest_reset_all()
+                self.switch_notebook_page('preferences')
+                return
+
+            c_repo = self._entropy.installed_repository()
+            found_matches = set()
+            not_all = False
+            for dep in deps_not_matched:
+                match = self._entropy.atom_match(dep)
+                if match[0] != -1:
+                    found_matches.add(match)
+                    continue
+                else:
+                    iddep = c_repo.searchDependency(dep)
+                    if iddep == -1:
+                        continue
+                    c_idpackages = c_repo.searchPackageIdFromDependencyId(
+                        iddep)
+                    for c_idpackage in c_idpackages:
+                        key, slot = c_repo.retrieveKeySlot(
+                            c_idpackage)
+                        match = self._entropy.atom_match(key, match_slot = slot)
+                        cmpstat = 0
+                        if match[0] != -1:
+                            cmpstat = self._entropy.get_package_action(match)
+                        if cmpstat != 0:
+                            found_matches.add(match)
+                            continue
+                        else:
+                            not_all = True
+                    continue
+
+                not_all = True
+
+            if not found_matches:
+                okDialog(self.ui.main,
+                    _("Missing dependencies found, but none of them are on the repositories."))
+                self.switch_notebook_page('preferences')
+                deptest_reset_all()
+                return
+
+            if not_all:
+                okDialog(self.ui.main,
+                    _("Some missing dependencies have not been matched, others are going to be added to the queue."))
+            else:
+                okDialog(self.ui.main,
+                    _("All the missing dependencies are going to be added to the queue"))
+
+            self.add_atoms_to_queue([], matches = found_matches)
+            self.switch_notebook_page("preferences")
+            deptest_reset_all()
+
         def run_up():
-            self.__deptest_deps_not_matched = self._entropy.dependencies_test()
+            rc = self._entropy.dependencies_test()
+            gobject.idle_add(_deptest_done, rc)
 
         t = ParallelTask(run_up)
         t.start()
-        while t.isAlive():
-            time.sleep(0.2)
-            if self.do_debug:
-                print_generic("dependencies_test: update thread still alive")
-            self.gtk_loop()
-        deps_not_matched = self.__deptest_deps_not_matched
-
-        if not deps_not_matched:
-            okDialog(self.ui.main, _("No missing dependencies found."))
-            deptest_reset_all()
-            self.switch_notebook_page('preferences')
-            return
-
-        c_repo = self._entropy.installed_repository()
-        found_matches = set()
-        not_all = False
-        for dep in deps_not_matched:
-            match = self._entropy.atom_match(dep)
-            if match[0] != -1:
-                found_matches.add(match)
-                continue
-            else:
-                iddep = c_repo.searchDependency(dep)
-                if iddep == -1:
-                    continue
-                c_idpackages = c_repo.searchPackageIdFromDependencyId(
-                    iddep)
-                for c_idpackage in c_idpackages:
-                    key, slot = c_repo.retrieveKeySlot(
-                        c_idpackage)
-                    match = self._entropy.atom_match(key, match_slot = slot)
-                    cmpstat = 0
-                    if match[0] != -1:
-                        cmpstat = self._entropy.get_package_action(match)
-                    if cmpstat != 0:
-                        found_matches.add(match)
-                        continue
-                    else:
-                        not_all = True
-                continue
-
-            not_all = True
-
-        if not found_matches:
-            okDialog(self.ui.main,
-                _("Missing dependencies found, but none of them are on the repositories."))
-            self.switch_notebook_page('preferences')
-            deptest_reset_all()
-            return
-
-        if not_all:
-            okDialog(self.ui.main,
-                _("Some missing dependencies have not been matched, others are going to be added to the queue."))
-        else:
-            okDialog(self.ui.main,
-                _("All the missing dependencies are going to be added to the queue"))
-
-        self.add_atoms_to_queue([], matches = found_matches)
-        self.switch_notebook_page("preferences")
-        deptest_reset_all()
 
     def libraries_test(self):
 
@@ -1601,52 +1596,47 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.abortQueueNow = False
                 raise KeyboardInterrupt('Simulated Keyboard Interrupt')
 
-        packages_matched, broken_execs = {}, set()
-        self.__libtest_abort = False
         QA = self._entropy.QA()
+
+        def _libtest_done(packages_matched, broken_execs, abort):
+            if self.do_debug and abort:
+                print_generic("libraries_test: scan abort")
+            if self.do_debug:
+                print_generic("libraries_test: done scanning")
+
+            if abort:
+                okDialog(self.ui.main, _("Libraries test aborted"))
+                do_stop()
+                return
+
+            matches = set()
+            for key in list(packages_matched.keys()):
+                matches |= packages_matched[key]
+
+            if broken_execs:
+                okDialog(self.ui.main,
+                    _("Some broken packages have not been matched, others are going to be added to the queue."))
+            else:
+                okDialog(self.ui.main,
+                    _("All the broken packages are going to be added to the queue"))
+
+            rc = self.add_atoms_to_queue([], matches = matches)
+            self.switch_notebook_page("preferences")
+
+            do_stop()
 
         def run_up():
             try:
-                x, y, z = QA.test_shared_objects(self._entropy.installed_repository(),
-                    task_bombing_func = task_bombing)
-                packages_matched.update(x)
-                broken_execs.update(y)
+                packages_matched, broken_execs, z = QA.test_shared_objects(
+                    self._entropy.installed_repository(),
+                        task_bombing_func = task_bombing)
+                gobject.idle_add(_libtest_done, packages_matched, broken_execs,
+                    False)
             except KeyboardInterrupt:
-                self.__libtest_abort = True
+                gobject.idle_add(_libtest_done, None, None, True)
 
         t = ParallelTask(run_up)
         t.start()
-        while t.isAlive():
-            time.sleep(0.2)
-            if self.do_debug:
-                print_generic("libraries_test: update thread still alive")
-            self.gtk_loop()
-
-        if self.do_debug and self.__libtest_abort:
-            print_generic("libraries_test: scan abort")
-        if self.do_debug:
-            print_generic("libraries_test: done scanning")
-
-        if self.__libtest_abort:
-            okDialog(self.ui.main, _("Libraries test aborted"))
-            do_stop()
-            return
-
-        matches = set()
-        for key in list(packages_matched.keys()):
-            matches |= packages_matched[key]
-
-        if broken_execs:
-            okDialog(self.ui.main,
-                _("Some broken packages have not been matched, others are going to be added to the queue."))
-        else:
-            okDialog(self.ui.main,
-                _("All the broken packages are going to be added to the queue"))
-
-        rc = self.add_atoms_to_queue([], matches = matches)
-        self.switch_notebook_page("preferences")
-
-        do_stop()
 
     def reset_progress_text(self):
         self.progress.set_mainLabel("")
