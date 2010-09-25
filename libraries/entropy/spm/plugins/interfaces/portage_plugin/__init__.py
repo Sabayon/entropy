@@ -1114,9 +1114,8 @@ class PortagePlugin(SpmPlugin):
         # Get License text if possible
         # NOTE: this is sucky, because Portage XPAK metadata doesn't contain
         # license text, and we need to rely on PORTDIR, which is very bad
-        licenses_dir = os.path.join(self.get_setting('PORTDIR'), 'licenses')
         data['licensedata'] = self._extract_pkg_metadata_license_data(
-            licenses_dir, data['license'])
+            data['spm_repository'], data['license'])
 
         data['desktop_mime'], data['provided_mime'] = \
             self._extract_pkg_metadata_desktop_mime(
@@ -1376,8 +1375,7 @@ class PortagePlugin(SpmPlugin):
 
         root = etpConst['systemroot'] + os.path.sep
         mysettings = self._get_portage_config(os.path.sep, root)
-        portdb = self._portage.portdbapi(mysettings["PORTDIR"],
-            mysettings = mysettings)
+        portdb = self._get_portage_portagetree(root).dbapi
 
         cps = portdb.cp_all()
         visibles = set()
@@ -2274,9 +2272,7 @@ class PortagePlugin(SpmPlugin):
 
     def __portage_updates_md5(self, repo_updates_file):
 
-        root = etpConst['systemroot']
-        if root:
-            root += os.path.sep
+        root = etpConst['systemroot'] + os.path.sep
 
         portdb = self._get_portage_portagetree(root).dbapi
         mdigest = hashlib.md5()
@@ -2307,9 +2303,7 @@ class PortagePlugin(SpmPlugin):
 
     def __get_portage_update_actions(self, repo_updates_file):
 
-        root = etpConst['systemroot']
-        if root:
-            root += os.path.sep
+        root = etpConst['systemroot'] + os.path.sep
 
         updates_map = {}
         portdb = self._get_portage_portagetree(root).dbapi
@@ -4195,15 +4189,53 @@ class PortagePlugin(SpmPlugin):
         provided_mime.discard("")
         return desktop_mime, provided_mime
 
-    def _extract_pkg_metadata_license_data(self, licenses_dir, license_string):
+    def _extract_pkg_metadata_license_data(self, spm_repository, license_string):
+
+        root = etpConst['systemroot'] + os.path.sep
+        portdb = self._get_portage_portagetree(root).dbapi
+        license_dirs = [os.path.join(self.get_setting('PORTDIR'), "licenses")]
+        if spm_repository is not None:
+            repo_path = portdb.getRepositoryPath(spm_repository)
+            if repo_path is not None:
+                license_dirs.append(os.path.join(repo_path, "licenses"))
 
         pkg_licensedata = {}
-        if licenses_dir and os.path.isdir(licenses_dir):
-            licdata = [x.strip() for x in license_string.split() if x.strip() \
-                and entropy.tools.is_valid_string(x.strip())]
-            for mylicense in licdata:
-                licfile = os.path.join(licenses_dir, mylicense)
+        licdata = [x.strip() for x in license_string.split() if x.strip() \
+            and entropy.tools.is_valid_string(x.strip())]
 
+        for mylicense in licdata:
+            found_lic = False
+            for license_dir in license_dirs:
+                licfile = os.path.join(license_dir, mylicense)
+
+                if not (os.access(licfile, os.R_OK | os.F_OK) and \
+                    os.path.isfile(licfile)):
+                    continue
+
+                if not entropy.tools.istextfile(licfile):
+                    continue
+
+                with open(licfile, "rb") as f:
+                    content = const_convert_to_rawstring('')
+                    line = f.readline()
+                    while line:
+                        content += line
+                        line = f.readline()
+                    try:
+
+                        try:
+                            pkg_licensedata[mylicense] = \
+                                const_convert_to_unicode(content)
+                        except UnicodeDecodeError:
+                            pkg_licensedata[mylicense] = \
+                                const_convert_to_unicode(content, 'utf-8')
+
+                    except (UnicodeDecodeError, UnicodeEncodeError,):
+                        continue # sorry!
+                found_lic = True
+                break
+
+            if not found_lic:
                 # make sure we always collect license and show something to
                 # user. Also set a default sorry text, in case we are not
                 # able to print it.
@@ -4211,34 +4243,7 @@ class PortagePlugin(SpmPlugin):
 be retrieved correcly, so this is a placeholder. I know it's a suboptimal
 advice, but please make sure to read it, just google '%s license' and you'll
 find it. By accepting this, you agree that your distribution won't be
-responsible in any way.
-""" % (mylicense, mylicense,)
-
-                if not (os.access(licfile, os.R_OK) and os.path.isfile(licfile)):
-                    continue
-                if not entropy.tools.istextfile(licfile):
-                    continue
-
-                f = open(licfile, "rb")
-                content = const_convert_to_rawstring('')
-                line = f.readline()
-                while line:
-                    content += line
-                    line = f.readline()
-                try:
-
-                    try:
-                        pkg_licensedata[mylicense] = \
-                            const_convert_to_unicode(content)
-                    except UnicodeDecodeError:
-                        pkg_licensedata[mylicense] = \
-                            const_convert_to_unicode(content, 'utf-8')
-
-                except (UnicodeDecodeError, UnicodeEncodeError,):
-                    f.close()
-                    continue # sorry!
-
-                f.close()
+responsible in any way.""" % (mylicense, mylicense,)
 
         return pkg_licensedata
 
