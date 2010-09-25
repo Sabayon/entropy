@@ -5094,22 +5094,23 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
             noclientdb = 1
         )
 
-    def destroy(self):
+    def destroy(self, _from_shutdown = False):
         self.__instance_destroyed = True
         _Client.close_repositories(self, mask_clear = False)
-        _Client.destroy(self)
+        _Client.destroy(self, _from_shutdown = _from_shutdown)
 
-        plug_id2 = self.sys_settings_fake_cli_plugin_id
-        plug_id1 = self.sys_settings_fatscope_plugin_id
-        plug_id = Server.SYSTEM_SETTINGS_PLG_ID
-        # reverse insert order
-        plugs = [plug_id2, plug_id1, plug_id]
-        for plug in plugs:
-            if plug is None:
-                continue
-            if not self._settings.has_plugin(plug):
-                continue
-            self._settings.remove_plugin(plug)
+        if not _from_shutdown:
+            plug_id2 = self.sys_settings_fake_cli_plugin_id
+            plug_id1 = self.sys_settings_fatscope_plugin_id
+            plug_id = Server.SYSTEM_SETTINGS_PLG_ID
+            # reverse insert order
+            plugs = [plug_id2, plug_id1, plug_id]
+            for plug in plugs:
+                if plug is None:
+                    continue
+                if not self._settings.has_plugin(plug):
+                    continue
+                self._settings.remove_plugin(plug)
 
         self.close_repositories()
 
