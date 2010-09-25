@@ -138,6 +138,7 @@ class SulfurConsole(vte.Terminal):
         self.reset()
         self.chars_count = 0
         self.max_chars = 100000
+        self.set_emulation("xterm")
 
     def _dosettings(self):
         imgpath = os.path.join(const.PIXMAPS_PATH,
