@@ -3255,6 +3255,9 @@ class Package:
             return 0
         self.pkgmeta['triggers']['remove']['removecontent'] = \
             self.pkgmeta['removecontent']
+        self.pkgmeta['triggers']['remove']['spm_repository'] = \
+            self._entropy.installed_repository().retrieveSpmRepository(
+                idpackage)
 
         pkg_license = self._entropy.installed_repository().retrieveLicense(
             idpackage)
@@ -3284,6 +3287,9 @@ class Package:
             self._entropy.installed_repository().retrieveCategory(idpackage)
         self.pkgmeta['name'] = \
             self._entropy.installed_repository().retrieveName(idpackage)
+        self.pkgmeta['spm_repository'] = \
+            self._entropy.installed_repository().retrieveSpmRepository(
+                idpackage)
 
         pkg_license = self._entropy.installed_repository().retrieveLicense(
             idpackage)
@@ -3461,6 +3467,8 @@ class Package:
                 # pass reference, not copy! nevva!
                 self.pkgmeta['triggers']['remove']['removecontent'] = \
                     self.pkgmeta['removecontent']
+                self.pkgmeta['triggers']['remove']['spm_repository'] = \
+                    inst_repo.retrieveSpmRepository(idpackage)
 
                 pkg_rm_license = inst_repo.retrieveLicense(
                     self.pkgmeta['removeidpackage'])
@@ -3506,6 +3514,8 @@ class Package:
             self.pkgmeta['unpackdir']
         self.pkgmeta['triggers']['install']['imagedir'] = \
             self.pkgmeta['imagedir']
+        self.pkgmeta['triggers']['install']['spm_repository'] = \
+            dbconn.retrieveSpmRepository(idpackage)
 
         spm_class = self._entropy.Spm_class()
         # call Spm setup hook
