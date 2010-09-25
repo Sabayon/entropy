@@ -140,10 +140,6 @@ class SulfurApplicationEventsMixin:
         if self.etpbase.selected_advisory_item:
             self.load_advisory_info_menu(self.etpbase.selected_advisory_item)
 
-    def on_pkgInfoButton_clicked( self, widget ):
-        if self.etpbase.selected_treeview_item:
-            self.load_package_info_menu(self.etpbase.selected_treeview_item)
-
     def on_filesDelete_clicked( self, widget ):
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
@@ -654,25 +650,6 @@ class SulfurApplicationEventsMixin:
             data = model.get_value( iterator, 0 )
             if data and data != (None, None, None):
                 self.load_advisory_info_menu(data)
-
-    def on_pkg_doubleclick( self, widget, iterator, path):
-        objs = self.pkgView.collect_selected_items()
-        for obj in objs:
-            if obj.dummy_type == SulfurConf.dummy_category:
-                cat_objs = self.pkgView.collect_selected_children_items()
-                self.pkgView.populate(cat_objs)
-                self.pkgView.expand()
-                if obj.is_group:
-                    # Package Category Group
-                    self.pkgView.set_filtering_string(obj.onlyname,
-                        run_it = False)
-                elif obj.is_pkgset_cat:
-                    break
-                else:
-                    self.pkgView.set_filtering_string(obj.onlyname + "/")
-                break
-
-            self.load_package_info_menu(obj)
 
     def on_pkg_click(self, widget):
         """

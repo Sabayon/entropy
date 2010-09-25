@@ -572,6 +572,7 @@ class EntropyPackageView:
         self.view_expanded = True
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
+        self.view.connect("row-activated", self.on_pkg_doubleclick)
         self.store = self.setupView()
         self.dummyCats = {}
         self.__install_statuses = {}
@@ -811,6 +812,30 @@ class EntropyPackageView:
                 myiter = model.iter_next(myiter)
 
         return items
+
+    def on_pkg_doubleclick( self, widget, path, column):
+
+        col_title = column.get_title()
+        if col_title == self.pkgcolumn_text:
+            return True
+
+        objs = self.collect_selected_items()
+        for obj in objs:
+            if obj.dummy_type == SulfurConf.dummy_category:
+                cat_objs = self.collect_selected_children_items()
+                self.populate(cat_objs)
+                self.expand()
+                if obj.is_group:
+                    # Package Category Group
+                    self.set_filtering_string(obj.onlyname, run_it = False)
+                elif obj.is_pkgset_cat:
+                    break
+                else:
+                    self.set_filtering_string(obj.onlyname + "/")
+                break
+
+            mymenu = PkgInfoMenu(self._entropy, obj, self.ui.main)
+            mymenu.load()
 
     def on_view_button_press(self, widget, event):
 

@@ -619,7 +619,6 @@ class EntropyPackages:
         self._packages = {}
         self._pkg_cache = {}
         self.unmaskingPackages = set()
-        self.selected_treeview_item = None
         self.selected_advisory_item = None
         self.queue = None
         self._non_cached_groups = ("queued", "search",)
@@ -629,21 +628,18 @@ class EntropyPackages:
 
     def clear_groups(self):
         self._packages.clear()
-        self.selected_treeview_item = None
         self.selected_advisory_item = None
         self.unmaskingPackages.clear()
 
     def clear_single_group(self, mask):
         if mask in self._packages:
             del self._packages[mask]
-        self.selected_treeview_item = None
         self.selected_advisory_item = None
         self.unmaskingPackages.clear()
 
     def clear_cache(self):
         self._pkg_cache.clear()
         self._packages.clear()
-        self.selected_treeview_item = None
         self.selected_advisory_item = None
 
     def is_cached(self, group):

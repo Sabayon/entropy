@@ -731,7 +731,6 @@
                         <property name="rules_hint">True</property>
                         <property name="rubber_banding">True</property>
                         <signal name="cursor_changed" handler="on_pkg_click"/>
-                        <signal name="row_activated" handler="on_pkg_doubleclick"/>
                       </widget>
                     </child>
                   </widget>

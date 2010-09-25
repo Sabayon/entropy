@@ -162,7 +162,7 @@ class SulfurConsole(vte.Terminal):
         # Workaround vte.Terminal bug not passing to .feed proper message RAW
         # size. feed() supports UTF-8 but then, string length is wrongly passed
         # by python, because it does not consider the fact that UTF-8 chars can
-        # be long 16bits.
+        # be 16bits long.
         raw_txt_len = len(txt)
         if const_isunicode(txt):
             raw_txt_len = len(txt.encode('utf-8'))
