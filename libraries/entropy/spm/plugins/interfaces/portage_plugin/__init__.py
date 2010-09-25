@@ -1705,7 +1705,7 @@ class PortagePlugin(SpmPlugin):
             self._reload_modules()
 
     def _portage_doebuild(self, myebuild, mydo, tree, cpv,
-        portage_tmpdir = None, licenses = None, portage_repo = None):
+        portage_tmpdir = None, licenses = None):
 
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
         # tree = "bintree"
@@ -1723,7 +1723,7 @@ class PortagePlugin(SpmPlugin):
 
         # load metadata
         myebuilddir = os.path.dirname(myebuild)
-        keys = self._portage.auxdbkeys
+        keys = sorted(self._portage.auxdbkeys) + ["repository"]
         metadata = {}
 
         for key in keys:
@@ -1735,8 +1735,6 @@ class PortagePlugin(SpmPlugin):
                     f = open(mykeypath, "rb")
                 metadata[key] = f.readline().strip()
                 f.close()
-        if portage_repo is not None:
-            metadata['repository'] = portage_repo
 
         ### END SETUP ENVIRONMENT
 
@@ -1982,8 +1980,7 @@ class PortagePlugin(SpmPlugin):
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
         rc = self._portage_doebuild(ebuild, "setup",
             "bintree", package, portage_tmpdir = package_metadata['unpackdir'],
-            licenses = package_metadata.get('accept_license'),
-            portage_repo = package_metadata.get('spm_repository'))
+            licenses = package_metadata.get('accept_license'))
 
         if rc != 0:
             self.log_message(
@@ -2009,8 +2006,7 @@ class PortagePlugin(SpmPlugin):
 
             rc = self._portage_doebuild(ebuild, phase, "bintree",
                 package, portage_tmpdir = package_metadata['unpackdir'],
-                licenses = package_metadata.get('accept_license'),
-                portage_repo = package_metadata.get('spm_repository'))
+                licenses = package_metadata.get('accept_license'))
 
             if rc != 0:
                 self.log_message(
@@ -2098,8 +2094,7 @@ class PortagePlugin(SpmPlugin):
             self._reload_portage_if_required(phase, package_metadata)
             rc = self._portage_doebuild(ebuild, phase, "bintree",
                 package, portage_tmpdir = work_dir,
-                licenses = package_metadata.get('accept_license'),
-                portage_repo = package_metadata.get('spm_repository'))
+                licenses = package_metadata.get('accept_license'))
         except Exception as e:
 
             entropy.tools.print_traceback()
@@ -2169,8 +2164,7 @@ class PortagePlugin(SpmPlugin):
         try:
 
             rc = self._portage_doebuild(ebuild, "config", "bintree",
-                package, licenses = package_metadata.get('accept_license'),
-                portage_repo = package_metadata.get('spm_repository'))
+                package, licenses = package_metadata.get('accept_license'))
 
             if rc != 0:
                 return 3
