@@ -470,14 +470,12 @@ class SulfurApplicationEventsMixin:
         normal_cursor(self.ui.main)
         self.switch_notebook_page('output')
 
-        rc = self.install_queue(remove_repos = [newrepo])
+        def status_cb(status):
+            if not status:
+                clean_n_quit(newrepo)
+
+        self.install_queue(remove_repos = [newrepo], status_cb = status_cb)
         self.reset_queue_progress_bars()
-        if rc:
-            self.queue.clear()
-            return True
-        else: # not done
-            clean_n_quit(newrepo)
-            return False
 
     def on_PageButton_changed(self, widget, page, do_set = True):
 
@@ -597,11 +595,9 @@ class SulfurApplicationEventsMixin:
         fetch_only = self.ui.queueProcessFetchOnly.get_active()
         download_sources = self.ui.queueProcessDownloadSource.get_active()
 
-        rc = self.install_queue(fetch = fetch_only,
+        self.install_queue(fetch = fetch_only,
             download_sources = download_sources)
         self.reset_queue_progress_bars()
-        if rc and not fetch_only:
-            self.queue.clear()       # Clear package queue
 
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (

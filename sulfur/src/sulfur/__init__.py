@@ -650,7 +650,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if action_bar_str.startswith(SulfurConf.entropy_uri):
             atoms = action_bar_str[len(SulfurConf.entropy_uri):].split(",")
             if atoms:
-                installed = self.atoms_install(atoms)
+                self.atoms_install(atoms)
                 return True
 
         return False
@@ -662,19 +662,16 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for atom in atoms:
             pkg_id, repo_id = self._entropy.atom_match(atom)
             if pkg_id == -1:
-                return False
+                return
             matches.append((pkg_id, repo_id,))
 
         if not matches:
-            return False
+            return
 
         self.switch_notebook_page('output')
 
-        rc = self.install_queue(fetch = fetch, direct_install_matches = matches)
+        self.install_queue(fetch = fetch, direct_install_matches = matches)
         self.reset_queue_progress_bars()
-        if rc:
-            self.queue.clear()
-        return rc
 
     def packages_install(self):
 
@@ -705,7 +702,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return True
 
         elif atoms_install: # --install <atom1> <atom2> ... support
-            return self.atoms_install(atoms_install, fetch = do_fetch)
+            self.atoms_install(atoms_install, fetch = do_fetch)
+            return True
 
         return False
 
@@ -2075,14 +2073,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def install_queue(self, fetch = False, download_sources = False,
         remove_repos = None, direct_install_matches = None,
-        direct_remove_matches = None):
+        direct_remove_matches = None, status_cb = None):
         try:
-            rc = self._process_queue(self.queue.packages,
+            self._process_queue(self.queue.packages,
                 fetch_only = fetch, remove_repos = remove_repos,
                 download_sources = download_sources,
                 direct_install_matches = direct_install_matches,
-                direct_remove_matches = direct_remove_matches)
-            return rc
+                direct_remove_matches = direct_remove_matches,
+                status_cb = status_cb)
         except SystemExit:
             raise
         except:
@@ -2094,12 +2092,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _process_queue(self, pkgs, remove_repos = None, fetch_only = False,
             download_sources = False, direct_remove_matches = None,
-            direct_install_matches = None):
+            direct_install_matches = None, status_cb = None):
 
         if self._RESOURCES_LOCKED:
             okDialog(self.ui.main,
                 _("Another Entropy instance is running. Cannot process queue."))
-            return False
+            return
 
         if remove_repos is None:
             remove_repos = []
@@ -2108,6 +2106,129 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if direct_install_matches is None:
             direct_install_matches = []
         self.show_progress_bars()
+
+        def do_file_updates_check():
+            self._entropy.FileUpdates.scan(dcache = False, quiet = True)
+            fs_data = self._entropy.FileUpdates.scan()
+            if fs_data:
+                if len(fs_data) > 0:
+                    switch_back_page = 'filesconf'
+
+        def _post_install_cleanup(state):
+            self.show_notebook_tabs_after_install()
+            self.disable_ugc = False
+            if switch_back_page is not None:
+                self.switch_notebook_page(switch_back_page)
+            elif state:
+                self.switch_notebook_page('packages')
+                # switch back to updates tab also
+                rb = self.packageRB["updates"]
+                gobject.timeout_add(0, rb.clicked)
+
+            self._entropy.unlock_resources()
+
+            if state:
+                self.progress.set_mainLabel(_("Tasks completed successfully."))
+                self.progress.set_subLabel(_("Please make sure to read all the messages in the terminal below."))
+                self.progress.set_extraLabel("Have phun!")
+            else:
+                self.progress.set_mainLabel(_("Oh, a fairytale gone bad!"))
+                self.progress.set_subLabel(_("Something bad happened, have a look at the messages in the terminal below."))
+                self.progress.set_extraLabel(_("Don't feel guilty, it's all my fault!"))
+
+        def _install_done(err):
+            state = True
+
+            if self.do_debug:
+                print_generic("process_queue: left all")
+
+            self.ui.skipMirror.hide()
+            self.ui.abortQueue.hide()
+            if self.do_debug:
+                print_generic("process_queue: buttons now hidden")
+
+            # deactivate UI lock
+            if self.do_debug:
+                print_generic("process_queue: unlocking gui?")
+            self.ui_lock(False)
+            if self.do_debug:
+                print_generic("process_queue: gui unlocked")
+
+            if (err == 0) and ((not fetch_only) and (not download_sources)):
+                # this triggers post-branch upgrade function inside
+                # Entropy Client SystemSettings plugin
+                self._settings.clear()
+
+            if err == 1: # install failed
+                okDialog(self.ui.main,
+                    _("Attention. An error occured while processing the queue."
+                    "\nPlease have a look at the terminal.")
+                )
+                self.reset_cache_status()
+                state = False
+            elif err in (2, 3):
+                # 2: masked package cannot be unmasked
+                # 3: license not accepted, move back to queue page
+                switch_back_page = 'packages'
+                state = False
+            elif err != 0:
+                # wtf?
+                okDialog(self.ui.main,
+                    _("Attention. Something really bad happened."
+                    "\nPlease have a look at the terminal.")
+                )
+                self.reset_cache_status()
+                state = False
+
+            elif (err == 0) and restart_needed and \
+                ((not fetch_only) and (not download_sources)):
+                okDialog(self.ui.main,
+                    _("Attention. You have updated Entropy."
+                    "\nSulfur will be reloaded.")
+                )
+                self._entropy.unlock_resources()
+                self.quit(sysexit = 99)
+
+            if self.do_debug:
+                print_generic("process_queue: end_working?")
+            self.end_working()
+            self.progress.reset_progress()
+            if self.do_debug:
+                print_generic("process_queue: end_working")
+
+            if (not fetch_only) and (not download_sources) and not \
+                (direct_install_matches or direct_remove_matches):
+
+                if self.do_debug:
+                    print_generic("process_queue: cleared caches")
+
+                for myrepo in remove_repos:
+                    self._entropy.remove_repository(myrepo)
+
+                self.reset_cache_status()
+                if self.do_debug:
+                    print_generic("process_queue: closed repo dbs")
+                self._entropy.reopen_installed_repository()
+                if self.do_debug:
+                    print_generic("process_queue: cleared caches (again)")
+                # regenerate packages information
+                if self.do_debug:
+                    print_generic("process_queue: setting up Sulfur")
+                self.setup_application()
+                if self.do_debug:
+                    print_generic("process_queue: scanning for new files")
+                do_file_updates_check()
+                if self.do_debug:
+                    print_generic("process_queue: all done")
+
+            if direct_install_matches or direct_remove_matches:
+                do_file_updates_check()
+            _post_install_cleanup(state)
+            if state:
+                self.queue.clear()
+            if status_cb is not None:
+                status_cb(state)
+
 
         with self._privileges:
             # preventive check against other instances
@@ -2138,14 +2259,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 for key in pkgs:
                     total += len(pkgs[key])
 
-            def do_file_updates_check():
-                self._entropy.FileUpdates.scan(dcache = False, quiet = True)
-                fs_data = self._entropy.FileUpdates.scan()
-                if fs_data:
-                    if len(fs_data) > 0:
-                        switch_back_page = 'filesconf'
-
-            state = True
             if total > 0:
 
                 self.start_working(do_busy = True)
@@ -2185,144 +2298,25 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     self.ui_lock(True)
 
                     controller = QueueExecutor(self)
-                    self.my_inst_error = 0
-                    def run_tha_bstrd():
-                        try:
-                            e = controller.run(install_queue[:],
-                                removal_queue[:], do_purge_cache,
-                                fetch_only = fetch_only,
-                                download_sources = download_sources,
-                                selected_by_user = selected_by_user)
-                        except:
-                            entropy.tools.print_traceback()
-                            e, i = 1, None
-                        self.my_inst_error = e
+                    def spawn_install():
+                        with self._privileges:
+                            try:
+                                e = controller.run(install_queue[:],
+                                    removal_queue[:], do_purge_cache,
+                                    fetch_only = fetch_only,
+                                    download_sources = download_sources,
+                                    selected_by_user = selected_by_user)
+                            except:
+                                entropy.tools.print_traceback()
+                                e, i = 1, None
+                            gobject.idle_add(_install_done, e)
 
-                    t = ParallelTask(run_tha_bstrd)
+                    t = ParallelTask(spawn_install)
                     t.start()
-                    dbg_count = 0
-                    while t.isAlive():
-                        if dbg_count > 2000:
-                            dbg_count = 0
-                        dbg_count += 1
-                        time.sleep(0.2)
-                        if self.do_debug and (dbg_count % 500 == 0):
-                            print_generic("process_queue: QueueExecutor thread still alive")
-                        self.gtk_loop()
-                        if self.do_debug and (dbg_count % 500 == 0):
-                            print_generic("process_queue: after QueueExecutor loop")
-
-                    err = self.my_inst_error
-                    if self.do_debug:
-                        print_generic("process_queue: left all")
-
-                    self.ui.skipMirror.hide()
-                    self.ui.abortQueue.hide()
-                    if self.do_debug:
-                        print_generic("process_queue: buttons now hidden")
-
-                    # deactivate UI lock
-                    if self.do_debug:
-                        print_generic("process_queue: unlocking gui?")
-                    self.ui_lock(False)
-                    if self.do_debug:
-                        print_generic("process_queue: gui unlocked")
-
-                    if (err == 0) and ((not fetch_only) and (not download_sources)):
-                        # this triggers post-branch upgrade function inside
-                        # Entropy Client SystemSettings plugin
-                        self._settings.clear()
-
-                    if err == 1: # install failed
-                        okDialog(self.ui.main,
-                            _("Attention. An error occured while processing the queue."
-                            "\nPlease have a look at the terminal.")
-                        )
-                        self.reset_cache_status()
-                        state = False
-                    elif err in (2, 3):
-                        # 2: masked package cannot be unmasked
-                        # 3: license not accepted, move back to queue page
-                        switch_back_page = 'packages'
-                        state = False
-                    elif err != 0:
-                        # wtf?
-                        okDialog(self.ui.main,
-                            _("Attention. Something really bad happened."
-                            "\nPlease have a look at the terminal.")
-                        )
-                        self.reset_cache_status()
-                        state = False
-
-                    elif (err == 0) and restart_needed and \
-                        ((not fetch_only) and (not download_sources)):
-                        okDialog(self.ui.main,
-                            _("Attention. You have updated Entropy."
-                            "\nSulfur will be reloaded.")
-                        )
-                        self._entropy.unlock_resources()
-                        self.quit(sysexit = 99)
-
-                if self.do_debug:
-                    print_generic("process_queue: end_working?")
-                self.end_working()
-                self.progress.reset_progress()
-                if self.do_debug:
-                    print_generic("process_queue: end_working")
-
-                if (not fetch_only) and (not download_sources) and not \
-                    (direct_install_matches or direct_remove_matches):
-
-                    if self.do_debug:
-                        print_generic("process_queue: cleared caches")
-
-                    for myrepo in remove_repos:
-                        self._entropy.remove_repository(myrepo)
-
-                    self.reset_cache_status()
-                    if self.do_debug:
-                        print_generic("process_queue: closed repo dbs")
-                    self._entropy.reopen_installed_repository()
-                    if self.do_debug:
-                        print_generic("process_queue: cleared caches (again)")
-                    # regenerate packages information
-                    if self.do_debug:
-                        print_generic("process_queue: setting up Sulfur")
-                    self.setup_application()
-                    if self.do_debug:
-                        print_generic("process_queue: scanning for new files")
-                    do_file_updates_check()
-                    if self.do_debug:
-                        print_generic("process_queue: all done")
-
-                if direct_install_matches or direct_remove_matches:
-                    do_file_updates_check()
 
             else:
                 self.set_status_ticker( _( "No packages selected" ) )
-
-            self.show_notebook_tabs_after_install()
-            self.disable_ugc = False
-            if switch_back_page is not None:
-                self.switch_notebook_page(switch_back_page)
-            elif state:
-                self.switch_notebook_page('packages')
-                # switch back to updates tab also
-                rb = self.packageRB["updates"]
-                gobject.timeout_add(0, rb.clicked)
-
-            self._entropy.unlock_resources()
-
-            if state:
-                self.progress.set_mainLabel(_("Tasks completed successfully."))
-                self.progress.set_subLabel(_("Please make sure to read all the messages in the terminal below."))
-                self.progress.set_extraLabel("Have phun!")
-            else:
-                self.progress.set_mainLabel(_("Oh, a fairytale gone bad!"))
-                self.progress.set_subLabel(_("Something bad happened, have a look at the messages in the terminal below."))
-                self.progress.set_extraLabel(_("Don't feel guilty, it's all my fault!"))
-
-            return state
+                _post_install_cleanup(True)
 
     def ui_lock(self, lock):
         self.ui.menubar.set_sensitive(not lock)
