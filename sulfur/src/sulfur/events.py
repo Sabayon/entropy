@@ -573,10 +573,11 @@ class SulfurApplicationEventsMixin:
 
     def do_repo_refresh(self, repos):
         self.switch_notebook_page('output')
-        status = self.update_repositories(repos)
-        self.switch_notebook_page('repos')
-        if status:
-            self.show_notice_board()
+        def _complete_cb(status):
+            self.switch_notebook_page('repos')
+            if status:
+                self.show_notice_board()
+        self.update_repositories(repos, complete_cb = _complete_cb)
 
     def on_cacheButton_clicked(self, widget):
         self.repoView.get_selected()

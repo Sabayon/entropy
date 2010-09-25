@@ -1377,10 +1377,57 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         my = NoticeBoardWindow(self.ui.main, self._entropy)
         my.load(repoids)
 
-    def update_repositories(self, repos):
+    def update_repositories(self, repos, complete_cb = None):
 
         if self._RESOURCES_LOCKED:
             return False
+
+        def _update_repos_done(rc, repoConn):
+
+            for repo in repos:
+                # inform UGC that we are syncing this repo
+                if self._entropy.UGC is not None:
+                    try:
+                        self._entropy.UGC.add_download_stats(repo, [repo])
+                    except (TimeoutError, SSLError,):
+                        continue
+
+            if repoConn.sync_errors or (rc != 0):
+                self.progress.set_mainLabel(_('Errors updating repositories.'))
+                self.progress.set_subLabel(
+                    _('Please check logs below for more info'))
+            else:
+                if repoConn.already_updated == 0:
+                    self.progress.set_mainLabel(
+                        _('Repositories updated successfully'))
+                else:
+                    if len(repos) == repoConn.already_updated:
+                        self.progress.set_mainLabel(
+                            _('All the repositories were already up to date.'))
+                    else:
+                        msg = "%s %s" % (repoConn.already_updated,
+                            _("repositories were already up to date. Others have been updated."),)
+                        self.progress.set_mainLabel(msg)
+                if repoConn.new_entropy:
+                    self.progress.set_extraLabel(
+                        _('sys-apps/entropy needs to be updated as soon as possible.'))
+
+            self._entropy.unlock_resources()
+            self.end_working()
+
+            self.progress.reset_progress()
+            self.reset_cache_status()
+            self.setup_repoView()
+            self.gtk_loop()
+            self.setup_application()
+            self.set_package_radio('updates')
+            self.ui_lock(False)
+
+            self.disable_ugc = False
+            self.show_notebook_tabs_after_install()
+            if self._ugc_status:
+                gobject.timeout_add(20*1000,
+                    self.spawn_user_generated_content_first)
 
         with self._privileges:
 
@@ -1433,65 +1480,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page('output')
             self.ui_lock(True)
 
-            self.__repo_update_rc = -1000
             def run_up():
-                self.__repo_update_rc = repoConn.sync()
+                with self._privileges:
+                    rc = repoConn.sync()
+                    gobject.idle_add(_update_repos_done, rc, repoConn)
 
             t = ParallelTask(run_up)
             t.start()
-            while t.isAlive():
-                time.sleep(0.2)
-                if self.do_debug:
-                    print_generic("update_repositories: update thread still alive")
-                self.gtk_loop()
-            rc = self.__repo_update_rc
-
-            for repo in repos:
-                # inform UGC that we are syncing this repo
-                if self._entropy.UGC is not None:
-                    try:
-                        self._entropy.UGC.add_download_stats(repo, [repo])
-                    except (TimeoutError, SSLError,):
-                        continue
-
-            if repoConn.sync_errors or (rc != 0):
-                self.progress.set_mainLabel(_('Errors updating repositories.'))
-                self.progress.set_subLabel(
-                    _('Please check logs below for more info'))
-            else:
-                if repoConn.already_updated == 0:
-                    self.progress.set_mainLabel(
-                        _('Repositories updated successfully'))
-                else:
-                    if len(repos) == repoConn.already_updated:
-                        self.progress.set_mainLabel(
-                            _('All the repositories were already up to date.'))
-                    else:
-                        msg = "%s %s" % (repoConn.already_updated,
-                            _("repositories were already up to date. Others have been updated."),)
-                        self.progress.set_mainLabel(msg)
-                if repoConn.new_entropy:
-                    self.progress.set_extraLabel(
-                        _('sys-apps/entropy needs to be updated as soon as possible.'))
-
-            self._entropy.unlock_resources()
-            self.end_working()
-
-            self.progress.reset_progress()
-            self.reset_cache_status()
-            self.setup_repoView()
-            self.gtk_loop()
-            self.setup_application()
-            self.set_package_radio('updates')
-            self.ui_lock(False)
-
-            self.disable_ugc = False
-            self.show_notebook_tabs_after_install()
-            if self._ugc_status:
-                gobject.timeout_add(20*1000,
-                    self.spawn_user_generated_content_first)
-
-        return not repoConn.sync_errors
 
     def dependencies_test(self):
 
