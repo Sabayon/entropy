@@ -1,3 +1,57 @@
+commit 348787d3e908329ec3524a93379917dfc1c5a017
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 13:52:39 2010 +0200
+
+    [entropy.spm] PortagePlugin: do not try to repackage packages no longer available in the installed system
+
+commit 94d178794f8616a9f93943180ba682507e0d577a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 12:51:56 2010 +0200
+
+    [entropy.tools] fix print_exception(), do not add the last stack frame twice if all_frame_data = True
+
+commit daea0c7102d06b875cd2a5b8ac4af51b1c9692eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 12:44:14 2010 +0200
+
+    [sulfur] make error reporting nicer for both users and developers
+
+commit 3ec599b5fe74a9e95316a68e9a10e1a4603dee9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 12:30:03 2010 +0200
+
+    [equo] improve error report code, make it shorter and nicer to both users and developers
+
+commit 536dab753cdc3d56ffd94bd1f9463d6bc4b1b1a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 12:06:55 2010 +0200
+
+    [entropy.client.interfaces.methods] in Client._validate_repositories(), also print the validation error object
+
+commit a55ada4fcaf1f0d9bc89ded0d72dc658333d187f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 12:05:57 2010 +0200
+
+    [tests] when calling Client.shutdown(), SystemSettings plugins are not removed now, so tests require to call destroy() first, then shutdown()
+
+commit 3c6f504e4588c6e161437e17e64de56aedb008d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 11:51:48 2010 +0200
+
+    [entropy.spm] PortagePlugin: support package license text retrieval from overlays
+
+commit ef13d28e685d7f580c69d83d1048d92ff1ac0358
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 11:51:13 2010 +0200
+
+    [entropy.server] add _from_shutdown argument to Server.destroy()
+
+commit 844e13011df3074b8e736cc7f22b6c9fc8498c20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 09:05:21 2010 +0200
+
+    Tagging Entropy version 0.99.50
+
 commit f09a1e0467ae1593eb5ede0087177a49d2643252
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 25 08:53:59 2010 +0200
