@@ -3238,17 +3238,18 @@ class LicenseDialog:
 
 class ExceptionDialog:
 
-    def show(self, errmsg = None, exc_data = None):
+    def show(self, errmsg = None, submitmsg = None, exc_data = None):
 
         if errmsg is None:
             errmsg = entropy.tools.get_traceback()
-        conntest = entropy.tools.get_remote_data(etpConst['distro_website_url'])
+        if submitmsg is None:
+            submitmsg = errmsg
         rc, (name, mail, description) = errorMessage(
             None,
             _( "Exception caught" ),
             _( "Sulfur crashed! An unexpected error occured." ),
             errmsg,
-            showreport = conntest
+            showreport = True
         )
         if rc == -1:
 
@@ -3262,7 +3263,7 @@ class ExceptionDialog:
             if exc_data is None:
                 exc_data = []
             if error is not None:
-                error.prepare(errmsg, name, mail,
+                error.prepare(submitmsg, name, mail,
                     '\n'.join([x for x in exc_data]),
                     description = description)
                 result = error.submit()

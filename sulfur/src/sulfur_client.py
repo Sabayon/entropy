@@ -42,6 +42,18 @@ def kill_threads():
     for pid in FORK_PIDS:
         kill_pid(pid)
 
+"""
+debug options:
+    --debug => make debug output to be printed to stdout
+    --debug-catch => catch exceptions (after the error reporter) and
+                     start the Python Debugger
+    --nougc => disable UGC
+    --locked => start the application in "locked" mode
+    --maximize => maximize application on load
+    --nonoticeboard => disable noticeboard popup
+    --advanced => start application in advanced mode
+"""
+
 def handle_exception(exc_class, exc_instance, exc_tb):
 
     # restore original exception handler, to avoid loops
@@ -62,8 +74,8 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         exit_status = exc_instance.code
         raise SystemExit(exit_status)
 
-    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
-    t_back += "\n"
+    submitmsg = entropy.tools.get_traceback(tb_obj = exc_tb)
+    t_back = submitmsg + "\n"
     t_back += ''.join(entropy.tools.print_exception(silent = True,
         tb_data = exc_tb))
 
@@ -76,7 +88,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         tb_data = exc_tb, all_frame_data = True)
 
     my = ExceptionDialog()
-    my.show(errmsg = t_back, exc_data = exc_data)
+    my.show(errmsg = t_back, submitmsg = submitmsg, exc_data = exc_data)
     kill_threads()
     if MAIN_APP is not None:
         MAIN_APP.quit(sysexit = -1)
