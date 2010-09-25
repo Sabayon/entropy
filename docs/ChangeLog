@@ -1,3 +1,21 @@
+commit f09a1e0467ae1593eb5ede0087177a49d2643252
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 08:53:59 2010 +0200
+
+    [conf] add more broken .so to brokenlibsmask.conf
+
+commit 1cb063714c9ab56ffe2e34273db010a487724f4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 01:20:14 2010 +0200
+
+    [sulfur] improve locks handling in repositories update function
+
+commit 14ba276e37092a8461684c25c19f1ec95d62b2c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Sep 24 20:18:29 2010 +0200
+
+    Tagging Entropy version 0.99.49.76
+
 commit 9cb13f6aeffe4d90c61b34a83837e43e08a5cc8b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Sep 24 20:15:07 2010 +0200
