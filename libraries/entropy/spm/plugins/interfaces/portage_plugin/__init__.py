@@ -2222,12 +2222,24 @@ class PortagePlugin(SpmPlugin):
 
         for myatom in runatoms:
 
-            self.__output.output(
-                red("%s: " % (_("repackaging"),) )+blue(myatom),
-                importance = 1,
-                level = "warning",
-                header = blue("  # ")
-            )
+            # check if atom is available
+            if not self.match_installed_package(myatom):
+                self.__output.output(
+                    red("%s: " % (_("package not available on system"),) ) + \
+                        blue(myatom),
+                    importance = 1,
+                    level = "warning",
+                    header = purple("  # ")
+                )
+                continue
+            else:
+                self.__output.output(
+                    red("%s: " % (_("repackaging"),) )+blue(myatom),
+                    importance = 1,
+                    level = "warning",
+                    header = blue("  # ")
+                )
+
             mydest = entropy_server._get_local_store_directory(repo = repo)
             try:
                 mypath = self.generate_package(myatom, mydest)
