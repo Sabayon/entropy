@@ -1,3 +1,90 @@
+commit a8eb1e7ddb7f55389edc2f8e52ca9abf3257ef14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 00:28:14 2010 +0200
+
+    [sulfur] remove debugging print
+
+commit 2ed46c86cbd676c01b4fdd8275e3992bc7c9f699
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 00:25:57 2010 +0200
+
+    [sulfur] migrate deptest and libtest code to asynchronous
+
+commit eb179b90ede4dec7ebe5b3d3eb2272455e949ea8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 00:05:45 2010 +0200
+
+    [sulfur] ease repositories update messages to user
+
+commit 0e668cca81127e6725e95f5b29ef8f04fe894a01
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 00:01:36 2010 +0200
+
+    [sulfur] migrate repositories update code to asynchronous mode
+
+commit d6c5d33445ffc6fa0ae56182a9a4028d19e97c6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 23:50:12 2010 +0200
+
+    [sulfur] introduce asynchronous interface for Sulfur packages installation
+
+commit ac724279e0c45600202cb589480a70a58a3b4e0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 23:22:50 2010 +0200
+
+    [sulfur] remove unused method
+
+commit 1d1fe50c47c6666170fec79960ffe44cc31916f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 23:22:09 2010 +0200
+
+    [sulfur] fix problems with terminal output not coming with "\n\r" but just with "\n" (Portage)
+
+commit 261ea3d42eacd00691047c8703b2a9778723aafe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 23:21:34 2010 +0200
+
+    [sulfur] SulfurConsole: set xterm emulation
+
+commit d590cb7778a834864b30d0696f0f693b2312656f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 22:23:16 2010 +0200
+
+    [sulfur] move main treeview double click behaviour to EntropyPackageView, fix some minor double click annoyances
+
+commit 995a172fedb08c4852b0a1d1badaaacbf82cee5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 18:23:27 2010 +0200
+
+    [entropy.spm] PortagePlugin: directly use "repository" metadatum from xpak data
+
+commit fa2115e5759c50d9a2c2951681a4d0511a9d2464
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 18:23:07 2010 +0200
+
+    [sulfur] set $TERM when instantiating SulfurConsole
+
+commit 9d2646a6a6868990f1c4bc4298d73d0d0174844c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 17:46:33 2010 +0200
+
+    [entropy.spm] PortagePlugin: make Portage able to show repository information while executing phases
+
+commit 8783da63c7f0f68ae340f877cc41a547fea6b165
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 17:44:47 2010 +0200
+
+    [entropy.client.interfaces.package] add "spm_repository" metadatum to trigger metadata that is passed to the "SPM" plugin
+    
+    In this way, SPM (Portage, for eg.) can show information related
+    to the nature of packages it works out.
+
+commit 8aabd456a8f870636af2ff7f7db15f362a0a843d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Sep 25 13:53:24 2010 +0200
+
+    Tagging Entropy version 0.99.50.1
+
 commit 348787d3e908329ec3524a93379917dfc1c5a017
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Sep 25 13:52:39 2010 +0200
