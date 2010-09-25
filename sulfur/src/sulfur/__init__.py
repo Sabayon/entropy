@@ -1397,17 +1397,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.progress.set_subLabel(
                     _('Please check logs below for more info'))
             else:
-                if repoConn.already_updated == 0:
-                    self.progress.set_mainLabel(
-                        _('Repositories updated successfully'))
-                else:
-                    if len(repos) == repoConn.already_updated:
-                        self.progress.set_mainLabel(
-                            _('All the repositories were already up to date.'))
-                    else:
-                        msg = "%s %s" % (repoConn.already_updated,
-                            _("repositories were already up to date. Others have been updated."),)
-                        self.progress.set_mainLabel(msg)
+                self.progress.set_mainLabel(
+                    _('Repositories updated successfully'))
                 if repoConn.new_entropy:
                     self.progress.set_extraLabel(
                         _('sys-apps/entropy needs to be updated as soon as possible.'))
