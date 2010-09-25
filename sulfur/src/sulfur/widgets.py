@@ -132,6 +132,8 @@ gobject.type_register(CellRendererStars)
 class SulfurConsole(vte.Terminal):
 
     def __init__(self):
+        # set $TERM variable, avoid shell scripts to complain
+        os.environ['TERM'] = "xterm"
         vte.Terminal.__init__(self)
         self.reset()
         self.chars_count = 0
