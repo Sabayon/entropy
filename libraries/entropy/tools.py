@@ -207,7 +207,8 @@ def print_exception(silent = False, tb_data = None, all_frame_data = False):
         if all_frame_data:
             stack.append(tb.tb_frame)
 
-    stack.append(tb.tb_frame)
+    if not all_frame_data:
+        stack.append(tb.tb_frame)
 
     #if not returndata: print
     for frame in stack:
