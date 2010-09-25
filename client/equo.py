@@ -14,6 +14,7 @@ import os
 import sys
 import errno
 import re
+import tempfile
 sys.path.insert(0, '/usr/lib/entropy/libraries')
 sys.path.insert(0, '/usr/lib/entropy/server')
 sys.path.insert(0, '/usr/lib/entropy/client')
@@ -570,7 +571,6 @@ def _do_text_cleanup(main_cmd, options):
     acquired = False
     client = None
     try:
-
         import text_tools
         from entropy.client.interfaces import Client
         client = Client(repo_validation = False, load_ugc = False,
@@ -884,9 +884,10 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     entropy.tools.print_exception(tb_data = exc_tb)
 
-    error_file = "/tmp/equoerror.txt"
+    error_fd, error_file = tempfile.mkstemp(prefix="entropy.error.report.",
+        suffix=".txt")
     try:
-        ferror = open(error_file, "wb")
+        ferror = os.fdopen(error_fd, "wb")
     except (OSError, IOError,):
         print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
         try_to_kill_cacher()
@@ -894,10 +895,11 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     exception_data = entropy.tools.print_exception(silent = True,
         tb_data = exc_tb, all_frame_data = True)
-    exception_stack = t_back
+
+    exception_tback_raw = const_convert_to_rawstring(t_back)
     ferror.write(const_convert_to_rawstring("\nRevision: " + \
         etpConst['entropyversion'] + "\n\n"))
-    ferror.write(const_convert_to_rawstring(exception_stack))
+    ferror.write(exception_tback_raw)
     ferror.write(const_convert_to_rawstring("\n\n"))
     ferror.write(const_convert_to_rawstring(''.join(exception_data)))
     ferror.write(const_convert_to_rawstring("\n"))
@@ -918,10 +920,6 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     email = readtext(_("Your E-Mail address:"))
     description = readtext(_("What you were doing:"))
 
-    ferror = open(error_file, "r")
-    error_text = ''.join(ferror.readlines())
-    ferror.close()
-
     try:
         from entropy.client.interfaces.qa import UGCErrorReportInterface
         error = UGCErrorReportInterface()
@@ -930,14 +928,17 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     result = None
     if error is not None:
-        error.prepare(error_text, name, email,
+        error.prepare(exception_tback_raw, name, email,
             '\n'.join([x for x in exception_data]), description)
         result = error.submit()
 
     if result:
         print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
     else:
-        print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayon.org.")))
+        print_error(darkred(_("Ugh. Cannot send the report. When you want, mail the file below to lxnay@sabayon.org.")))
+        print_error("")
+        print_error("==> %s" % (error_file,))
+        print_error("")
     try_to_kill_cacher()
     raise SystemExit(1)
 
