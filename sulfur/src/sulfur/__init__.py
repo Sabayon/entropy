@@ -2361,7 +2361,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if self.abortQueueNow:
             self.abortQueueNow = False
-            print_generic("mirror_bombing: queue BOMB !!!")
+            if self.do_debug:
+                print_generic("mirror_bombing: queue BOMB !!!")
             # do not reset self.abortQueueNow here, we need
             # mirror_bombing to keep crashing
             raise KeyboardInterrupt('Simulated keyboard interrupt')
