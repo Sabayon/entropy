@@ -209,10 +209,16 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         while gtk.events_pending():
            gtk.main_iteration()
 
+    class VteFakeoutfile(fakeoutfile):
+        def write(self, s):
+            if "\n\r" not in s:
+                s = s.replace("\n", "\n\r")
+            return fakeoutfile.write(self, s)
+
     def setup_gui(self):
 
         self.pty = pty.openpty()
-        self.std_output = fakeoutfile(self.pty[1])
+        self.std_output = self.VteFakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
         self.do_debug = const.debug
 
