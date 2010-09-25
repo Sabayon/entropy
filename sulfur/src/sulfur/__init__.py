@@ -2373,20 +2373,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         my = SecurityAdvisoryMenu(self.ui.main)
         my.load(item)
 
-    def load_package_info_menu(self, pkg):
-        mymenu = PkgInfoMenu(self._entropy, pkg, self.ui.main)
-        load_count = 6
-        while True:
-            try:
-                mymenu.load()
-            except:
-                if load_count < 0:
-                    raise
-                load_count -= 1
-                time.sleep(1)
-                continue
-            break
-
     def queue_bombing(self):
         if self.do_debug:
             print_generic("queue_bombing: bomb?")
