@@ -79,7 +79,7 @@ class RepositoryMixin:
                 dbc.listConfigProtectEntries()
                 dbc.validate()
                 _enabled_repos.append(repoid)
-            except RepositoryError:
+            except RepositoryError as err:
 
                 ensure_closed_repo(repoid)
                 if quiet:
@@ -93,13 +93,18 @@ class RepositoryMixin:
                     level = "warning"
                 )
                 self.output(
+                    repr(err),
+                    importance = 0,
+                    level = "warning"
+                )
+                self.output(
                     purple(t2),
                     header = bold("!!! "),
                     importance = 1,
                     level = "warning"
                 )
                 continue # repo not available
-            except (OperationalError, DatabaseError, SystemDatabaseError,):
+            except (OperationalError, DatabaseError, SystemDatabaseError,) as err:
 
                 ensure_closed_repo(repoid)
                 if quiet:
@@ -108,10 +113,15 @@ class RepositoryMixin:
                 t = _("Repository") + " " + repoid + " " + \
                     _("is corrupted") + ". " + _("Cannot validate")
                 self.output(
-                                    darkred(t),
-                                    importance = 1,
-                                    level = "warning"
-                                   )
+                    darkred(t),
+                    importance = 1,
+                    level = "warning"
+                )
+                self.output(
+                    repr(err),
+                    importance = 0,
+                    level = "warning"
+                )
                 continue
 
         # write back correct _enabled_repos
