@@ -29,6 +29,14 @@
     - SQL CONCATENATE vs ||
     - EntropyRepository.exportRepository args
     - equo conf update => differential update
+    - when a new kernel is pulled in, updated kernel mods should be pulled
+      in as well (nvidia-drivers missing):
+        >>  ## [N] [sabayonlinux.org] sys-kernel/linux-firmwares-2.6.35-r5|0
+        >>  ## [U] [sabayonlinux.org] sys-kernel/linux-sabayon-2.6.34|4   [2.6.34|2]
+        >>  ## [U] [sabayonlinux.org] x11-drivers/nvidia-drivers-256.53#2.6.34-sabayon|0   [256.44|1|2.6.34-sabayon]
+        >>  ## [U] [sabayonlinux.org] media-video/nvidia-settings-256.52-r2|0   [256.52|0]
+        >>  ## [U] [sabayonlinux.org] app-emulation/virtualbox-modules-3.2.8#2.6.34-sabayon|3   [3.2.8|1|2.6.34-sabayon]
+
 
   1.1:
 
