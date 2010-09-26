@@ -30,6 +30,26 @@
 """
 import sys
 import os
+
+# check for potentially disruptive filesystem encoding setting.
+# Values different from UTF-8 are not supported and can cause
+# massive system destruction. Unfortunately, there is no good way
+# to ensure that a valid UTF-8 encoding is selected, so the library
+# must die here.
+default_enc = sys.getfilesystemencoding()
+if default_enc is None:
+    default_enc = "ascii"
+if default_enc.lower() != "utf-8":
+    default_locale = "en_US.UTF-8"
+    sys.stderr.write("""\
+invalid filesystem encoding %s, must be UTF-8.
+Make sure to set LC_ALL, LANG, LANGUAGE to valid UTF-8 values.
+Please execute:
+  LC_ALL=en_US.UTF-8 %s
+Cannot automatically recover from this.
+""" % (default_enc, ' '.join(sys.argv)))
+    raise SystemExit(1)
+
 import stat
 import errno
 import fcntl
