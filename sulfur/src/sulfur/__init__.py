@@ -211,7 +211,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     class VteFakeoutfile(fakeoutfile):
         def write(self, s):
-            if "\n\r" not in s:
+            # workaround for raw input coming without \r
+            if "\r" not in s:
                 s = s.replace("\n", "\n\r")
             return fakeoutfile.write(self, s)
 
