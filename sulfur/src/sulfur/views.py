@@ -1666,7 +1666,11 @@ class EntropyPackageView:
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
-        self.view.set_model( store )
+        self.view.set_model(store)
+        # this avoids cell_data_func being called thousand times
+        # DO NOT REMOVE!!
+        self.view.set_fixed_height_mode(True)
+        ################
         myheight = self._get_row_height()
 
         # package UGC icon pixmap
@@ -2215,7 +2219,8 @@ class EntropyPackageView:
         else:
             # delay a bit, to avoid overloading the UI
             gobject.timeout_add_seconds(8,
-                self.__new_ugc_pixbuf_stash_fetch, pkg)
+                self.__new_ugc_pixbuf_stash_fetch, pkg,
+                priority = gobject.PRIORITY_LOW)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
