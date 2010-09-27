@@ -1495,6 +1495,7 @@ class MiscMixin:
 
         pkg_mirrors = repo_data['plain_packages']
         mirror_stats = {}
+        mirror_cache = set()
         retries = 3
 
         for mirror in pkg_mirrors:
@@ -1503,9 +1504,14 @@ class MiscMixin:
             try:
 
                 url_data = entropy.tools.spliturl(mirror)
+                hostname = url_data.hostname
+                if hostname in mirror_cache:
+                    continue
+                mirror_cache.add(hostname)
+
                 mytxt = "%s: %s" % (
                     blue(_("Checking response time of")),
-                    purple(url_data.hostname),
+                    purple(hostname),
                 )
                 self.output(
                     mytxt,
@@ -1527,7 +1533,7 @@ class MiscMixin:
 
                 mytxt = "%s: %s, %s" % (
                     blue(_("Mirror response time")),
-                    purple(url_data.hostname),
+                    purple(hostname),
                     teal(str(result_time)),
                 )
                 self.output(
