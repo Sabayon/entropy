@@ -873,7 +873,7 @@ class MultipleUrlFetcher(TextInterface):
 
     def __handle_threads_stop(self):
         if self.__stop_threads:
-            raise InterruptError
+            raise InterruptError("interrupted")
 
     def _init_vars(self):
         self.__progress_data = {}
