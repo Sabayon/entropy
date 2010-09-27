@@ -1826,25 +1826,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         elif allpkgs and (self.lastPkgPB != "pkgsets"):
             self.ui.pkgSorter.set_property('sensitive', True)
 
-        orphans = None
-        syspkg_orphans = None
-        unavail_repo_pkgs = None
-        if (not self._orphans_message_shown) and (not self._RESOURCES_LOCKED) \
-            and self._entropy.repositories():
-            if action == "updates" and \
-                (not self.etpbase.get_raw_groups('updates')):
-
-                orphans = self.etpbase.get_raw_groups('orphans')
-                syspkg_orphans = self.etpbase.get_raw_groups('syspkg_orphans')
-                unavail_repo_pkgs = self.etpbase.get_raw_groups('unavail_orphans')
-                if self.do_debug:
-                    print_generic("show_packages: found orphans %s" % (orphans,))
-                    print_generic("show_packages: found syspkg orphans %s" % (
-                        syspkg_orphans,))
-                    print_generic("show_packages: found unavail repo pkgs %s" % (
-                        unavail_repo_pkgs,))
-                self._orphans_message_shown = True
-
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
 
         if back_to_page:
@@ -1857,12 +1838,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if do_switch_to:
             rb = self.packageRB[do_switch_to]
             gobject.timeout_add(200, rb.clicked)
-
-        if orphans or syspkg_orphans or unavail_repo_pkgs:
-            # enqueue in the main loop, better!
-            # avoid actions button to not show up
-            gobject.timeout_add(2000, self._show_orphans_message, orphans,
-                syspkg_orphans, unavail_repo_pkgs)
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = None):
 
@@ -2113,6 +2088,35 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.progress.set_subLabel(_("Something bad happened, have a look at the messages in the terminal below."))
                 self.progress.set_extraLabel(_("Don't feel guilty, it's all my fault!"))
 
+        def _show_orphans_message(state):
+
+            if not state:
+                return
+            if self._orphans_message_shown:
+                return
+
+            orphans = None
+            syspkg_orphans = None
+            unavail_repo_pkgs = None
+            if not self.etpbase.get_raw_groups('updates'):
+
+                orphans = self.etpbase.get_raw_groups('orphans')
+                syspkg_orphans = self.etpbase.get_raw_groups('syspkg_orphans')
+                unavail_repo_pkgs = self.etpbase.get_raw_groups('unavail_orphans')
+                if self.do_debug:
+                    print_generic("_show_orphans_message: found orphans %s" % (orphans,))
+                    print_generic("_show_orphans_message: found syspkg orphans %s" % (
+                        syspkg_orphans,))
+                    print_generic("_show_orphans_message: found unavail repo pkgs %s" % (
+                        unavail_repo_pkgs,))
+                self._orphans_message_shown = True
+
+            if orphans or syspkg_orphans or unavail_repo_pkgs:
+                # enqueue in the main loop, better!
+                # avoid actions button to not show up
+                gobject.timeout_add(2000, self._show_orphans_message, orphans,
+                    syspkg_orphans, unavail_repo_pkgs)
+
         def _install_done(err):
             state = True
 
@@ -2205,6 +2209,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.queue.clear()
             if status_cb is not None:
                 status_cb(state)
+            _show_orphans_message(state)
 
 
         with self._privileges:
