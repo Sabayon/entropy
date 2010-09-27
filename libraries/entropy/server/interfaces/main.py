@@ -197,7 +197,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # atomic !
             os.rename(tmp_revision_file, revision_file)
 
-            # auto-update package sets
+        # auto-update package sets
+        cur_sets = entropy_repository_instance.retrievePackageSets()
+        sys_sets = self._server._get_configured_package_sets(repo)
+        if cur_sets != sys_sets:
             self._server.output(
                 "[repo:%s|%s] %s" % (
                         blue(repo),
@@ -208,11 +211,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 level = "info",
                 header = brown(" @@ ")
             )
-            cur_sets = entropy_repository_instance.retrievePackageSets()
-            sys_sets = self._server._get_configured_package_sets(repo)
-            if cur_sets != sys_sets:
-                self._server._update_database_package_sets(repo,
-                    dbconn = entropy_repository_instance)
+            self._server._update_database_package_sets(repo,
+                dbconn = entropy_repository_instance)
             entropy_repository_instance.commitChanges(no_plugins = True)
 
         return 0
