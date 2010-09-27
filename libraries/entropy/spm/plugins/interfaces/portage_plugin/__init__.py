@@ -1487,14 +1487,12 @@ class PortagePlugin(SpmPlugin):
             pid_write_func(proc.pid)
         return proc.wait()
 
-    def environment_update(self, stdout = None, stderr = None):
-        kwargs = {}
-        if etpUi['mute']:
-            kwargs['stdout'] = stdout
-            kwargs['stderr'] = stderr
+    def environment_update(self):
         args = (PortagePlugin._cmd_map['env_update_cmd'],)
         try:
-            proc = subprocess.Popen(args, **kwargs)
+            # inherit stdin, stderr, stdout from parent
+            proc = subprocess.Popen(args, stdout = sys.stdout,
+                stderr = sys.stderr, stdin = sys.stdin)
         except OSError as err:
             if err.errno != 2:
                 raise

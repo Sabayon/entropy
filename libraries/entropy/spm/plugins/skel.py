@@ -595,17 +595,13 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def environment_update(self, stdout = None, stderr = None):
+    def environment_update(self):
         """
         Hook used by Entropy Client and Entropy Server to ask Source Package
         Manager to update /etc/profile* and other environment settings around.
         Since this is part of the Source Package Manager metaphor it must stay
         in this class.
 
-        @keyword stdout: custom standard output
-        @type stdout: file object or valid file descriptor number
-        @keyword stderr: custom standard error
-        @type stderr: file object or valid file descriptor number
         @return: execution status
         @rtype: int
         """
