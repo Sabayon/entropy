@@ -114,6 +114,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def __init__(self, drop_privs = True):
 
+        # support for packages installation on startup
+        packages_install, atoms_install, do_fetch = \
+            self.__scan_packages_install()
+
         self._privileges = self.Privileges(drop_privs = drop_privs)
         self._entropy = Equo()
         self._cacher = EntropyCacher()
@@ -145,6 +149,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             )
             self.safe_mode_txt = _("Safe Mode")
 
+        self._startup_packages_install = None
+        if (not self._RESOURCES_LOCKED) and not (self._entropy.safe_mode):
+            if packages_install or atoms_install:
+                self._startup_packages_install = (packages_install,
+                    atoms_install, do_fetch)
+
         self.isBusy = False
         self.etpbase = EntropyPackages(self._entropy)
 
@@ -152,6 +162,29 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         ui = UI( const.GLADE_FILE, 'main', 'entropy' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
+
+    def __scan_packages_install(self):
+        packages_install = os.environ.get("SULFUR_PACKAGES", '').split(";")
+        atoms_install = []
+        do_fetch = False
+        if "--fetch" in sys.argv:
+            do_fetch = True
+            sys.argv.remove("--fetch")
+
+        if "--install" in sys.argv:
+            atoms_install.extend(sys.argv[sys.argv.index("--install")+1:])
+
+        packages_install = [x for x in packages_install if \
+            os.access(x, os.R_OK) and os.path.isfile(x)]
+
+        for arg in sys.argv:
+            if arg.endswith(etpConst['packagesext']) and \
+                os.access(arg, os.R_OK) and os.path.isfile(arg):
+
+                arg = os.path.realpath(arg)
+                packages_install.append(arg)
+
+        return packages_install, atoms_install, do_fetch
 
     def init(self):
 
@@ -170,14 +203,22 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             okDialog( self.ui.main, _("Oh oh ooooh... Merry Xmas!"))
 
         self.warn_repositories()
-        pkg_installing = self.packages_install()
+        self.start_working()
+        self.ui_lock(True)
+        self.gtk_loop()
+        def _pkg_install():
+            pkg_installing = self.__packages_install()
+            self.ui_lock(False)
+            self.end_working()
 
-        if not pkg_installing:
-            if "--nonoticeboard" not in sys.argv:
-                if not self._entropy.are_noticeboards_marked_as_read():
-                    self.show_notice_board(force = False)
-                else:
-                    self.show_sulfur_tips()
+            if not pkg_installing:
+                if "--nonoticeboard" not in sys.argv:
+                    if not self._entropy.are_noticeboards_marked_as_read():
+                        self.show_notice_board(force = False)
+                    else:
+                        self.show_sulfur_tips()
+        self.gtk_loop()
+        gobject.idle_add(_pkg_install)
 
     def quit(self, widget = None, event = None, sysexit = 0):
 
@@ -674,27 +715,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.install_queue(fetch = fetch, direct_install_matches = matches)
         self.reset_queue_progress_bars()
 
-    def packages_install(self):
+    def __packages_install(self):
 
-        packages_install = os.environ.get("SULFUR_PACKAGES", '').split(";")
-        atoms_install = []
-        do_fetch = False
-        if "--fetch" in sys.argv:
-            do_fetch = True
-            sys.argv.remove("--fetch")
+        if not self._startup_packages_install:
+            return
 
-        if "--install" in sys.argv:
-            atoms_install.extend(sys.argv[sys.argv.index("--install")+1:])
-
-        packages_install = [x for x in packages_install if \
-            os.access(x, os.R_OK) and os.path.isfile(x)]
-
-        for arg in sys.argv:
-            if arg.endswith(etpConst['packagesext']) and \
-                os.access(arg, os.R_OK) and os.path.isfile(arg):
-
-                arg = os.path.realpath(arg)
-                packages_install.append(arg)
+        packages_install, atoms_install, do_fetch = \
+            self._startup_packages_install
+        self._startup_packages_install = None
 
         if packages_install:
 
@@ -990,7 +1018,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         def get_ugc_status_pix( column, cell, model, myiter ):
             if self._entropy.UGC == None:
-                cell.set_property( 'icon-name', 'gtk-cancel' )
+                cell.set_property('icon-name', 'gtk-cancel')
+                return
+            if not self._ugc_status:
+                cell.set_property('icon-name', 'gtk-cancel')
                 return
             obj = model.get_value( myiter, 0 )
             if obj:
@@ -1775,6 +1806,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 continue
 
     def show_packages(self, back_to_page = None, on_init = False):
+
+        if self._startup_packages_install:
+            # don't do anything on startup if packages install is triggered
+            return
 
         action = self.lastPkgPB
         self.disable_ugc = True
