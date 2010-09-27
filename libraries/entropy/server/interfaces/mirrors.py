@@ -1715,9 +1715,6 @@ class Server(ServerNoticeBoardMixin):
             header = darkgreen(" * ")
         )
 
-        # Package Sets info
-        self._show_package_sets_messages(repo)
-
         self._sync_database_treeupdates(repo)
         self._entropy._update_database_package_sets(repo)
         dbconn = self._entropy.open_server_repository(
@@ -1725,6 +1722,9 @@ class Server(ServerNoticeBoardMixin):
             do_treeupdates = False)
         dbconn.commitChanges()
         # now we can safely copy it
+
+        # Package Sets info
+        self._show_package_sets_messages(repo)
 
         # backup current database to avoid re-indexing
         old_dbpath = self._entropy._get_local_database_file(repo)
