@@ -5200,6 +5200,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def _migrateCountersTable(self):
         self._cursor().executescript("""
+            BEGIN TRANSACTION;
             DROP TABLE IF EXISTS counterstemp;
             CREATE TABLE counterstemp (
                 counter INTEGER, idpackage INTEGER, branch VARCHAR,
@@ -5208,10 +5209,10 @@ class EntropyRepository(EntropyRepositoryBase):
             );
             INSERT INTO counterstemp (counter, idpackage, branch)
                 SELECT counter, idpackage, branch FROM counters;
-            DROP TABLE counters;
+            DROP TABLE IF EXISTS counters;
             ALTER TABLE counterstemp RENAME TO counters;
+            COMMIT;
         """)
-        self.commitChanges()
         self.__clearLiveCache("_doesTableExist")
         self.__clearLiveCache("_doesColumnInTableExist")
 
