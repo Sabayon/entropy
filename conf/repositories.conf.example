@@ -13,6 +13,7 @@
 #
 # Sabayon Linux Official Repository
 repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
+repository|sabayonlinux.org||http://mirror.agooga.ru/Linux/sabayonlinux/entropy|
 repository|sabayonlinux.org||http://bali.idrepo.or.id/sabayon/entropy|
 repository|sabayonlinux.org||http://madura.idrepo.or.id/sabayon/entropy|
 repository|sabayonlinux.org||http://sumbawa.idrepo.or.id/sabayon/entropy|
