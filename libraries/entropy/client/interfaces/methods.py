@@ -1663,7 +1663,7 @@ class MiscMixin:
             dbconn.addPackage(data, revision = data['revision'])
             if treeupdates_actions != None:
                 dbconn.bumpTreeUpdatesActions(treeupdates_actions)
-            dbconn.commitChanges()
+            dbconn.commit()
             dbconn.close()
             entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
         finally:

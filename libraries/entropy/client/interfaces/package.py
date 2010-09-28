@@ -1158,7 +1158,7 @@ class Package:
 
         # commit changes, to avoid users pressing CTRL+C and still having
         # all the db entries in, so we need to commit at every iteration
-        self._entropy.installed_repository().commitChanges()
+        self._entropy.installed_repository().commit()
 
         self._remove_content_from_system(self.pkgmeta['removeidpackage'],
             automerge_metadata)

@@ -109,7 +109,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             self._metadata['read_only'] = False
             entropy_repository_instance.readonly = False
             entropy_repository_instance.initializeRepository()
-            entropy_repository_instance.commitChanges()
+            entropy_repository_instance.commit()
 
         out_intf = self._metadata.get('output_interface')
         if out_intf is not None:
@@ -213,7 +213,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             if cur_sets != sys_sets:
                 self._server._update_database_package_sets(repo,
                     dbconn = entropy_repository_instance)
-            entropy_repository_instance.commitChanges(no_plugins = True)
+            entropy_repository_instance.commit(no_plugins = True)
 
         return 0
 
@@ -337,7 +337,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 package_data['category'], descdata)
         except (IOError, OSError, EOFError,):
             pass
-        entropy_repository_instance.commitChanges()
+        entropy_repository_instance.commit()
 
         return 0
 
@@ -1530,7 +1530,7 @@ class ServerPackagesHandlingMixin:
             no_upload = True, repo = repo, is_new = True)
         dbconn.initializeRepository()
 
-        dbconn.commitChanges()
+        dbconn.commit()
         self.close_repositories()
 
         return 0
@@ -1882,9 +1882,9 @@ class ServerPackagesHandlingMixin:
 
                 # update database
                 dbconn.setDownloadURL(idpackage, download_url)
-                dbconn.commitChanges()
+                dbconn.commit()
                 dbconn.switchBranch(idpackage, branch)
-                dbconn.commitChanges()
+                dbconn.commit()
 
                 self.output(
                     "[%s=>%s|%s] %s: %s" % (
@@ -2240,9 +2240,9 @@ class ServerPackagesHandlingMixin:
             )
             new_idpackage, new_revision, new_data = todbconn.handlePackage(data)
             del data
-            todbconn.commitChanges()
+            todbconn.commit()
             todbconn.storeInstalledPackage(new_idpackage, to_repo)
-            todbconn.commitChanges()
+            todbconn.commit()
 
             if not do_copy:
                 self.output(
@@ -2261,7 +2261,7 @@ class ServerPackagesHandlingMixin:
 
                 # remove package from old db
                 dbconn.removePackage(idpackage)
-                dbconn.commitChanges()
+                dbconn.commit()
 
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
@@ -2357,7 +2357,7 @@ class ServerPackagesHandlingMixin:
             dbconn.setSignatures(idpackage, signatures['sha1'],
                 signatures['sha256'], signatures['sha512'],
                 gpg_sign)
-            dbconn.commitChanges()
+            dbconn.commit()
             entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
             self.output(
@@ -2392,7 +2392,7 @@ class ServerPackagesHandlingMixin:
                 header = brown(" @@ ")
             )
             dbconn.removePackage(idpackage)
-            dbconn.commitChanges()
+            dbconn.commit()
         self.close_repository(dbconn)
         self.output(
             "[repo:%s] %s" % (
@@ -2898,7 +2898,7 @@ class ServerPackagesHandlingMixin:
 
             fine += 1
 
-        dbconn.commitChanges()
+        dbconn.commit()
 
         # print stats
         self.output(
@@ -3200,10 +3200,10 @@ class ServerPackagesHandlingMixin:
                 count = (count, maxcount,)
             )
             dbconn.switchBranch(idpackage, to_branch)
-            dbconn.commitChanges()
+            dbconn.commit()
             switched.add(idpackage)
 
-        dbconn.commitChanges()
+        dbconn.commit()
 
         # now migrate counters
         dbconn.moveSpmUidsToBranch(to_branch)
@@ -3977,7 +3977,7 @@ class ServerRepositoryMixin:
                 header = brown(" @@ ")
             )
             conn.createAllIndexes()
-            conn.commitChanges(no_plugins = True)
+            conn.commit(no_plugins = True)
 
         if do_cache:
             # !!! also cache just_reading otherwise there will be
@@ -4021,7 +4021,7 @@ class ServerRepositoryMixin:
         )
         dbconn = self.open_generic_repository(dbpath)
         dbconn.initializeRepository()
-        dbconn.commitChanges()
+        dbconn.commit()
         dbconn.close()
         mytxt = "%s %s %s." % (
             red(_("Entropy repository file")),
@@ -4138,7 +4138,7 @@ class ServerRepositoryMixin:
             {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
         # make sure that info have been written to disk
-        dbconn.commitChanges()
+        dbconn.commit()
 
         myserver_repos = list(srv_set['repositories'].keys())
 
@@ -4170,7 +4170,7 @@ class ServerRepositoryMixin:
             dbconn.setRevision(idpackage, revision)
 
         # make sure that info have been written to disk, again
-        dbconn.commitChanges()
+        dbconn.commit()
 
         # set trashed counters
         trashing_counters = set()
@@ -4191,7 +4191,7 @@ class ServerRepositoryMixin:
             dbconn.setTrashedUid(mycounter)
 
         # make sure that info have been written to disk, again
-        dbconn.commitChanges()
+        dbconn.commit()
 
         # add package info to our current server repository
         dbconn.dropInstalledPackageFromStore(idpackage)
@@ -4244,7 +4244,7 @@ class ServerRepositoryMixin:
             shutil.move(package_file, destination_path)
 
         # make sure that info have been written to disk, again
-        dbconn.commitChanges()
+        dbconn.commit()
 
         return idpackage, destination_path
 
@@ -4263,7 +4263,7 @@ class ServerRepositoryMixin:
 
         # update url
         dbconn.setDownloadURL(idpackage, downloadurl)
-        dbconn.commitChanges()
+        dbconn.commit()
 
         return downloadurl
 
@@ -4402,7 +4402,7 @@ class ServerRepositoryMixin:
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
         self._taint_database(repo = repo)
-        dbconn.commitChanges()
+        dbconn.commit()
         self.close_repository(dbconn)
 
 class ServerMiscMixin:
@@ -4788,7 +4788,7 @@ class ServerMiscMixin:
         counter = dbconn.getFakeSpmUid()
         dbconn.setSpmUid(idpackage, counter)
         dbconn.setInjected(idpackage)
-        dbconn.commitChanges()
+        dbconn.commit()
 
     def _pump_extracted_package_metadata(self, pkg_meta, repo, extra_metadata):
         """
@@ -4995,7 +4995,7 @@ class ServerMiscMixin:
         dbconn.clearPackageSets()
         if package_sets:
             dbconn.insertPackageSets(package_sets)
-        dbconn.commitChanges()
+        dbconn.commit()
 
 class Server(ServerSettingsMixin, ServerLoadersMixin,
     ServerPackageDepsMixin, ServerPackagesHandlingMixin, ServerQAMixin,

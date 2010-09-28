@@ -1582,7 +1582,7 @@ class Server(ServerNoticeBoardMixin):
         dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.vacuum()
-        dbconn.commitChanges()
+        dbconn.commit()
         self._entropy.close_repository(dbconn)
 
     def _get_current_timestamp(self):
@@ -1643,7 +1643,7 @@ class Server(ServerNoticeBoardMixin):
             # restore previous data
             dbconn.bumpTreeUpdatesActions(backed_up_entries)
 
-        dbconn.commitChanges()
+        dbconn.commit()
 
     def _create_repository_pkglist(self, repo = None, branch = None):
         pkglist_file = self._entropy._get_local_pkglist_file(repo = repo,
@@ -1720,7 +1720,7 @@ class Server(ServerNoticeBoardMixin):
         dbconn = self._entropy.open_server_repository(
             read_only = False, no_upload = True, repo = repo,
             do_treeupdates = False)
-        dbconn.commitChanges()
+        dbconn.commit()
         # now we can safely copy it
 
         # Package Sets info
@@ -1758,7 +1758,7 @@ class Server(ServerNoticeBoardMixin):
                     xcache = False)
             eapi2_tmp_dbconn.dropContent()
             eapi2_tmp_dbconn.dropChangelog()
-            eapi2_tmp_dbconn.commitChanges()
+            eapi2_tmp_dbconn.commit()
 
             # opener = cmethod[0]
             f_out = cmethod[0](upload_data['dump_path_light'], "wb")
@@ -1800,7 +1800,7 @@ class Server(ServerNoticeBoardMixin):
                     xcache = False)
             eapi1_tmp_dbconn.dropContent()
             eapi1_tmp_dbconn.dropChangelog()
-            eapi1_tmp_dbconn.commitChanges()
+            eapi1_tmp_dbconn.commit()
             eapi1_tmp_dbconn.vacuum()
             eapi1_tmp_dbconn.close()
 

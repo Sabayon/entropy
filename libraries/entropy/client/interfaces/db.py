@@ -713,7 +713,7 @@ class AvailablePackagesRepositoryUpdater(object):
         )
         dbconn = self._entropy.open_repository(self.__repository_id)
         dbconn.createAllIndexes()
-        dbconn.commitChanges(force = True)
+        dbconn.commit(force = True)
         if self._entropy.installed_repository() is not None:
             try: # client db can be absent
                 self._entropy.installed_repository().createAllIndexes()
@@ -1684,7 +1684,7 @@ class AvailablePackagesRepositoryUpdater(object):
             header = "\t",
         )
 
-        mydbconn.commitChanges()
+        mydbconn.commit()
         mydbconn.clearCache()
         # now verify if both checksums match
         result = False

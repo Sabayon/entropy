@@ -396,7 +396,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         EntropyRepositoryPlugins won't be notified of a repo close.
         """
         if not self.readonly:
-            self.commitChanges()
+            self.commit()
 
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):
@@ -421,7 +421,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def commitChanges(self, force = False, no_plugins = False):
+    def commit(self, force = False, no_plugins = False):
         """
         Commit actual changes and make them permanently stored.
         Attention: call this method from your subclass, otherwise
@@ -442,6 +442,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             if exec_rc:
                 raise RepositoryPluginError("[commit_hook] %s: status: %s" % (
                     plug_inst.get_id(), exec_rc,))
+
+    def commitChanges(self):
+        """
+        @deprecated, please see commit()
+        """
+        warnings.warn("EntropyRepositoryBase.commitChanges() " + \
+            "is now deprecated. Please use commit()")
+        return self.commit()
 
     def initializeRepository(self):
         """
@@ -1611,7 +1619,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # we have to repackage also package owning this iddep
             iddependencies |= self.searchPackageIdFromDependencyId(iddep)
 
-        self.commitChanges()
+        self.commit()
         quickpkg_queue = list(quickpkg_queue)
         for x in range(len(quickpkg_queue)):
             myatom = quickpkg_queue[x]
@@ -1700,7 +1708,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                         "[treeupdates_slot_move_action_hook] %s: status: %s" % (
                             plug_inst.get_id(), exec_rc,))
 
-        self.commitChanges()
+        self.commit()
         for package_id_owner in iddependencies:
             myatom = self.retrieveAtom(package_id_owner)
             if myatom is None:

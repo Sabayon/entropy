@@ -419,7 +419,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             if missing:
                 taint = True
                 dbconn.insertDependencies(idpackage, missing)
-                dbconn.commitChanges()
+                dbconn.commit()
                 self.output(
                     "[repo:%s] %s: %s" % (
                         darkgreen(repo),

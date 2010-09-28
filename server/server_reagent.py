@@ -303,7 +303,7 @@ def repositories(options):
                 try:
                     w_dbconn.removeDependencies(idpackage)
                     w_dbconn.insertDependencies(idpackage, insert_deps)
-                    w_dbconn.commitChanges()
+                    w_dbconn.commit()
                 except (KeyboardInterrupt, SystemExit,):
                     continue
                 break

@@ -837,7 +837,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             # store new actions
             self._installed_repository.addRepositoryUpdatesActions(etpConst['clientdbid'],
                 update_actions, self._settings['repositories']['branch'])
-            self._installed_repository.commitChanges()
+            self._installed_repository.commit()
             # clear client cache
             self._installed_repository.clearCache()
             return True

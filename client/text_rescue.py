@@ -147,7 +147,7 @@ def _database_vacuum(entropy_client):
         print_info(red(" @@ ")+"%s..." % (blue(_("Vacuum cleaning System Database")),), back = True)
         entropy_client.installed_repository().dropAllIndexes()
         entropy_client.installed_repository().vacuum()
-        entropy_client.installed_repository().commitChanges()
+        entropy_client.installed_repository().commit()
         print_info(red(" @@ ")+"%s." % (brown(_("Vacuum cleaned System Database")),))
         return 0
     print_warning(darkred(" !!! ")+blue("%s." % (_("No System Databases found"),)))
@@ -263,7 +263,7 @@ def _database_resurrect(entropy_client):
     dbc = entropy_client.open_generic_repository(dbpath,
         dbname = etpConst['clientdbid']) # don't do this at home
     dbc.initializeRepository()
-    dbc.commitChanges()
+    dbc.commit()
     entropy_client._installed_repository = dbc
     mytxt = "  %s %s" % (
         darkgreen(_("Database reinitialized correctly at")),
