@@ -4230,8 +4230,8 @@ class EntropyRepository(EntropyRepositoryBase):
         Do not forget to bump _SCHEMA_REV whenever you add more tables
         """
         try:
-            current_schema_rev = self.getSetting("schema_revision")
-        except KeyError:
+            current_schema_rev = int(self.getSetting("schema_revision"))
+        except (KeyError, ValueError):
             current_schema_rev = -1
 
         if current_schema_rev == EntropyRepository._SCHEMA_REV:
