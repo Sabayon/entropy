@@ -29,25 +29,19 @@ from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
 
 from text_tools import acquire_entropy_locks, release_entropy_locks
 
-def _backup_client_repository():
+def _backup_client_repository(entropy_client):
     """
     docstring_title
 
     @return: 
     @rtype: 
     """
-    if not os.path.isfile(etpConst['etpdatabaseclientfilepath']):
-        return
+    dbpath = etpConst['etpdatabaseclientfilepath']
+    if not os.path.isfile(dbpath):
+        return True
 
-    rnd = entropy.tools.get_random_number()
-    source = etpConst['etpdatabaseclientfilepath']
-    dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
-    shutil.copy2(source, dest)
-    user = os.stat(source)[4]
-    group = os.stat(source)[5]
-    os.chown(dest, user, group)
-    shutil.copystat(source, dest)
-    return dest
+    backed_up, msg = entropy_client.backup_repository(dbpath)
+    return backed_up
 
 def test_spm(entropy_client):
     # test if portage is available
@@ -246,10 +240,11 @@ def _database_resurrect(entropy_client):
     # if exist, copy old database
     print_info(red(" @@ ") + \
         blue(_("Creating backup of the previous database, if exists.")))
-    newfile = _backup_client_repository()
-    if newfile is not None:
-        print_info(red(" @@ ") + \
-            blue(_("Previous database copied to file"))+" "+newfile)
+    _backup_client_repository(entropy_client)
+    try:
+        os.remove(etpConst['etpdatabaseclientfilepath'])
+    except OSError:
+        pass
 
     # Now reinitialize it
     mytxt = "  %s %s" % (
@@ -257,14 +252,10 @@ def _database_resurrect(entropy_client):
         bold(etpConst['etpdatabaseclientfilepath']),
     )
     print_info(mytxt, back = True)
-    dbpath = etpConst['etpdatabaseclientfilepath']
-    if os.path.isfile(dbpath) and os.access(dbpath, os.W_OK):
-        os.remove(dbpath)
-    dbc = entropy_client.open_generic_repository(dbpath,
-        dbname = etpConst['clientdbid']) # don't do this at home
-    dbc.initializeRepository()
-    dbc.commit()
-    entropy_client._installed_repository = dbc
+    entropy_client.reopen_installed_repository()
+    entropy_client.installed_repository().initializeRepository()
+    entropy_client.installed_repository().commit()
+
     mytxt = "  %s %s" % (
         darkgreen(_("Database reinitialized correctly at")),
         bold(etpConst['etpdatabaseclientfilepath']),
@@ -638,10 +629,11 @@ def _database_generate(entropy_client):
     print_info(red(" @@ ") + \
         blue(_("Creating backup of the previous database, if exists.")) + \
         red(" @@"))
-    newfile = _backup_client_repository()
-    if newfile is not None:
-        print_info(red(" @@ ") + blue(_("Previous database copied to file")) + \
-            " " + newfile+red(" @@"))
+    _backup_client_repository(entropy_client)
+    try:
+        os.remove(etpConst['etpdatabaseclientfilepath'])
+    except OSError:
+        pass
 
     # Now reinitialize it
     mytxt = darkred("  %s %s") % (
@@ -650,9 +642,9 @@ def _database_generate(entropy_client):
     )
     print_info(mytxt, back = True)
     entropy_client.reopen_installed_repository()
-    entropy_client.installed_repository().close()
-    entropy_client._open_installed_repository()
     entropy_client.installed_repository().initializeRepository()
+    entropy_client.installed_repository().commit()
+
     mytxt = darkred("  %s %s") % (
         _("Database reinitialized correctly at"),
         bold(etpConst['etpdatabaseclientfilepath']),
