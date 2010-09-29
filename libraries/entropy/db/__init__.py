@@ -65,7 +65,11 @@ class EntropyRepository(EntropyRepositoryBase):
     class.
     """
 
-    _SETTING_KEYS = [ "arch", "on_delete_cascade" ]
+    # bump this every time schema changes and databaseStructureUpdate
+    # should be triggered
+    _SCHEMA_REV = 1
+
+    _SETTING_KEYS = [ "arch", "on_delete_cascade", "schema_revision" ]
 
     class Schema:
 
@@ -4188,18 +4192,28 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         if setting_name not in self._SETTING_KEYS:
-            raise KeyError()
+            raise KeyError("invalid setting_name")
         try:
             cur = self._cursor().execute("""
             SELECT setting_value FROM settings WHERE setting_name = (?)
             """, (setting_name,))
         except Error:
-            raise KeyError("cannot find %s" % (setting_name,))
+            raise KeyError("cannot find setting")
 
         setting = cur.fetchone()
         if setting is None:
-            raise KeyError()
+            raise KeyError("Setting unavaliable")
         return setting[0]
+
+    def _setSetting(self, setting_name, setting_value):
+        """
+        Internal method, set new setting for setting_name with value
+        setting_value.
+        """
+        cur = self._cursor().execute("""
+        INSERT OR REPLACE INTO settings VALUES (?, ?)
+        """, (setting_name, setting_value,))
+        cur.fetchall()
 
     def _setupInitialSettings(self):
         """
@@ -4212,6 +4226,16 @@ class EntropyRepository(EntropyRepositoryBase):
         )
 
     def _databaseStructureUpdates(self):
+        """
+        Do not forget to bump _SCHEMA_REV whenever you add more tables
+        """
+        try:
+            current_schema_rev = self.getSetting("schema_revision")
+        except KeyError:
+            current_schema_rev = -1
+
+        if current_schema_rev == EntropyRepository._SCHEMA_REV:
+            return
 
         old_readonly = self.readonly
         self.readonly = False
@@ -4266,6 +4290,8 @@ class EntropyRepository(EntropyRepositoryBase):
 
         self.readonly = old_readonly
         self._connection().commit()
+
+        self._setSetting("schema_revision", EntropyRepository._SCHEMA_REV)
 
     def validate(self):
         """
