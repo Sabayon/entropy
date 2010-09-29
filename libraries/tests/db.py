@@ -695,6 +695,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         db_lic_txt = self.test_db.retrieveLicenseText(lic_name)
         self.assertEqual(db_lic_txt, lic_txt)
 
+    def test_settings(self):
+        self.assertRaises(KeyError, self.test_db.getSetting, "fuck")
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")
