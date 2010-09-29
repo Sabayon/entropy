@@ -4188,7 +4188,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         if setting_name not in self._SETTING_KEYS:
-            raise KeyError
+            raise KeyError()
         try:
             cur = self._cursor().execute("""
             SELECT setting_value FROM settings WHERE setting_name = (?)
@@ -4198,7 +4198,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         setting = cur.fetchone()
         if setting is None:
-            raise KeyError
+            raise KeyError()
         return setting[0]
 
     def _setupInitialSettings(self):
