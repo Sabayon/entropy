@@ -52,9 +52,12 @@ class SulfurApplicationEventsMixin:
 
     def on_dbBackupButton_clicked(self, widget):
         self.start_working()
-        status, err_msg = self._entropy.backup_repository(
-            etpConst['etpdatabaseclientfilepath'])
-        self.end_working()
+        with self._privileges:
+            # make sure to commit any transaction before backing-up
+            self._entropy.installed_repository().commit()
+            status, err_msg = self._entropy.backup_repository(
+                etpConst['etpdatabaseclientfilepath'])
+            self.end_working()
         if not status:
             okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),
                 err_msg,) )
@@ -71,6 +74,8 @@ class SulfurApplicationEventsMixin:
 
         self.start_working()
         with self._privileges:
+            # make sure to commit any transaction before restoring
+            self._entropy.installed_repository().commit()
             status, err_msg = self._entropy.restore_repository(dbpath,
                 etpConst['etpdatabaseclientfilepath'])
             self.end_working()

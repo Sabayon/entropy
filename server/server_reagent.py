@@ -590,6 +590,8 @@ def repositories(options):
     elif cmd == "backup":
 
         db_path = Entropy._get_local_database_file()
+        # make sure to close all repos before backing-up
+        Entropy.close_repositories()
         rc, err_msg = Entropy.backup_repository(db_path,
             backup_dir = os.path.dirname(db_path))
         if not rc:
@@ -640,6 +642,8 @@ def repositories(options):
                 continue
             break
 
+        # make sure to close all repos before restoring
+        Entropy.close_repositories()
         status, err_msg = Entropy.restore_repository(dbpath, db_file)
         if status:
             return 0

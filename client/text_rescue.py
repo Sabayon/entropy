@@ -40,6 +40,8 @@ def _backup_client_repository(entropy_client):
     if not os.path.isfile(dbpath):
         return True
 
+    # make sure to commit any transaction before backing-up
+    entropy_client.installed_repository().commit()
     backed_up, msg = entropy_client.backup_repository(dbpath)
     return backed_up
 
@@ -186,6 +188,8 @@ def _database_restore(entropy_client):
             continue
         break
 
+    # make sure to commit any transaction before restoring
+    entropy_client.installed_repository().commit()
     status, err_msg = entropy_client.restore_repository(dbpath,
         etpConst['etpdatabaseclientfilepath'])
     if status:
