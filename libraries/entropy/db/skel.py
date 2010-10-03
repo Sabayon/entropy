@@ -3298,7 +3298,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def importRepository(self, dumpfile, dbfile):
+    @staticmethod
+    def importRepository(dumpfile, dbfile):
         """
         Import SQLite3 dump file to this database.
 

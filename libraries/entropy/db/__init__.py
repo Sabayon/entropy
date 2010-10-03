@@ -4690,7 +4690,8 @@ class EntropyRepository(EntropyRepositoryBase):
             return 1
         return 0
 
-    def importRepository(self, dumpfile, dbfile):
+    @staticmethod
+    def importRepository(dumpfile, dbfile):
         """
         Reimplemented from EntropyRepositoryBase.
         @todo: remove /usr/bin/sqlite3 dependency
