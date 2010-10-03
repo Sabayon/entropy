@@ -1951,19 +1951,21 @@ class EntropyRepository(EntropyRepositoryBase):
         content = set((x,) for x in dbconn.retrieveContent(dbconn_package_id))
 
         # setup random table name
-        randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
-        while self._doesTableExist(randomtable, temporary = True):
-            randomtable = "cdiff%s" % (entropy.tools.get_random_number(),)
+        random_str = "%svs%s_%s" % (package_id, id(dbconn),
+            dbconn_package_id)
+        randomtable = "cdiff%s" % (hashlib.md5(random_str).hexdigest(),)
 
         # create random table
-        self._cursor().execute("""
-            CREATE TEMPORARY TABLE %s ( file VARCHAR )""" % (randomtable,)
+        self._cursor().executescript("""
+            DROP TABLE IF EXISTS `%s`;
+            CREATE TEMPORARY TABLE `%s` ( file VARCHAR );
+            """ % (randomtable, randomtable,)
         )
 
         try:
 
             self._cursor().executemany("""
-            INSERT INTO %s VALUES (?)""" % (randomtable,), content)
+            INSERT INTO `%s` VALUES (?)""" % (randomtable,), content)
 
             # remove this when the one in retrieveContent will be removed
             self._connection().text_factory = const_convert_to_unicode
@@ -1972,14 +1974,14 @@ class EntropyRepository(EntropyRepositoryBase):
             cur = self._cursor().execute("""
             SELECT file FROM content 
             WHERE content.idpackage = (?) AND 
-            content.file NOT IN (SELECT file from %s)""" % (randomtable,),
+            content.file NOT IN (SELECT file from `%s`)""" % (randomtable,),
                 (package_id,))
 
             # suck back
             return self._cur2frozenset(cur)
 
         finally:
-            self._cursor().execute('DROP TABLE IF EXISTS %s' % (randomtable,))
+            self._cursor().execute('DROP TABLE IF EXISTS `%s`' % (randomtable,))
 
     def clean(self):
         """
