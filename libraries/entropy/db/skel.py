@@ -3156,11 +3156,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def listPackageIdsInCategoryId(self, category_id, order_by = None):
+    def listPackageIdsInCategory(self, category, order_by = None):
         """
-        List package identifiers available in given category identifier.
+        List package identifiers available in given category name.
 
-        @param category_id: cateogory identifier
+        @param category_id: cateogory name
         @type category_id: int
         @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
             "name", "version", "versiontag", "revision", "slot"
@@ -3222,10 +3222,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         List all categories available in repository.
 
-        @keyword order_by: order by "category", "category_id"
+        @keyword order_by: order by "category"
         @type order_by: string
-        @return: tuple of tuples of length 2 composed by (category_id, category,)
-        @rtype: tuple
+        @return: list (frozenset) of available package categories
+        @rtype: frozenset
         @raise AttributeError: if order_by value is invalid
         """
         raise NotImplementedError()

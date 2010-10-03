@@ -1650,8 +1650,7 @@ class MiscMixin:
         categories = set()
         for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
-            catsdata = dbconn.listAllCategories()
-            categories.update(set([x[1] for x in catsdata]))
+            categories.update(dbconn.listAllCategories())
         return sorted(categories)
 
     def _inject_entropy_database_into_package(self, package_filename, data,

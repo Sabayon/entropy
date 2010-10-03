@@ -613,7 +613,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = self.test_db.addPackage(data)
         out = self.test_db.listAllCategories()
-        self.assertEqual(out, ((1, 'sys-libs'),))
+        self.assertEqual(out, frozenset(('sys-libs',)))
 
     def test_list_downloads(self):
         test_pkg = _misc.get_test_package()
