@@ -479,7 +479,7 @@ def const_default_settings(rootdir):
         # prefix of the name of EntropyRepository.reponame
         'dbnamerepoprefix': "repo_",
         # prefix of database backups
-        'dbbackupprefix': 'etp_backup_',
+        'dbbackupprefix': 'entropy_backup_',
 
         # Entropy database API revision
         'etpapi': etpSys['api'],

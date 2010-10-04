@@ -56,7 +56,8 @@ class SulfurApplicationEventsMixin:
             # make sure to commit any transaction before backing-up
             self._entropy.installed_repository().commit()
             status, err_msg = self._entropy.backup_repository(
-                etpConst['etpdatabaseclientfilepath'])
+                etpConst['clientdbid'],
+                os.path.dirname(etpConst['etpdatabaseclientfilepath']))
             self.end_working()
         if not status:
             okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),
@@ -77,7 +78,7 @@ class SulfurApplicationEventsMixin:
             # make sure to commit any transaction before restoring
             self._entropy.installed_repository().commit()
             status, err_msg = self._entropy.restore_repository(dbpath,
-                etpConst['etpdatabaseclientfilepath'])
+                etpConst['etpdatabaseclientfilepath'], etpConst['clientdbid'])
             self.end_working()
             self._entropy.reopen_installed_repository()
         self.reset_cache_status()

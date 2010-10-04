@@ -40,6 +40,7 @@ from entropy.qa import QAInterfacePlugin
 from entropy.security import Repository as RepositorySecurity
 from entropy.db.exceptions import ProgrammingError
 from entropy.client.interfaces import Client as _Client
+from entropy.client.interfaces.db import InstalledPackagesRepository
 
 import entropy.dep
 import entropy.tools
@@ -3858,6 +3859,15 @@ class ServerRepositoryMixin:
         )
         conn.initializeRepository()
         return conn
+
+    @staticmethod
+    def get_repository(repoid):
+        """
+        Reimplemented from entropy.client.interfaces.client.Client class
+        """
+        if repoid == etpConst['clientserverrepoid']:
+            return InstalledPackagesRepository
+        return ServerPackagesRepository
 
     def open_repository(self, repository_id):
         """

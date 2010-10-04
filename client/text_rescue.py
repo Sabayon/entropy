@@ -42,7 +42,8 @@ def _backup_client_repository(entropy_client):
 
     # make sure to commit any transaction before backing-up
     entropy_client.installed_repository().commit()
-    backed_up, msg = entropy_client.backup_repository(dbpath)
+    backed_up, msg = entropy_client.backup_repository(etpConst['clientdbid'],
+        os.path.dirname(dbpath))
     return backed_up
 
 def test_spm(entropy_client):
@@ -116,7 +117,8 @@ def database(options):
 
         elif cmd == "backup":
             status, err_msg = etp_client.backup_repository(
-                etpConst['etpdatabaseclientfilepath'])
+                etpConst['clientdbid'],
+                os.path.dirname(etpConst['etpdatabaseclientfilepath']))
             if status:
                 return 0
             return 1
@@ -181,17 +183,17 @@ def _database_restore(entropy_client):
             return 1
         myid, dbx = data['db']
         try:
-            dbpath = db_data.pop(myid-1)
+            backup_path = db_data.pop(myid-1)
         except IndexError:
             continue
-        if not os.path.isfile(dbpath):
+        if not os.path.isfile(backup_path):
             continue
         break
 
     # make sure to commit any transaction before restoring
     entropy_client.installed_repository().commit()
-    status, err_msg = entropy_client.restore_repository(dbpath,
-        etpConst['etpdatabaseclientfilepath'])
+    status, err_msg = entropy_client.restore_repository(backup_path,
+        etpConst['etpdatabaseclientfilepath'], etpConst['clientdbid'])
     if status:
         return 0
     return 1
