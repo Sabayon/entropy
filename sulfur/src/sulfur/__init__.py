@@ -1933,6 +1933,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # behaviours
         self._settings.clear()
         self._entropy.close_repositories()
+        # re-validate repositories, in this way broken apples will be
+        # disabled.
+        self._entropy._validate_repositories()
+        self._entropy.close_repositories()
 
     def hide_notebook_tabs_for_install(self):
         self.ui.securityVbox.hide()
