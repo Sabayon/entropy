@@ -3313,16 +3313,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def exportRepository(self, dumpfile, gentle_with_tables = True,
-        exclude_tables = None):
+    def exportRepository(self, dumpfile):
         """
         Export running SQLite3 database to file.
 
         @param dumpfile: dump file object to write to
         @type dumpfile: file object (hint: open())
-        @keyword gentle_with_tables: append "IF NOT EXISTS" to "CREATE TABLE"
-            statements
-        @type gentle_with_tables: bool
         """
         raise NotImplementedError()
 

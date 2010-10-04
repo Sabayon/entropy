@@ -4711,14 +4711,12 @@ class EntropyRepository(EntropyRepositoryBase):
         os.rename(tmp_dbfile, dbfile)
         return retcode
 
-    def exportRepository(self, dumpfile, gentle_with_tables = True,
-        exclude_tables = None):
+    def exportRepository(self, dumpfile):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        if not exclude_tables:
-            exclude_tables = []
-
+        exclude_tables = []
+        gentle_with_tables = True
         toraw = const_convert_to_rawstring
 
         dumpfile.write(toraw("BEGIN TRANSACTION;\n"))
