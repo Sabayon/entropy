@@ -51,45 +51,69 @@ class SulfurApplicationEventsMixin:
             return True
 
     def on_dbBackupButton_clicked(self, widget):
+
+        def _run_backup(callback):
+            with self._privileges:
+                with self._async_event_execution_lock:
+                    status, err_msg = self._entropy.backup_repository(
+                        etpConst['clientdbid'],
+                        os.path.dirname(etpConst['etpdatabaseclientfilepath']))
+                    gobject.idle_add(callback, status, err_msg)
+
+        def _backup_complete(status, err_msg):
+            self.ui_lock(False)
+            self.end_working()
+            if not status:
+                okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),
+                    err_msg,) )
+                return
+            okDialog(self.ui.main, "%s" % (_("Backup complete"),))
+            self.fill_pref_db_backup_page()
+            self.dbBackupView.queue_draw()
+
         self.start_working()
+        self.ui_lock(True)
         with self._privileges:
             # make sure to commit any transaction before backing-up
             self._entropy.installed_repository().commit()
-            status, err_msg = self._entropy.backup_repository(
-                etpConst['clientdbid'],
-                os.path.dirname(etpConst['etpdatabaseclientfilepath']))
-            self.end_working()
-        if not status:
-            okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),
-                err_msg,) )
-            return
-        okDialog( self.ui.main, "%s" % (_("Backup complete"),) )
-        self.fill_pref_db_backup_page()
-        self.dbBackupView.queue_draw()
+            t = ParallelTask(_run_backup, _backup_complete)
+            t.start()
 
     def on_dbRestoreButton_clicked(self, widget):
         model, myiter = self.dbBackupView.get_selection().get_selected()
-        if myiter == None:
+        if myiter is None:
             return
         dbpath = model.get_value(myiter, 0)
 
+        def _run_restore(callback):
+            with self._async_event_execution_lock:
+                with self._privileges:
+                    status, err_msg = self._entropy.restore_repository(dbpath,
+                        etpConst['etpdatabaseclientfilepath'],
+                        etpConst['clientdbid'])
+                    gobject.idle_add(callback, status, err_msg)
+
+        def _restore_done(status, err_msg):
+            self.ui_lock(False)
+            self.end_working()
+            self._entropy.reopen_installed_repository()
+            self.reset_cache_status()
+            self.show_packages()
+            if not status:
+                okDialog(self.ui.main, "%s: %s" % (_("Error during restore"),
+                    err_msg,))
+                return
+            self.fill_pref_db_backup_page()
+            self.dbBackupView.queue_draw()
+            okDialog(self.ui.main, "%s" % (_("Restore complete"),))
+
         self.start_working()
+        self.ui_lock(True)
         with self._privileges:
             # make sure to commit any transaction before restoring
             self._entropy.installed_repository().commit()
-            status, err_msg = self._entropy.restore_repository(dbpath,
-                etpConst['etpdatabaseclientfilepath'], etpConst['clientdbid'])
-            self.end_working()
-            self._entropy.reopen_installed_repository()
-        self.reset_cache_status()
-        self.show_packages()
-        if not status:
-            okDialog( self.ui.main, "%s: %s" % (_("Error during restore"),
-                err_msg,) )
-            return
-        self.fill_pref_db_backup_page()
-        self.dbBackupView.queue_draw()
-        okDialog( self.ui.main, "%s" % (_("Restore complete"),) )
+            t = ParallelTask(_run_restore, _restore_done)
+            t.start()
 
     def on_dbDeleteButton_clicked(self, widget):
         model, myiter = self.dbBackupView.get_selection().get_selected()

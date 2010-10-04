@@ -114,17 +114,22 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def __init__(self, drop_privs = True):
 
-        # support for packages installation on startup
-        packages_install, atoms_install, do_fetch = \
-            self.__scan_packages_install()
+        self.do_debug = False
+        self._ugc_status = "--nougc" not in sys.argv
 
         self._privileges = self.Privileges(drop_privs = drop_privs)
+        # Use this lock when you want to make sure that no other asynchronous
+        # executions are being run.
+        self._async_event_execution_lock = threading.Lock()
+
         self._entropy = Equo()
         self._cacher = EntropyCacher()
         self._settings = SystemSettings()
 
-        self.do_debug = False
-        self._ugc_status = "--nougc" not in sys.argv
+        # support for packages installation on startup
+        packages_install, atoms_install, do_fetch = \
+            self.__scan_packages_install()
+
         self._RESOURCES_LOCKED = "--locked" in sys.argv
         if self._RESOURCES_LOCKED:
             locked = True
@@ -1591,8 +1596,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             deptest_reset_all()
 
         def run_up():
-            rc = self._entropy.dependencies_test()
-            gobject.idle_add(_deptest_done, rc)
+            with self._async_event_execution_lock:
+                rc = self._entropy.dependencies_test()
+                gobject.idle_add(_deptest_done, rc)
 
         t = ParallelTask(run_up)
         t.start()
@@ -1658,14 +1664,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             do_stop()
 
         def run_up():
-            try:
-                packages_matched, broken_execs, z = QA.test_shared_objects(
-                    self._entropy.installed_repository(),
-                        task_bombing_func = task_bombing)
-                gobject.idle_add(_libtest_done, packages_matched, broken_execs,
-                    False)
-            except KeyboardInterrupt:
-                gobject.idle_add(_libtest_done, None, None, True)
+            with self._async_event_execution_lock:
+                try:
+                    packages_matched, broken_execs, z = QA.test_shared_objects(
+                        self._entropy.installed_repository(),
+                            task_bombing_func = task_bombing)
+                    gobject.idle_add(_libtest_done, packages_matched,
+                        broken_execs, False)
+                except KeyboardInterrupt:
+                    gobject.idle_add(_libtest_done, None, None, True)
 
         t = ParallelTask(run_up)
         t.start()
@@ -2316,17 +2323,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
                     controller = QueueExecutor(self)
                     def spawn_install():
-                        with self._privileges:
-                            try:
-                                e = controller.run(install_queue[:],
-                                    removal_queue[:], do_purge_cache,
-                                    fetch_only = fetch_only,
-                                    download_sources = download_sources,
-                                    selected_by_user = selected_by_user)
-                            except:
-                                entropy.tools.print_traceback()
-                                e, i = 1, None
-                            gobject.idle_add(_install_done, e)
+                        with self._async_event_execution_lock:
+                            with self._privileges:
+                                try:
+                                    e = controller.run(install_queue[:],
+                                        removal_queue[:], do_purge_cache,
+                                        fetch_only = fetch_only,
+                                        download_sources = download_sources,
+                                        selected_by_user = selected_by_user)
+                                except:
+                                    entropy.tools.print_traceback()
+                                    e, i = 1, None
+                                gobject.idle_add(_install_done, e)
 
                     t = ParallelTask(spawn_install)
                     t.start()
