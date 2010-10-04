@@ -2172,6 +2172,9 @@ class Client:
                 except TimeoutError as e:
                     print_timeout_err()
                     return None
+                except self.socket.error as e:
+                    print_timeout_err()
+                    return None
 
             except self.SSL_exceptions['WantWriteError']:
                 const_debug_write(__name__, "WantWriteError on receive()")
