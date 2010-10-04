@@ -16,6 +16,7 @@ from entropy.core import Singleton
 from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import SSLError, TimeoutError, RepositoryError, \
     ConnectionError, PermissionDenied
+from entropy.cache import MtimePingus, EntropyCacher
 from entropy.const import etpConst, const_setup_file, const_setup_perms
 from entropy.i18n import _
 
@@ -24,10 +25,10 @@ import entropy.dump
 class Client:
 
     ssl_connection = True
-    def __init__(self, EquoInstance, quiet = True, show_progress = False):
+    def __init__(self, entropy_client, quiet = True, show_progress = False):
 
         from entropy.client.interfaces import Client as Cl
-        if not isinstance(EquoInstance, Cl):
+        if not isinstance(entropy_client, Cl):
             mytxt = "A valid Client based instance is needed"
             raise AttributeError(mytxt)
 
@@ -35,12 +36,13 @@ class Client:
         self.socket, self.threading = socket, threading
         import struct
         self.struct = struct
-        self.Entropy = EquoInstance
+        self.Entropy = entropy_client
         self.store = AuthStore()
         self.quiet = quiet
         self.show_progress = show_progress
         self.UGCCache = Cache(self)
         self.TxLocks = {}
+        self._cacher = EntropyCacher()
 
     def connect_to_service(self, repository, timeout = None):
 
@@ -90,28 +92,57 @@ class Client:
             return None
         return srv
 
-    def is_repository_eapi3_aware(self, repository):
+    def is_repository_eapi3_aware(self, repository, _use_cache = True):
 
         aware = self.UGCCache._get_live_cache_item(repository,
             'is_repository_eapi3_aware')
         if aware is not None:
             return aware
 
-        try:
-            srv = self.get_service_connection(repository, check = False,
-                timeout = 6)
-            if srv is None:
-                aware = False
-            else:
-                session = srv.open_session()
-                if session is not None:
-                    srv.close_session(session)
-                    srv.disconnect()
-                    aware = True
+        def _get_awareness():
+            try:
+                srv = self.get_service_connection(repository, check = False,
+                    timeout = 6)
+                if srv is None:
+                    rc = False
                 else:
-                    aware = False
-        except (TimeoutError, SSLError,):
-            aware = False
+                    session = srv.open_session()
+                    if session is not None:
+                        srv.close_session(session)
+                        srv.disconnect()
+                        rc = True
+                    else:
+                        rc = False
+            except (TimeoutError, SSLError,):
+                rc = False
+            return rc
+
+        # Life is hard, and socket communication can be very annoying
+        # over a non-performant connection. So, the only way to circumvent this
+        # is to cache results somewhere.
+        cache_id = "entropy.client.interfaces.ugc.is_repository_eapi3_aware_" \
+            + repository
+        pingus = MtimePingus()
+
+        passed = True
+        if _use_cache:
+            # are 3 days passed?
+            passed = pingus.hours_passed(cache_id, 24*3)
+
+        if passed:
+            aware = _get_awareness()
+            # update pingus mtime
+            pingus.ping(cache_id)
+        else:
+            # then load data from disk cache
+            cached = self._cacher.pop(cache_id)
+            if cached is None:
+                # no cache on disk
+                aware = _get_awareness()
+                self._cacher.push(cache_id, aware, async = False)
+                pingus.ping(cache_id)
+            else:
+                aware = cached
 
         self.UGCCache._set_live_cache_item(repository,
             'is_repository_eapi3_aware', aware)
