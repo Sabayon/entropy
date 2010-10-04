@@ -700,6 +700,28 @@ class AvailablePackagesRepositoryUpdater(object):
             rev_f.write(str(self._last_rev) + "\n")
             rev_f.flush()
 
+    def __validate_database(self):
+        def tell_error(err):
+            mytxt = "%s: %s" % (darkred(_("Repository is invalid")),
+                repr(err),)
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                level = "error",
+                header = "\t"
+            )
+        try:
+            dbconn = self._entropy.open_repository(self.__repository_id)
+        except RepositoryError as err:
+            tell_error(err)
+            return False
+        try:
+            dbconn.validate()
+        except SystemDatabaseError as err:
+            tell_error(err)
+            return False
+        return True
+
     def __database_indexing(self):
 
         # renice a bit, to avoid eating resources
@@ -1973,6 +1995,11 @@ class AvailablePackagesRepositoryUpdater(object):
                 os.remove(path)
             except OSError:
                 continue
+
+        valid = self.__validate_database()
+        if not valid:
+            # repository failed validation
+            return EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR
 
         self.__update_repository_revision()
         if self._entropy.indexing:
