@@ -698,6 +698,30 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_settings(self):
         self.assertRaises(KeyError, self.test_db.getSetting, "fuck")
 
+    def test_new_entropyrepository_schema(self):
+        test_pkg = _misc.get_test_package2()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, xxx, yyy = self.test_db.addPackage(data)
+        old_data = self.test_db.getPackageData(idpackage)
+        old_base_data = self.test_db.getBaseData(idpackage)
+        old_cats = self.test_db.listAllCategories()
+
+        old_val = EntropyRepository._SCHEMA_2010_SUPPORT
+        EntropyRepository._SCHEMA_2010_SUPPORT = True
+        test_db = self.__open_test_db(":memory:")
+        idpackage, xxx, yyy = test_db.addPackage(data)
+        new_data = test_db.getPackageData(idpackage)
+        new_base_data = test_db.getBaseData(idpackage)
+        new_cats = test_db.listAllCategories()
+
+        self.assert_(test_db._isBaseinfoExtrainfo2010())
+        self.assertEqual(old_data, new_data)
+        self.assertEqual(old_base_data, new_base_data)
+        self.assertEqual(old_cats, new_cats)
+
+        test_db.close()
+        EntropyRepository._SCHEMA_2010_SUPPORT = old_val
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")
