@@ -234,7 +234,8 @@ def update(entropy_client, cmd = None):
                             comeback = True
                             break
                         else:
-                            os.system(editor+" "+etpConst['systemroot']+scandata[cmd]['source'])
+                            subprocess.call((editor,
+                                etpConst['systemroot']+scandata[cmd]['source']))
 
                         print_info(darkred("%s " % (_("Edited file"),) ) + darkgreen(etpConst['systemroot'] + \
                             scandata[cmd]['source']) + darkred(" - %s:" % (_("showing differencies"),) )
@@ -254,6 +255,28 @@ def update(entropy_client, cmd = None):
                         continue
 
                     elif action == 4:
+                        source = etpConst['systemroot']+scandata[cmd]['source']
+                        dest = etpConst['systemroot']+scandata[cmd]['destination']
+                        print_info(darkred("%s " % (_("Interactively merge"),) ) + \
+                            darkgreen(source)
+                        )
+                        merge_outcome_path, exit_status = interactive_merge(
+                            source, dest)
+                        if exit_status in (2, 130):
+                            # quit
+                            continue
+                        else: # ok
+                            try:
+                                os.rename(merge_outcome_path, source)
+                            except OSError:
+                                shutil.move(merge_outcome_path, source)
+                            entropy_client.FileUpdates.merge(cmd)
+                            scandata = entropy_client.FileUpdates.scan()
+
+                            comeback = True
+                            break
+
+                    elif action == 5:
                         # show diffs again
                         diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],
                             etpConst['systemroot'] + scandata[cmd]['source'])
@@ -290,7 +313,8 @@ def selaction():
     print_info("  ("+blue("1")+") "+brown(_("Replace original with update")))
     print_info("  ("+blue("2")+") "+darkred(_("Delete update, keeping original as is")))
     print_info("  ("+blue("3")+") "+brown(_("Edit proposed file and show diffs again")))
-    print_info("  ("+blue("4")+") "+darkred(_("Show differences again")))
+    print_info("  ("+blue("4")+") "+brown(_("Interactively merge original with update")))
+    print_info("  ("+blue("5")+") "+darkred(_("Show differences again")))
     # wait user interaction
     action = readtext(_("Your choice (type a number and press enter):")+" ")
     return action
@@ -336,6 +360,20 @@ def showdiff(fromfile, tofile):
         return []
     return output
 
+def interactive_merge(source, destination):
+    tmp_fd, tmp_path = tempfile.mkstemp()
+    args = ("/usr/bin/sdiff", "-o", tmp_path, source, destination)
+    try:
+        rc = subprocess.call(args)
+    except OSError:
+        if err.errno != 2:
+            raise
+        rc = 2
+        os.remove(tmp_path)
+    finally:
+        os.close(tmp_fd)
+
+    return tmp_path, rc
 
 '''
    @description: prints information about config files that should be updated
