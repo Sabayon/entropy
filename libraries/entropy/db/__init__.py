@@ -555,11 +555,11 @@ class EntropyRepository(EntropyRepositoryBase):
             cursor = conn.cursor()
             # !!! enable foreign keys pragma !!! do not remove this
             # otherwise removePackage won't work properly
-            cursor.execute("pragma foreign_keys = 1")
+            cursor.execute("pragma foreign_keys = 1").fetchall()
             # setup temporary tables and indices storage
             # to in-memory value
             # http://www.sqlite.org/pragma.html#pragma_temp_store
-            cursor.execute("pragma temp_store = 2")
+            cursor.execute("pragma temp_store = 2").fetchall()
             self.__cursor_cache[c_key] = cursor
             # memory databases are critical because every new cursor brings
             # up a totally empty repository. So, enforce initialization.
@@ -4445,6 +4445,7 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT OR REPLACE INTO settings VALUES (?, ?)
         """, (setting_name, setting_value,))
+        self._connection().commit()
         self.__settings_cache.clear()
 
     def _setupInitialSettings(self):
@@ -4460,6 +4461,7 @@ class EntropyRepository(EntropyRepositoryBase):
             INSERT OR REPLACE INTO settings VALUES ("_baseinfo_extrainfo_2010",
             "%s");""" % ("1",)
         self._cursor().executescript(query)
+        self._connection().commit()
         self.__settings_cache.clear()
 
     def _databaseStructureUpdates(self):
@@ -4794,8 +4796,9 @@ class EntropyRepository(EntropyRepositoryBase):
             # temporary table do not pop-up with the statement below, so
             # we need to handle them with "care"
             try:
-                self._cursor().execute("""
+                cur = self._cursor().execute("""
                 SELECT count(*) FROM (?) LIMIT 1""", (table,))
+                cur.fetchone()
             except OperationalError:
                 return False
             return True
@@ -5075,7 +5078,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._createLicensesIndex()
             self._createCategoriesIndex()
             self._createCompileFlagsIndex()
-        self._cursor().execute("ANALYZE")
+        self._cursor().execute("ANALYZE").fetchall()
 
     def _createMirrorlinksIndex(self):
         if self.indexing:
@@ -5524,10 +5527,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._atomicRename(tmp_table, table)
 
         if done_something:
-            self._cursor().execute("""
-                INSERT OR REPLACE INTO settings
-                VALUES ("on_delete_cascade", "1")
-            """)
+            self._setSetting("on_delete_cascade", "1")
             # recreate indexes
             self.createAllIndexes()
         elif foreign_keys_supported:
@@ -5535,10 +5535,7 @@ class EntropyRepository(EntropyRepositoryBase):
             try:
                 self.getSetting("on_delete_cascade")
             except KeyError:
-                self._cursor().execute("""
-                    INSERT OR REPLACE INTO settings
-                    VALUES ("on_delete_cascade", "1")
-                """)
+                self._setSetting("on_delete_cascade", "1")
 
     def _moveContent(self, from_table, to_table):
         self._cursor().execute("""
