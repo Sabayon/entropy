@@ -290,6 +290,7 @@ def const_default_settings(rootdir):
         'etpdatabaseupdatefile': default_etp_dbfile+".repo_updates",
         'etpdatabaselicwhitelistfile': default_etp_dbfile+".lic_whitelist",
         'etpdatabasecriticalfile': default_etp_dbfile+".critical",
+        'etpdatabasemirrorsfile': default_etp_dbfile+".mirrors",
         # server-side package dependencies rewrite rules file
         'etpdatabasedeprewritefile': default_etp_packagesdir+"/packages.server.dep_rewrite",
         # server-side package broken dependency blacklist file

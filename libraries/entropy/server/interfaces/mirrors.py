@@ -1115,6 +1115,14 @@ class Server(ServerNoticeBoardMixin):
                     database_license_whitelist_file
             extra_text_files.append(database_license_whitelist_file)
 
+        database_mirrors_file = \
+            self._entropy._get_local_database_mirrors_file(repo)
+        if os.path.isfile(database_mirrors_file) or download:
+            if download:
+                data['database_mirrors_file'] = \
+                    database_mirrors_file
+            extra_text_files.append(database_mirrors_file)
+
         exp_based_pkgs_removal_file = \
             self._entropy._get_local_exp_based_pkgs_rm_whitelist_file(repo)
         if os.path.isfile(exp_based_pkgs_removal_file) or download:

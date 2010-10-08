@@ -1124,19 +1124,25 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         # protocol filter takes place inside entropy.fetchers
         repopackages = [x.strip() for x in repopackages.split() if x.strip()]
-        repopackages = [x for x in repopackages if \
-            entropy.tools.is_valid_uri(x)]
 
         for repo_package in repopackages:
-            try:
-                repo_package = str(repo_package)
-            except (UnicodeDecodeError, UnicodeEncodeError,):
+            new_repo_package = self.__expand_plain_package_mirror(repo_package,
+                product, reponame)
+            if new_repo_package is None:
                 continue
             mydata['plain_packages'].append(repo_package)
-            mydata['packages'].append(
-                repo_package + os.path.sep + product + os.path.sep + reponame)
+            mydata['packages'].append(new_repo_package)
 
         return reponame, mydata
+
+    def __expand_plain_package_mirror(self, mirror, product, reponame):
+        if not entropy.tools.is_valid_uri(mirror):
+            return None
+        try:
+            mirror = str(mirror)
+        except (UnicodeDecodeError, UnicodeEncodeError,):
+            return None
+        return mirror + os.path.sep + product + os.path.sep + reponame
 
     def _repositories_parser(self):
 
@@ -1333,6 +1339,37 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 os.access(repo_db_path, os.R_OK):
                 self.validate_entropy_cache(repo_db_path, repo_db_path_mtime,
                     repoid = repoid)
+
+        # insert extra packages mirrors directly from repository dirs
+        # if they actually exist. use data['order'] because it reflects
+        # the list of available repos.
+        for repoid in data['order']:
+            if repoid in data['available']:
+                obj = data['available'][repoid]
+            elif repoid in data['excluded']:
+                obj = data['excluded'][repoid]
+            else:
+                continue
+            mirrors_file = os.path.join(obj['dbpath'],
+                etpConst['etpdatabasemirrorsfile'])
+            if not (os.path.isfile(mirrors_file) and \
+                os.access(mirrors_file, os.R_OK)):
+                continue
+            raw_mirrors = entropy.tools.generic_file_content_parser(
+                mirrors_file)
+
+            mirrors_data = []
+            for mirror in raw_mirrors:
+                expanded_mirror = self.__expand_plain_package_mirror(
+                    mirror, data['product'], repoid)
+                if expanded_mirror is None:
+                    continue
+                mirrors_data.append((mirror, expanded_mirror))
+            # add in reverse order, at the beginning of the list
+            mirrors_data.reverse()
+            for mirror, expanded_mirror in mirrors_data:
+                obj['plain_packages'].insert(0, mirror)
+                obj['packages'].insert(0, expanded_mirror)
 
         # override parsed branch from env
         override_branch = os.getenv('ETP_BRANCH')
