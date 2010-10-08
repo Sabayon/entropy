@@ -1,3 +1,15 @@
+commit 0b72e1836caca17ac8337936069a89dd735f51ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 20:47:21 2010 +0200
+
+    [entropy.db] do not use _connection().commit() directly
+
+commit 8d2a7e8a6066a5bacf3026e2ec453a1d38b617d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 20:44:46 2010 +0200
+
+    Tagging Entropy version 0.99.50.4
+
 commit 76873c4e6ae7bb6c642e2a876f5c8508469c7da7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 8 20:42:43 2010 +0200
