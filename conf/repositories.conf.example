@@ -108,41 +108,41 @@ branch|5
 #
 #  syntax for officialrepositoryid:
 #
-#    officialrepositoryid: Repository identifier for the official main distribution repository
-#    officialrepositoryid|<repository identifier>
+#    official-repository-id: Repository identifier for the official main distribution repository
+#    official-repository-id|<repository identifier>
 #
-officialrepositoryid|sabayonlinux.org
+official-repository-id|sabayonlinux.org
 
 #
 #  syntax for downloadspeedlimit:
 #
-#    downloadspeedlimit: If you need a way to limit download speed, this is the option you were looking for
-#    downloadspeedlimit|<maximum allowed speed in kb/sec>
+#    download-speed-limit: If you need a way to limit download speed, this is the option you were looking for
+#    download-speed-limit|<maximum allowed speed in kb/sec>
 #
 #    example:
-#    downloadspeedlimit|30
+#    download-speed-limit|30
 #
-# downloadspeedlimit|
+# download-speed-limit|
 
 #
 #  syntax for downloadtimeout:
 #
-#    downloadtimeout: If you are on a slow network, you may want to raise the
+#    download-timeout: If you are on a slow network, you may want to raise the
 #                     download timeout value (by default, it's set to 10 secs)
-#    downloadtimeout|<maximum allowed speed in kb/sec>
+#    download-timeout|<maximum allowed speed in kb/sec>
 #
 #    example:
-#    downloadtimeout|20
+#    download-timeout|20
 #
-# downloadtimeout|20
+# download-timeout|20
 
 #
-#  syntax for securityurl:
+#  syntax for security-url:
 #
-#    securityurl: Entropy compatible Security Advisories (GLSAs) package URL
-#    securityurl|<HTTP/FTP download URL>
+#    security-url: Entropy compatible Security Advisories (GLSAs) package URL
+#    security-url|<HTTP/FTP download URL>
 #
 #    example:
 #    securityurl|http://community.sabayon.org/security/security-advisories.tar.bz2
 #
-# securityurl|
+# security-url|

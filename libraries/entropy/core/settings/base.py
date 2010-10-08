@@ -1244,28 +1244,30 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     if not excluded:
                         data['order'].append(reponame)
 
-            elif (line.find("officialrepositoryid|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif (line.startswith("officialrepositoryid|") or \
+                line.startswith("official-repository-id|")) \
+                and (split_line_len == 2):
 
                 officialreponame = split_line[1]
                 data['default_repository'] = officialreponame
 
-            elif (line.find("developer-repo|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif (line.startswith("developer-repo|")) \
+                and (split_line_len == 2):
 
                 dev_repo = split_line[1]
                 if dev_repo in ("enable", "enabled", "true", "1", "yes",):
                     data['developer_repo'] = True
 
-            elif (line.find("differential-update|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif (line.startswith("differential-update|")) \
+                and (split_line_len == 2):
 
                 dev_repo = split_line[1]
                 if dev_repo in ("disable", "disabled", "false", "0", "no",):
                     data['differential_update'] = False
 
-            elif (line.find("downloadspeedlimit|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif (line.startswith("downloadspeedlimit|") or \
+                line.startswith("download-speed-limit|")) \
+                and (split_line_len == 2):
 
                 try:
                     myval = int(split_line[1])
@@ -1276,8 +1278,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 except (ValueError, IndexError,):
                     data['transfer_limit'] = None
 
-            elif (line.find("downloadtimeout|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif (line.startswith("downloadtimeout|") or \
+                line.startswith("download-timeout|")) \
+                and (split_line_len == 2):
 
                 try:
                     myval = int(split_line[1])
@@ -1285,8 +1288,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 except (ValueError, IndexError,):
                     continue
 
-            elif (line.find("securityurl|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            elif (line.startswith("securityurl|") or \
+                line.startswith("security-url|")) \
+                and (split_line_len == 2):
 
                 try:
                     data['security_advisories_url'] = split_line[1]

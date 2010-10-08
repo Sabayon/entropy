@@ -50,14 +50,14 @@ database-format|bz2
 #
 #  syntax for syncspeedlimit:
 #
-#    syncspeedlimit: If you need a way to limit sync speed (upload/download),
+#    sync-speed-limit: If you need a way to limit sync speed (upload/download),
 #                    this is the option you were looking for
-#    syncspeedlimit|<maximum allowed speed in kb/sec>
+#    sync-speed-limit|<maximum allowed speed in kb/sec>
 #
 #    example:
-#    syncspeedlimit|30
+#    sync-speed-limit|30
 #
-# syncspeedlimit|
+# sync-speed-limit|
 
 # Server side LC_*, LANG, LANGUAGE default settings.
 # This setting is used by entropy.qa to validate packages and avoid weird

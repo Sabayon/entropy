@@ -654,7 +654,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 if fmt in etpConst['etpdatabasesupportedcformats']:
                     data['database_file_format'] = fmt
 
-            elif line.startswith("syncspeedlimit|") and (split_line_len == 2):
+            elif (line.startswith("sync-speed-limit|") or \
+                line.startswith("syncspeedlimit|")) and (split_line_len == 2):
 
                 try:
                     speed_limit = int(split_line[1])

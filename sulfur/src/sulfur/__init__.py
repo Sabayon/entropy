@@ -1245,7 +1245,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             ],
             etpConst['repositoriesconf']: [
                 (
-                    'downloadspeedlimit',
+                    'download-speed-limit',
                     self._settings['repositories']['transfer_limit'],
                     int,
                     fill_setting,
