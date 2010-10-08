@@ -105,6 +105,16 @@ class Package:
             pkg_disk_path = Package.get_standard_fetch_disk_path(download)
         return pkg_disk_path
 
+    def __escape_path(self, path):
+        """
+        Some applications (like ld) don't like ":" in path, others just don't
+        escape paths at all. So, it's better to avoid to use field separators
+        in path.
+        """
+        path = path.replace(":", "_")
+        path = path.replace("~", "_")
+        return path
+
     def __check_pkg_path_download(self, download, checksum = None):
         # is the file available
         pkg_path = self.__get_fetch_disk_path(download)
@@ -3439,10 +3449,9 @@ class Package:
                 self.pkgmeta['download'])
 
         self.pkgmeta['unpackdir'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self.pkgmeta['download']
+            os.path.sep + self.__escape_path(self.pkgmeta['download'])
 
-        self.pkgmeta['imagedir'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self.pkgmeta['download'] + os.path.sep + \
+        self.pkgmeta['imagedir'] = self.pkgmeta['unpackdir'] + os.path.sep + \
             etpConst['entropyimagerelativepath']
 
         self.pkgmeta['pkgdbpath'] = os.path.join(self.pkgmeta['unpackdir'],
