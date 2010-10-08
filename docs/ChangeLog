@@ -1,3 +1,272 @@
+commit 1a423ed034fcbf5131075e309e694153a67aed0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 18:19:15 2010 +0200
+
+    [update TODO]
+
+commit acaeb3eb0af2e76d0c30b8fdc80e6685e6eebbec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 18:13:14 2010 +0200
+
+    [entropy.client.interfaces.package] do not use temporary unpack paths with ":" in it.
+    
+    sys-libs/glibc got confused. Thanks to Diego Elio Pettenò for
+    finding this out.
+
+commit ff36b9d6f9cdabb2bc28c26c2460b2acf7328378
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 7 16:54:56 2010 +0200
+
+    [equo] implement support for interactive merge
+
+commit cb0fd5336126446344295c1435c71fa72133c3eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 23:57:59 2010 +0200
+
+    [entropy.db] remove implementation specific arguments from EntropyRepositoryBase.exportRepository()
+
+commit 83cf08a6e63dcb71633a0a36c4e1c7394d4fbffe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 20:09:20 2010 +0200
+
+    [entropy.client.interfaces.db] when updating repositories, after the actual update, always validate database file
+
+commit 5feff074ba49a75a689686e14b569a82045e87ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 19:54:04 2010 +0200
+
+    [entropy.services.interfaces] catch socket.error exception when polling on ssl
+
+commit 043def01fa1cc56935d9ddc58205391d825da2a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 19:47:24 2010 +0200
+
+    [sulfur] validate repositories every time application cache is reset
+
+commit ad1611c2fd76eb4facf811b5fec4b2806a713b60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 19:18:01 2010 +0200
+
+    [tests] add new EntropyRepository SQL schema tests
+
+commit da5b3bac0b89a769c9319369b02db56f240b1cfb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 17:40:07 2010 +0200
+
+    [entropy.client.services.ugc.interfaces] cache is_repository_eapi3_aware() result for good sake
+
+commit 0b97b900a4f8ece93d6dedae2022a75ba04eea6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 17:15:51 2010 +0200
+
+    [sulfur] execute installed packages repository backup without blocking the UI, introduce thread lock to avoid concurrency issues.
+
+commit 625a9279acc1231b63f1c6d7e0a3cd1eb16780ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 4 16:58:49 2010 +0200
+
+    [entropy.client.interfaces] improve (and change API) backup_repository() and restore_repository() reliability. Make them safe to use.
+
+commit e09b199f705e2ea012d07f8da907c2772bbd96c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 3 15:49:45 2010 +0200
+
+    [entropy.db] make importRepository() atomic
+
+commit ea63fe2b164fea0154e8b32a5deeaf48244df836
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 3 15:48:48 2010 +0200
+
+    [entropy.db] improve reliability of contentDiff(), generating random temp. table in a smarter way
+
+commit 440f37996685842a72354516ba94786125473cea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 3 14:28:12 2010 +0200
+
+    [entropy.db] EntropyRepository(Base): importRepository is now a static method
+
+commit 8da4e66b3660e709c25d9de19d438081d1f5d4ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 3 13:53:45 2010 +0200
+
+    [entropy*] before calling Client.backup_repository() or Client.restore_repository(), make sure that transactions are committed
+
+commit 2a531dd01430392cdfecd580c207f558a3ed6d18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 3 11:13:22 2010 +0200
+
+    [entropy.db] introduce SQL schema changes in EntropyRepository (small API break)
+    
+    New SQL schema changes have been introduced to EntropyRepository,
+    keeping them disabled by default (older Entropy client have to be
+    flushed out first). The aim is to improve performance avoiding
+    extra SQL joins on baseinfo and extrainfo tables, thus removing
+    "categories", "flags", "licenses" tables (which missed external
+    keys also).
+    This upgrade is completely backward compatible and new schema is detected
+    at runtime, so the whole class can work with old and new one transparently.
+    The downside is that listPackageIdsInCategoryId() is no longer available and
+    has been replaced by a more generic listPackageIdsInCategory().
+    This new SQL schema will be hopefully enabled before the end of 2011.
+
+commit 770721dae48b8f5e8cd771b1b05a00d04e1af40c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 29 20:51:28 2010 +0200
+
+    [tests] add EntropyRepository.getSetting() test
+
+commit bd9b4a9000602494f422389a03516511f3cfd438
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 29 20:49:38 2010 +0200
+
+    [entropy.db] EntropyRepository: fix schema_revision comparison in _databaseStructureUpdates
+
+commit 9adc3fff284efa87fb885e298c74e00000bce6ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 29 20:35:43 2010 +0200
+
+    [entropy.db] EntropyRepository: run schema update routines only when schema_revision stored in db differs from the one stored in the class obj.
+
+commit a42c9c72ed3eea7da876dacf7f0ceec0aa14f251
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 29 20:25:41 2010 +0200
+
+    [entropy.db] raise KeyError exception the new way
+
+commit d219de58a14d7e1d4d1004bf00643db061df8292
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 29 13:50:07 2010 +0200
+
+    [po] update Italian translation
+
+commit d83e644825cf9cfc2157f8b8f056ed0fce51bb80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Sep 29 12:19:23 2010 +0200
+
+    [entropy.client] improve usability of rescue and resurrect tools
+
+commit 71200c2d9f49dd82c16155bf4346e74af870cbbe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 28 11:13:43 2010 +0200
+
+    [todo] update TODO
+
+commit 2531888516cc0305d79204a99dbb499d78a06d03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 28 11:13:12 2010 +0200
+
+    [entropy.db] deprecate EntropyRepositoryBase.commitChanges() in favour of commit()
+
+commit 7734745bce22f7f6bb7c082028bb1346f267b95b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 28 09:52:20 2010 +0200
+
+    Revert "[entropy.server] sync package sets at every commit hook (to avoid unaligned data)"
+    
+    This reverts commit ab16a7e6d7e9d65c6ec0ccf83fd25a8cad47c080.
+
+commit 4aad2397a5a76a3d36d41d29b4896ef5c3d3f218
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 28 09:36:25 2010 +0200
+
+    [entropy.db] EntropyRepository: make _migrateCountersTable() atomic
+
+commit ffd8cf0f5c2d57ddb4067ce5d29e94931587077a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Sep 28 08:29:29 2010 +0200
+
+    [conf] add http://mirror.agooga.ru to repositories.conf.example
+
+commit 6e639a3844fd68bdf9a21e6f10ce9df1cf33639f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 23:01:01 2010 +0200
+
+    [todo] update TODO
+
+commit fdd75c87b36925b93ab81211c00b026280346861
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 23:00:09 2010 +0200
+
+    [sulfur] fix speed regression caused by the removal of fixed_height_mode from our main gtk.TreeView
+
+commit 3ac93c51a937c20e06ed5dd5a16fb5ec734b6833
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 22:58:38 2010 +0200
+
+    [sulfur] move package installation logic (from argv) in a less annoying place, improving startup speed
+
+commit 41deaba72c56424c1238a68b4fb5bf99ba29e047
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 21:35:03 2010 +0200
+
+    [entropy.spm] remove environment_update() arguments, unwanted.
+
+commit 5d4f7c18ebf505687765f56fe4b3e2229abccac2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 21:34:30 2010 +0200
+
+    [entropy.client.interface.methods] optimize reorder_mirrors() do not execute ping test function on the same mirror more than once
+
+commit 39ef4a4b58922222cceec76400895acbb7e569b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 21:27:53 2010 +0200
+
+    [sulfur] move orphan packages dialog and logic to post-_process_queue() functions
+
+commit 935122ee080f2cfb56ba8f0ba0f6637b2c39c9bc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 21:00:07 2010 +0200
+
+    [entropy.fetchers] raise InterruptError exception the right way
+
+commit 84fe13c529633b813e17f06b980d8277e2192720
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 20:54:32 2010 +0200
+
+    [conf] repositories.conf: remove mirror.us.sabayon.org, mirror gave up without notice
+
+commit 57e10c23c77c9083ca254bed6cb7c38f90580ab3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 18:52:40 2010 +0200
+
+    [entropy.server] show package sets information after having updated package sets metadata
+
+commit ab16a7e6d7e9d65c6ec0ccf83fd25a8cad47c080
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Sep 27 18:28:06 2010 +0200
+
+    [entropy.server] sync package sets at every commit hook (to avoid unaligned data)
+
+commit ac0edd76274b72f6849668dbe067218481812c7d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 15:02:24 2010 +0200
+
+    [sulfur] improve VteFakeoutfile raw input workaround (\n vs \n\r)
+
+commit 81f0b3fd449c49e9b420b2db37f5039138f679a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 14:51:49 2010 +0200
+
+    [entropy.const] when filesystem encoding is not UTF-8, die prematurely.
+
+commit 7932378fd5fbb0aa0b59b0c838587fdb51c3e6be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 14:24:55 2010 +0200
+
+    [equo] run python with -OO
+
+commit 2233d570015143cd5e9e2142cd8315e3b06a75c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 14:24:33 2010 +0200
+
+    [todo] update TODO
+
+commit 92493da55ffa125886ba8b3fe05cdec951636ea6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Sep 26 00:40:04 2010 +0200
+
+    Tagging Entropy version 0.99.50.2
+
 commit a8eb1e7ddb7f55389edc2f8e52ca9abf3257ef14
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Sep 26 00:28:14 2010 +0200
