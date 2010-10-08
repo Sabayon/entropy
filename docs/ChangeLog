@@ -1,3 +1,21 @@
+commit 76873c4e6ae7bb6c642e2a876f5c8508469c7da7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 20:42:43 2010 +0200
+
+    [entropy.db] improve reliability of transactions, always commit when updating settings
+
+commit 0cfccd4267fd87745b16910c4343162e202c5b4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 18:19:49 2010 +0200
+
+    [entropy.conf] uniform setting keys (keeping backward compat)
+
+commit fb344f98900ae225a9a85dded93eeb67f65df070
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 18:19:38 2010 +0200
+
+    Tagging Entropy version 0.99.50.3
+
 commit 1a423ed034fcbf5131075e309e694153a67aed0b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 8 18:19:15 2010 +0200
