@@ -4445,7 +4445,7 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT OR REPLACE INTO settings VALUES (?, ?)
         """, (setting_name, setting_value,))
-        self._connection().commit()
+        self.commit()
         self.__settings_cache.clear()
 
     def _setupInitialSettings(self):
@@ -4461,7 +4461,7 @@ class EntropyRepository(EntropyRepositoryBase):
             INSERT OR REPLACE INTO settings VALUES ("_baseinfo_extrainfo_2010",
             "%s");""" % ("1",)
         self._cursor().executescript(query)
-        self._connection().commit()
+        self.commit()
         self.__settings_cache.clear()
 
     def _databaseStructureUpdates(self):
