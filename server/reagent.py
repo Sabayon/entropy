@@ -22,9 +22,8 @@ import entropy.tools
 from entropy.output import red, print_error, print_generic, \
     is_stdout_a_tty, nocolor, etpUi
 from entropy.const import etpConst, const_kill_threads
-from entropy.core.settings.base import SystemSettings
+from entropy.server.interfaces import Server
 from text_tools import print_menu
-SysSettings = SystemSettings()
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
@@ -32,8 +31,8 @@ if not is_stdout_a_tty():
 
 help_opts = [
     None,
-    (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1,
-        'Entropy Package Manager - (C) %s' % (entropy.tools.get_year(),) ),
+    (0, " ~ reagent ~ ", 1,
+        'Entropy Framework Server - (C) %s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
     None,
@@ -147,6 +146,9 @@ def install_exception_handler():
 def uninstall_exception_handler():
     sys.excepthook = sys.__excepthook__
 
+def get_entropy_server():
+    return Server(community_repo = etpConst['community']['mode'])
+
 options = sys.argv[1:]
 
 # print version
@@ -196,12 +198,12 @@ main_cmd = options.pop(0)
 if main_cmd == "update":
     import server_reagent
     rc = server_reagent.update(options)
-    server_reagent.Entropy.close_repositories()
+    get_entropy_server().close_repositories()
 
 elif main_cmd == "inject":
     import server_reagent
     rc = server_reagent.inject(options)
-    server_reagent.Entropy.close_repositories()
+    get_entropy_server().close_repositories()
 
 elif main_cmd == "query":
     import server_query
@@ -212,12 +214,12 @@ elif main_cmd == "repo":
         etpUi['warn'] = False
     import server_reagent
     rc = server_reagent.repositories(options)
-    server_reagent.Entropy.close_repositories()
+    get_entropy_server().close_repositories()
 
 elif main_cmd == "status":
     import server_reagent
     server_reagent.status()
-    server_reagent.Entropy.close_repositories()
+    get_entropy_server().close_repositories()
     rc = 0
 
 elif main_cmd == "key":
@@ -225,29 +227,28 @@ elif main_cmd == "key":
     rc = server_key.key(options)
 
 elif main_cmd == "deptest":
-    import server_reagent
-    server_reagent.Entropy.dependencies_test()
-    server_reagent.Entropy.close_repositories()
+    server = get_entropy_server()
+    server.dependencies_test()
+    server.close_repositories()
     rc = 0
 
 elif main_cmd == "pkgtest":
-
-    import server_reagent
-    server_reagent.Entropy.verify_local_packages([], ask = etpUi['ask'])
-    server_reagent.Entropy.close_repositories()
+    server = get_entropy_server()
+    server.verify_local_packages([], ask = etpUi['ask'])
+    server.close_repositories()
     rc = 0
 
 elif main_cmd == "libtest":
-    import server_reagent
+    server = get_entropy_server()
     dump = "--dump" in options
-    rc, pkgs = server_reagent.Entropy.test_shared_objects(
+    rc, pkgs = server.test_shared_objects(
         dump_results_to_file = dump)
-    x = server_reagent.Entropy.close_repositories()
+    x = server.close_repositories()
 
 elif main_cmd == "revdeps":
-    import server_reagent
-    rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
-    server_reagent.Entropy.close_repositories()
+    server = get_entropy_server()
+    rc = server.generate_reverse_dependencies_metadata()
+    server.close_repositories()
 
 # cleanup
 elif main_cmd == "cleanup":
@@ -258,7 +259,7 @@ elif main_cmd == "cleanup":
 elif main_cmd == "spm":
     import server_reagent
     rc = server_reagent.spm(options)
-    server_reagent.Entropy.close_repositories()
+    get_entropy_server().close_repositories()
 
 if rc == -10:
     print_menu(help_opts)

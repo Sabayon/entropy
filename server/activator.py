@@ -23,9 +23,7 @@ import entropy.tools
 from entropy.output import red, is_stdout_a_tty, nocolor, print_generic, \
     etpUi, print_error
 from entropy.const import etpConst, const_kill_threads
-from entropy.core.settings.base import SystemSettings
 from text_tools import print_menu
-SysSettings = SystemSettings()
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
@@ -33,7 +31,7 @@ if not is_stdout_a_tty():
 
 help_opts = [
     None,
-    (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1,
+    (0, " ~ activator ~ ", 1,
         'Entropy Package Manager - (C) %s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
