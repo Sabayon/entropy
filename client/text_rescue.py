@@ -553,7 +553,7 @@ def _database_spmsync(entropy_client):
                 mydata = Spm.extract_package_metadata(temp_pkg_path)
             except Exception as err:
                 entropy.tools.print_traceback()
-                entropy_client.clientLog.log(
+                entropy_client.logger.log(
                     "[spm sync]",
                     etpConst['logging']['normal_loglevel_id'],
                     "Database spmsync: Exception caught: %s" % (
@@ -681,7 +681,7 @@ def _database_generate(entropy_client):
             mydata = Spm.extract_package_metadata(temp_pkg_path)
         except Exception as err:
             entropy.tools.print_traceback()
-            entropy_client.clientLog.log(
+            entropy_client.logger.log(
                 "[spm sync]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Database generation: Exception caught: %s" % (str(err),)

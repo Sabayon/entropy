@@ -1015,13 +1015,13 @@ class Package:
     def __unpack_package(self):
 
         if not self.pkgmeta['merge_from']:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Unpacking package: %s" % (self.pkgmeta['atom'],)
             )
         else:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Merging package: %s" % (self.pkgmeta['atom'],)
@@ -1073,7 +1073,7 @@ class Package:
                         catch_empty = True
                     )
                 except EOFError:
-                    self._entropy.clientLog.log(
+                    self._entropy.logger.log(
                         "[Package]", etpConst['logging']['normal_loglevel_id'], 
                         "EOFError on " + self.pkgmeta['pkgpath']
                     )
@@ -1081,7 +1081,7 @@ class Package:
                 except:
                     # this will make devs to actually catch the
                     # right exception and prepare a fix
-                    self._entropy.clientLog.log(
+                    self._entropy.logger.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "Raising Unicode/Pickling Error for " + \
@@ -1123,7 +1123,7 @@ class Package:
         try:
             Spm = self._entropy.Spm()
         except Exception as err:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -1144,7 +1144,7 @@ class Package:
 
         self._entropy.clear_cache()
 
-        self._entropy.clientLog.log("[Package]",
+        self._entropy.logger.log("[Package]",
             etpConst['logging']['normal_loglevel_id'],
                 "Removing package: %s" % (self.pkgmeta['removeatom'],))
 
@@ -1273,7 +1273,7 @@ class Package:
 
             # Is file or directory a protected item?
             if protected:
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['verbose_loglevel_id'],
                     "[remove] Protecting config file: %s" % (sys_root_item,)
@@ -1332,7 +1332,7 @@ class Package:
             try:
                 os.remove(sys_root_item)
             except OSError as err:
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "[remove] Unable to remove %s, error: %s" % (
@@ -1366,7 +1366,7 @@ class Package:
                 level = "warning",
                 header = red("   ## ")
             )
-            self._entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
+            self._entropy.logger.log("[Package]", etpConst['logging']['normal_loglevel_id'],
                 "Collision found during removal of %s - cannot overwrite" % (
                     path,)
             )
@@ -1428,7 +1428,7 @@ class Package:
         # clear on-disk cache
         self._entropy.clear_cache()
 
-        self._entropy.clientLog.log(
+        self._entropy.logger.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Installing package: %s" % (self.pkgmeta['atom'],)
@@ -1474,7 +1474,7 @@ class Package:
         try:
             Spm = self._entropy.Spm()
         except Exception as err:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -1483,7 +1483,7 @@ class Package:
             )
             return -1
 
-        self._entropy.clientLog.log(
+        self._entropy.logger.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Installing new SPM entry: %s" % (self.pkgmeta['atom'],)
@@ -1516,7 +1516,7 @@ class Package:
         try:
             Spm = self._entropy.Spm()
         except Exception as err:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -1530,7 +1530,7 @@ class Package:
             spm_uid = Spm.assign_uid_to_installed_package(spm_package)
         except (SPMError, KeyError,):
             # installed package not available, we must ignore it
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Spm uid not available for Spm package: %s (pkg not avail?)" % (
@@ -1557,7 +1557,7 @@ class Package:
         try:
             Spm = self._entropy.Spm()
         except Exception as err:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
@@ -1566,7 +1566,7 @@ class Package:
             )
             return -1
 
-        self._entropy.clientLog.log(
+        self._entropy.logger.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Removing from SPM: %s" % (self.pkgmeta['removeatom'],)
@@ -1847,7 +1847,7 @@ class Package:
             # if our directory is a file on the live system
             elif os.path.isfile(rootdir): # really weird...!
 
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a file when it should be " \
@@ -1870,7 +1870,7 @@ class Package:
                 # if our live system features a directory instead of
                 # a symlink, we should consider removing the directory
                 if not os.path.islink(rootdir) and os.path.isdir(rootdir):
-                    self._entropy.clientLog.log(
+                    self._entropy.logger.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! %s is a directory when it should be " \
@@ -1896,7 +1896,7 @@ class Package:
                     try:
                         shutil.rmtree(rootdir, True)
                     except (shutil.Error, OSError,) as err:
-                        self._entropy.clientLog.log(
+                        self._entropy.logger.log(
                             "[Package]",
                             etpConst['logging']['normal_loglevel_id'],
                             "WARNING!!! Failed to rm %s " \
@@ -1981,7 +1981,7 @@ class Package:
                     self.pkgmeta['configprotect_data'].append(
                         (prot_old_tofile, prot_md5,))
                 except (IOError,) as err:
-                    self._entropy.clientLog.log(
+                    self._entropy.logger.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to get md5 of %s " \
@@ -2033,7 +2033,7 @@ class Package:
             except RuntimeError:
                 # circular symlink, fuck!
                 # really weird...!
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a circular symlink !!!" % (fromfile,)
@@ -2055,7 +2055,7 @@ class Package:
             except RuntimeError:
                 # circular symlink, fuck!
                 # really weird...!
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a circular symlink !!!" % (tofile,)
@@ -2080,7 +2080,7 @@ class Package:
                     # try to cope...
                     os.remove(tofile)
                 except (OSError, IOError,) as err:
-                    self._entropy.clientLog.log(
+                    self._entropy.logger.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to cope to oddity of %s " \
@@ -2093,7 +2093,7 @@ class Package:
             if os.path.isdir(tofile) and not os.path.islink(tofile):
 
                 # really weird...!
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a directory when it should " \
@@ -2116,7 +2116,7 @@ class Package:
                 try:
                     shutil.rmtree(tofile, True)
                 except (shutil.Error, IOError,) as err:
-                    self._entropy.clientLog.log(
+                    self._entropy.logger.log(
                         "[Package]",
                         etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to cope to oddity of %s " \
@@ -2135,7 +2135,7 @@ class Package:
                 if err.errno not in (errno.ENOENT, errno.EACCES,):
                     raise
 
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Error during file move" \
@@ -2148,7 +2148,7 @@ class Package:
                 done = True
 
             if not done:
-                self._entropy.clientLog.log(
+                self._entropy.logger.log(
                     "[Package]",
                     etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Error during file move" \
@@ -2308,7 +2308,7 @@ class Package:
 
         # check if protection is disabled for this element
         if tofile in misc_settings['configprotectskip']:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Skipping config file installation/removal, " \
@@ -2355,7 +2355,7 @@ class Package:
                 os.path.basename(oldtofile)[10:])
 
         if not do_quiet:
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "Protecting config file: %s" % (oldtofile,)
@@ -2388,7 +2388,7 @@ class Package:
                 level = "warning",
                 header = darkred("   ## ")
             )
-            self._entropy.clientLog.log(
+            self._entropy.logger.log(
                 "[Package]",
                 etpConst['logging']['normal_loglevel_id'],
                 "WARNING!!! Collision found during install " \
@@ -2819,7 +2819,7 @@ class Package:
         Post-remove phase of package install, this step removes older SPM
         package entries from SPM db.
         """
-        self._entropy.clientLog.log(
+        self._entropy.logger.log(
             "[Package]",
             etpConst['logging']['normal_loglevel_id'],
             "Remove old package (spm data): %s" % (self.pkgmeta['removeatom'],)

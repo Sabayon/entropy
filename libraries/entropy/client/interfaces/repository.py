@@ -226,7 +226,7 @@ class Repository:
             security_intf = self._entropy.Security()
             security_intf.sync()
         except Exception as e:
-            entropy.tools.print_traceback(f = self._entropy.clientLog)
+            entropy.tools.print_traceback(f = self._entropy.logger)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
             self._entropy.output(
                 mytxt,

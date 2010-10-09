@@ -31,7 +31,7 @@ class Trigger:
             mytxt = "A valid Entropy Instance is needed"
             raise AttributeError(mytxt)
 
-        self.Entropy = entropy_client
+        self._entropy = entropy_client
         self.pkgdata = pkgdata
         self.prepared = False
         self.triggers = []
@@ -40,7 +40,7 @@ class Trigger:
 
         self.spm_support = True
         try:
-            Spm = self.Entropy.Spm()
+            Spm = self._entropy.Spm()
             self.Spm = Spm
         except Exception as e:
             entropy.tools.print_traceback()
@@ -50,7 +50,7 @@ class Trigger:
                 e,
                 _("please fix"),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 0,
                 header = bold(" !!! ")
@@ -83,7 +83,7 @@ class Trigger:
         functions = []
 
         if self.spm_support:
-            spm_class = self.Entropy.Spm_class()
+            spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
             while True:
                 if self.pkgdata['spm_phases'] is not None:
@@ -109,7 +109,7 @@ class Trigger:
 
         # Portage phases
         if self.spm_support:
-            spm_class = self.Entropy.Spm_class()
+            spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
             while True:
                 if self.pkgdata['spm_phases'] != None:
@@ -129,7 +129,7 @@ class Trigger:
         functions = []
 
         if self.spm_support:
-            spm_class = self.Entropy.Spm_class()
+            spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
 
             # doing here because we need /var/db/pkg stuff
@@ -161,7 +161,7 @@ class Trigger:
 
         # Portage hook
         if self.spm_support:
-            spm_class = self.Entropy.Spm_class()
+            spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
 
             while True:
@@ -196,9 +196,9 @@ class Trigger:
         except Exception as e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
             tb = entropy.tools.get_traceback()
-            self.Entropy.output(tb, importance = 0, level = "error")
-            self.Entropy.clientLog.write(tb)
-            self.Entropy.clientLog.log(
+            self._entropy.output(tb, importance = 0, level = "error")
+            self._entropy.logger.write(tb)
+            self._entropy.logger.log(
                 "[Trigger]",
                 etpConst['logging']['normal_loglevel_id'],
                 "[POST] ATTENTION Cannot run External trigger for " + \
@@ -210,7 +210,7 @@ class Trigger:
                 bold(mykey),
                 brown(_("Please report it")),
             )
-            self.Entropy.output(
+            self._entropy.output(
                 mytxt,
                 importance = 0,
                 header = red("   ## ")
@@ -220,7 +220,7 @@ class Trigger:
     class EntropyShSandbox:
 
         def __init__(self, Entropy):
-            self.Entropy = Entropy
+            self._entropy = Entropy
 
         def __env_setup(self, stage, pkgdata):
 
@@ -353,7 +353,7 @@ class Trigger:
     class EntropyPySandbox:
 
         def __init__(self, Entropy):
-            self.Entropy = Entropy
+            self._entropy = Entropy
 
         def run(self, stage, pkgdata, trigger_file):
             my_ext_status = 1
@@ -408,13 +408,13 @@ class Trigger:
         entropy_sh = etpConst['trigger_sh_interpreter']
         if interpreter == "#!%s" % (entropy_sh,):
             os.chmod(triggerfile, 0o775)
-            my = self.EntropyShSandbox(self.Entropy)
+            my = self.EntropyShSandbox(self._entropy)
         else:
-            my = self.EntropyPySandbox(self.Entropy)
+            my = self.EntropyPySandbox(self._entropy)
         return my.run(self.phase, self.pkgdata, triggerfile)
 
     def trigger_env_update(self):
-        self.Entropy.clientLog.log(
+        self._entropy.logger.log(
             "[Trigger]",
             etpConst['logging']['normal_loglevel_id'],
             "[POST] Running env_update"
@@ -423,7 +423,7 @@ class Trigger:
 
     def trigger_spm_postinstall(self):
 
-        self.Entropy.output(
+        self._entropy.output(
             "SPM: %s" % (brown(_("post-install phase")),),
             importance = 0,
             header = red("   ## ")
@@ -432,7 +432,7 @@ class Trigger:
 
     def trigger_spm_preinstall(self):
 
-        self.Entropy.output(
+        self._entropy.output(
             "SPM: %s" % (brown(_("pre-install phase")),),
             importance = 0,
             header = red("   ## ")
@@ -441,7 +441,7 @@ class Trigger:
 
     def trigger_spm_preremove(self):
 
-        self.Entropy.output(
+        self._entropy.output(
             "SPM: %s" % (brown(_("pre-remove phase")),),
             importance = 0,
             header = red("   ## ")
@@ -450,7 +450,7 @@ class Trigger:
 
     def trigger_spm_postremove(self):
 
-        self.Entropy.output(
+        self._entropy.output(
             "SPM: %s" % (brown(_("post-remove phase")),),
             importance = 0,
             header = red("   ## ")

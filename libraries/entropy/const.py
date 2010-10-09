@@ -468,7 +468,6 @@ def const_default_settings(rootdir):
         'syslogdir': default_etp_syslogdir, # Entropy system tools log directory
         'entropylogfile': default_etp_syslogdir+"entropy.log",
         'securitylogfile': default_etp_syslogdir+"security.log",
-        'equologfile': default_etp_syslogdir+"equo.log",
         'spmlogfile': default_etp_syslogdir+"spm.log",
 
         'etpdatabaseclientdir': default_etp_dir + default_etp_client_repodir + \

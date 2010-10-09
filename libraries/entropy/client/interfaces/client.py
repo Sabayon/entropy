@@ -636,9 +636,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # class init
         LoadersMixin.__init__(self)
 
-        self.clientLog = LogFile(
+        self.logger = LogFile(
             level = self._settings['system']['log_level'],
-            filename = etpConst['equologfile'], header = "[client]")
+            filename = etpConst['entropylogfile'], header = "[client]")
 
         self.MultipleUrlFetcher = multiple_url_fetcher
         self.urlFetcher = url_fetcher
@@ -724,8 +724,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if hasattr(self, '_installed_repository'):
             if self._installed_repository != None:
                 self._installed_repository.close()
-        if hasattr(self, 'clientLog'):
-            self.clientLog.close()
+        if hasattr(self, 'logger'):
+            self.logger.close()
         if hasattr(self, '_settings') and \
             hasattr(self, 'sys_settings_client_plugin_id') and \
             hasattr(self._settings, 'remove_plugin'):

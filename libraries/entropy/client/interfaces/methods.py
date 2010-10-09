@@ -645,7 +645,7 @@ class RepositoryMixin:
         db_path = etpConst['etpdatabaseclientfilepath']
         if (not self.noclientdb) and (not os.path.isfile(db_path)):
             conn = load_db_from_ram()
-            entropy.tools.print_traceback(f = self.clientLog)
+            entropy.tools.print_traceback(f = self.logger)
         else:
             try:
                 repo_class = self.get_repository(etpConst['clientdbid'])
@@ -658,7 +658,7 @@ class RepositoryMixin:
                     etpConst['clientdbid'])
                 # TODO: remove this in future, drop useless data from clientdb
             except (DatabaseError,):
-                entropy.tools.print_traceback(f = self.clientLog)
+                entropy.tools.print_traceback(f = self.logger)
                 conn = load_db_from_ram()
             else:
                 # validate database
@@ -670,7 +670,7 @@ class RepositoryMixin:
                             conn.close()
                         except (RepositoryPluginError, OSError, IOError):
                             pass
-                        entropy.tools.print_traceback(f = self.clientLog)
+                        entropy.tools.print_traceback(f = self.logger)
                         conn = load_db_from_ram()
 
         self._installed_repository = conn
