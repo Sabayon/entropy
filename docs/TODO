@@ -13,7 +13,6 @@
             =app-crypt/gnupg-1.4*
         )
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
-    - reagent/activator, do not use stuff like server_reagent.Entropy.blah()
       alternatively use "=" instead of "|"
     - equo security filescheck (--generate-hashes)
     - implement system snapshots (as snapshots, sets).
