@@ -1,6 +1,7 @@
 
   1.0:
 
+    - entropy.server: warn when package set disappears!
     - more conditional deps support? (syntax parser)
             || (
             (
@@ -12,11 +13,9 @@
             )
             =app-crypt/gnupg-1.4*
         )
-    - collect metadata regarding: postscript drivers, fonts (PackageKit req)
       alternatively use "=" instead of "|"
     - equo security filescheck (--generate-hashes)
-    - implement system snapshots (as snapshots, sets).
-    - Client.urlFetcher/MultipleUrlFetcher/clientLog? ugly!
+    - Client.urlFetcher/MultipleUrlFetcher ugly!
     - entropy package metadata .dtd specs
     - entropy.client API docs
     - server-side handling of package deltas (daemon)
@@ -29,6 +28,8 @@
         >>  ## [U] [sabayonlinux.org] media-video/nvidia-settings-256.52-r2|0   [256.52|0]
         >>  ## [U] [sabayonlinux.org] app-emulation/virtualbox-modules-3.2.8#2.6.34-sabayon|3   [3.2.8|1|2.6.34-sabayon]
     - complete README
+    - implement system snapshots (as snapshots, sets).
+    - collect metadata regarding: postscript drivers, fonts (PackageKit req)
 
   1.1:
 
