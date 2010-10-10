@@ -1,3 +1,63 @@
+commit 9028e4bd2bb474fc287c903a1a8196ca5e261fbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 10 17:59:58 2010 +0200
+
+    [todo] update TODO
+
+commit 2ee709643497a32513d297e3534446eeb1f9cdc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 10 17:57:05 2010 +0200
+
+    [entropy.const] const_kill_threads: do not try to kill own thread, it won't work
+
+commit cfbb0909c5f144e478de9e829560c5bda8b7e094
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 10 17:55:21 2010 +0200
+
+    [services] add client-updates-daemon wrapper (which sets LC_*), move real executable to /usr/libexec, close bug #1880
+
+commit 43003221761005cd4c250a6f98ca2ea4f7113fdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 9 23:23:28 2010 +0200
+
+    [entropy.client] rename Client.clientLog into Client.logger
+
+commit 8781d9d928ff1132e7893f6ec9e667adbf3a090d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 9 13:55:57 2010 +0200
+
+    [todo] update TODO
+
+commit 255b2fe46817ca115b4710b3853e23cbdf94c3d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 9 13:55:24 2010 +0200
+
+    [reagent,activator] cleanup respective modules, trivial fixes
+
+commit 7dec719efc1b5ab187818c0847d1f1b903e6e995
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 9 13:35:09 2010 +0200
+
+    [sulfur.views] catch IOError when calling resize_image
+
+commit 118db0340c8fde597f57157917d8ba54c31908d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 9 01:17:54 2010 +0200
+
+    [todo] update TODO
+
+commit 7c2d053366d04ea15966f24f82b191af03273145
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 9 01:17:23 2010 +0200
+
+    [entropy.core,entropy.server] implement support for per-repository packages mirrors support.
+
+commit 01dc775a908be29e52cb6321085bcb4dce514385
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 8 20:47:43 2010 +0200
+
+    Tagging Entropy version 0.99.50.5
+
 commit 0b72e1836caca17ac8337936069a89dd735f51ce
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Oct 8 20:47:21 2010 +0200
