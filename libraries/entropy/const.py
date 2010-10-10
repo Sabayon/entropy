@@ -58,6 +58,8 @@ import gzip
 import bz2
 import grp
 import pwd
+import threading
+import thread
 from entropy.i18n import _
 
 
@@ -1564,7 +1566,6 @@ def const_kill_threads(wait_seconds = 120.0):
     @rtype: None
     @return: None
     """
-    import threading
     threads = threading.enumerate()
     for running_t in threads:
         # do not join current thread
@@ -1572,6 +1573,9 @@ def const_kill_threads(wait_seconds = 120.0):
             continue
         if hasattr(running_t, 'kill'):
             running_t.kill()
+        if thread.get_ident() == running_t.ident:
+            # do not try to kill myself
+            continue
         running_t.join(wait_seconds) # wait n seconds?
 
 def __const_handle_exception(etype, value, t_back):
