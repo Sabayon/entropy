@@ -139,10 +139,9 @@ def isjustname(mypkg):
     @rtype: int
     @return: if the package string is not just the package name
     """
-    for chunk in mypkg.split('-')[-2:]:
-        if _ververify(chunk):
-            return False
-    return True
+    # must match, in case of "1.2.3-r1".
+    ver_rev = '-'.join(mypkg.split('-')[-2:])
+    return not _ververify(ver_rev)
 
 def catpkgsplit(mydata):
     """
