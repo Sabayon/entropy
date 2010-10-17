@@ -42,7 +42,7 @@ from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog, \
 from sulfur.event import SulfurSignals
 
 from entropy.db.exceptions import ProgrammingError, Error as DbError, \
-    OperationalError
+    OperationalError, DatabaseError
 
 class EntropyPackageViewModelInjector:
 
@@ -2231,7 +2231,7 @@ class EntropyPackageView:
                 icon_theme = gtk.icon_theme_get_default()
                 try:
                     name = pkg.onlyname
-                except (OperationalError, ProgrammingError):
+                except (OperationalError, ProgrammingError, DatabaseError):
                     name = "N/A"
                 if name is None:
                     name = "N/A"
