@@ -1972,6 +1972,9 @@ class Client:
         except self.socket.sslerror as e:
             self.disconnect()
             raise SSLError('SSL Socket error: %s' % (e,))
+        except self.socket.error as e:
+            self.disconnect()
+            raise SSLError('SSL Socket error: %s' % (e,))
         except:
             self.disconnect()
             raise
