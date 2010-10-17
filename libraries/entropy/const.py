@@ -74,7 +74,7 @@ ETP_ARCH_MAP = {
 }
 _uname_m = os.uname()[4]
 ETP_ARCH_CONST = 'UNKNOWN'
-for arches, arch in list(ETP_ARCH_MAP.items()):
+for arches, arch in ETP_ARCH_MAP.items():
     if _uname_m in arches:
         ETP_ARCH_CONST = arch
 
