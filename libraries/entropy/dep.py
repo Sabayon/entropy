@@ -52,29 +52,6 @@ def _ververify(myver):
         return True
     return False
 
-def _isspecific(mypkg):
-    """
-    Checks to see if a package is in category/package-version or package-version format,
-    possibly returning a cached result.
-
-    Example usage:
-        >>> _isspecific('media-libs/test')
-        False
-        >>> _isspecific('media-libs/test-3.0')
-        True
-
-    @param mypkg: the package depstring to check against
-    @type mypkg: string
-    @rtype: int
-    @return: One of the following:
-        1) False if the package string is not specific
-        2) True if it is
-    """
-    mysplit = mypkg.split("/")
-    if not isjustname(mysplit[-1]):
-        return True
-    return False
-
 _pv_re = re.compile('^' + _pv + '$', re.VERBOSE)
 def _pkgsplit(mypkg):
     """
@@ -140,6 +117,9 @@ def isjustname(mypkg):
     @return: if the package string is not just the package name
     """
     # must match, in case of "1.2.3-r1".
+    rev = dep_get_spm_revision(mypkg)
+    if rev == "r0":
+        mypkg += "-r0"
     ver_rev = '-'.join(mypkg.split('-')[-2:])
     return not _ververify(ver_rev)
 
@@ -189,7 +169,7 @@ def dep_getkey(mydep):
     mydep = remove_usedeps(mydep)
 
     mydep = dep_getcpv(mydep)
-    if mydep and _isspecific(mydep):
+    if mydep and (not isjustname(mydep)):
         mysplit = catpkgsplit(mydep)
         if not mysplit:
             return mydep

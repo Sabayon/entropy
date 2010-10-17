@@ -4097,7 +4097,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     stripped_atom += "*"
                 direction = scan_atom[0:-len(stripped_atom)]
 
-                justname = entropy.dep.isjustname(stripped_atom)
+                justname = entropy.dep.isjustname(scan_cpv)
                 pkgkey = stripped_atom
                 if justname == 0:
                     # get version
