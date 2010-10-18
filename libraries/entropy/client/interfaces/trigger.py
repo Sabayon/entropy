@@ -38,10 +38,9 @@ class Trigger:
         self._trigger_data = {}
         self.package_action = package_action
 
-        self.spm_support = True
+        self._spm = None
         try:
-            Spm = self._entropy.Spm()
-            self.Spm = Spm
+            self._spm = self._entropy.Spm()
         except Exception as e:
             entropy.tools.print_traceback()
             mytxt = darkred("%s, %s: %s, %s !") % (
@@ -55,7 +54,6 @@ class Trigger:
                 importance = 0,
                 header = bold(" !!! ")
             )
-            self.spm_support = False
 
         self.phase = phase
         # validate phase
@@ -82,7 +80,7 @@ class Trigger:
 
         functions = []
 
-        if self.spm_support:
+        if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
             while True:
@@ -107,8 +105,7 @@ class Trigger:
 
         functions = []
 
-        # Portage phases
-        if self.spm_support:
+        if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
             while True:
@@ -128,7 +125,7 @@ class Trigger:
 
         functions = []
 
-        if self.spm_support:
+        if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
 
@@ -159,8 +156,7 @@ class Trigger:
 
         functions = []
 
-        # Portage hook
-        if self.spm_support:
+        if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
 
@@ -414,45 +410,46 @@ class Trigger:
         return my.run(self.phase, self.pkgdata, triggerfile)
 
     def trigger_env_update(self):
-        self._entropy.logger.log(
-            "[Trigger]",
-            etpConst['logging']['normal_loglevel_id'],
-            "[POST] Running env_update"
-        )
-        self.Spm.environment_update()
+        if self._spm is not None:
+            self._entropy.logger.log(
+                "[Trigger]",
+                etpConst['logging']['normal_loglevel_id'],
+                "[POST] Running env_update"
+            )
+            self._spm.environment_update()
 
     def trigger_spm_postinstall(self):
-
-        self._entropy.output(
-            "SPM: %s" % (brown(_("post-install phase")),),
-            importance = 0,
-            header = red("   ## ")
-        )
-        return self.Spm.execute_package_phase(self.pkgdata, 'postinstall')
+        if self._spm is not None:
+            self._entropy.output(
+                "SPM: %s" % (brown(_("post-install phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
+            return self._spm.execute_package_phase(self.pkgdata, 'postinstall')
 
     def trigger_spm_preinstall(self):
-
-        self._entropy.output(
-            "SPM: %s" % (brown(_("pre-install phase")),),
-            importance = 0,
-            header = red("   ## ")
-        )
-        return self.Spm.execute_package_phase(self.pkgdata, 'preinstall')
+        if self._spm is not None:
+            self._entropy.output(
+                "SPM: %s" % (brown(_("pre-install phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
+            return self._spm.execute_package_phase(self.pkgdata, 'preinstall')
 
     def trigger_spm_preremove(self):
-
-        self._entropy.output(
-            "SPM: %s" % (brown(_("pre-remove phase")),),
-            importance = 0,
-            header = red("   ## ")
-        )
-        return self.Spm.execute_package_phase(self.pkgdata, 'preremove')
+        if self._spm is not None:
+            self._entropy.output(
+                "SPM: %s" % (brown(_("pre-remove phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
+            return self._spm.execute_package_phase(self.pkgdata, 'preremove')
 
     def trigger_spm_postremove(self):
-
-        self._entropy.output(
-            "SPM: %s" % (brown(_("post-remove phase")),),
-            importance = 0,
-            header = red("   ## ")
-        )
-        return self.Spm.execute_package_phase(self.pkgdata, 'postremove')
+        if self._spm is not None:
+            self._entropy.output(
+                "SPM: %s" % (brown(_("post-remove phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
+            return self._spm.execute_package_phase(self.pkgdata, 'postremove')
