@@ -4707,11 +4707,12 @@ class EntropyRepository(EntropyRepositoryBase):
             raise AttributeError("dbfile value is invalid")
         if not entropy.tools.is_valid_path_string(dumpfile):
             raise AttributeError("dumpfile value is invalid")
-        sqlite3_exec = "/usr/bin/sqlite3 \"%s\" < \"%s\"" % (tmp_dbfile,
-            dumpfile,)
-        retcode = subprocess.call(sqlite3_exec, shell = True)
+        with open(dumpfile, "rb") as in_f:
+            proc = subprocess.Popen(("/usr/bin/sqlite3", tmp_dbfile,),
+                bufsize = -1, stdin = in_f)
+            rc = proc.wait()
         os.rename(tmp_dbfile, dbfile)
-        return retcode
+        return rc
 
     def exportRepository(self, dumpfile):
         """
