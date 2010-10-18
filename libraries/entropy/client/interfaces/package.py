@@ -1911,10 +1911,36 @@ class Package:
                     live_tolink = os.readlink(rootdir)
 
                 if tolink != live_tolink:
+                    _symfail = False
                     if os.path.lexists(rootdir):
                         # at this point, it must be a file
-                        os.remove(rootdir)
-                    os.symlink(tolink, rootdir)
+                        try:
+                            os.remove(rootdir)
+                        except OSError as err:
+                            _symfail = True
+                            # must be atomic, too bad if it fails
+                            self._entropy.logger.log(
+                                "[Package]",
+                                etpConst['logging']['normal_loglevel_id'],
+                                "WARNING!!! Failed to remove %s " \
+                                "file ! [workout_file/0]: %s" % (
+                                    rootdir, err,
+                                )
+                            )
+                            msg = _("Cannot remove symlink")
+                            mytxt = "%s: %s => %s" % (
+                                purple(msg),
+                                blue(rootdir),
+                                repr(err),
+                            )
+                            self._entropy.output(
+                                mytxt,
+                                importance = 1,
+                                level = "warning",
+                                header = brown("   ## ")
+                            )
+                    if not _symfail:
+                        os.symlink(tolink, rootdir)
 
             elif not os.path.isdir(rootdir) and not \
                 os.access(rootdir, os.R_OK):
