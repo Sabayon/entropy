@@ -1,3 +1,74 @@
+commit c58e1a79c96e3647a4cbd046a76f632a761d60e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 18 21:40:02 2010 +0200
+
+    [entropy.client.interfaces.package] when destination install directory cannot be removed, raise a warning instead of failing
+
+commit b25b82c9801ab9e86d1f531a27828ba6dccf9fda
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 18 21:26:30 2010 +0200
+
+    [entropy.db] EntropyRepository.importRepository: improve code, remove shell usage
+
+commit 683023e79c38ac9f89b0376170ad3d03d2a6ef52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Oct 18 19:33:22 2010 +0200
+
+    [entropy.client.interfaces.trigger] better handle Source Package Manager availability
+
+commit adc97c9438bbbe39fe6ae0fdbe981e1704ee5484
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 22:00:45 2010 +0200
+
+    [entropy.const] trivial change, no need to cast to list()
+
+commit 959cc8185fef3e5f0d92a3ced9b190aa5745947d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 19:41:37 2010 +0200
+
+    [entropy.services.ugc.interfaces] catch socket.error exception and give up (handle the exception)
+
+commit 9e09dcc1b1e4fd0c1291394da87210734d24d07c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 19:41:14 2010 +0200
+
+    [sulfur.views] catch DatabaseError exceptions in new_ugc_pixbuf
+
+commit 73e9778f2f0ce3820533a4a86861017e09d81efe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 17:20:44 2010 +0200
+
+    [entropy.client.interfaces.dep] filter out packages in the same scope
+    
+    In particular, when package dependency list is broken and contains
+    references to colliding slots. This is generally caught at SPM time
+    but there are some corner cases (cough, entropy tags, cough) where
+    SPM cannot do anything.
+
+commit 97f481f3d59ac314eef753ab63fcc0b5e2fd743b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 15:52:46 2010 +0200
+
+    [entropy.client.interfaces.dep] add logic that automatically filters out packages already pulled in, in the same slot, under certain corner case circumstances
+
+commit 34c86726386f69c036e525fb7111410e24bbc2cc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 15:00:10 2010 +0200
+
+    [entropy.db] fix isjustname() usage in EntropyRepository.atomMatch(), and fix isjustname() itself
+
+commit ad5b770cf3c2c18002335d2ae271259a541dca04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 17 14:37:02 2010 +0200
+
+    [entropy.db] isjustname: rework logic, make "389-admin" return True
+
+commit 6b8aadcc48df10b0681930f417e8f1acf7f7c2ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Oct 10 18:00:15 2010 +0200
+
+    Tagging Entropy version 0.99.50.6
+
 commit 9028e4bd2bb474fc287c903a1a8196ca5e261fbb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Oct 10 17:59:58 2010 +0200
