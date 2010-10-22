@@ -48,7 +48,8 @@ Please execute:
   LC_ALL=en_US.UTF-8 %s
 Cannot automatically recover from this.
 """ % (default_enc, ' '.join(sys.argv)))
-    raise SystemExit(1)
+    # just nag from now, make possible to fix broken glibc
+    # raise SystemExit(1)
 
 import stat
 import errno
