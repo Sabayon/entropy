@@ -1,4 +1,4 @@
-# Server side packages.server.dep_rewrite file (this has to stay in /etc/entropy/packages)
+# Server side packages.server.dep_blackist file (this has to stay in /etc/entropy/packages)
 # Using this file, you can blacklist arbitrary broken dependencies
 # detected by Entropy broken libraries QA routine.
 
