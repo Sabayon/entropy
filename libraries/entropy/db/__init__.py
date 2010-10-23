@@ -4711,7 +4711,8 @@ class EntropyRepository(EntropyRepositoryBase):
             proc = subprocess.Popen(("/usr/bin/sqlite3", tmp_dbfile,),
                 bufsize = -1, stdin = in_f)
             rc = proc.wait()
-        os.rename(tmp_dbfile, dbfile)
+            if rc == 0:
+                os.rename(tmp_dbfile, dbfile)
         return rc
 
     def exportRepository(self, dumpfile):
