@@ -491,14 +491,21 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         for line in rewrite_content:
             params = line.split()
-            if len(params) < 3:
+            if len(params) < 2:
                 continue
             pkg_match, pattern, replaces = params[0], params[1], params[2:]
-            try:
-                compiled_pattern = re.compile(pattern)
-            except re.error:
-                # invalid pattern
-                continue
+            if pattern.startswith("++"):
+                compiled_pattern = None
+                pattern = pattern[2:]
+                if not pattern:
+                    # malformed
+                    continue
+            else:
+                try:
+                    compiled_pattern = re.compile(pattern)
+                except re.error:
+                    # invalid pattern
+                    continue
             # use this key to make sure to not overwrite similar entries
             data[(pkg_match, pattern)] = (compiled_pattern, replaces)
 
@@ -4859,15 +4866,56 @@ class ServerMiscMixin:
         for dep_string_rewrite, dep_pattern in rewrites_enabled:
             compiled_pattern, replaces = \
                 dep_rewrite[(dep_string_rewrite, dep_pattern)]
+            if compiled_pattern is None:
+                # this means that user is asking to add dep_pattern
+                # as a dependency to package
+                replaces_str = _("added")
+            elif not replaces:
+                # this means that user is asking to remove dep_pattern
+                replaces_str = _("removed")
+            else:
+                replaces_str = "=> " + ', '.join(replaces)
             self.output(
-                "%s => %s" % (
+                "%s %s" % (
                     purple(dep_pattern),
-                    ', '.join(replaces),
+                    replaces_str,
                 ),
                 importance = 1,
                 level = "info",
                 header = teal("   # ")
             )
+
+        def _extract_dep_add_from_dep_pattern(_dep_pattern):
+            """
+            when action is to add a dependency, extracts the dependency type
+            from dependency string, if found.
+            """
+            _dep_type = etpConst['dependency_type_ids']['mdepend_id']
+            bracket_start_idx = _dep_pattern.rfind("<")
+            if _dep_pattern.endswith(">") and (bracket_start_idx != -1):
+                _c_dep_type = _dep_pattern[bracket_start_idx+1:-1]
+                try:
+                    _c_dep_type = int(_c_dep_type)
+                    if _c_dep_type not in (1, 2, 3, 4):
+                        raise ValueError()
+                except ValueError:
+                    # cannot correctly evaluate, giving up silently
+                    return _dep_pattern, _dep_type
+
+                _dep_pattern = _dep_pattern[:bracket_start_idx]
+                # given packages.server.dep_rewrite.example specifications
+                # this is the mapping:
+                if _c_dep_type == 1:
+                    _dep_type = etpConst['dependency_type_ids']['bdepend_id']
+                elif _c_dep_type == 2:
+                    _dep_type = etpConst['dependency_type_ids']['rdepend_id']
+                elif _c_dep_type == 3:
+                    _dep_type = etpConst['dependency_type_ids']['pdepend_id']
+                elif _c_dep_type == 4:
+                    # manual dependency
+                    _dep_type = etpConst['dependency_type_ids']['mdepend_id']
+
+            return _dep_pattern, _dep_type
 
         for dep_string, dep_value in pkg_meta['dependencies'].items():
 
@@ -4877,6 +4925,13 @@ class ServerMiscMixin:
             for key in rewrites_enabled:
 
                 compiled_pattern, replaces = dep_rewrite[key]
+                if compiled_pattern is None:
+                    # user is asking to add dep_pattern to dependency list
+                    dep_pattern_string, dep_pattern_type = \
+                        _extract_dep_add_from_dep_pattern(dep_pattern)
+                    pkg_meta['dependencies'][dep_pattern_string] = \
+                        dep_pattern_type
+                    continue
 
                 if not compiled_pattern.match(dep_string):
                     # dep_string not matched, skipping

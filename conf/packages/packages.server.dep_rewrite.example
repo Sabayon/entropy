@@ -17,4 +17,32 @@
 # See examples below
 
 # EXAMPLES:
-# media-gfx/foo media-sound/bar media-sound/baz
+
+# replace media-sound/bar with media-sound/baz:
+#    media-gfx/foo media-sound/bar media-sound/baz
+
+# Some more complex substitutions, change app-text/poppler dependency into
+# app-text/poppler-glib maintaining the operator and version parts:
+#    media-gfx/pdf2svg (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+#    kde-base/okular (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-qt4-\2
+#    media-gfx/inkscape (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+
+# Some removal examples:
+# remove media-sound/bar from media-gfx/foo dependencies:
+#    media-gfx/foo media-sound/bar
+#
+# Note 1: the removal dependency pattern can take advantage of regular
+# expressions, of course.
+# Note 2: providing no replaces, makes Entropy remove the whole matched dependency
+# at <::dep_pattern::> (media-sound/bar) position, if found in media-gfx/foo
+# dependencies.
+
+# add a new dependency to media-gfx/foo, called media-sound/bar.
+# Moreover, you can specify what kind of dependency you're adding appending
+# an id between < and > at the end of the string.
+# 1: build dependency
+# 2: runtime dependency
+# 3: post-dependency
+# 4: manual dependency (dependency added by hand, this is the default)
+# This is optional.
+#    media-gfx/foo ++media-sound/bar<3>
