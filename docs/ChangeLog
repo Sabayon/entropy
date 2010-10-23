@@ -1,3 +1,21 @@
+commit 5efa48bb3ea75d59ef57a513d411efef33e58825
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 23 11:34:49 2010 +0200
+
+    [entropy.db] EntropyRepository.importRepository: only rename when sqlite3 call is successful
+
+commit e224b4caee9d841cc163ae313e20225aa92b254e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Oct 22 11:20:47 2010 +0200
+
+    [entropy.const] reduce locale error to warning for now.
+
+commit 3b8e465f5751a4998bf0dfa7c39bab445c22354a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 20 11:10:49 2010 +0200
+
+    Tagging Entropy version 0.99.50.8
+
 commit ddd783155f9da2ca79d331d425dab6a3f72fb3cc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Oct 20 11:05:39 2010 +0200
