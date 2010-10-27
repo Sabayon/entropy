@@ -1,3 +1,33 @@
+commit 5183d94fcf836bcd079ada1f0b55d346e391ed43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 27 21:18:41 2010 +0200
+
+    [entropy.client.interfaces.trigger] always execute environment update before any other trigger
+
+commit 1c2dc68601a76037bd536e6b8da9a629b0369bd8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Oct 26 18:27:23 2010 +0200
+
+    [test] test commit
+
+commit 09cb532af59ec17f26f64d64168cfc5f22319358
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 23 18:46:44 2010 +0200
+
+    [entropy.server] add support for dependency add (and document dep. remove) in packages.server.dep_rewrite configuration file
+
+commit 59e9c03c64784e9ae441e03699610e3ee32de96c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 23 18:44:33 2010 +0200
+
+    [conf] minor typo fix
+
+commit 1fa0c1462c6ec49c204f614ffd21c0996f115c1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Oct 23 11:35:45 2010 +0200
+
+    Tagging Entropy version 0.99.50.9
+
 commit 5efa48bb3ea75d59ef57a513d411efef33e58825
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Oct 23 11:34:49 2010 +0200
