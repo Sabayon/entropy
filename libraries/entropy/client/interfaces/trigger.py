@@ -94,7 +94,7 @@ class Trigger:
         cont_dirs = set((os.path.dirname(x) for x in self.pkgdata['content']))
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
-            functions.append(self.trigger_env_update)
+            functions.insert(0, self.trigger_env_update)
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postinstall)
@@ -144,7 +144,7 @@ class Trigger:
 
         ldpaths = entropy.tools.collect_linker_paths()
         if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
-            functions.append(self.trigger_env_update)
+            functions.insert(0, self.trigger_env_update)
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postremove)
