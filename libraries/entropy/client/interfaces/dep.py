@@ -777,13 +777,6 @@ class CalculatorsMixin:
 
                 dbconn = self.open_repository(k_repo)
                 keyslot = dbconn.retrieveKeySlot(k_id)
-
-                if keyslot in new_filters:
-                    # filter out packages in an already analyzed key+slot.
-                    const_debug_write(__name__,
-                        "__generate_dependency_tree_analyze_deplist "
-                        "keyslot_filter, filtered again %s" % (dependency,))
-                    return False
                 new_filters.add(keyslot)
                 if keyslot in keyslot_filter:
                     const_debug_write(__name__,
@@ -791,12 +784,7 @@ class CalculatorsMixin:
                         "keyslot_filter, filtered %s" % (dependency,))
                     return False
                 return True
-
-            # NOTE: in order to make the key+slot filtering criteria deterministic
-            # sort unsatisfied dependencies alphabetically.
-            # without a clear filtering hierarchy, this is the current
-            # implementation. Do not rely on this.
-            myundeps = set(filter(ks_filter, sorted(myundeps)))
+            myundeps = set(filter(ks_filter, myundeps))
             # update keyslot_filter, to avoid more deps in the same slot
             # to get pulled in.
             keyslot_filter.update(new_filters)
