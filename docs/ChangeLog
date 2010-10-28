@@ -1,3 +1,25 @@
+commit 2a131ad23b12708884549a4adfb73ef40c6b1270
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 28 11:27:24 2010 +0200
+
+    Revert "[entropy.client.interfaces.dep] add logic that automatically filters out packages already pulled in, in the same slot, under certain corner case circumstances"
+    
+    This reverts commit 97f481f3d59ac314eef753ab63fcc0b5e2fd743b.
+
+commit fcbe6bde1df93001f3b74cf59854113e69baccbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 28 11:27:11 2010 +0200
+
+    Revert "[entropy.client.interfaces.dep] filter out packages in the same scope"
+    
+    This reverts commit 73e9778f2f0ce3820533a4a86861017e09d81efe.
+
+commit be98fa373b6b563fc4f717a0f474801e78862c17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Oct 27 21:23:29 2010 +0200
+
+    Tagging Entropy version 0.99.50.10
+
 commit 5183d94fcf836bcd079ada1f0b55d346e391ed43
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Oct 27 21:18:41 2010 +0200
