@@ -738,7 +738,7 @@ class CalculatorsMixin:
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
         stack, deps_not_found, conflicts, unsat_cache, relaxed_deps,
-        build_deps, deep_deps, empty_deps, recursive, keyslot_filter):
+        build_deps, deep_deps, empty_deps, recursive):
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
@@ -759,35 +759,6 @@ class CalculatorsMixin:
         const_debug_write(__name__,
             "__generate_dependency_tree_analyze_deplist filtered "
             "dependency list => %s" % (myundeps,))
-
-        ### key, slot filter, used to avoid packages implicitly pulled
-        ### in, to get reconsidered again (useful for tagged packages)
-        ### example: we ship with two distinct versions of www-servers/apache
-        ### and if user manually selects one for install, the other should
-        ### not get pulled in.
-        if keyslot_filter is not None:
-            new_filters = set()
-            def ks_filter(dependency):
-                k_id, k_repo = self.atom_match(dependency)
-                if k_id == -1:
-                    const_debug_write(__name__,
-                        "__generate_dependency_tree_analyze_deplist "
-                        "keyslot_filter, pkg not avail for %s" % (dependency,))
-                    return True
-
-                dbconn = self.open_repository(k_repo)
-                keyslot = dbconn.retrieveKeySlot(k_id)
-                new_filters.add(keyslot)
-                if keyslot in keyslot_filter:
-                    const_debug_write(__name__,
-                        "__generate_dependency_tree_analyze_deplist "
-                        "keyslot_filter, filtered %s" % (dependency,))
-                    return False
-                return True
-            myundeps = set(filter(ks_filter, myundeps))
-            # update keyslot_filter, to avoid more deps in the same slot
-            # to get pulled in.
-            keyslot_filter.update(new_filters)
 
         if not empty_deps:
 
@@ -839,7 +810,7 @@ class CalculatorsMixin:
     def _generate_dependency_tree(self, matched_atom, graph,
         empty_deps = False, relaxed_deps = False, build_deps = False,
         deep_deps = False, unsatisfied_deps_cache = None,
-        elements_cache = None, recursive = True, keyslot_filter = None):
+        elements_cache = None, recursive = True):
 
         # this cache avoids adding the same element to graph
         # several times, when it is supposed to be already handled
@@ -903,8 +874,7 @@ class CalculatorsMixin:
                 self.__generate_dependency_tree_analyze_deplist(
                     pkg_match, repo_db, stack, deps_not_found,
                     conflicts, unsatisfied_deps_cache, relaxed_deps,
-                    build_deps, deep_deps, empty_deps, recursive,
-                    keyslot_filter)
+                    build_deps, deep_deps, empty_deps, recursive)
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
@@ -1246,14 +1216,7 @@ class CalculatorsMixin:
         sort_dep_text = _("Sorting dependencies")
         unsat_deps_cache = {}
         elements_cache = set()
-        # NOTE: this will be also filled by children calls.
-        keyslot_filter = set()
         matchfilter = set()
-
-        for pkg_id, pkg_repo in package_matches:
-            keyslot_filter.add(
-                self.open_repository(pkg_repo).retrieveKeySlot(pkg_id))
-
         for matched_atom in package_matches:
 
             const_debug_write(__name__,
@@ -1277,7 +1240,7 @@ class CalculatorsMixin:
                     deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                     build_deps = build_deps, elements_cache = elements_cache,
                     unsatisfied_deps_cache = unsat_deps_cache,
-                    recursive = recursive, keyslot_filter = keyslot_filter
+                    recursive = recursive
                 )
             except DependenciesNotFound as err:
                 error_generated = -2
