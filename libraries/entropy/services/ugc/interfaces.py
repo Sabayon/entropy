@@ -1975,6 +1975,9 @@ class Client:
         except self.socket.error as e:
             self.disconnect()
             raise SSLError('SSL Socket error: %s' % (e,))
+        except select.error as e:
+            self.disconnect()
+            raise SSLError('SSL Socket Select error: %s' % (e,))
         except:
             self.disconnect()
             raise
@@ -2160,7 +2163,7 @@ class Client:
                         header = self.output_header
                     )
                 return None
-            except self.socket.error as e:
+            except self.socket.error:
                 print_timeout_err()
                 return None
 
@@ -2172,10 +2175,13 @@ class Client:
                 const_debug_write(__name__, "WantReadError on receive()")
                 try:
                     self._ssl_poll(select.POLLIN, 'read')
-                except TimeoutError as e:
+                except TimeoutError:
                     print_timeout_err()
                     return None
-                except self.socket.error as e:
+                except self.socket.error:
+                    print_timeout_err()
+                    return None
+                except select.error:
                     print_timeout_err()
                     return None
 
@@ -2183,7 +2189,7 @@ class Client:
                 const_debug_write(__name__, "WantWriteError on receive()")
                 try:
                     self._ssl_poll(select.POLLOUT, 'read')
-                except TimeoutError as e:
+                except TimeoutError:
                     print_timeout_err()
                     return None
 
