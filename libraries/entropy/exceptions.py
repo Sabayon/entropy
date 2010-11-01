@@ -50,6 +50,13 @@ class DependenciesNotFound(EntropyException):
     list (set) of missing dependencies are in the .value attribute
     """
 
+class DependenciesCollision(EntropyException):
+    """
+    During dependencies calculation, dependencies were pulled in in the same
+    "scpe" (package key + package slot),
+    list of lists (set) of colliding dependencies are in the .value attribute
+    """
+
 class DependenciesNotRemovable(EntropyException):
     """
     During dependencies calculation, dependencies got considered

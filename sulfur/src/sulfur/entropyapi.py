@@ -109,6 +109,17 @@ class QueueExecutor:
                 install_queue, False, False,
                 relaxed = (SulfurConf.relaxed_deps == 1)
             )
+            if status != 0:
+                # wtf!?
+                status_msg = _("Unknown error")
+                if status == -2:
+                    status_msg = _("dependencies not found")
+                elif status == -3:
+                    status_msg = _("conflicting dependencies were pulled in")
+                self.ok_dialog("%s: %s" % (
+                    _("Calculated dependencies data no longer valid"),
+                    status_msg))
+                return 4
         if removal_queue:
             removalQueue += [(x, False) for x in removal_queue if x \
                 not in conflicts_queue]

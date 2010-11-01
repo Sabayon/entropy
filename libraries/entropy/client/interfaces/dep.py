@@ -10,11 +10,12 @@
 
 """
 import os
+import copy
 
 from entropy.const import etpConst, const_debug_write, const_isstring, \
     const_isnumber
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
-    DependenciesNotFound, DependenciesNotRemovable
+    DependenciesNotFound, DependenciesNotRemovable, DependenciesCollision
 from entropy.graph import Graph
 from entropy.misc import Lifo
 from entropy.cache import EntropyCacher
@@ -1178,7 +1179,7 @@ class CalculatorsMixin:
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['dep_tree'],
-            hash("%s|%s|%s|%s|%s|%s|%s|%s" % (
+            hash("%s|%s|%s|%s|%s|%s|%s|%s|v2" % (
                 hash(frozenset(sorted(package_matches))),
                 empty_deps,
                 deep_deps,
@@ -1199,8 +1200,7 @@ class CalculatorsMixin:
         deptree_conflicts = set()
         atomlen = len(package_matches)
         count = 0
-        error_generated = 0
-        error_tree = set()
+        deps_not_found = set()
 
         # check if there are repositories needing some mandatory packages
         forced_matches = self._lookup_system_mask_repository_deps()
@@ -1243,15 +1243,14 @@ class CalculatorsMixin:
                     recursive = recursive
                 )
             except DependenciesNotFound as err:
-                error_generated = -2
-                error_tree |= err.value
+                deps_not_found |= err.value
                 conflicts = set()
 
             deptree_conflicts |= conflicts
 
-        if error_generated != 0:
+        if deps_not_found:
             del graph
-            return error_tree, error_generated
+            raise DependenciesNotFound(deps_not_found)
 
         # solve depgraph and append conflicts
         deptree = graph.solve()
@@ -1259,10 +1258,24 @@ class CalculatorsMixin:
             del graph
             raise KeyError("Graph contains a dep_level == 0")
 
+        # now check and report dependencies with colliding scope and in case,
+        # raise DependenciesCollision, containing information about collisions
+        _dup_deps_collisions = {}
+        for _level, _deps in deptree.items():
+            for pkg_id, pkg_repo in _deps:
+                keyslot = self.open_repository(pkg_repo).retrieveKeySlot(pkg_id)
+                ks_set = _dup_deps_collisions.setdefault(keyslot, set())
+                ks_set.add((pkg_id, pkg_repo))
+        _colliding_deps = [x for x in _dup_deps_collisions.values() if \
+            len(x) > 1]
+        if _colliding_deps:
+            del graph
+            raise DependenciesCollision(_colliding_deps)
+
         # reverse ketys in deptree, this allows correct order (not inverse)
         level_count = 0
         reverse_tree = {}
-        for key in sorted(deptree.keys(), reverse = True):
+        for key in sorted(deptree, reverse = True):
             level_count += 1
             reverse_tree[level_count] = deptree[key]
 
@@ -1270,9 +1283,9 @@ class CalculatorsMixin:
         reverse_tree[0] = deptree_conflicts
 
         if self.xcache:
-            self._cacher.push(c_hash, (reverse_tree, 0))
+            self._cacher.push(c_hash, reverse_tree)
 
-        return reverse_tree, 0
+        return reverse_tree
 
     def __filter_depends_multimatched_atoms(self, idpackage, repo_id, depends):
 
@@ -2234,20 +2247,28 @@ class CalculatorsMixin:
             the wanted behaviour)
         @type recursive: bool
         """
-
         install = []
         removal = []
-        treepackages, result = self._get_required_packages(package_matches,
-            empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed, 
-            build_deps = build, quiet = quiet, recursive = recursive)
-
-        if result == -2:
-            return treepackages, removal, result
+        try:
+            deptree = self._get_required_packages(package_matches,
+                empty_deps = empty, deep_deps = deep, relaxed_deps = relaxed, 
+                build_deps = build, quiet = quiet, recursive = recursive)
+        except DependenciesCollision as exc:
+            # Packages pulled in conflicting dependencies, these sharing the
+            # same key+slot. For example, repositories contain one or more
+            # packages with key "www-servers/apache" and slot "2" and
+            # user is requiring packages that require both. In this case,
+            # user should mask one or the other by hand
+            return copy.copy(exc.value), removal, -3
+        except DependenciesNotFound as exc:
+            # One or more dependencies pulled in by packages are not
+            # found in repositories
+            return copy.copy(exc.value), removal, -2
 
         # format
-        removal = treepackages.pop(0, set())
-        for dep_level in sorted(treepackages):
-            install.extend(treepackages[dep_level])
+        removal = deptree.pop(0, set())
+        for dep_level in sorted(deptree):
+            install.extend(deptree[dep_level])
 
         # filter out packages that are in actionQueue comparing key + slot
         if install and removal:

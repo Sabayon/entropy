@@ -22,7 +22,8 @@ import time
 from entropy.i18n import _
 from entropy.const import etpConst, const_debug_write, const_get_stringtype
 from entropy.exceptions import DependenciesNotFound, RepositoryError, \
-    SystemDatabaseError, SystemDatabaseError, DependenciesNotRemovable
+    SystemDatabaseError, SystemDatabaseError, DependenciesNotRemovable, \
+    DependenciesCollision
 from entropy.output import print_generic
 from entropy.graph import Graph
 from entropy.db.exceptions import OperationalError
@@ -167,10 +168,15 @@ class Queue:
             [mynew.update(d[x]) for x in d]
             return mynew
 
-        dep_tree, st = self.Entropy._get_required_packages(proposed_matches[:])
-        if st != 0:
+        try:
+            dep_tree = self.Entropy._get_required_packages(proposed_matches[:])
+        except DependenciesNotFound:
             return proposed_matches, False # wtf?
-        if 0 in dep_tree: dep_tree.pop(0)
+        except DependenciesCollision:
+            return proposed_matches, False # wtf, again?
+
+        if 0 in dep_tree:
+            dep_tree.pop(0)
         new_deptree = flatten(dep_tree)
 
         crying_items = [x for x in matches_to_be_removed if x in new_deptree]
@@ -415,6 +421,26 @@ class Queue:
                 top_text = _("Attention"),
                 sub_text = _("Some dependencies couldn't be found. It can either be because they are masked or because they aren't in any active repository."),
                 bottom_text = "",
+                cancel = False,
+                simpleList = True
+            )
+            confirmDialog.run()
+            confirmDialog.destroy()
+            return -10
+        elif status == -3:
+            pkgs_list = []
+            for pkg_matches in runQueue:
+                for pkg_id, pkg_repo in pkg_matches:
+                    repo_db = self.Entropy.open_repository(pkg_repo)
+                    pkg_atom = repo_db.retrieveAtom(pkg_id)
+                    keyslot = repo_db.retrieveKeySlotAggregated(pkg_id)
+                    pkg_string = "%s (%s)" % (pkg_atom, keyslot)
+                    pkgs_list.append(pkg_string)
+            confirmDialog = self.dialogs.ConfirmationDialog(self.ui.main,
+                pkgs_list,
+                top_text = _("Attention"),
+                sub_text = _("Conflicting packages were pulled in, in the same key and slot"),
+                bottom_text = _("Please mask packages that are causing the issue"),
                 cancel = False,
                 simpleList = True
             )

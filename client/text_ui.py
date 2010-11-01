@@ -968,11 +968,29 @@ def _generate_run_queue(entropy_client, found_pkg_atoms, deps, emptydeps,
             found_pkg_atoms, emptydeps, deepdeps, relaxed = relaxeddeps,
             build = builddeps, recursive = recursive)
         if status == -2:
+            # dependencies not found
             print_error(red(" @@ ") + blue("%s: " % (
                 _("Cannot find needed dependencies"),) ))
             for package in run_queue:
                 _show_masked_pkg_info(entropy_client, package,
                     from_user = False)
+            return True, (125, -1), []
+        elif status == -3:
+            # colliding dependencies
+            print_error(red(" @@ ") + blue("%s: " % (
+                _("Conflicting packages were pulled in"),) ))
+            # run_queue is a list of sets
+            print_warning("")
+            for pkg_matches in run_queue:
+                for pkg_id, pkg_repo in pkg_matches:
+                    repo_db = entropy_client.open_repository(pkg_repo)
+                    print_warning(
+                        "%s %s" % (brown("  # "),
+                            teal(repo_db.retrieveAtom(pkg_id)),))
+                print_warning("")
+            print_error("%s %s: %s" % (red(" @@ "),
+                purple(_("Please mask conflicts using")),
+                bold("equo mask <package>"),))
             return True, (125, -1), []
 
     else:
@@ -1521,6 +1539,10 @@ def install_packages(entropy_client,
                 run_queue, x, status = entropy_client.get_install_queue(run_queue[1:],
                     emptydeps, deepdeps, relaxed = relaxed_deps,
                     build = build_deps)
+                if status != 0:
+                    # wtf! do not save anything
+                    print_error(red("%s." % (_("Resume cache no longer valid"),) ))
+                    return 128, -1
                 del x # was removal_queue
                 # save new queues
                 resume_cache['run_queue'] = run_queue

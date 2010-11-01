@@ -727,10 +727,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         packages_install, atoms_install, do_fetch = \
             self._startup_packages_install
-        self._startup_packages_install = None
 
         if packages_install:
-
             fn = packages_install[0]
             self.on_installPackageItem_activate(None, fn)
             return True
@@ -738,6 +736,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         elif atoms_install: # --install <atom1> <atom2> ... support
             self.atoms_install(atoms_install, fetch = do_fetch)
             return True
+        # it will be reset by the packages install function
+        #self._startup_packages_install = None
 
         return False
 
@@ -2193,11 +2193,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 )
                 self.reset_cache_status()
                 state = False
-            elif err in (2, 3):
+            elif err in (2, 3, 4):
                 # 2: masked package cannot be unmasked
                 # 3: license not accepted, move back to queue page
+                # 4: conflicting dependencies were pulled in
                 switch_back_page = 'packages'
                 state = False
+                if err == 4:
+                    self.reset_cache_status()
             elif err != 0:
                 # wtf?
                 okDialog(self.ui.main,
@@ -2256,6 +2259,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if status_cb is not None:
                 status_cb(state)
             _show_orphans_message(state)
+            if self._startup_packages_install:
+                self._startup_packages_install = None
+                self.gtk_loop()
+                def do_show():
+                    self.show_packages(on_init = True)
+                gobject.idle_add(do_show)
 
 
         with self._privileges:
