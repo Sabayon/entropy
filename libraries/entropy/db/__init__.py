@@ -4866,8 +4866,12 @@ class EntropyRepository(EntropyRepositoryBase):
 
         def do_update_md5(m, cursor):
             # this could slow things down a lot, so be careful
+            # NOTE: this function must guarantee platform, architecture,
+            # interpreter independent results. Cannot use hash() then.
+            # Even repr() might be risky! But on the other hand, the
+            # conversion to string cannot take forever.
             for record in cursor:
-                m.update(str(hash(record)))
+                m.update(repr(record))
 
         if strings:
             m = hashlib.md5()
