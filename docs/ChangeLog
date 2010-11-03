@@ -1,3 +1,47 @@
+commit b99d0a86df2372a2d96a53c32f90866090dbb28a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 3 21:15:05 2010 +0100
+
+    [sulfur.views] catch gobject.GError exception on resize_image
+
+commit 37dac7e029f2dd272754e530da207b3c8aabef94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 3 21:05:23 2010 +0100
+
+    [entropy.db] EntropyRepository.checksum(): when returning md5 hex digest, make sure to eat international food
+    
+    hash() is platform, interpreter dependent.
+
+commit 6a21093ba47c9d875311be52c0b7e7165b5b7611
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 1 22:27:19 2010 +0100
+
+    [entropy.services.ugc.interfaces] catch select.error exception (interrupted system call, IO Error 4)
+
+commit 3d77475b9e72dad5ff10f8178859d13edabd9534
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 1 12:58:00 2010 +0100
+
+    [po] update translations
+
+commit 08c2979373467184ab288b170f2525b3a2b39c21
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 1 12:55:43 2010 +0100
+
+    [entropy.client.interfaces.dep] when conflicting dependencies are pulled in, in the dep graph, bail out to avoid inconsistencies
+
+commit 88c61e4a76a688556cc6a299f24fcf19466c3cd1
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Sun Oct 31 14:00:54 2010 +0000
+
+    [i18n] Update sk translation
+
+commit 722cec9bb7d02d1b49d42e19bceee5efa3853f4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Oct 28 11:28:47 2010 +0200
+
+    Tagging Entropy version 0.99.50.11
+
 commit 2a131ad23b12708884549a4adfb73ef40c6b1270
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Oct 28 11:27:24 2010 +0200
