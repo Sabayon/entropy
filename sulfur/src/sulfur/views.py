@@ -2157,7 +2157,7 @@ class EntropyPackageView:
                 try:
                     resize_image(self._get_row_height(), store_path,
                         icon_path)
-                except (ValueError, OSError, IOError):
+                except (ValueError, OSError, IOError, gobject.GError):
                     # OSError = source file moved while copying
                     return None
 
