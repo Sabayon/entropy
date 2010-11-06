@@ -1,3 +1,69 @@
+commit 0978ef9813bb416b5ba316b63d78b9f45a9c0656
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 20:56:29 2010 +0100
+
+    [entropy.client.interfaces.dep] filter out invalid package matches when calling _get_required_packages() and _generate_dependency_tree()
+
+commit 614bf6d436a2adbf20980139a3627ab74879f898
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 19:57:53 2010 +0100
+
+    [tests] add small sleep() to mitigate unittest multithreading bugs
+
+commit 13edb1c90ad1f13d23acc7a2d466797ebf720b04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 19:57:07 2010 +0100
+
+    [entropy.spm] re-add eclasses metadata, keep backward compatibility
+
+commit efec5bed02abc162a205bf5a9fb1250a4b2dd81f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 19:35:20 2010 +0100
+
+    [server] fix undefined reference, close bug #1943
+
+commit e9dff807d2d3fa5499f975a724cb813751b6a9a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 19:31:11 2010 +0100
+
+    [entropy.client.services.ugc] do not let socket exceptions going through, but rather return error on execution
+
+commit 88c47241536e1664e4edf5d800da37e059010caa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 19:00:21 2010 +0100
+
+    [equo] fix freeze in bash completion support, close bug #1940
+
+commit 32e6f4f1aba4b84debfbb9f4ff5eaa588cffbe61
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 18:37:32 2010 +0100
+
+    [entropy.db] always discard live cache when closing repository, see bug #1638
+
+commit 99b7d2b4541d87ce6ab0091547cbd4ea71477b36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 17:22:42 2010 +0100
+
+    [entropy.db.skel] add back 'eclasses' metadata for backward compatibility
+
+commit 811e6fec9568688bced05f56f0cd1d0d0f358828
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 15:12:09 2010 +0100
+
+    [entropy.server] implement packages.server.dep_rewrite conflicts add support
+
+commit ac784b394cbd6b96cac4c71bc2031bd033303512
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 14:54:48 2010 +0100
+
+    [entropy.security] handle race condition in Security.clear() (os.makedirs())
+
+commit 53a27e0fd863153bfa4c380cac12b893cb4640c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 3 21:16:52 2010 +0100
+
+    Tagging Entropy version 0.99.50.12
+
 commit b99d0a86df2372a2d96a53c32f90866090dbb28a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Nov 3 21:15:05 2010 +0100
