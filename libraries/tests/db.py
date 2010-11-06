@@ -4,6 +4,7 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
 import os
+import time
 import tempfile
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
@@ -270,6 +271,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         cacher = EntropyCacher()
         started = cacher.is_started()
         cacher.start()
+        # avoid race conditions, unittest bug
+        time.sleep(2)
 
         cached = self.test_db._EntropyRepositoryBase__atomMatchFetchCache(
             key, True, False, False, None, None, False, False, True)
