@@ -1138,6 +1138,7 @@ class PortagePlugin(SpmPlugin):
 
         # kept for backward compatibility, remove in late 2011
         data['messages'] = []
+        data['eclasses'] = []
 
         # etpapi must be int, as returned by entropy.db.getPackageData
         data['etpapi'] = int(etpConst['etpapi'])
