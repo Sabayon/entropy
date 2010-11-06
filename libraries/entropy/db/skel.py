@@ -1397,6 +1397,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # risky to add to the sql above, still
             'counter': self.retrieveSpmUid(package_id),
             'messages': [],
+            # FIXME: backward compatibility, drop after 2011
+            'eclasses': [],
             'trigger': self.retrieveTrigger(package_id),
             'disksize': self.retrieveOnDiskSize(package_id),
             'changelog': changelog,
