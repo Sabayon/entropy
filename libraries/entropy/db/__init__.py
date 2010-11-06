@@ -631,6 +631,12 @@ class EntropyRepository(EntropyRepositoryBase):
         except KeyError:
             pass
 
+    def __discardLiveCache(self):
+        cache_key = self.__getLiveCacheKey()
+        for key in EntropyRepository._LIVE_CACHE.keys():
+            if key.startswith(cache_key):
+                del EntropyRepository._LIVE_CACHE[key]
+
     def __setLiveCache(self, key, value):
         EntropyRepository._LIVE_CACHE[self.__getLiveCacheKey() + key] = value
 
@@ -675,6 +681,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 os.remove(self._db_path)
             except (OSError, IOError,):
                 pass
+        # live cache must be discarded every time the repository is closed
+        # in order to avoid data mismatches for long-running processes
+        # that load and unload Entropy Framework often.
+        # like "client-updates-daemon".
+        self.__discardLiveCache()
 
     def vacuum(self):
         """
