@@ -4892,6 +4892,8 @@ class ServerMiscMixin:
             """
             _dep_type = etpConst['dependency_type_ids']['mdepend_id']
             bracket_start_idx = _dep_pattern.rfind("<")
+            _is_conflict = False
+
             if _dep_pattern.endswith(">") and (bracket_start_idx != -1):
                 _c_dep_type = _dep_pattern[bracket_start_idx+1:-1]
                 try:
@@ -4915,7 +4917,14 @@ class ServerMiscMixin:
                     # manual dependency
                     _dep_type = etpConst['dependency_type_ids']['mdepend_id']
 
-            return _dep_pattern, _dep_type
+            if _dep_pattern.startswith("!"):
+                _is_conflict = True
+                _dep_pattern = _dep_pattern[1:]
+
+            return _dep_pattern, _dep_type, _is_conflict
+
+        # pkg_meta['conflicts'] is a frozenset
+        conflicts = set(pkg_meta['conflicts'])
 
         for dep_string, dep_value in pkg_meta['dependencies'].items():
 
@@ -4927,10 +4936,13 @@ class ServerMiscMixin:
                 compiled_pattern, replaces = dep_rewrite[key]
                 if compiled_pattern is None:
                     # user is asking to add dep_pattern to dependency list
-                    dep_pattern_string, dep_pattern_type = \
+                    dep_pattern_string, dep_pattern_type, conflict = \
                         _extract_dep_add_from_dep_pattern(dep_pattern)
-                    pkg_meta['dependencies'][dep_pattern_string] = \
-                        dep_pattern_type
+                    if conflict:
+                        conflicts.add(dep_pattern_string)
+                    else:
+                        pkg_meta['dependencies'][dep_pattern_string] = \
+                            dep_pattern_type
                     continue
 
                 if not compiled_pattern.match(dep_string):
@@ -4991,6 +5003,9 @@ class ServerMiscMixin:
                     level = "warning",
                     header = darkred("   !x!x!x! ")
                 )
+
+        # save conflicts metadata back in place
+        pkg_meta['conflicts'] = frozenset(conflicts)
 
     def _get_entropy_sets(self, repo = None, branch = None):
 

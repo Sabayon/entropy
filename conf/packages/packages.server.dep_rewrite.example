@@ -45,4 +45,7 @@
 # 3: post-dependency
 # 4: manual dependency (dependency added by hand, this is the default)
 # This is optional.
+# If you want to add a conflict, just write something like:
+#    media-gfx/foo ++!media-sound/bar
+# Generic example:
 #    media-gfx/foo ++media-sound/bar<3>
