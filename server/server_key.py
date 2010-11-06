@@ -10,7 +10,7 @@
 
 """
 from entropy.output import blue, purple, darkgreen, bold, brown, teal, darkred
-from entropy.const import const_convert_to_rawstring
+from entropy.const import const_convert_to_rawstring, etpConst
 from entropy.server.interfaces import Server
 from entropy.security import Repository
 from entropy.i18n import _
@@ -37,7 +37,9 @@ def key(myopts):
 
     rc = -10
     entropy_srv = Server()
-    sys_set = entropy_srv.Settings()[entropy_srv.sys_settings_plugin_id]['server']
+    sys_settings_plugin_id = \
+        etpConst['system_settings_plugins_ids']['server_plugin']
+    sys_set = entropy_srv.Settings()[sys_settings_plugin_id]['server']
     avail_repos = sys_set['repositories']
 
     def validate_repos(repos, entropy_srv):
