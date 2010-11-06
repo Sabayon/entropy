@@ -13,6 +13,7 @@
 
 """
 import os
+import errno
 import shutil
 import subprocess
 import datetime
@@ -540,7 +541,12 @@ class System:
         EntropyCacher.clear_cache_item(System._CACHE_ID,
             cache_dir = System._CACHE_DIR)
         if not os.path.isdir(System._CACHE_DIR):
-            os.makedirs(System._CACHE_DIR, 0o775)
+            try:
+                os.makedirs(System._CACHE_DIR, 0o775)
+            except OSError as err:
+                # race condition handling
+                if err.errno != errno.EEXIST:
+                    raise
             const_setup_perms(System._CACHE_DIR, etpConst['entropygid'])
 
     def _get_advisories_cache_hash(self):
