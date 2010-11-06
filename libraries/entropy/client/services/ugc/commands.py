@@ -237,11 +237,14 @@ class Base:
                 if result == None:
                     return False, 'command not supported' # untranslated on purpose
                 return result
-            except (self.socket.error, self.struct.error,):
-                self.Service.reconnect_socket()
+            except (self.socket.error, self.struct.error,) as err:
+                try:
+                    self.Service.reconnect_socket()
+                except self.socket.error as exc:
+                    return False, 'connection error %s' % (exc,)
                 tries -= 1
                 if tries < 1:
-                    raise
+                    return False, 'connection error %s' % (err,)
 
     def set_gzip_compression(self, session, do):
         self.Service.check_socket_connection()
