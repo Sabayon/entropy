@@ -813,6 +813,10 @@ class CalculatorsMixin:
         deep_deps = False, unsatisfied_deps_cache = None,
         elements_cache = None, recursive = True):
 
+        pkg_id, pkg_repo = matched_atom
+        if (pkg_id == -1) or (pkg_repo == 1):
+            raise AttributeError("invalid matched_atom: %s" % (matched_atom,))
+
         # this cache avoids adding the same element to graph
         # several times, when it is supposed to be already handled
         if elements_cache is None:
@@ -1218,6 +1222,10 @@ class CalculatorsMixin:
         elements_cache = set()
         matchfilter = set()
         for matched_atom in package_matches:
+
+            pkg_id, pkg_repo = matched_atom
+            if (pkg_id == -1) or (pkg_repo == 1):
+                raise AttributeError("invalid matched_atom: %s" % (matched_atom,))
 
             const_debug_write(__name__,
                 "_get_required_packages matched_atom => %s" % (matched_atom,))
