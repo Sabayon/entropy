@@ -672,24 +672,30 @@ def _match_bashcomp(cmdline):
     from entropy.client.interfaces import Client
     client = Client(repo_validation = False, load_ugc = False,
         indexing = False, noclientdb = True)
-    if client.installed_repository() is None:
-        return []
-    import text_query
-    return text_query.match_package([cmdline[-1]], Equo = client,
-        get_results = True, multiMatch = "--multimatch" in cmdline,
-        multiRepo = "--multirepo" in cmdline)
+    try:
+        if client.installed_repository() is None:
+            return []
+        import text_query
+        return text_query.match_package([cmdline[-1]], Equo = client,
+            get_results = True, multiMatch = "--multimatch" in cmdline,
+            multiRepo = "--multirepo" in cmdline)
+    finally:
+        client.shutdown()
 
 def _search_bashcomp(cmdline, from_installed = False, ignore_installed = False):
     # speed up loading, preload singleton with faster settings
     from entropy.client.interfaces import Client
     client = Client(repo_validation = False, load_ugc = False,
         indexing = False, noclientdb = True)
-    if client.installed_repository() is None:
-        return []
-    import text_query
-    return text_query.search_package([cmdline[-1]], Equo = client,
-        get_results = True, from_installed = from_installed,
-            ignore_installed = ignore_installed)
+    try:
+        if client.installed_repository() is None:
+            return []
+        import text_query
+        return text_query.search_package([cmdline[-1]], Equo = client,
+            get_results = True, from_installed = from_installed,
+                ignore_installed = ignore_installed)
+    finally:
+        client.shutdown()
 
 def _remove_bashcomp(cmdline):
     return _search_bashcomp(cmdline, from_installed = True)
