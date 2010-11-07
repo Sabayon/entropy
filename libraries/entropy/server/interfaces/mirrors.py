@@ -1179,6 +1179,15 @@ class Server(ServerNoticeBoardMixin):
         # EAPI 2,3
         if not download: # we don't need to get the dump
 
+            # upload eapi3 signal file
+            something_new = os.path.join(
+                self._entropy._get_local_database_dir(repo),
+                etpConst['etpdatabaseeapi3updates'])
+            with open(something_new, "w") as sn_f:
+                sn_f.flush()
+            data['~~something_new'] = something_new
+            critical.append(data['~~something_new'])
+
             # always push metafiles file, it's cheap
             data['metafiles_path'] = \
                 self._entropy._get_local_database_compressed_metafiles_file(repo)

@@ -318,6 +318,9 @@ def const_default_settings(rootdir):
         'etpdatabaselockfile': default_etp_dbfile+".lock",
         # the remote database download lock file
         'etpdatabasedownloadlockfile': default_etp_dbfile+".download.lock",
+        # eapi3 "there are updates" signal file
+        # used to let EAPI3 remote service daemon know about repository updates
+        'etpdatabaseeapi3updates': default_etp_dbfile+".eapi3_updates",
         'etpdatabasecacertfile': "ca.cert",
         'etpdatabaseservercertfile': "server.cert",
         # repository GPG public key file
