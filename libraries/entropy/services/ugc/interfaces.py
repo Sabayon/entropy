@@ -2037,7 +2037,7 @@ class Client:
             self.sock_conn.settimeout(self.socket_timeout)
         self.ssl_prepending = True
 
-        def print_timeout_err():
+        def print_timeout_err(e):
             if not self.quiet:
                 mytxt = _("connection error while receiving data")
                 self.Output.output(
@@ -2163,8 +2163,8 @@ class Client:
                         header = self.output_header
                     )
                 return None
-            except self.socket.error:
-                print_timeout_err()
+            except self.socket.error as e:
+                print_timeout_err(e)
                 return None
 
             except self.SSL_exceptions['WantX509LookupError']:
@@ -2175,22 +2175,22 @@ class Client:
                 const_debug_write(__name__, "WantReadError on receive()")
                 try:
                     self._ssl_poll(select.POLLIN, 'read')
-                except TimeoutError:
-                    print_timeout_err()
+                except TimeoutError as e:
+                    print_timeout_err(e)
                     return None
-                except self.socket.error:
-                    print_timeout_err()
+                except self.socket.error as e:
+                    print_timeout_err(e)
                     return None
-                except select.error:
-                    print_timeout_err()
+                except select.error as e:
+                    print_timeout_err(e)
                     return None
 
             except self.SSL_exceptions['WantWriteError']:
                 const_debug_write(__name__, "WantWriteError on receive()")
                 try:
                     self._ssl_poll(select.POLLOUT, 'read')
-                except TimeoutError:
-                    print_timeout_err()
+                except TimeoutError as e:
+                    print_timeout_err(e)
                     return None
 
             except self.SSL_exceptions['ZeroReturnError']:
