@@ -1,3 +1,15 @@
+commit f3df3c0422f33fa7630e32ccef6d1b084ac1a6cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 7 13:04:46 2010 +0100
+
+    [entropy.db] EntropyRepository.listPackageIdsInCategory: fix undefined reference
+
+commit be8d4f4079f6d83208e53f970fbe927d43b8794d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 6 21:00:23 2010 +0100
+
+    Tagging Entropy version 0.99.50.13
+
 commit 0978ef9813bb416b5ba316b63d78b9f45a9c0656
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 6 20:56:29 2010 +0100
