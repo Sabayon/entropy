@@ -5075,11 +5075,55 @@ class ServerMiscMixin:
 
         if repo is None:
             repo = self.default_repository
+
+        self.output(
+            "[%s|%s] %s..." % (
+                darkgreen(repo),
+                purple(_("sets")),
+                blue(_("updating package sets")),
+            ),
+            importance = 0,
+            level = "info",
+            header = blue(" @@ "),
+            back = True
+        )
+
         package_sets = self._get_configured_package_sets(repo)
         if dbconn is None:
             dbconn = self.open_server_repository(
                 read_only = False, no_upload = True, repo = repo,
                 do_treeupdates = False)
+
+        # tell what package sets got added, and what got removed
+        current_sets = set(dbconn.retrievePackageSets())
+        configured_sets = set(package_sets)
+        new_sets = sorted(configured_sets - current_sets)
+        removed_sets = sorted(current_sets - configured_sets)
+        for new_set in new_sets:
+            self.output(
+                "[%s|%s] %s: %s" % (
+                    darkgreen(repo),
+                    purple(_("sets")),
+                    blue(_("adding package set")),
+                    brown(new_set),
+                ),
+                importance = 0,
+                level = "info",
+                header = darkgreen(" @@ ")
+            )
+        for removed_set in removed_sets:
+            self.output(
+                "[%s|%s] %s: %s" % (
+                    teal(repo),
+                    brown(_("sets")),
+                    purple(_("removing package set")),
+                    bold(removed_set),
+                ),
+                importance = 1,
+                level = "warning",
+                header = darkred(" @@ ")
+            )
+
         dbconn.clearPackageSets()
         if package_sets:
             dbconn.insertPackageSets(package_sets)
