@@ -4247,13 +4247,13 @@ class EntropyRepository(EntropyRepositoryBase):
         if self._isBaseinfoExtrainfo2010():
             cur = self._cursor().execute("""
             SELECT idpackage FROM baseinfo where category = (?)
-            """ + order_by_string, (category_id,))
+            """ + order_by_string, (category,))
         else:
             cur = self._cursor().execute("""
             SELECT idpackage FROM baseinfo, categories WHERE
                 categories.category = (?) AND
                 baseinfo.idcategory = categories.idcategory
-            """ + order_by_string, (category_id,))
+            """ + order_by_string, (category,))
 
         return self._cur2frozenset(cur)
 
