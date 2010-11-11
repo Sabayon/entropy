@@ -102,16 +102,21 @@ class Repository(SocketCommands):
         if cached is not None:
             std_checksum, secure_checksum, myids = cached
         else:
-            dbconn = self.HostInterface.open_db(dbpath, docache = False)
-            std_checksum = dbconn.checksum(do_order = True, strict = False,
-                strings = True)
-            secure_checksum = dbconn.checksum(do_order = True, strict = False,
-                strings = True, include_signatures = True)
-            myids = dbconn.listAllPackageIds()
-            cached = std_checksum, secure_checksum, myids
-            self.HostInterface.set_dcache(
-                x + ('docmd_dbdiff', mtime, rev_id,), cached, repository)
-            dbconn.close()
+            self.HostInterface.master_slave_lock.slave_acquire(x)
+            try:
+                dbconn = self.HostInterface.open_repository(dbpath,
+                    docache = False)
+                std_checksum = dbconn.checksum(do_order = True, strict = False,
+                    strings = True)
+                secure_checksum = dbconn.checksum(do_order = True,
+                    strict = False, strings = True, include_signatures = True)
+                myids = dbconn.listAllPackageIds()
+                cached = std_checksum, secure_checksum, myids
+                self.HostInterface.set_dcache(
+                    x + ('docmd_dbdiff', mtime, rev_id,), cached, repository)
+                dbconn.close()
+            finally:
+                self.HostInterface.master_slave_lock.slave_release(x)
 
         foreign_idpackages = set(foreign_idpackages)
 
@@ -154,19 +159,25 @@ class Repository(SocketCommands):
 
         metadata = {}
         dbpath = self.get_database_path(repository, arch, product, branch)
-        dbconn = self.HostInterface.open_db(dbpath, docache = False)
-        metadata['sets'] = dbconn.retrievePackageSets()
-        metadata['treeupdates_actions'] = dbconn.listAllTreeUpdatesActions()
-        metadata['treeupdates_digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
-        # NOTE: kept for backward compatibility (<=0.99.0.x) remove in future
-        metadata['library_idpackages'] = []
-        metadata['revision'] = self.get_database_revision(repository, arch,
-            product, branch)
+        self.HostInterface.master_slave_lock.slave_acquire(x)
+        try:
+            dbconn = self.HostInterface.open_repository(dbpath, docache = False)
+            metadata['sets'] = dbconn.retrievePackageSets()
+            metadata['treeupdates_actions'] = dbconn.listAllTreeUpdatesActions()
+            metadata['treeupdates_digest'] = \
+                dbconn.retrieveRepositoryUpdatesDigest(repository)
+            # NOTE: kept for backward compatibility (<=0.99.0.x) remove in future
+            metadata['library_idpackages'] = []
+            metadata['revision'] = self.get_database_revision(repository, arch,
+                product, branch)
+            dbconn.close()
+        finally:
+            self.HostInterface.master_slave_lock.slave_release(x)
+
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_repository_metadata',
                 mtime, rev_id,), metadata, repository)
-        dbconn.close()
 
         return metadata
 
@@ -197,16 +208,17 @@ class Repository(SocketCommands):
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        dbconn = self.HostInterface.open_db(dbpath, docache = False)
-
-        # get data
-        data = dbconn.retrievePackageSets()
+        self.HostInterface.master_slave_lock.slave_acquire(x)
+        try:
+            dbconn = self.HostInterface.open_repository(dbpath, docache = False)
+            data = dbconn.retrievePackageSets()
+            dbconn.close()
+        finally:
+            self.HostInterface.master_slave_lock.slave_release(x)
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_package_sets',
                 mtime, rev_id,), data, repository)
-        dbconn.close()
-
         return data
 
 
@@ -236,18 +248,20 @@ class Repository(SocketCommands):
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        dbconn = self.HostInterface.open_db(dbpath, docache = False)
-
-        # get data
-        data = {}
-        data['actions'] = dbconn.listAllTreeUpdatesActions()
-        data['digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
+        self.HostInterface.master_slave_lock.slave_acquire(x)
+        try:
+            dbconn = self.HostInterface.open_repository(dbpath, docache = False)
+            data = {}
+            data['actions'] = dbconn.listAllTreeUpdatesActions()
+            data['digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
+            dbconn.close()
+            dbconn = None
+        finally:
+            self.HostInterface.master_slave_lock.slave_release(x)
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, 'docmd_treeupdates', mtime,
                 rev_id,), data, repository)
-        dbconn.close()
-
         return data
 
 
@@ -289,29 +303,32 @@ class Repository(SocketCommands):
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        dbconn = self.HostInterface.open_db(dbpath, docache = False)
-
-        result = {}
-        for idpackage in idpackages:
-            try:
-                mydata = dbconn.getPackageData(
-                    idpackage,
-                    content_insert_formatted = format_content_for_insert,
-                    get_content = False, get_changelog = False
-                )
-            except Exception:
-                tb = entropy.tools.get_traceback()
-                print(tb)
-                self.HostInterface.socketLog.write(tb)
-                dbconn.close()
-                return None
-            result[idpackage] = mydata.copy()
+        self.HostInterface.master_slave_lock.slave_acquire(x)
+        try:
+            dbconn = self.HostInterface.open_repository(dbpath, docache = False)
+            result = {}
+            for idpackage in idpackages:
+                try:
+                    mydata = dbconn.getPackageData(
+                        idpackage,
+                        content_insert_formatted = format_content_for_insert,
+                        get_content = False, get_changelog = False
+                    )
+                except Exception:
+                    tb = entropy.tools.get_traceback()
+                    print(tb)
+                    self.HostInterface.socketLog.write(tb)
+                    dbconn.close()
+                    return None
+                result[idpackage] = mydata.copy()
+            dbconn.close()
+        finally:
+            self.HostInterface.master_slave_lock.slave_release(x)
 
         self.HostInterface.set_dcache(
             (repository, arch, product, branch, idpackages,
                 'docmd_pkginfo_strict', mtime, rev_id,),
                     result, repository)
-        dbconn.close()
         return result
 
     def get_database_path(self, repository, arch, product, branch):

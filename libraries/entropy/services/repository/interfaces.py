@@ -11,11 +11,14 @@
 """
 
 import os
+import errno
+import threading
 import shutil
+
 from entropy.core.settings.base import SystemSettings
 from entropy.output import TextInterface, blue, brown, darkred, teal
 from entropy.const import etpConst
-from entropy.misc import TimeScheduled
+from entropy.misc import TimeScheduled, MasterSlaveLock
 from entropy.cache import EntropyCacher
 from entropy.services.interfaces import SocketHost
 from entropy.services.repository.commands import Repository
@@ -35,6 +38,7 @@ class Server(SocketHost):
     def __init__(self, repositories, repository_lock_scanner = True,
         do_ssl = False, stdout_logging = True, **kwargs):
 
+        self.master_slave_lock = MasterSlaveLock()
         # instantiate critical constants
         etpConst['socket_service']['max_connections'] = 5000
 
@@ -95,14 +99,14 @@ class Server(SocketHost):
     def set_dcache(self, item, data, repo = '_norepo_'):
         entropy.dump.dumpobj(Server.CACHE_ID+"/"+repo+"/"+str(hash(item)), data)
 
-    def close_db(self, dbpath):
+    def close_repository(self, dbpath):
         try:
             dbc = self.__dbcache.pop(dbpath)
             dbc.close()
         except KeyError:
             pass
 
-    def open_db(self, dbpath, docache = True):
+    def open_repository(self, dbpath, docache = True):
         if docache:
             cached = self.__dbcache.get(dbpath)
             if cached != None:
@@ -118,7 +122,7 @@ class Server(SocketHost):
         return dbc
 
     def _start_repository_lock_scanner(self):
-        self.__lock_scanner = TimeScheduled(3, self.__lock_scan)
+        self.__lock_scanner = TimeScheduled(10, self.__lock_scan)
         self.__lock_scanner.start()
 
     def _is_repository_available(self, repo_tuple):
@@ -170,8 +174,6 @@ class Server(SocketHost):
         for repository, arch, product, branch in self.repositories:
 
             repo_tuple = (repository, arch, product, branch,)
-            lock_file = os.path.join(self.repositories[repo_tuple]['dbpath'],
-                etpConst['etpdatabasedownloadlockfile'])
             db_path = os.path.join(self.repositories[repo_tuple]['dbpath'],
                 etpConst['etpdatabasefile'])
 
@@ -179,21 +181,26 @@ class Server(SocketHost):
             if not available:
                 if self.repositories[repo_tuple]['enabled']:
                     self.repositories[repo_tuple]['enabled'] = False
-                    self.close_db(db_path)
+                    self.close_repository(db_path)
                     do_clear.add(repository)
                 continue
 
-            if os.path.lexists(lock_file):
+            signal_file = os.path.join(self.repositories[repo_tuple]['dbpath'],
+                etpConst['etpdatabaseeapi3updates'])
+            if os.path.lexists(signal_file) or \
+                self.repositories[repo_tuple]['locked']:
 
-                # locked !
-                if not self.repositories[repo_tuple]['locked']:
-                    self.repositories[repo_tuple]['locked'] = True
-                    # trash old databases
-                    self.close_db(db_path)
+                # make sure to mark it as locked
+                self.repositories[repo_tuple]['locked'] = True
+                # acquire write lock
+                self.master_slave_lock.master_acquire(repo_tuple)
+                try:
+
+                    self.close_repository(db_path)
                     do_clear.add(repository)
 
                     mytxt = blue("%s.") % (
-                        "repository is now locked, it's being uploaded",)
+                        "repository is now locked, there is something new!",)
                     self.output(
                         "[%s] %s" % (
                             brown(str(repo_tuple)),
@@ -202,76 +209,68 @@ class Server(SocketHost):
                         importance = 1,
                         level = "info"
                     )
-                continue
 
-            elif self.repositories[repo_tuple]['locked']:
+                    status = self.__unpack_repository(db_path, repo_tuple)
+                    if status:
+                        mytxt = blue("%s. %s:") % (
+                            "unlocking and indexing database",
+                            "hash",
+                        )
+                        self.output(
+                            "[%s] %s" % (
+                                    brown(str(repo_tuple)),
+                                    mytxt,
+                            ),
+                            importance = 1,
+                            level = "info"
+                        )
+                        # update revision
+                        self.repositories[repo_tuple]['dbrevision'] = \
+                            self.__read_revision(repo_tuple)
 
-                # lock_file does not exists, but locked is enable.
-                # this means that repo got locked while this app was running.
-                # unpack the repository db and then unlock repository
-                mytxt = blue("%s.") % (
-                    "new repository revision available. Updating metadata",)
-                self.output(
-                    "[%s] %s" % (
-                        brown(str(repo_tuple)),
-                        mytxt,
-                    ),
-                    importance = 1,
-                    level = "info"
-                )
-                # make sure it is all closed, again
-                self.close_db(db_path)
-                do_clear.add(repository)
-                status = self.__unpack_repository(db_path, repo_tuple)
-                if status:
-                    mytxt = blue("%s. %s:") % (
-                        "unlocking and indexing database",
-                        "hash",
-                    )
-                    self.output(
-                        "[%s] %s" % (
+                        dbc = self.open_repository(db_path, docache = False)
+                        dbc.createAllIndexes()
+                        db_ck = dbc.checksum(do_order = True, strict = False,
+                            strings = True)
+                        self.output(
+                            teal(str(db_ck)),
+                            importance = 1,
+                            level = "info"
+                        )
+                        dbc.close()
+                        self.__cacher.discard()
+                        self.__drop_cache_now(repository)
+                        self.repositories[repo_tuple]['locked'] = False
+                        self.repositories[repo_tuple]['enabled'] = True
+
+                    else:
+                        mytxt = darkred("%s.") % (
+                            "error during repository unpack, disabling repository",)
+                        self.output(
+                            "[%s] %s" % (
                                 brown(str(repo_tuple)),
                                 mytxt,
-                        ),
-                        importance = 1,
-                        level = "info"
-                    )
-                    # update revision
-                    self.repositories[repo_tuple]['dbrevision'] = \
-                        self.__read_revision(repo_tuple)
-                    # woohoo, got unlocked eventually
-                    dbc = self.open_db(db_path, docache = False)
-                    dbc.createAllIndexes()
-                    db_ck = dbc.checksum(do_order = True, strict = False,
-                        strings = True)
-                    self.output(
-                        teal(str(db_ck)),
-                        importance = 1,
-                        level = "info"
-                    )
-                    dbc.close()
-                    self.__cacher.discard()
-                    self.__drop_cache_now(repository)
-                    self.repositories[repo_tuple]['locked'] = False
+                            ),
+                            importance = 1,
+                            level = "info"
+                        )
+                        self.repositories[repo_tuple]['fatal_error'] = True
+                        self.repositories[repo_tuple]['enabled'] = False
+                        self.repositories[repo_tuple]['locked'] = False
 
-                else:
-                    mytxt = darkred("%s.") % (
-                        "error during repository unpack, disabling repository",)
-                    self.output( # scrive 2 volte stessa roba (self.output())
-                        "[%s] %s" % (
-                            brown(str(repo_tuple)),
-                            mytxt,
-                        ),
-                        importance = 1,
-                        level = "info"
-                    )
-                    self.repositories[repo_tuple]['fatal_error'] = True
-                    self.repositories[repo_tuple]['enabled'] = False
-                    continue
+                finally:
+                    try:
+                        os.remove(signal_file)
+                    except OSError as err:
+                        if err.errno != errno.ENOENT:
+                            raise
+                    self.master_slave_lock.master_release(repo_tuple)
 
+            else:
+                # if repository is not locked and signal file is not found
+                # consider the repository enabled.
+                self.repositories[repo_tuple]['enabled'] = True
 
-            # at this point, repository is enabled, always
-            self.repositories[repo_tuple]['enabled'] = True
 
         self.__cacher.discard()
         for repo in do_clear:
