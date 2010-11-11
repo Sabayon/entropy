@@ -89,8 +89,8 @@ ugc_args = [ugc_connection_data,ugc_store_path,ugc_store_url]
 
 # configure my repositories
 repositories = {
-    ('sabayonlinux.org','amd64','standard','4',): {
-        'dbpath': '/home/fabio/new.sabayonlinux.org/standard/amd64/4',
+    ('sabayonlinux.org','amd64','standard','5',): {
+        'dbpath': '/repos/new.sabayonlinux.org/standard/amd64/5',
         'cmethod': 'bz2',
     },
 }
@@ -144,12 +144,14 @@ if srv_ssl is not None:
 
 run_map = {
     "repodaemon": srv,
-    "repodaemon_ssl": srv_ssl,
 }
+if srv_ssl is not None:
+    run_map["repodaemon_ssl"] = srv_ssl
 t_map = {
     "repodaemon": task,
-    "repodaemon_ssl": task2,
 }
+if task2 is not None:
+    t_map["repodaemon_ssl"] = task2
 
 def threads_alive():
     for th in t_map.values():
