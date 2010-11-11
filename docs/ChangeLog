@@ -1,3 +1,58 @@
+commit 50de1a73784c2e8b6d3a71235049e90f4de5c9a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 11 19:00:06 2010 +0100
+
+    [entropy.services.repository] use MasterSlaveLock in EAPI3 repository daemon library code, make code stronger, avoid to depend on packages.db.download.lock
+
+commit b2aea57d875d69fa852aa0376329ef37b32eeddc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 11 18:59:41 2010 +0100
+
+    [services] slightly improve repositories-services-daemon.example code
+
+commit 3cc05e408c5457ce8469cc1cb2b8755c4879bb4b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 9 19:20:30 2010 +0100
+
+    [entropy.misc] add MasterSlaveLock class
+    
+    Useful for handling a certain kind of mutex, with some primitive
+    priority concept. There is a Master and several Slaves, Master
+    can block slaves from being able to acquire the lock, and take
+    the control itself once all slaves are done. Slaves share the same
+    lock, and can acquire every time they want, as many times as they want.
+    If you see the mutex object like a microphone, and more people talking
+    at a conference sharing it, where there's a boss that can hold his/her
+    employees from talking, you got it.
+
+commit 4b67cf4f5376e7d466ade3d9b4f92a7ea7362508
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 7 19:38:14 2010 +0100
+
+    [entropy.services.ugc] fix error output, undefined reference
+
+commit 9c717c50d00fda687f0ae616912a6a82b5a9978e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 7 16:50:19 2010 +0100
+
+    [entropy.server] add EAPI3 signal file upload on every repository update.
+    
+    This file will be used by EAPI3 service daemon to trigger local repository
+    cache data and repository data updates and serve new repository package
+    information to clients.
+
+commit 7d1ea41e1ae659b243a0974c1ce557907145c218
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 7 15:26:17 2010 +0100
+
+    [entropy.server] make package sets update more verbose (warning developer for removed package sets)
+
+commit 1e18eb4f3474109d557b45f32f79e6904ac236a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 7 13:05:30 2010 +0100
+
+    Tagging Entropy version 0.99.50.14
+
 commit f3df3c0422f33fa7630e32ccef6d1b084ac1a6cd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 7 13:04:46 2010 +0100
