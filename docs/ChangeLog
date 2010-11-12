@@ -1,3 +1,33 @@
+commit dcbe7ff97585def8b5dce574c296ab03b9a1cc14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 12 06:45:37 2010 +0100
+
+    [entropy.db] catch OSError exceptions in EntropyRepository.importRepository, when instantiating Popen()
+
+commit 898eec10ac585e9afd2fba4d2bfe2fb6c6eb6134
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 12 06:39:33 2010 +0100
+
+    [entropy.client.services.ugc] make set_gzip_compression more fault tolerant in regards to socket errors
+
+commit 427cecf0c0bd5f17ae61ba01978fb41c868704ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 12 06:33:00 2010 +0100
+
+    [equo] catch DBusException exception when trying to use org.entropy.Client dbus interface
+
+commit 43f573cd9aa5221f82f26b0b8c4bc9624444dda4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 12 06:23:20 2010 +0100
+
+    [entropy.services.repository] fix MasterSlaveLock usage in EAPI3 service library class
+
+commit b96020c1081e0e49dd0b97c4b65e09bbd8b07c17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 11 19:03:36 2010 +0100
+
+    Tagging Entropy version 0.99.50.15
+
 commit 50de1a73784c2e8b6d3a71235049e90f4de5c9a8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Nov 11 19:00:06 2010 +0100
