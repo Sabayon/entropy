@@ -102,7 +102,10 @@ class Repository(SocketCommands):
         if cached is not None:
             std_checksum, secure_checksum, myids = cached
         else:
-            self.HostInterface.master_slave_lock.slave_acquire(x)
+            acquired = self.HostInterface.master_slave_lock.slave_acquire(x,
+                timeout = 1)
+            if not acquired:
+                return False
             try:
                 dbconn = self.HostInterface.open_repository(dbpath,
                     docache = False)
@@ -159,7 +162,10 @@ class Repository(SocketCommands):
 
         metadata = {}
         dbpath = self.get_database_path(repository, arch, product, branch)
-        self.HostInterface.master_slave_lock.slave_acquire(x)
+        acquired = self.HostInterface.master_slave_lock.slave_acquire(x,
+            timeout = 1)
+        if not acquired:
+            return False
         try:
             dbconn = self.HostInterface.open_repository(dbpath, docache = False)
             metadata['sets'] = dbconn.retrievePackageSets()
@@ -208,7 +214,10 @@ class Repository(SocketCommands):
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        self.HostInterface.master_slave_lock.slave_acquire(x)
+        acquired = self.HostInterface.master_slave_lock.slave_acquire(x,
+            timeout = 1)
+        if not acquired:
+            return False
         try:
             dbconn = self.HostInterface.open_repository(dbpath, docache = False)
             data = dbconn.retrievePackageSets()
@@ -248,7 +257,10 @@ class Repository(SocketCommands):
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        self.HostInterface.master_slave_lock.slave_acquire(x)
+        acquired = self.HostInterface.master_slave_lock.slave_acquire(x,
+            timeout = 1)
+        if not acquired:
+            return False
         try:
             dbconn = self.HostInterface.open_repository(dbpath, docache = False)
             data = {}
@@ -303,7 +315,10 @@ class Repository(SocketCommands):
             return cached
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        self.HostInterface.master_slave_lock.slave_acquire(x)
+        acquired = self.HostInterface.master_slave_lock.slave_acquire(x,
+            timeout = 1)
+        if not acquired:
+            return False
         try:
             dbconn = self.HostInterface.open_repository(dbpath, docache = False)
             result = {}
