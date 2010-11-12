@@ -366,7 +366,7 @@ def _do_dbus_sync():
 
     def bail_out(err):
         print_error(darkred(" @@ ")+brown("%s" % (
-            _("sys-apps/entropy-client-services not installed. Update not allowed."),) ))
+            _("sys-apps/entropy-client-services not installed or configured. Update not allowed."),) ))
         if err:
             print_error(str(err))
 
@@ -401,7 +401,11 @@ def _do_dbus_sync():
     if _entropy_dbus_object is not None:
         iface = dbus.Interface(_entropy_dbus_object,
             dbus_interface = "org.entropy.Client")
-        iface.trigger_check()
+        try:
+            iface.trigger_check()
+        except dbus.exceptions.DBusException as err:
+            bail_out(err)
+            return 1
         info_txt = _("Have a nice day")
         print_info(brown(info_txt) + ".")
         return 0
