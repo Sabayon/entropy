@@ -254,11 +254,21 @@ class Base:
             const_convert_to_rawstring('compression'), 
             const_convert_to_rawstring(do),
         )
-        self.Service.transmit(cmd)
-        data = self.Service.receive()
-        if data == self.Service.answers['ok']:
-            return True
-        return False
+        fail_count = 5
+        while True:
+            try:
+                self.Service.transmit(cmd)
+                data = self.Service.receive()
+            except (self.socket.error, self.struct.error, SSLError) as err:
+                const_debug_write(__name__,
+                    darkred("set_gzip_compression: error: " + repr(err)))
+                fail_count -= 1
+                if fail_count == 0:
+                    raise
+                continue
+            if data == self.Service.answers['ok']:
+                return True
+            return False
 
     def service_login(self, username, password, session_id):
 
