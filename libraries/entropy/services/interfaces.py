@@ -1691,7 +1691,8 @@ class SocketHost:
         except OSError:
             pass
 
-    def create_ca_server_certs(self, serial, digest, not_before, not_after, ca_pkey_dest, ca_cert_dest, server_key, server_cert):
+    def create_ca_server_certs(self, serial, digest, not_before, not_after,
+        ca_pkey_dest, ca_cert_dest, server_key, server_cert):
 
         mycn = 'Entropy Repository Service'
         cakey = self.create_ssl_key_pair(self.SSL['crypto'].TYPE_RSA, 1024)
@@ -1786,15 +1787,15 @@ class SocketHost:
             identifiers.add(str(myinst))
             self.command_instances.append(myinst)
             # now register
-            myinst.register(    self.valid_commands,
-                                self.no_acked_commands,
-                                self.termination_commands,
-                                self.initialization_commands,
-                                self.login_pass_commands,
-                                self.no_session_commands,
-                                self.raw_commands,
-                                self.config_commands
-                            )
+            myinst.register(self.valid_commands,
+                self.no_acked_commands,
+                self.termination_commands,
+                self.initialization_commands,
+                self.login_pass_commands,
+                self.no_session_commands,
+                self.raw_commands,
+                self.config_commands
+            )
 
     def disable_commands(self):
         for cmd in self.disabled_commands:
@@ -1832,7 +1833,8 @@ class SocketHost:
 
         # lock, if perhaps some implementations need it
         self.AuthenticatorLock = self.threading.Lock()
-        auth_inst = (self.BasicPamAuthenticator, [self], {},) # authentication class, args, keywords
+        # authentication class, args, keywords
+        auth_inst = (self.BasicPamAuthenticator, [self], {},)
         # external authenticator
         if 'sock_auth' in self.kwds:
             authIntf = self.kwds.pop('sock_auth')
@@ -1847,7 +1849,8 @@ class SocketHost:
         self.AuthenticatorInst = (auth_inst[0], [self]+auth_inst[1], auth_inst[2],)
 
     def start_python_garbage_collector(self):
-        self.PythonGarbageCollector = self.TimeScheduled(3600, self.python_garbage_collect)
+        self.PythonGarbageCollector = self.TimeScheduled(3600,
+            self.python_garbage_collect)
         self.PythonGarbageCollector.setName("Socket Server Python Garbage Collector")
         self.PythonGarbageCollector.set_accuracy(False)
         self.PythonGarbageCollector.start()
@@ -1879,7 +1882,8 @@ class SocketHost:
                 ttl = self.session_ttl
                 check_time = sess_time + ttl
                 if cur_time > check_time:
-                    self.output('killing session %s, ttl: %ss: no activity' % (session_id, ttl,) )
+                    self.output('killing session %s, ttl: %ss: no activity' % (
+                        session_id, ttl,) )
                     self._destroy_session(session_id)
 
     def setup_hostname(self):
@@ -1892,8 +1896,10 @@ class SocketHost:
     def get_ip_address(self, ifname):
         import fcntl
         import struct
-        mysock = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
-        return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
+        mysock = self.socket.socket (self.socket.AF_INET,
+            self.socket.SOCK_STREAM)
+        return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915,
+            struct.pack('256s', ifname[:15]))[20:24])
 
     def get_md5_hash(self, salt):
         import hashlib
@@ -1980,11 +1986,11 @@ class SocketHost:
         while True:
             try:
                 self.Server = self.HostServerMixin(
-                                                (self.hostname, self.port),
-                                                self.RequestHandler,
-                                                self.CommandProcessor(self),
-                                                self
-                                            )
+                    (self.hostname, self.port),
+                    self.RequestHandler,
+                    self.CommandProcessor(self),
+                    self
+                )
                 break
             except self.socket.error as e:
                 if e[0] == 98:
@@ -2050,7 +2056,10 @@ class SocketHost:
                     encode_done = True
                     continue
         else:
-            channel.sendall(self.append_eos(data))
+            try:
+                channel.sendall(self.append_eos(data))
+            except self.socket.timeout:
+                raise TimeoutError("Connection timed out on write")
 
     def output(self, *args, **kwargs):
         message = args[0]
