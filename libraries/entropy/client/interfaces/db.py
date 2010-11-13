@@ -122,11 +122,9 @@ class AvailablePackagesRepositoryUpdater(object):
     EAPI3_CACHE_ID = 'eapi3/segment_'
 
     def __init__(self, entropy_client, repository_id, force, gpg):
-        self.__lock_scanner = None
         self.__repository_id = repository_id
         self.__force = force
         self.__big_sock_timeout = 10
-        self.__current_repo_locked = False
         self._cacher = EntropyCacher()
         self._last_rev = -1
         self._entropy = entropy_client
@@ -146,10 +144,6 @@ class AvailablePackagesRepositoryUpdater(object):
             const_debug_write(__name__,
                 "__init__: developer repo mode enabled")
         self._repo_eapi = self.__get_repo_eapi()
-
-    def __del__(self):
-        if self.__lock_scanner is not None:
-            self.__lock_scanner.kill()
 
     def __get_eapi3_repository_metadata(self, eapi3_interface, session):
         product = self._settings['repositories']['product']
@@ -411,29 +405,6 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return cmethod
 
-    def __load_background_repository_lock_check(self):
-        # kill previous
-        self.__current_repo_locked = False
-        self.__kill_previous_repository_lock_scanner()
-        self.__lock_scanner = TimeScheduled(30,
-            self.__repository_lock_scanner)
-        self.__lock_scanner.start()
-
-    def __kill_previous_repository_lock_scanner(self):
-        if self.__lock_scanner is not None:
-            self.__lock_scanner.kill()
-
-    def __repository_lock_scanner(self):
-        locked = self.__handle_repository_lock()
-        if locked:
-            self.__current_repo_locked = True
-
-    def __repository_lock_scanner_status(self):
-        # raise an exception if repo got suddenly locked
-        if self.__current_repo_locked:
-            mytxt = "Current repository got suddenly locked."
-            raise RepositoryError('RepositoryError %s' % (mytxt,))
-
     def __remove_repository_files(self):
         sys_set = self._settings
         avail_data = sys_set['repositories']['available']
@@ -468,29 +439,19 @@ class AvailablePackagesRepositoryUpdater(object):
         sig_status = False
         if self._repo_eapi == 2:
 
-            # start a check in background
-            self.__load_background_repository_lock_check()
             down_item = "dbdumplight"
 
             down_status = self._download_item(down_item, cmethod,
-                lock_status_func = self.__repository_lock_scanner_status,
                 disallow_redirect = True)
             if down_status:
                 # get GPG file if available
                 sig_status = self._download_item(down_item, cmethod,
-                    lock_status_func = self.__repository_lock_scanner_status,
                     disallow_redirect = True, get_signature = True)
 
             downloaded_item = down_item
-            if self.__current_repo_locked:
-                self.__kill_previous_repository_lock_scanner()
-                show_repo_locked_message()
-                return False, sig_status, downloaded_item
 
         if not down_status: # fallback to old db
 
-            # start a check in background
-            self.__load_background_repository_lock_check()
             self._repo_eapi = 1
             down_item = "dblight"
             if self._developer_repo:
@@ -500,18 +461,12 @@ class AvailablePackagesRepositoryUpdater(object):
                     "__handle_database_download: developer repo mode enabled")
 
             down_status = self._download_item(down_item, cmethod,
-                lock_status_func = self.__repository_lock_scanner_status,
                 disallow_redirect = True)
             if down_status:
                 sig_status = self._download_item(down_item, cmethod,
-                    lock_status_func = self.__repository_lock_scanner_status,
                     disallow_redirect = True, get_signature = True)
 
             downloaded_item = down_item
-            if self.__current_repo_locked:
-                self.__kill_previous_repository_lock_scanner()
-                show_repo_locked_message()
-                return False, sig_status, downloaded_item
 
         if not down_status:
             mytxt = "%s: %s." % (bold(_("Attention")),
@@ -523,7 +478,6 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "\t"
             )
 
-        self.__kill_previous_repository_lock_scanner()
         return down_status, sig_status, downloaded_item
 
     def __handle_database_checksum_download(self, cmethod):
@@ -853,8 +807,7 @@ class AvailablePackagesRepositoryUpdater(object):
         return url, path
 
     def _download_item(self, item, cmethod = None,
-        lock_status_func = None, disallow_redirect = True,
-        get_signature = False):
+        disallow_redirect = True, get_signature = False):
 
         url, filepath = self._construct_paths(item, cmethod,
             get_signature = get_signature)
@@ -876,7 +829,6 @@ class AvailablePackagesRepositoryUpdater(object):
             url,
             filepath,
             resume = False,
-            abort_check_func = lock_status_func,
             disallow_redirect = disallow_redirect
         )
 
