@@ -1855,8 +1855,7 @@ class Server(ServerNoticeBoardMixin):
                     repo)
 
             if not pretend:
-                self.lock_mirrors_for_download(True, [uri], repo = repo)
-                # upload
+
                 uploader = self.TransceiverServerHandler(
                     self._entropy,
                     [uri],
@@ -1874,7 +1873,7 @@ class Server(ServerNoticeBoardMixin):
                             repo,
                             crippled_uri,
                             _("errors"),
-                            _("upload failed, not unlocking and continuing"),
+                            _("upload failed, locking and continuing"),
                         ),
                         importance = 0,
                         level = "error",
@@ -1890,10 +1889,8 @@ class Server(ServerNoticeBoardMixin):
                     )
                     upload_errors = True
                     broken_uris |= m_broken_uris
+                    self.lock_mirrors_for_download(True, [uri], repo = repo)
                     continue
-
-                # unlock
-                self.lock_mirrors_for_download(False, [uri], repo = repo)
 
             fine_uris |= m_fine_uris
 
