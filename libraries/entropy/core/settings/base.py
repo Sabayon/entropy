@@ -808,90 +808,75 @@ class SystemSettings(Singleton, EntropyPluginStore):
             x.strip() and not x.strip().startswith("#")]
         socket_f.close()
 
+        def _listen(setting):
+            data['hostname'] = setting
+
+        def _listen_port(setting):
+            try:
+                data['port'] = int(setting)
+            except ValueError:
+                return
+
+        def _listen_timeout(setting):
+            try:
+                data['timeout'] = int(setting)
+            except ValueError:
+                return
+
+        def _listen_threads(setting):
+            try:
+                data['threads'] = int(setting)
+            except ValueError:
+                return
+
+        def _session_ttl(setting):
+            try:
+                data['session_ttl'] = int(setting)
+            except ValueError:
+                return
+
+        def _max_connections(setting):
+            try:
+                data['max_connections'] = int(setting)
+            except ValueError:
+                return
+
+        def _ssl_port(setting):
+            try:
+                data['ssl_port'] = int(setting)
+            except ValueError:
+                return
+
+        def _disabled_commands(setting):
+            for disabled_cmd in setting.split():
+                data['disabled_cmds'].add(disabled_cmd)
+
+        def _ip_blacklist(setting):
+            for ip_blacklist in setting.split():
+                data['ip_blacklist'].add(ip_blacklist)
+
+        settings_map = {
+            'listen': _listen,
+            'listen-port': _listen_port,
+            'listen-timeout': _listen_timeout,
+            'listen-threads': _listen_threads,
+            'session-ttl': _session_ttl,
+            'max-connections': _max_connections,
+            'ssl-port': _ssl_port,
+            'disabled-commands': _disabled_commands,
+            'ip-blacklist': _ip_blacklist,
+        }
+
         for line in socketconf:
 
-            split_line = line.split("|")
-            split_line_len = len(split_line)
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
 
-            if line.startswith("listen|") and (split_line_len > 1):
-
-                item = split_line[1].strip()
-                if item:
-                    data['hostname'] = item
-
-            elif line.startswith("listen-port|") and \
-                (split_line_len > 1):
-
-                item = split_line[1].strip()
-                try:
-                    item = int(item)
-                    data['port'] = item
-                except ValueError:
-                    continue
-
-            elif line.startswith("listen-timeout|") and \
-                (split_line_len > 1):
-
-                item = split_line[1].strip()
-                try:
-                    item = int(item)
-                    data['timeout'] = item
-                except ValueError:
-                    continue
-
-            elif line.startswith("listen-threads|") and \
-                (split_line_len > 1):
-
-                item = split_line[1].strip()
-                try:
-                    item = int(item)
-                    data['threads'] = item
-                except ValueError:
-                    continue
-
-            elif line.startswith("session-ttl|") and \
-                (split_line_len > 1):
-
-                item = split_line[1].strip()
-                try:
-                    item = int(item)
-                    data['session_ttl'] = item
-                except ValueError:
-                    continue
-
-            elif line.startswith("max-connections|") and \
-                (split_line_len > 1):
-
-                item = split_line[1].strip()
-                try:
-                    item = int(item)
-                    data['max_connections'] = item
-                except ValueError:
-                    continue
-
-            elif line.startswith("ssl-port|") and \
-                (split_line_len > 1):
-
-                item = split_line[1].strip()
-                try:
-                    item = int(item)
-                    data['ssl_port'] = item
-                except ValueError:
-                    continue
-
-            elif line.startswith("disabled-commands|") and \
-                (split_line_len > 1):
-
-                disabled_cmds = split_line[1].strip().split()
-                for disabled_cmd in disabled_cmds:
-                    data['disabled_cmds'].add(disabled_cmd)
-
-            elif line.startswith("ip-blacklist|") and \
-                (split_line_len > 1):
-
-                ips_blacklist = split_line[1].strip().split()
-                for ip_blacklist in ips_blacklist:
-                    data['ip_blacklist'].add(ip_blacklist)
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(value)
 
         return data
 
@@ -922,77 +907,76 @@ class SystemSettings(Singleton, EntropyPluginStore):
             x.strip() and not x.strip().startswith("#")]
         entropy_f.close()
 
+        def _loglevel(setting):
+            try:
+                loglevel = int(setting)
+            except ValueError:
+                return
+            if (loglevel > -1) and (loglevel < 3):
+                data['log_level'] = loglevel
+
+        def _ftp_proxy(setting):
+            ftpproxy = setting.strip().split()
+            if ftpproxy:
+                data['proxy']['ftp'] = ftpproxy[-1]
+
+        def _http_proxy(setting):
+            httpproxy = setting.strip().split()
+            if httpproxy:
+                data['proxy']['http'] = httpproxy[-1]
+
+        def _rsync_proxy(setting):
+            rsyncproxy = setting.strip().split()
+            if rsyncproxy:
+                data['proxy']['rsync'] = rsyncproxy[-1]
+
+        def _proxy_username(setting):
+            username = setting.strip().split()
+            if username:
+                data['proxy']['username'] = username[-1]
+
+        def _proxy_password(setting):
+            password = setting.strip().split()
+            if password:
+                data['proxy']['password'] = password[-1]
+
+        def _name(setting):
+            data['name'] = setting.strip()
+
+        def _spm_backend(setting):
+            data['spm_backend'] = setting.strip()
+
+        def _nice_level(setting):
+            mylevel = setting.strip()
+            try:
+                mylevel = int(mylevel)
+                if (mylevel >= -19) and (mylevel <= 19):
+                    const_set_nice_level(mylevel)
+            except (ValueError,):
+                return
+
+        settings_map = {
+            'loglevel': _loglevel,
+            'ftp-proxy': _ftp_proxy,
+            'http-proxy': _http_proxy,
+            'rsync-proxy': _rsync_proxy,
+            'proxy-username': _proxy_username,
+            'proxy-password': _proxy_password,
+            'system-name': _name,
+            'spm-backend': _spm_backend,
+            'nice-level': _nice_level,
+        }
+
         for line in entropyconf:
 
-            split_line = line.split("|")
-            split_line_len = len(split_line)
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
 
-            if line.startswith("loglevel|") and \
-                (len(line.split("loglevel|")) == 2):
-
-                loglevel = line.split("loglevel|")[1]
-                try:
-                    loglevel = int(loglevel)
-                except ValueError:
-                    pass
-                if (loglevel > -1) and (loglevel < 3):
-                    data['log_level'] = loglevel
-
-            elif line.startswith("ftp-proxy|") and \
-                (split_line_len == 2):
-
-                ftpproxy = split_line[1].strip().split()
-                if ftpproxy:
-                    data['proxy']['ftp'] = ftpproxy[-1]
-
-            elif line.startswith("http-proxy|") and \
-                (split_line_len == 2):
-
-                httpproxy = split_line[1].strip().split()
-                if httpproxy:
-                    data['proxy']['http'] = httpproxy[-1]
-
-            elif line.startswith("rsync-proxy|") and \
-                (split_line_len == 2):
-
-                httpproxy = split_line[1].strip().split()
-                if httpproxy:
-                    data['proxy']['rsync'] = httpproxy[-1]
-
-            elif line.startswith("proxy-username|") and \
-                (split_line_len == 2):
-
-                httpproxy = split_line[1].strip().split()
-                if httpproxy:
-                    data['proxy']['username'] = httpproxy[-1]
-
-            elif line.startswith("proxy-password|") and \
-                (split_line_len == 2):
-
-                httpproxy = split_line[1].strip().split()
-                if httpproxy:
-                    data['proxy']['password'] = httpproxy[-1]
-
-            elif line.startswith("system-name|") and \
-                (split_line_len == 2):
-
-                data['name'] = split_line[1].strip()
-
-            elif line.startswith("spm-backend|") and \
-                (split_line_len == 2):
-
-                data['spm_backend'] = split_line[1].strip()
-
-            elif line.startswith("nice-level|") and \
-                (split_line_len == 2):
-
-                mylevel = split_line[1].strip()
-                try:
-                    mylevel = int(mylevel)
-                    if (mylevel >= -19) and (mylevel <= 19):
-                        const_set_nice_level(mylevel)
-                except (ValueError,):
-                    continue
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(value)
 
         return data
 
@@ -1175,133 +1159,137 @@ class SystemSettings(Singleton, EntropyPluginStore):
         repo_f = open(repo_conf, "r")
         repositoriesconf = [x.strip() for x in repo_f.readlines() if x.strip()]
         repo_f.close()
+        repoids = set()
+
+        def _product_func(line, setting):
+            data['product'] = setting
+
+        def _branch_func(line, setting):
+            data['branch'] = setting
+
+        def _repository_func(line, setting):
+
+            excluded = False
+            my_repodata = data['available']
+            if line.startswith("##"):
+                return
+
+            elif line.startswith("#"):
+                excluded = True
+                my_repodata = data['excluded']
+                line = line[1:]
+
+            reponame, repodata = self._analyze_client_repo_string(line,
+                data['branch'], data['product'])
+            if reponame == etpConst['clientdbid']:
+                # not allowed!!!
+                return
+
+            repoids.add(reponame)
+            if reponame in my_repodata:
+
+                my_repodata[reponame]['plain_packages'].extend(
+                    repodata['plain_packages'])
+                my_repodata[reponame]['packages'].extend(
+                    repodata['packages'])
+
+                if (not my_repodata[reponame]['plain_database']) and \
+                    repodata['plain_database']:
+
+                    my_repodata[reponame]['plain_database'] = \
+                        repodata['plain_database']
+                    my_repodata[reponame]['database'] = \
+                        repodata['database']
+                    my_repodata[reponame]['dbrevision'] = \
+                        repodata['dbrevision']
+                    my_repodata[reponame]['dbcformat'] = \
+                        repodata['dbcformat']
+
+                    my_repodata[reponame]['service_uri'] = \
+                        repodata['service_uri']
+                    my_repodata[reponame]['service_port'] = \
+                        repodata['service_port']
+                    my_repodata[reponame]['ssl_service_port'] = \
+                        repodata['ssl_service_port']
+
+            else:
+                my_repodata[reponame] = repodata.copy()
+                if not excluded:
+                    data['order'].append(reponame)
+
+        def _offrepoid(line, setting):
+            data['default_repository'] = setting
+
+        def _developer_repo(line, setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['developer_repo'] = bool_setting
+
+        def _differential_update(line, setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['differential_update'] = bool_setting
+
+        def _down_speed_limit(line, setting):
+            data['transfer_limit'] = None
+            try:
+                myval = int(setting)
+                if myval > 0:
+                    data['transfer_limit'] = myval
+            except ValueError:
+                data['transfer_limit'] = None
+
+        def _down_timeout(line, setting):
+            try:
+                data['timeout'] = int(setting)
+            except ValueError:
+                return
+
+        def _security_url(setting):
+            data['security_advisories_url'] = setting
+
+        settings_map = {
+            'product': _product_func,
+            'branch': _branch_func,
+            'repository': _repository_func,
+            # backward compatibility
+            'officialrepositoryid': _offrepoid,
+            'official-repository-id': _offrepoid,
+            'developer-repo': _developer_repo,
+            'differential-update': _differential_update,
+            # backward compatibility
+            'downloadspeedlimit': _down_speed_limit,
+            'download-speed-limit': _down_speed_limit,
+            # backward compatibility
+            'downloadtimeout': _down_timeout,
+            'download-timeout': _down_timeout,
+            # backward compatibility
+            'securityurl': _security_url,
+            'security-url': _security_url,
+        }
 
         # setup product and branch first
         for line in repositoriesconf:
 
-            split_line = line.split("|")
-            split_line_len = len(split_line)
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
 
-            if (line.find("product|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(line, value)
 
-                data['product'] = split_line[1]
-
-            elif (line.find("branch|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
-
-                branch = split_line[1].strip()
-                data['branch'] = branch
-
-        repoids = set()
         for line in repositoriesconf:
 
-            split_line = line.split("|")
-            split_line_len = len(split_line)
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
 
-            # populate data['available']
-            if (line.find("repository|") != -1) and (split_line_len == 5):
-
-                excluded = False
-                my_repodata = data['available']
-                if line.startswith("##"):
-                    continue
-                elif line.startswith("#"):
-                    excluded = True
-                    my_repodata = data['excluded']
-                    line = line[1:]
-
-                reponame, repodata = self._analyze_client_repo_string(line,
-                    data['branch'], data['product'])
-                if reponame == etpConst['clientdbid']:
-                    # not allowed!!!
-                    continue
-
-                repoids.add(reponame)
-                if reponame in my_repodata:
-
-                    my_repodata[reponame]['plain_packages'].extend(
-                        repodata['plain_packages'])
-                    my_repodata[reponame]['packages'].extend(
-                        repodata['packages'])
-
-                    if (not my_repodata[reponame]['plain_database']) and \
-                        repodata['plain_database']:
-
-                        my_repodata[reponame]['plain_database'] = \
-                            repodata['plain_database']
-                        my_repodata[reponame]['database'] = \
-                            repodata['database']
-                        my_repodata[reponame]['dbrevision'] = \
-                            repodata['dbrevision']
-                        my_repodata[reponame]['dbcformat'] = \
-                            repodata['dbcformat']
-
-                        my_repodata[reponame]['service_uri'] = \
-                            repodata['service_uri']
-                        my_repodata[reponame]['service_port'] = \
-                            repodata['service_port']
-                        my_repodata[reponame]['ssl_service_port'] = \
-                            repodata['ssl_service_port']
-
-                else:
-
-                    my_repodata[reponame] = repodata.copy()
-                    if not excluded:
-                        data['order'].append(reponame)
-
-            elif (line.startswith("officialrepositoryid|") or \
-                line.startswith("official-repository-id|")) \
-                and (split_line_len == 2):
-
-                officialreponame = split_line[1]
-                data['default_repository'] = officialreponame
-
-            elif (line.startswith("developer-repo|")) \
-                and (split_line_len == 2):
-
-                dev_repo = split_line[1]
-                if dev_repo in ("enable", "enabled", "true", "1", "yes",):
-                    data['developer_repo'] = True
-
-            elif (line.startswith("differential-update|")) \
-                and (split_line_len == 2):
-
-                dev_repo = split_line[1]
-                if dev_repo in ("disable", "disabled", "false", "0", "no",):
-                    data['differential_update'] = False
-
-            elif (line.startswith("downloadspeedlimit|") or \
-                line.startswith("download-speed-limit|")) \
-                and (split_line_len == 2):
-
-                try:
-                    myval = int(split_line[1])
-                    if myval > 0:
-                        data['transfer_limit'] = myval
-                    else:
-                        data['transfer_limit'] = None
-                except (ValueError, IndexError,):
-                    data['transfer_limit'] = None
-
-            elif (line.startswith("downloadtimeout|") or \
-                line.startswith("download-timeout|")) \
-                and (split_line_len == 2):
-
-                try:
-                    myval = int(split_line[1])
-                    data['timeout'] = myval
-                except (ValueError, IndexError,):
-                    continue
-
-            elif (line.startswith("securityurl|") or \
-                line.startswith("security-url|")) \
-                and (split_line_len == 2):
-
-                try:
-                    data['security_advisories_url'] = split_line[1]
-                except (IndexError, ValueError, TypeError,):
-                    continue
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(line, value)
 
         try:
             tx_limit = int(os.getenv("ETP_DOWNLOAD_KB"))

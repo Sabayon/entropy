@@ -458,128 +458,117 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if not (os.path.isfile(cli_conf) and os.access(cli_conf, os.R_OK)):
             return data
 
+        def _filesbackup(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['filesbackup'] = bool_setting
+
+        def _forcedupdates(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['forcedupdates'] = bool_setting
+
+        def _autoprune(setting):
+            int_setting = entropy.tools.setting_to_int(setting, 0, 365)
+            if int_setting is not None:
+                data['autoprune_days'] = int_setting
+
+        def _packagehashes(setting):
+            setting = setting.lower().split()
+            hashes = set()
+            for opt in setting:
+                if opt in etpConst['packagehashes']:
+                    hashes.add(opt)
+            if hashes:
+                data['packagehashes'] = tuple(sorted(hashes))
+
+        def _multifetch(setting):
+            int_setting = entropy.tools.setting_to_int(setting, None, None)
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if int_setting is not None:
+                if int_setting not in range(2, 11):
+                    int_setting = 10
+                data['multifetch'] = int_setting
+            if bool_setting is not None:
+                if bool_setting:
+                    data['multifetch'] = 3
+
+        def _gpg(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['gpg'] = bool_setting
+
+        def _spm_downgrades(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['ignore_spm_downgrades'] = bool_setting
+
+        def _splitdebug(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['splitdebug'] = bool_setting
+
+        def _collisionprotect(setting):
+            int_setting = entropy.tools.setting_to_int(setting, 0, 2)
+            if int_setting is not None:
+                data['collisionprotect'] = int_setting
+
+        def _configprotect(setting):
+            for opt in setting.split():
+                data['configprotect'].append(const_convert_to_unicode(opt))
+
+        def _configprotectmask(setting):
+            for opt in setting.split():
+                data['configprotectmask'].append(const_convert_to_unicode(opt))
+
+        def _configprotectskip(setting):
+            for opt in setting.split():
+                data['configprotectskip'].append(
+                    etpConst['systemroot'] + const_convert_to_unicode(opt))
+
+        settings_map = {
+            # backward compatibility
+            'filesbackup': _filesbackup,
+            'files-backup': _filesbackup,
+            # backward compatibility
+            'forcedupdates': _forcedupdates,
+            'forced-updates': _forcedupdates,
+            'packages-autoprune-days': _autoprune,
+            # backward compatibility
+            'packagehashes': _packagehashes,
+            'package-hashes': _packagehashes,
+            'multifetch': _multifetch,
+            'gpg': _gpg,
+            'ignore-spm-downgrades': _spm_downgrades,
+            'splitdebug': _splitdebug,
+            # backward compatibility
+            'collisionprotect': _collisionprotect,
+            'collision-protect': _collisionprotect,
+            # backward compatibility
+            'configprotect': _configprotect,
+            'config-protect': _configprotect,
+            # backward compatibility
+            'configprotectmask': _configprotectmask,
+            'config-protect-mask': _configprotectmask,
+            # backward compatibility
+            'configprotectskip': _configprotectskip,
+            'config-protect-skip': _configprotectskip,
+        }
+
         client_f = open(cli_conf, "r")
         clientconf = [x.strip() for x in client_f.readlines() if \
             x.strip() and not x.strip().startswith("#")]
         client_f.close()
         for line in clientconf:
 
-            split_line = line.split("|")
-            split_line_len = len(split_line)
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
 
-            if (line.startswith("filesbackup|") or \
-                line.startswith("files-backup|")) and (split_line_len == 2):
-
-                compatopt = split_line[1].strip().lower()
-                if compatopt in ("disable", "disabled", "false", "0", "no",):
-                    data['filesbackup'] = False
-
-            elif (line.startswith("forcedupdates|") or \
-                line.startswith("forced-updates|")) and (split_line_len == 2):
-
-                compatopt = split_line[1].strip().lower()
-                if compatopt in ("disable", "disabled", "false", "0", "no",):
-                    data['forcedupdates'] = False
-                else:
-                    data['forcedupdates'] = True
-
-            elif line.startswith("packages-autoprune-days|") and \
-                (split_line_len == 2):
-
-                prune_opt = split_line[1].strip()
-                try:
-                    autoprune_days = int(prune_opt)
-                    if autoprune_days < 0:
-                        raise ValueError()
-                    if autoprune_days > 365:
-                        raise ValueError()
-                    data['autoprune_days'] = autoprune_days
-                except ValueError:
-                    data['autoprune_days'] = None
-
-            elif (line.startswith("packagehashes|") or \
-                line.startswith("package-hashes|")) and (split_line_len == 2):
-
-                opts = split_line[1].strip().lower().split()
-                hashes = []
-                for opt in opts:
-                    if opt in etpConst['packagehashes']:
-                        hashes.append(opt)
-                if hashes:
-                    data['packagehashes'] = tuple(hashes)
-
-            elif line.startswith("multifetch|") and (split_line_len == 2):
-
-                compatopt = split_line[1].strip().lower()
-                try:
-                    compatopt_int = int(compatopt)
-                except ValueError:
-                    compatopt_int = None
-                if compatopt_int is not None:
-                    if compatopt_int not in range(2, 11):
-                        compatopt_int = 10
-                    data['multifetch'] = compatopt_int
-                elif compatopt in ("enable", "enabled", "true",):
-                    data['multifetch'] = 3
-
-            elif line.startswith("gpg|") and (split_line_len == 2):
-
-                compatopt = split_line[1].strip().lower()
-                if compatopt in ("disable", "disabled", "false", "0", "no",):
-                    data['gpg'] = False
-                else:
-                    data['gpg'] = True
-
-            elif line.startswith("ignore-spm-downgrades|") and \
-                (split_line_len == 2):
-
-                compatopt = split_line[1].strip().lower()
-                if compatopt in ("enable", "enabled", "true", "1", "yes"):
-                    data['ignore_spm_downgrades'] = True
-
-            elif line.startswith("splitdebug|") and \
-                (split_line_len == 2):
-
-                compatopt = split_line[1].strip().lower()
-                if compatopt in ("enable", "enabled", "true", "1", "yes"):
-                    data['splitdebug'] = True
-                else:
-                    data['splitdebug'] = False 
-
-            elif (line.startswith("collisionprotect|") or \
-                line.startswith("collision-protect|")) and \
-                (split_line_len == 2):
-
-                collopt = split_line[1].strip()
-                if collopt.lower() in ("0", "1", "2",):
-                    data['collisionprotect'] = int(collopt)
-
-            elif (line.startswith("configprotect|") or \
-                line.startswith("config-protect|")) and (split_line_len == 2):
-
-                configprotect = split_line[1].strip()
-                for myprot in configprotect.split():
-                    data['configprotect'].append(
-                        const_convert_to_unicode(myprot))
-
-            elif (line.startswith("configprotectmask|") or \
-                line.startswith("config-protect-mask|")) and \
-                (split_line_len == 2):
-
-                configprotect = split_line[1].strip()
-                for myprot in configprotect.split():
-                    data['configprotectmask'].append(
-                        const_convert_to_unicode(myprot))
-
-            elif (line.startswith("configprotectskip|") or \
-                line.startswith("config-protect-skip|")) and \
-                (split_line_len == 2):
-
-                configprotect = split_line[1].strip()
-                for myprot in configprotect.split():
-                    data['configprotectskip'].append(
-                        etpConst['systemroot'] + \
-                            const_convert_to_unicode(myprot))
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(value)
 
         # completely disable GPG feature
         if not data['gpg'] and ("gpg" in data['packagehashes']):

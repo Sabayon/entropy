@@ -571,148 +571,143 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         default_repo_changed = False
 
+        def _offservrepoid(line, setting):
+            # NOTE: remove this in future, supported for backward compat.
+            # NOTE: added for backward and mixed compat.
+            if default_repo_changed:
+                return
+            if not fake_instance:
+                data['default_repository_id'] = setting.strip()
+
+        def _default_repo(line, setting):
+            if not fake_instance:
+                data['default_repository_id'] = setting.strip()
+            default_repo_changed = True
+
+        def _exp_days(line, setting):
+            mydays = setting.strip()
+            try:
+                mydays = int(mydays)
+                data['packages_expiration_days'] = mydays
+            except ValueError:
+                return
+
+        def _exp_based_scope(line, setting):
+            exp_opt = entropy.tools.setting_to_bool(setting)
+            if exp_opt is not None:
+                data['exp_based_scope'] = exp_opt
+
+        def _nf_packages_dir_sup(line, setting):
+            opt = entropy.tools.setting_to_bool(setting)
+            if opt is not None:
+                data['nonfree_packages_dir_support'] = opt
+
+        def _disabled_eapis(line, setting):
+            mydis = setting.strip().split(",")
+            try:
+                mydis = [int(x) for x in mydis]
+                mydis = set([x for x in mydis if x in (1, 2, 3,)])
+            except ValueError:
+                return
+            if (len(mydis) < 3) and mydis:
+                data['disabled_eapis'] = mydis
+
+        def _server_basic_lang(line, setting):
+            data['qa_langs'] = setting.strip().split()
+
+        def _repository_func(line, setting):
+            repoid, repodata = \
+                ServerSystemSettingsPlugin.analyze_server_repo_string(
+                    line, product = sys_set['repositories']['product'])
+            if repoid in data['repositories']:
+                # just update mirrors
+                data['repositories'][repoid]['pkg_mirrors'].extend(
+                    repodata['pkg_mirrors'])
+                data['repositories'][repoid]['repo_mirrors'].extend(
+                    repodata['repo_mirrors'])
+            else:
+                data['repositories'][repoid] = repodata.copy()
+
+            # base_repository_id support
+            if data['base_repository_id'] is None:
+                data['base_repository_id'] = repoid
+
+        def _database_format(line, setting):
+            if setting in etpConst['etpdatabasesupportedcformats']:
+                data['database_file_format'] = setting
+
+        def _syncspeedlimit(line, setting):
+            try:
+                speed_limit = int(setting)
+            except ValueError:
+                speed_limit = None
+            data['sync_speed_limit'] = speed_limit
+
+        def _rss_feed(line, setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['rss']['enabled'] = bool_setting
+
+        def _rss_name(line, setting):
+            data['rss']['name'] = setting
+
+        def _rss_base_url(line, setting):
+            if not setting.endswith("/"):
+                setting += "/"
+            data['rss']['base_url'] = setting
+
+        def _rss_website_url(line, setting):
+            data['rss']['website_url'] = setting
+
+        def _managing_editor(line, setting):
+            data['rss']['editor'] = setting
+
+        def _max_rss_entries(line, setting):
+            try:
+                entries = int(setting)
+                data['rss']['max_entries'] = entries
+            except (ValueError, IndexError,):
+                return
+
+        def _max_rss_light_entries(line, setting):
+            try:
+                entries = int(setting)
+                data['rss']['light_max_entries'] = entries
+            except (ValueError, IndexError,):
+                return
+
+        settings_map = {
+            'officialserverrepositoryid': _offservrepoid,
+            'default-repository': _default_repo,
+            'expiration-days': _exp_days,
+            'expiration-based-scope': _exp_based_scope,
+            'nonfree-packages-directory-support': _nf_packages_dir_sup,
+            'disabled-eapis': _disabled_eapis,
+            'server-basic-languages': _server_basic_lang,
+            'repository': _repository_func,
+            'database-format': _database_format,
+            # backward compatibility
+            'sync-speed-limit': _syncspeedlimit,
+            'syncspeedlimit': _syncspeedlimit,
+            'rss-feed': _rss_feed,
+            'rss-name': _rss_name,
+            'rss-base-url': _rss_base_url,
+            'rss-website-url': _rss_website_url,
+            'managing-editor': _managing_editor,
+            'max-rss-entries': _max_rss_entries,
+            'max-rss-light-entries': _max_rss_light_entries,
+        }
+
         for line in serverconf:
 
-            split_line = line.split("|")
-            split_line_len = len(split_line)
+            key, value = entropy.tools.extract_setting(line)
+            if key is None:
+                continue
 
-            # NOTE: remove this in future, supported for backward compat.
-            if (line.find("officialserverrepositoryid|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
-
-                # NOTE: added for backward and mixed compat.
-                if default_repo_changed:
-                    continue
-
-                if not fake_instance:
-                    data['default_repository_id'] = split_line[1].strip()
-
-            elif (line.find("default-repository|") != -1) and \
-                (not line.startswith("#")) and (split_line_len == 2):
-
-                if not fake_instance:
-                    data['default_repository_id'] = split_line[1].strip()
-                default_repo_changed = True
-
-            elif line.startswith("expiration-days|") and (split_line_len == 2):
-
-                mydays = split_line[1].strip()
-                try:
-                    mydays = int(mydays)
-                    data['packages_expiration_days'] = mydays
-                except ValueError:
-                    continue
-
-            elif line.startswith("expiration-based-scope|") and \
-                (split_line_len == 2):
-
-                exp_opt = split_line[1].strip().lower()
-                if exp_opt in ("enable", "enabled", "true", "1", "yes"):
-                    data['exp_based_scope'] = True
-                else:
-                    data['exp_based_scope'] = False
-
-            elif line.startswith("nonfree-packages-directory-support|") and \
-                (split_line_len == 2):
-
-                exp_opt = split_line[1].strip().lower()
-                if exp_opt in ("enable", "enabled", "true", "1", "yes"):
-                    data['nonfree_packages_dir_support'] = True
-                else:
-                    data['nonfree_packages_dir_support'] = False
-
-            elif line.startswith("disabled-eapis|") and (split_line_len == 2):
-
-                mydis = split_line[1].strip().split(",")
-                try:
-                    mydis = [int(x) for x in mydis]
-                    mydis = set([x for x in mydis if x in (1, 2, 3,)])
-                except ValueError:
-                    continue
-                if (len(mydis) < 3) and mydis:
-                    data['disabled_eapis'] = mydis
-
-            elif line.startswith("server-basic-languages|") and \
-                (split_line_len == 2):
-                data['qa_langs'] = split_line[1].strip().split()
-
-            elif line.startswith("repository|") and (split_line_len in (5, 6)) \
-                and (not fake_instance):
-
-                repoid, repodata = \
-                    ServerSystemSettingsPlugin.analyze_server_repo_string(line,
-                        product = sys_set['repositories']['product'])
-                if repoid in data['repositories']:
-                    # just update mirrors
-                    data['repositories'][repoid]['pkg_mirrors'].extend(
-                        repodata['pkg_mirrors'])
-                    data['repositories'][repoid]['repo_mirrors'].extend(
-                        repodata['repo_mirrors'])
-                else:
-                    data['repositories'][repoid] = repodata.copy()
-
-                # base_repository_id support
-                if data['base_repository_id'] is None:
-                    data['base_repository_id'] = repoid
-
-            elif line.startswith("database-format|") and (split_line_len == 2):
-
-                fmt = split_line[1]
-                if fmt in etpConst['etpdatabasesupportedcformats']:
-                    data['database_file_format'] = fmt
-
-            elif (line.startswith("sync-speed-limit|") or \
-                line.startswith("syncspeedlimit|")) and (split_line_len == 2):
-
-                try:
-                    speed_limit = int(split_line[1])
-                except ValueError:
-                    speed_limit = None
-                data['sync_speed_limit'] = speed_limit
-
-            elif line.startswith("rss-feed|") and (split_line_len == 2):
-
-                feed = split_line[1]
-                if feed in ("enable", "enabled", "true", "1"):
-                    data['rss']['enabled'] = True
-                elif feed in ("disable", "disabled", "false", "0", "no",):
-                    data['rss']['enabled'] = False
-
-            elif line.startswith("rss-name|") and (split_line_len == 2):
-
-                feedname = line.split("rss-name|")[1].strip()
-                data['rss']['name'] = feedname
-
-            elif line.startswith("rss-base-url|") and (split_line_len == 2):
-
-                data['rss']['base_url'] = line.split("rss-base-url|")[1].strip()
-                if not data['rss']['base_url'][-1] == "/":
-                    data['rss']['base_url'] += "/"
-
-            elif line.startswith("rss-website-url|") and (split_line_len == 2):
-
-                data['rss']['website_url'] = split_line[1].strip()
-
-            elif line.startswith("managing-editor|") and (split_line_len == 2):
-
-                data['rss']['editor'] = split_line[1].strip()
-
-            elif line.startswith("max-rss-entries|") and (split_line_len == 2):
-
-                try:
-                    entries = int(split_line[1].strip())
-                    data['rss']['max_entries'] = entries
-                except (ValueError, IndexError,):
-                    continue
-
-            elif line.startswith("max-rss-light-entries|") and \
-                (split_line_len == 2):
-
-                try:
-                    entries = int(split_line[1].strip())
-                    data['rss']['light_max_entries'] = entries
-                except (ValueError, IndexError,):
-                    continue
+            func = settings_map.get(key)
+            if func is None:
+                continue
+            func(line, value)
 
         # add system database if community repository mode is enabled
         if self._helper.community_repo:
