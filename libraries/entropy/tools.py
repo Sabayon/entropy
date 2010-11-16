@@ -1991,7 +1991,7 @@ def write_parameter_to_file(config_file, name, data):
     return True
 
 _optcre_old = re.compile(
-    r'(?P<option>[^:=\s][^:=]*)'
+    r'(?P<option>[^\|\s][^\|]*)'
     r'\s*(?P<vi>[\|])\s*'
     r'(?P<value>.*)$'
 )
@@ -2016,12 +2016,14 @@ def extract_setting(raw_line):
     m_obj = _optcre_old.match(raw_line)
     if m_obj is not None:
         option, vi, value = m_obj.group('option', 'vi', 'value')
-        return option.strip(), value
+        if value:
+            return option.strip(), value
 
     m_obj = _optcre_new.match(raw_line)
     if m_obj is not None:
         option, vi, value = m_obj.group('option', 'vi', 'value')
-        return option.strip(), value
+        if value:
+            return option.strip(), value
 
     return None, None
 
