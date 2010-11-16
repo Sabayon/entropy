@@ -1990,6 +1990,80 @@ def write_parameter_to_file(config_file, name, data):
     shutil.move(config_file_tmp, config_file)
     return True
 
+_optcre_old = re.compile(
+    r'(?P<option>[^:=\s][^:=]*)'
+    r'\s*(?P<vi>[\|])\s*'
+    r'(?P<value>.*)$'
+)
+_optcre_new = re.compile(
+    r'(?P<option>[^:=\s][^:=]*)'
+    r'\s*(?P<vi>[:=])\s*'
+    r'(?P<value>.*)$'
+)
+def extract_setting(raw_line):
+    """
+    Extract configuration file setting key and value from string representing
+    a configuration file line.
+
+    @param raw_line: configuration file line
+    @type raw_line: string
+    @return: extracted setting key and value, if found, otherwise (None, None)
+        if setting|key or setting=key is not found.
+    @rtype: tuple
+    """
+
+    # old style setting
+    m_obj = _optcre_old.match(raw_line)
+    if m_obj is not None:
+        option, vi, value = m_obj.group('option', 'vi', 'value')
+        return option.strip(), value
+
+    m_obj = _optcre_new.match(raw_line)
+    if m_obj is not None:
+        option, vi, value = m_obj.group('option', 'vi', 'value')
+        return option.strip(), value
+
+    return None, None
+
+def setting_to_bool(setting):
+    """
+    Convert entropy setting string which should represent a bool setting into
+    a bool type, if possible, otherwise return None.
+
+    @param setting: raw setting value that should represent a bool
+    @type setting: string
+    @return: bool value, or None
+    @rtype: bool or None
+    """
+    if setting in ("disable", "disabled", "false", "0", "no",):
+        return False
+    elif setting in ("enable", "enabled", "true", "1", "yes",):
+        return True
+    return None
+
+def setting_to_int(setting, lower_bound, upper_bound):
+    """
+    Convert entropy setting string which should represent a int setting into
+    a int type, if possible, otherwise return None. Also check against
+    lower and upper bounds, if different than None.
+
+    @param setting: raw setting value that should represent a bool
+    @type setting: string
+    @return: bool value, or None
+    @rtype: bool or None
+    """
+    try:
+        data = int(setting)
+        if lower_bound is not None:
+            if data < lower_bound:
+                raise ValueError()
+        if upper_bound is not None:
+            if data > upper_bound:
+                raise ValueError()
+        return data
+    except ValueError:
+        return None
+
 def is_entropy_package_file(entropy_package_path):
     """
     Determine whether given package path is a valid Entropy package file.
