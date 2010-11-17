@@ -2001,8 +2001,8 @@ _optcre_old = re.compile(
     r'(?P<value>.*)$'
 )
 _optcre_new = re.compile(
-    r'(?P<option>[^:=\s][^:=]*)'
-    r'\s*(?P<vi>[:=])\s*'
+    r'(?P<option>[^=\s][^=]*)'
+    r'\s*(?P<vi>[=])\s*'
     r'(?P<value>.*)$'
 )
 def extract_setting(raw_line):
@@ -2016,15 +2016,19 @@ def extract_setting(raw_line):
         if setting|key or setting=key is not found.
     @rtype: tuple
     """
+    if not raw_line.strip():
+        return None, None
+    if raw_line.strip() == "#":
+        return None, None
 
-    # old style setting
-    m_obj = _optcre_old.match(raw_line)
+    m_obj = _optcre_new.match(raw_line)
     if m_obj is not None:
         option, vi, value = m_obj.group('option', 'vi', 'value')
         if value:
             return option.strip(), value
 
-    m_obj = _optcre_new.match(raw_line)
+    # old style setting
+    m_obj = _optcre_old.match(raw_line)
     if m_obj is not None:
         option, vi, value = m_obj.group('option', 'vi', 'value')
         if value:
