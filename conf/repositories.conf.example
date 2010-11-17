@@ -4,58 +4,58 @@
 #  syntax for repositories (content in square brackets not mandatory):
 #
 #    repository: where the available packages and its database are stored
-#|   repository|repository_id|repository description|<packages mirror 1> <packages mirror 2> <...>|<database uri>[,<UGC service URI>][#compression_method][#<service port,ssl service port>]
+#    repository = repository_id|repository description|<packages mirror 1> <packages mirror 2> <...>|<database uri>[,<UGC service URI>][#compression_method][#<service port,ssl service port>]
 #
 #    example (content in square brackets not mandatory):
-#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db[,sabayon.org][#bz2][#1026,1027]
+#       repository = sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db[,sabayon.org][#bz2][#1026,1027]
 #
 # NOTE: supported protocols are: file, http, https, ftp, ftps, rsync
-#
+
 # Sabayon Linux Official Repository
-repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
-repository|sabayonlinux.org||http://mirror.agooga.ru/Linux/sabayonlinux/entropy|
-repository|sabayonlinux.org||http://bali.idrepo.or.id/sabayon/entropy|
-repository|sabayonlinux.org||http://madura.idrepo.or.id/sabayon/entropy|
-repository|sabayonlinux.org||http://sumbawa.idrepo.or.id/sabayon/entropy|
-repository|sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy|
-repository|sabayonlinux.org||http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy|
-repository|sabayonlinux.org||http://ftp2.cz.freebsd.org/pub/sabayon/entropy|
-repository|sabayonlinux.org||http://debian.mirror.dkm.cz/sabayon/entropy|
-repository|sabayonlinux.org||http://mirror.umoss.org/sabayonlinux/entropy|
-repository|sabayonlinux.org||ftp://ftp.klid.dk/sabayonlinux/entropy|
-repository|sabayonlinux.org||http://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
-repository|sabayonlinux.org||ftp://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
-repository|sabayonlinux.org||http://mirrors.cs.wmich.edu/sabayon/entropy|
-repository|sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy|
-repository|sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
-repository|sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
-repository|sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
-repository|sabayonlinux.org||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
-repository|sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
-repository|sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
-repository|sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
-repository|sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+repository = sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
+repository = sabayonlinux.org||http://mirror.agooga.ru/Linux/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://bali.idrepo.or.id/sabayon/entropy|
+repository = sabayonlinux.org||http://madura.idrepo.or.id/sabayon/entropy|
+repository = sabayonlinux.org||http://sumbawa.idrepo.or.id/sabayon/entropy|
+repository = sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy|
+repository = sabayonlinux.org||http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy|
+repository = sabayonlinux.org||http://ftp2.cz.freebsd.org/pub/sabayon/entropy|
+repository = sabayonlinux.org||http://debian.mirror.dkm.cz/sabayon/entropy|
+repository = sabayonlinux.org||http://mirror.umoss.org/sabayonlinux/entropy|
+repository = sabayonlinux.org||ftp://ftp.klid.dk/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
+repository = sabayonlinux.org||ftp://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
+repository = sabayonlinux.org||http://mirrors.cs.wmich.edu/sabayon/entropy|
+repository = sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy|
+repository = sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
+repository = sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
+repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
+repository = sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
+repository = sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
+repository = sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
 # NOTE: delta package download support works over rsync://, please find some rsync
 # sources below
-repository|sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
-repository|sabayonlinux.org||rsync://gd.tuwien.ac.at/linux/sabayonlinux/entropy|
-repository|sabayonlinux.org||rsync://ftp.nluug.nl/sabayonlinux/entropy|
-repository|sabayonlinux.org||rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
-repository|sabayonlinux.org||rsync://ftp.fsn.hu/ftp/pub/linux/distributions/sabayon/entropy|
-repository|sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
-repository|sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
-repository|sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
+repository = sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
+repository = sabayonlinux.org||rsync://gd.tuwien.ac.at/linux/sabayonlinux/entropy|
+repository = sabayonlinux.org||rsync://ftp.nluug.nl/sabayonlinux/entropy|
+repository = sabayonlinux.org||rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
+repository = sabayonlinux.org||rsync://ftp.fsn.hu/ftp/pub/linux/distributions/sabayon/entropy|
+repository = sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
+repository = sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
+repository = sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
 
 # Experimental Sabayon repository "sabayon-limbo"
 # Here you can find in-testing packages that will be merged to
 # the mainline repository soon.
 # You can use any mirror listed for "sabayonlinux.org"
-# repository|sabayon-limbo|Sabayon Limbo Testing Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
-# repository|sabayon-limbo||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
-# repository|sabayon-limbo||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
-# repository|sabayon-limbo||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
-# repository|sabayon-limbo||http://cross-lfs.sabayonlinux.org/entropy|
-# repository|sabayon-limbo||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+# repository = sabayon-limbo|Sabayon Limbo Testing Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
+# repository = sabayon-limbo||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
+# repository = sabayon-limbo||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
+# repository = sabayon-limbo||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
+# repository = sabayon-limbo||http://cross-lfs.sabayonlinux.org/entropy|
+# repository = sabayon-limbo||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
 
 
 # syntax for differential-update
@@ -67,7 +67,7 @@ repository|sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
 #                      are known to cause issues on some networks.
 # Valid parameters: disable, enable, true, false, disabled, enabled
 # Default is: enabled
-# differential-update: enabled
+# differential-update = enabled
 
 # syntax for developer-repo
 #
@@ -75,74 +75,74 @@ repository|sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
 #                  the whole metadata set (including package ChangeLogs and contents).
 #                  Disabled by default.
 # Valid parameters: disable, enable, true, false, disabled, enabled
-#  developer-repo|disable
+#  developer-repo = disable
 
 #
 #  syntax for product:
 #
 #    product: Sabayon Linux product type (eg. standard, professional, mini)
-#    product|product string (no spaces!)
+#    product = product string (no spaces!)
 #
 #    example:
-#    product|standard
+#    product = standard
 #    or:
-#    product|professional
+#    product = professional
 #
 # Product default setting
-product|standard
+product = standard
 
 #
 #  syntax for branch:
 #
 #    branch: in Sabayon Linux each release has its branch that is the version name (eg. 3.4, 3.5)
-#    branch|actual branch string (no spaces!)
+#    branch = actual branch string (no spaces!)
 #
 #    example:
-#    branch|4
+#    branch = 4
 #    or:
-#    branch|5
+#    branch = 5
 #
 # Branch default setting
-branch|5
+branch = 5
 
 #
 #  syntax for officialrepositoryid:
 #
 #    official-repository-id: Repository identifier for the official main distribution repository
-#    official-repository-id|<repository identifier>
+#    official-repository-id = <repository identifier>
 #
-official-repository-id|sabayonlinux.org
+official-repository-id = sabayonlinux.org
 
 #
 #  syntax for downloadspeedlimit:
 #
 #    download-speed-limit: If you need a way to limit download speed, this is the option you were looking for
-#    download-speed-limit|<maximum allowed speed in kb/sec>
+#    download-speed-limit = <maximum allowed speed in kb/sec>
 #
 #    example:
-#    download-speed-limit|30
+#    download-speed-limit = 30
 #
-# download-speed-limit|
+# download-speed-limit = 
 
 #
 #  syntax for downloadtimeout:
 #
 #    download-timeout: If you are on a slow network, you may want to raise the
 #                     download timeout value (by default, it's set to 10 secs)
-#    download-timeout|<maximum allowed speed in kb/sec>
+#    download-timeout = <maximum allowed speed in kb/sec>
 #
 #    example:
-#    download-timeout|20
+#    download-timeout = 20
 #
-# download-timeout|20
+# download-timeout = 20
 
 #
 #  syntax for security-url:
 #
 #    security-url: Entropy compatible Security Advisories (GLSAs) package URL
-#    security-url|<HTTP/FTP download URL>
+#    security-url = <HTTP/FTP download URL>
 #
 #    example:
 #    securityurl|http://community.sabayon.org/security/security-advisories.tar.bz2
 #
-# security-url|
+# security-url = 

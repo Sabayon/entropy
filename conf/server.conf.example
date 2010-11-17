@@ -2,16 +2,16 @@
 
 #
 # Packages expiration days:
-# expiration-days|<number>
+# expiration-days = <number>
 #
 #
 # Number of days after a binary package will be removed from its belonging
 # repository if not available anymore (old files)
 #
 #   example:
-#   expiration-days|15
+#   expiration-days = 15
 #
-# expiration-days|<internal value>
+# expiration-days = <internal value>
 
 
 #
@@ -20,16 +20,16 @@
 #    default-repository: Currently working repository identifier (if you have
 #        more than one server-side repository, this indicates the one which
 #        Entropy Server is authorized to work on)
-#    default-repository|<repository identifier>
+#    default-repository = <repository identifier>
 #
-default-repository|sabayonlinux.org
+default-repository = sabayonlinux.org
 
 #
 #  syntax for repository:
 #
 #    repository: server-side repositories configuration
 #    Currently supported upload URI protocols are ftp:// and ssh://
-#      => repository|<repository_id>|<repository description>|<upload URI 1> <2>[|<EAPI3 remote server hostname>#<service port>,<ssl service port>]
+#      => repository = <repository_id>|<repository description>|<upload URI 1> <2>[|<EAPI3 remote server hostname>#<service port>,<ssl service port>]
 #    (EAPI3 part is optional)
 #
 #    PLEASE NOTE: the first repository listed is going to be considered the
@@ -39,25 +39,25 @@ default-repository|sabayonlinux.org
 #    (for repository only)
 #
 #    example:
-#      => repository|myserverrepo|My Server Repository|ftp://user:pass@111.111.111.111/ ssh://username@host:~user/path:port|hostname.tld#1026,1027
+#      => repository = myserverrepo|My Server Repository|ftp://user:pass@111.111.111.111/ ssh://username@host:~user/path:port|hostname.tld#1026,1027
 #
-# repository|
+# repository = 
 
 # Database format used by EAPI1 packages:
 # bz2 or gz
-database-format|bz2
+database-format = bz2
 
 #
 #  syntax for syncspeedlimit:
 #
 #    sync-speed-limit: If you need a way to limit sync speed (upload/download),
 #                    this is the option you were looking for
-#    sync-speed-limit|<maximum allowed speed in kb/sec>
+#    sync-speed-limit = <maximum allowed speed in kb/sec>
 #
 #    example:
-#    sync-speed-limit|30
+#    sync-speed-limit = 30
 #
-# sync-speed-limit|
+# sync-speed-limit = 
 
 # Server side LC_*, LANG, LANGUAGE default settings.
 # This setting is used by entropy.qa to validate packages and avoid weird
@@ -66,7 +66,7 @@ database-format|bz2
 # for extra stuff like @UTF-8. If you fail to do so and your L* value differs
 # from the one here, Entropy will bitch you at QA checks and uploading packages
 # will be impossible. You can concatenate (space separated) more than one value.
-# server-basic-languages|en_US C
+# server-basic-languages = en_US C
 
 # Disabled EAPIs (comma separated).
 # By default, all current EAPI implementations are supported (1, 2, 3).
@@ -81,7 +81,7 @@ database-format|bz2
 # to keep EAPI1, make sure to remove "unmaintained" files from your remote mirror.
 # A fast way to achieve this is removing the whole remote database dir and re-upload
 # everything (backup first!).
-# disabled-eapis|1,2
+# disabled-eapis = 1,2
 
 # WARNING: E X P E R I M E N T A L
 # Automatic multiple packages support through expiration.
@@ -95,7 +95,7 @@ database-format|bz2
 # ATTENTION !!!: still, there is one unsolved "bad behaviour" for now.
 # Due to the nature of OSS libraries (breaking API/ABI every odd day),
 # YOU are responsible of potential older packages inconsistencies due to this.
-# expiration-based-scope|disable
+# expiration-based-scope = disable
 
 # WARNING: P L E A S E   R E A D   T H I S   F I R S T
 # Enable support for packages -nonfree directory split. It uses the Entropy
@@ -105,47 +105,47 @@ database-format|bz2
 # It is actually disabled by default because older Entropy client versions
 # have troubles determining the correct storage directory and it's been fixed
 # since Entropy 0.99.30.
-# nonfree-packages-directory-support|disable
+# nonfree-packages-directory-support = disable
 
 # Online RSS support to track changes of the things happened on the database.
 # Here are basic settings, like the ability to enable/disable this feature or
 # set the name of the feed.
-# Feed will be uploaded on the same packages.db.[bz2|gz] directory
+# Feed will be uploaded on the same packages.db.[bz2 | gz] directory
 #
 # syntax for rss-feed:
-#    rss-feed|<enable/disable>
+#    rss-feed = <enable/disable>
 #
-rss-feed|enable
+rss-feed = enable
 
 # syntax for rss-name:
-#    rss-name|<name.rss>
+#    rss-name = <name.rss>
 #
-rss-name|packages.rss
+rss-name = packages.rss
 
 # This option allows to specify a base URL for the <guid> and <link> RSS entry.
 # If you have the entropy web portal online, just add its path to index.py which
 # will be wrapped to add ?search=...
 # syntax for rss-base-url:
-#    rss-base-url|<URL>
+#    rss-base-url = <URL>
 #
-rss-base-url|http://pkg.sabayon.org/
+rss-base-url = http://pkg.sabayon.org/
 # This is just the website url that will be added to the RSS
-rss-website-url|http://www.sabayon.org/
+rss-website-url = http://www.sabayon.org/
 
 # Maximum RSS entries, oldest will be dropped
 # syntax for max-rss-entries:
-#    max-rss-entries|<number>
+#    max-rss-entries = <number>
 #
-max-rss-entries|10000
+max-rss-entries = 10000
 
 # Maximum RSS entries for the light version, oldest will be dropped
 # syntax for max-rss-light-entries:
-#    max-rss-light-entries|<number>
+#    max-rss-light-entries = <number>
 #
-# max-rss-light-entries|100
+# max-rss-light-entries = 100
 
 # RSS Editor E-mail (corresponding to managingEditor tag)
 # syntax for max-rss-entries:
-#    managing-editor|<email>
+#    managing-editor = <email>
 #
-managing-editor|
+managing-editor = 
