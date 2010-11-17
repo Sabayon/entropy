@@ -262,14 +262,14 @@ class AddRepositoryWindow(MenuSkel):
         text = input_box(self.addrepo_ui.addRepoWin, _("Insert Repository"),
             _("Insert Repository identification string")+"   ")
         if text:
-            if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                current_branch = self._entropy.Settings()['repositories']['branch']
-                current_product = self._entropy.Settings()['repositories']['product']
+            current_branch = self._entropy.Settings()['repositories']['branch']
+            current_product = self._entropy.Settings()['repositories']['product']
+            try:
                 repoid, repodata = \
                     self._entropy.Settings()._analyze_client_repo_string(text,
                         current_branch, current_product)
                 self._load_repo_data(repodata)
-            else:
+            except AttributeError:
                 okDialog( self.addrepo_ui.addRepoWin,
                     _("This Repository identification string is malformed") )
 

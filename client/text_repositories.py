@@ -130,19 +130,19 @@ def _add_repository(entropy_client, repo_strings):
             print_warning("[%s] %s" % (
                 purple(repo_string), blue(_("invalid data, skipping")),))
             continue
-        if not ((repo_string.startswith("repository|")) and \
-            (len(repo_string.split("|")) == 5)):
+
+        print_info("%s: %s" % (
+            teal(_("Adding repository string")), blue(repo_string),))
+
+        try:
+            repoid, repodata = SystemSettings._analyze_client_repo_string(
+                repo_string, current_branch, current_product)
+        except AttributeError:
             print_warning("[%s] %s" % (
                 purple(repo_string),
                 blue(_("invalid repository string, skipping")),)
             )
             continue
-
-        print_info("%s: %s" % (
-            teal(_("Adding repository string")), blue(repo_string),))
-
-        repoid, repodata = SystemSettings._analyze_client_repo_string(
-            repo_string, current_branch, current_product)
 
         # print some info
         toc = []
