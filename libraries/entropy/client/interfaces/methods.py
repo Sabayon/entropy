@@ -385,35 +385,64 @@ class RepositoryMixin:
             f.close()
 
         if not disable and not enable:
-            content = [x for x in content if not \
-                x.startswith("repository|"+repodata['repoid'])]
+            new_content = []
+            for line in content:
+                key, value = entropy.tools.extract_setting(line)
+                if key is not None:
+                    r_value = value.split("|")[0].strip()
+                    if (key == "repository") and \
+                        (r_value == repodata['repoid']):
+                        continue
+                new_content.append(line)
+            content = new_content
             if remove:
-                # also remove possible disable repo
-                content = [x for x in content if not (x.startswith("#") and \
-                    not x.startswith("##") and \
-                        (x.find("repository|"+repodata['repoid']) != -1))]
+                new_content = []
+                for line in content:
+                    key, value = entropy.tools.extract_setting(line)
+                    if key is not None:
+                        key = key.replace(" ", "")
+                        key = key.replace("\t", "")
+                        r_value = value.split("|")[0].strip()
+                        if key in ("#repository", "##repository") and \
+                            (r_value == repodata['repoid']):
+                            continue
+                    new_content.append(line)
+
         if not remove:
 
-            repolines = [x for x in content if x.startswith("repository|") or \
-                (x.startswith("#") and not x.startswith("##") and \
-                    (x.find("repository|") != -1))]
+            repolines = []
+            filter_lines = set()
+            repolines_map = {}
+            for line in content:
+                key, value = entropy.tools.extract_setting(line)
+                if key is not None:
+                    key = key.replace(" ", "")
+                    key = key.replace("\t", "")
+                    if key in ("repository", "#repository", "##repository"):
+                        repolines.append(value)
+                        repolines_map[value] = line
+                        filter_lines.add(line)
+
             # exclude lines from repolines
-            content = [x for x in content if x not in repolines]
+            content = [x for x in content if x not in filter_lines]
             # filter sane repolines lines
-            repolines = [x for x in repolines if (len(x.split("|")) == 5)]
             repolines_data = {}
             repocount = 0
             for x in repolines:
+
+                x_repoid = x.split("|")[0].strip()
                 repolines_data[repocount] = {}
-                repolines_data[repocount]['repoid'] = x.split("|")[1]
-                repolines_data[repocount]['line'] = x
-                if disable and x.split("|")[1] == repodata['repoid']:
-                    if not x.startswith("#"):
-                        x = "#"+x
-                    repolines_data[repocount]['line'] = x
-                elif enable and x.split("|")[1] == repodata['repoid'] \
-                    and x.startswith("#"):
-                    repolines_data[repocount]['line'] = x[1:]
+                repolines_data[repocount]['repoid'] = x_repoid
+                repolines_data[repocount]['line'] = repolines_map[x]
+
+                if x_repoid == repodata['repoid']:
+                    if disable:
+                        repolines_data[repocount]['line'] = \
+                            "# repository = %s" % (x,)
+                    elif enable:
+                        repolines_data[repocount]['line'] = \
+                            "repository = %s" % (x,)
+
                 repocount += 1
 
             if not disable and not enable: # so it's a add
@@ -421,7 +450,7 @@ class RepositoryMixin:
                 service_uri = repodata.get('service_uri', '')
                 if service_uri:
                     service_uri = ',%s' % (service_uri,)
-                line = "repository|%s|%s|%s|%s%s#%s#%s,%s" % (
+                repository_line = "repository = %s|%s|%s|%s%s#%s#%s,%s" % (
                     repodata['repoid'],
                     repodata['description'],
                     ' '.join(repodata['plain_packages']),
@@ -433,28 +462,28 @@ class RepositoryMixin:
                 )
 
                 # seek in repolines_data for a disabled entry and remove
-                to_remove = set()
-                for cc in repolines_data:
-                    cc_line = repolines_data[cc]['line']
-                    if cc_line.startswith("#") and \
-                        (cc_line.find("repository|"+repodata['repoid']) != -1):
-                        # then remove
-                        to_remove.add(cc)
-                for x in to_remove:
-                    del repolines_data[x]
+                for cc in repolines_data.keys():
+                    line = repolines_data[cc]['line']
+                    key, value = entropy.tools.extract_setting(line)
+                    if key is not None:
+                        key = key.replace(" ", "")
+                        key = key.replace("\t", "")
+                        r_value = value.split("|")[0].strip()
+                        if key in ("repository", "#repository") and \
+                            r_value == repodata['repoid']:
+                            del repolines_data[cc]
 
+                repocount += 1
                 repolines_data[repocount] = {}
                 repolines_data[repocount]['repoid'] = repodata['repoid']
-                repolines_data[repocount]['line'] = line
+                repolines_data[repocount]['line'] = repository_line
 
             # inject new repodata
-            keys = sorted(repolines_data.keys())
-            for cc in keys:
-                #repoid = repolines_data[cc]['repoid']
-                # write the first
+            for cc in sorted(repolines_data):
                 line = repolines_data[cc]['line']
                 content.append(line)
 
+        # atomic write
         try:
             repo_conf = etpConst['repositoriesconf']
             tmp_repo_conf = repo_conf + ".cfg_save_set"
@@ -471,19 +500,28 @@ class RepositoryMixin:
     def __write_ordered_repositories_entries(self, ordered_repository_list):
         content = []
         if os.path.isfile(etpConst['repositoriesconf']):
-            f = open(etpConst['repositoriesconf'])
-            content = [x.strip() for x in f.readlines()]
-            f.close()
+            with open(etpConst['repositoriesconf'], "r") as f:
+                content = [x.strip() for x in f.readlines()]
 
-        repolines = [x for x in content if x.startswith("repository|") and \
-            (len(x.split("|")) == 5)]
-        content = [x for x in content if x not in repolines]
+        repolines = []
+        filter_lines = set()
+        repolines_map = {}
+        for line in content:
+            key, value = entropy.tools.extract_setting(line)
+            if key is not None:
+                key = key.replace(" ", "")
+                key = key.replace("\t", "")
+                if key in ("repository", "#repository", "##repository"):
+                    repolines.append(value)
+                    filter_lines.add(line)
+                    repolines_map[value] = line
+
+        content = [x for x in content if x not in filter_lines]
         for repoid in ordered_repository_list:
-            # get repoid from repolines
-            for x in repolines:
-                repoidline = x.split("|")[1]
-                if repoid == repoidline:
-                    content.append(x)
+            for x in content:
+                repoidline = x.split("|")[0].strip()
+                if (repoid == repoidline) and (x in repolines_map):
+                    content.append(repolines_map[x])
 
         repo_conf = etpConst['repositoriesconf']
         tmp_repo_conf = repo_conf + ".cfg_save"

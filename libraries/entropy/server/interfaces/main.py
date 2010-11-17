@@ -403,19 +403,27 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         @return: None
         """
 
-        if product == None:
+        if product is None:
             product = etpConst['product']
 
         mydata = {}
-        repoid = repostring.split("|")[1].strip()
-        repodesc = repostring.split("|")[2].strip()
-        repouris = repostring.split("|")[3].strip()
+        repo_key, repostring = entropy.tools.extract_setting(repostring)
+        if repo_key != "repository":
+            raise AttributeError("invalid repostring passed")
+
+        repo_split = repostring.split("|")
+        if len(repo_split) < 3:
+            raise AttributeError("invalid repostring passed (2)")
+
+        repoid = repo_split[0].strip()
+        repodesc = repo_split[1].strip()
+        repouris = repo_split[2].strip()
 
         service_url = None
         eapi3_port = etpConst['socket_service']['port']
         eapi3_ssl_port = etpConst['socket_service']['ssl_port']
-        if len(repostring.split("|")) > 4:
-            service_url = repostring.split("|")[4].strip()
+        if len(repo_split) > 3:
+            service_url = repo_split[3].strip()
 
             eapi3_formatcolon = service_url.rfind("#")
             if eapi3_formatcolon != -1:
@@ -616,9 +624,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             data['qa_langs'] = setting.strip().split()
 
         def _repository_func(line, setting):
-            repoid, repodata = \
-                ServerSystemSettingsPlugin.analyze_server_repo_string(
-                    line, product = sys_set['repositories']['product'])
+            try:
+                repoid, repodata = \
+                    ServerSystemSettingsPlugin.analyze_server_repo_string(
+                        line, product = sys_set['repositories']['product'])
+            except AttributeError:
+                # error parsing string
+                return
+
             if repoid in data['repositories']:
                 # just update mirrors
                 data['repositories'][repoid]['pkg_mirrors'].extend(
@@ -862,7 +875,7 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         for repoid, repo_data in srv_repodata.items():
             xxx, my_data = sys_set._analyze_client_repo_string(
-                "repository|%s|%s|http://--fake--|http://--fake--" % (
+                "repository = %s|%s|http://--fake--|http://--fake--" % (
                     repoid, repo_data['description'],))
             my_data['repoid'] = repoid
             my_data['dbpath'] = self._helper._get_local_database_dir(
@@ -3653,12 +3666,13 @@ class ServerRepositoryMixin:
             found = False
             new_content = []
             for line in content:
-                if line.strip().startswith("default-repository|"):
-                    line = "default-repository|%s" % (repoid,)
+                key, value = entropy.tools.extract_setting(line)
+                if key == "default-repository":
+                    line = "default-repository = %s" % (repoid,)
                     found = True
                 new_content.append(line)
             if not found:
-                new_content.append("default-repository|%s" % (repoid,))
+                new_content.append("default-repository = %s" % (repoid,))
             f_srv_t = open(etpConst['serverconf']+".save_default_repo_tmp", "w")
             for line in new_content:
                 f_srv_t.write(line+"\n")
@@ -3668,7 +3682,7 @@ class ServerRepositoryMixin:
                 etpConst['serverconf'])
         else:
             f_srv = open(etpConst['serverconf'], "w")
-            f_srv.write("default-repository|%s\n" % (repoid,))
+            f_srv.write("default-repository = %s\n" % (repoid,))
             f_srv.flush()
             f_srv.close()
 
@@ -3680,29 +3694,30 @@ class ServerRepositoryMixin:
 
         if not os.path.isfile(etpConst['serverconf']):
             return None
-        f_srv = open(etpConst['serverconf'])
+
         tmpfile = etpConst['serverconf']+".switch"
-        mycontent = [x.strip() for x in f_srv.readlines()]
-        f_srv.close()
-        f_tmp = open(tmpfile, "w")
-        st = "repository|%s" % (repoid,)
-        status = False
-        for line in mycontent:
-            if enable:
-                if (line.find(st) != -1) and line.startswith("#") and \
-                    (len(line.split("|")) == 5):
-                    line = line[1:]
-                    status = True
-            else:
-                if (line.find(st) != -1) and not line.startswith("#") and \
-                    (len(line.split("|")) == 5):
-                    line = "#"+line
-                    status = True
-            f_tmp.write(line+"\n")
-        f_tmp.flush()
-        f_tmp.close()
-        shutil.move(tmpfile, etpConst['serverconf'])
+        with open(etpConst['serverconf']) as f_srv:
+            content = [x.strip() for x in f_srv.readlines()]
+
+        with open(tmpfile, "w") as f_tmp:
+            status = False
+            for line in content:
+                key, value = entropy.tools.extract_setting(line)
+                if key is not None:
+                    key = key.replace(" ", "")
+                    key = key.replace("\t", "")
+                    if key in ("repository", "#repository"):
+                        if enable and (key == "#repository"):
+                            line = "repository = %s" % (value,)
+                            status = True
+                        elif not enable and (key == "repository"):
+                            line = "# repository = %s" % (value,)
+                            status = True
+                f_tmp.write(line+"\n")
+            f_tmp.flush()
+
         if status:
+            os.rename(tmpfile, etpConst['serverconf'])
             self.close_repositories()
             self._settings.clear()
             self._setup_services()

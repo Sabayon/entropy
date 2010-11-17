@@ -991,17 +991,26 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: tuple (string, dict)
         @return: tuple composed by (repository identifier, extracted repository
             metadata)
+        @raise AttributeError: when repostring passed is invalid.
         """
 
-        if branch == None:
+        if branch is None:
             branch = etpConst['branch']
-        if product == None:
+        if product is None:
             product = etpConst['product']
 
-        reponame = repostring.split("|")[1].strip()
-        repodesc = repostring.split("|")[2].strip()
-        repopackages = repostring.split("|")[3].strip()
-        repodatabase = repostring.split("|")[4].strip()
+        repo_key, repostring = entropy.tools.extract_setting(repostring)
+        if repo_key != "repository":
+            raise AttributeError("invalid repostring passed")
+
+        repo_split = repostring.split("|")
+        if len(repo_split) < 4:
+            raise AttributeError("invalid repostring passed (2)")
+
+        reponame = repo_split[0].strip()
+        repodesc = repo_split[1].strip()
+        repopackages = repo_split[2].strip()
+        repodatabase = repo_split[3].strip()
 
         eapi3_uri = None
         eapi3_port = etpConst['socket_service']['port']
@@ -1171,16 +1180,17 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
             excluded = False
             my_repodata = data['available']
-            if line.startswith("##"):
-                return
 
-            elif line.startswith("#"):
+            if line.startswith("#"):
                 excluded = True
                 my_repodata = data['excluded']
-                line = line[1:]
+                line = line.lstrip(" #")
 
-            reponame, repodata = self._analyze_client_repo_string(line,
-                data['branch'], data['product'])
+            try:
+                reponame, repodata = self._analyze_client_repo_string(line,
+                    data['branch'], data['product'])
+            except AttributeError:
+                return
             if reponame == etpConst['clientdbid']:
                 # not allowed!!!
                 return
@@ -1252,6 +1262,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'product': _product_func,
             'branch': _branch_func,
             'repository': _repository_func,
+            '#repository': _repository_func,
             # backward compatibility
             'officialrepositoryid': _offrepoid,
             'official-repository-id': _offrepoid,
@@ -1288,6 +1299,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             if key is None:
                 continue
 
+            key = key.replace(" ", "")
+            key = key.replace("\t", "")
             func = settings_map.get(key)
             if func is None:
                 continue
@@ -1365,6 +1378,14 @@ class SystemSettings(Singleton, EntropyPluginStore):
         override_branch = os.getenv('ETP_BRANCH')
         if override_branch is not None:
             data['branch'] = override_branch
+
+        # remove repositories that are in excluded if they are in available
+        for repoid in set(data['excluded']):
+            if repoid in data['available']:
+                try:
+                    del data['excluded'][repoid]
+                except KeyError:
+                    continue
 
         return data
 
