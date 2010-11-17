@@ -125,7 +125,7 @@ class RepositoryMixin:
                 continue
 
         # write back correct _enabled_repos
-        self._enabled_repos = _enabled_repos
+        self._enabled_repos.extend(_enabled_repos)
 
     def _init_generic_temp_repository(self, repoid, description,
         package_mirrors = None, temp_file = None):
