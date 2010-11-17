@@ -1,7 +1,6 @@
 
   1.0:
 
-    - entropy.server: warn when package set disappears!
     - more conditional deps support? (syntax parser)
             || (
             (
@@ -13,7 +12,6 @@
             )
             =app-crypt/gnupg-1.4*
         )
-      alternatively use "=" instead of "|"
     - equo security filescheck (--generate-hashes)
     - Client.urlFetcher/MultipleUrlFetcher ugly!
     - entropy package metadata .dtd specs
