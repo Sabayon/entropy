@@ -1274,6 +1274,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
             key, value = entropy.tools.extract_setting(line)
             if key is None:
                 continue
+            if key not in ("product", "branch"):
+                continue
 
             func = settings_map.get(key)
             if func is None:
