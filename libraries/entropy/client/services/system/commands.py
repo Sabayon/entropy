@@ -11,6 +11,7 @@
 """
 
 from entropy.const import etpConst
+from entropy.exceptions import ConnectionError
 import entropy.dump
 import entropy.tools
 from entropy.client.services.ugc.commands import Base
@@ -60,12 +61,18 @@ class Client(Base):
         )
 
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         rc = self.do_generic_handler(cmd, session_id, compression = compression)
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         return rc
 
@@ -77,12 +84,18 @@ class Client(Base):
             queue_id,
         )
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         rc = self.do_generic_handler(cmd, session_id, compression = compression)
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         return rc
 

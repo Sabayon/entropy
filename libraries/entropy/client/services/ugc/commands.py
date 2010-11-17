@@ -11,7 +11,7 @@
 """
 
 import os
-from entropy.exceptions import SSLError
+from entropy.exceptions import SSLError, ConnectionError
 from entropy.const import etpConst, const_get_stringtype, const_debug_write, \
     const_convert_to_rawstring
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
@@ -58,7 +58,7 @@ class Base:
         answer_id = self.standard_answers_map['all_fine']
 
         # elaborate answer
-        if data == None:
+        if data is None:
             mytxt = _("feature not supported remotely")
             self.Output.output(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
@@ -214,7 +214,7 @@ class Base:
                 continue
 
             data = self.get_result(session_id)
-            if data == None:
+            if data is None:
                 lasterr = None
                 continue
             elif not data:
@@ -228,13 +228,16 @@ class Base:
 
     def do_generic_handler(self, cmd, session_id, tries = 10, compression = False):
 
-        self.Service.check_socket_connection()
+        try:
+            self.Service.check_socket_connection()
+        except ConnectionError:
+            return False, 'connection error'
 
         while True:
             try:
                 result = self.retrieve_command_answer(cmd, session_id,
                     compression = compression)
-                if result == None:
+                if result is None:
                     return False, 'command not supported' # untranslated on purpose
                 return result
             except (self.socket.error, self.struct.error,) as err:
@@ -246,7 +249,7 @@ class Base:
                 if tries < 1:
                     return False, 'connection error %s' % (err,)
 
-    def set_gzip_compression(self, session, do):
+    def _set_gzip_compression(self, session, do):
         self.Service.check_socket_connection()
         cmd = "%s %s %s %s zlib" % (
             const_convert_to_rawstring(session),
@@ -261,7 +264,7 @@ class Base:
                 data = self.Service.receive()
             except (self.socket.error, self.struct.error, SSLError) as err:
                 const_debug_write(__name__,
-                    darkred("set_gzip_compression: error: " + repr(err)))
+                    darkred("_set_gzip_compression: error: " + repr(err)))
                 fail_count -= 1
                 if fail_count == 0:
                     raise
@@ -360,13 +363,19 @@ class Client(Base):
         )
 
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         data = self.do_generic_handler(cmd, session_id, tries = 5,
             compression = compression)
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         return data
 
@@ -426,12 +435,18 @@ class Client(Base):
         )
 
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         data = self.do_generic_handler(cmd, session_id, compression = compression)
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         return data
 
@@ -490,12 +505,18 @@ class Client(Base):
         )
 
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         rc = self.do_generic_handler(cmd, session_id, compression = compression)
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         return rc
 
@@ -526,12 +547,18 @@ class Client(Base):
         )
 
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         rc = self.do_generic_handler(cmd, session_id, compression = compression)
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         return rc
 
@@ -659,7 +686,10 @@ class Client(Base):
             return False, status, msg
 
         # enable zlib compression
-        compression = self.set_gzip_compression(session_id, True)
+        try:
+            compression = self._set_gzip_compression(session_id, True)
+        except ConnectionError:
+            return False, 'connection error'
 
         # start streamer
         stream_status = True
@@ -703,7 +733,10 @@ class Client(Base):
         f.close()
 
         # disable compression
-        self.set_gzip_compression(session_id, False)
+        try:
+            compression = self._set_gzip_compression(session_id, False)
+        except ConnectionError:
+            return False, 'connection error'
 
         # disable config
         cmd = "%s %s %s off" % (
