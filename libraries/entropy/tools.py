@@ -1965,29 +1965,34 @@ def write_parameter_to_file(config_file, name, data):
     f = open(config_file_tmp, "w")
     param_found = False
     if data:
-        proposed_line = "%s|%s" % (name, data,)
-        myreg = re.compile('^(%s)?[|].*$' % (name,))
+        proposed_line = "%s = %s" % (name, data,)
     else:
-        proposed_line = "# %s|" % (name,)
-        myreg_rem = re.compile('^(%s)?[|].*$' % (name,))
-        myreg = re.compile('^#([ \t]+?)?(%s)?[|].*$' % (name,))
+        proposed_line = "# %s =" % (name,)
+
         new_content = []
+        # remove older setting
         for line in content:
-            if myreg_rem.match(line):
+            key, value = extract_setting(line)
+            if key == name:
                 continue
             new_content.append(line)
         content = new_content
 
     for line in content:
-        if myreg.match(line):
+        key, value = extract_setting(line)
+        if key == name:
             param_found = True
             line = proposed_line
         f.write(line+"\n")
-    if not param_found:
+    if (not param_found) and data:
         f.write(proposed_line+"\n")
     f.flush()
     f.close()
-    shutil.move(config_file_tmp, config_file)
+
+    try:
+        os.rename(config_file_tmp, config_file)
+    except OSError:
+        shutil.move(config_file_tmp, config_file)
     return True
 
 _optcre_old = re.compile(
