@@ -20,10 +20,10 @@ sys.path.insert(5, '/usr/lib/entropy/server')
 from entropy.i18n import _
 import entropy.tools
 from entropy.output import red, print_error, print_generic, \
-    is_stdout_a_tty, nocolor, etpUi
+    is_stdout_a_tty, nocolor, etpUi, darkgreen
 from entropy.const import etpConst, const_kill_threads
 from entropy.server.interfaces import Server
-from text_tools import print_menu
+from text_tools import print_menu, acquire_entropy_locks, release_entropy_locks
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
@@ -195,75 +195,91 @@ if not entropy.tools.is_root():
 install_exception_handler()
 main_cmd = options.pop(0)
 
-if main_cmd == "update":
-    import server_reagent
-    rc = server_reagent.update(options)
-    get_entropy_server().close_repositories()
-
-elif main_cmd == "inject":
-    import server_reagent
-    rc = server_reagent.inject(options)
-    get_entropy_server().close_repositories()
-
-elif main_cmd == "query":
-    import server_query
-    rc = server_query.query(options)
-
-elif main_cmd == "repo":
-    if "switchbranch" in options:
-        etpUi['warn'] = False
-    import server_reagent
-    rc = server_reagent.repositories(options)
-    get_entropy_server().close_repositories()
-
-elif main_cmd == "status":
-    import server_reagent
-    server_reagent.status()
-    get_entropy_server().close_repositories()
-    rc = 0
-
-elif main_cmd == "key":
-    import server_key
-    rc = server_key.key(options)
-
-elif main_cmd == "deptest":
+acquired = False
+server = None
+try:
     server = get_entropy_server()
-    server.dependencies_test()
-    server.close_repositories()
-    rc = 0
+    acquired = acquire_entropy_locks(server)
 
-elif main_cmd == "pkgtest":
-    server = get_entropy_server()
-    server.verify_local_packages([], ask = etpUi['ask'])
-    server.close_repositories()
-    rc = 0
+    if not acquired:
+        print_error(darkgreen(_("Another Entropy is currently running.")))
+        rc = 1
 
-elif main_cmd == "libtest":
-    server = get_entropy_server()
-    dump = "--dump" in options
-    rc, pkgs = server.test_shared_objects(
-        dump_results_to_file = dump)
-    x = server.close_repositories()
+    elif main_cmd == "update":
+        import server_reagent
+        rc = server_reagent.update(options)
+        get_entropy_server().close_repositories()
 
-elif main_cmd == "revdeps":
-    server = get_entropy_server()
-    rc = server.generate_reverse_dependencies_metadata()
-    server.close_repositories()
+    elif main_cmd == "inject":
+        import server_reagent
+        rc = server_reagent.inject(options)
+        get_entropy_server().close_repositories()
 
-# cleanup
-elif main_cmd == "cleanup":
-    import text_tools
-    rc = text_tools.cleanup([etpConst['packagestmpdir'], etpConst['logdir']])
+    elif main_cmd == "query":
+        import server_query
+        rc = server_query.query(options)
 
-# deptest tool
-elif main_cmd == "spm":
-    import server_reagent
-    rc = server_reagent.spm(options)
-    get_entropy_server().close_repositories()
+    elif main_cmd == "repo":
+        if "switchbranch" in options:
+            etpUi['warn'] = False
+        import server_reagent
+        rc = server_reagent.repositories(options)
+        get_entropy_server().close_repositories()
+
+    elif main_cmd == "status":
+        import server_reagent
+        server_reagent.status()
+        get_entropy_server().close_repositories()
+        rc = 0
+
+    elif main_cmd == "key":
+        import server_key
+        rc = server_key.key(options)
+
+    elif main_cmd == "deptest":
+        server = get_entropy_server()
+        server.dependencies_test()
+        server.close_repositories()
+        rc = 0
+
+    elif main_cmd == "pkgtest":
+        server = get_entropy_server()
+        server.verify_local_packages([], ask = etpUi['ask'])
+        server.close_repositories()
+        rc = 0
+
+    elif main_cmd == "libtest":
+        server = get_entropy_server()
+        dump = "--dump" in options
+        rc, pkgs = server.test_shared_objects(
+            dump_results_to_file = dump)
+        x = server.close_repositories()
+
+    elif main_cmd == "revdeps":
+        server = get_entropy_server()
+        rc = server.generate_reverse_dependencies_metadata()
+        server.close_repositories()
+
+    # cleanup
+    elif main_cmd == "cleanup":
+        import text_tools
+        rc = text_tools.cleanup([etpConst['packagestmpdir'], etpConst['logdir']])
+
+    # deptest tool
+    elif main_cmd == "spm":
+        import server_reagent
+        rc = server_reagent.spm(options)
+        get_entropy_server().close_repositories()
+finally:
+    if server is not None:
+        if acquired:
+            release_entropy_locks(server)
+        server.shutdown()
 
 if rc == -10:
     print_menu(help_opts)
     print_error(red(" %s." % (_("Wrong parameters"),) ))
+    rc = 10
 
 uninstall_exception_handler()
 entropy.tools.kill_threads()
