@@ -123,7 +123,6 @@ help_opts = [
     (1, 'libtest', 2, _('look for missing libraries')),
         (2, '--dump', 2, _('dump results to files')),
     (1, 'pkgtest', 2, _('verify the integrity of local package files')),
-    (1, 'revdeps', 2, _('regenerate the reverse dependencies metadata')),
     None,
     (1, 'cleanup', 2, _('remove downloaded packages and clean temp. directories)')),
     None,
@@ -254,11 +253,6 @@ try:
         rc, pkgs = server.test_shared_objects(
             dump_results_to_file = dump)
         x = server.close_repositories()
-
-    elif main_cmd == "revdeps":
-        server = get_entropy_server()
-        rc = server.generate_reverse_dependencies_metadata()
-        server.close_repositories()
 
     # cleanup
     elif main_cmd == "cleanup":
