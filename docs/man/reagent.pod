@@ -97,10 +97,6 @@ match package dependency inside the default repository database
 
 show runtime libraries needed by the provided atoms
 
-=item B<revdeps>
-
-show what packages depend on the provided atoms
-
 =item B<tags>
 
 show packages owning the specified tags
