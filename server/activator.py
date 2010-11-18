@@ -21,9 +21,13 @@ sys.path.insert(5, '/usr/lib/entropy/server')
 from entropy.i18n import _
 import entropy.tools
 from entropy.output import red, is_stdout_a_tty, nocolor, print_generic, \
-    etpUi, print_error
+    etpUi, print_error, darkgreen
 from entropy.const import etpConst, const_kill_threads
-from text_tools import print_menu
+from entropy.server.interfaces import Server
+from text_tools import print_menu, acquire_entropy_locks, release_entropy_locks
+
+def get_entropy_server():
+    return Server(community_repo = etpConst['community']['mode'])
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
@@ -136,30 +140,46 @@ if not entropy.tools.is_root():
 main_cmd = options.pop(0)
 install_exception_handler()
 
-if main_cmd == "sync":
-    import server_activator
-    rc = server_activator.sync(options)
+server = None
+acquired = False
+try:
+    server = get_entropy_server()
+    acquired = acquire_entropy_locks(server)
 
-elif main_cmd == "tidy":
-    import server_activator
-    rc = server_activator.sync(options, just_tidy = True)
+    if not acquired:
+        print_error(darkgreen(_("Another Entropy is currently running.")))
+        rc = 1
 
-elif main_cmd == "repo":
-    import server_activator
-    rc = server_activator.repo(options)
+    elif main_cmd == "sync":
+        import server_activator
+        rc = server_activator.sync(options)
 
-elif main_cmd == "packages":
-    import server_activator
-    rc = server_activator.packages(options)
+    elif main_cmd == "tidy":
+        import server_activator
+        rc = server_activator.sync(options, just_tidy = True)
 
-# database tool
-elif main_cmd == "notice":
-    import server_activator
-    rc = server_activator.notice(options)
+    elif main_cmd == "repo":
+        import server_activator
+        rc = server_activator.repo(options)
+
+    elif main_cmd == "packages":
+        import server_activator
+        rc = server_activator.packages(options)
+
+    # database tool
+    elif main_cmd == "notice":
+        import server_activator
+        rc = server_activator.notice(options)
+finally:
+    if server is not None:
+        if acquired:
+            release_entropy_locks(server)
+        server.shutdown()
 
 if rc == -10:
     print_menu(help_opts)
     print_error(red(" %s." % (_("Wrong parameters"),) ))
+    rc = 10
 
 uninstall_exception_handler()
 const_kill_threads()
