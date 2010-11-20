@@ -59,6 +59,15 @@ def get_test_entropy_package5():
     test_pkg = "media-gfx:pdf2svg-0.2.1~3.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_packages_and_atoms():
+    data = {
+        'media-gfx/pdf2svg': get_test_entropy_package5(),
+        'x11-base/xorg-server': get_test_entropy_package4(),
+        'virtual/poppler-qt3': get_test_entropy_package3(),
+        'xfce-extra/xfce4-verve': get_test_entropy_package2(),
+    }
+    return data
+
 def get_test_entropy_package_provide():
     test_pkg = "mail-mta:ssmtp-2.62-r7~0.tbz2"
     return get_test_generic_package(test_pkg)

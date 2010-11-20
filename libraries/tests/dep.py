@@ -5,7 +5,6 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
 from entropy.const import const_convert_to_rawstring, const_convert_to_unicode
-from entropy.client.interfaces import Client
 from entropy.output import print_generic
 import tests._misc as _misc
 import tempfile
@@ -159,6 +158,49 @@ class DepTest(unittest.TestCase):
         result = 'app-foo/foo-1.2.3#abc'
         self.assertEqual(et.create_package_atom_string(category, name, version,
             package_tag), result)
+
+    def __open_test_db(self):
+        from entropy.client.interfaces import Client
+        client = Client(noclientdb = 2, indexing = False, xcache = False,
+            repo_validation = False)
+        db = client.open_temp_repository(dbname = "parser_test",
+            temp_file = ":memory:")
+        client.destroy()
+        client.shutdown()
+        return db
+
+    def __open_spm(self):
+        from entropy.client.interfaces import Client
+        client = Client()
+        spm = client.Spm()
+        client.destroy()
+        client.shutdown()
+        return spm
+
+    def test_parser(self):
+        pkgs = _misc.get_test_packages_and_atoms()
+        test_db = self.__open_test_db()
+        spm = self.__open_spm()
+
+        deps = []
+        for dep, path in pkgs.items():
+            data = spm.extract_package_metadata(path)
+            idpackage, rev, new_data = test_db.addPackage(data)
+            self.assertEqual(data, new_data)
+            deps.append(dep)
+        deps.sort()
+
+        depstrings = [
+            ("( %s & %s ) | cacca" % (deps[0], deps[1]), [deps[0], deps[1]]),
+            ("%s | ( cacca | cacca ) | cacca" % (deps[0],), [deps[0]]),
+            ("( app-foo/foo | %s ) & ( %s & %s ) %s" % (deps[0], deps[1], deps[2], deps[3]), [deps[0], deps[1], deps[2], deps[3]]),
+            ("cacca | ( cacca | cacca ) | cacca", []),
+        ]
+
+        for depstring, expected_outcome in depstrings:
+            parser = et.DependencyStringParser(depstring, test_db)
+            result, outcome = parser.parse()
+            self.assertEqual(outcome, expected_outcome)
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:

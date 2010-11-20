@@ -12,7 +12,7 @@
 
 """
 import re
-from entropy.exceptions import InvalidAtom
+from entropy.exceptions import InvalidAtom, EntropyException
 from entropy.const import etpConst, const_cmp
 
 # Imported from Gentoo portage_dep.py
@@ -742,3 +742,220 @@ def create_package_atom_string(category, name, version, package_tag):
     package_name = "%s/%s-%s" % (category, name, version,)
     package_name += package_tag
     return package_name
+
+class Dependency(object):
+
+    """
+    Helper class used to evaluate dependency string containing boolean
+    expressions such as: (dep1 & dep2) | dep 3
+    """
+
+    def __init__(self, entropy_dep, entropy_repository):
+        """
+        Dependency constructor.
+
+        @param entropy_dep: entropy package dependency
+        @type entropy_dep: string
+        @param entropy_repository: EntropyRepositoryBase instance
+        @type entropy_repository: EntropyRepositoryBase
+        """
+        self.__entropy_repository = entropy_repository
+        self.__dep = entropy_dep
+
+    def get(self):
+        """
+        Return encapsulated depdenency string
+
+        @rtype: string
+        """
+        return self.__dep
+
+    def __nonzero__(self):
+        """
+        Tries to match entropy_dep and returns True or False if dependency
+        is matched.
+        """
+        pkg_id, rc = self.__entropy_repository.atomMatch(self.__dep)
+        return rc == 0
+
+
+class DependencyStringParser(object):
+
+    """
+    Conditional dependency string parser. It is used by Entropy dependency
+    matching logic to evaluate dependency conditions containing boolean
+    operators. Example: "( app-foo/foo & foo-misc/foo ) | foo-misc/new-foo"
+
+    Example usage (self is an EntropyRepositoryBase instance):
+    >>> parser = DependencyStringParser("app-foo/foo & foo-misc/foo", self)
+    >>> matched, outcome = parser.parse()
+    >>> matched
+    True
+    >>> outcome
+    ["app-foo/foo", "foo-misc/foo"]
+
+    """
+    LOGIC_AND = "&"
+    LOGIC_OR = "|"
+
+    class MalformedDependency(EntropyException):
+        """
+        Raised when dependency string is malformed.
+        """
+
+    def __init__(self, entropy_dep, entropy_repository):
+        """
+        DependencyStringParser constructor.
+
+        @param entropy_dep: the dependency string to parse
+        @type entropy_dep: string
+        @param entropy_repository: EntropyRepositoryBase based instance
+        @type entropy_repository: EntropyRepositoryBase
+        """
+        self.__dep = entropy_dep
+        self.__entropy_repository = entropy_repository
+
+    def __dependency(self, dep):
+        """
+        Helper function to make instantianting Dependency classes less annoying.
+        """
+        return Dependency(dep, self.__entropy_repository)
+
+    def __split_subs(self, substring):
+        deep_count = 0
+        cur_str = ""
+        subs = []
+        for char in substring:
+            if char == " ":
+                continue
+            elif char == "(" and deep_count == 0:
+                if cur_str.strip():
+                    subs.append(cur_str.strip())
+                cur_str = char
+                deep_count += 1
+            elif char == "(":
+                cur_str += char
+                deep_count += 1
+            elif char == self.LOGIC_OR and deep_count == 0:
+                if cur_str.strip():
+                    subs.append(cur_str.strip())
+                subs.append(char)
+                cur_str = ""
+            elif char == self.LOGIC_AND and deep_count == 0:
+                if cur_str.strip():
+                    subs.append(cur_str.strip())
+                subs.append(char)
+                cur_str = ""
+            elif char == ")":
+                cur_str += char
+                deep_count -= 1
+                if deep_count == 0:
+                    cur_str = cur_str.strip()
+                    deps = self.__encode_sub(cur_str)
+                    if len(deps) == 1:
+                        subs.append(deps[0])
+                    elif deps:
+                        subs.append(deps)
+                    else:
+                        raise DependencyStringParser.MalformedDependency()
+                    cur_str = ""
+            else:
+                cur_str += char
+
+        if cur_str:
+            subs.append(cur_str.strip())
+
+        return subs
+
+    def __evaluate_subs(self, iterable):
+
+        if self.LOGIC_AND in iterable and self.LOGIC_OR in iterable:
+            raise DependencyStringParser.MalformedDependency(
+                "more than one operator in domain")
+
+        _subs = [x for x in iterable if isinstance(x, list)]
+
+        if not _subs:
+            if self.LOGIC_AND in iterable:
+                valid = True
+                iterable = [x for x in iterable if x != self.LOGIC_AND]
+                for and_el in iterable:
+                    if not self.__dependency(and_el):
+                        valid = False
+                        break
+                if valid:
+                    return True, iterable
+                return False, []
+
+            elif self.LOGIC_OR in iterable:
+                iterable = [x for x in iterable if x != self.LOGIC_OR]
+                for or_el in iterable:
+                    if self.__dependency(or_el):
+                        return True, [or_el]
+                return False, []
+            else:
+                raise DependencyStringParser.MalformedDependency()
+        else:
+            if self.LOGIC_AND in iterable:
+                iterable = [x for x in iterable if x != self.LOGIC_AND]
+                outcomes = []
+                for and_el in iterable:
+                    if isinstance(and_el, list):
+                        matched, outcome = self.__evaluate_subs(and_el)
+                        if matched:
+                            outcomes.extend(outcome)
+                        else:
+                            return False, []
+                    elif self.__dependency(and_el):
+                        outcomes.append(and_el)
+                    else:
+                        return False, []
+                return True, outcomes
+
+            elif self.LOGIC_OR in iterable:
+                iterable = [x for x in iterable if x != self.LOGIC_OR]
+                for or_el in iterable:
+                    if isinstance(or_el, list):
+                        matched, outcome = self.__evaluate_subs(or_el)
+                        if matched:
+                            return True, outcome
+                    elif self.__dependency(or_el):
+                        return True, [or_el]
+                return False, []
+
+    def __encode_sub(self, dep):
+        """
+        Generate a list of lists and strings from a plain dependency match
+        condition.
+        """
+        open_bracket = dep.find("(")
+        closed_bracket = dep.rfind(")")
+
+        try:
+            substring = dep[open_bracket + 1:closed_bracket]
+        except IndexError:
+            raise DependencyStringParser.MalformedDependency()
+        if not substring:
+            raise DependencyStringParser.MalformedDependency()
+
+
+        subs = self.__split_subs(substring)
+        if not subs:
+            raise DependencyStringParser.MalformedDependency()
+
+        return subs
+
+    def parse(self):
+        """
+        Execute the actual parsing and return the result.
+
+        @return: tuple composed by boolean (matched? not matched?) and list
+            of evaluated/matched dependencies.
+        @rtype: tuple
+        """
+        try:
+            matched, matched_deps = self.__evaluate_subs(
+                self.__encode_sub("(" + self.__dep + ")"))
+        except DependencyStringParser.MalformedDependency:
+            return False, []
+        return matched, matched_deps
