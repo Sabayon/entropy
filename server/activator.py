@@ -24,7 +24,7 @@ from entropy.output import red, is_stdout_a_tty, nocolor, print_generic, \
     etpUi, print_error, darkgreen
 from entropy.const import etpConst, const_kill_threads
 from entropy.server.interfaces import Server
-from text_tools import print_menu, acquire_entropy_locks, release_entropy_locks
+from text_tools import print_menu
 
 def get_entropy_server():
     return Server(community_repo = etpConst['community']['mode'])
@@ -140,41 +140,26 @@ if not entropy.tools.is_root():
 main_cmd = options.pop(0)
 install_exception_handler()
 
-server = None
-acquired = False
-try:
-    server = get_entropy_server()
-    acquired = acquire_entropy_locks(server)
+if main_cmd == "sync":
+    import server_activator
+    rc = server_activator.sync(options)
 
-    if not acquired:
-        print_error(darkgreen(_("Another Entropy is currently running.")))
-        rc = 1
+elif main_cmd == "tidy":
+    import server_activator
+    rc = server_activator.sync(options, just_tidy = True)
 
-    elif main_cmd == "sync":
-        import server_activator
-        rc = server_activator.sync(options)
+elif main_cmd == "repo":
+    import server_activator
+    rc = server_activator.repo(options)
 
-    elif main_cmd == "tidy":
-        import server_activator
-        rc = server_activator.sync(options, just_tidy = True)
+elif main_cmd == "packages":
+    import server_activator
+    rc = server_activator.packages(options)
 
-    elif main_cmd == "repo":
-        import server_activator
-        rc = server_activator.repo(options)
-
-    elif main_cmd == "packages":
-        import server_activator
-        rc = server_activator.packages(options)
-
-    # database tool
-    elif main_cmd == "notice":
-        import server_activator
-        rc = server_activator.notice(options)
-finally:
-    if server is not None:
-        if acquired:
-            release_entropy_locks(server)
-        server.shutdown()
+# database tool
+elif main_cmd == "notice":
+    import server_activator
+    rc = server_activator.notice(options)
 
 if rc == -10:
     print_menu(help_opts)
