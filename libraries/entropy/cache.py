@@ -302,6 +302,27 @@ class EntropyCacher(Singleton):
         """
         self.__cache_buffer.clear()
 
+    def save(self, key, data, cache_dir = None):
+        """
+        Save data object to cache asynchronously and in any case.
+        This method guarantees that cached data is stored even if cacher
+        is not started. If data cannot be stored, IOError will be raised.
+
+        @param key: cache data identifier
+        @type key: string
+        @param data: picklable object
+        @type data: any picklable object
+        @keyword cache_dir: alternative cache directory
+        @type cache_dir: string
+        """
+        if cache_dir is None:
+            cache_dir = entropy.dump.D_DIR
+        try:
+            entropy.dump.dumpobj(key, data, dump_dir = cache_dir,
+                ignore_exceptions = False)
+        except (EOFError, IOError, OSError):
+            raise IOError("cannot store %s to %s" % (key, cache_dir))
+
     def push(self, key, data, async = True, cache_dir = None):
         """
         This is the place where data is either added
@@ -316,8 +337,6 @@ class EntropyCacher(Singleton):
         @type async: bool
         @keyword cache_dir: alternative cache directory
         @type cache_dir: string
-        @rtype: None
-        @return: None
         """
         if not self.__alive:
             return
