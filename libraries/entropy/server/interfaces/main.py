@@ -230,6 +230,22 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         spm = self._server.Spm()
         return spm.get_package_category_description_metadata(category)
 
+    def __save_rss(self, srv_repo, rss_name, srv_updates):
+        # save to disk
+        try:
+            self._cacher.save(rss_name, srv_updates,
+                cache_dir = Server.CACHE_DIR)
+        except IOError as err:
+            e_msg = "[%s] %s: %s" % (brown(srv_repo),
+                purple(_("cannot store updates RSS cache")),
+                repr(err),)
+            self._server.output(
+                e_msg,
+                importance = 1,
+                level = "warning",
+                header = brown(" * ")
+            )
+
     def _write_rss_for_removed_package(self, repo_db, package_id):
 
         # setup variables we're going to use
@@ -273,8 +289,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         srv_updates['removed'][rss_atom] = mydict
 
         # save to disk
-        self._cacher.push(rss_name, srv_updates, async = False,
-            cache_dir = Server.CACHE_DIR)
+        self.__save_rss(srv_repo, rss_name, srv_updates)
 
     def _write_rss_for_added_package(self, repo_db, package_data):
 
@@ -314,8 +329,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             package_data['description']
 
         # save to disk
-        self._cacher.push(rss_name, srv_updates, async = False,
-            cache_dir = Server.CACHE_DIR)
+        self.__save_rss(srv_repo, rss_name, srv_updates)
 
     def add_package_hook(self, entropy_repository_instance, package_id,
         package_data):
