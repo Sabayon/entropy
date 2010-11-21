@@ -871,57 +871,37 @@ class DependencyStringParser(object):
 
         if self.LOGIC_AND in iterable and self.LOGIC_OR in iterable:
             raise DependencyStringParser.MalformedDependency(
-                "more than one operator in domain")
+                "more than one operator in domain, not yet supported")
 
-        _subs = [x for x in iterable if isinstance(x, list)]
-
-        if not _subs:
-            if self.LOGIC_AND in iterable:
-                valid = True
-                iterable = [x for x in iterable if x != self.LOGIC_AND]
-                for and_el in iterable:
-                    if not self.__dependency(and_el):
-                        valid = False
-                        break
-                if valid:
-                    return True, iterable
-                return False, []
-
-            elif self.LOGIC_OR in iterable:
-                iterable = [x for x in iterable if x != self.LOGIC_OR]
-                for or_el in iterable:
-                    if self.__dependency(or_el):
-                        return True, [or_el]
-                return False, []
-            else:
-                raise DependencyStringParser.MalformedDependency()
-        else:
-            if self.LOGIC_AND in iterable:
-                iterable = [x for x in iterable if x != self.LOGIC_AND]
-                outcomes = []
-                for and_el in iterable:
-                    if isinstance(and_el, list):
-                        matched, outcome = self.__evaluate_subs(and_el)
-                        if matched:
-                            outcomes.extend(outcome)
-                        else:
-                            return False, []
-                    elif self.__dependency(and_el):
-                        outcomes.append(and_el)
+        if self.LOGIC_AND in iterable:
+            iterable = [x for x in iterable if x != self.LOGIC_AND]
+            outcomes = []
+            for and_el in iterable:
+                if isinstance(and_el, list):
+                    matched, outcome = self.__evaluate_subs(and_el)
+                    if matched:
+                        outcomes.extend(outcome)
                     else:
                         return False, []
-                return True, outcomes
+                elif self.__dependency(and_el):
+                    outcomes.append(and_el)
+                else:
+                    return False, []
+            return True, outcomes
 
-            elif self.LOGIC_OR in iterable:
-                iterable = [x for x in iterable if x != self.LOGIC_OR]
-                for or_el in iterable:
-                    if isinstance(or_el, list):
-                        matched, outcome = self.__evaluate_subs(or_el)
-                        if matched:
-                            return True, outcome
-                    elif self.__dependency(or_el):
-                        return True, [or_el]
-                return False, []
+        elif self.LOGIC_OR in iterable:
+            iterable = [x for x in iterable if x != self.LOGIC_OR]
+            for or_el in iterable:
+                if isinstance(or_el, list):
+                    matched, outcome = self.__evaluate_subs(or_el)
+                    if matched:
+                        return True, outcome
+                elif self.__dependency(or_el):
+                    return True, [or_el]
+            return False, []
+
+        # don't know what to do at the moment with this malformation
+        return False, []
 
     def __encode_sub(self, dep):
         """
