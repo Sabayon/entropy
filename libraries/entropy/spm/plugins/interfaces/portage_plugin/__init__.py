@@ -25,7 +25,7 @@ import time
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
-    InvalidAtom
+    InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
     bold, blue, getcolor
 from entropy.i18n import _
@@ -167,6 +167,109 @@ class PortageMetaphor:
         del sort_dict
         return new_list
 
+
+class PortageEntropyDepTranslator(object):
+    """
+    Conditional dependency string translator from Portage to Entropy.
+
+    Example usage:
+    >>> translator = PortageEntropyDepTranslator(portage_string)
+    >>> entropy_string = translator.translate()
+    entropy_string
+
+    """
+
+    class ParseError(EntropyException):
+        """
+        Parse error.
+        """
+
+    def __init__(self, portage_dependency):
+        """
+        PortageEntropyDepTranslator constructor.
+
+        @param portage_dependency: Portage dependency string
+        @type portage_dependency: string
+        """
+        self.__dep = portage_dependency
+
+    def __produce_entropy_dep(self, split_dep):
+        """
+        Digest Portage raw dependency data produced by __extract_scope()
+        """
+        dep_str_list = []
+        operator, sub_split = split_dep[0], split_dep[1:]
+
+        for dep in sub_split:
+            if isinstance(dep, list):
+                _str = self.__produce_entropy_dep(dep)
+            else:
+                _str = dep
+            dep_str_list.append(_str)
+
+        return "( " + (" " + operator + " ").join(dep_str_list) + " )"
+
+    def __extract_scope(self, split_sub):
+        """
+        Prepare split Portage dependency string for complete digestion.
+        """
+        scope_list = []
+        nest_level = 0
+        skip_count = 0
+        sub_count = 0
+
+        for sub_idx in range(len(split_sub)):
+
+            sub_count += 1
+            if skip_count:
+                skip_count -= 1
+                continue
+
+            sub = split_sub[sub_idx]
+            if sub == "||": # or
+                try:
+                    next_sub = split_sub[sub_idx+1]
+                except IndexError:
+                    raise PortageEntropyDepTranslator.ParseError()
+                if next_sub != "(":
+                    raise PortageEntropyDepTranslator.ParseError()
+
+                local_sub_count, sub_scope = self.__extract_scope(
+                    split_sub[sub_idx+2:])
+                skip_count += local_sub_count
+                scope_list.append(
+                    [entropy.dep.DependencyStringParser.LOGIC_OR] + sub_scope)
+
+            elif sub == "(":
+                local_sub_count, sub_scope = self.__extract_scope(
+                    split_sub[sub_idx+1:])
+                skip_count += local_sub_count
+                scope_list.append(
+                    [entropy.dep.DependencyStringParser.LOGIC_AND] + sub_scope)
+                nest_level += 1
+
+            elif sub == ")":
+                if nest_level == 0:
+                    break # end of scope
+                nest_level -= 1
+
+            else:
+                scope_list.append(sub)
+
+        return sub_count, scope_list
+
+    def translate(self):
+        """
+        Effectively translate Portage dependency string returning Entropy one.
+
+        @return: Entropy dependency string
+        @rtype: string
+        @raise PortageEntropyDepTranslator.ParseError: in case of malformed
+            Portage dependency.
+        """
+        split_sub = [x.strip() for x in self.__dep.split() if x.strip()]
+        count, split_dep = self.__extract_scope(split_sub)
+        return self.__produce_entropy_dep(split_dep[0])
 
 class PortagePlugin(SpmPlugin):
 
