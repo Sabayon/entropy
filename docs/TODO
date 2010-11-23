@@ -1,20 +1,7 @@
 
   1.0:
 
-    - more conditional deps support? (syntax parser)
-            || (
-            (
-                >=app-crypt/gnupg-2.0
-                || (
-                    app-crypt/pinentry[gtk]
-                    app-crypt/pinentry[qt4]
-                )
-            )
-            =app-crypt/gnupg-1.4*
-        )
     - equo security filescheck (--generate-hashes)
-    - Client.urlFetcher/MultipleUrlFetcher ugly!
-    - entropy package metadata .dtd specs
     - entropy.client API docs
     - server-side handling of package deltas (daemon)
     - entropy.services, entropy.client.services: love and refactoring
@@ -29,10 +16,11 @@
     - implement system snapshots (as snapshots, sets).
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
 
-
+  break backward compat:
+      - enable baseinfo-extrainfo-2010 tables
+      - conditional deps support, implement in entropy.spm, class is there
 
   1.1:
 
-    - PackageKit replacement
     - UGC based on XML requests (all the commands into one string)
     - more specific extension? (.etp)
