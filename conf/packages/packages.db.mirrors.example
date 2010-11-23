@@ -1,0 +1,15 @@
+# Server and Client side packages.db.mirrors file.
+# In this file, repository administrators can list packages mirrors that
+# Entropy Client will use (beside the ones already in repositories.conf).
+# This makes possible to control and keep mirrors up-to-date without
+# bothering the user.
+#
+
+# LINE CONSTRUCTION:
+# <mirror uri>
+# NOTE: for inline comments, please use "##" instead of "#"
+
+# EXAMPLES:
+# http://foo.entropy.something/
+# ftp://entropy.somethingelse.com/
+
