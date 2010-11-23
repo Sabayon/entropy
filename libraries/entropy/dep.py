@@ -932,6 +932,7 @@ class DependencyStringParser(object):
         @return: tuple composed by boolean (matched? not matched?) and list
             of evaluated/matched dependencies.
         @rtype: tuple
+        @raise MalformedDependency: if dependency string is malformed
         """
         try:
             matched, matched_deps = self.__evaluate_subs(
