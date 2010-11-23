@@ -4260,7 +4260,8 @@ class ServerRepositoryMixin:
             header = red(" @@ ")
         )
 
-        manual_deps = sorted(dbconn.retrieveManualDependencies(idpackage))
+        manual_deps = sorted(dbconn.retrieveManualDependencies(idpackage,
+            resolve_conditional_deps = False))
         if manual_deps:
             self.output(
                 "[repo:%s] %s: %s" % (

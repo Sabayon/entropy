@@ -212,7 +212,8 @@ class ServerPackagesRepository(EntropyRepository):
                     current_rev = myrev
 
             #
-            manual_deps |= self.retrieveManualDependencies(package_id)
+            manual_deps |= self.retrieveManualDependencies(package_id,
+                resolve_conditional_deps = False)
             # injected packages wouldn't be removed by addPackage
             self.removePackage(package_id, do_cleanup = False,
                 do_commit = False)
@@ -227,7 +228,8 @@ class ServerPackagesRepository(EntropyRepository):
         )
 
         for r_package_id in removelist:
-            manual_deps |= self.retrieveManualDependencies(r_package_id)
+            manual_deps |= self.retrieveManualDependencies(r_package_id,
+                resolve_conditional_deps = False)
             self.removePackage(r_package_id, do_cleanup = False,
                 do_commit = False)
 

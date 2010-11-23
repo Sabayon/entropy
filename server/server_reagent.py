@@ -213,7 +213,8 @@ def _package_dep(entropy_server, args):
     for idpackage in idpackages:
 
         atom = dbconn.retrieveAtom(idpackage)
-        orig_deps = dbconn.retrieveDependencies(idpackage, extended = True)
+        orig_deps = dbconn.retrieveDependencies(idpackage, extended = True,
+            resolve_conditional_deps = False)
         dep_type_map = dict(orig_deps)
 
         def dep_check_cb(s):

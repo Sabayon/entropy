@@ -433,7 +433,8 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
 
         # deps
         repodb = entropy_intf.open_repository(repo_id)
-        deps = repodb.retrieveDependencies(pkg_id, extended = True)
+        deps = repodb.retrieveDependencies(pkg_id, extended = True,
+            resolve_conditional_deps = False)
 
         graph_deps = []
         for dep, x_dep_type in sorted(deps, key = depsorter):
@@ -1628,7 +1629,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             pkgsize = entropy.tools.bytes_into_human(pkgsize)
             pkgbin = dbconn.retrieveDownloadURL(idpackage)
             pkgdigest = dbconn.retrieveDigest(idpackage)
-            pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
+            pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True,
+                resolve_conditional_deps = False)
             pkgconflicts = dbconn.retrieveConflicts(idpackage)
             depsorter = lambda x: entropy.dep.dep_getcpv(x[0])
 

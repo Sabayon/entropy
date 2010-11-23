@@ -836,7 +836,8 @@ class EntropyRepository(EntropyRepositoryBase):
         mypackage_id_string = 'NULL'
         if isinstance(package_id, int):
 
-            manual_deps = self.retrieveManualDependencies(package_id)
+            manual_deps = self.retrieveManualDependencies(package_id,
+                resolve_conditional_deps = False)
 
             # does it exist?
             self.removePackage(package_id, do_cleanup = False,
@@ -2916,7 +2917,8 @@ class EntropyRepository(EntropyRepositoryBase):
             return frozenset(cur)
         return self._cur2frozenset(cur)
 
-    def retrieveDependenciesList(self, package_id, exclude_deptypes = None):
+    def retrieveDependenciesList(self, package_id, exclude_deptypes = None,
+        resolve_conditional_deps = True):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -2934,31 +2936,40 @@ class EntropyRepository(EntropyRepositoryBase):
         UNION SELECT "!" || conflict FROM conflicts
         WHERE idpackage = (?)""" % (excluded_deptypes_query,),
         (package_id, package_id,))
-        return self._cur2frozenset(cur)
+        if resolve_conditional_deps:
+            return frozenset(entropy.dep.expand_dependencies(cur, self))
+        else:
+            return self._cur2frozenset(cur)
 
-    def retrieveBuildDependencies(self, package_id, extended = False):
+    def retrieveBuildDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         return self.retrieveDependencies(package_id, extended = extended,
-            deptype = etpConst['dependency_type_ids']['bdepend_id'])
+            deptype = etpConst['dependency_type_ids']['bdepend_id'],
+            resolve_conditional_deps = resolve_conditional_deps)
 
-    def retrievePostDependencies(self, package_id, extended = False):
+    def retrievePostDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         return self.retrieveDependencies(package_id, extended = extended,
-            deptype = etpConst['dependency_type_ids']['pdepend_id'])
+            deptype = etpConst['dependency_type_ids']['pdepend_id'],
+            resolve_conditional_deps = resolve_conditional_deps)
 
-    def retrieveManualDependencies(self, package_id, extended = False):
+    def retrieveManualDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
         """
         Reimplemented from EntropyRepositoryBase.
         """
         return self.retrieveDependencies(package_id, extended = extended,
-            deptype = etpConst['dependency_type_ids']['mdepend_id'])
+            deptype = etpConst['dependency_type_ids']['mdepend_id'],
+            resolve_conditional_deps = resolve_conditional_deps)
 
     def retrieveDependencies(self, package_id, extended = False, deptype = None,
-        exclude_deptypes = None):
+        exclude_deptypes = None, resolve_conditional_deps = True):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -2983,7 +2994,7 @@ class EntropyRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return tuple(cur)
+            return tuple(entropy.dep.expand_dependencies(cur, self))
         else:
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency
@@ -2992,7 +3003,7 @@ class EntropyRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return self._cur2frozenset(cur)
+            return frozenset(entropy.dep.expand_dependencies(cur, self))
 
     def retrieveKeywords(self, package_id):
         """

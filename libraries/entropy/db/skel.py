@@ -1418,7 +1418,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             'content': content,
             'content_safety': self.retrieveContentSafety(package_id),
             'dependencies': dict((x, y,) for x, y in \
-                self.retrieveDependencies(package_id, extended = True)),
+                self.retrieveDependencies(package_id, extended = True,
+                    resolve_conditional_deps = False)),
             'mirrorlinks': [[x, self.retrieveMirrorData(x)] for x in mirrornames],
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(package_id),
@@ -2273,7 +2274,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def retrieveDependenciesList(self, package_id, exclude_deptypes = None):
+    def retrieveDependenciesList(self, package_id, exclude_deptypes = None,
+        resolve_conditional_deps = True):
         """
         Return list of dependencies, including conflicts for given package
         identifier.
@@ -2284,13 +2286,18 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             data. Please see etpConst['dependency_type_ids'] for valid values.
             Anything != int will raise AttributeError
         @type exclude_deptypes: list
+        @keyword resolve_conditional_deps: resolve conditional dependencies
+            automatically by default, stuff like
+            ( app-foo/foo | app-foo/bar ) & bar-baz/foo
+        @type resolve_conditional_deps: bool
         @return: list (frozenset) of dependencies of package
         @rtype: frozenset
         @raise AttributeError: if exclude_deptypes contains illegal values
         """
         raise NotImplementedError()
 
-    def retrieveBuildDependencies(self, package_id, extended = False):
+    def retrieveBuildDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
         """
         Return list of build time package dependencies for given package
         identifier.
@@ -2301,12 +2308,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
+        @keyword resolve_conditional_deps: resolve conditional dependencies
+            automatically by default, stuff like
+            ( app-foo/foo | app-foo/bar ) & bar-baz/foo
+        @type resolve_conditional_deps: bool
         @return: list (frozenset) of build dependencies of package
         @rtype: frozenset
         """
         raise NotImplementedError()
 
-    def retrievePostDependencies(self, package_id, extended = False):
+    def retrievePostDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
         """
         Return list of post-merge package dependencies for given package
         identifier.
@@ -2317,12 +2329,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
+        @keyword resolve_conditional_deps: resolve conditional dependencies
+            automatically by default, stuff like
+            ( app-foo/foo | app-foo/bar ) & bar-baz/foo
+        @type resolve_conditional_deps: bool
         @return: list (frozenset) of post dependencies of package
         @rtype: frozenset
         """
         raise NotImplementedError()
 
-    def retrieveManualDependencies(self, package_id, extended = False):
+    def retrieveManualDependencies(self, package_id, extended = False,
+        resolve_conditional_deps = True):
         """
         Return manually added dependencies for given package identifier.
         Note: this function is just a wrapper of retrieveDependencies()
@@ -2332,13 +2349,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type package_id: int
         @keyword extended: return in extended format
         @type extended: bool
+        @keyword resolve_conditional_deps: resolve conditional dependencies
+            automatically by default, stuff like
+            ( app-foo/foo | app-foo/bar ) & bar-baz/foo
+        @type resolve_conditional_deps: bool
         @return: list (frozenset) of manual dependencies of package
         @rtype: frozenset
         """
         raise NotImplementedError()
 
     def retrieveDependencies(self, package_id, extended = False, deptype = None,
-        exclude_deptypes = None):
+        exclude_deptypes = None, resolve_conditional_deps = True):
         """
         Return dependencies for given package identifier.
 
@@ -2355,6 +2376,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             data. Please see etpConst['dependency_type_ids'] for valid values.
             Anything != int will raise AttributeError
         @type exclude_deptypes: list
+        @keyword resolve_conditional_deps: resolve conditional dependencies
+            automatically by default, stuff like
+            ( app-foo/foo | app-foo/bar ) & bar-baz/foo
+        @type resolve_conditional_deps: bool
         @return: dependencies of given package
         @rtype: tuple or frozenset
         @raise AttributeError: if exclude_deptypes contains illegal values
