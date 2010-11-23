@@ -940,3 +940,55 @@ class DependencyStringParser(object):
         except DependencyStringParser.MalformedDependency:
             return False, []
         return matched, matched_deps
+
+
+def expand_dependencies(dependencies, entropy_repository):
+    """
+    Expand a list of dependencies resolving conditional ones.
+    NOTE: it automatically handles dependencies metadata extended format:
+        [(dep, type), ...]
+
+    @param dependencies: list of raw package dependencies, as
+        returned by EntropyRepositoryBase.retrieveDependencies{,List}()
+    @type dependencies: iterable
+    @param entropy_repository: EntropyRepositoryBase instance used to execute
+        the actual dependency resolution
+    @type entropy_repository: EntropyRepositoryBase
+    @return: list (keeping the iterable order when possible) of expanded
+        dependencies
+    @rtype: list
+    @raise AttributeError: if dependencies structure is unsupported (this
+        function supports list of strings, or list of tuples of length 2)
+    """
+    pkg_deps = []
+    for dep in dependencies:
+        is_tuple = False
+        dep_type = None
+        if isinstance(dep, tuple):
+            if len(dep) == 2:
+                dep, dep_type = dep
+            elif len(dep) == 1:
+                dep = dep[0]
+            else:
+                raise AttributeError("malformed input dependencies")
+        if dep.startswith("("):
+            try:
+                deps = DependencyStringParser(pkg_dep,
+                    entropy_repository).parse()
+            except DependencyStringParser.MalformedDependency:
+                # wtf! add as-is
+                if dep_type is None:
+                    pkg_deps.append(dep)
+                else:
+                    pkg_deps.append((dep, dep_type))
+                continue
+            if dep_type is None:
+                pkg_deps.extend(deps)
+            else:
+                pkg_deps.extend([(x, dep_type) for x in deps])
+        elif dep_type is None:
+            pkg_deps.append(dep)
+        else:
+            pkg_deps.append((dep, dep_type))
+
+    return pkg_deps
