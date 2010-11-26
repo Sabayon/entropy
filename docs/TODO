@@ -1,10 +1,10 @@
+Backlog (raw)
 
   1.0:
 
-    - equo security filescheck (--generate-hashes)
-    - entropy.client API docs
+    - verify false positives of "equo security oscheck"
     - server-side handling of package deltas (daemon)
-    - entropy.services, entropy.client.services: love and refactoring
+    - entropy.services, entropy.client: love and refactoring (API doc)
     - when a new kernel is pulled in, updated kernel mods should be pulled
       in as well (nvidia-drivers missing) [su controllo reverse deps togliere -1?]:
         >>  ## [N] [sabayonlinux.org] sys-kernel/linux-firmwares-2.6.35-r5|0
@@ -18,7 +18,7 @@
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
-      - conditional deps support, implement in entropy.spm, class is there
+      - conditional deps support, implement in entropy.spm, class is there (add unit test)
 
   1.1:
 
