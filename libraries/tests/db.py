@@ -87,12 +87,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         idpackage, rev, new_data = self.test_db.addPackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(data, db_data)
-        content_safety = self.test_db.searchContentSafety("/usr/include/zconf.h")
+        path = "/usr/include/zconf.h"
+        content_safety = self.test_db.searchContentSafety(path)
         self.assertEqual(content_safety, (
             {'package_id': 1,
-             'sha256': '2969cdfba8290da429a6cde4d145e627beb839deca14578c2a430212cbaf91fb',
+             'sha256': data['content_safety'][path]['sha256'],
              'path': '/usr/include/zconf.h',
-             'mtime': 1276241305.0},)
+             'mtime': data['content_safety'][path]['mtime']},)
         )
 
     def test_needed(self):
