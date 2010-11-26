@@ -271,6 +271,7 @@ class PortageEntropyDepTranslator(object):
         count, split_dep = self.__extract_scope(split_sub)
         return self.__produce_entropy_dep(split_dep[0])
 
+
 class PortagePlugin(SpmPlugin):
 
     builtin_pkg_sets = [
@@ -4125,13 +4126,12 @@ class PortagePlugin(SpmPlugin):
                 'mtime': os.path.getmtime(real_path),
             }
 
-        pkg_files = [(os.path.join(pkg_dir, k), k) for k, v in \
+        pkg_files = [(os.path.join(pkg_dir, k.lstrip("/")), k) for k, v in \
             content_data.items() if v == "obj"]
         pkg_files = [(real_path, repo_path) for real_path, repo_path in \
             pkg_files if is_reg(real_path)]
         return dict((repo_path, gen_meta(real_path, repo_path)) \
             for real_path, repo_path in pkg_files)
-
 
     def _extract_pkg_metadata_content(self, content_file, package_path, pkg_dir):
 
