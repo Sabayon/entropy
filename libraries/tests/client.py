@@ -115,11 +115,28 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(False, key1 in self._settings)
         self.assertEqual(False, key2 in self._settings)
 
+    def test_contentsafety(self):
+        dbconn = self.Client._init_generic_temp_repository(
+            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+        test_pkg = _misc.get_test_entropy_package5()
+        tmp_dir = tempfile.mkdtemp()
+        rc = entropy.tools.uncompress_tarball(test_pkg, extract_path = tmp_dir)
+        self.assertEqual(rc, 0)
+
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = dbconn.addPackage(data)
+        self.assertEqual(data, new_data)
+        cs_data = dbconn.retrieveContentSafety(idpackage)
+        for path, cs_info in cs_data.items():
+            real_path = os.path.join(tmp_dir, path.lstrip("/"))
+            self.assertEqual(os.path.getmtime(real_path), cs_info['mtime'])
+        shutil.rmtree(tmp_dir)
+
     def test_memory_repository(self):
         dbconn = self.Client._init_generic_temp_repository(
             self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
         test_pkg = _misc.get_test_package()
-        data = self.Spm.extract_package_metadata(test_pkg)
+        data = self.Spm.extract_package_metadata(test_pkg) 
         idpackage, rev, new_data = dbconn.addPackage(data)
         self.assertEqual(data, new_data)
         self.Client.remove_repository(self.mem_repoid)
