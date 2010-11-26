@@ -9,9 +9,11 @@
     B{Entropy Package Manager Client}.
 
 """
-from entropy.const import etpConst
+import os
+from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, darkgreen, darkblue, \
-    bold, purple, green, print_error, print_warning, print_info
+    bold, purple, green, teal, print_error, print_warning, print_info, \
+    print_generic
 from text_tools import print_table, acquire_entropy_locks, \
     release_entropy_locks
 from entropy.i18n import _
@@ -27,6 +29,8 @@ def security(options):
     only_unaffected = False
     fetch = False
     force = False
+    mtime = False
+    reinstall = False
     for opt in options:
         if opt == "--affected":
             only_affected = True
@@ -36,6 +40,10 @@ def security(options):
             fetch = True
         elif opt == "--force":
             force = True
+        elif opt == "--mtime":
+            mtime = True
+        elif opt == "--reinstall":
+            reinstall = True
 
     cmd = options[0]
     from entropy.client.interfaces import Client
@@ -56,6 +64,14 @@ def security(options):
             security_intf = entropy_client.Security()
             rc = list_advisories(security_intf, only_affected = only_affected,
                 only_unaffected = only_unaffected)
+
+        elif cmd == "oscheck":
+            if not entropy.tools.is_root():
+                er_txt = darkred(_("You must be an administrator."))
+                print_error(er_txt)
+                return 1
+            rc = oscheck(entropy_client, mtime_only = mtime,
+                reinstall = reinstall)
 
         elif cmd == "install":
 
@@ -267,6 +283,117 @@ def list_advisories(security_intf, only_affected = False,
                         blue(adv_metadata[key]['title']))
                     print_info(description)
     return 0
+
+def oscheck(entropy_client, mtime_only = False, reinstall = False):
+
+    import text_ui
+
+    installed_repo = entropy_client.installed_repository()
+    if installed_repo is None:
+        if not etpUi['quiet']:
+            print_info(red(" @@ ")+blue("%s." % (
+                _("Installed packages repository is not available"),)))
+        return 1
+
+    def _valid_sha256(path, sha256):
+        return entropy.tools.sha256(path) == sha256
+
+    def _valid_mtime(path, mtime):
+        return os.path.getmtime(path) == mtime
+
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue("%s..." % (_("Checking system files"),)))
+    pkg_ids = installed_repo.listAllPackageIds()
+    total = len(pkg_ids)
+    count = 0
+    faulty_pkg_ids = []
+
+    for pkg_id in pkg_ids:
+        count += 1
+        pkg_atom = installed_repo.retrieveAtom(pkg_id)
+        sts_txt = "%s%s/%s%s %s" % (blue("["), darkgreen(str(count)),
+            purple(str(total)), blue("]"), brown(pkg_atom))
+
+        if not etpUi['quiet']:
+            print_info(blue("@@") + " " + sts_txt, back = True)
+        cont_s = installed_repo.retrieveContentSafety(pkg_id)
+        if not cont_s:
+            if (not etpUi['quiet']) and etpUi['verbose']:
+                atom_txt = " %s: " % (brown(pkg_atom),)
+                print_info(red("@@") + atom_txt + _("no checksum information"))
+            # if pkg provides content!
+            continue
+
+        paths_tainted = []
+        paths_unavailable = []
+        for path, safety_data in cont_s.items():
+            tainted = False
+            if not os.path.lexists(path):
+                # file does not exist
+                # NOTE: current behaviour is to ignore file not available
+                # this might change in future.
+                paths_unavailable.append(path)
+                continue
+
+            elif not mtime_only:
+                # verify sha256
+                tainted = not _valid_sha256(path, safety_data['sha256'])
+            else:
+                # mtime only
+                tainted = not _valid_mtime(path, safety_data['mtime'])
+
+            if tainted:
+                paths_tainted.append(path)
+
+        if paths_tainted:
+            faulty_pkg_ids.append(pkg_id)
+            paths_tainted.sort()
+            if not etpUi['quiet']:
+                atom_txt = " %s: " % (teal(pkg_atom),)
+                print_info(red("@@") + atom_txt + _("altered files") + ":")
+            for path in paths_tainted:
+                if etpUi['quiet']:
+                    print_generic(path)
+                else:
+                    txt = " %s" % (purple(path),)
+                    print_info(txt)
+
+        if paths_unavailable:
+            paths_unavailable.sort()
+            if (not etpUi['quiet']) and etpUi['verbose']:
+                for path in paths_unavailable:
+                    txt = " %s [%s]" % (teal(path), purple(_("unavailable")))
+                    print_info(txt)
+
+    if not faulty_pkg_ids:
+        if not etpUi['quiet']:
+            print_info(red(" @@ ") + darkgreen(_("No altered files found")))
+        return 0
+
+    rc = 0
+    if faulty_pkg_ids:
+        rc = 10
+    valid_matches = set()
+
+    if reinstall and faulty_pkg_ids:
+        for pkg_id in faulty_pkg_ids:
+            key, slot = installed_repo.retrieveKeySlot(pkg_id)
+            match = entropy_client.atom_match(key, match_slot = slot)
+            if match[0] != -1:
+                valid_matches.add(match)
+
+        if valid_matches:
+            rc, stat = text_ui.install_packages(entropy_client,
+                atomsdata = valid_matches)
+
+    if not etpUi['quiet']:
+        print_warning(red(" @@ ") + \
+            purple(_("Altered files have been found")))
+        if reinstall and (rc == 0) and valid_matches:
+            print_warning(red(" @@ ") + \
+                purple(_("Packages have been reinstalled successfully")))
+
+    return rc
 
 def install_packages(entropy_client, security_intf, fetch = False):
 

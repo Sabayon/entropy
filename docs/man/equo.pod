@@ -202,6 +202,38 @@ security infrastructure functions
 
 =over
 
+=item B<oscheck>
+
+verify installed files using stored checksums
+
+=over
+
+=item B<--mtime>
+
+verify using mtime instead of SHA256 (false positives ahead)
+
+=back
+
+=item B<--quiet>
+
+show less details (useful for scripting)
+
+=back
+
+=item B<--verbose>
+
+also list removed files
+
+=back
+
+=over
+
+=item B<--reinstall>
+
+reinstall faulty packages
+
+=back
+
 =item B<update>
 
 download the latest Security Advisories
