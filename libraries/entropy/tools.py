@@ -1822,12 +1822,20 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
             try:
                 tar.chown(tarinfo, epath)
                 fix_uid_gid(tarinfo, epath)
-                tar.utime(tarinfo, epath)
                 # mode = tarinfo.mode
                 # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
                 # which is setuid. Symlinks don't need chmod. PERIOD!
                 if not os.path.islink(epath):
                     tar.chmod(tarinfo, epath)
+
+                # no longer touch utime using Tarinfo, behaviour seems
+                # buggy and introduces an unwanted delay on some conditions.
+                # match /bin/tar behaviour to not fuck touch mtime/atime at all
+                # I wonder who are the idiots who didn't even test how
+                # tar.utime behaves. Or perhaps it's just me that I've found
+                # a new bug. Issue is, packages are prepared on PC A, and
+                # mtime is checked on PC B.
+                # tar.utime(tarinfo, epath)
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     raise
