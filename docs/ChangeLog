@@ -1,3 +1,266 @@
+commit 4aed13fec663ddc51dbc8e189b2f1810c9102d2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 19:51:05 2010 +0100
+
+    [todo] update TODO
+
+commit 1842ad22b4b1c1b142d78c74941d5bd37a661e2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 19:46:27 2010 +0100
+
+    [equo] add "equo security oscheck", anti-rootkit tool built-in in the package manager!
+    
+    This new tool compares entropy installed packages repository stored file checksums
+    and mtimes with live system ones and reports altered ones.
+    
+    Please note:
+    - configuration files can expose different checksums and mtime
+      obvious thing
+    - there can be some false positives and you manually have to check
+      them
+
+commit 8c642218b8f108234fbeac667b48687368122e80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 19:46:07 2010 +0100
+
+    [conf] repositories.conf.example: add a new brazilian mirror
+
+commit c66d610c7f7c8a92cf0203f540ee3490a2cd8d4c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 14:59:25 2010 +0100
+
+    [tests] add content_safety metadata test
+
+commit 8f7a6d22eb132a65d80af3a6f39330950e8521a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 14:58:39 2010 +0100
+
+    [entropy.spm] fix bug in generating content_safety package metadata. os.path.join was used with wrong params.
+
+commit 9efbab85bfb5b15d1b0ccc8ed9ddc64187f675e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 14:56:41 2010 +0100
+
+    [entropy.tools] tarinfo.utime() is buggy and when used, it screws files mtime
+    
+    The inaccuracy has been measured and is > 10 seconds. Probably a tarinfo
+    bug somewhere, but I don't care. There is no need to (re)set mtime on
+    extracted files because they already hold right and original values.
+
+commit f2e60e6b8f6a7156b5f9c74023b1a12e7a285146
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 14:56:00 2010 +0100
+
+    [entropy.db] small SQL coding style update
+
+commit a5a8a9b38b790708e42ed75b061f810f23c2a44c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 23 21:25:15 2010 +0100
+
+    [todo] update TODO
+
+commit f76ce71d83845b7d69ff5ccab644529eef3be032
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 23 21:13:41 2010 +0100
+
+    [entropy.db] implement conditional dependencies support, break API on EntropyRepositoryBase
+
+commit 00cec97b2da41a916e00961976ce69a9beea551e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 23 21:09:39 2010 +0100
+
+    [entropy.dep] add helper function expand_dependencies()
+
+commit 8ab1d4645efe3becaafaf6ae52dcbcf7c7f4d879
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 23 21:09:01 2010 +0100
+
+    [entropy.dep] fix docstring on DependencyStringParser.parse()
+
+commit 6d3f3e02d2cf0a170205bf73f5774e39bbf38a74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 23 21:07:22 2010 +0100
+
+    [conf] add packages.db.mirrors.example file, missing
+
+commit e4f8d6250e1cf8576259801b1c7bab4e6b401719
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 22 17:59:25 2010 +0100
+
+    [entropy.spm] add Portage<->Entropy conditional dependency strings translator
+
+commit 02613af261443e2a22bbe3718d3619e99bbc04a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 21 21:42:05 2010 +0100
+
+    [reagent,activator] effectively implement entropy locking management in entropy.server modules
+
+commit 13b54e938aac340f9c5e884a54a0c7bc79d5cb42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 21 16:21:48 2010 +0100
+
+    [entropy.dep] improve code of DependencyStringParser, remove duplications
+
+commit 4149bbd48e4837cb351f2182c3f109ae934d3281
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 21 16:13:59 2010 +0100
+
+    [entropy.server] fix regression on repositories updates RSS files handling.
+
+commit 421b7cc04159127884181ee5b73b1778300db8b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 21 16:10:22 2010 +0100
+
+    [entropy.cache] add EntropyRepository.save()
+    
+    save() guarantess that data is stored to disk in any case if the
+    disk operation completes without errors, otherwise IOError is raised.
+
+commit da8e1435dedd855762e05135a8a7878109925ab5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 20 17:38:50 2010 +0100
+
+    [entropy.dep] implement base classes for conditional dependency string evaluation
+
+commit 28008bf88c38f82ef8d0893eec1cb56bba45df99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 18 10:07:38 2010 +0100
+
+    [activator] use entropy lock to ensure that there always be at most one instance running
+
+commit 12b72ff77a053fd07e350d881b9761b44fdb7421
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 18 10:07:11 2010 +0100
+
+    [docs] update man pages
+
+commit 8dd3c78e52b2e64e95faa753cba0a2dee5e0d46d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 18 10:03:25 2010 +0100
+
+    [reagent] remove "revdeps" tool, it is no longer needed
+
+commit 649f6786acff75e0fa39a420957eb2d0c9b4eeb3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Nov 18 10:01:36 2010 +0100
+
+    [reagent] use entropy lock to ensure that there always be at most one instance running
+
+commit 374238b566920fc81248e8274fddf6b9d9fce0a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 18:48:58 2010 +0100
+
+    [todo] update TODO
+
+commit 147811a3ed6dd83fb602f5edf07c6513b2c3a3de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 18:48:11 2010 +0100
+
+    [conf] update client.conf valid boolean setting values
+
+commit 7dd5f920c7233737e4d331d0bca57295bcc2e025
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 18:47:39 2010 +0100
+
+    [equo,sulfur] port to new configuration files syntax
+
+commit 8e5623dccdfb0fae8abebd0dd2566d5470412794
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 18:46:10 2010 +0100
+
+    [entropy.{core,client,server}] port parsers' code to new entropy.tools functions and new config files syntax (keeping backward compat).
+
+commit 4b8d087850438f2edab69aebc71e2e5e955920ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 18:45:10 2010 +0100
+
+    [entropy.client.interfaces.methods] do not throw _enabled_repos reference away
+
+commit e43a504801f5bcb98cb01c1e6c5a25f9da4a6256
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 16:27:30 2010 +0100
+
+    [entropy.tools] several improvements to settings parsing functions
+
+commit a3abde25994cbc90065c8e3d3f1d2e8d23fe6565
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 16:26:50 2010 +0100
+
+    [entropy.client.services] catch ConnectionError exception when using check_socket_connection(), always
+
+commit 209a177053092b6d0331977fc8f2325dd85e3ba9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 11:16:20 2010 +0100
+
+    [conf] port configuration files to new syntax
+
+commit 57f6a4a1d290fa727bd767768706b64ac7966d18
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 11:15:12 2010 +0100
+
+    [entropy.tools] port write_parameter_to_file to new configuration files syntax
+
+commit 126820a68b845a436790eacda19089713735d09d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Nov 17 08:38:20 2010 +0100
+
+    [entropy.core] fix regression in configuration file parsing (repositories.conf).
+    
+    Parse product and branch before any other parameter.
+
+commit d81980027a3b4aa220d4c2db5e7c1903607b64f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 16 23:21:25 2010 +0100
+
+    [entropy.*] rewrite configuration files parsing, make it more flexible and faster (and add key=value support)
+
+commit 6c1d8c40e21d028e6ce320f7599fc63e4d504cdd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 16 23:20:38 2010 +0100
+
+    [entropy.tools] tweaks inside extract_setting
+
+commit f69d65f49e293edd788699624b359bd296733676
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 16 22:07:23 2010 +0100
+
+    [entropy.tools] add some configuration file parsing functions that will be used around the entropy library
+
+commit 6fcba59ad8f62557c90e3c5e7d5b94161a0179b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Nov 16 21:41:27 2010 +0100
+
+    [conf] client.conf: fix typos in config file
+
+commit b110f2df325a7b981c4586b3d0282f1f280b45c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 13 14:43:02 2010 +0100
+
+    [entropy.server] remove repository remote download lock creation when uploading a new repository
+    
+    The only case where repository is locked now, is in case of upload failure,
+    to try to protect users from downloading data in inconsistent state.
+    This last one cannot be atomic since it involves more files, but this way
+    should prevent most of the annoyances.
+
+commit 816bc45acb4a238d6cb07004da4a8048e7a85aee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 13 14:28:05 2010 +0100
+
+    [entropy.client.interfaces.db] remove repository lock thread check, server-side repository updates have been made atomic long time ago
+
+commit 75a00e6e5b44806d61f96737771b8fba7e92362f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 13 14:22:43 2010 +0100
+
+    [entropy.services] code style update
+
+commit 9c64ff9dbdc2e0c8fc991b1632b993dea54a7f36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 12 07:05:57 2010 +0100
+
+    Tagging Entropy version 0.99.50.16
+
 commit dcbe7ff97585def8b5dce574c296ab03b9a1cc14
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 12 06:45:37 2010 +0100
