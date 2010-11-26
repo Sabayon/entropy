@@ -35,6 +35,8 @@ repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/e
 repository = sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
 repository = sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
 repository = sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://cerberus.itti.ifce.edu.br/entropy ftp://cerberus.itti.ifce.edu.br/entropy|
+
 # NOTE: delta package download support works over rsync://, please find some rsync
 # sources below
 repository = sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
