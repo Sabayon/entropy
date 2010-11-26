@@ -3171,7 +3171,7 @@ class EntropyRepository(EntropyRepositoryBase):
             return {}
 
         cur = self._cursor().execute("""
-        SELECT file, sha256, mtime from contentsafety where idpackage = (?)
+        SELECT file, sha256, mtime from contentsafety WHERE idpackage = (?)
         """, (package_id,))
         return dict((path, {'sha256': sha256, 'mtime': mtime}) for path, \
             sha256, mtime in cur.fetchall())
