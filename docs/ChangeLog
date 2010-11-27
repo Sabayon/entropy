@@ -1,3 +1,21 @@
+commit 49fa5e783699cbb327fb6d0f87a2631f943367a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 27 15:02:15 2010 +0100
+
+    Release Entropy test.0
+
+commit 284b0539db5dbdb2990b0749ce7040dfb6e09a52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 27 14:46:26 2010 +0100
+
+    [scripts] slightly tweak tag-version.sh script to make possible to list the new release in the released ChangeLog file.
+
+commit 17c7f9d95178fbe1a9b64619fd1336b6ed87d3a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 27 14:45:48 2010 +0100
+
+    Tagging Entropy version 0.99.51.2
+
 commit a15d12445e8adb6ab8829e56cda9bb0f11baf624
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 27 14:45:48 2010 +0100
