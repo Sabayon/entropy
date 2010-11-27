@@ -138,7 +138,7 @@ def _sync(entropy_server, options, just_tidy):
                 elif rss_enabled:
                     ServerRssMetadata()['commitmessage'] = "Autodriven Update"
 
-            errors, fine, broken = sync_remote_databases()
+            errors, fine, broken = _sync_remote_databases(entropy_server)
             if not errors:
                 entropy_server.Mirrors.lock_mirrors(lock = False)
             if not errors and not do_noask:
@@ -511,7 +511,7 @@ def _repo(entropy_server, options):
                 entropy_server.switch_default_repository(repo)
 
             print_info(green(" * ")+red("%s ..." % (_("Syncing databases"),) ))
-            errors, fine, broken = sync_remote_databases()
+            errors, fine, broken = _sync_remote_databases(entropy_server)
             if errors:
                 print_error(darkred(" !!! ") + \
                     green(_("Database sync errors, cannot continue.")))
