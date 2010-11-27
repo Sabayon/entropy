@@ -1,3 +1,27 @@
+commit 047dbf3aaf6d63733f7cfcc7369a28b6ba858284
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 27 14:32:51 2010 +0100
+
+    [reagent] call _update() instead of update(), entropy lock is already acquired
+
+commit 24df7a05af0bd41b06efec4050e3cea800878eb1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 27 13:38:13 2010 +0100
+
+    [activator] fix regression in repository sync handling, do not reinstantiante Entropy Server instance and lose repository information
+
+commit dba41146dcada35de030642506e354613f434745
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 23:08:30 2010 +0100
+
+    [tests] make content_safety test more reliable on different platforms
+
+commit 0ff67b01c4ff11cd30611b1096b09151636521f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Nov 26 20:23:38 2010 +0100
+
+    Tagging Entropy version 0.99.51
+
 commit 4aed13fec663ddc51dbc8e189b2f1810c9102d2d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Nov 26 19:51:05 2010 +0100
