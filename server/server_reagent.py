@@ -1249,7 +1249,7 @@ def _spm_compile_pkgset(entropy_server, pkgsets, do_rebuild = False,
             dbopts.append("--noask")
         dbopts.append("--atoms")
         dbopts.extend(sorted(done_atoms))
-        rc = update(dbopts)
+        rc = _update(entropy_server, dbopts)
         entropy_server.close_repositories()
         if rc != 0:
             return rc
