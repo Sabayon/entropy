@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2010-11-26" "perl v5.12.2" "Entropy"
+.TH EQUO 1 "2010-11-27" "perl v5.12.2" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -293,16 +293,19 @@ verify installed files using stored checksums
 .RS 4
 .IP "\fB\-\-mtime\fR" 4
 .IX Item "--mtime"
-verify using mtime instead of \s-1SHA256\s0 (false positives ahead)
+consider mtime instead of \s-1SHA256\s0 (false positives ahead)
+.RE
+.RS 4
+.RE
+.IP "\fB\-\-assimilate\fR" 4
+.IX Item "--assimilate"
+update hashes and mtime (useful after editing config files)
 .RE
 .RS 4
 .RE
 .IP "\fB\-\-quiet\fR" 4
 .IX Item "--quiet"
 show less details (useful for scripting)
-.RE
-.RS 4
-.RE
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 also list removed files
@@ -1206,9 +1209,12 @@ Fabio Erculiani <lxnay@sabayon.org>
 .SH "POD ERRORS"
 .IX Header "POD ERRORS"
 Hey! \fBThe above document had some coding errors, which are explained below:\fR
-.IP "Around line 237:" 4
-.IX Item "Around line 237:"
+.IP "Around line 229:" 4
+.IX Item "Around line 229:"
 \&'=item' outside of any '=over'
-.IP "Around line 287:" 4
-.IX Item "Around line 287:"
+.IP "Around line 243:" 4
+.IX Item "Around line 243:"
+\&'=item' outside of any '=over'
+.IP "Around line 293:" 4
+.IX Item "Around line 293:"
 \&'=item' outside of any '=over'

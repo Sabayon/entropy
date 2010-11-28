@@ -31,6 +31,7 @@ def security(options):
     force = False
     mtime = False
     reinstall = False
+    assimilate = False
     for opt in options:
         if opt == "--affected":
             only_affected = True
@@ -44,6 +45,8 @@ def security(options):
             mtime = True
         elif opt == "--reinstall":
             reinstall = True
+        elif opt == "--assimilate":
+            assimilate = True
 
     cmd = options[0]
     from entropy.client.interfaces import Client
@@ -71,7 +74,7 @@ def security(options):
                 print_error(er_txt)
                 return 1
             rc = oscheck(entropy_client, mtime_only = mtime,
-                reinstall = reinstall)
+                reinstall = reinstall, assimilate = assimilate)
 
         elif cmd == "install":
 
@@ -284,7 +287,8 @@ def list_advisories(security_intf, only_affected = False,
                     print_info(description)
     return 0
 
-def oscheck(entropy_client, mtime_only = False, reinstall = False):
+def oscheck(entropy_client, mtime_only = False, reinstall = False,
+    assimilate = False):
 
     import text_ui
 
@@ -294,12 +298,6 @@ def oscheck(entropy_client, mtime_only = False, reinstall = False):
             print_info(red(" @@ ")+blue("%s." % (
                 _("Installed packages repository is not available"),)))
         return 1
-
-    def _valid_sha256(path, sha256):
-        return entropy.tools.sha256(path) == sha256
-
-    def _valid_mtime(path, mtime):
-        return os.path.getmtime(path) == mtime
 
     if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("%s..." % (_("Checking system files"),)))
@@ -328,6 +326,9 @@ def oscheck(entropy_client, mtime_only = False, reinstall = False):
         paths_unavailable = []
         for path, safety_data in cont_s.items():
             tainted = False
+            mtime = None
+            sha256 = None
+
             if not os.path.lexists(path):
                 # file does not exist
                 # NOTE: current behaviour is to ignore file not available
@@ -337,10 +338,22 @@ def oscheck(entropy_client, mtime_only = False, reinstall = False):
 
             elif not mtime_only:
                 # verify sha256
-                tainted = not _valid_sha256(path, safety_data['sha256'])
+                sha256 = entropy.tools.sha256(path)
+                tainted = sha256 != safety_data['sha256']
+                if tainted:
+                    cont_s[path]['sha256'] = sha256
             else:
-                # mtime only
-                tainted = not _valid_mtime(path, safety_data['mtime'])
+                # verify mtime
+                mtime = os.path.getmtime(path)
+                tainted = mtime != safety_data['mtime']
+                if tainted:
+                    cont_s[path]['mtime'] = mtime
+
+            if assimilate:
+                if mtime is None:
+                    cont_s[path]['mtime'] = os.path.getmtime(path)
+                elif sha256 is None:
+                    cont_s[path]['sha256'] = entropy.tools.sha256(path)
 
             if tainted:
                 paths_tainted.append(path)
@@ -357,6 +370,11 @@ def oscheck(entropy_client, mtime_only = False, reinstall = False):
                 else:
                     txt = " %s" % (purple(path),)
                     print_info(txt)
+            if assimilate:
+                if not etpUi['quiet']:
+                    print_info(blue("@@") + " " + sts_txt + ", " + \
+                        teal(_("assimilated new hashes and mtime")),)
+                installed_repo.setContentSafety(pkg_id, cont_s)
 
         if paths_unavailable:
             paths_unavailable.sort()

@@ -210,7 +210,13 @@ verify installed files using stored checksums
 
 =item B<--mtime>
 
-verify using mtime instead of SHA256 (false positives ahead)
+consider mtime instead of SHA256 (false positives ahead)
+
+=back
+
+=item B<--assimilate>
+
+update hashes and mtime (useful after editing config files)
 
 =back
 
