@@ -1,3 +1,39 @@
+commit bd153e7b3452c1fb45aed68285fc96e530b84c64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 28 23:01:34 2010 +0100
+
+    Release Entropy 0.99.51.4
+
+commit 488e9cebf645e3718c0344c6c0d866a86761dec6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 28 22:38:14 2010 +0100
+
+    [equo] fix undefined reference in "equo community" code
+
+commit 65c4d3a28279169fed2736afbf07bb9ff5e9c2da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 28 13:13:23 2010 +0100
+
+    [todo] update TODO
+
+commit ccf38fd5e2fdc90ed438c442579b81c67d43924a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 28 13:12:34 2010 +0100
+
+    [equo] add --assimilate support to "equo security oscheck" to save checksums and mtimes of altered files
+
+commit 50fa1211803f10ec39a2c63f375382a87f220256
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 28 13:11:55 2010 +0100
+
+    [entropy.db] EntropyRepositoryBase: implement new method "setContentSafety", the opposite of "retrieveContentSafety"
+
+commit ad1254d0295f5bc844b98465d60ccceb92354686
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Nov 27 15:03:05 2010 +0100
+
+    Tagging Entropy version 0.99.51.3
+
 commit f30b9e6ba65698f5913bdeac8b47936802eca640
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Nov 27 15:03:05 2010 +0100
