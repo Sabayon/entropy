@@ -2,7 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - verify false positives of "equo security oscheck"
     - server-side handling of package deltas (daemon)
     - entropy.services, entropy.client: love and refactoring (API doc)
     - when a new kernel is pulled in, updated kernel mods should be pulled
