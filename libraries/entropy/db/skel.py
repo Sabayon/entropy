@@ -907,6 +907,18 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
+    def setContentSafety(self, package_id, content_safety):
+        """
+        Set (overwriting previous entries) new content safety metadata.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @param content_safety: dictionary with the same data structure of the
+            one returned by retrieveContentSafety()
+        @type content_safety: dict
+        """
+        raise NotImplementedError()
+
     def removeDependencies(self, package_id):
         """
         Remove all the dependencies of package.

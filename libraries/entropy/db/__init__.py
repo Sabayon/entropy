@@ -1953,6 +1953,15 @@ class EntropyRepository(EntropyRepositoryBase):
 
         self.commit()
 
+    def setContentSafety(self, package_id, content_safety):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        self._cursor().execute("""
+        DELETE FROM contentsafety where idpackage = (?)
+        """, (package_id,))
+        self._insertContentSafety(package_id, content_safety)
+
     def contentDiff(self, package_id, dbconn, dbconn_package_id):
         """
         Reimplemented from EntropyRepositoryBase.
