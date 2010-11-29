@@ -13,6 +13,8 @@
 
 # Sabayon Linux Official Repository
 repository = sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org,sabayon.org
+
+# Misc, unsorted mirrors (TODO, sort them)
 repository = sabayonlinux.org||http://mirror.agooga.ru/Linux/sabayonlinux/entropy|
 repository = sabayonlinux.org||http://bali.idrepo.or.id/sabayon/entropy|
 repository = sabayonlinux.org||http://madura.idrepo.or.id/sabayon/entropy|
@@ -21,32 +23,29 @@ repository = sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/e
 repository = sabayonlinux.org||http://ftp.sh.cvut.cz/MIRRORS/sabayon/entropy|
 repository = sabayonlinux.org||http://ftp2.cz.freebsd.org/pub/sabayon/entropy|
 repository = sabayonlinux.org||http://debian.mirror.dkm.cz/sabayon/entropy|
-repository = sabayonlinux.org||http://mirror.umoss.org/sabayonlinux/entropy|
+repository = sabayonlinux.org||http://mirror.umoss.org/sabayonlinux/entropy rsync://mirror.umoss.org/sabayonlinux/entropy|
 repository = sabayonlinux.org||ftp://ftp.klid.dk/sabayonlinux/entropy|
-repository = sabayonlinux.org||http://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
+repository = sabayonlinux.org||http://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy rsync://ftp.fsn.hu/ftp/pub/linux/distributions/sabayon/entropy|
 repository = sabayonlinux.org||ftp://ftp.fsn.hu/pub/linux/distributions/sabayon/entropy|
 repository = sabayonlinux.org||http://mirrors.cs.wmich.edu/sabayon/entropy|
-repository = sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy|
-repository = sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy|
 repository = sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
 repository = sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
 repository = sabayonlinux.org||http://ftp.rnl.ist.utl.pt/pub/sabayon ftp://ftp.rnl.ist.utl.pt/pub/sabayon|
-repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy|
-repository = sabayonlinux.org||ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy|
-repository = sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
-repository = sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
-repository = sabayonlinux.org||http://cerberus.itti.ifce.edu.br/entropy ftp://cerberus.itti.ifce.edu.br/entropy|
 
-# NOTE: delta package download support works over rsync://, please find some rsync
-# sources below
-repository = sabayonlinux.org||rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
-repository = sabayonlinux.org||rsync://gd.tuwien.ac.at/linux/sabayonlinux/entropy|
-repository = sabayonlinux.org||rsync://ftp.nluug.nl/sabayonlinux/entropy|
-repository = sabayonlinux.org||rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
-repository = sabayonlinux.org||rsync://ftp.fsn.hu/ftp/pub/linux/distributions/sabayon/entropy|
-repository = sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
-repository = sabayonlinux.org||rsync://ftp.pwsz.elblag.pl/sabayon/entropy|
-repository = sabayonlinux.org||rsync://mirror.umoss.org/sabayonlinux/entropy|
+# NLUUG, Holland
+repository = sabayonlinux.org||ftp://ftp.nluug.nl/pub/os/Linux/distr/sabayonlinux/entropy rsync://ftp.nluug.nl/sabayonlinux/entropy|
+# Surfnet, Holland
+repository = sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy rsync://ftp.SURFnet.nl/sabayonlinux/entropy|
+# AArnet.edu/Internode, Australia
+repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
+# Instituto Federal de Educação, Ciência e Tecnologia do Cearà, Brazil
+repository = sabayonlinux.org||http://cerberus.itti.ifce.edu.br/entropy ftp://cerberus.itti.ifce.edu.br/entropy|
+# Universidade Federal do Parana', Brazil
+repository = sabayonlinux.org||http://sabayon.c3sl.ufpr.br/entropy ftp://sabayon.c3sl.ufpr.br/sabayon/entropy rsync://sabayon.c3sl.ufpr.br/sabayon/entropy|
+# Cross-LFS Project mirror, United States
+repository = sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
+# GARR Network mirror, Italy
+repository = sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
 
 # Experimental Sabayon repository "sabayon-limbo"
 # Here you can find in-testing packages that will be merged to
