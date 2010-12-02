@@ -1536,7 +1536,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         Equo = EquoInterface()
 
     # now fetch essential info
-    pkgatom = dbconn.retrieveAtom(idpackage)
+    corrupted_str = _("CORRUPTED")
+    pkgatom = dbconn.retrieveAtom(idpackage) or corrupted_str
     if etpUi['quiet']:
         repoinfo = ''
         desc = ''
@@ -1548,12 +1549,20 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         return
 
     pkghome = dbconn.retrieveHomepage(idpackage)
-    pkgslot = dbconn.retrieveSlot(idpackage)
-    pkgver = dbconn.retrieveVersion(idpackage)
+    if pkghome is None:
+        pkghome = corrupted_str
+    pkgslot = dbconn.retrieveSlot(idpackage) or corrupted_str
+    pkgver = dbconn.retrieveVersion(idpackage) or corrupted_str
     pkgtag = dbconn.retrieveTag(idpackage)
+    if pkgtag is None:
+        pkgtag = corrupted_str
     pkgrev = dbconn.retrieveRevision(idpackage)
+    if pkgrev is None:
+        pkgrev = 0
     pkgdesc = dbconn.retrieveDescription(idpackage)
-    pkgbranch = dbconn.retrieveBranch(idpackage)
+    if pkgdesc is None:
+        pkgdesc = corrupted_str
+    pkgbranch = dbconn.retrieveBranch(idpackage) or corrupted_str
     if not pkgtag:
         pkgtag = "NoTag"
 
@@ -1569,11 +1578,14 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             if pkginstalled[1] == 0:
                 idx = pkginstalled[0]
                 # found
-                installedVer = Equo.installed_repository().retrieveVersion(idx)
+                installedVer = Equo.installed_repository().retrieveVersion(idx) \
+                     or corrupted_str
                 installedTag = Equo.installed_repository().retrieveTag(idx)
                 if not installedTag:
                     installedTag = "NoTag"
                 installedRev = Equo.installed_repository().retrieveRevision(idx)
+                if installedRev is None:
+                    installedRev = 0
         except:
             clientSearch = True
 
@@ -1583,8 +1595,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
         ", [" + purple(str(dbconn.reponame)) + "] ")
     if not strictOutput and extended:
-        pkgname = dbconn.retrieveName(idpackage)
-        pkgcat = dbconn.retrieveCategory(idpackage)
+        pkgname = dbconn.retrieveName(idpackage) or corrupted_str
+        pkgcat = dbconn.retrieveCategory(idpackage) or corrupted_str
         toc.append((darkgreen("       %s:" % (_("Category"),)),
             blue(pkgcat)))
         toc.append((darkgreen("       %s:" % (_("Name"),)),
@@ -1628,7 +1640,9 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             pkgsize = dbconn.retrieveSize(idpackage)
             pkgsize = entropy.tools.bytes_into_human(pkgsize)
             pkgbin = dbconn.retrieveDownloadURL(idpackage)
-            pkgdigest = dbconn.retrieveDigest(idpackage)
+            if pkgbin is None:
+                pkgbin = corrupted_str
+            pkgdigest = dbconn.retrieveDigest(idpackage) or corrupted_str
             pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True,
                 resolve_conditional_deps = False)
             pkgconflicts = dbconn.retrieveConflicts(idpackage)
@@ -1698,6 +1712,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             chost, cflags, cxxflags = dbconn.retrieveCompileFlags(idpackage)
             sources = dbconn.retrieveSources(idpackage)
             etpapi = dbconn.retrieveApi(idpackage)
+            if etpapi is None:
+                etpapi =  corrupted_str
 
             toc.append((darkgreen("       %s:" % (_("CHOST"),)),
                 blue(chost)))
@@ -1735,6 +1751,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 purple(pkgcreatedate)))
 
         pkglic = dbconn.retrieveLicense(idpackage)
+        if pkglic is None:
+            pkglic = corrupted_str
         toc.append((darkgreen("       %s:" % (_("License"),)),
             teal(pkglic)))
 
