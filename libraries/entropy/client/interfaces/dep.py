@@ -265,7 +265,9 @@ class CalculatorsMixin:
                         raise
                     xuse_cache = False
                     continue
-                except OperationalError:
+                except (OperationalError, DatabaseError):
+                    # OperationalError => error in data format
+                    # DatabaseError => database disk image is malformed
                     # repository fooked, skip!
                     break
                 break
