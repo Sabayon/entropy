@@ -973,7 +973,7 @@ def expand_dependencies(dependencies, entropy_repository):
                 raise AttributeError("malformed input dependencies")
         if dep.startswith("("):
             try:
-                deps = DependencyStringParser(pkg_dep,
+                deps = DependencyStringParser(dep,
                     entropy_repository).parse()
             except DependencyStringParser.MalformedDependency:
                 # wtf! add as-is
