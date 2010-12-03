@@ -11,7 +11,8 @@
 """
 
 import os
-from entropy.exceptions import SSLError, ConnectionError
+from entropy.services.exceptions import TransmissionError, \
+    EntropyServicesError, ServiceConnectionError
 from entropy.const import etpConst, const_get_stringtype, const_debug_write, \
     const_convert_to_rawstring
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
@@ -144,7 +145,11 @@ class Base:
     def get_result(self, session):
         # get the information
         cmd = "%s rc" % (session,)
-        self.Service.transmit(cmd)
+        try:
+            self.Service.transmit(cmd)
+        except TransmissionError:
+            entropy.tools.print_traceback()
+            return None
         try:
             data = self.Service.receive()
             return data
@@ -194,7 +199,7 @@ class Base:
             try:
                 # send command
                 self.Service.transmit(cmd)
-            except (SSLError,):
+            except TransmissionError:
                 return None
             # receive answer
             data = self.Service.receive()
@@ -230,7 +235,7 @@ class Base:
 
         try:
             self.Service.check_socket_connection()
-        except ConnectionError:
+        except ServiceConnectionError:
             return False, 'connection error'
 
         while True:
@@ -262,7 +267,7 @@ class Base:
             try:
                 self.Service.transmit(cmd)
                 data = self.Service.receive()
-            except (self.socket.error, self.struct.error, SSLError) as err:
+            except TransmissionError as err:
                 const_debug_write(__name__,
                     darkred("_set_gzip_compression: error: " + repr(err)))
                 fail_count -= 1
@@ -365,7 +370,7 @@ class Client(Base):
         # enable zlib compression
         try:
             compression = self._set_gzip_compression(session_id, True)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         data = self.do_generic_handler(cmd, session_id, tries = 5,
@@ -374,7 +379,7 @@ class Client(Base):
         # disable compression
         try:
             compression = self._set_gzip_compression(session_id, False)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         return data
@@ -437,7 +442,7 @@ class Client(Base):
         # enable zlib compression
         try:
             compression = self._set_gzip_compression(session_id, True)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         data = self.do_generic_handler(cmd, session_id, compression = compression)
@@ -445,7 +450,7 @@ class Client(Base):
         # disable compression
         try:
             compression = self._set_gzip_compression(session_id, False)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         return data
@@ -507,7 +512,7 @@ class Client(Base):
         # enable zlib compression
         try:
             compression = self._set_gzip_compression(session_id, True)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         rc = self.do_generic_handler(cmd, session_id, compression = compression)
@@ -515,7 +520,7 @@ class Client(Base):
         # disable compression
         try:
             compression = self._set_gzip_compression(session_id, False)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         return rc
@@ -549,7 +554,7 @@ class Client(Base):
         # enable zlib compression
         try:
             compression = self._set_gzip_compression(session_id, True)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         rc = self.do_generic_handler(cmd, session_id, compression = compression)
@@ -557,7 +562,7 @@ class Client(Base):
         # disable compression
         try:
             compression = self._set_gzip_compression(session_id, False)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         return rc
@@ -688,7 +693,7 @@ class Client(Base):
         # enable zlib compression
         try:
             compression = self._set_gzip_compression(session_id, True)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         # start streamer
@@ -735,7 +740,7 @@ class Client(Base):
         # disable compression
         try:
             compression = self._set_gzip_compression(session_id, False)
-        except ConnectionError:
+        except EntropyServicesError:
             return False, 'connection error'
 
         # disable config

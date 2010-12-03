@@ -25,7 +25,8 @@ from entropy.dump import dumpobj
 from entropy.cache import EntropyCacher
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
-    ConnectionError, PermissionDenied
+    PermissionDenied
+from entropy.services.exceptions import EntropyServicesError
 from entropy.security import Repository as RepositorySecurity
 from entropy.misc import TimeScheduled
 from entropy.i18n import _
@@ -179,7 +180,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 socket_timeout = self.__big_sock_timeout)
             eapi3_socket.connect(dburl, port)
             return eapi3_socket
-        except (ConnectionError, socket.error,):
+        except EntropyServicesError:
             return None
 
     def __check_eapi3_availability(self):

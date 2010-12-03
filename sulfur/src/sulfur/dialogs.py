@@ -27,6 +27,7 @@ import pango
 from entropy.i18n import _, _LOCALE
 from entropy.output import decolorize
 from entropy.exceptions import *
+from entropy.services.exceptions import TimeoutError
 from entropy.const import *
 from entropy.misc import ParallelTask
 import entropy.dep

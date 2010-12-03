@@ -23,8 +23,19 @@ sys.path.insert(0, '../server')
 sys.path.insert(0, '../client')
 
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
-    RepositoryError, TransceiverError, PermissionDenied, FileNotFound, \
-    SPMError, ConnectionError
+    RepositoryError, PermissionDenied, FileNotFound, SPMError
+try:
+    from entropy.services.exceptions import ServiceConnectionError
+except ImportError:
+    # backward compatibility
+    ServiceConnectionError = None
+try:
+    from entropy.transceivers.exceptions import TransceiverError, \
+        TransceiverConnectionError
+except ImportError:
+    TransceiverError = None
+    TransceiverConnectionError = None
+
 from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
     is_stdout_a_tty, bold, purple, blue
@@ -853,8 +864,8 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(101)
 
     generic_exc_classes = (OnlineMirrorError, RepositoryError,
-        TransceiverError, PermissionDenied, ConnectionError, FileNotFound,
-        SPMError, SystemError)
+        TransceiverError, PermissionDenied, TransceiverConnectionError,
+        ServiceConnectionError, FileNotFound, SPMError, SystemError)
     if exc_class in generic_exc_classes:
         print_error("%s %s. %s." % (
             darkred(" * "), exc_instance, _("Cannot continue"),))

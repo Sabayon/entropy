@@ -11,6 +11,7 @@
 """
 import sys
 import os
+import errno
 import tempfile
 import select
 import shutil
@@ -22,8 +23,8 @@ import entropy.tools
 from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst, const_setup_perms, const_isstring, \
     const_get_stringtype, const_convert_to_rawstring, etpUi, const_debug_write
-from entropy.exceptions import ConnectionError, InterruptError, \
-    PermissionDenied, TimeoutError, DumbException
+from entropy.exceptions import InterruptError, PermissionDenied, DumbException
+from entropy.services.exceptions import TimeoutError, ServiceConnectionError
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
 from entropy.output import blue, red, darkgreen, darkred, darkblue, brown, \
@@ -217,8 +218,8 @@ class SocketHost:
                     socketserver.TCPServer.__init__(self, server_address,
                         RequestHandlerClass)
                 except self.socket_mod.error as e:
-                    if e[0] == 13:
-                        raise ConnectionError('ConnectionError: %s' % (_("Cannot bind the service"),))
+                    if e.errno == errno.EACCESS:
+                        raise ServiceConnectionError("Cannot bind service")
                     raise
 
         def load_ssl_context(self):
@@ -806,7 +807,7 @@ class SocketHost:
             elif (("authenticator" in cmd_data['args']) or (cmd in self.HostInterface.login_pass_commands)):
                 try:
                     authenticator = self.load_authenticator()
-                except ConnectionError as e:
+                except ServiceConnectionError as e:
                     self.HostInterface.output(
                         '[from: %s] authenticator error: cannot load: %s' % (
                             self.client_address,
@@ -2031,7 +2032,7 @@ class SocketHost:
         poller.register(sock_obj, filter_type)
         res = poller.poll(sock_obj.gettimeout() * 1000)
         if len(res) != 1:
-            raise TimeoutError("Connection timed out on %s" % caller_name)
+            raise TimeoutError("Connection timed out")
 
     def transmit(self, channel, data):
         if self.is_ssl_enabled():

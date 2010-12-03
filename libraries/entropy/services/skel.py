@@ -11,8 +11,8 @@
 """
 import os
 from entropy.const import const_convert_to_unicode
-from entropy.exceptions import PermissionDenied, ConnectionError, \
-    LibraryNotFound
+from entropy.exceptions import PermissionDenied, LibraryNotFound
+from entropy.services.exceptions import ServiceConnectionError
 from entropy.i18n import _
 
 class SocketCommands:
@@ -137,7 +137,7 @@ class RemoteDatabase:
 
     def check_connection(self):
         if self.dbconn == None:
-            raise ConnectionError('ConnectionError: %s' % (_("not connected to database"),))
+            raise ServiceConnectionError("not connected to service")
         self._check_needed_reconnect()
 
     def _check_needed_reconnect(self):
@@ -161,10 +161,6 @@ class RemoteDatabase:
         if 'converters' not in self.connection_data and self.conversion_dict:
             self.connection_data['converters'] = self.conversion_dict.copy()
 
-    def check_connection_data(self):
-        if not self.connection_data:
-            raise PermissionDenied('ConnectionError: %s' % (_("no connection data"),))
-
     def connect(self):
         kwargs = {}
         keys = [
@@ -183,7 +179,7 @@ class RemoteDatabase:
         try:
             self.dbconn = self.mysql.connect(**kwargs)
         except self.mysql_exceptions.OperationalError as e:
-            raise ConnectionError('ConnectionError: %s' % (e,))
+            raise ServiceConnectionError(repr(e))
         self.plain_cursor = self.dbconn.cursor()
         self.cursor = self.mysql.cursors.DictCursor(self.dbconn)
         self.escape_string = self.dbconn.escape_string
@@ -304,21 +300,21 @@ class Authenticator:
 
     def check_login(self):
         if not self.logged_in:
-            raise PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
+            raise PermissionDenied("not logged in")
 
     def set_login_data(self, data):
         self.login_data = data.copy()
 
     def check_login_data(self):
         if not self.login_data:
-            raise PermissionDenied('PermissionDenied: %s' % (_("no login data"),))
+            raise PermissionDenied("no login data")
 
     def check_logged_in(self):
         if not self.is_logged_in():
-            raise PermissionDenied('PermissionDenied: %s' % (_("not logged in"),))
+            raise PermissionDenied("not logged in")
 
     def _raise_not_implemented_error(self):
-        raise NotImplementedError('NotImplementedError: %s' % (_('method not implemented'),))
+        raise NotImplementedError("not implemented")
 
     def check_connection(self):
         pass

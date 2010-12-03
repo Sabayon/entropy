@@ -20,6 +20,8 @@ import threading
 import time, gtk, gobject, pty, sys
 from entropy.i18n import _
 from entropy.exceptions import *
+from entropy.services.exceptions import SSLTransmissionError, \
+    EntropyServicesError
 from entropy.const import *
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.output import print_generic
@@ -860,8 +862,8 @@ class RepositoryManagerMenu(MenuSkel):
             srv.disconnect()
             self.connection_done = True
             return True, None
-        except SSLError:
-            return False, _("SSL Error, are you sure the server supports SSL?")
+        except SSLTransmissionError as err:
+            return False, "SSL Transmission error: %s" % (err,)
 
     def load(self):
 
@@ -965,7 +967,7 @@ class RepositoryManagerMenu(MenuSkel):
                 status, queue = self.Service.Methods.get_queue()
                 if not status:
                     return
-            except ConnectionError as err:
+            except EntropyServicesError as err:
                 self.debug_print("do_update_queue_view", str(err))
                 return
             except Exception as e:

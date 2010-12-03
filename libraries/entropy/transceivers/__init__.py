@@ -19,8 +19,8 @@ from entropy.const import const_isnumber
 from entropy.output import TextInterface, blue, brown, darkgreen, red
 from entropy.i18n import _
 from entropy.misc import Lifo
-from entropy.exceptions import UriHandlerNotFound, ConnectionError, \
-    TransceiverError
+from entropy.transceivers.exceptions import TransceiverError, \
+    UriHandlerNotFound, TransceiverConnectionError
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 

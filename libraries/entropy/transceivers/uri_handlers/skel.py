@@ -23,7 +23,7 @@ class EntropyUriHandler(object, TextInterface):
     "add_uri_handler" is a EntropyTransceiver static method.
     """
 
-    BASE_PLUGIN_API_VERSION = 1
+    BASE_PLUGIN_API_VERSION = 2
 
     TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
 
@@ -31,7 +31,7 @@ class EntropyUriHandler(object, TextInterface):
         """
         EntropyUriHandler constructor.
         When constructor is called, instance should perform a connection and
-        permissions check and raise entropy.exceptions.ConnectionError in case
+        permissions check and raise TransceiverConnectionError in case
         of issues.
 
         @param uri: URI to handle
@@ -173,7 +173,7 @@ class EntropyUriHandler(object, TextInterface):
         @type save_path: string
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -190,7 +190,7 @@ class EntropyUriHandler(object, TextInterface):
         @type save_dir: string
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -204,7 +204,7 @@ class EntropyUriHandler(object, TextInterface):
         @type remote_path: string
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -219,7 +219,7 @@ class EntropyUriHandler(object, TextInterface):
         @type remote_dir: string
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -233,7 +233,7 @@ class EntropyUriHandler(object, TextInterface):
         @type remote_path_new: string
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -247,7 +247,7 @@ class EntropyUriHandler(object, TextInterface):
         @rtype: bool
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -259,7 +259,7 @@ class EntropyUriHandler(object, TextInterface):
         @type remote_paths: list
         @return: execution status, True if done
         @rtype: bool
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 
@@ -348,7 +348,7 @@ class EntropyUriHandler(object, TextInterface):
     def keep_alive(self):
         """
         Send a keep-alive ping to handler.
-        @raise ConnectionError: if problems happen
+        @raise TransceiverConnectionError: if problems happen
         """
         raise NotImplementedError()
 

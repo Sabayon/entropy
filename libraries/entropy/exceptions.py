@@ -69,20 +69,8 @@ class RepositoryError(EntropyException):
 class RepositoryPluginError(EntropyException):
     """Error during EntropyRepositoryPlugin hook execution"""
 
-class ConnectionError(EntropyException):
-    """Cannot connect to service"""
-
 class InterruptError(EntropyException):
     """Raised to interrupt a thread or process"""
-
-class UriHandlerNotFound(EntropyException):
-    """
-    Raised when URI handler (in entropy.transceivers.EntropyTransceiver)
-    for given URI is not available.
-    """
-
-class TransceiverError(EntropyException):
-    """FTP errors"""
 
 class SystemDatabaseError(EntropyException):
     """Cannot open system database"""
@@ -117,12 +105,6 @@ class PermissionDenied(EntropyException):
 
 class LibraryNotFound(EntropyException):
     """A required library was not available or executable"""
-
-class SSLError(EntropyException):
-    """SSL support is not available"""
-
-class TimeoutError(EntropyException):
-    """Generic Timeout Error exception"""
 
 class EntropyPackageException(EntropyException):
     """Malformed or missing package data"""

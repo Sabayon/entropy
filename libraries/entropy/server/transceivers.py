@@ -13,7 +13,7 @@ import os
 
 from entropy.const import const_isstring, const_isnumber, etpConst
 from entropy.output import darkred, blue, brown, darkgreen, red, bold
-from entropy.exceptions import ConnectionError
+from entropy.transceivers.exceptions import TransceiverConnectionError
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.transceivers import EntropyTransceiver
@@ -173,7 +173,7 @@ class TransceiverServerHandler:
             if const_isnumber(self.speed_limit):
                 txc.set_speed_limit(self.speed_limit)
             txc.set_output_interface(self.Entropy)
-        except ConnectionError:
+        except TransceiverConnectionError:
             print_traceback()
             return True, fine, broken # issues
 

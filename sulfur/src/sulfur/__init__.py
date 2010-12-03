@@ -37,7 +37,8 @@ if "/usr/lib/entropy/client" not in sys.path:
 if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
-from entropy.exceptions import OnlineMirrorError, TimeoutError, SSLError
+from entropy.exceptions import OnlineMirrorError
+from entropy.services.exceptions import EntropyServicesError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants, const_convert_to_unicode, \
@@ -1426,7 +1427,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if self._entropy.UGC is not None:
                     try:
                         self._entropy.UGC.add_download_stats(repo, [repo])
-                    except (TimeoutError, SSLError,):
+                    except EntropyServicesError:
                         continue
 
             if repoConn.sync_errors or (rc != 0):

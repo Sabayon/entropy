@@ -18,7 +18,7 @@ import os
 import sys
 import time
 
-from entropy.exceptions import TimeoutError
+from entropy.services.exceptions import TimeoutError
 from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
     print_info, print_warning, print_error, purple, teal

@@ -17,7 +17,7 @@ import shutil
 from entropy.const import const_isnumber
 from entropy.output import brown, darkgreen, teal
 from entropy.i18n import _
-from entropy.exceptions import ConnectionError
+from entropy.transceivers.exceptions import TransceiverConnectionError
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 class EntropySshUriHandler(EntropyUriHandler):
@@ -26,7 +26,7 @@ class EntropySshUriHandler(EntropyUriHandler):
     EntropyUriHandler based SSH (with pubkey) transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 1
+    PLUGIN_API_VERSION = 2
 
     _DEFAULT_TIMEOUT = 60
     _DEFAULT_PORT = 22
@@ -83,7 +83,7 @@ class EntropySshUriHandler(EntropyUriHandler):
                 time.sleep(5)
                 continue
 
-        raise ConnectionError("cannot connect to %s on port %s" % (
+        raise TransceiverConnectionError("cannot connect to %s on port %s" % (
             self.__host, self.__port,))
 
     def __extract_scp_data(self, uri):
@@ -151,7 +151,7 @@ class EntropySshUriHandler(EntropyUriHandler):
             proc = self._subprocess.Popen(args)
             os._exit(proc.wait())
         elif pid == -1:
-            raise ConnectionError("cannot forkpty()")
+            raise TransceiverConnectionError("cannot forkpty()")
         else:
             dead = False
             return_code = 1

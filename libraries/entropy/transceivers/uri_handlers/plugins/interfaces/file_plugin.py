@@ -91,7 +91,7 @@ class EntropyFileUriHandler(EntropyUriHandler):
     EntropyUriHandler based FILE (local) transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 1
+    PLUGIN_API_VERSION = 2
 
     @staticmethod
     def approve_uri(uri):

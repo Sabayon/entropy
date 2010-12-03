@@ -12,6 +12,7 @@
 
 import os
 import sys
+import errno
 import select
 import time
 import subprocess
@@ -20,8 +21,10 @@ import shutil
 import entropy.dump
 import entropy.tools
 from entropy.services.skel import RemoteDatabase
-from entropy.exceptions import DumbException, ConnectionError, \
-    TimeoutError, SSLError, PermissionDenied
+from entropy.exceptions import DumbException, PermissionDenied
+from entropy.services.exceptions import EntropyServicesError, \
+    TransmissionError, SSLTransmissionError, BrokenPipe, \
+    ServiceConnectionError, TimeoutError
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_set_chmod, const_setup_file, const_get_stringtype, \
     const_convert_to_rawstring, const_convert_to_unicode, const_debug_write
@@ -1825,12 +1828,12 @@ class Client:
 
             '''
             if not (self.server_cert and self.server_ca_cert):
-                raise SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),)
+                raise EntropyServicesError("Specified SSL server certificate not available")
             if not (os.path.isfile(self.server_cert) and \
                     os.access(self.server_cert,os.R_OK) and \
                     os.path.isfile(self.server_ca_cert) and \
                     os.access(self.server_ca_cert,os.R_OK)) and self.pyopenssl:
-                        raise SSLError('SSLError: %s: %s' % (_("Specified SSL server certificate not available"),self.server_cert,))
+                        raise EntropyServicesError("Specified SSL server certificate not available")
             '''
 
             if self.pyopenssl:
@@ -1869,7 +1872,7 @@ class Client:
 
     def check_pyopenssl(self):
         if not self.pyopenssl:
-            raise SSLError('SSLError: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),))
+            raise EntropyServicesError("OpenSSL Python module not available")
 
     '''
     # this function should do the authentication checking to see that
@@ -1883,7 +1886,7 @@ class Client:
 
     def create_ssl_key_pair(self, keytype, bits):
         if not self.pyopenssl:
-            raise SSLError('SSLError: %s' % (_("OpenSSL Python module not available, you need dev-python/pyopenssl"),))
+            raise EntropyServicesError("OpenSSL Python module not available")
         pkey = self.SSL['crypto'].PKey()
         pkey.generate_key(keytype, bits)
         return pkey
@@ -1968,19 +1971,23 @@ class Client:
 
         except self.SSL_exceptions['Error'] as e:
             self.disconnect()
-            raise SSLError('SSLError: %s' % (e,))
+            raise SSLTransmissionError('SSLTransmissionError: %s' % (e,))
         except self.socket.sslerror as e:
             self.disconnect()
-            raise SSLError('SSL Socket error: %s' % (e,))
+            raise SSLTransmissionError('SSL Socket error: %s' % (e,))
         except self.socket.error as e:
             self.disconnect()
-            raise SSLError('SSL Socket error: %s' % (e,))
+            if e.errno == errno.EPIPE:
+                raise BrokenPipe(repr(e))
+            raise TransmissionError(repr(e))
+
         except select.error as e:
             self.disconnect()
-            raise SSLError('SSL Socket Select error: %s' % (e,))
-        except:
+            raise SSLTransmissionError('SSLTransmissionError<2>: %s' % (e,))
+
+        except Exception as e:
             self.disconnect()
-            raise
+            raise TransmissionError('Generic transmission error: %s' % (e,))
 
     def close_session(self, session_id):
         self.check_socket_connection()
@@ -1988,15 +1995,9 @@ class Client:
             self.transmit("%s end" % (session_id,))
             # since we don't know if it's expired, we need to wrap it
             data = self.receive()
-        except self.socket.error as e:
-            if etpUi['debug']:
-                entropy.tools.print_traceback()
-                import pdb
-                pdb.set_trace()
-            if e[0] == 32: # broken pipe
-                return None
-            raise
-        except SSLError:
+        except BrokenPipe:
+            return None
+        except TransmissionError:
             raise
         return data
 
@@ -2010,7 +2011,7 @@ class Client:
         try:
             self.transmit('begin')
             data = self.receive()
-        except (SSLError, self.socket.error):
+        except TransmissionError:
             return None
         return const_convert_to_unicode(data)
 
@@ -2028,7 +2029,7 @@ class Client:
         poller.register(self.sock_conn, filter_type)
         res = poller.poll(self.sock_conn.gettimeout() * 1000)
         if len(res) != 1:
-            raise TimeoutError("Connection timed out on %s" % caller_name)
+            raise TimeoutError("Connection timed out")
 
     def receive(self):
 
@@ -2237,7 +2238,7 @@ class Client:
 
     def check_socket_connection(self):
         if not self.sock_conn:
-            raise ConnectionError("ConnectionError: %s" % (_("Not connected to host"),))
+            raise ServiceConnectionError("Not connected to host")
 
     def connect(self, host, port):
 
@@ -2291,11 +2292,7 @@ class Client:
                         header = self.output_header
                     )
         except self.socket.error as e:
-            if e.errno == 111:
-                mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"), host, _("on port"), port,)
-                raise ConnectionError("ConnectionError: %s" % (mytxt,))
-            else:
-                raise
+            raise ServiceConnectionError(repr(e))
 
         if self.ssl:
             # make sure that SSL socket is in BLOCKING mode

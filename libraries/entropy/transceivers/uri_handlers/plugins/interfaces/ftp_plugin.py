@@ -17,7 +17,8 @@ from entropy.tools import print_traceback, get_file_size, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl
 from entropy.output import blue, brown, darkgreen, red
 from entropy.i18n import _
-from entropy.exceptions import ConnectionError, TransceiverError
+from entropy.transceivers.exceptions import TransceiverError, \
+    TransceiverConnectionError
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 
 class EntropyFtpUriHandler(EntropyUriHandler):
@@ -26,7 +27,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     EntropyUriHandler based FTP transceiver plugin.
     """
 
-    PLUGIN_API_VERSION = 1
+    PLUGIN_API_VERSION = 2
 
     _DEFAULT_TIMEOUT = 60
 
@@ -124,7 +125,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             self._connect()
         try:
             self.keep_alive()
-        except ConnectionError:
+        except TransceiverConnectionError:
             self._connect()
 
     def _connect(self):
@@ -144,10 +145,10 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 self.__ftpconn.connect(self.__ftphost, self.__ftpport, timeout)
                 break
             except (socket.gaierror,) as e:
-                raise ConnectionError('ConnectionError: %s' % (e,))
+                raise TransceiverConnectionError(repr(e))
             except (socket.error,) as e:
                 if not count:
-                    raise ConnectionError('ConnectionError: %s' % (e,))
+                    raise TransceiverConnectionError(repr(e))
             except:
                 if not count:
                     raise
@@ -165,7 +166,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         try:
             self.__ftpconn.login(self.__ftpuser, self.__ftppassword)
         except self.ftplib.error_perm as e:
-            raise ConnectionError('ConnectionError: %s' % (e,))
+            raise TransceiverConnectionError(repr(e))
 
         if self._verbose:
             mytxt = _("switching to")
@@ -626,11 +627,11 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         Send a keep-alive ping to handler.
         """
         if not self.__connected:
-            raise ConnectionError("keep_alive when not connected")
+            raise TransceiverConnectionError("keep_alive when not connected")
         try:
             self.__ftpconn.sendcmd("NOOP")
         except (self.ftplib.error_temp, self.ftplib.error_reply,):
-            raise ConnectionError("cannot execute keep_alive")
+            raise TransceiverConnectionError("cannot execute keep_alive")
 
     def close(self):
         """ just call our disconnect method """

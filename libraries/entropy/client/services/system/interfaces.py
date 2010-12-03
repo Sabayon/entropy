@@ -11,7 +11,7 @@
 """
 import time
 from entropy.const import const_isstring, etpUi
-from entropy.exceptions import ConnectionError
+from entropy.services.exceptions import EntropyServicesError
 from entropy.i18n import _
 from entropy.misc import TimeScheduled
 
@@ -213,7 +213,7 @@ class Client:
     def get_service_connection(self, timeout = None):
         try:
             srv = self.connect_to_service(timeout = timeout)
-        except (ConnectionError, self.socket.error, self.struct.error,):
+        except EntropyServicesError:
             return None
         return srv
 

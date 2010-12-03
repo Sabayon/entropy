@@ -14,8 +14,9 @@ import os
 import shutil
 from entropy.core import Singleton
 from entropy.core.settings.base import SystemSettings
-from entropy.exceptions import SSLError, TimeoutError, RepositoryError, \
-    ConnectionError, PermissionDenied
+from entropy.exceptions import RepositoryError, PermissionDenied
+from entropy.services.exceptions import ServiceConnectionError, \
+    EntropyServicesError
 from entropy.cache import MtimePingus, EntropyCacher
 from entropy.const import etpConst, const_setup_file, const_setup_perms
 from entropy.i18n import _
@@ -86,9 +87,7 @@ class Client:
                 return None
         try:
             srv = self.connect_to_service(repository, timeout = timeout)
-        except (RepositoryError, ConnectionError,):
-            return None
-        except (self.socket.error, self.struct.error,):
+        except (RepositoryError, ServiceConnectionError,):
             return None
         return srv
 
@@ -113,7 +112,7 @@ class Client:
                         rc = True
                     else:
                         rc = False
-            except (TimeoutError, SSLError,):
+            except EntropyServicesError:
                 rc = False
             return rc
 
@@ -279,7 +278,7 @@ class Client:
             try:
                 srv.close_session(session)
                 srv.disconnect()
-            except ConnectionError:
+            except ServiceConnectionError:
                 return False, 'no connection'
 
             return rslt
