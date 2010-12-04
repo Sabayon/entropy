@@ -423,6 +423,8 @@ def const_default_settings(rootdir):
         'userpackagesetsid': "__user__",
         'cachedumpext': ".dmp",
         'packagesext': ".tbz2",
+        # entropy package files binary delta extension
+        'packagesdeltaext': ".edelta",
         'smartappsext': ".app",
         # Extension of the file that contains the checksum
         # of its releated package file

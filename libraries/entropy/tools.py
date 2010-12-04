@@ -1065,6 +1065,196 @@ def unpack_bzip2(bzip2filepath):
     os.rename(tmp_path, filepath)
     return filepath
 
+def generate_entropy_delta_file_name(pkg_path_a, pkg_path_b, api = 0):
+    """
+    Generate Entropy package binary delta file name basing on package paths
+    given (from pkg_path_a to pkg_path_b).
+
+    @param pkg_path_a: package path A
+    @type pkg_path_a: string
+    @param pkg_path_a: package path B
+    @type pkg_path_a: string
+    @keyword api: for future usage (if api will change)
+    @type api: int
+    @return: package delta file name (not full path!)
+    @rtype: string
+    @raise AttributeError: if api is unsupported
+    """
+    if api != 0:
+        raise AttributeError("unsupported API")
+    pkg_path_a_name = os.path.basename(pkg_path_a)
+    pkg_path_b_name = os.path.basename(pkg_path_b)
+    delta_name = pkg_path_a_name + pkg_path_b_name
+    from_pkg_name = os.path.splitext(pkg_path_a_name.replace(":", "+"))[0]
+    delta_hashed_name = "%s~%s%s" % (from_pkg_name,
+        md5sum(pkg_path_b), etpConst['packagesdeltaext'])
+    return delta_hashed_name
+
+def _delta_extract_bz2(bz2_path, new_path_fd):
+    import bz2
+    with os.fdopen(new_path_fd, "wb") as item:
+        filebz2 = bz2.BZ2File(bz2_path, "rb")
+        chunk = filebz2.read(16384)
+        while chunk:
+            item.write(chunk)
+            chunk = filebz2.read(16384)
+        filebz2.close()
+        item.flush()
+        item.close()
+
+def _delta_extract_gzip(gzip_path, new_path_fd):
+    import gzip
+    with os.fdopen(new_path_fd, "wb") as item:
+        file_gz = gzip.GzipFile(gzip_path, "rb")
+        chunk = file_gz.read(16384)
+        while chunk:
+            item.write(chunk)
+            chunk = file_gz.read(16384)
+        file_gz.close()
+        item.flush()
+        item.close()
+
+_PKGDELTA_SUBDIR = "deltas"
+_BSDIFF_EXEC = "/usr/bin/bsdiff"
+_BSPATCH_EXEC = "/usr/bin/bspatch"
+_DELTA_DECOMPRESSION_MAP = {
+    "bz2": _delta_extract_bz2,
+    "gz": _delta_extract_gzip,
+}
+_DEFAULT_PKG_COMPRESSION = "bz2"
+
+def generate_entropy_delta(pkg_path_a, pkg_path_b, pkg_compression = None):
+    """
+    Generate Entropy package delta between pkg_path_a (from file) and
+    pkg_path_b (to file).
+
+    @param pkg_path_a: package path A (from file)
+    @type pkg_path_a: string
+    @param pkg_path_a: package path B (to file)
+    @type pkg_path_a: string
+    @keyword pkg_compression: default package compression, can be "bz2" or "gz".
+        if None, "bz2" is selected.
+    @type: string
+    @return: path to newly created delta file, return None if error
+    @rtype: string or None
+    @raise KeyError: if pkg_compression is unsupported
+    @raise IOError: if delta cannot be generated
+    @raise OSError: if some other error happens during the generation
+    """
+    if pkg_compression is None:
+        _delta_extractor = _DELTA_DECOMPRESSION_MAP[_DEFAULT_PKG_COMPRESSION]
+    else:
+        _delta_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
+
+    tmp_fd_a, tmp_path_a = tempfile.mkstemp(dir=os.path.dirname(pkg_path_a))
+    tmp_fd_b, tmp_path_b = tempfile.mkstemp(dir=os.path.dirname(pkg_path_b))
+    tmp_fd, tmp_path = tempfile.mkstemp()
+    os.close(tmp_fd)
+
+    try:
+        _delta_extractor(pkg_path_a, tmp_fd_a)
+        _delta_extractor(pkg_path_b, tmp_fd_b)
+    finally:
+        # ensure that fds are closed
+        for fd in (tmp_fd_a, tmp_fd_b):
+            try:
+                os.close(fd)
+            except OSError as err:
+                if err.errno != errno.EBADF:
+                    raise
+
+    try:
+
+        pkg_path_b_dir = os.path.dirname(pkg_path_b)
+        delta_fn = generate_entropy_delta_file_name(pkg_path_a,
+            pkg_path_b)
+        delta_file = os.path.join(pkg_path_b_dir, _PKGDELTA_SUBDIR, delta_fn)
+        delta_dir = os.path.dirname(delta_file)
+        if not os.path.isdir(delta_dir):
+            os.mkdir(delta_dir, 0o775)
+
+        args = (_BSDIFF_EXEC, tmp_path_a, tmp_path_b, delta_file)
+        rc = subprocess.call(args)
+        if rc != 0:
+            return None
+
+        # last step, append package B metadata to delta_file
+        dump_entropy_metadata(pkg_path_b, tmp_path)
+        aggregate_entropy_metadata(delta_file, tmp_path)
+
+    finally:
+        for pkg_f in (tmp_path_a, tmp_path_b, tmp_path):
+            try:
+                os.remove(pkg_f)
+            except (IOError, OSError):
+                continue
+
+    return delta_file
+
+def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
+    pkg_compression = None):
+    """
+    Apply Entropy package delta file to pkg_path_a generating pkg_path_b (which
+    is returned in case of success). If delta cannot be generated, IOError is
+    raised.
+    NOTE: new_pkg_path_b file won't be compressed in any format to avoid
+    unwanted performance penalty. It will be plain .tar with entropy metadata
+    appended at the end (as usual).
+
+    @param pkg_path_a: path to package A
+    @type pkg_path_a: string
+    @param delta_path: path to entropy package delta
+    @type delta_path: string
+    @param new_pkg_path_b: path where to store newly created package B
+    @type new_pkg_path_b: string
+    @keyword pkg_compression: default package compression, can be "bz2" or "gz".
+        if None, "bz2" is selected.
+    @type: string
+    @raise IOError: if delta cannot be generated.
+    """
+    if pkg_compression is None:
+        _pkg_extractor = _DELTA_DECOMPRESSION_MAP[_DEFAULT_PKG_COMPRESSION]
+    else:
+        _pkg_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
+
+    tmp_fd, tmp_delta_path = tempfile.mkstemp(dir=os.path.dirname(delta_path))
+    tmp_fd_a, tmp_path_a = tempfile.mkstemp(dir=os.path.dirname(pkg_path_a))
+    tmp_meta_fd, tmp_metadata_path = tempfile.mkstemp(
+        dir=os.path.dirname(new_pkg_path_b))
+    os.close(tmp_fd)
+    os.close(tmp_meta_fd)
+    new_pkg_path_b_tmp = new_pkg_path_b + ".edelta_work"
+    try:
+
+        # remove entropy metadata from pkg delta, will be appended to package
+        # right after
+        remove_entropy_metadata(delta_path, tmp_delta_path)
+        _pkg_extractor(pkg_path_a, tmp_fd_a)
+
+        rc = subprocess.call(
+            (_BSPATCH_EXEC, tmp_path_a, new_pkg_path_b_tmp, tmp_delta_path))
+        if rc != 0:
+            raise IOError("bspatch returned error: %s" % (rc,))
+
+        # NO NEED to compress it back, because it will have to be decompressed
+        # again afterwards, just keep plain tar
+        # add entropy metadata at the end
+        dump_entropy_metadata(delta_path, tmp_metadata_path)
+        aggregate_entropy_metadata(new_pkg_path_b_tmp, tmp_metadata_path)
+        os.rename(new_pkg_path_b_tmp, new_pkg_path_b)
+
+    finally:
+        for path in (tmp_delta_path, tmp_path_a, tmp_metadata_path):
+            try:
+                os.remove(path)
+            except (IOError, OSError):
+                pass
+        try:
+            os.close(tmp_fd_a)
+        except OSError as err:
+            if err.errno != errno.EBADF:
+                raise
+
 def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
     """
     Add Entropy metadata dump file to given Entropy package file.
