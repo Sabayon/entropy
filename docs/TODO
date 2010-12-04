@@ -4,13 +4,6 @@ Backlog (raw)
 
     - server-side handling of package deltas (daemon)
     - entropy.services, entropy.client: love and refactoring (API doc)
-    - when a new kernel is pulled in, updated kernel mods should be pulled
-      in as well (nvidia-drivers missing) [su controllo reverse deps togliere -1?]:
-        >>  ## [N] [sabayonlinux.org] sys-kernel/linux-firmwares-2.6.35-r5|0
-        >>  ## [U] [sabayonlinux.org] sys-kernel/linux-sabayon-2.6.34|4   [2.6.34|2]
-        >>  ## [U] [sabayonlinux.org] x11-drivers/nvidia-drivers-256.53#2.6.34-sabayon|0   [256.44|1|2.6.34-sabayon]
-        >>  ## [U] [sabayonlinux.org] media-video/nvidia-settings-256.52-r2|0   [256.52|0]
-        >>  ## [U] [sabayonlinux.org] app-emulation/virtualbox-modules-3.2.8#2.6.34-sabayon|3   [3.2.8|1|2.6.34-sabayon]
     - complete README
     - implement system snapshots (as snapshots, sets).
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
@@ -22,4 +15,4 @@ Backlog (raw)
   1.1:
 
     - UGC based on XML requests (all the commands into one string)
-    - more specific extension? (.etp)
+    - more specific extension? (.etp) entropy.tools.strip_entropy_package_extension
