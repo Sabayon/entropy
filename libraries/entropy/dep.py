@@ -720,6 +720,43 @@ def create_package_filename(category, name, version, package_tag):
     package_name += etpConst['packagesext']
     return package_name
 
+def strip_entropy_package_extension(pkg_path):
+    """
+    Strip entropy package file extension from package path pkg_path.
+
+    @param pkg_path: package path
+    @type pkg_path: string
+    @return: stripped package path
+    @rtype: string
+    """
+    return pkg_path.rstrip(etpConst['packagesext'])
+
+def exploit_package_filename(package_name):
+    """
+    This is the inverse function of create_package_filename, and returns
+    a tuple composed by category, name, version, package_tag (None if not set)
+    and additional revision (as int).
+    package_name should be a string like this:
+        <category>:<name>-<version>[~<revision>[#<tag>]][.tbz2]
+
+    @param package_name: package file name
+    @type package_name: string
+    @return: tuple of strings/int composed by (category, name, version,
+        package_tag, revision)
+    @rtype: tuple
+    """
+    pkg_str = strip_entropy_package_extension(package_name)
+    pkg_str = pkg_str.replace(":", "/")
+    pkg_str = strip_entropy_package_extension(pkg_str)
+    etp_tag = dep_gettag(pkg_str)
+    pkg_str = remove_tag(pkg_str)
+    etp_rev = dep_get_entropy_revision(pkg_str)
+    pkg_str = remove_entropy_revision(pkg_str)
+    etp_cat, etp_name, ver, rev = catpkgsplit(pkg_str)
+    if rev != "r0":
+        ver += "-" + rev
+    return etp_cat, etp_name, ver, etp_tag, etp_rev
+
 def create_package_atom_string(category, name, version, package_tag):
     """
     Create Entropy package atom string.
