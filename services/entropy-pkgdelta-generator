@@ -67,7 +67,8 @@ def generate_package_deltas(directory):
                 pkg_path_a, next_pkg_path)
             delta_path = os.path.join(directory,
                 etpConst['packagesdeltasubdir'], delta_fn)
-            if os.path.lexists(delta_path) and os.path.lexists(delta_path + ".md5"):
+            delta_path_md5 = delta_path + etpConst['packagesmd5fileext']
+            if os.path.lexists(delta_path) and os.path.lexists(delta_path_md5):
                 sys.stderr.write(delta_path + " already exists\n")
                 continue
             delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
@@ -112,6 +113,10 @@ def cleanup_package_deltas(directory):
             sys.stderr.write("cannot remove %s: %s\n" % (old_pkg_delta,
                 err))
             rc = 1
+        try:
+            os.remove(old_pkg_delta + etpConst['packagesmd5fileext'])
+        except OSError:
+            pass
     return rc
 
 def _generator_argv(argv):
