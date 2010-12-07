@@ -1114,7 +1114,6 @@ def _delta_extract_gzip(gzip_path, new_path_fd):
         item.flush()
         item.close()
 
-_PKGDELTA_SUBDIR = "deltas"
 _BSDIFF_EXEC = "/usr/bin/bsdiff"
 _BSPATCH_EXEC = "/usr/bin/bspatch"
 _DELTA_DECOMPRESSION_MAP = {
@@ -1168,7 +1167,8 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, pkg_compression = None):
         pkg_path_b_dir = os.path.dirname(pkg_path_b)
         delta_fn = generate_entropy_delta_file_name(pkg_path_a,
             pkg_path_b)
-        delta_file = os.path.join(pkg_path_b_dir, _PKGDELTA_SUBDIR, delta_fn)
+        delta_file = os.path.join(pkg_path_b_dir,
+            etpConst['packagesdeltasubdir'], delta_fn)
         delta_dir = os.path.dirname(delta_file)
         if not os.path.isdir(delta_dir):
             os.mkdir(delta_dir, 0o775)

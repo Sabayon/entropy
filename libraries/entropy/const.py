@@ -425,6 +425,8 @@ def const_default_settings(rootdir):
         'packagesext': ".tbz2",
         # entropy package files binary delta extension
         'packagesdeltaext': ".edelta",
+        # entropy package files binary delta subdir
+        'packagesdeltasubdir': "deltas",
         'smartappsext': ".app",
         # Extension of the file that contains the checksum
         # of its releated package file
