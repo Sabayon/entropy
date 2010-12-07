@@ -1,0 +1,160 @@
+#!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
+
+import os
+import errno
+import sys
+sys.path.insert(0, "../libraries")
+import tempfile
+import subprocess
+import bz2
+import gzip
+
+from entropy.const import etpConst
+import entropy.dep
+import entropy.tools
+
+
+BSPATCH_EXEC = "/usr/bin/bspatch"
+
+def generate_pkg_map(packages_directory):
+    """
+    
+    """
+    pkg_map = {}
+    for pkg_file in os.listdir(packages_directory):
+        if not pkg_file.endswith(etpConst['packagesext']):
+            continue
+        cat, name, ver, tag, rev = entropy.dep.exploit_package_filename(
+            pkg_file)
+        obj = pkg_map.setdefault((cat, name), set())
+        obj.add((ver, tag, rev, pkg_file))
+    return pkg_map
+
+def sort_packages(pkg_map_items):
+    """
+    Sort packages by version, tag, revision and return a sort map (dict) and
+    a sorted list of them (list)
+    """
+    def _generate_from_to(cat_name_map, sorted_pkg_list):
+        for pkg_idx in range(len(sorted_pkg_list)):
+            pkg_key = sorted_pkg_list[pkg_idx]
+            next_pkgs = set(sorted_pkg_list[pkg_idx:])
+            next_pkgs.discard(pkg_key)
+            sorted_next = sorted(next_pkgs, key = lambda x: cat_name_map[x])
+            for next_pkg_key in sorted_next:
+                yield (cat_name_map[pkg_key], cat_name_map[next_pkg_key])
+
+    cat_name_map = dict((((ver, tag, rev), pkg_path) \
+        for ver, tag, rev, pkg_path in pkg_map_items))
+    sorted_pkgs = entropy.dep.get_entropy_newer_version(list(cat_name_map))
+    sorted_pkgs.reverse()
+    return _generate_from_to(cat_name_map, sorted_pkgs)
+
+
+
+def generate_package_deltas(directory):
+    """
+    Generate Entropy package delta files.
+    """
+    for (cat, name), items in generate_pkg_map(directory).items():
+        # sort items, then generate deltas in one direction only
+        sorted_pkgs_couples = sort_packages(items)
+        for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
+            pkg_path_a = os.path.join(directory, from_pkg_name)
+            next_pkg_path = os.path.join(directory, to_pkg_name)
+            delta_fn = entropy.tools.generate_entropy_delta_file_name(
+                pkg_path_a, next_pkg_path)
+            delta_path = os.path.join(directory,
+                etpConst['packagesdeltasubdir'], delta_fn)
+            if os.path.lexists(delta_path):
+                sys.stderr.write(delta_path + " already exists\n")
+                continue
+            delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
+                next_pkg_path)
+            if delta_file is not None:
+                sys.stdout.write(delta_file + "\n")
+
+def cleanup_package_deltas(directory):
+    """
+    Cleanup old Entropy package delta files.
+    """
+    def _list_delta_packages(delta_dir):
+        return set([os.path.join(delta_dir, x) for x in os.listdir(delta_dir) \
+            if x.endswith(etpConst['packagesdeltaext'])])
+
+    avail_deltas = _list_delta_packages(os.path.join(directory,
+        etpConst['packagesdeltasubdir']))
+    required_deltas = set()
+    for (cat, name), items in generate_pkg_map(directory).items():
+        # sort items, then generate deltas in one direction only
+        sorted_pkgs_couples = sort_packages(items)
+        for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
+            pkg_path_a = os.path.join(directory, from_pkg_name)
+            next_pkg_path = os.path.join(directory, to_pkg_name)
+            delta_fn = entropy.tools.generate_entropy_delta_file_name(
+                pkg_path_a, next_pkg_path)
+            delta_path = os.path.join(directory,
+                etpConst['packagesdeltasubdir'], delta_fn)
+            if os.path.lexists(delta_path):
+                required_deltas.add(delta_path)
+
+    to_remove_deltas = avail_deltas - required_deltas
+    rc = 0
+    if not to_remove_deltas:
+        sys.stdout.write("nothing to remove for %s\n" % (directory,))
+    for old_pkg_delta in to_remove_deltas:
+        try:
+            os.remove(old_pkg_delta)
+            sys.stdout.write(old_pkg_delta + " removed\n")
+        except OSError as err:
+            sys.stderr.write("cannot remove %s: %s\n" % (old_pkg_delta,
+                err))
+            rc = 1
+    return rc
+
+def _generator_argv(argv):
+    for directory in argv:
+        if os.path.isdir(directory):
+            generate_package_deltas(directory)
+    return 0
+
+def _cleanup_argv(argv):
+    rc = 1
+    for directory in argv:
+        if os.path.isdir(directory):
+            rc = cleanup_package_deltas(directory)
+    return rc
+
+_cmds_map = {
+    'generate': _generator_argv,
+    'cleanup': _cleanup_argv,
+}
+
+def _opts_parser(args):
+    if not args:
+        return None, []
+    cmd, argv = args[0], args[1:]
+    if not argv:
+        return None, []
+    func = _cmds_map.get(cmd)
+    if func is None:
+        return None, []
+    return func, argv
+
+def _print_help():
+    sys.stdout.write(
+        "entropy-pkgdelta-generator <command> <pkgdir> [... <pkgdir> ...]\n\n")
+    sys.stdout.write("available commands:\n")
+    sys.stdout.write("\tgenerate\tgenerate pkgdelta files for given package directories\n")
+    sys.stdout.write("\tcleanup\t\tclean pkgdelta files for unavailable packages\n\n")
+
+
+if __name__ == "__main__":
+    func, argv = _opts_parser(sys.argv[1:])
+    if func is not None:
+        rc = func(argv)
+    else:
+        _print_help()
+        rc = 1
+    raise SystemExit(rc)
