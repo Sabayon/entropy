@@ -744,6 +744,7 @@ def exploit_package_filename(package_name):
     @return: tuple of strings/int composed by (category, name, version,
         package_tag, revision)
     @rtype: tuple
+    @raise AttributeError: if package_name string passed is improperly formatted
     """
     pkg_str = strip_entropy_package_extension(package_name)
     pkg_str = pkg_str.replace(":", "/")
@@ -752,7 +753,10 @@ def exploit_package_filename(package_name):
     pkg_str = remove_tag(pkg_str)
     etp_rev = dep_get_entropy_revision(pkg_str)
     pkg_str = remove_entropy_revision(pkg_str)
-    etp_cat, etp_name, ver, rev = catpkgsplit(pkg_str)
+    split_data = catpkgsplit(pkg_str)
+    if split_data is None:
+        raise AttributeError("invalid package name passed: %s" % (package_name,))
+    etp_cat, etp_name, ver, rev = split_data
     if rev != "r0":
         ver += "-" + rev
     return etp_cat, etp_name, ver, etp_tag, etp_rev
