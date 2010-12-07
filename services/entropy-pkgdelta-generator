@@ -67,11 +67,12 @@ def generate_package_deltas(directory):
                 pkg_path_a, next_pkg_path)
             delta_path = os.path.join(directory,
                 etpConst['packagesdeltasubdir'], delta_fn)
-            if os.path.lexists(delta_path):
+            if os.path.lexists(delta_path) and os.path.lexists(delta_path + ".md5"):
                 sys.stderr.write(delta_path + " already exists\n")
                 continue
             delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
                 next_pkg_path)
+            entropy.tools.create_md5_file(delta_file)
             if delta_file is not None:
                 sys.stdout.write(delta_file + "\n")
 
