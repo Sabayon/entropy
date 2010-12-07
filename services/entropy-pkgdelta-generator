@@ -25,8 +25,12 @@ def generate_pkg_map(packages_directory):
     for pkg_file in os.listdir(packages_directory):
         if not pkg_file.endswith(etpConst['packagesext']):
             continue
-        cat, name, ver, tag, rev = entropy.dep.exploit_package_filename(
-            pkg_file)
+        try:
+            cat, name, ver, tag, rev = entropy.dep.exploit_package_filename(
+                pkg_file)
+        except AttributeError:
+            # skip invalid crap
+            continue
         obj = pkg_map.setdefault((cat, name), set())
         obj.add((ver, tag, rev, pkg_file))
     return pkg_map
