@@ -274,13 +274,6 @@ class PortageEntropyDepTranslator(object):
 
 class PortagePlugin(SpmPlugin):
 
-    builtin_pkg_sets = [
-        "system", "world", "installed", "module-rebuild",
-        "security", "preserved-rebuild", "live-rebuild",
-        "downgrade", "unavailable", "rebuilt-binaries",
-        "selected"
-    ]
-
     xpak_entries = {
         'description': "DESCRIPTION",
         'homepage': "HOMEPAGE",
@@ -1656,10 +1649,14 @@ class PortagePlugin(SpmPlugin):
 
         mysets = config.getSets()
         if not builtin_sets:
-            builtin_pkg_sets = [x for x in PortagePlugin.builtin_pkg_sets if \
-                x in mysets]
-            for pkg_set in builtin_pkg_sets:
-                mysets.pop(pkg_set)
+            sets_obj = self._get_portage_sets_object()
+            # attention, this is sensible to Portage API changes
+            static_file_class = sets_obj.files.StaticFileSet
+            # filter out Portage-generated sets object, those not being
+            # an instance of portage._sets.files.StaticFileSet
+            for key, obj in mysets.items():
+                if not isinstance(obj, static_file_class):
+                    mysets.pop(key)
 
         set_data = {}
         for k, obj in mysets.items():

@@ -149,6 +149,11 @@ class SpmTest(unittest.TestCase):
         sets = spm.get_package_sets(True)
         self.assertNotEqual(sets, None)
 
+    def test_static_sets_load(self):
+        spm = self.Client.Spm()
+        sets = spm.get_package_sets(False)
+        self.assertNotEqual(sets, None)
+
     def test_dependencies_calculation(self):
 
         spm_class = self.Client.Spm_class()
