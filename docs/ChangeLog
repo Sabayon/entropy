@@ -1,3 +1,108 @@
+commit 5abfc112f867952300f8e3eef2c0132c29768854
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 8 15:44:02 2010 +0100
+
+    Release Entropy 0.99.51.10
+
+commit 74e7a5102eea11f12a67d87b6bc53e5eb529e2c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 7 21:05:36 2010 +0100
+
+    [services/entropy-pkgdelta-generator] skip invalid package file names silently
+
+commit b3e6aeb0ea28d8f7aa828fe0eaa6cfe4a3584af9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 7 21:04:11 2010 +0100
+
+    [entropy.dep] improve exploit_package_name, raise AttributeError if input validation fails
+
+commit 6cefc182680a5badbc9145e1ad8ecfbd1dd15555
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 7 20:57:24 2010 +0100
+
+    [services/entropy-pkgdelta-generator] use etpConst .md5 extension constant and remove stale .md5 files too on cleanup
+
+commit f78e69056e200c4f93d873d335d485cdcc41319b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 7 20:54:59 2010 +0100
+
+    [services/entropy-pkgdelta-generator] also generate .md5 file
+
+commit 33e36a30d9554b176aa6126df2461a97f174dc49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 7 20:14:16 2010 +0100
+
+    [services] add entropy package deltas generator tool
+
+commit f3171344fee2f7182443a1e65be9b67ccd7a54e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 7 20:14:02 2010 +0100
+
+    [entropy.const] move package delta subdir name to etpConst
+
+commit b75a3400e160f0d8fa5e08b7fabe5a5a36aa71d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 4 13:08:56 2010 +0100
+
+    [todo] update TODO
+
+commit 13258fe9032bf34ddef3b78f473a5c92bdc9b070
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 4 13:07:36 2010 +0100
+
+    [entropy.tools] add package delta updates support function
+    
+    Implement generate_entropy_delta and apply_entropy_delta functions
+
+commit 821eac28c237f6509937bfbef610b2a732b3ee97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 4 13:04:27 2010 +0100
+
+    [entropy.dep] two new handy function strip_entropy_package_extension and exploit_package_filename
+
+commit 91468af5d9c67222a612429faf09542574379378
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 3 18:20:56 2010 +0100
+
+    [entropy.exceptions] move some exception to respective modules
+    
+    Create entropy.transceivers.exceptions package containing transceiver
+    related stuff.
+    Create entropy.services.exceptions package containing services
+    related stuff.
+    
+    Break API (yay!)
+
+commit b08707414a32e91feab80a8bb611cd5106754cb9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 3 17:42:17 2010 +0100
+
+    [entropy.dep] fix undefined reference in expand_dependencies()
+
+commit 07db7a904fb68b5eb0c00fbf0fae1e0746d7c1d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 2 08:04:20 2010 +0100
+
+    [equo] query: make print_package_info more fault tolerant towards corrupted repository entries
+
+commit d5d0f8f26b710428108c67c2a2b39442279f194e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 2 08:03:42 2010 +0100
+
+    [entropy.client.interfaces.dep] catch DatabaseError exception when calling atomMatch()
+
+commit 4cf921192db3aef43d46900a13931fce31834457
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Nov 29 15:07:20 2010 +0100
+
+    [conf] add new brazilian mirrors to repositories.conf and reorder mirrors a bit
+
+commit e5a2d3119107e7bf525794bbeaf09065f5ada8b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Nov 28 23:01:38 2010 +0100
+
+    Tagging Entropy version 0.99.51.4
+
 commit bd153e7b3452c1fb45aed68285fc96e530b84c64
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Nov 28 23:01:34 2010 +0100
