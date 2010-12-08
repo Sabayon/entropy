@@ -1,3 +1,27 @@
+commit 2325d2dc82f95fad4db25bf8e7f2ea5b28d7f4ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 8 16:47:56 2010 +0100
+
+    Release Entropy 0.99.51.11
+
+commit ae8cc9bfcfbd69c8051bc11deec73925129f0079
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 8 16:47:17 2010 +0100
+
+    [entropy.spm] PortagePlugin: improve speed of get_package_sets(False) as used by entropy.server
+
+commit 5697c2ee3c34bc838bd2adcf7a5e985d31e9023b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 8 15:55:06 2010 +0100
+
+    [services/entropy-pkgdelta-generator] add --quiet support
+
+commit e1fd7a2da5362e7c32f981183f52e16ad95dca29
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 8 15:44:11 2010 +0100
+
+    Tagging Entropy version 0.99.51.10
+
 commit 5abfc112f867952300f8e3eef2c0132c29768854
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 8 15:44:02 2010 +0100
