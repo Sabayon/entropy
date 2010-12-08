@@ -15,11 +15,11 @@ import entropy.dep
 import entropy.tools
 
 
-BSPATCH_EXEC = "/usr/bin/bspatch"
-
 def generate_pkg_map(packages_directory):
     """
-    
+    Generate handy hash table based on packages directory content. It will
+    be used by internal calling functions to determine the delta files that
+    have to be generated.
     """
     pkg_map = {}
     for pkg_file in os.listdir(packages_directory):
@@ -57,7 +57,7 @@ def sort_packages(pkg_map_items):
 
 
 
-def generate_package_deltas(directory):
+def generate_package_deltas(directory, quiet):
     """
     Generate Entropy package delta files.
     """
@@ -73,7 +73,8 @@ def generate_package_deltas(directory):
                 etpConst['packagesdeltasubdir'], delta_fn)
             delta_path_md5 = delta_path + etpConst['packagesmd5fileext']
             if os.path.lexists(delta_path) and os.path.lexists(delta_path_md5):
-                sys.stderr.write(delta_path + " already exists\n")
+                if not quiet:
+                    sys.stderr.write(delta_path + " already exists\n")
                 continue
             delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
                 next_pkg_path)
@@ -81,7 +82,7 @@ def generate_package_deltas(directory):
             if delta_file is not None:
                 sys.stdout.write(delta_file + "\n")
 
-def cleanup_package_deltas(directory):
+def cleanup_package_deltas(directory, quiet):
     """
     Cleanup old Entropy package delta files.
     """
@@ -114,8 +115,9 @@ def cleanup_package_deltas(directory):
             os.remove(old_pkg_delta)
             sys.stdout.write(old_pkg_delta + " removed\n")
         except OSError as err:
-            sys.stderr.write("cannot remove %s: %s\n" % (old_pkg_delta,
-                err))
+            if not quiet:
+                sys.stderr.write("cannot remove %s: %s\n" % (old_pkg_delta,
+                    err))
             rc = 1
         try:
             os.remove(old_pkg_delta + etpConst['packagesmd5fileext'])
@@ -123,17 +125,17 @@ def cleanup_package_deltas(directory):
             pass
     return rc
 
-def _generator_argv(argv):
+def _generator_argv(argv, quiet):
     for directory in argv:
         if os.path.isdir(directory):
-            generate_package_deltas(directory)
+            generate_package_deltas(directory, quiet)
     return 0
 
-def _cleanup_argv(argv):
+def _cleanup_argv(argv, quiet):
     rc = 1
     for directory in argv:
         if os.path.isdir(directory):
-            rc = cleanup_package_deltas(directory)
+            rc = cleanup_package_deltas(directory, quiet)
     return rc
 
 _cmds_map = {
@@ -142,6 +144,18 @@ _cmds_map = {
 }
 
 def _opts_parser(args):
+
+    # --quiet handler
+    quiet = False
+    for q_opt in ("-q", "--quiet"):
+        if q_opt in args:
+            quiet = True
+            while True:
+                try:
+                    args.remove("--quiet")
+                except ValueError:
+                    break
+
     if not args:
         return None, []
     cmd, argv = args[0], args[1:]
@@ -150,20 +164,20 @@ def _opts_parser(args):
     func = _cmds_map.get(cmd)
     if func is None:
         return None, []
-    return func, argv
+    return func, argv, quiet
 
 def _print_help():
     sys.stdout.write(
-        "entropy-pkgdelta-generator <command> <pkgdir> [... <pkgdir> ...]\n\n")
+        "entropy-pkgdelta-generator [-q (--quiet)] <command> <pkgdir> [... <pkgdir> ...]\n\n")
     sys.stdout.write("available commands:\n")
     sys.stdout.write("\tgenerate\tgenerate pkgdelta files for given package directories\n")
     sys.stdout.write("\tcleanup\t\tclean pkgdelta files for unavailable packages\n\n")
 
 
 if __name__ == "__main__":
-    func, argv = _opts_parser(sys.argv[1:])
+    func, argv, quiet = _opts_parser(sys.argv[1:])
     if func is not None:
-        rc = func(argv)
+        rc = func(argv, quiet)
     else:
         _print_help()
         rc = 1
