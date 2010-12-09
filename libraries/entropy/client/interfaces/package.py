@@ -1415,9 +1415,20 @@ class Package:
         del directories
 
     def _cleanup_package(self, unpack_dir):
+        # shutil.rmtree wants raw strings... otherwise it will explode
+        if const_isunicode(unpack_dir):
+            unpack_dir = unpack_dir.encode('raw_unicode_escape')
+
         # remove unpack dir
-        shutil.rmtree(unpack_dir, True)
-        try: 
+        try:
+            shutil.rmtree(unpack_dir, True)
+        except Exception as err:
+            # fault tolerance here dude
+            self._entropy.logger.log(
+                "[Package]", etpConst['logging']['normal_loglevel_id'],
+                "WARNING!!! Failed to cleanup directory %s," \
+                " error: %s" % (unpack_dir, err,))
+        try:
             os.rmdir(unpack_dir)
         except OSError:
             pass
