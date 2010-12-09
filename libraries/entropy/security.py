@@ -1828,7 +1828,10 @@ class Repository:
         """
         keymap = self.__get_keymap()
         fingerprint = keymap[repository_identifier]
-        pubkey = self.__export_key(fingerprint)
+        try:
+            pubkey = self.__export_key(fingerprint)
+        except GPGError as err:
+            raise KeyError(repr(err))
         return pubkey
 
     def get_privkey(self, repository_identifier):
