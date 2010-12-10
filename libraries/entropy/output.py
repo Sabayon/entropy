@@ -16,7 +16,8 @@ import sys
 import errno
 import curses
 
-from entropy.const import etpUi, const_convert_to_rawstring, const_isstring
+from entropy.const import etpUi, const_convert_to_rawstring, const_isstring, \
+    const_convert_to_unicode, const_isunicode
 from entropy.i18n import _
 
 stuff = {}
@@ -626,6 +627,15 @@ def _my_raw_input(txt = ''):
             break
         response += y
         _flush_stdouterr()
+
+    # try to convert to unicode, because responses are stored that
+    # way, fix bug #2006.
+    if not const_isunicode(response):
+        try:
+            response = const_convert_to_unicode(response, "utf-8")
+        except (UnicodeDecodeError, UnicodeEncodeError):
+            # be fault tolerant, we just tried
+            pass
     return response
 
 class TextInterface:
