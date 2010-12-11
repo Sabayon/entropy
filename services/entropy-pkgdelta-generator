@@ -67,8 +67,10 @@ def generate_package_deltas(directory, quiet):
         for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
             pkg_path_a = os.path.join(directory, from_pkg_name)
             next_pkg_path = os.path.join(directory, to_pkg_name)
+            hash_tag = entropy.tools.md5sum(pkg_path_a) + \
+                entropy.tools.md5sum(next_pkg_path)
             delta_fn = entropy.tools.generate_entropy_delta_file_name(
-                pkg_path_a, next_pkg_path)
+                from_pkg_name, to_pkg_name, hash_tag)
             delta_path = os.path.join(directory,
                 etpConst['packagesdeltasubdir'], delta_fn)
             delta_path_md5 = delta_path + etpConst['packagesmd5fileext']
@@ -77,7 +79,7 @@ def generate_package_deltas(directory, quiet):
                     sys.stderr.write(delta_path + " already exists\n")
                 continue
             delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
-                next_pkg_path)
+                next_pkg_path, hash_tag)
             entropy.tools.create_md5_file(delta_file)
             if delta_file is not None:
                 sys.stdout.write(delta_file + "\n")
@@ -99,8 +101,10 @@ def cleanup_package_deltas(directory, quiet):
         for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
             pkg_path_a = os.path.join(directory, from_pkg_name)
             next_pkg_path = os.path.join(directory, to_pkg_name)
+            hash_tag = entropy.tools.md5sum(pkg_path_a) + \
+                entropy.tools.md5sum(next_pkg_path)
             delta_fn = entropy.tools.generate_entropy_delta_file_name(
-                pkg_path_a, next_pkg_path)
+                from_pkg_name, to_pkg_name, hash_tag)
             delta_path = os.path.join(directory,
                 etpConst['packagesdeltasubdir'], delta_fn)
             if os.path.lexists(delta_path):
@@ -112,6 +116,10 @@ def cleanup_package_deltas(directory, quiet):
         sys.stdout.write("nothing to remove for %s\n" % (directory,))
     for old_pkg_delta in to_remove_deltas:
         try:
+            os.remove(old_pkg_delta + etpConst['packagesmd5fileext'])
+        except OSError:
+            pass
+        try:
             os.remove(old_pkg_delta)
             sys.stdout.write(old_pkg_delta + " removed\n")
         except OSError as err:
@@ -119,10 +127,6 @@ def cleanup_package_deltas(directory, quiet):
                 sys.stderr.write("cannot remove %s: %s\n" % (old_pkg_delta,
                     err))
             rc = 1
-        try:
-            os.remove(old_pkg_delta + etpConst['packagesmd5fileext'])
-        except OSError:
-            pass
     return rc
 
 def _generator_argv(argv, quiet):

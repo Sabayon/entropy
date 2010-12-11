@@ -1065,29 +1065,24 @@ def unpack_bzip2(bzip2filepath):
     os.rename(tmp_path, filepath)
     return filepath
 
-def generate_entropy_delta_file_name(pkg_path_a, pkg_path_b, api = 0):
+def generate_entropy_delta_file_name(pkg_name_a, pkg_name_b, hash_tag):
     """
-    Generate Entropy package binary delta file name basing on package paths
-    given (from pkg_path_a to pkg_path_b).
+    Generate Entropy package binary delta file name basing on package file names
+    given (from pkg_path_a to pkg_path_b). hash_tag is by convention an md5 hash
 
-    @param pkg_path_a: package path A
-    @type pkg_path_a: string
-    @param pkg_path_a: package path B
-    @type pkg_path_a: string
-    @keyword api: for future usage (if api will change)
-    @type api: int
+    @param pkg_name_a: package file name A
+    @type pkg_name_a: string
+    @param pkg_name_b: package file name B
+    @type pkg_name_b: string
+    @param hash_tag: arbitrary hash tag appended to file name
+    @type hash_tag: string
     @return: package delta file name (not full path!)
     @rtype: string
     @raise AttributeError: if api is unsupported
     """
-    if api != 0:
-        raise AttributeError("unsupported API")
-    pkg_path_a_name = os.path.basename(pkg_path_a)
-    pkg_path_b_name = os.path.basename(pkg_path_b)
-    delta_name = pkg_path_a_name + pkg_path_b_name
-    from_pkg_name = os.path.splitext(pkg_path_a_name.replace(":", "+"))[0]
+    from_pkg_name = os.path.splitext(pkg_name_a.replace(":", "+"))[0]
     delta_hashed_name = "%s~%s%s" % (from_pkg_name,
-        md5sum(pkg_path_b), etpConst['packagesdeltaext'])
+        hash_tag, etpConst['packagesdeltaext'])
     return delta_hashed_name
 
 def _delta_extract_bz2(bz2_path, new_path_fd):
@@ -1122,7 +1117,8 @@ _DELTA_DECOMPRESSION_MAP = {
 }
 _DEFAULT_PKG_COMPRESSION = "bz2"
 
-def generate_entropy_delta(pkg_path_a, pkg_path_b, pkg_compression = None):
+def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
+    pkg_compression = None):
     """
     Generate Entropy package delta between pkg_path_a (from file) and
     pkg_path_b (to file).
@@ -1131,6 +1127,8 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, pkg_compression = None):
     @type pkg_path_a: string
     @param pkg_path_a: package path B (to file)
     @type pkg_path_a: string
+    @param hash_tag: hash tag to append to Entropy package delta file name
+    @type hash_tag: string
     @keyword pkg_compression: default package compression, can be "bz2" or "gz".
         if None, "bz2" is selected.
     @type: string
@@ -1165,8 +1163,9 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, pkg_compression = None):
     try:
 
         pkg_path_b_dir = os.path.dirname(pkg_path_b)
-        delta_fn = generate_entropy_delta_file_name(pkg_path_a,
-            pkg_path_b)
+        delta_fn = generate_entropy_delta_file_name(
+            os.path.basename(pkg_path_a), os.path.basename(pkg_path_b),
+            hash_tag)
         delta_file = os.path.join(pkg_path_b_dir,
             etpConst['packagesdeltasubdir'], delta_fn)
         delta_dir = os.path.dirname(delta_file)
