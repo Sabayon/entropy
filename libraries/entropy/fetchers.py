@@ -13,6 +13,7 @@ import os
 import sys
 import time
 import httplib
+import hashlib
 import socket
 import pty
 import subprocess
@@ -130,6 +131,8 @@ class UrlFetcher(TextInterface):
         self.__localfile = None
 
     def _init_vars(self):
+        self.__use_md5_checksum = False
+        self.__md5_checksum = hashlib.new("md5")
         self.__resumed = False
         self.__buffersize = 8192
         self.__status = None
@@ -189,7 +192,12 @@ class UrlFetcher(TextInterface):
 
     def __prepare_return(self):
         if self.__checksum:
-            self.__status = md5sum(self.__path_to_save)
+            if self.__use_md5_checksum:
+                self.__status = self.__md5_checksum.hexdigest()
+            else:
+                # for rsync, we don't have control on the data flow, so
+                # we cannot calculate the md5 on the way
+                self.__status = md5sum(self.__path_to_save)
             return self.__status
         self.__status = "-2"
         return self.__status
@@ -470,6 +478,8 @@ class UrlFetcher(TextInterface):
         """
         self._setup_urllib_proxy()
         self.__setup_urllib_resume_support()
+        # we're going to feed the md5 digestor on the way.
+        self.__use_md5_checksum = True
         url = self.__encode_url(self.__url)
         uname = os.uname()
         user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
@@ -638,6 +648,7 @@ class UrlFetcher(TextInterface):
     def __urllib_commit(self, mybuffer):
         # writing file buffer
         self.__localfile.write(mybuffer)
+        self.__md5_checksum.update(mybuffer)
         # update progress info
         self.__downloadedsize = self.__localfile.tell()
         kbytecount = float(self.__downloadedsize)/1024
