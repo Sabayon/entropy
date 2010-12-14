@@ -377,8 +377,10 @@ class PortagePlugin(SpmPlugin):
             del os.environ['NOCOLOR']
 
         # importing portage stuff
-        import portage
         import portage.const
+        # Portage 2.1.9x, enable package sets for overlay.
+        portage.const._ENABLE_SET_CONFIG = True
+        import portage
         import portage.util
         self._portage = portage
 
@@ -417,8 +419,11 @@ class PortagePlugin(SpmPlugin):
             elif key.startswith(emerge_key):
                 del sys.modules[key]
         # now reimport everything
-        import portage
+
+        # Portage 2.1.9x, enable package sets for overlay.
         import portage.const
+        portage.const._ENABLE_SET_CONFIG = True
+        import portage
         import portage.util
         # reassign portage variable, pointing to a fresh object
         self._portage = portage
