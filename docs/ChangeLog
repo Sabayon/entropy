@@ -1,3 +1,15 @@
+commit b84ddc5f8880eadfbc098669a23047a60f64fd5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 14 19:48:30 2010 +0100
+
+    Release Entropy 0.99.51.12
+
+commit 4f440fb35f10dcd3c1c7a96132d8a96980daa29c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 14 19:40:08 2010 +0100
+
+    Tagging Entropy version 0.99.51.5
+
 commit 242402cb92e9c48b320f944c4e4c432beccd1e8d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 14 19:40:00 2010 +0100
