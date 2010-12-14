@@ -1,3 +1,61 @@
+commit 242402cb92e9c48b320f944c4e4c432beccd1e8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 14 19:40:00 2010 +0100
+
+    Release Entropy 0.99.51.5
+
+commit 1ea5871f1fb751657ee0c007429821256cd5a542
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 14 19:38:04 2010 +0100
+
+    [entropy.spm] add workaround for Portage 2.1.9x, having package sets configuration disabled by default
+
+commit ff51f9d938756cd8dc2a7fdac76a475e4f0bbf96
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 12 14:26:20 2010 +0100
+
+    [entropy.fetchers] avoid to re-read the downloaded file for making the md5 when using urllib
+
+commit ab1e1115022bfb14961f26fd0e0301f20fe606ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 12 10:12:02 2010 +0100
+
+    [services] entropy-pkgdelta-generator: add --lock support
+    
+    Add --lock <lock_file_path> switch in order to make possible to
+    control the execution of the tool and avoid to have multiple instances
+    running.
+
+commit a4122850c4e6df1f3d7441c3d394b7b7cc2b7a67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Dec 11 23:01:00 2010 +0100
+
+    [entropy.tools] update API of generate_entropy_delta() and generate_entropy_delta_file_name(), improve reliability of fetching the right file.
+
+commit 95d0d9139d48ef1ffd4d5666cd3d4517b5da6600
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 10 12:43:35 2010 +0100
+
+    [entropy.output] always return unicode data (when possible) out of _my_raw_input(), close bug 2006.
+
+commit af39de27a6d696ceeee73265be89f08708f676bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 9 21:38:42 2010 +0100
+
+    [entropy.security] Security.get_pubkey() catch GPGError in case of issues exporting pubkey, and raise KeyError
+
+commit 689f5dd95e72adc1adf05c3b785be4ffb7db23c1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 9 21:34:35 2010 +0100
+
+    [entropy.client.interfaces.package] deal with badly encoded file names in cleanup
+
+commit d5cdff3191cae628fd99f993e8fee936ea901d8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 8 16:47:57 2010 +0100
+
+    Tagging Entropy version 0.99.51.11
+
 commit 2325d2dc82f95fad4db25bf8e7f2ea5b28d7f4ac
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Dec 8 16:47:56 2010 +0100
