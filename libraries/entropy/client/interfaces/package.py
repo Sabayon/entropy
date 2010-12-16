@@ -2460,10 +2460,23 @@ class Package:
                     dest_file = os.path.join(self.pkgmeta['unpackdir'],
                         file_name)
 
-                rc = self._fetch_source(url, dest_file)
+                try:
+                    rc = self._fetch_source(url, dest_file)
+                except KeyboardInterrupt:
+                    keyboard_interrupt = True
+                    break
+
+                if rc == -100:
+                    keyboard_interrupt = True
+                    break
+
                 if rc == 0:
                     d_cache.add(key_name)
                     break
+
+            if keyboard_interrupt:
+                rc = 1
+                break
 
             key_cache.remove(key_name)
             if rc != 0 and key_name not in key_cache:
