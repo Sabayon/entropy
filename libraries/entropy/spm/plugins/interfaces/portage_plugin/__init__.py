@@ -340,7 +340,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 5
+    PLUGIN_API_VERSION = 6
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -942,6 +942,20 @@ class PortagePlugin(SpmPlugin):
         sources.discard("->")
         sources = set((x for x in sources if "/" in x))
         return sources
+
+    @staticmethod
+    def dump_package_metadata(entropy_package_path, metadata_path):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        return xpaktools.suck_xpak(entropy_package_path, metadata_path)
+
+    @staticmethod
+    def aggregate_package_metadata(entropy_package_path, metadata_path):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        return xpaktools.aggregate_xpak(entropy_package_path, metadata_path)
 
     def extract_package_metadata(self, package_file, license_callback = None,
         restricted_callback = None):

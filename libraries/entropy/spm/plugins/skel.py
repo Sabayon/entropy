@@ -21,7 +21,7 @@ import entropy.tools
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 5
+    BASE_PLUGIN_API_VERSION = 6
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -729,7 +729,40 @@ class SpmPlugin(Singleton):
         @type entropy_package_name: string
         @param package_path: Entropy package path
         @type package_path: string
-        @return: True, if metadata has been appended succesfully
+        @return: True, if metadata has been appended successfully
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def dump_package_metadata(entropy_package_path, metadata_path):
+        """
+        Extract raw Source Package Manager metadata from Entropy package.
+        This is the opposite of "append_metadata_to_package()".
+        This method must dump it's data to metadata_path and return True.
+
+        @param entropy_package_path: path to Entropy package file
+        @type entropy_package_path: string
+        @param metadata_path: Entropy package path
+        @type metadata_path: string
+        @return: True, if metadata has been appended successfully
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def aggregate_package_metadata(entropy_package_path, metadata_path):
+        """
+        Aggregate raw Source Package Manager metadata contained in metadata_path
+        to Entropy package.
+        This is the opposite of "dump_package_metadata()".
+        This method must dump it's data to entropy_package_path and return True.
+
+        @param entropy_package_path: path to Entropy package file
+        @type entropy_package_path: string
+        @param metadata_path: Entropy package path
+        @type metadata_path: string
+        @return: True, if metadata has been appended successfully
         @rtype: bool
         """
         raise NotImplementedError()

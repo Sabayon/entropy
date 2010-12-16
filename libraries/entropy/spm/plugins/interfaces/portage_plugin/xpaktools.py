@@ -14,7 +14,6 @@ import tempfile
 import os
 import shutil
 from entropy.output import TextInterface
-from entropy.const import etpConst
 from entropy.spm.plugins.factory import get_default_instance
 from entropy.spm.plugins.interfaces.portage_plugin import xpak
 
@@ -30,8 +29,15 @@ def extract_xpak(tbz2file, tmpdir = None):
     @rtype: 
     """
     # extract xpak content
-    xpakpath = suck_xpak(tbz2file, etpConst['packagestmpdir'])
-    return unpack_xpak(xpakpath, tmpdir)
+    tmp_fd, tmp_path = tempfile.mkstemp()
+    os.close(tmp_fd)
+    try:
+        done = suck_xpak(tbz2file, tmp_path)
+        if not done:
+            return None
+        return unpack_xpak(tmp_path, tmpdir = tmpdir)
+    finally:
+        os.remove(tmp_path)
 
 def read_xpak(tbz2file):
     """
@@ -42,12 +48,17 @@ def read_xpak(tbz2file):
     @return: 
     @rtype: 
     """
-    xpakpath = suck_xpak(tbz2file, etpConst['entropyunpackdir'])
-    f = open(xpakpath, "rb")
-    data = f.read()
-    f.close()
-    os.remove(xpakpath)
-    return data
+    tmp_fd, tmp_path = tempfile.mkstemp()
+    os.close(tmp_fd)
+    try:
+        done = suck_xpak(tbz2file, tmp_path)
+        if not done:
+            return None
+        with open(xpakpath, "rb") as f:
+            data = f.read()
+        return data
+    finally:
+        os.remove(tmp_path)
 
 def unpack_xpak(xpakfile, tmpdir = None):
     """
@@ -61,7 +72,7 @@ def unpack_xpak(xpakfile, tmpdir = None):
     @rtype: 
     """
     if tmpdir is None:
-        tmpdir = tempfile.mkdtemp(dir = etpConst['packagestmpdir'])
+        tmpdir = tempfile.mkdtemp()
     elif os.path.isdir(tmpdir):
         shutil.rmtree(tmpdir, True)
         try:
@@ -81,85 +92,83 @@ def unpack_xpak(xpakfile, tmpdir = None):
         except OSError:
             pass
 
-def suck_xpak(tbz2file, outputpath):
+def suck_xpak(tbz2file, xpakpath):
     """
     docstring_title
 
     @param tbz2file: 
     @type tbz2file: 
-    @param outputpath: 
-    @type outputpath: 
+    @param xpakpath: 
+    @type xpakpath: 
     @return: 
     @rtype: 
     """
-
-    dest_filename = os.path.basename(tbz2file)[:-5]+".xpak"
-    xpakpath = os.path.join(outputpath, dest_filename)
     old = open(tbz2file, "rb")
-
-    # position old to the end
-    old.seek(0, os.SEEK_END)
-    # read backward until we find
-    n_bytes = old.tell()
-    counter = n_bytes - 1
-    if sys.hexversion >= 0x3000000:
-        xpak_end = b"XPAKSTOP"
-        xpak_start = b"XPAKPACK"
-        xpak_entry_point = b"X"
-    else:
-        xpak_end = "XPAKSTOP"
-        xpak_start = "XPAKPACK"
-        xpak_entry_point = "X"
-
-    xpak_tag_len = len(xpak_start)
-    chunk_len = 3
-    data_start_position = None
-    data_end_position = None
-
-    while counter >= (0 - chunk_len):
-
-        old.seek(counter - n_bytes, os.SEEK_END)
-        if (n_bytes - (abs(counter - n_bytes))) < chunk_len:
-            chunk_len = 1
-        read_bytes = old.read(chunk_len)
-        read_len = len(read_bytes)
-
-        entry_idx = read_bytes.rfind(xpak_entry_point)
-        if entry_idx != -1:
-
-            cut_gotten = read_bytes[entry_idx:]
-            offset = xpak_tag_len - len(cut_gotten)
-            chunk = cut_gotten + old.read(offset)
-
-            if (chunk == xpak_end) and (data_start_position is None):
-                data_end_position = old.tell()
-
-            elif (chunk == xpak_start) and (data_end_position is not None):
-                data_start_position = old.tell() - xpak_tag_len
-                break
-
-        counter -= read_len
-
-    if data_start_position is None:
-        return None
-    if data_end_position is None:
-        return None
-
-    # now write to found metadata to file
-    # starting from data_start_position
-    # ending to data_end_position
     db = open(xpakpath, "wb")
-    old.seek(data_start_position)
-    to_read = data_end_position - data_start_position
-    while to_read > 0:
-        data = old.read(to_read)
-        db.write(data)
-        to_read -= len(data)
+    try:
+        # position old to the end
+        old.seek(0, os.SEEK_END)
+        # read backward until we find
+        n_bytes = old.tell()
+        counter = n_bytes - 1
+        if sys.hexversion >= 0x3000000:
+            xpak_end = b"XPAKSTOP"
+            xpak_start = b"XPAKPACK"
+            xpak_entry_point = b"X"
+        else:
+            xpak_end = "XPAKSTOP"
+            xpak_start = "XPAKPACK"
+            xpak_entry_point = "X"
 
-    db.flush()
-    db.close()
-    old.close()
-    return xpakpath
+        xpak_tag_len = len(xpak_start)
+        chunk_len = 3
+        data_start_position = None
+        data_end_position = None
+
+        while counter >= (0 - chunk_len):
+
+            old.seek(counter - n_bytes, os.SEEK_END)
+            if (n_bytes - (abs(counter - n_bytes))) < chunk_len:
+                chunk_len = 1
+            read_bytes = old.read(chunk_len)
+            read_len = len(read_bytes)
+
+            entry_idx = read_bytes.rfind(xpak_entry_point)
+            if entry_idx != -1:
+
+                cut_gotten = read_bytes[entry_idx:]
+                offset = xpak_tag_len - len(cut_gotten)
+                chunk = cut_gotten + old.read(offset)
+
+                if (chunk == xpak_end) and (data_start_position is None):
+                    data_end_position = old.tell()
+
+                elif (chunk == xpak_start) and (data_end_position is not None):
+                    data_start_position = old.tell() - xpak_tag_len
+                    break
+
+            counter -= read_len
+
+        if data_start_position is None:
+            return False
+        if data_end_position is None:
+            return False
+
+        # now write to found metadata to file
+        # starting from data_start_position
+        # ending to data_end_position
+        old.seek(data_start_position)
+        to_read = data_end_position - data_start_position
+        while to_read > 0:
+            data = old.read(to_read)
+            db.write(data)
+            to_read -= len(data)
+        return True
+
+    finally:
+        old.close()
+        db.flush()
+        db.close()
 
 def append_xpak(tbz2file, atom):
     """
@@ -180,3 +189,21 @@ def append_xpak(tbz2file, atom):
         tbz2 = xpak.tbz2(tbz2file)
         tbz2.recompose(dbdir)
     return tbz2file
+
+def aggregate_xpak(tbz2file, xpakfile):
+    """
+    Aggregate xpakfile content to tbz2file
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @param xpakfile: 
+    @type xpakfile: 
+    @return: 
+    @rtype: 
+    """
+    tbz2 = xpak.tbz2(tbz2file)
+    with open(xpakfile, "rb") as xpak_f:
+        # put all in memory
+        xpak_data = xpak_f.read()
+        tbz2.recompose_mem(xpak_data)
+        del xpak_data
