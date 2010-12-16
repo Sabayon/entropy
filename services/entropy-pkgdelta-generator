@@ -15,6 +15,7 @@ from entropy.const import etpConst
 import entropy.dep
 import entropy.tools
 
+MAX_PKG_FILE_SIZE = 10*1024000 # 10 mb
 
 def generate_pkg_map(packages_directory):
     """
@@ -65,9 +66,26 @@ def generate_package_deltas(directory, quiet):
         sorted_pkgs_couples = sort_packages(items)
         for from_pkg_name, to_pkg_name in sorted_pkgs_couples:
             pkg_path_a = os.path.join(directory, from_pkg_name)
+
+            try:
+                f_size = entropy.tools.get_file_size(pkg_path_a)
+            except (IOError, OSError) as err:
+                sys.stderr.write("error: %s\n" % (err,))
+                continue
+
+            if f_size > MAX_PKG_FILE_SIZE:
+                if not quiet:
+                    sys.stderr.write("%s too big\n" % (pkg_path_a,))
+                continue
+
             next_pkg_path = os.path.join(directory, to_pkg_name)
-            hash_tag = entropy.tools.md5sum(pkg_path_a) + \
-                entropy.tools.md5sum(next_pkg_path)
+            try:
+                hash_tag = entropy.tools.md5sum(pkg_path_a) + \
+                    entropy.tools.md5sum(next_pkg_path)
+            except (IOError, OSError) as err:
+                sys.stderr.write("error: %s\n" % (err,))
+                continue
+
             delta_fn = entropy.tools.generate_entropy_delta_file_name(
                 from_pkg_name, to_pkg_name, hash_tag)
             delta_path = os.path.join(directory,
@@ -77,9 +95,15 @@ def generate_package_deltas(directory, quiet):
                 if not quiet:
                     sys.stderr.write(delta_path + " already exists\n")
                 continue
-            delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
-                next_pkg_path, hash_tag)
-            entropy.tools.create_md5_file(delta_file)
+
+            try:
+                delta_file = entropy.tools.generate_entropy_delta(pkg_path_a,
+                    next_pkg_path, hash_tag)
+                entropy.tools.create_md5_file(delta_file)
+            except (IOError, OSError) as err:
+                sys.stderr.write("error: %s\n" % (err,))
+                continue
+
             if delta_file is not None:
                 sys.stdout.write(delta_file + "\n")
 
