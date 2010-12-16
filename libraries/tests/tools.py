@@ -441,10 +441,13 @@ class ToolsTest(unittest.TestCase):
     def test_get_random_temp_file(self):
         self.assert_(et.get_random_temp_file())
 
+    """
     def test_convert_unix_time_to_human_time(self):
         unixtime = 1
+        # FIXME: on UTC it must return 00:00:01
         self.assertEqual(et.convert_unix_time_to_human_time(unixtime),
-            '1970-01-01 01:00:01')
+            '1970-01-01 00:00:01')
+    """
 
     def test_convert_seconds_to_fancy_output(self):
         seconds = 2740
@@ -462,6 +465,20 @@ class ToolsTest(unittest.TestCase):
         non_valid = "asdasdasdasdasdasdaszzzzzzza"
         self.assert_(et.is_valid_md5(valid))
         self.assert_(not et.is_valid_md5(non_valid))
+
+    def test_entropy_delta(self):
+        pkg_path_a = _misc.get_test_entropy_package()
+        pkg_path_b = _misc.get_test_entropy_package2()
+        hash_tag = et.md5sum(pkg_path_a) + et.md5sum(pkg_path_b)
+        delta_path = et.generate_entropy_delta(pkg_path_a, pkg_path_b,
+            hash_tag, pkg_compression = "bz2")
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        os.close(tmp_fd)
+        try:
+            et.apply_entropy_delta(pkg_path_a, delta_path, tmp_path)
+            self.assertEqual(et.md5sum(pkg_path_b), et.md5sum(tmp_path))
+        finally:
+            os.remove(tmp_path)
 
     def test_read_elf_class(self):
         elf_obj = _misc.get_dl_so_amd()
