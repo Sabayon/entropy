@@ -3076,9 +3076,10 @@ class EntropyRepository(EntropyRepositoryBase):
             if source.startswith(mirror_str):
 
                 mirrorname = source.split("/")[2]
-                mirror_url =  source.split("/", 3)[3:][0]
+                # avoid leading "/"
+                mirror_url =  source.split("/", 3)[3:][0].lstrip("/")
                 source_data[source] |= set(
-                    [os.path.join(url, mirror_url) for url in \
+                    [url.rstrip("/") + "/" + mirror_url for url in \
                         self.retrieveMirrorData(mirrorname)])
 
             else:
