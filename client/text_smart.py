@@ -395,7 +395,8 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
             # add
             idpk, rev, y = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
             del y
-            mergeDbconn.storeSpmMetadata(idpk, xpakdata)
+            if xpakdata is not None:
+                mergeDbconn.storeSpmMetadata(idpk, xpakdata)
         mydbconn.close()
         os.remove(tmpdbfile)
 
