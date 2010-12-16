@@ -27,6 +27,8 @@ import pwd
 import hashlib
 import random
 import traceback
+import gzip
+import bz2
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
@@ -1025,7 +1027,6 @@ def unpack_gzip(gzipfilepath):
     @return: path to uncompressed file
     @rtype: string
     """
-    import gzip
     filepath = gzipfilepath[:-3] # remove .gz
     fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
 
@@ -1050,7 +1051,6 @@ def unpack_bzip2(bzip2filepath):
     @return: path to uncompressed file
     @rtype: string
     """
-    import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
     fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
     item = os.fdopen(fd, "wb")
@@ -1086,7 +1086,6 @@ def generate_entropy_delta_file_name(pkg_name_a, pkg_name_b, hash_tag):
     return delta_hashed_name
 
 def _delta_extract_bz2(bz2_path, new_path_fd):
-    import bz2
     with os.fdopen(new_path_fd, "wb") as item:
         filebz2 = bz2.BZ2File(bz2_path, "rb")
         chunk = filebz2.read(16384)
@@ -1098,7 +1097,6 @@ def _delta_extract_bz2(bz2_path, new_path_fd):
         item.close()
 
 def _delta_extract_gzip(gzip_path, new_path_fd):
-    import gzip
     with os.fdopen(new_path_fd, "wb") as item:
         file_gz = gzip.GzipFile(gzip_path, "rb")
         chunk = file_gz.read(16384)
@@ -1114,6 +1112,10 @@ _BSPATCH_EXEC = "/usr/bin/bspatch"
 _DELTA_DECOMPRESSION_MAP = {
     "bz2": _delta_extract_bz2,
     "gz": _delta_extract_gzip,
+}
+_DELTA_COMPRESSION_MAP = {
+    "bz2": "bz2.BZ2File",
+    "gzip": "gzip.GzipFile",
 }
 _DEFAULT_PKG_COMPRESSION = "bz2"
 
@@ -1138,6 +1140,8 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
     @raise IOError: if delta cannot be generated
     @raise OSError: if some other error happens during the generation
     """
+    from entropy.spm.plugins.factory import get_default_class as get_spm_class
+
     if pkg_compression is None:
         _delta_extractor = _DELTA_DECOMPRESSION_MAP[_DEFAULT_PKG_COMPRESSION]
     else:
@@ -1147,6 +1151,8 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
     tmp_fd_b, tmp_path_b = tempfile.mkstemp(dir=os.path.dirname(pkg_path_b))
     tmp_fd, tmp_path = tempfile.mkstemp()
     os.close(tmp_fd)
+    tmp_fd_spm, tmp_path_spm = tempfile.mkstemp()
+    os.close(tmp_fd_spm)
 
     try:
         _delta_extractor(pkg_path_a, tmp_fd_a)
@@ -1177,12 +1183,16 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
         if rc != 0:
             return None
 
-        # last step, append package B metadata to delta_file
+        # append Spm metadata
+        get_spm_class().dump_package_metadata(pkg_path_b, tmp_path_spm)
+        get_spm_class().aggregate_package_metadata(delta_file, tmp_path_spm)
+
+        # append Entropy metadata
         dump_entropy_metadata(pkg_path_b, tmp_path)
         aggregate_entropy_metadata(delta_file, tmp_path)
 
     finally:
-        for pkg_f in (tmp_path_a, tmp_path_b, tmp_path):
+        for pkg_f in (tmp_path_a, tmp_path_b, tmp_path, tmp_path_spm):
             try:
                 os.remove(pkg_f)
             except (IOError, OSError):
@@ -1196,9 +1206,6 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
     Apply Entropy package delta file to pkg_path_a generating pkg_path_b (which
     is returned in case of success). If delta cannot be generated, IOError is
     raised.
-    NOTE: new_pkg_path_b file won't be compressed in any format to avoid
-    unwanted performance penalty. It will be plain .tar with entropy metadata
-    appended at the end (as usual).
 
     @param pkg_path_a: path to package A
     @type pkg_path_a: string
@@ -1211,23 +1218,35 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
     @type: string
     @raise IOError: if delta cannot be generated.
     """
+    from entropy.spm.plugins.factory import get_default_class as get_spm_class
+
     if pkg_compression is None:
         _pkg_extractor = _DELTA_DECOMPRESSION_MAP[_DEFAULT_PKG_COMPRESSION]
+        used_compression = _DELTA_COMPRESSION_MAP[_DEFAULT_PKG_COMPRESSION]
     else:
         _pkg_extractor = _DELTA_DECOMPRESSION_MAP[pkg_compression]
+        used_compression = _DELTA_COMPRESSION_MAP[pkg_compression]
 
     tmp_fd, tmp_delta_path = tempfile.mkstemp(dir=os.path.dirname(delta_path))
+    os.close(tmp_fd)
+    tmp_spm_fd, tmp_spm_path = tempfile.mkstemp(dir=os.path.dirname(delta_path))
+    os.close(tmp_spm_fd)
+
     tmp_fd_a, tmp_path_a = tempfile.mkstemp(dir=os.path.dirname(pkg_path_a))
     tmp_meta_fd, tmp_metadata_path = tempfile.mkstemp(
         dir=os.path.dirname(new_pkg_path_b))
-    os.close(tmp_fd)
     os.close(tmp_meta_fd)
+
     new_pkg_path_b_tmp = new_pkg_path_b + ".edelta_work"
+    new_pkg_path_b_tmp_compressed = new_pkg_path_b_tmp + ".compress"
     try:
 
         # remove entropy metadata from pkg delta, will be appended to package
         # right after
         remove_entropy_metadata(delta_path, tmp_delta_path)
+        # get spm metadata
+        get_spm_class().dump_package_metadata(delta_path, tmp_spm_path)
+
         _pkg_extractor(pkg_path_a, tmp_fd_a)
 
         rc = subprocess.call(
@@ -1235,15 +1254,23 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
         if rc != 0:
             raise IOError("bspatch returned error: %s" % (rc,))
 
-        # NO NEED to compress it back, because it will have to be decompressed
-        # again afterwards, just keep plain tar
-        # add entropy metadata at the end
+        # extract entropy metadata
         dump_entropy_metadata(delta_path, tmp_metadata_path)
-        aggregate_entropy_metadata(new_pkg_path_b_tmp, tmp_metadata_path)
-        os.rename(new_pkg_path_b_tmp, new_pkg_path_b)
+        compress_file(new_pkg_path_b_tmp, new_pkg_path_b_tmp_compressed,
+            eval(used_compression), compress_level = 9)
+
+        # add spm metadata
+        get_spm_class().aggregate_package_metadata(
+            new_pkg_path_b_tmp_compressed, tmp_spm_path)
+        # add entropy metadata
+        aggregate_entropy_metadata(new_pkg_path_b_tmp_compressed,
+            tmp_metadata_path)
+        os.rename(new_pkg_path_b_tmp_compressed, new_pkg_path_b)
 
     finally:
-        for path in (tmp_delta_path, tmp_path_a, tmp_metadata_path):
+        for path in (tmp_delta_path, tmp_spm_path, tmp_path_a,
+            tmp_metadata_path, new_pkg_path_b_tmp):
+
             try:
                 os.remove(path)
             except (IOError, OSError):
@@ -1482,6 +1509,26 @@ def compare_md5(filepath, checksum):
     if checksum == result:
         return True
     return False
+
+def get_hash_from_md5file(md5path):
+    """
+    Extract md5 hash from md5 file.
+    If md5 file is corrupted or invalid, raise ValueError.
+
+    @param md5path: path to .md5 file
+    @type md5path: string
+    @return: md5 hex digest
+    @rtype: string
+    @raise ValueError: if md5path contains invalid data
+    """
+    try:
+        with open(md5path, "r") as md5_f:
+            md5_str = md5_f.read(32)
+            if (not is_valid_md5(md5_str)) or len(md5_str) < 32:
+                raise ValueError("invalid md5 file")
+            return md5_str
+    except (IOError, OSError) as err:
+        raise ValueError(repr(err))
 
 def compare_sha512(filepath, checksum):
     """
