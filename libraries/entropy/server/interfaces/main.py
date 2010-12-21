@@ -926,6 +926,13 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         return False
 
     def __extract_edb_analyze_metadata(self, package_path):
+
+        def _is_supported(keywords):
+            for arch in etpConst['keywords']:
+                if arch in keywords:
+                    return True
+            return False
+
         tmp_fd, tmp_f = tempfile.mkstemp(prefix = 'entropy.server')
         dbc = None
         try:
@@ -941,9 +948,9 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
                 dbc.retrieveContentSafety(package_id)
                 # test keywords
                 keywords = dbc.retrieveKeywords(package_id)
-                if not keywords:
+                if not _is_supported(keywords):
                     atom = dbc.retrieveAtom(package_id)
-                    # bit PHAT warning !!
+                    # big PHAT warning !!
                     self._server.output(darkred("~"*40), level = "warning")
                     self._server.output("[%s, %s] %s" % (
                          brown(os.path.basename(package_path)), teal(atom),
