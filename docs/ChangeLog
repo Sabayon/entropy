@@ -1,3 +1,111 @@
+commit b0d5a87ffda97245fc959e745c7b3e84a3b3ad5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 12:41:52 2010 +0100
+
+    Release Entropy 0.99.51.20
+
+commit 12f53894f559cc6ba03dab3c0841b5af7d7a6eec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 12:39:46 2010 +0100
+
+    [entropy.spm] PortagePlugin: when splitdebug is disabled, tweak CONTENTS data removing /usr/lib/debug entries
+
+commit ed4544228fb45d61437fab6f80b84da2f775ecdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 12:39:20 2010 +0100
+
+    [entropy.spm] PortagePlugin: add temporary workaround for broken fakedbapi API
+
+commit 07efee9f0298518a676e37f7d598290636e5f56a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 12:16:30 2010 +0100
+
+    [entropy.client.interfaces.package] provide splitdebug metadata to triggers
+
+commit 4326d32fbb8231841cc5b877f12ebc3a27c0cbe5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 12:00:54 2010 +0100
+
+    [entropy.server] fix _add_packages_qa_libtests() undefined references
+
+commit 54f1f505612947f80cbab805240a8f297ac18569
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 11:52:58 2010 +0100
+
+    [entropy.server] when moving packages between repos, always execute the missing libraries check again
+
+commit f0662544c3e1c3122b59796ed98fe6b35b38b567
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 10:25:35 2010 +0100
+
+    [entropy.server]  fix QA check against keywords
+
+commit 6e7c9b71c1fdda1cd543168d2c788448b51a8654
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 10:10:54 2010 +0100
+
+    [entropy.client.services.ugc.interface] ValueError("bad marshal data") can be raised there, catch it
+
+commit 4c47a51bea569ab301dcaacdbd8dd0fe8ee7ef53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 10:10:04 2010 +0100
+
+    [entropy.tools] write apply_entropy_delta() bspatch output to temp file
+
+commit fc3df29dbfc43428d88713b63ac9950c843533ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 10:06:27 2010 +0100
+
+    [entropy.spm] PortagePlugin.xpaktools: properly handle os.remove() in extract_xpak()
+
+commit 7e879a18e6dd306b7f8fe28000431d738b025340
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 19:47:47 2010 +0100
+
+    [entropy.db] EntropyRepository.retrieveSources(): properly setup url strings, avoid using os.path.join() on urls. Thanks to Giovanni Martinelli.
+
+commit 46876df522937992bff5bcfb113b7ccbc4bf4a54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 19:36:22 2010 +0100
+
+    [entropy.client.interfaces.package] when pressing CTRL+C give up completely on sources fetch
+
+commit b105cd444716b459086dba6ad3360e65c374f68e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 16:23:02 2010 +0100
+
+    [equo/smart] read_xpak() can return None, check the return value before calling storeSpmMetadata()
+
+commit 55d995e0108515775c8b72cab8407cdaaa243a83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 16:22:01 2010 +0100
+
+    [services] entropy-pkgdelta-generator: create deltas only for files smaller than 10Mb (bsdiff mem usage: max(17*n,9*n+m)+O(1) )
+
+commit daf486d01d181121baee7adacd9b4d6f5afe3c44
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 16:21:18 2010 +0100
+
+    [tests] add test_entropy_delta, testing entropy.tools.generate_entropy_delta() and entropy.tools.apply_entropy_delta()
+
+commit 89bdd34a27a05d664354882fcb66e895daf626a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 16:20:07 2010 +0100
+
+    [entropy.tools] complete entropy deltas generation functions, make them simmetric (md5 generated matches the original file)
+
+commit d80b1698ecfe1af230152054f4bdde56aef4bec9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 16 16:19:23 2010 +0100
+
+    [entropy.spm] add two new methods (bump plugin API) dump_package_metadata and aggregate_package_metadata
+
+commit 22110475014c9ea22f10d2bb3beee487f6ba118f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 14 19:48:33 2010 +0100
+
+    Tagging Entropy version 0.99.51.12
+
 commit b84ddc5f8880eadfbc098669a23047a60f64fd5b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 14 19:48:30 2010 +0100
