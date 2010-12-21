@@ -4334,10 +4334,23 @@ class ServerRepositoryMixin:
         Execute some generic QA checks for broken libraries on packages added
         to repository.
         """
+        blacklisted_deps = \
+            self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
+
         # XXX these can be optimized
         repo_blacklist = self._get_missing_dependencies_blacklist(
             repo = repo)
         my_qa = self.QA()
+
+        def get_blacklisted_deps(package_ids, repo_db):
+            my_blacklist = set()
+            for pkg_dep, bl_pkg_deps in blacklisted_deps.items():
+                pkg_ids, rc = repo_db.atomMatch(pkg_dep, multiMatch = True)
+                for package_id in package_ids:
+                    if package_id in pkg_ids:
+                        my_blacklist.update(bl_pkg_deps)
+                        break
+            return my_blacklist
 
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
@@ -4367,17 +4380,6 @@ class ServerRepositoryMixin:
         maxcount = len(packages_data)
         idpackages_added = set()
         to_be_injected = set()
-        blacklisted_deps = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
-
-        def get_blacklisted_deps(package_ids, repo_db):
-            my_blacklist = set()
-            for pkg_dep, bl_pkg_deps in blacklisted_deps.items():
-                pkg_ids, rc = repo_db.atomMatch(pkg_dep, multiMatch = True)
-                for package_id in package_ids:
-                    if package_id in pkg_ids:
-                        my_blacklist.update(bl_pkg_deps)
-                        break
-            return my_blacklist
 
         for package_filepath, inject in packages_data:
 
