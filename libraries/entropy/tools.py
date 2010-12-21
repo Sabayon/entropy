@@ -1237,6 +1237,9 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
         dir=os.path.dirname(new_pkg_path_b))
     os.close(tmp_meta_fd)
 
+    tmp_fd_null, tmp_path_null = \
+        tempfile.mkstemp(dir=os.path.dirname(delta_path))
+
     new_pkg_path_b_tmp = new_pkg_path_b + ".edelta_work"
     new_pkg_path_b_tmp_compressed = new_pkg_path_b_tmp + ".compress"
     try:
@@ -1249,10 +1252,12 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
 
         _pkg_extractor(pkg_path_a, tmp_fd_a)
 
-        rc = subprocess.call(
-            (_BSPATCH_EXEC, tmp_path_a, new_pkg_path_b_tmp, tmp_delta_path))
-        if rc != 0:
-            raise IOError("bspatch returned error: %s" % (rc,))
+        with os.fdopen(tmp_fd_null, "w") as null_f:
+            argv = (_BSPATCH_EXEC, tmp_path_a, new_pkg_path_b_tmp,
+                tmp_delta_path)
+            rc = subprocess.call(argv, stdout = null_f, stderr = null_f)
+            if rc != 0:
+                raise IOError("%s returned error: %s" % (_BSPATCH_EXEC, rc,))
 
         # extract entropy metadata
         dump_entropy_metadata(delta_path, tmp_metadata_path)
@@ -1269,7 +1274,7 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
 
     finally:
         for path in (tmp_delta_path, tmp_spm_path, tmp_path_a,
-            tmp_metadata_path, new_pkg_path_b_tmp):
+            tmp_metadata_path, new_pkg_path_b_tmp, tmp_path_null):
 
             try:
                 os.remove(path)
