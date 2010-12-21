@@ -1934,6 +1934,12 @@ class PortagePlugin(SpmPlugin):
 
         cpv = str(cpv)
         mydbapi = self._portage.fakedbapi(settings=mysettings)
+        # XXX: temporary workaround for broken Portage API
+        if not hasattr(mydbapi, "getFetchMap"):
+            def _get_fetch_map(*b_args, **b_kwargs):
+                return {}
+            mydbapi.getFetchMap = _get_fetch_map
+
         mydbapi.cpv_inject(cpv, metadata = metadata)
         mysettings.setcpv(cpv, mydb = mydbapi)
 
