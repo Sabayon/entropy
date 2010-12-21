@@ -3242,8 +3242,7 @@ class Package:
         # generate metadata dictionary
         self._generate_metadata()
 
-    def _setup_base_metadata(self, action):
-
+    def __get_base_metadata(self, action):
         def get_splitdebug_data():
             sys_set_plg_id = \
                 etpConst['system_settings_plugins_ids']['client_plugin']
@@ -3253,17 +3252,18 @@ class Package:
             return splitdebug, splitdebug_dirs
 
         splitdebug, splitdebug_dirs = get_splitdebug_data()
-        self.pkgmeta.update({
+        metadata = {
             'splitdebug': splitdebug,
             'splitdebug_dirs': splitdebug_dirs,
-        })
+        }
+        return metadata
 
     def _generate_metadata(self):
         self._error_on_prepared()
 
         self._check_action_validity(self._action)
         self.pkgmeta.clear()
-        self._setup_base_metadata(self._action)
+        self.pkgmeta.update(self.__get_base_metadata(self._action))
 
         if self._action == "fetch":
             self.__generate_fetch_metadata()
@@ -3318,6 +3318,8 @@ class Package:
         self.pkgmeta['triggers']['remove']['spm_repository'] = \
             self._entropy.installed_repository().retrieveSpmRepository(
                 idpackage)
+        self.pkgmeta['triggers']['remove'].update(
+            self.__get_base_metadata(self._action))
 
         pkg_license = self._entropy.installed_repository().retrieveLicense(
             idpackage)
@@ -3528,6 +3530,8 @@ class Package:
                     self.pkgmeta['removecontent']
                 self.pkgmeta['triggers']['remove']['spm_repository'] = \
                     inst_repo.retrieveSpmRepository(idpackage)
+                self.pkgmeta['triggers']['remove'].update(
+                    self.__get_base_metadata(self._action))
 
                 pkg_rm_license = inst_repo.retrieveLicense(
                     self.pkgmeta['removeidpackage'])
@@ -3575,6 +3579,8 @@ class Package:
             self.pkgmeta['imagedir']
         self.pkgmeta['triggers']['install']['spm_repository'] = \
             dbconn.retrieveSpmRepository(idpackage)
+        self.pkgmeta['triggers']['install'].update(
+            self.__get_base_metadata(self._action))
 
         spm_class = self._entropy.Spm_class()
         # call Spm setup hook
