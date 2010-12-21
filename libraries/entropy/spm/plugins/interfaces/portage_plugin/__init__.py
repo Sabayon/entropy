@@ -2624,7 +2624,7 @@ class PortagePlugin(SpmPlugin):
         if hasattr(vartree.dbapi, '_bump_mtime'):
             vartree.dbapi._bump_mtime(portage_cpv)
 
-    def __update_features_file(self, features_path):
+    def __splitdebug_update_features_file(self, features_path):
 
         with open(features_path, "r") as feat_f:
             feat_content = feat_f.read().split(" ")
@@ -2638,6 +2638,33 @@ class PortagePlugin(SpmPlugin):
                 feat_f.flush()
 
             os.rename(features_path+".tmp", features_path)
+
+    def __splitdebug_update_contents_file(self, contents_path, splitdebug_dirs):
+
+        if not (os.path.isfile(contents_path) and \
+            os.access(contents_path, os.R_OK)):
+            return
+
+        with open(contents_path, "r") as cont_f:
+            with open(contents_path+".tmp", "w") as cont_new_f:
+                line = cont_f.readline()
+                while line:
+                    do_skip = False
+                    split_line = line.split()
+                    if len(split_line) > 1:
+                        for splitdebug_dir in splitdebug_dirs:
+                            if split_line[1].startswith(splitdebug_dir):
+                                do_skip = True
+                                break
+                    if do_skip:
+                        line = cont_f.readline()
+                        continue
+                    cont_new_f.write(line)
+                    line = cont_f.readline()
+
+                cont_new_f.flush()
+
+        os.rename(contents_path+".tmp", contents_path)
 
     def _create_contents_file_if_not_available(self, pkg_dir,
         entropy_package_metadata):
@@ -2837,10 +2864,16 @@ class PortagePlugin(SpmPlugin):
                 os.makedirs(cat_dir, 0o755)
 
             splitdebug = package_metadata.get("splitdebug", False)
+            splitdebug_dirs = package_metadata.get("splitdebug_dirs", tuple())
             if splitdebug:
                 features_path = os.path.join(copypath,
                     PortagePlugin.xpak_entries['features'])
-                self.__update_features_file(features_path)
+                self.__splitdebug_update_features_file(features_path)
+            elif not splitdebug and splitdebug_dirs:
+                contents_path = os.path.join(copypath,
+                    PortagePlugin.xpak_entries['contents'])
+                self.__splitdebug_update_contents_file(contents_path,
+                    splitdebug_dirs)
 
             # lock vdb before making changes
             with self._PortageVdbLocker(self):
