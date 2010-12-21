@@ -445,7 +445,8 @@ class AuthStore(Singleton):
         self.store = {}
         try:
             self.xmldoc = self.minidom.parse(self.access_file)
-        except (self.expat.ExpatError, IOError,):
+        except (self.expat.ExpatError, IOError, ValueError,):
+            # ValueError: bad marshal data, wtf!?
             self.xmldoc = None
         if self.xmldoc is not None:
             try:
