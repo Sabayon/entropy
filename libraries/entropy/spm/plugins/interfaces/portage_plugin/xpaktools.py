@@ -12,6 +12,7 @@
 import sys
 import tempfile
 import os
+import errno
 import shutil
 from entropy.output import TextInterface
 from entropy.spm.plugins.factory import get_default_instance
@@ -37,7 +38,12 @@ def extract_xpak(tbz2file, tmpdir = None):
             return None
         return unpack_xpak(tmp_path, tmpdir = tmpdir)
     finally:
-        os.remove(tmp_path)
+        try:
+            # unpack_xpak already removes it
+            os.remove(tmp_path)
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
 
 def read_xpak(tbz2file):
     """
