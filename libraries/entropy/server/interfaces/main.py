@@ -2106,6 +2106,7 @@ class ServerPackagesHandlingMixin:
             if rc_question == _("No"):
                 return switched
 
+        package_ids_added = set()
         for idpackage, repo in my_matches:
 
             dbconn = self.open_server_repository(read_only = False,
@@ -2288,6 +2289,7 @@ class ServerPackagesHandlingMixin:
             todbconn.commit()
             todbconn.storeInstalledPackage(new_idpackage, to_repo)
             todbconn.commit()
+            package_ids_added.add(new_idpackage)
 
             if not do_copy:
                 self.output(
@@ -2326,8 +2328,11 @@ class ServerPackagesHandlingMixin:
             no_upload = True, repo = to_repo)
         todbconn.clean()
 
-        # just run this to make dev aware
-        self.dependencies_test(to_repo)
+        if package_ids_added:
+            self._add_packages_qa_libtests(package_ids_added, to_repo,
+                ask = ask)
+            # just run this to make dev aware
+            self.dependencies_test(to_repo)
 
         return switched
 
@@ -4324,6 +4329,34 @@ class ServerRepositoryMixin:
 
         return downloadurl
 
+    def _add_packages_qa_libtests(self, package_ids_added, repo, ask = True):
+        """
+        Execute some generic QA checks for broken libraries on packages added
+        to repository.
+        """
+        # XXX these can be optimized
+        repo_blacklist = self._get_missing_dependencies_blacklist(
+            repo = repo)
+        my_qa = self.QA()
+
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
+        pkg_blacklisted_deps = get_blacklisted_deps(
+            package_ids_added, dbconn)
+        pkg_blacklisted_deps |= repo_blacklist
+        my_qa.test_missing_dependencies(
+            package_ids_added,
+            dbconn,
+            ask = ask,
+            repo = repo,
+            self_check = True,
+            black_list = pkg_blacklisted_deps,
+            black_list_adder = \
+                self._add_missing_dependencies_blacklist_items
+        )
+        my_qa.test_reverse_dependencies_linking(package_ids_added, dbconn,
+            repo = repo)
+
     def add_packages_to_repository(self, packages_data, ask = True,
         repo = None):
 
@@ -4335,8 +4368,6 @@ class ServerRepositoryMixin:
         idpackages_added = set()
         to_be_injected = set()
         blacklisted_deps = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
-        repo_blacklist = self._get_missing_dependencies_blacklist(
-            repo = repo)
 
         def get_blacklisted_deps(package_ids, repo_db):
             my_blacklist = set()
@@ -4348,7 +4379,6 @@ class ServerRepositoryMixin:
                         break
             return my_blacklist
 
-        my_qa = self.QA()
         for package_filepath, inject in packages_data:
 
             mycount += 1
@@ -4388,23 +4418,8 @@ class ServerRepositoryMixin:
                 )
                 # reinit librarypathsidpackage table
                 if idpackages_added:
-                    dbconn = self.open_server_repository(read_only = False,
-                        no_upload = True, repo = repo)
-                    pkg_blacklisted_deps = get_blacklisted_deps(
-                        idpackages_added, dbconn)
-                    pkg_blacklisted_deps |= repo_blacklist
-                    my_qa.test_missing_dependencies(
-                        idpackages_added,
-                        dbconn,
-                        ask = ask,
-                        repo = repo,
-                        self_check = True,
-                        black_list = pkg_blacklisted_deps,
-                        black_list_adder = \
-                            self._add_missing_dependencies_blacklist_items
-                    )
-                    my_qa.test_reverse_dependencies_linking(idpackages_added,
-                        dbconn, repo = repo)
+                    self._add_packages_qa_libtests(idpackages_added, repo,
+                        ask = ask)
                 if to_be_injected:
                     self._inject_database_into_packages(to_be_injected,
                         repo = repo)
@@ -4418,23 +4433,8 @@ class ServerRepositoryMixin:
             dbconn.isPackageIdAvailable(x)))
 
         if idpackages_added:
-            dbconn = self.open_server_repository(read_only = False,
-                no_upload = True, repo = repo)
-            pkg_blacklisted_deps = get_blacklisted_deps(
-                idpackages_added, dbconn)
-            pkg_blacklisted_deps |= repo_blacklist
-            my_qa.test_missing_dependencies(
-                idpackages_added,
-                dbconn,
-                ask = ask,
-                repo = repo,
-                self_check = True,
-                black_list = pkg_blacklisted_deps,
-                black_list_adder = \
-                    self._add_missing_dependencies_blacklist_items
-            )
-            my_qa.test_reverse_dependencies_linking(idpackages_added, dbconn,
-                repo = repo)
+            self._add_packages_qa_libtests(idpackages_added, repo,
+                ask = ask)
 
         # inject database into packages
         self._inject_database_into_packages(to_be_injected, repo = repo)
