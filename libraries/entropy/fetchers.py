@@ -481,6 +481,7 @@ class UrlFetcher(TextInterface):
         # we're going to feed the md5 digestor on the way.
         self.__use_md5_checksum = True
         url = self.__encode_url(self.__url)
+        url_protocol = UrlFetcher._get_url_protocol(self.__url)
         uname = os.uname()
         user_agent = "Entropy/%s (compatible; %s; %s: %s %s %s)" % (
             etpConst['entropyversion'],
@@ -491,7 +492,7 @@ class UrlFetcher(TextInterface):
             uname[2],
         )
 
-        if url.startswith("http://"):
+        if url_protocol in ("http", "https"):
             headers = {'User-Agent': user_agent,}
             req = urlmod.Request(url, headers = headers)
         else:
@@ -595,12 +596,13 @@ class UrlFetcher(TextInterface):
         if self.__remotesize > 0:
             self.__remotesize = float(int(self.__remotesize))/1024
 
-        if self.__disallow_redirect and \
-            (url != self.__remotefile.geturl()):
+        if url_protocol not in ("file", "ftp", "ftps"):
+            if self.__disallow_redirect and \
+                (url != self.__remotefile.geturl()):
 
-            self.__urllib_close(True)
-            self.__status = "-3"
-            return self.__status
+                self.__urllib_close(True)
+                self.__status = "-3"
+                return self.__status
 
         while True:
             try:
