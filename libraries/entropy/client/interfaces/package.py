@@ -3731,15 +3731,16 @@ class Package:
                 'gpg': gpg,
             }
 
+
+            if dochecksum:
+                obj = (idpackage, repository, download, digest, signatures,)
+                temp_checksum_list.append(obj)
+
             repo_size = dbconn.retrieveSize(idpackage)
             if self.__check_pkg_path_download(download, None) < 0:
                 obj = (idpackage, repository, download, digest, signatures,)
                 temp_fetch_list.append(obj)
                 continue
-
-            elif dochecksum:
-                obj = (idpackage, repository, download, digest, signatures,)
-                temp_checksum_list.append(obj)
 
             down_path = self.__get_fetch_disk_path(download)
             if os.path.isfile(down_path):
