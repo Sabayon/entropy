@@ -132,43 +132,70 @@ class Package:
 
     def __fetch_files(self, url_data_list, checksum = True, resume = True):
 
-        fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
-        url_path_list = []
-        checksum_map = {}
-        count = 0
+        def _generate_checksum_map(url_data):
+            if not checksum:
+                return {}
+            ck_map = {}
+            ck_map_id = 0
+            for pkg_id, repo, url, dest_path, cksum in url_data:
+                ck_map_id += 1
+                if cksum is not None:
+                    ck_map[ck_map_id] = cksum
+            return ck_map
 
-        for pkg_id, repo, url, dest_path, cksum in url_data_list:
-            count += 1
+        fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
+        # avoid tainting data pointed by url_data_list
+        url_data = url_data_list[:]
+        diff_map = {}
+
+        # setup directories
+        for pkg_id, repo, url, dest_path, cksum in url_data:
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
                 os.makedirs(dest_dir, 0o775)
                 const_setup_perms(dest_dir, etpConst['entropygid'])
 
-            url_path_list.append((url, dest_path,))
-            if cksum is not None:
-                checksum_map[count] = cksum
-
-            self._setup_differential_download(self._entropy.MultipleUrlFetcher,
-                url, resume, dest_path, repo, pkg_id)
-
-        # load class
-        fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
-            resume = resume, abort_check_func = fetch_abort_function,
-            url_fetcher_class = self._entropy.urlFetcher, checksum = checksum)
-        try:
-            data = fetch_intf.download()
-        except KeyboardInterrupt:
+        checksum_map = _generate_checksum_map(url_data)
+        fetched_url_data, data_transfer, abort = self.__try_edelta_multifetch(
+            url_data, resume)
+        if abort:
             return -100, {}, 0
 
-        diff_map = {}
-        if checksum_map and checksum: # verify checksums
-            diff_map = dict((url_path_list[x-1][0], checksum_map.get(x)) \
-                for x in checksum_map if checksum_map.get(x) != data.get(x))
+        for url_data_item in fetched_url_data:
+            url_data.remove(url_data_item)
 
-        data_transfer = fetch_intf.get_transfer_rate()
+        # some packages haven't been downloaded using edelta
+        if url_data:
+
+            url_path_list = []
+            for pkg_id, repo, url, dest_path, cksum in url_data:
+                url_path_list.append((url, dest_path,))
+                self._setup_differential_download(
+                    self._entropy.MultipleUrlFetcher, url, resume, dest_path,
+                        repo, pkg_id)
+
+            # load class
+            fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
+                resume = resume, abort_check_func = fetch_abort_function,
+                url_fetcher_class = self._entropy.urlFetcher,
+                checksum = checksum)
+            try:
+                data = fetch_intf.download()
+            except KeyboardInterrupt:
+                return -100, {}, 0
+            # update transfer rate information
+            data_transfer = fetch_intf.get_transfer_rate()
+
+            checksum_map = _generate_checksum_map(url_data)
+            # if checksum_map is empty, it means that checksum == False
+            for ck_id in checksum_map:
+                orig_checksum = checksum_map.get(ck_id)
+                if orig_checksum != data.get(ck_id):
+                    diff_map[url_path_list[ck_id-1][0]] = orig_checksum
+
         if diff_map:
             defval = -1
-            for key, val in list(diff_map.items()):
+            for key, val in diff_map.items():
                 if val == "-1": # general error
                     diff_map[key] = -1
                 elif val == "-2":
@@ -513,6 +540,229 @@ class Package:
                 "_setup_differential_download(%s) %s" % (
                     url, "no installed package file found"))
 
+    def __approve_edelta(self, url, installed_package_id, package_digest):
+        """
+        Approve Entropy package delta support for given url, checking if
+        a previously fetched package is available.
+
+        @return: edelta URL to download and previously downloaded package path
+        or None if edelta is not available
+        @rtype: tuple of strings or None
+        """
+        inst_repo = self._entropy.installed_repository()
+        download_url = inst_repo.retrieveDownloadURL(installed_package_id)
+        installed_digest = inst_repo.retrieveDigest(installed_package_id)
+        installed_fetch_path = self.__get_fetch_disk_path(download_url)
+
+        if os.path.isfile(installed_fetch_path) and \
+            os.access(installed_fetch_path, os.R_OK | os.F_OK):
+
+            edelta_local_approved = entropy.tools.compare_md5(
+                installed_fetch_path, installed_digest)
+
+            if edelta_local_approved:
+                hash_tag = installed_digest + package_digest
+                edelta_file_name = \
+                    entropy.tools.generate_entropy_delta_file_name(
+                        os.path.basename(download_url),
+                        os.path.basename(url), hash_tag)
+                edelta_url = os.path.join(os.path.dirname(url),
+                    etpConst['packagesdeltasubdir'], edelta_file_name)
+                return edelta_url, installed_fetch_path
+
+    def __try_edelta_multifetch(self, url_data, resume):
+
+        # no edelta support enabled
+        if not self.pkgmeta.get('edelta_support'):
+            return [], 0.0, False
+        # edelta disabled in environment
+        if os.getenv("ETP_NO_EDELTA") is not None:
+            return [], 0.0, False
+
+        url_path_list = []
+        url_data_map = {}
+        url_data_map_idx = 0
+        for pkg_id, repo, url, dest_path, cksum in url_data:
+
+            repo_db = self._entropy.open_repository(repo)
+            if cksum is None:
+                # cannot setup edelta without checksum, get from repository
+                cksum = repo_db.retrieveDigest(pkg_id)
+                if cksum is None:
+                    # still nothing
+                    continue
+
+            key_slot = repo_db.retrieveKeySlot(pkg_id)
+            if key_slot is None:
+                # wtf corrupted entry, skip
+                continue
+
+            pkg_key, pkg_slot = key_slot
+            installed_package_id = self.__setup_package_to_remove(pkg_key,
+                pkg_slot)
+            if installed_package_id == -1:
+                # package is not installed
+                continue
+
+            edelta_approve = self.__approve_edelta(url, installed_package_id,
+                cksum)
+            if edelta_approve is None:
+                # no edelta support
+                continue
+            edelta_url, installed_fetch_path = edelta_approve
+
+            edelta_save_path = dest_path + etpConst['packagesdeltaext']
+            key = (edelta_url, edelta_save_path)
+            url_path_list.append(key)
+            url_data_map_idx += 1
+            url_data_map[url_data_map_idx] = (pkg_id, repo, url, dest_path,
+                cksum, edelta_url, edelta_save_path, installed_fetch_path)
+
+        if not url_path_list:
+            # no martini, no party!
+            return [], 0.0, False
+
+        fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
+        fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
+            resume = resume, abort_check_func = fetch_abort_function,
+            url_fetcher_class = self._entropy.urlFetcher)
+        try:
+            data = fetch_intf.download()
+        except KeyboardInterrupt:
+            return [], 0.0, True
+        data_transfer = fetch_intf.get_transfer_rate()
+
+        valid_idxs = []
+        for url_data_map_idx, cksum in data.items():
+
+            if cksum.startswith("-"):
+                # download failed => "-1", "-2", "-3", etc
+                continue
+
+            pkg_id, repo, url, dest_path, orig_cksum, edelta_url, \
+                edelta_save_path, installed_fetch_path = \
+                    url_data_map[url_data_map_idx]
+
+            # now check
+            tmp_dest_path = dest_path + ".edelta_pkg_tmp"
+            # yay, we can apply the delta and cook the new package file!
+            try:
+                entropy.tools.apply_entropy_delta(installed_fetch_path,
+                    edelta_save_path, tmp_dest_path)
+            except IOError:
+                # give up with this edelta
+                try:
+                    os.remove(tmp_dest_path)
+                except (OSError, IOError):
+                    pass
+                continue
+
+            os.rename(tmp_dest_path, dest_path)
+            valid_idxs.append(url_data_map_idx)
+
+        # now check md5
+        fetched_url_data = []
+        for url_data_map_idx in valid_idxs:
+            pkg_id, repo, url, dest_path, orig_cksum, edelta_url, \
+                edelta_save_path, installed_fetch_path = \
+                    url_data_map[url_data_map_idx]
+
+            try:
+                valid = entropy.tools.compare_md5(dest_path, orig_cksum)
+            except (IOError, OSError):
+                valid = False
+
+            if valid:
+                url_data_item = (pkg_id, repo, url, dest_path, orig_cksum)
+                fetched_url_data.append(url_data_item)
+
+        return fetched_url_data, data_transfer, False
+
+
+    def __try_edelta_fetch(self, url, save_path, resume):
+
+        # no edelta support enabled
+        if not self.pkgmeta.get('edelta_support'):
+            return 1, 0.0
+        # edelta disabled in environment
+        if os.getenv("ETP_NO_EDELTA") is not None:
+            return 1, 0.0
+
+        installed_package_id = self.pkgmeta['removeidpackage']
+        # fresh install, cannot fetch edelta, edelta only works for installed
+        # packages, by design.
+        if installed_package_id == -1:
+            return 1, 0.0
+
+        edelta_approve = self.__approve_edelta(url, installed_package_id,
+            self.pkgmeta['checksum'])
+
+        if edelta_approve is None:
+            # edelta not available, give up
+            return 1, 0.0
+        edelta_url, installed_fetch_path = edelta_approve
+
+        # check if edelta file is available online
+        edelta_save_path = save_path + etpConst['packagesdeltaext']
+
+        max_tries = 2
+        edelta_approved = False
+        data_transfer = 0
+        download_plan = [(edelta_url, edelta_save_path) for x in \
+            range(max_tries)]
+        delta_resume = resume
+        fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
+
+        for delta_url, delta_save in download_plan:
+
+            delta_fetcher = self._entropy.urlFetcher(delta_url,
+                delta_save, resume = delta_resume,
+                abort_check_func = fetch_abort_function)
+
+            try:
+                delta_checksum = delta_fetcher.download()
+                data_transfer = delta_fetcher.get_transfer_rate()
+                del delta_fetcher
+            except KeyboardInterrupt:
+                return -100, data_transfer
+            except NameError:
+                raise
+            except Exception:
+                return -1, data_transfer
+
+            # "-3", "-4", etc are considered errors, so give up.
+            if delta_checksum.startswith("-"):
+                # make sure this points to the hell
+                delta_resume = False
+                # retry
+                continue
+
+            # now check
+            tmp_save_path = save_path + ".edelta_pkg_tmp"
+            # yay, we can apply the delta and cook the new package file!
+            try:
+                entropy.tools.apply_entropy_delta(installed_fetch_path,
+                    delta_save, tmp_save_path)
+            except IOError:
+                # make sure this points to the hell
+                delta_resume = False
+                # retry
+                try:
+                    os.remove(tmp_save_path)
+                except (OSError, IOError):
+                    pass
+                continue
+
+            os.rename(tmp_save_path, save_path)
+            edelta_approved = True
+            break
+
+        if edelta_approved:
+            # we can happily return
+            return 0, data_transfer
+        # error, give up with the edelta stuff
+        return 1, data_transfer
+
     def __fetch_file(self, url, save_path, digest = None, resume = True,
         download = None, package_id = None, repository = None):
 
@@ -532,11 +782,17 @@ class Package:
                 pass
             os.makedirs(filepath_dir, 0o755)
 
+        rc, data_transfer = self.__try_edelta_fetch(url, save_path, resume)
+        if rc == 0:
+            return rc, data_transfer, False
+        elif rc < 0: # < 0 errors are unrecoverable
+            return rc, data_transfer, False
+        # otherwise, just fallback to package download
+
         existed_before = False
         if os.path.isfile(save_path) and os.path.exists(save_path):
             existed_before = True
 
-        # load class
         fetch_intf = self._entropy.urlFetcher(url, save_path, resume = resume,
             abort_check_func = fetch_abort_function)
         if (download is not None) and (package_id is not None) and \
@@ -665,15 +921,16 @@ class Package:
                         level = "warning",
                         header = red("   ## ")
                     )
-                    rc, data_transfer, resumed = self.__fetch_file(
-                        url,
-                        save_path,
-                        download = download,
-                        package_id = package_id,
-                        repository = repository,
-                        digest = digest,
-                        resume = do_resume
-                    )
+                    rc, data_transfer, resumed = \
+                        self.__fetch_file(
+                                url,
+                                save_path,
+                                download = download,
+                                package_id = package_id,
+                                repository = repository,
+                                digest = digest,
+                                resume = do_resume
+                            )
                     if rc == 0:
                         mytxt = mirror_count_txt
                         mytxt += "%s: " % (
@@ -2450,6 +2707,7 @@ class Package:
                 continue
             # first fine wins
 
+            keyboard_interrupt = False
             for url in down_data[key]:
 
                 file_name = os.path.basename(url)
@@ -2488,65 +2746,61 @@ class Package:
 
     def _fetch_source(self, url, dest_file):
         rc = 1
-        try:
 
-            mytxt = "%s: %s" % (blue(_("Downloading")), brown(url),)
-            # now fetch the new one
+        mytxt = "%s: %s" % (blue(_("Downloading")), brown(url),)
+        # now fetch the new one
+        self._entropy.output(
+            mytxt,
+            importance = 1,
+            level = "info",
+            header = red("   ## ")
+        )
+
+        rc, data_transfer, resumed = self.__fetch_file(
+            url,
+            dest_file,
+            digest = None,
+            resume = False
+        )
+        if rc == 0:
+            mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
+            mytxt += red(self._get_url_name(url))
+            human_bytes = entropy.tools.bytes_into_human(data_transfer)
+            mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
             self._entropy.output(
                 mytxt,
                 importance = 1,
                 level = "info",
                 header = red("   ## ")
             )
-
-            rc, data_transfer, resumed = self.__fetch_file(
-                url,
-                dest_file,
-                digest = None,
-                resume = False
+            self._entropy.output(
+                "%s: %s" % (blue(_("Local path")), brown(dest_file),),
+                importance = 1,
+                level = "info",
+                header = red("      # ")
             )
-            if rc == 0:
-                mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
-                mytxt += red(self._get_url_name(url))
-                human_bytes = entropy.tools.bytes_into_human(data_transfer)
-                mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
-                self._entropy.output(
-                    mytxt,
-                    importance = 1,
-                    level = "info",
-                    header = red("   ## ")
+        else:
+            error_message = blue("%s: %s") % (
+                _("Error downloading from"),
+                red(self._get_url_name(url)),
+            )
+            # something bad happened
+            if rc == -1:
+                error_message += " - %s." % (
+                    _("file not available on this mirror"),
                 )
-                self._entropy.output(
-                    "%s: %s" % (blue(_("Local path")), brown(dest_file),),
-                    importance = 1,
-                    level = "info",
-                    header = red("      # ")
-                )
+            elif rc == -3:
+                error_message += " - not found."
+            elif rc == -100:
+                error_message += " - %s." % (_("discarded download"),)
             else:
-                error_message = blue("%s: %s") % (
-                    _("Error downloading from"),
-                    red(self._get_url_name(url)),
-                )
-                # something bad happened
-                if rc == -1:
-                    error_message += " - %s." % (
-                        _("file not available on this mirror"),
-                    )
-                elif rc == -3:
-                    error_message += " - not found."
-                elif rc == -100:
-                    error_message += " - %s." % (_("discarded download"),)
-                else:
-                    error_message += " - %s: %s" % (_("unknown reason"), rc,)
-                self._entropy.output(
-                    error_message,
-                    importance = 1,
-                    level = "warning",
-                    header = red("   ## ")
-                )
-
-        except KeyboardInterrupt:
-            pass
+                error_message += " - %s: %s" % (_("unknown reason"), rc,)
+            self._entropy.output(
+                error_message,
+                importance = 1,
+                level = "warning",
+                header = red("   ## ")
+            )
 
         return rc
 
@@ -3385,12 +3639,28 @@ class Package:
 
         return found_conflicts
 
+    def __setup_package_to_remove(self, package_key, slot):
+
+        inst_repo = self._entropy.installed_repository()
+        inst_idpackage, inst_rc = inst_repo.atomMatch(package_key,
+            matchSlot = slot)
+
+        if inst_idpackage != -1:
+            avail = inst_repo.isPackageIdAvailable(inst_idpackage)
+            if avail:
+                inst_atom = inst_repo.retrieveAtom(inst_idpackage)
+                self.pkgmeta['removeatom'] = inst_atom
+            else:
+                inst_idpackage = -1
+        return inst_idpackage
+
     def __generate_install_metadata(self):
 
         idpackage, repository = self._package_match
         inst_repo = self._entropy.installed_repository()
         self.pkgmeta['idpackage'] = idpackage
         self.pkgmeta['repository'] = repository
+        self.pkgmeta['edelta_support'] = True
 
         # fetch abort function
         self.pkgmeta['fetch_abort_function'] = \
@@ -3458,23 +3728,10 @@ class Package:
             self.pkgmeta['merge_from'] = const_convert_to_unicode(mf)
         self.pkgmeta['removeconfig'] = remove_config
 
-        pkgkey = entropy.dep.dep_getkey(self.pkgmeta['atom'])
-        inst_idpackage, inst_rc = inst_repo.atomMatch(pkgkey,
-            matchSlot = self.pkgmeta['slot'])
-
+        self.pkgmeta['removeidpackage'] = self.__setup_package_to_remove(
+            entropy.dep.dep_getkey(self.pkgmeta['atom']), self.pkgmeta['slot'])
         # filled later...
         self.pkgmeta['removecontent'] = set()
-        self.pkgmeta['removeidpackage'] = inst_idpackage
-
-        if self.pkgmeta['removeidpackage'] != -1:
-            avail = inst_repo.isPackageIdAvailable(
-                self.pkgmeta['removeidpackage'])
-            if avail:
-                inst_atom = inst_repo.retrieveAtom(
-                    self.pkgmeta['removeidpackage'])
-                self.pkgmeta['removeatom'] = inst_atom
-            else:
-                self.pkgmeta['removeidpackage'] = -1
 
         # smartpackage ?
         self.pkgmeta['smartpackage'] = False
@@ -3611,10 +3868,16 @@ class Package:
         self.pkgmeta['idpackage'] = idpackage
         dbconn = self._entropy.open_repository(repository)
         self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
+        self.pkgmeta['slot'] = dbconn.retrieveSlot(idpackage)
+        self.pkgmeta['removeidpackage'] = self.__setup_package_to_remove(
+            entropy.dep.dep_getkey(self.pkgmeta['atom']), self.pkgmeta['slot'])
+
         if sources:
+            self.pkgmeta['edelta_support'] = False
             self.pkgmeta['download'] = dbconn.retrieveSources(idpackage,
                 extended = True)
         else:
+            self.pkgmeta['edelta_support'] = True
             self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
             sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
             signatures = {
@@ -3700,6 +3963,7 @@ class Package:
         self.pkgmeta['checksum'] = dochecksum
 
         matches = self._package_match
+        self.pkgmeta['edelta_support'] = True
         self.pkgmeta['matches'] = matches
         self.pkgmeta['atoms'] = []
         self.pkgmeta['repository_atoms'] = {}
