@@ -843,7 +843,7 @@ class Package:
 
 
     def _download_package(self, package_id, repository, download, save_path,
-        digest = False):
+        digest = False, resume = True):
 
         avail_data = self._settings['repositories']['available']
         excluded_data = self._settings['repositories']['excluded']
@@ -907,7 +907,7 @@ class Package:
                 remaining.discard(uri)
                 continue
 
-            do_resume = True
+            do_resume = resume
             timeout_try_count = 50
             while True:
                 try:
@@ -1176,8 +1176,9 @@ class Package:
 
         dlcount = 0
         match = False
+        max_dlcount = 5
 
-        while dlcount <= 5:
+        while dlcount <= max_dlcount:
 
             self._entropy.output(
                 blue(_("Checking package checksum...")),
@@ -1228,7 +1229,9 @@ class Package:
                     repository,
                     download,
                     pkg_disk_path,
-                    checksum
+                    checksum,
+                    # if this is the last chance, disable resume
+                    resume = dlcount != max_dlcount
                 )
                 if fetch != 0:
                     self._entropy.output(
