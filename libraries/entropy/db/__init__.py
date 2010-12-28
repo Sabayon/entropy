@@ -3816,7 +3816,6 @@ class EntropyRepository(EntropyRepositoryBase):
             return result[0]
         return -1
 
-
     def searchBelongs(self, bfile, like = False):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -3963,6 +3962,22 @@ class EntropyRepository(EntropyRepositoryBase):
             """ % (elfsearch,), search_args)
 
         return self._cur2frozenset(cur)
+
+    def searchConflict(self, conflict, strings = False):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        keyword = "%"+conflict+"%"
+        if strings:
+            cur = self._cursor().execute("""
+            SELECT conflict FROM conflicts WHERE conflict LIKE (?)
+            """, (keyword,))
+            return self._cur2tuple(cur)
+
+        cur = self._cursor().execute("""
+        SELECT idpackage, conflict FROM conflicts WHERE conflict LIKE (?)
+        """, (keyword,))
+        return tuple(cur)
 
     def searchDependency(self, dep, like = False, multi = False,
         strings = False):

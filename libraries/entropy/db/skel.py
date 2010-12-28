@@ -2966,6 +2966,22 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
+    def searchConflict(self, conflict, strings = False):
+        """
+        Search conflict dependency among packages.
+
+        @param conflict:
+        @type conflict: string
+        @keyword strings: return a list of conflict names instead of a tuple of
+            tuples of entropy package identifier and conflict dependency.
+        @type strings: bool
+        @return: if "strings" is False, a tuple of tuples of entropy package
+            identifier and conflict dependency. if "strings" is True, a list
+            (tuple) of conflict dependencies.
+        @rtype tuple
+        """
+        raise NotImplementedError()
+
     def searchDependency(self, dep, like = False, multi = False,
         strings = False):
         """
