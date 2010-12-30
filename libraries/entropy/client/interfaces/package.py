@@ -3196,12 +3196,22 @@ class Package:
 
     def _removeconflict_step(self):
 
-        for idpackage in self.pkgmeta['conflicts']:
-            if not self._entropy.installed_repository().isPackageIdAvailable(idpackage):
-                continue
+        inst_repo = self._entropy.installed_repository()
+        package_ids = [x for x in self.pkgmeta['conflicts'] if \
+            inst_repo.isPackageIdAvailable(x)]
+        if not package_ids:
+            return 0
+
+        # calculate removal dependencies
+        proposed_pkg_ids = self._entropy.get_removal_queue(package_ids)
+        # we don't want to remove the whole inverse dependencies of course,
+        # but just the conflicting ones, in a proper order
+        package_ids = [x for x in proposed_pkg_ids if x in package_ids]
+
+        for package_id in package_ids:
 
             pkg = self._entropy.Package()
-            pkg.prepare((idpackage,), "remove_conflict",
+            pkg.prepare((package_id,), "remove_conflict",
                 self.pkgmeta['remove_metaopts'])
 
             rc = pkg.run(xterm_header = self._xterm_title)
