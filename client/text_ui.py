@@ -1828,6 +1828,9 @@ def _configure_packages(entropy_client, packages):
         if rc == _("No"):
             return 0, 0
 
+    if etpUi['pretend']:
+        return 0, 0
+
     totalqueue = str(len(found_pkg_atoms))
     currentqueue = 0
     for idpackage in found_pkg_atoms:
