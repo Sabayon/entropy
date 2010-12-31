@@ -98,14 +98,16 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
                     os.mkdir(d_path)
                     const_setup_file(d_path, E_GID, 0o775)
 
-            with open(dmpfile, "wb") as dmp_f:
+            tmp_dmpfile = dmpfile + ".tmp"
+            with open(tmp_dmpfile, "wb") as dmp_f:
                 if sys.hexversion >= 0x3000000:
                     pickle.dump(my_object, dmp_f,
                         protocol = COMPAT_PICKLE_PROTOCOL, fix_imports = True)
                 else:
                     pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
-            const_setup_file(dmpfile, E_GID, 0o664)
+            const_setup_file(tmp_dmpfile, E_GID, 0o664)
+            os.rename(tmp_dmpfile, dmpfile)
 
         except RuntimeError:
             try:
