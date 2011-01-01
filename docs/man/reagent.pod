@@ -230,6 +230,10 @@ enable the specified repository
 
 disable the specified repository
 
+=item B<package-dep-check <repo> [atoms]>
+
+check packages in repository for missing dependencies
+
 =item B<package-dep <repo> [atoms]>
 
 handle packages dependencies
