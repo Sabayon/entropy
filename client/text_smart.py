@@ -211,7 +211,6 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
     print_info(brown(" %s: " % (_("Using branch"),))+bold(branch))
 
     Spm = entropy_client.Spm()
-    Qa = entropy_client.QA()
 
     # analyze files
     for tbz2 in mytbz2s:
@@ -252,7 +251,6 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         mydbconn.initializeRepository()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
-        Qa.test_missing_dependencies([idpackage], mydbconn)
         mydbconn.close()
         entropy.tools.aggregate_entropy_metadata(etptbz2path, dbpath)
         os.remove(dbpath)

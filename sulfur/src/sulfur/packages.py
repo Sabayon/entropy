@@ -284,9 +284,10 @@ class Queue:
                 mydependencies = set()
                 myQA = self.Entropy.QA()
                 for pkg in q_pkgs:
-                    mydeps = myQA.get_deep_dependency_list(
-                        self.Entropy.installed_repository(), pkg.matched_atom[0])
-                    mydependencies |= set([x for x in mydeps if x in xlist])
+                    pkg_match = (pkg.matched_atom[0], etpConst['clientdbid'])
+                    mydeps = myQA.get_deep_dependency_list(self.Entropy,
+                        pkg_match, match_repo = (etpConst['clientdbid'],))
+                    mydependencies |= set([x for x, y in mydeps if x in xlist])
                 # what are in queue?
                 mylist = set(xlist)
                 mylist -= mydepends

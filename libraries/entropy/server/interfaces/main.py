@@ -2054,8 +2054,8 @@ class ServerPackagesHandlingMixin:
 
             # do we want to pull in also package dependencies?
             if pull_deps:
-                dep_matches = [(x, repo) for x in \
-                    my_qa.get_deep_dependency_list(dbconn, idpackage)]
+                dep_matches = my_qa.get_deep_dependency_list(self,
+                    (idpackage, repo), match_repo = (repo,))
                 revdep_matches = self.get_reverse_queue(dep_matches,
                     system_packages = False)
                 dep_matches += [x for x in revdep_matches if x not in \
@@ -4357,16 +4357,22 @@ class ServerRepositoryMixin:
         pkg_blacklisted_deps = get_blacklisted_deps(
             package_ids_added, dbconn)
         pkg_blacklisted_deps |= repo_blacklist
-        my_qa.test_missing_dependencies(
-            package_ids_added,
-            dbconn,
-            ask = ask,
-            repo = repo,
-            self_check = True,
-            black_list = pkg_blacklisted_deps,
+        # make sure all data is committed at this point
+        dbconn.commit()
+
+        # missing dependencies check
+        missing_deps = my_qa.test_missing_dependencies(
+            self, [(x, repo) for x in package_ids_added], ask = ask,
+            self_check = True, black_list = pkg_blacklisted_deps,
             black_list_adder = \
-                self._add_missing_dependencies_blacklist_items
-        )
+                self._add_missing_dependencies_blacklist_items)
+        for (pkg_id, pkg_repo), missing in missing_deps.items():
+            # pkg_repo is always the same...
+            dbconn.insertDependencies(pkg_id, missing)
+        if missing_deps:
+            # save changes here again
+            dbconn.commit()
+
         my_qa.test_reverse_dependencies_linking(package_ids_added, dbconn,
             repo = repo)
 

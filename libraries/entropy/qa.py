@@ -252,65 +252,55 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         )
         return broken
 
-    def test_missing_dependencies(self, idpackages, dbconn, ask = True,
-            self_check = False, repo = None, black_list = None,
-            black_list_adder = None):
+    def test_missing_dependencies(self, entropy_client, package_matches,
+        ask = True, self_check = False, black_list = None,
+        black_list_adder = None):
         """
-        Scan missing dependencies for the given idpackages on the given
-        entropy.db.EntropyRepository "dbconn" instance. In addition, this method
-        will allow the user through OutputInterface to interactively add (if ask
-        == True) missing dependencies or blacklist them.
+        Scan given package matches looking for missing dependencies (checking
+        ELF metadata).
 
-        @param idpackages: list of valid idpackages (int) on the given dbconn
-            argument passed
-        @type idpackages: list
-        @param dbconn: entropy.db.EntropyRepository instance containing the
-            given idpackages list
-        @type dbconn: entropy.db.EntropyRepository
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client based
+            instance object
+        @param package_matches: list of entropy package matches tuples
+            (package id, repo id)
+        @type package_matches: list
         @keyword ask: request user interaction when finding missing dependencies
         @type ask: bool
         @keyword self_check: also introspect inside the complaining package
             (to avoid reporting false positives when circular dependencies
             occur)
         @type self_check: bool
-        @keyword repo: repository identifier of the given
-            entropy.db.EntropyRepository dbconn instance.
-            It is used to correctly place blacklisted items.
-        @type repo: string
         @keyword black_list: list of dependencies already blacklisted.
         @type black_list: set
         @keyword black_list_adder: callable function that accepts two arguments:
             (1) list (set) of new dependencies to blacklist for the
             given (2) repository identifier.
         @type black_list_adder: callable
-        @return: tainting status, if any dependency has been added
-        @rtype: bool
+        @return: dict of missing dependencies to add, key is package match,
+            value is the dependency list
+        @rtype: dict
         """
-        if repo is None:
-            repo = self._settings['repositories']['default_repository']
 
         if not isinstance(black_list, set):
             black_list = set()
 
-        taint = False
         scan_msg = blue(_("Now searching for missing RDEPENDs"))
         self.output(
-            "[repo:%s] %s..." % (
-                        darkgreen(repo),
-                        scan_msg,
-                    ),
+            "%s..." % (scan_msg,),
             importance = 1,
             level = "info",
             header = red(" @@ ")
         )
         scan_msg = blue(_("scanning for missing RDEPENDs"))
         count = 0
-        maxcount = len(idpackages)
-        for idpackage in idpackages:
+        maxcount = len(package_matches)
+        missing_map = {}
+
+        for package_id, repo in package_matches:
             count += 1
-            atom = dbconn.retrieveAtom(idpackage)
-            if not atom:
-                continue
+            dbconn = entropy_client.open_repository(repo)
+            atom = dbconn.retrieveAtom(package_id)
             self.output(
                 "[repo:%s] %s: %s" % (
                             darkgreen(repo),
@@ -324,8 +314,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 count = (count, maxcount,)
             )
 
-            missing_extended, missing = self._get_missing_rdepends(dbconn,
-                idpackage, self_check = self_check)
+            missing_extended, missing = self._get_missing_rdepends(
+                entropy_client, (package_id, repo),
+                self_check = self_check)
+
             old_missing = missing.copy()
             missing -= black_list
             for item in list(missing_extended.keys()):
@@ -417,14 +409,13 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         black_list_adder(new_blacklist, repo = repo)
                     missing = newmissing
             if missing:
-                taint = True
-                dbconn.insertDependencies(idpackage, missing)
-                dbconn.commit()
+                obj = missing_map.setdefault((package_id, repo), [])
+                obj.extend([x for x in missing if x not in obj])
                 self.output(
                     "[repo:%s] %s: %s" % (
                         darkgreen(repo),
                         darkgreen(atom),
-                        blue(_("missing dependencies added")),
+                        blue(_("missing dependencies saved")),
                     ),
                     importance = 1,
                     level = "info",
@@ -434,8 +425,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             # check for untracked missing sonames (using less reliable
             # ldd check, but just warn)
-            missing_sonames = self._get_unresolved_sonames(dbconn,
-                idpackage)
+            missing_sonames = self._get_unresolved_sonames(entropy_client,
+                (package_id, repo))
             if missing_sonames:
                 self.output(
                     "[repo:%s] %s: %s %s:" % (
@@ -481,7 +472,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         header = brown("     # ")
                     )
 
-        return taint
+        return missing_map
 
     def test_shared_objects(self, dbconn, broken_symbols = False,
         task_bombing_func = None, self_dir_check = True,
@@ -600,18 +591,21 @@ class QAInterface(TextInterface, EntropyPluginStore):
             else:
                 broken_libs_mask_regexp.append(reg_lib)
 
-        ldpaths = set(entropy.tools.collect_linker_paths())
-        ldpaths.update(entropy.tools.collect_paths())
+        ldpaths = entropy.tools.collect_linker_paths()
+        ldpaths += [x for x in entropy.tools.collect_paths() if \
+            x not in ldpaths]
 
         # some crappy packages put shit here too
-        ldpaths.update(self._settings['extra_ldpaths'])
+        ldpaths += [x for x in self._settings['extra_ldpaths'] if \
+            x not in ldpaths]
 
         # remove duplicated dirs (due to symlinks) to speed up scanning
         for real_dir in list(reverse_symlink_map.keys()):
             syms = reverse_symlink_map[real_dir]
             for sym in syms:
                 if sym in ldpaths:
-                    ldpaths.discard(real_dir)
+                    while (real_dir in ldpaths):
+                        ldpaths.remove(real_dir)
                     self.output(
                         "%s: %s, %s: %s" % (
                             brown(_("discarding directory")),
@@ -918,7 +912,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return broken_libs
 
-    def _get_unresolved_sonames(self, entropy_repository, package_id,
+    def _get_unresolved_sonames(self, entropy_client, package_match,
         content_root = None):
         """
         This runtime dependencies function uses ldd to determine what missing
@@ -932,11 +926,11 @@ class QAInterface(TextInterface, EntropyPluginStore):
         depends on the environment (ld.so.conf and LD*). So, just use it to
         warn developers or users.
 
-        @param entropy_repository: entropy.db.EntropyRepository instance from
-            which package_id argument belongs
-        @type entropy_repository: entropy.db.EntropyRepository instance
-        @param package_id: entropy.db.EntropyRepository package identifier
-        @type package_id: int
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client based
+            instance object
+        @param package_match: Entropy package match: (package id, repo id).
+        @type package_match: tuple
         @keyword content_root: alternative root directory containing content
         @return: dictionary composed by package ELF file path as key, and
             list (set) of missing sonames as value.
@@ -946,9 +940,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
             content_root = etpConst['systemroot']
         elif not content_root.endswith(os.path.sep):
             content_root += os.path.sep
-
-        pkg_dep_ids = self.get_deep_dependency_list(entropy_repository,
-            package_id)
 
         def is_valid_elf(path):
             if not os.path.lexists(path):
@@ -963,17 +954,24 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 return False
             return True
 
-        package_content = entropy_repository.retrieveContent(package_id)
+        pkg_matches = self.get_deep_dependency_list(entropy_client,
+            package_match)
+
         all_content = set()
-        for pkg_id in pkg_dep_ids:
-            all_content.update(entropy_repository.retrieveContent(pkg_id))
+        for pkg_id, pkg_repo in pkg_matches:
+            pkg_dbconn = entropy_client.open_repository(pkg_repo)
+            all_content.update(pkg_dbconn.retrieveContent(pkg_id))
+
+        package_id, repo_id = package_match
+        entropy_repository = entropy_client.open_repository(repo_id)
+        package_content = entropy_repository.retrieveContent(package_id)
         all_content.update(package_content)
 
         resolve_cache = {}
         unresolved_sonames = {}
         content = [os.path.normpath(content_root + x) for x in package_content]
         content_dirs = set((x for x in content if os.path.isdir(x)))
-        elf_files = list(filter(is_valid_elf, content))
+        elf_files = filter(is_valid_elf, content)
 
         def soname_in_package_content(soname):
             for content_dir in content_dirs:
@@ -1008,21 +1006,21 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return unresolved_sonames
 
-    def _get_missing_rdepends(self, dbconn, idpackage, self_check = False):
+    def _get_missing_rdepends(self, entropy_client, package_match,
+        self_check = False):
         """
         Service method able to determine whether dependencies are missing
         on the given idpackage (belonging to the given
         entropy.db.EntropyRepository "dbconn" argument) using shared objects
         linking information between packages.
 
-        @todo: swap the first two arguments?
-        @param dbconn: entropy.db.EntropyRepository instance from which idpackage
-            argument belongs
-        @type dbconn: entropy.db.EntropyRepository instance
-        @param idpackage: entropy.db.EntropyRepository package identifier
-        @type idpackage: int
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client base
+            class object
+        @param package_match: Entropy package match: (package id, repo id).
+        @type package_match: tuple
         @keyword self_check: also check inside the given package
-            (idpackage) itself
+            (package id) itself
         @type self_check: bool
         @return: tuple of length 2, composed by a dictionary with the
             following structure:
@@ -1031,19 +1029,45 @@ class QAInterface(TextInterface, EntropyPluginStore):
             set([list of missing dependencies])
         @rtype: tuple
         """
+        package_id, repo = package_match
+        repos = list(entropy_client.repositories())
+        # max priority to package_match repo
+        repos.remove(repo)
+        repos.insert(0, repo)
+        dbconn = entropy_client.open_repository(repo)
+
         rdepends = {}
         rdepends_plain = set()
-        neededs = dbconn.retrieveNeeded(idpackage, extended = True)
-        ldpaths = set(entropy.tools.collect_linker_paths())
+        neededs = dbconn.retrieveNeeded(package_id, extended = True)
+        ldpaths = entropy.tools.collect_linker_paths()
         deps_content = set()
-        dependencies = self.get_deep_dependency_list(dbconn, idpackage,
-            atoms = True)
+        dependencies = self.get_deep_dependency_list(entropy_client,
+            package_match, atoms = True)
         scope_cache = set()
 
-        def update_depscontent(mycontent, dbconn, ldpaths):
+        def is_soname_available(soname):
+            for p_repo in repos:
+                p_dbconn = entropy_client.open_repository(p_repo)
+                if p_dbconn.isNeededAvailable(soname) > 0:
+                    return True
+            return False
+
+        def resolve_soname(soname, elfclass):
+            for p_repo in repos:
+                p_dbconn = entropy_client.open_repository(p_repo)
+                data_solved = p_dbconn.resolveNeeded(soname,
+                    elfclass = elfclass, extended = True)
+                if data_solved:
+                    # found !
+                    return [(pkg_id, p_repo, path) for pkg_id, path in \
+                        data_solved]
+            # nothing found
+            return []
+
+        def update_depscontent(mycontent):
             return set( \
                 [x for x in mycontent if os.path.dirname(x) in ldpaths \
-                and (dbconn.isNeededAvailable(os.path.basename(x)) > 0) ])
+                and is_soname_available(os.path.basename(x))])
 
         def is_in_content(myneeded, content):
             for item in content:
@@ -1053,81 +1077,98 @@ class QAInterface(TextInterface, EntropyPluginStore):
             return False
 
         for dependency in dependencies:
-            match = dbconn.atomMatch(dependency)
-            if match[0] != -1:
-                mycontent = dbconn.retrieveContent(match[0])
-                deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
-                key, slot = dbconn.retrieveKeySlot(match[0])
+            pkg_id, repo_id = entropy_client.atom_match(dependency)
+            if pkg_id != -1:
+                mydbconn = entropy_client.open_repository(repo_id)
+                deps_content |= update_depscontent(
+                    mydbconn.retrieveContent(pkg_id))
+                key, slot = mydbconn.retrieveKeySlot(pkg_id)
                 scope_cache.add((key, slot))
 
-        key, slot = dbconn.retrieveKeySlot(idpackage)
-        mycontent = dbconn.retrieveContent(idpackage)
-        deps_content |= update_depscontent(mycontent, dbconn, ldpaths)
+        key, slot = dbconn.retrieveKeySlot(package_id)
+        pkg_content = dbconn.retrieveContent(package_id)
+        deps_content |= update_depscontent(pkg_content)
         scope_cache.add((key, slot))
 
-        idpackages_cache = set()
-        idpackage_map = {}
-        idpackage_map_reverse = {}
+        packages_cache = set()
+        package_map = {}
+        package_map_reverse = {}
+
         for needed, elfclass in neededs:
-            data_solved = dbconn.resolveNeeded(needed, elfclass = elfclass,
-                extended = True)
+            data_solved = resolve_soname(needed, elfclass)
             data_size = len(data_solved)
-            data_solved = set([x for x in data_solved if x[0] \
-                not in idpackages_cache])
+            data_solved = [(pkg_id, pkg_repo, path) for \
+                pkg_id, pkg_repo, path in data_solved if (pkg_id, pkg_repo)
+                    not in packages_cache]
             if not data_solved or (data_size != len(data_solved)):
                 continue
 
             if self_check:
-                if is_in_content(needed, mycontent):
+                if is_in_content(needed, pkg_content):
                     continue
 
             found = False
-            for data in data_solved:
-                if data[1] in deps_content:
+            for pkg_id, pkg_repo, path in data_solved:
+                if path in deps_content:
                     found = True
                     break
+
             if not found:
-                for data in data_solved:
-                    r_idpackage = data[0]
-                    key, slot = dbconn.retrieveKeySlot(r_idpackage)
-                    if (key, slot) not in scope_cache:
-                        if not dbconn.isSystemPackage(r_idpackage):
-                            if (needed, elfclass) not in rdepends:
-                                rdepends[(needed, elfclass)] = set()
-                            if (needed, elfclass) not in idpackage_map:
-                                idpackage_map[(needed, elfclass)] = set()
-                            keyslot = "%s%s%s" % (key,
-                                etpConst['entropyslotprefix'], slot,)
-                            obj = idpackage_map_reverse.setdefault(
-                                keyslot, set())
-                            obj.add((needed, elfclass,))
-                            rdepends[(needed, elfclass)].add(keyslot)
-                            idpackage_map[(needed, elfclass)].add(r_idpackage)
-                            rdepends_plain.add(keyslot)
-                        idpackages_cache.add(r_idpackage)
+
+                for pkg_id, pkg_repo, path in data_solved:
+                    pkg_dbconn = entropy_client.open_repository(pkg_repo)
+                    key, slot = pkg_dbconn.retrieveKeySlot(pkg_id)
+                    if (key, slot) in scope_cache:
+                        continue
+                    if pkg_dbconn.isSystemPackage(pkg_id):
+                        # ignore system package missing dep if this is a
+                        # system package, it means that further missing
+                        # deps detection will be anyway wrong.
+                        # !!! this fixes improper libgcc_s.so binding with
+                        # gnat-gcc on amd64.
+                        break
+
+                    map_key = (needed, elfclass)
+                    keyslot = "%s%s%s" % (key, etpConst['entropyslotprefix'],
+                        slot,)
+
+                    obj = rdepends.setdefault(map_key, set())
+                    obj.add(keyslot)
+
+                    obj = package_map_reverse.setdefault(keyslot, set())
+                    obj.add(map_key)
+
+                    pkg_match = (pkg_id, pkg_repo)
+                    obj = package_map.setdefault(map_key, set())
+                    obj.add(pkg_match)
+
+                    rdepends_plain.add(keyslot)
+                    packages_cache.add(pkg_match)
 
         # now reduce dependencies
 
         r_deplist = set()
-        for key in idpackage_map:
-            r_idpackages = idpackage_map.get(key)
-            for r_idpackage in r_idpackages:
-                r_deplist |= dbconn.retrieveDependencies(r_idpackage,
+        for key, package_matches in package_map.items():
+            for package_match in package_matches:
+                pkg_id, pkg_repo = package_match
+                pkg_dbconn = entropy_client.open_repository(pkg_repo)
+                r_deplist |= pkg_dbconn.retrieveDependencies(pkg_id,
                     exclude_deptypes = \
                         [etpConst['dependency_type_ids']['bdepend_id']])
 
         r_keyslots = set()
         for r_dep in r_deplist:
-            m_idpackage, m_rc = dbconn.atomMatch(r_dep)
-            if m_rc != 0:
+            pkg_id, pkg_repo = entropy_client.atom_match(r_dep)
+            if pkg_id == -1:
                 continue
-            keyslot = dbconn.retrieveKeySlotAggregated(m_idpackage)
+            pkg_dbconn = entropy_client.open_repository(pkg_repo)
+            keyslot = pkg_dbconn.retrieveKeySlotAggregated(pkg_id)
             if keyslot in rdepends_plain:
                 r_keyslots.add(keyslot)
 
         rdepends_plain -= r_keyslots
         for r_keyslot in r_keyslots:
-            keys = [x for x in idpackage_map_reverse.get(keyslot, set()) if \
+            keys = [x for x in package_map_reverse.get(keyslot, set()) if \
                 x in rdepends]
             for key in keys:
                 rdepends[key].discard(r_keyslot)
@@ -1136,33 +1177,39 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return rdepends, rdepends_plain
 
-    def get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
+    def get_deep_dependency_list(self, entropy_client, package_match,
+        atoms = False, match_repo = None):
         """
-        Service method which returns a complete, expanded list of dependencies
-        for the given idpackage on the given entropy.db.EntropyRepository
-        "dbconn" instance.
+        Service method which returns a complete, expanded list of dependencies.
 
         NOTE: this method will only return dependencies that are NOT build
             dependencies.
 
-        @param dbconn: entropy.db.EntropyRepository instance which contains
-            the given idpackage item.
-        @type dbconn: entropy.db.EntropyRepository instance
-        @param idpackage: Entropy database package key
-        @type idpackage: int
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client based
+            instance object
+        @param package_match: Entropy package match (package id, repo id)
+        @type package_match: tuple
         @keyword atoms: !! return type modifier !! , make method returning
             a list of atom strings instead of list of db match tuples.
         @type atoms: bool
-        @return: list of dependencies in form of matching tuple list
-            set([123,321,...idpackage,]) or plain dependency list (if
-            atom == True -- set([atom_string1, atom_string2, atom_string3])
-        @rtype: list or set
+        @keyword match_repo: list of repositories to match, if None, only
+            repository given in package_match will be used for matching.
+        @param match_repo: list
+        @return: list of package matches (of dependencies) or plain dependency
+            string list if "atom" is True
+        @rtype: set
         """
+        package_id, repo = package_match
+        dbconn = entropy_client.open_repository(repo)
+        if match_repo is None:
+            match_repo = (repo,)
+
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         mybuffer = Lifo()
-        matchcache = set()
         depcache = set()
-        mydeps = dbconn.retrieveDependencies(idpackage,
+        matchcache = set()
+        mydeps = dbconn.retrieveDependencies(package_id,
             exclude_deptypes = excluded_dep_types)
         for mydep in mydeps:
             mybuffer.push(mydep)
@@ -1171,6 +1218,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         except ValueError:
             mydep = None # stack empty
 
+        result = set()
         while mydep:
 
             if mydep in depcache:
@@ -1180,14 +1228,26 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     break # stack empty
                 continue
 
-            my_idpackage, my_rc = dbconn.atomMatch(mydep)
-            if atoms:
-                matchcache.add(mydep)
-            else:
-                matchcache.add(my_idpackage)
+            pkg_id, pkg_repo = entropy_client.atom_match(mydep,
+                match_repo = match_repo)
 
-            if my_idpackage != -1:
-                owndeps = dbconn.retrieveDependencies(my_idpackage,
+            match = (pkg_id, pkg_repo)
+            if match in matchcache:
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
+                continue
+            matchcache.add(match)
+
+            if atoms:
+                result.add(mydep)
+            else:
+                result.add(match)
+
+            if pkg_id != -1:
+                pkg_dbconn = entropy_client.open_repository(pkg_repo)
+                owndeps = pkg_dbconn.retrieveDependencies(pkg_id,
                     exclude_deptypes = excluded_dep_types)
                 for owndep in owndeps:
                     mybuffer.push(owndep)
@@ -1198,9 +1258,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             except ValueError:
                 break # stack empty
 
-        # always discard -1 in set
-        matchcache.discard(-1)
-        return matchcache
+        return result
 
     def __analyze_package_edb(self, pkg_path):
         """
