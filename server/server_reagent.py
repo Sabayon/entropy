@@ -172,7 +172,8 @@ def _package_dep_check(entropy_server, args):
         print_error(darkred(" !!! ")+red(_("No packages selected.")))
         return 2
 
-    entropy_server.missing_runtime_dependencies_test(pkg_matches)
+    entropy_server.missing_runtime_dependencies_test(pkg_matches,
+        bump_packages = True)
     return 0
 
 def _package_dep(entropy_server, args):

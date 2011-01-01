@@ -4329,13 +4329,20 @@ class ServerRepositoryMixin:
 
         return downloadurl
 
-    def missing_runtime_dependencies_test(self, package_matches, ask = True):
+    def missing_runtime_dependencies_test(self, package_matches, ask = True,
+        bump_packages = False):
         """
         Use Entropy QA interface to check package matches against missing
         runtime dependencies, adding them.
 
         @param package_matches:
         @type package_matches: list
+        @keyword ask: if missing runtime dependencies should be validated
+            interactively
+        @type ask: bool
+        @keyword bump_packages: True, if packages should be bumped (revision
+            bumped)
+        @type bump_packages: bool
         """
         blacklisted_deps = \
             self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
@@ -4381,6 +4388,20 @@ class ServerRepositoryMixin:
                     # pkg_repo is always the same...
                     raise AssertionError(
                         "pkg_repo and missing_pkg_repo must be equal")
+
+                if bump_packages:
+                    # in this case, a new package should be generated, with
+                    # bumped revision
+                    pkg_data = dbconn.getPackageData(pkg_id)
+                    # also bump injected packages properly
+                    original_injected = pkg_data['injected']
+                    pkg_data['injected'] = False
+                    pkg_id, revision, pkg_data = dbconn.handlePackage(pkg_data)
+                    if original_injected:
+                        dbconn.setInjected(pkg_id)
+                    # make sure that info have been written to disk
+                    dbconn.commit()
+
                 dbconn.insertDependencies(pkg_id, missing)
 
             if missing_deps:
