@@ -137,6 +137,44 @@ def _package_tag(entropy_server, args):
         repo = repo)
     return status
 
+def _package_dep_check(entropy_server, args):
+
+    if len(args) < 1:
+        print_error(darkred(" !!! ")+red(_("Invalid syntax.")))
+        return 1
+    repo = args[0]
+
+    sys_settings_plugin_id = \
+        etpConst['system_settings_plugins_ids']['server_plugin']
+    srv_set = SYS_SET[sys_settings_plugin_id]['server']
+    if repo not in srv_set['repositories']:
+        print_error(darkred(" !!! ")+red(_("No valid repository specified.")))
+        return 3
+
+    atoms = args[1:]
+    if not atoms:
+        pkg_ids = entropy_server.open_repository(repo).listAllPackageIds()
+        pkg_matches = [(x, repo) for x in pkg_ids]
+    else:
+        pkg_matches = []
+        for package in atoms:
+            match = entropy_server.atom_match(package, match_repo = (repo,))
+            if match[1] == repo:
+                pkg_matches.append(match)
+            else:
+                print_warning(  brown(" * ") + \
+                    red("%s: " % (_("Cannot match"),) )+bold(package) + \
+                    red(" %s " % (_("in"),) )+bold(repo) + \
+                        red(" %s" % (_("repository"),) )
+                )
+
+    if not pkg_matches:
+        print_error(darkred(" !!! ")+red(_("No packages selected.")))
+        return 2
+
+    entropy_server.missing_runtime_dependencies_test(pkg_matches)
+    return 0
+
 def _package_dep(entropy_server, args):
 
     if len(args) < 2:
@@ -165,6 +203,7 @@ def _package_dep(entropy_server, args):
                     red(" %s" % (_("repository"),) )
             )
     if not idpackages:
+        print_error(darkred(" !!! ")+red(_("No packages selected.")))
         return 2
     dbconn = entropy_server.open_server_repository(repo = repo,
         just_reading = True)
@@ -650,6 +689,9 @@ def _repositories(entropy_server, options):
     elif cmd == "default":
         entropy_server.switch_default_repository(repoid, save = True)
         return 0
+
+    elif cmd == "package-dep-check":
+        return _package_dep_check(entropy_server, myopts)
 
     elif cmd == "package-tag":
         return _package_tag(entropy_server, myopts)
