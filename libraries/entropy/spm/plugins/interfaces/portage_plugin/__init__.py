@@ -4280,7 +4280,7 @@ class PortagePlugin(SpmPlugin):
 
         provided_libs = set()
         ldpaths = entropy.tools.collect_linker_paths()
-        for obj, ftype in list(content.items()):
+        for obj, ftype in content.items():
 
             if ftype == "dir":
                 continue
