@@ -1231,10 +1231,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             if atoms:
                 result.add(mydep)
-            else:
-                result.add(match)
 
             if pkg_id != -1:
+                if not atoms:
+                    result.add(match)
                 pkg_dbconn = entropy_client.open_repository(pkg_repo)
                 owndeps = pkg_dbconn.retrieveDependencies(pkg_id,
                     exclude_deptypes = excluded_dep_types)
