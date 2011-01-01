@@ -2329,8 +2329,8 @@ class ServerPackagesHandlingMixin:
         todbconn.clean()
 
         if package_ids_added:
-            self._add_packages_qa_libtests(package_ids_added, to_repo,
-                ask = ask)
+            self._add_packages_qa_libtests(
+                [(x, to_repo) for x in package_ids_added], ask = ask)
             # just run this to make dev aware
             self.dependencies_test(to_repo)
 
@@ -4329,17 +4329,16 @@ class ServerRepositoryMixin:
 
         return downloadurl
 
-    def _add_packages_qa_libtests(self, package_ids_added, repo, ask = True):
+    def missing_runtime_dependencies_test(self, package_matches, ask = True):
         """
-        Execute some generic QA checks for broken libraries on packages added
-        to repository.
+        Use Entropy QA interface to check package matches against missing
+        runtime dependencies, adding them.
+
+        @param package_matches:
+        @type package_matches: list
         """
         blacklisted_deps = \
             self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['dep_blacklist']
-
-        # XXX these can be optimized
-        repo_blacklist = self._get_missing_dependencies_blacklist(
-            repo = repo)
         my_qa = self.QA()
 
         def get_blacklisted_deps(package_ids, repo_db):
@@ -4352,29 +4351,50 @@ class ServerRepositoryMixin:
                         break
             return my_blacklist
 
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
-        pkg_blacklisted_deps = get_blacklisted_deps(
-            package_ids_added, dbconn)
-        pkg_blacklisted_deps |= repo_blacklist
-        # make sure all data is committed at this point
-        dbconn.commit()
+        pkg_map = {}
+        for pkg_id, pkg_repo in package_matches:
+            obj = pkg_map.setdefault(pkg_repo, [])
+            obj.append(pkg_id)
 
-        # missing dependencies check
-        missing_deps = my_qa.test_missing_dependencies(
-            self, [(x, repo) for x in package_ids_added], ask = ask,
-            self_check = True, black_list = pkg_blacklisted_deps,
-            black_list_adder = \
-                self._add_missing_dependencies_blacklist_items)
-        for (pkg_id, pkg_repo), missing in missing_deps.items():
-            # pkg_repo is always the same...
-            dbconn.insertDependencies(pkg_id, missing)
-        if missing_deps:
-            # save changes here again
-            dbconn.commit()
+        for pkg_repo, package_ids in pkg_map.items():
 
-        my_qa.test_reverse_dependencies_linking(package_ids_added, dbconn,
-            repo = repo)
+            repo_blacklist = self._get_missing_dependencies_blacklist(
+                repo = pkg_repo)
+
+            dbconn = self.open_server_repository(read_only = False,
+                no_upload = True, repo = pkg_repo)
+            pkg_blacklisted_deps = get_blacklisted_deps(package_ids, dbconn)
+            pkg_blacklisted_deps |= repo_blacklist
+
+            # missing dependencies check
+            missing_deps = my_qa.test_missing_dependencies(
+                self, [(x, pkg_repo) for x in package_ids], ask = ask,
+                self_check = True, black_list = pkg_blacklisted_deps,
+                black_list_adder = \
+                    self._add_missing_dependencies_blacklist_items)
+
+            for (pkg_id, missing_pkg_repo), missing in missing_deps.items():
+                if pkg_repo != missing_pkg_repo:
+                    # with current API, this never happens!
+                    # but since this is a critical region, better being
+                    # safe than sorry.
+                    # pkg_repo is always the same...
+                    raise AssertionError(
+                        "pkg_repo and missing_pkg_repo must be equal")
+                dbconn.insertDependencies(pkg_id, missing)
+
+            if missing_deps:
+                # save changes here again
+                dbconn.commit()
+
+    def _add_packages_qa_libtests(self, package_matches, ask = True):
+        """
+        Execute some generic QA checks for broken libraries on packages added
+        to repository.
+        """
+        self.missing_runtime_dependencies_test(package_matches, ask = ask)
+        my_qa = self.QA()
+        my_qa.test_reverse_dependencies_linking(self, package_matches)
 
     def add_packages_to_repository(self, packages_data, ask = True,
         repo = None):
@@ -4426,8 +4446,8 @@ class ServerRepositoryMixin:
                 )
                 # reinit librarypathsidpackage table
                 if idpackages_added:
-                    self._add_packages_qa_libtests(idpackages_added, repo,
-                        ask = ask)
+                    self._add_packages_qa_libtests(
+                        [(x, repo) for x in idpackages_added], ask = ask)
                 if to_be_injected:
                     self._inject_database_into_packages(to_be_injected,
                         repo = repo)
@@ -4441,8 +4461,8 @@ class ServerRepositoryMixin:
             dbconn.isPackageIdAvailable(x)))
 
         if idpackages_added:
-            self._add_packages_qa_libtests(idpackages_added, repo,
-                ask = ask)
+            self._add_packages_qa_libtests(
+                [(x, repo) for x in idpackages_added], ask = ask)
 
         # inject database into packages
         self._inject_database_into_packages(to_be_injected, repo = repo)

@@ -136,38 +136,28 @@ class QAInterface(TextInterface, EntropyPluginStore):
             raise AttributeError("Specify a QAInterfacePlugin based class")
         return EntropyPluginStore.add_plugin(self, plugin.get_id(), plugin)
 
-    def test_reverse_dependencies_linking(self, idpackages, dbconn,
-        repo = None):
+    def test_reverse_dependencies_linking(self, entropy_client,
+        package_matches):
         """
-        Scan for broken shared objects linking for the given idpackages on
-        the given entropy.db.EntropyRepository based instance.
+        Scan for broken shared objects linking.
         Note: this only works for packages actually installed on the running
         system.
         It is used by Entropy Server during packages injection into database
         to warn about potentially broken packages.
 
-        @param idpackages: list of valid idpackages (int) on the given dbconn
-            argument passed
-        @type idpackages: list
-        @param dbconn: entropy.db.EntropyRepository instance containing the
-            given idpackages list
-        @type dbconn: entropy.db.EntropyRepository
-        @keyword repo: repository identifer from which dbconn and idpackages
-            arguments belong. Note: at the moment it's only used for output
-            purposes.
-        @type repo: string
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client based
+            instance object
+        @param package_matches: list of entropy package matches tuples
+            (package id, repo id)
+        @type package_matches: list
         @return: True if any breakage is found, otherwise False
         @rtype: bool
         """
-        if repo is None:
-            repo = self._settings['repositories']['default_repository']
 
         scan_msg = blue(_("Now searching for broken reverse dependencies"))
         self.output(
-            "[repo:%s] %s..." % (
-                darkgreen(repo),
-                scan_msg,
-            ),
+            "%s..." % (scan_msg,),
             importance = 1,
             level = "info",
             header = red(" @@ ")
@@ -176,18 +166,18 @@ class QAInterface(TextInterface, EntropyPluginStore):
         broken = False
 
         count = 0
-        maxcount = len(idpackages)
-        # excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        for idpackage in idpackages:
+        maxcount = len(package_matches)
+        for pkg_id, pkg_repo in package_matches:
             count += 1
-            atom = dbconn.retrieveAtom(idpackage)
+            dbconn = entropy_client.open_repository(pkg_repo)
+            atom = dbconn.retrieveAtom(pkg_id)
             scan_msg = "%s, %s:" % (
                 blue(_("scanning for broken reverse dependencies")),
                 darkgreen(atom),
             )
             self.output(
                 "[repo:%s] %s" % (
-                    darkgreen(repo),
+                    darkgreen(pkg_repo),
                     scan_msg,
                 ),
                 importance = 1,
@@ -196,15 +186,14 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 back = True,
                 count = (count, maxcount,)
             )
-            mydepends = dbconn.retrieveReverseDependencies(idpackage)
-                #, exclude_deptypes = excluded_dep_types)
+            mydepends = dbconn.retrieveReverseDependencies(pkg_id)
             if not mydepends:
                 continue
             for mydepend in mydepends:
                 myatom = dbconn.retrieveAtom(mydepend)
                 self.output(
                     "[repo:%s] %s => %s" % (
-                        darkgreen(repo),
+                        darkgreen(pkg_repo),
                         darkgreen(atom),
                         darkred(myatom),
                     ),
@@ -221,7 +210,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 broken = True
                 self.output(
                     "[repo:%s] %s %s => %s" % (
-                        darkgreen(repo),
+                        darkgreen(pkg_repo),
                         darkgreen(atom),
                         darkred(myatom),
                         bold(_("broken libraries detected")),
