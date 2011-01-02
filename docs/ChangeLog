@@ -1,3 +1,171 @@
+commit 1613fb420a0455c77971c0f2f00d8da2cccbdb5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:45:34 2011 +0100
+
+    Release Entropy 1.0_alpha1
+
+commit 9c8753ada818f9279e76d29019a4739602bef49e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:40:13 2011 +0100
+
+    [todo] update TODO
+
+commit 15675cdc1a861d3b77243d37943b6e60c67444a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:36:06 2011 +0100
+
+    [entropy.qa] rename "dbconn" argument of test_shared_objects to "entropy_repository"
+
+commit 62f691819b87143830c866d5cadb0a65d616c153
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:31:36 2011 +0100
+
+    [todo] update TODO
+
+commit 4b475778824ba0abec5a4e939fa785e8bd63e4d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:30:45 2011 +0100
+
+    [entropy.spm] PortagePlugin: add note inside _extract_pkg_metadata_provided_libs regarding metadata collection of injected packages
+
+commit d5028d33227469a53433ae111094cebefdf7d635
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:30:00 2011 +0100
+
+    [entropy.server] add note regarding missing_runtime_dependencies_test behaviour with in-package metadata
+
+commit e8ecb55b6a61ebcd722e9133fb70fdcc086aab99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 18:15:48 2011 +0100
+
+    [entropy.qa] fix regression in get_deep_dependency_list(), only add valid matches to result
+
+commit 4e8bcf07d7e3ffd2414113cb4350fc4b6006d748
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 18:02:54 2011 +0100
+
+    [docs/man] update man page source file for reagent
+
+commit fc11710aa7a96dd26c77c2cd4f9be558a68a8653
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 18:01:48 2011 +0100
+
+    [entropy.server] missing_runtime_dependencies_test: add "bump packages" feature
+    
+    Packages should be bumped if metadata changes, this applies to
+    calls coming for old packages already available in online repositories
+
+commit bf947d355ba7e6664732425ea9ece84c882a1ee2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 17:22:44 2011 +0100
+
+    [reagent,equo] implement "reagent repo package-dep-check" tool
+    
+    This tool helps QA checking packages against missing runtime dependencies
+
+commit 4c37ad3e2223d58edb49c42ac79bd5127b3112e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 17:17:10 2011 +0100
+
+    [entropy.qa,entropy.server] migrate missing_runtime_dependencies_test() and add missing_runtime_dependencies_test()
+    
+    Migrate entropy.qa missing_runtime_dependencies_test() to multi-repository support.
+    Provide public API for running missing runtime dependencies verification in entropy.server,
+    add missing_runtime_dependencies_test()
+
+commit 2384985fd84e3746b7980b4d45e4bd868d10ff84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 16:23:34 2011 +0100
+
+    [entropy.qa] rework QA functions to add multi-repository functionalities, break API
+
+commit 6446b40b7eb01ec8b3062d9130fbf3cefeb4dcc0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 1 16:16:26 2011 +0100
+
+    [entropy.spm] PortagePlugin: trivial code update
+
+commit 356f5025dada37a8a75e4740e8e9b5db9b6ab29c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 31 16:55:44 2010 +0100
+
+    [entropy.dump] make dumpobj execution atomic
+
+commit 5983cae3e1c872ce0008e73d5bd298e005200267
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 28 11:41:09 2010 +0100
+
+    [entropy.client.interfaces.dep] add automatic conflicts detection, when package metadata doesn't list them.
+    
+    It can happen that some installed packages conflict against newly
+    available packages, but the latter doesn't list the former as
+    conflict, resulting in unforeseen missing conflict information.
+    This is generally a QA issue in the package metadata, but it's better
+    to try to cope with it, even if a bit dangerous (effects of this
+    "auto-conflict" feature have to be tested in real world). For this
+    reason, one can override this feature by setting the env var:
+    ETP_DISABLE_AUTOCONFLICT=1 as well as turning off caching that could
+    compromise the results: ETP_NOCACHE=1
+
+commit 6a302f2c6de4dc44a56373729d51e38b18e26699
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 28 11:40:46 2010 +0100
+
+    [entropy.db] EntropyRepositoryBase: add searchConflict() function
+
+commit 5f52ded8822c48b8b80caf664608708a7454f477
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 30 18:32:25 2010 +0100
+
+    [entropy.client.interfaces.package] remove conflicts in proper order (not random)
+
+commit 2ec88d424868916933d473cce48e668da486b6f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Dec 30 12:15:56 2010 +0100
+
+    [equo] do not execute "equo config" when --pretend is passed
+
+commit f87d52786a0b2906eaffa85e0e5ce231f22987ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Dec 26 16:14:37 2010 +0100
+
+    [entropy.client.interfaces.package] if download fails 4 times (out of 5), try to download disabling the resume feature
+
+commit 71a7e59f647bc939ed04db95653d36fd1f5738f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 24 18:24:14 2010 +0100
+
+    [entropy.client.interfaces.package] implement edelta support in Entropy Client
+    
+    This commit implements working Entropy package delta download for
+    both single fetch and multifetch feature. It is fault tolerant and
+    the usual behaviour will be triggered as fallback.
+    Due to the memory requirements of bspatch, edelta won't be used for
+    files bigger than 10Mb (this is hardcoded inside entropy-pkgdelta-generator).
+    .edelta files are automatically generated by entropy-pkgdelta-generator,
+    inside a cron job on our servers. This feature is completely optional,
+    but can be easily implemented by 3rd parties by simply using the
+    generator app above, everything will be handled automatically (bsdiff
+    required).
+
+commit e33f19964d72aaf6ee9e93e8fe87fec29ec5df71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Dec 24 18:22:33 2010 +0100
+
+    [entropy.client.interfaces.package] fix checksum verification when multifetch is enabled, the if condition was never reached.
+
+commit f9860c838420c42e1615fbb84b889e9cf95f9aba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Dec 22 16:58:57 2010 +0100
+
+    [entropy.fetchers] fix file:// protocol handling, close bug 2037, thanks to a screwdriver, lol
+
+commit d7476ad095188080952d7e53463d68e2fe2ac0d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Dec 21 12:42:00 2010 +0100
+
+    Tagging Entropy version 0.99.51.20
+
 commit b0d5a87ffda97245fc959e745c7b3e84a3b3ad5e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Dec 21 12:41:52 2010 +0100
