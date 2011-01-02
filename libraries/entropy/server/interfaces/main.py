@@ -4334,6 +4334,8 @@ class ServerRepositoryMixin:
         """
         Use Entropy QA interface to check package matches against missing
         runtime dependencies, adding them.
+        NOTE: this method does not update metadata inside package. This can
+        change in future.
 
         @param package_matches:
         @type package_matches: list
