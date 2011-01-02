@@ -2,10 +2,8 @@ Backlog (raw)
 
   1.0:
 
-    - server-side handling of package deltas (daemon)
     - entropy.services, entropy.client: love and refactoring (API doc)
     - complete README
-    - implement system snapshots (as snapshots, sets).
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
 
   break backward compat:
