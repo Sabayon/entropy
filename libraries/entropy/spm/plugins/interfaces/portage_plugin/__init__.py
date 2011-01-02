@@ -4278,6 +4278,9 @@ class PortagePlugin(SpmPlugin):
 
     def _extract_pkg_metadata_provided_libs(self, pkg_dir, content):
 
+        # NOTE: this does not take into account changes to environment
+        # caused by the installation of the package, if this metadata
+        # is read off a non-installed one.
         provided_libs = set()
         ldpaths = entropy.tools.collect_linker_paths()
         for obj, ftype in content.items():
