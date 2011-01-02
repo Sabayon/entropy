@@ -463,17 +463,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         return missing_map
 
-    def test_shared_objects(self, dbconn, broken_symbols = False,
+    def test_shared_objects(self, entropy_repository, broken_symbols = False,
         task_bombing_func = None, self_dir_check = True,
         dump_results_to_file = False):
 
         """
         Scan system looking for broken shared object ELF library dependencies.
 
-        @param dbconn: entropy.db.EntropyRepository instance which contains
-            information on packages installed on the system (for example:
-            entropy.client.interfaces.Client.installed_repository() ).
-        @type dbconn: entropy.db.EntropyRepository instance
+        @param entropy_repository: entropy.db.EntropyRepository instance
+        @type entropy_repository: entropy.db.EntropyRepository instance
         @keyword broken_symbols: enable or disable broken symbols extra check.
             Symbols which are going to be checked have to be listed into:
             /etc/entropy/brokensyms.conf (regexp supported).
@@ -830,17 +828,17 @@ class QAInterface(TextInterface, EntropyPluginStore):
             matched = set()
             for brokenlib in plain_brokenexecs:
                 # test with /usr/lib
-                idpackages = dbconn.searchBelongs(brokenlib)
+                idpackages = entropy_repository.searchBelongs(brokenlib)
                 if not idpackages:
                     # try with realpath
                     # on multilib systems this resolves to /usr/lib64
                     # which makes searchBelongs() happy
-                    idpackages = dbconn.searchBelongs(
+                    idpackages = entropy_repository.searchBelongs(
                         os.path.realpath(brokenlib))
 
                 for idpackage in idpackages:
 
-                    key, slot = dbconn.retrieveKeySlot(idpackage)
+                    key, slot = entropy_repository.retrieveKeySlot(idpackage)
                     mymatch = client.atom_match(key, match_slot = slot)
                     if mymatch[0] == -1:
                         matched.add(brokenlib)
