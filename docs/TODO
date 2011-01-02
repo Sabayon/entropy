@@ -2,9 +2,9 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.services, entropy.client: love and refactoring (API doc)
-    - complete README
+    - entropy.services, entropy.client: love and refactoring (API break!)
     - collect metadata regarding: postscript drivers, fonts (PackageKit req)
+    - complete README
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
