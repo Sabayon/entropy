@@ -2568,6 +2568,7 @@ def read_elf_linker_paths(elf_file):
     for mypath in data:
         for xpath in mypath:
             xpath = xpath.replace("$ORIGIN", os.path.dirname(elf_file))
+            xpath = xpath.replace("${ORIGIN}", os.path.dirname(elf_file))
             mypaths.append(xpath)
     return mypaths
 
