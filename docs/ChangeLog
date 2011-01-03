@@ -1,3 +1,39 @@
+commit cf09a64d4376de81940646b6223c90b97a65fbc2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 3 18:55:38 2011 +0100
+
+    Release Entropy 1.0_alpha2
+
+commit da57b318b3e97df0d81fbb5232c79e5e6a74f587
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 3 18:55:11 2011 +0100
+
+    [entropy.qa] add some more caching to get_deep_dependency_list
+
+commit 6fddbec3edb6756a2474ebedcaf49110a4612131
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 3 18:44:14 2011 +0100
+
+    [entropy.qa] correct get_deep_dependency_list() behaviour when match_repo is None, drop useless cache
+
+commit 5b633349881e07644ecff277c3b6497036009e6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 3 12:41:42 2011 +0100
+
+    [entropy.qa] improve unresolved sonames logic, add multi-repository support
+
+commit bace46744e43d0ecfcadd4830722fdb04611ce50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 3 12:24:15 2011 +0100
+
+    [entropy.tools] fix read_elf_linker_paths when ${ORIGIN} is in RPATH/RUNPATH (handle this case too)
+
+commit d50046d735e3440cb897b1834f3c6e6779fdd75c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 2 19:45:43 2011 +0100
+
+    Tagging Entropy version 1.0_alpha1
+
 commit 1613fb420a0455c77971c0f2f00d8da2cccbdb5e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jan 2 19:45:34 2011 +0100
