@@ -1187,8 +1187,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @keyword atoms: !! return type modifier !! , make method returning
             a list of atom strings instead of list of db match tuples.
         @type atoms: bool
-        @keyword match_repo: list of repositories to match, if None, only
-            repository given in package_match will be used for matching.
+        @keyword match_repo: list of repositories to match, if None,
+            all repositories will be used for matching.
         @param match_repo: list
         @return: list of package matches (of dependencies) or plain dependency
             string list if "atom" is True
@@ -1196,13 +1196,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
         """
         package_id, repo = package_match
         dbconn = entropy_client.open_repository(repo)
-        if match_repo is None:
-            match_repo = (repo,)
 
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         mybuffer = Lifo()
         depcache = set()
-        matchcache = set()
         mydeps = dbconn.retrieveDependencies(package_id,
             exclude_deptypes = excluded_dep_types)
         for mydep in mydeps:
@@ -1226,14 +1223,6 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 match_repo = match_repo)
 
             match = (pkg_id, pkg_repo)
-            if match in matchcache:
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    break # stack empty
-                continue
-            matchcache.add(match)
-
             if atoms:
                 result.add(mydep)
 
