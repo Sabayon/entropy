@@ -1200,6 +1200,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         mybuffer = Lifo()
         depcache = set()
+        matchcache = set()
         mydeps = dbconn.retrieveDependencies(package_id,
             exclude_deptypes = excluded_dep_types)
         for mydep in mydeps:
@@ -1223,6 +1224,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 match_repo = match_repo)
 
             match = (pkg_id, pkg_repo)
+            if match in matchcache:
+                # neeeext !
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
+                continue
+            matchcache.add(match)
+
             if atoms:
                 result.add(mydep)
 
