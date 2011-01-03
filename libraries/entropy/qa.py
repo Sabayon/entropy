@@ -285,6 +285,31 @@ class QAInterface(TextInterface, EntropyPluginStore):
         count = 0
         maxcount = len(package_matches)
         missing_map = {}
+        repos = sorted(entropy_client.repositories())
+
+        def _warn_soname(soname, elf_class):
+            # try to resolve soname
+            for needed_repo in repos:
+                needed_dbconn = entropy_client.open_repository(needed_repo)
+                pkg_ids = needed_dbconn.resolveNeeded(soname,
+                    elfclass = elf_class)
+                if pkg_ids:
+                    pkg_atoms = sorted((
+                        needed_dbconn.retrieveKeySlotAggregated(x) for x in \
+                            pkg_ids))
+                    pkg_atoms_string = ', '.join(pkg_atoms)
+                else:
+                    pkg_atoms_string = _("no packages")
+                self.output(
+                    "[%s:%s] %s" % (
+                        brown(needed_repo),
+                        teal(soname),
+                        purple(pkg_atoms_string),
+                    ),
+                    importance = 0,
+                    level = "info",
+                    header = brown("     # ")
+                )
 
         for package_id, repo in package_matches:
             count += 1
@@ -441,25 +466,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     header = purple("   ## ")
                 )
                 for soname in sonames:
-                    # try to resolve soname
-                    pkg_ids = dbconn.resolveNeeded(soname,
-                        elfclass = elf_class)
-                    if pkg_ids:
-                        pkg_atoms = sorted((
-                            dbconn.retrieveKeySlotAggregated(x) for x in \
-                                pkg_ids))
-                        pkg_atoms_string = ', '.join(pkg_atoms)
-                    else:
-                        pkg_atoms_string = _("no packages")
-                    self.output(
-                        "%s [%s]" % (
-                            teal(soname),
-                            pkg_atoms_string,
-                        ),
-                        importance = 0,
-                        level = "info",
-                        header = brown("     # ")
-                    )
+                    _warn_soname(soname, elf_class)
 
         return missing_map
 
