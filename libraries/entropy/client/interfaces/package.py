@@ -3197,16 +3197,25 @@ class Package:
     def _removeconflict_step(self):
 
         inst_repo = self._entropy.installed_repository()
-        package_ids = [x for x in self.pkgmeta['conflicts'] if \
+        confl_package_ids = [x for x in self.pkgmeta['conflicts'] if \
             inst_repo.isPackageIdAvailable(x)]
-        if not package_ids:
+        if not confl_package_ids:
             return 0
 
         # calculate removal dependencies
-        proposed_pkg_ids = self._entropy.get_removal_queue(package_ids)
+        # system_packages must be False because we should not exclude
+        # them from the dependency tree in any case. Also, we cannot trigger
+        # DependenciesNotRemovable() exception, too.
+        proposed_pkg_ids = self._entropy.get_removal_queue(confl_package_ids,
+            system_packages = False)
         # we don't want to remove the whole inverse dependencies of course,
         # but just the conflicting ones, in a proper order
-        package_ids = [x for x in proposed_pkg_ids if x in package_ids]
+        package_ids = [x for x in proposed_pkg_ids if x in confl_package_ids]
+        # make sure that every package is listed in package_ids before
+        # proceeding, cannot keep packages behind anyway, and must be fault
+        # tolerant. Besides, having missing packages here should never happen.
+        package_ids += [x for x in confl_package_ids if x not in \
+            package_ids]
 
         for package_id in package_ids:
 
