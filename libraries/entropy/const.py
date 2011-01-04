@@ -298,6 +298,8 @@ def const_default_settings(rootdir):
         'etpdatabasedeprewritefile': default_etp_packagesdir+"/packages.server.dep_rewrite",
         # server-side package broken dependency blacklist file
         'etpdatabasedepblackistfile': default_etp_packagesdir+"/packages.server.dep_blacklist",
+        # server-side package broken dependency blacklist file
+        'etpdatabaseqasetsfile': default_etp_packagesdir+"/packages.server.sets",
         # per-repository configuration file to list legally sensible pkgs
         'etpdatabaserestrictedfile': default_etp_dbfile+".restricted",
         # the local/remote database revision file

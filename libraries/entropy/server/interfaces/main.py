@@ -553,6 +553,24 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
+    def qa_sets_parser(self, sys_set):
+
+        data = {}
+        sets_file = etpConst['etpdatabaseqasetsfile']
+        if not os.path.isfile(sets_file):
+            return data
+        sets_content = self.__generic_parser(sets_file)
+
+        for line in sets_content:
+            params = line.split()
+            if len(params) < 2:
+                continue
+            repo_id, qa_sets = params[0], params[1:]
+            obj = data.setdefault(repo_id, set())
+            obj.update(qa_sets)
+
+        return data
+
     def server_parser(self, sys_set):
 
         """

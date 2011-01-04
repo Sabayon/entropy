@@ -1,0 +1,13 @@
+# List here Entropy Server package sets, organized per repository, that you
+# want to guarantee the availability. This list will be used inside Entropy
+# Server repository QA routines to ensure that vital package sets will be
+# removed and the action go unnoticed.
+
+# LINE CONSTRUCTION:
+# <repository> <package set> [<package set 2> ...]
+# See examples below, multiple repository lines are also accepted,
+# data will be concatenated.
+
+# EXAMPLES:
+# sabayon-limbo entropy kde music
+# sabayon-limbo gnome
