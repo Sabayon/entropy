@@ -537,7 +537,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
     def dep_blacklist_parser(self, sys_set):
 
         data = {}
-        blacklist_file = etpConst['etpdatabasedepblackistfile']
+        blacklist_file = etpConst['etpdatabasedepblacklistfile']
         if not os.path.isfile(blacklist_file):
             return data
         blacklist_content = self.__generic_parser(blacklist_file)
@@ -1129,7 +1129,7 @@ class ServerSettingsMixin:
         if repo is None:
             repo = self.default_repository
         return os.path.join(self._get_local_database_dir(repo, branch),
-            etpConst['etpdatabasedepblackistfile'])
+            etpConst['etpdatabasedepblacklistfile'])
 
     def _get_local_database_rss_file(self, repo = None, branch = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
