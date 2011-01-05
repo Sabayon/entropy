@@ -12,5 +12,4 @@ Backlog (raw)
 
   1.1:
 
-    - UGC based on XML requests (all the commands into one string)
-    - more specific extension? (.etp) entropy.tools.strip_entropy_package_extension
+    - UGC based on HTTP requests (using HTTP-alike headers) containing XML data (real requests)
