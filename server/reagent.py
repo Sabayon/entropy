@@ -23,7 +23,7 @@ from entropy.output import red, print_error, print_generic, \
     is_stdout_a_tty, nocolor, etpUi, darkgreen
 from entropy.const import etpConst, const_kill_threads
 from entropy.server.interfaces import Server
-from text_tools import print_menu
+from text_tools import print_menu, acquire_entropy_locks
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
@@ -198,12 +198,10 @@ main_cmd = options.pop(0)
 if main_cmd == "update":
     import server_reagent
     rc = server_reagent.update(options)
-    get_entropy_server().close_repositories()
 
 elif main_cmd == "inject":
     import server_reagent
     rc = server_reagent.inject(options)
-    get_entropy_server().close_repositories()
 
 elif main_cmd == "query":
     import server_query
@@ -214,12 +212,10 @@ elif main_cmd == "repo":
         etpUi['warn'] = False
     import server_reagent
     rc = server_reagent.repositories(options)
-    get_entropy_server().close_repositories()
 
 elif main_cmd == "status":
     import server_reagent
     server_reagent.status()
-    get_entropy_server().close_repositories()
     rc = 0
 
 elif main_cmd == "key":
@@ -227,34 +223,84 @@ elif main_cmd == "key":
     rc = server_key.key(options)
 
 elif main_cmd == "deptest":
-    server = get_entropy_server()
-    server.dependencies_test()
-    server.close_repositories()
-    rc = 0
+    acquired = False
+    server = None
+    rc = 1
+    try:
+        server = get_entropy_server()
+        acquired = acquire_entropy_locks(server)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+        else:
+            server.dependencies_test()
+            rc = 0
+    finally:
+        if server is not None:
+            if acquired:
+                release_entropy_locks(server)
+            server.shutdown()
 
 elif main_cmd == "pkgtest":
-    server = get_entropy_server()
-    server.verify_local_packages([], ask = etpUi['ask'])
-    server.close_repositories()
-    rc = 0
+    acquired = False
+    server = None
+    rc = 1
+    try:
+        server = get_entropy_server()
+        acquired = acquire_entropy_locks(server)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+        else:
+            server.verify_local_packages([], ask = etpUi['ask'])
+            rc = 0
+    finally:
+        if server is not None:
+            if acquired:
+                release_entropy_locks(server)
+            server.shutdown()
 
 elif main_cmd == "libtest":
-    server = get_entropy_server()
     dump = "--dump" in options
-    rc, pkgs = server.test_shared_objects(
-        dump_results_to_file = dump)
-    x = server.close_repositories()
+    acquired = False
+    server = None
+    rc = 1
+    try:
+        server = get_entropy_server()
+        acquired = acquire_entropy_locks(server)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+        else:
+            rc, pkgs = server.test_shared_objects(
+                dump_results_to_file = dump)
+    finally:
+        if server is not None:
+            if acquired:
+                release_entropy_locks(server)
+            server.shutdown()
 
 # cleanup
 elif main_cmd == "cleanup":
     import text_tools
-    rc = text_tools.cleanup([etpConst['packagestmpdir'], etpConst['logdir']])
+    acquired = False
+    server = None
+    rc = 1
+    try:
+        server = get_entropy_server()
+        acquired = acquire_entropy_locks(server)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+        else:
+            rc = text_tools.cleanup([etpConst['packagestmpdir'],
+                etpConst['logdir']])
+    finally:
+        if server is not None:
+            if acquired:
+                release_entropy_locks(server)
+            server.shutdown()
 
 # deptest tool
 elif main_cmd == "spm":
     import server_reagent
     rc = server_reagent.spm(options)
-    get_entropy_server().close_repositories()
 
 if rc == -10:
     print_menu(help_opts)
