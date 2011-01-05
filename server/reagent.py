@@ -23,7 +23,7 @@ from entropy.output import red, print_error, print_generic, \
     is_stdout_a_tty, nocolor, etpUi, darkgreen
 from entropy.const import etpConst, const_kill_threads
 from entropy.server.interfaces import Server
-from text_tools import print_menu, acquire_entropy_locks
+from text_tools import print_menu, acquire_entropy_locks, release_entropy_locks
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
