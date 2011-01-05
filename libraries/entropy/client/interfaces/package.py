@@ -575,8 +575,8 @@ class Package:
         # no edelta support enabled
         if not self.pkgmeta.get('edelta_support'):
             return [], 0.0, False
-        # edelta disabled in environment
-        if os.getenv("ETP_NO_EDELTA") is not None:
+        # edelta enabled?
+        if not entropy.tools.is_entropy_delta_available():
             return [], 0.0, False
 
         url_path_list = []
@@ -684,8 +684,8 @@ class Package:
         # no edelta support enabled
         if not self.pkgmeta.get('edelta_support'):
             return 1, 0.0
-        # edelta disabled in environment
-        if os.getenv("ETP_NO_EDELTA") is not None:
+        # edelta enabled?
+        if not entropy.tools.is_entropy_delta_available():
             return 1, 0.0
 
         installed_package_id = self.pkgmeta['removeidpackage']
