@@ -1,3 +1,59 @@
+commit dc5f13d7a7208bfe98f04ba6393ab2d2face510c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 00:54:03 2011 +0100
+
+    Release Entropy 1.0_alpha5
+
+commit 8200991a733dc15387337d592467de3d302ae1d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 00:52:12 2011 +0100
+
+    [entropy.client] make possible to enable/disable entropy delta package download feature via client.conf
+    
+    Turn off Entropy delta packages download feature by default, needs
+    further testing. Make possible to enable/disable from configuration
+    files.
+
+commit 9d830abd1e5640d0bf749d02a4ff4f1b0684c015
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 00:20:14 2011 +0100
+
+    [todo] update TODO
+
+commit e138c9108561faf61fcd765e162bed6e123540ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 00:19:42 2011 +0100
+
+    [entropy.client.interfaces.package] use entropy.tools.is_entropy_delta_available()
+
+commit dc4d2dea60fa4603f6fe34aa5b48bc068d657cbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 00:19:27 2011 +0100
+
+    [entropy.tools] add is_entropy_delta_available() function
+
+commit fc7c7a1ca64934da1eeb4a49854e9047eb9122b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 5 12:50:22 2011 +0100
+
+    [reagent] import release_entropy_locks from text_tools
+
+commit 6c312692f322caf14aa3c7d69be08d51eaccbe2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 5 12:47:46 2011 +0100
+
+    [reagent] fix Entropy Server resource usage
+    
+    Sometimes Entropy Server instance gets loaded twice, this fixes it
+    in reagent. At the same time, some commands were not properly
+    wrapped around the acquisition of the entropy server lock.
+
+commit 415db83db68669633f2e64aa3445b277583b6d69
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 5 09:42:33 2011 +0100
+
+    Tagging Entropy version 1.0_alpha4
+
 commit 5fd8c1d57534bca319c4faaac6839b090a920853
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jan 5 09:42:30 2011 +0100
