@@ -1119,6 +1119,22 @@ _DELTA_COMPRESSION_MAP = {
 }
 _DEFAULT_PKG_COMPRESSION = "bz2"
 
+def is_entropy_delta_available():
+    """
+    Return whether Entropy delta packages support is enabled by checking
+    if bsdiff executables are available. Moreover, if ETP_NO_EDELTA environment
+    variable is set, this function will return False.
+
+    @return: True, if service is available
+    @rtype: bool
+    """
+    if os.getenv("ETP_NO_EDELTA") is not None:
+        return False
+    if os.access(_BSDIFF_EXEC, os.X_OK) and os.access(_BSPATCH_EXEC, os.X_OK) \
+        and os.path.isfile(_BSDIFF_EXEC) and os.path.isfile(_BSPATCH_EXEC):
+        return True
+    return False
+
 def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
     pkg_compression = None):
     """
