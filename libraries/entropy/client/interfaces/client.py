@@ -452,6 +452,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'configprotectmask': etpConst['configprotectmask'][:],
             'configprotectskip': etpConst['configprotectskip'][:],
             'autoprune_days': None, # disabled by default
+            'edelta_support': False, # disabled by default
         }
 
         cli_conf = etpConst['clientconf']
@@ -472,6 +473,11 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             int_setting = entropy.tools.setting_to_int(setting, 0, 365)
             if int_setting is not None:
                 data['autoprune_days'] = int_setting
+
+        def _packagesdelta(setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['edelta_support'] = bool_setting
 
         def _packagehashes(setting):
             setting = setting.lower().split()
@@ -534,6 +540,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'forcedupdates': _forcedupdates,
             'forced-updates': _forcedupdates,
             'packages-autoprune-days': _autoprune,
+            'packages-delta': _packagesdelta,
             # backward compatibility
             'packagehashes': _packagehashes,
             'package-hashes': _packagehashes,

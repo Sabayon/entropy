@@ -3682,7 +3682,9 @@ class Package:
         inst_repo = self._entropy.installed_repository()
         self.pkgmeta['idpackage'] = idpackage
         self.pkgmeta['repository'] = repository
-        self.pkgmeta['edelta_support'] = True
+        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        edelta_support = self._settings[cl_id]['misc']['edelta_support']
+        self.pkgmeta['edelta_support'] = edelta_support
 
         # fetch abort function
         self.pkgmeta['fetch_abort_function'] = \
@@ -3899,7 +3901,9 @@ class Package:
             self.pkgmeta['download'] = dbconn.retrieveSources(idpackage,
                 extended = True)
         else:
-            self.pkgmeta['edelta_support'] = True
+            cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+            edelta_support = self._settings[cl_id]['misc']['edelta_support']
+            self.pkgmeta['edelta_support'] = edelta_support
             self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
             sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
             signatures = {
@@ -3985,7 +3989,9 @@ class Package:
         self.pkgmeta['checksum'] = dochecksum
 
         matches = self._package_match
-        self.pkgmeta['edelta_support'] = True
+        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        edelta_support = self._settings[cl_id]['misc']['edelta_support']
+        self.pkgmeta['edelta_support'] = edelta_support
         self.pkgmeta['matches'] = matches
         self.pkgmeta['atoms'] = []
         self.pkgmeta['repository_atoms'] = {}
