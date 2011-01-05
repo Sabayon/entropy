@@ -1179,7 +1179,11 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
             os.mkdir(delta_dir, 0o775)
 
         args = (_BSDIFF_EXEC, tmp_path_a, tmp_path_b, delta_file)
-        rc = subprocess.call(args)
+        try:
+            rc = subprocess.call(args)
+        except OSError:
+            # probably "ENOENT", but any OSError will be caught
+            return None
         if rc != 0:
             return None
 
@@ -1255,7 +1259,10 @@ def apply_entropy_delta(pkg_path_a, delta_path, new_pkg_path_b,
         with os.fdopen(tmp_fd_null, "w") as null_f:
             argv = (_BSPATCH_EXEC, tmp_path_a, new_pkg_path_b_tmp,
                 tmp_delta_path)
-            rc = subprocess.call(argv, stdout = null_f, stderr = null_f)
+            try:
+                rc = subprocess.call(argv, stdout = null_f, stderr = null_f)
+            except OSError as err:
+                raise IOError("%s OSError: %s" % (_BSPATCH_EXEC, err.errno,))
             if rc != 0:
                 raise IOError("%s returned error: %s" % (_BSPATCH_EXEC, rc,))
 
