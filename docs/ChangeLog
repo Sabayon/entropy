@@ -1,3 +1,21 @@
+commit ae88cfd39ea54d70e9a1c6efa34aefbc5e259a72
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 01:22:06 2011 +0100
+
+    Release Entropy 1.0_alpha6
+
+commit b7586a95f0e4f076d4d6b2708e266869eaae1bf5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 01:21:21 2011 +0100
+
+    [entropy.client.interfaces.package] "removeidpackage" metadatum can be unset, deal with it
+
+commit ff6efef7272800653fb293048ee7c0a1565fb137
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 00:54:07 2011 +0100
+
+    Tagging Entropy version 1.0_alpha5
+
 commit dc5f13d7a7208bfe98f04ba6393ab2d2face510c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 6 00:54:03 2011 +0100
