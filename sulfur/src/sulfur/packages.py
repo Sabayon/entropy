@@ -989,6 +989,16 @@ class EntropyPackages:
                 return None
 
             if yp.action is None:
+                pkg_id, pkg_repo = match
+                # make sure that package is available before calling
+                # get_masked_package_action, otherwise
+                # Entropy.get_package_action will raise TypeError at
+                # retrieveKeySlot
+                pkg_db = self.Entropy.open_repository(pkg_repo)
+                if not pkg_db.isPackageIdAvailable(pkg_id):
+                    const_debug_write(__name__,
+                        "_pkg_get_masked: wtf, pkg not avail: %s" % (yp,))
+                    return None
                 yp.action = gmp_action(match)
                 if yp.action == 'rr': # setup reinstallables
                     idpackage = gi_match(match)
