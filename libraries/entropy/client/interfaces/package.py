@@ -688,7 +688,12 @@ class Package:
         if not entropy.tools.is_entropy_delta_available():
             return 1, 0.0
 
-        installed_package_id = self.pkgmeta['removeidpackage']
+        # when called by __fetch_file, which is called by _download_package
+        # which is called by _match_checksum, which is called by
+        # multi_match_checksum, removeidpackage metadatum is not available
+        # So, be fault tolerant.
+        installed_package_id = self.pkgmeta.get('removeidpackage', -1)
+
         # fresh install, cannot fetch edelta, edelta only works for installed
         # packages, by design.
         if installed_package_id == -1:
