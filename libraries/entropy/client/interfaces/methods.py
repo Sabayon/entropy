@@ -1755,14 +1755,15 @@ class MatchMixin:
         reinstall: int(0)
         downgrade: int(-1)
         """
-        dbconn = self.open_repository(package_match[1])
-        pkgkey, pkgslot = dbconn.retrieveKeySlot(package_match[0])
+        pkg_id, pkg_repo = package_match
+        dbconn = self.open_repository(pkg_repo)
+        pkgkey, pkgslot = dbconn.retrieveKeySlot(pkg_id)
         results = self._installed_repository.searchKeySlot(pkgkey, pkgslot)
         if not results:
             return 1
 
         installed_idpackage = sorted(results)[-1]
-        pkgver, pkgtag, pkgrev = dbconn.getVersioningData(package_match[0])
+        pkgver, pkgtag, pkgrev = dbconn.getVersioningData(pkg_id)
         installed_ver, installed_tag, installed_rev = \
             self._installed_repository.getVersioningData(installed_idpackage)
         pkgcmp = entropy.dep.entropy_compare_versions(
@@ -1772,8 +1773,9 @@ class MatchMixin:
             # check digest, if it differs, we should mark pkg as update
             # we don't want users to think that they are "reinstalling" stuff
             # because it will just confuse them
-            inst_digest = self._installed_repository.retrieveDigest(installed_idpackage)
-            repo_digest = dbconn.retrieveDigest(package_match[0])
+            inst_digest = self._installed_repository.retrieveDigest(
+                installed_idpackage)
+            repo_digest = dbconn.retrieveDigest(pkg_id)
             if inst_digest != repo_digest:
                 return 2
             return 0
