@@ -112,8 +112,8 @@ class ServerNoticeBoardMixin:
         errors, m_fine_uris, m_broken_uris = destroyer.go()
         if errors:
             m_broken_uris = sorted(m_broken_uris)
-            m_broken_uris = [EntropyTransceiver.get_uri_name(x) \
-                for x in m_broken_uris]
+            m_broken_uris = [EntropyTransceiver.get_uri_name(x_uri) \
+                for x_uri, x_uri_rc in m_broken_uris]
             self._entropy.output(
                 "[repo:%s] %s %s" % (
                         brown(repo),
@@ -165,8 +165,8 @@ class ServerNoticeBoardMixin:
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
             m_broken_uris = sorted(m_broken_uris)
-            m_broken_uris = [EntropyTransceiver.get_uri_name(x) \
-                for x in m_broken_uris]
+            m_broken_uris = [EntropyTransceiver.get_uri_name(x_uri) \
+                for x_uri, x_uri_rc in m_broken_uris]
             self._entropy.output(
                 "[repo:%s] %s %s" % (
                         brown(repo),
@@ -1866,8 +1866,8 @@ class Server(ServerNoticeBoardMixin):
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
                     my_broken_uris = sorted([
-                        (EntropyTransceiver.get_uri_name(x[0]),
-                            x[1]) for x in m_broken_uris])
+                        (EntropyTransceiver.get_uri_name(x_uri),
+                            x_uri_rc) for x_uri, x_uri_rc in m_broken_uris])
                     self._entropy.output(
                         "[repo:%s|%s|%s] %s" % (
                             repo,
@@ -1992,8 +1992,8 @@ class Server(ServerNoticeBoardMixin):
                     errors, m_fine_uris, m_broken_uris = downloader.go()
                     if errors:
                         my_broken_uris = sorted([
-                            (EntropyTransceiver.get_uri_name(x[0]),
-                                x[1]) for x in m_broken_uris])
+                            (EntropyTransceiver.get_uri_name(x_uri),
+                                x_uri_rc) for x_uri, x_uri_rc in m_broken_uris])
                         self._entropy.output(
                             "[repo:%s|%s|%s] %s" % (
                                 brown(repo),
@@ -2857,8 +2857,8 @@ class Server(ServerNoticeBoardMixin):
 
         if errors:
             my_broken_uris = [
-                (EntropyTransceiver.get_uri_name(x[0]), x[1]) for \
-                    x in m_broken_uris]
+                (EntropyTransceiver.get_uri_name(x_uri), x_uri_rc) for \
+                    x_uri, x_uri_rc in m_broken_uris]
             reason = my_broken_uris[0][1]
             self._entropy.output(
                 "[branch:%s] %s: %s, %s: %s" % (
@@ -2933,8 +2933,8 @@ class Server(ServerNoticeBoardMixin):
 
         if errors:
             my_broken_uris = [
-                (EntropyTransceiver.get_uri_name(x), y,) \
-                    for x, y in m_broken_uris]
+                (EntropyTransceiver.get_uri_name(x_uri), x_uri_rc,) \
+                    for x_uri, x_uri_rc in m_broken_uris]
             reason = my_broken_uris[0][1]
             self._entropy.output(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
@@ -3515,8 +3515,8 @@ class Server(ServerNoticeBoardMixin):
 
             if errors:
                 my_broken_uris = [
-                    (EntropyTransceiver.get_uri_name(x[0]), x[1]) \
-                        for x in m_broken_uris]
+                    (EntropyTransceiver.get_uri_name(x_uri), x_uri_rc) \
+                        for x_uri, x_uri_rc in m_broken_uris]
 
                 reason = my_broken_uris[0][1]
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
