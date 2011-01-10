@@ -157,6 +157,20 @@ class UrlFetcher(TextInterface):
             self.__existed_before = True
 
     def __setup_urllib_resume_support(self):
+
+        # resume support
+        if os.path.isfile(self.__path_to_save) and \
+            os.access(self.__path_to_save, os.W_OK) and self.__resume:
+
+            self.__urllib_open_local_file("ab")
+            self.__localfile.seek(0, os.SEEK_END)
+            self.__startingposition = int(self.__localfile.tell())
+            self.__last_downloadedsize = self.__startingposition
+
+        else:
+            self.__urllib_open_local_file("wb")
+
+    def __urllib_open_local_file(self, mode):
         # if client uses this instance more than
         # once, make sure we close previously opened
         # files.
@@ -167,19 +181,11 @@ class UrlFetcher(TextInterface):
                 self.__localfile.close()
             except (IOError, OSError,):
                 pass
-
-        # resume support
-        if os.path.isfile(self.__path_to_save) and \
-            os.access(self.__path_to_save, os.W_OK) and self.__resume:
-
-            self.__localfile = open(self.__path_to_save, "ab")
-            self.__localfile.seek(0, os.SEEK_END)
-            self.__startingposition = int(self.__localfile.tell())
-            self.__last_downloadedsize = self.__startingposition
+        self.__localfile = open(self.__path_to_save, mode)
+        if mode.startswith("a"):
             self.__resumed = True
-            return
-
-        self.__localfile = open(self.__path_to_save, "wb")
+        else:
+            self.__resumed = False
 
     def __encode_url(self, url):
         if sys.hexversion >= 0x3000000:
@@ -579,10 +585,17 @@ class UrlFetcher(TextInterface):
                     raise
                 except:
                     pass
-            elif (self.__startingposition == self.__remotesize):
+            elif self.__startingposition == self.__remotesize:
                 # all fine then!
                 self.__urllib_close(False)
                 return self.__prepare_return()
+            elif (self.__startingposition > self.__remotesize) and \
+                self.__resumed:
+                # there is something wrong
+                # downloaded more than the advertised size
+                # the HTTP server is broken or something else happened
+                # locally and file cannot be trusted (resumed)
+                self.__urllib_open_local_file("wb")
 
             self.__remotefile = urlmod.urlopen(request, None, self.__timeout)
         except KeyboardInterrupt:
