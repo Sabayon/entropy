@@ -1229,14 +1229,16 @@ class Package:
                     level = "warning",
                     header = darkred("   ## ")
                 )
+                # Unfortunately, disabling resume makes possible to recover
+                # from bad download data. trying to resume would do more harm
+                # than good in the majority of cases.
                 fetch = self._download_package(
                     package_id,
                     repository,
                     download,
                     pkg_disk_path,
                     checksum,
-                    # if this is the last chance, disable resume
-                    resume = dlcount != max_dlcount
+                    resume = False
                 )
                 if fetch != 0:
                     self._entropy.output(
