@@ -3418,15 +3418,26 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
     def getInstalledPackageRepository(self, package_id):
         """
-        Note: this is used by installed packages repository (also known as
-        client db).
-        Return repository identifier stored inside the "installed packages
-        table".
+        Return repository identifier from where package has been installed from.
 
         @param package_id: package indentifier
         @type package_id: int
         @return: repository identifier
         @rtype: string or None
+        """
+        raise NotImplementedError()
+
+    def getInstalledPackageSource(self, package_id):
+        """
+        Return installed package source id (corresponding to "as dependency",
+        "by user", in other words, the reason why the package is installed).
+        Its value can be either one of the etpConst['install_sources'] values.
+        In case of unavailable information, None is returned.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @return: install source identifier
+        @rtype: int or None
         """
         raise NotImplementedError()
 

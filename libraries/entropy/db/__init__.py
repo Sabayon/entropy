@@ -5005,6 +5005,7 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self.__clearLiveCache("getInstalledPackageRepository")
+        self.__clearLiveCache("getInstalledPackageSource")
         self._cursor().execute('INSERT into installedtable VALUES (?,?,?)',
             (package_id, repoid, source,))
 
@@ -5021,6 +5022,22 @@ class EntropyRepository(EntropyRepositoryBase):
             self.__setLiveCache("getInstalledPackageRepository", cached)
         return cached.get(package_id)
 
+    def getInstalledPackageSource(self, package_id):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cached = self.__getLiveCache("getInstalledPackageSource")
+        if cached is None:
+            cached = {}
+            # TODO: drop this check in future, backward compatibility
+            if self._doesColumnInTableExist("installedtable", "source"):
+                cur = self._cursor().execute("""
+                SELECT idpackage, source FROM installedtable
+                """)
+                cached = dict(cur)
+            self.__setLiveCache("getInstalledPackageSource", cached)
+        return cached.get(package_id)
+
     def dropInstalledPackageFromStore(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -5029,6 +5046,7 @@ class EntropyRepository(EntropyRepositoryBase):
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (package_id,))
         self.__clearLiveCache("getInstalledPackageRepository")
+        self.__clearLiveCache("getInstalledPackageSource")
 
     def storeSpmMetadata(self, package_id, blob):
         """
@@ -5760,6 +5778,7 @@ class EntropyRepository(EntropyRepositoryBase):
         UPDATE installedtable SET source = (?)
         """, (etpConst['install_sources']['unknown'],))
         self.__clearLiveCache("getInstalledPackageRepository")
+        self.__clearLiveCache("getInstalledPackageSource")
         self.__clearLiveCache("_doesTableExist")
         self.__clearLiveCache("_doesColumnInTableExist")
 
