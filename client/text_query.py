@@ -1542,7 +1542,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         repoinfo = ''
         desc = ''
         if showRepoOnQuiet:
-            repoinfo = "[%s] " % (dbconn.reponame,)
+            repoinfo = "[%s] " % (dbconn.name,)
         if showDescOnQuiet:
             desc = ' %s' % (dbconn.retrieveDescription(idpackage),)
         print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
@@ -1593,7 +1593,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
 
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
-        ", [" + purple(str(dbconn.reponame)) + "] ")
+        ", [" + purple(str(dbconn.name)) + "] ")
     if not strictOutput and extended:
         pkgname = dbconn.retrieveName(idpackage) or corrupted_str
         pkgcat = dbconn.retrieveCategory(idpackage) or corrupted_str

@@ -427,7 +427,7 @@ class EntropyRepository(EntropyRepositoryBase):
     _LIVE_CACHE = {}
 
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
-        dbname = None, indexing = True, skipChecks = False, temporary = False):
+        name = None, indexing = True, skipChecks = False, temporary = False):
         """
         EntropyRepository constructor.
 
@@ -437,8 +437,8 @@ class EntropyRepository(EntropyRepositoryBase):
         @type dbFile: string
         @keyword xcache: enable on-disk cache
         @type xcache: bool
-        @keyword dbname: EntropyRepository instance identifier
-        @type dbname: string
+        @keyword name: repository identifier
+        @type name: string
         @keyword indexing: enable database indexes
         @type indexing: bool
         @keyword skipChecks: if True, skip integrity checks
@@ -451,11 +451,11 @@ class EntropyRepository(EntropyRepositoryBase):
         self.__cursor_cache = {}
         self.__connection_cache = {}
         self._cleanup_stale_cur_conn_t = time.time()
-        if dbname is None:
-            dbname = etpConst['genericdbid']
+        if name is None:
+            name = etpConst['genericdbid']
 
         EntropyRepositoryBase.__init__(self, readOnly, xcache, temporary,
-            dbname, indexing)
+            name, indexing)
 
         self._db_path = dbFile
         if self._db_path is None:
@@ -585,7 +585,7 @@ class EntropyRepository(EntropyRepositoryBase):
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
             self.readonly, self.xcache, self.indexing,)
         third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
-            self.reponame, self.__skip_checks, self.__structure_update,)
+            self.name, self.__skip_checks, self.__structure_update,)
         fourth_part = ", conn_cache: %s, cursor_cache: %s>" % (
             self.__connection_cache, self.__cursor_cache,)
 
@@ -623,7 +623,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def __getLiveCacheKey(self):
         return etpConst['systemroot'] + "_" + self._db_path + "_" + \
-            self.reponame + "_"
+            self.name + "_"
 
     def __clearLiveCache(self, key):
         try:
@@ -4599,7 +4599,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # use sqlite3 pragma
         pingus = MtimePingus()
         # since quick_check is slow, run it every 72 hours
-        action_str = "EntropyRepository.validate(%s)" % (self.reponame,)
+        action_str = "EntropyRepository.validate(%s)" % (self.name,)
         passed = pingus.hours_passed(action_str, 72)
         if passed:
             cur = self._cursor().execute("PRAGMA quick_check(1)")
@@ -5538,8 +5538,8 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # TODO: remove this before 31-12-2011
 
-        # entropy.qa uses this reponame, must skip migration
-        if self.reponame in ("qa_testing", "mem_repo"):
+        # entropy.qa uses this name, must skip migration
+        if self.name in ("qa_testing", "mem_repo"):
             return
 
         tables = ("extrainfo", "dependencies" , "provide",
@@ -5568,7 +5568,7 @@ class EntropyRepository(EntropyRepositoryBase):
             if not done_something:
                 mytxt = "%s: [%s] %s" % (
                     bold(_("ATTENTION")),
-                    purple(self.reponame),
+                    purple(self.name),
                     red(_("updating repository metadata layout, please wait!")),
                 )
                 self.output(
@@ -5670,7 +5670,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self.__clearLiveCache("_doesTableExist")
             self.__clearLiveCache("_doesColumnInTableExist")
 
-        if self.reponame != etpConst['clientdbid']:
+        if self.name != etpConst['clientdbid']:
             return do_create()
 
         mytxt = "%s: %s" % (
@@ -5912,7 +5912,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         checksum = self.checksum()
         cache_key = "__generateReverseDependenciesMetadata_%s_%s_%s" % (
-            etpConst['systemroot'], self.reponame, checksum,)
+            etpConst['systemroot'], self.name, checksum,)
         rev_deps_data = self._cacher.pop(cache_key)
         if rev_deps_data is not None:
             self.__setLiveCache("reverseDependenciesMetadata",

@@ -29,7 +29,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             repo_validation = False)
         # fake clientDbconn
         self.Client._installed_repository = self.Client.open_temp_repository(
-            dbname = etpConst['clientdbid'], temp_file = ":memory:")
+            name = etpConst['clientdbid'], temp_file = ":memory:")
         # as per GenericRepository specifications, enable generic handlePackage
         self.Client._installed_repository.override_handlePackage = True
         self.Spm = self.Client.Spm()

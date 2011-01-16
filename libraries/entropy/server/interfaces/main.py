@@ -91,7 +91,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 self,)
             )
 
-        repo = entropy_repository_instance.reponame
+        repo = entropy_repository_instance.name
         local_dbfile = self._metadata['local_dbfile']
         taint_file = self._server._get_local_database_taint_file(repo)
         if os.path.isfile(taint_file):
@@ -131,7 +131,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         if self._server.Mirrors is None:
             return 0
 
-        repo = entropy_repository_instance.reponame
+        repo = entropy_repository_instance.name
         dbfile = self._metadata['local_dbfile']
         read_only = self._metadata['read_only']
         if not read_only:
@@ -159,7 +159,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         dbs = ServerRepositoryStatus()
         dbfile = self._metadata['local_dbfile']
-        repo = entropy_repository_instance.reponame
+        repo = entropy_repository_instance.name
         read_only = self._metadata['read_only']
         if read_only:
             # do not taint database
@@ -249,7 +249,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_removed_package(self, repo_db, package_id):
 
         # setup variables we're going to use
-        srv_repo = repo_db.reponame
+        srv_repo = repo_db.name
         rss_revision = repo_db.retrieveRevision(package_id)
         rss_atom = "%s~%s" % (repo_db.retrieveAtom(package_id), rss_revision,)
         status = ServerRepositoryStatus()
@@ -294,7 +294,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_added_package(self, repo_db, package_data):
 
         # setup variables we're going to use
-        srv_repo = repo_db.reponame
+        srv_repo = repo_db.name
         rss_atom = "%s~%s" % (package_data['atom'], package_data['revision'],)
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
@@ -3919,7 +3919,7 @@ class ServerRepositoryMixin:
         conn = ServerPackagesRepository(
             readOnly = False,
             dbFile = temp_file,
-            dbname = repo,
+            name = repo,
             xcache = False,
             indexing = False,
             skipChecks = True,
@@ -4001,10 +4001,10 @@ class ServerRepositoryMixin:
         conn = ServerPackagesRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
-            dbname = repo,
+            name = repo,
             xcache = False # always set to False, if you want to enable
             # you need to make sure that client-side and server-side caches
-            # don't collide due to sharing ServerPackagesRepository.reponame
+            # don't collide due to sharing ServerPackagesRepository.name
         )
         etp_repo_meta = {
             'lock_remote': lock_remote,

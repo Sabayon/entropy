@@ -132,7 +132,7 @@ class RepositoryMixin:
         if package_mirrors is None:
             package_mirrors = []
 
-        dbc = self.open_temp_repository(dbname = repoid, temp_file = temp_file)
+        dbc = self.open_temp_repository(name = repoid, temp_file = temp_file)
         repo_key = self.__get_repository_cache_key(repoid)
         self._memory_db_instances[repo_key] = dbc
 
@@ -260,7 +260,7 @@ class RepositoryMixin:
             conn = self.get_repository(repoid)(
                 readOnly = True,
                 dbFile = dbfile,
-                dbname = repoid,
+                name = repoid,
                 xcache = xcache,
                 indexing = indexing
             )
@@ -669,7 +669,7 @@ class RepositoryMixin:
                 level = "warning",
                 header = bold(" !!! "),
             )
-            m_conn = self.open_temp_repository(dbname = etpConst['clientdbid'])
+            m_conn = self.open_temp_repository(name = etpConst['clientdbid'])
             self._add_plugin_to_client_repository(m_conn)
             return m_conn
 
@@ -686,7 +686,7 @@ class RepositoryMixin:
                 repo_class = self.get_repository(etpConst['clientdbid'])
                 conn = repo_class(readOnly = False,
                     dbFile = db_path,
-                    dbname = etpConst['clientdbid'],
+                    name = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing
                 )
                 self._add_plugin_to_client_repository(conn)
@@ -716,18 +716,22 @@ class RepositoryMixin:
         # make sure settings are in sync
         self._settings.clear()
 
-    def open_generic_repository(self, dbfile, dbname = None, xcache = None,
-            read_only = False, indexing_override = None, skip_checks = False):
+    def open_generic_repository(self, dbfile, dbname = None, name = None,
+            xcache = None, read_only = False, indexing_override = None,
+            skip_checks = False):
         if xcache is None:
             xcache = self.xcache
         if indexing_override != None:
             indexing = indexing_override
         else:
             indexing = self.indexing
+        if dbname is not None:
+            # backward compatibility
+            name = dbname
         conn = GenericRepository(
             readOnly = read_only,
             dbFile = dbfile,
-            dbname = dbname,
+            name = name,
             xcache = xcache,
             indexing = indexing,
             skipChecks = skip_checks
@@ -735,14 +739,17 @@ class RepositoryMixin:
         self._add_plugin_to_client_repository(conn)
         return conn
 
-    def open_temp_repository(self, dbname = None, temp_file = None):
+    def open_temp_repository(self, dbname = None, name = None, temp_file = None):
         if temp_file is None:
             tmp_fd, temp_file = tempfile.mkstemp()
             os.close(tmp_fd)
+        if dbname is not None:
+            # backward compatibility
+            name = dbname
         dbc = GenericRepository(
             readOnly = False,
             dbFile = temp_file,
-            dbname = dbname,
+            name = name,
             xcache = False,
             indexing = False,
             skipChecks = True,

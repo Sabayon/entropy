@@ -163,7 +163,7 @@ class DepTest(unittest.TestCase):
         from entropy.client.interfaces import Client
         client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
-        db = client.open_temp_repository(dbname = "parser_test",
+        db = client.open_temp_repository(name = "parser_test",
             temp_file = ":memory:")
         client.destroy()
         client.shutdown()

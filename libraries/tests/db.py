@@ -52,7 +52,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client.shutdown()
 
     def __open_test_db(self, tmp_path):
-        return self.Client.open_temp_repository(dbname = self.test_db_name,
+        return self.Client.open_temp_repository(name = self.test_db_name,
             temp_file = tmp_path)
 
     def test_db_clearcache(self):
@@ -166,7 +166,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_db_creation(self):
         self.assert_(isinstance(self.test_db, EntropyRepository))
-        self.assertEqual(self.test_db_name, self.test_db.reponame)
+        self.assertEqual(self.test_db_name, self.test_db.name)
         self.assert_(self.test_db._doesTableExist('baseinfo'))
         self.assert_(self.test_db._doesTableExist('extrainfo'))
 

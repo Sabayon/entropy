@@ -369,7 +369,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
     os.mkdir(unpackdir+"/db")
     # create master database
     dbfile = unpackdir+"/db/merged.db"
-    mergeDbconn = entropy_client.open_generic_repository(dbfile, dbname = "client")
+    mergeDbconn = entropy_client.open_generic_repository(dbfile, name = "client")
     mergeDbconn.initializeRepository()
     tmpdbfile = dbfile+"--readingdata"
     for package in matched_pkgs:

@@ -1277,7 +1277,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 dbc = EntropyRepository(
                     readOnly = False,
                     dbFile = tmp_path,
-                    dbname = 'qa_testing',
+                    name = "qa_testing",
                     xcache = False,
                     indexing = False,
                     skipChecks = False

@@ -148,7 +148,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __get_eapi3_repository_metadata(self, eapi3_interface, session):
         product = self._settings['repositories']['product']
         data = eapi3_interface.CmdInterface.get_repository_metadata(
-            session, self.reponame, etpConst['currentarch'], product
+            session, self.name, etpConst['currentarch'], product
         )
         if not isinstance(data, dict):
             return {}
@@ -165,11 +165,11 @@ class AvailablePackagesRepositoryUpdater(object):
     def __get_eapi3_connection(self):
         # get database url
         avail_data = self._settings['repositories']['available']
-        dburl = avail_data[self.reponame].get('service_uri')
+        dburl = avail_data[self.name].get('service_uri')
         if dburl is None:
             return None
 
-        port = avail_data[self.reponame]['service_port']
+        port = avail_data[self.name]['service_port']
         try:
             from entropy.services.ugc.interfaces import Client
             from entropy.client.services.ugc.commands import Client as \
@@ -195,7 +195,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __get_eapi3_local_database(self):
 
         avail_data = self._settings['repositories']['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
 
         dbfile = os.path.join(repo_data['dbpath'],
             etpConst['etpdatabasefile'])
@@ -214,7 +214,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         product = self._settings['repositories']['product']
         data = eapi3_interface.CmdInterface.differential_packages_comparison(
-            session, idpackages, self.reponame,
+            session, idpackages, self.name,
             etpConst['currentarch'], product
         )
         if isinstance(data, bool): # then it's probably == False
@@ -320,7 +320,7 @@ class AvailablePackagesRepositoryUpdater(object):
         online = self.remote_revision()
         if online != -1:
             local = AvailablePackagesRepository.revision(
-                self.reponame)
+                self.name)
             if (local == online) and (not self.__force):
                 return False
         return True
@@ -328,7 +328,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __show_repository_information(self):
 
         avail_data = self._settings['repositories']['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
 
         self._entropy.output(
             bold("%s") % ( repo_data['description'] ),
@@ -385,7 +385,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __ensure_repository_path(self):
 
         avail_data = self._settings['repositories']['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
 
         # create dir if it doesn't exist
         if not os.path.isdir(repo_data['dbpath']):
@@ -396,7 +396,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
     def __validate_compression_method(self):
 
-        repo = self.reponame
+        repo = self.name
         repo_settings = self._settings['repositories']
         dbc_format = repo_settings['available'][repo]['dbcformat']
         cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
@@ -408,7 +408,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __remove_repository_files(self):
         sys_set = self._settings
         avail_data = sys_set['repositories']['available']
-        repo_dbpath = avail_data[self.reponame]['dbpath']
+        repo_dbpath = avail_data[self.name]['dbpath']
         shutil.rmtree(repo_dbpath, True)
 
     def __handle_database_download(self, cmethod):
@@ -537,7 +537,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def __verify_database_checksum(self, cmethod = None):
 
         sys_settings_repos = self._settings['repositories']
-        avail_config = sys_settings_repos['available'][self.reponame]
+        avail_config = sys_settings_repos['available'][self.name]
 
         sep = os.path.sep
         if self._repo_eapi == 1:
@@ -569,7 +569,7 @@ class AvailablePackagesRepositoryUpdater(object):
         rc = 0
         path = None
         sys_set_repos = self._settings['repositories']['available']
-        repo_data = sys_set_repos[self.reponame]
+        repo_data = sys_set_repos[self.name]
 
         garbage, myfile = self._construct_paths(down_item, cmethod)
 
@@ -635,9 +635,9 @@ class AvailablePackagesRepositoryUpdater(object):
         return True, myitem
 
     def __update_repository_revision(self):
-        cur_rev = AvailablePackagesRepository.revision(self.reponame)
+        cur_rev = AvailablePackagesRepository.revision(self.name)
         repo_data = self._settings['repositories']
-        db_data = repo_data['available'][self.reponame]
+        db_data = repo_data['available'][self.name]
         db_data['dbrevision'] = "0"
         if cur_rev != -1:
             db_data['dbrevision'] = str(cur_rev)
@@ -665,7 +665,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "\t"
             )
         try:
-            dbconn = self._entropy.open_repository(self.reponame)
+            dbconn = self._entropy.open_repository(self.name)
         except RepositoryError as err:
             tell_error(err)
             return False
@@ -687,7 +687,7 @@ class AvailablePackagesRepositoryUpdater(object):
             level = "info",
             header = "\t"
         )
-        dbconn = self._entropy.open_repository(self.reponame)
+        dbconn = self._entropy.open_repository(self.name)
         dbconn.createAllIndexes()
         dbconn.commit(force = True)
         if self._entropy.installed_repository() is not None:
@@ -711,7 +711,7 @@ class AvailablePackagesRepositoryUpdater(object):
             raise AttributeError(mytxt)
 
         avail_data = self._settings['repositories']['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
 
         repo_db = repo_data['database']
         repo_dbpath = repo_data['dbpath']
@@ -854,7 +854,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def _standard_items_download(self):
 
         repos_data = self._settings['repositories']
-        repo_data = repos_data['available'][self.reponame]
+        repo_data = repos_data['available'][self.name]
         notice_board = os.path.basename(repo_data['local_notice_board'])
         db_meta_file = etpConst['etpdatabasemetafilesfile']
         db_meta_file_gpg = etpConst['etpdatabasemetafilesfile'] + \
@@ -1020,7 +1020,7 @@ class AvailablePackagesRepositoryUpdater(object):
             finally:
                 shutil.rmtree(tmpdir, True)
 
-        repo_r = AvailablePackagesRepository.revision(self.reponame)
+        repo_r = AvailablePackagesRepository.revision(self.name)
         mytxt = "%s: %s" % (
             red(_("Repository revision")),
             bold(str(repo_r)),
@@ -1107,7 +1107,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         my_repos = self._settings['repositories']
         avail_data = my_repos['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
         gpg_path = repo_data['gpg_pubkey']
 
         if not (os.path.isfile(gpg_path) and os.access(gpg_path, os.R_OK)):
@@ -1150,7 +1150,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         pk_expired = False
         try:
-            pk_avail = repo_sec.is_pubkey_available(self.reponame)
+            pk_avail = repo_sec.is_pubkey_available(self.name)
         except repo_sec.KeyExpired:
             pk_avail = False
             pk_expired = True
@@ -1163,18 +1163,18 @@ class AvailablePackagesRepositoryUpdater(object):
             # try to install and get fingerprint
             try:
                 downloaded_key_fp = repo_tmp_sec.install_key(
-                    self.reponame, gpg_path)
+                    self.name, gpg_path)
             except RepositorySecurity.GPGError:
                 downloaded_key_fp = None
 
-            fingerprint = repo_sec.get_key_metadata(self.reponame)['fingerprint']
+            fingerprint = repo_sec.get_key_metadata(self.name)['fingerprint']
             shutil.rmtree(tmp_dir, True)
 
             if downloaded_key_fp != fingerprint and \
                 (downloaded_key_fp is not None):
                 mytxt = "%s: %s !!!" % (
                     purple(_("GPG key changed for")),
-                    bold(self.reponame),
+                    bold(self.name),
                 )
                 self._entropy.output(
                     mytxt,
@@ -1194,7 +1194,7 @@ class AvailablePackagesRepositoryUpdater(object):
             else:
                 mytxt = "%s: %s" % (
                     purple(_("GPG key already installed for")),
-                    bold(self.reponame),
+                    bold(self.name),
                 )
                 self._entropy.output(
                     mytxt,
@@ -1207,7 +1207,7 @@ class AvailablePackagesRepositoryUpdater(object):
         elif pk_expired:
             mytxt = "%s: %s" % (
                 purple(_("GPG key EXPIRED for repository")),
-                bold(self.reponame),
+                bold(self.name),
             )
             self._entropy.output(
                 mytxt,
@@ -1219,7 +1219,7 @@ class AvailablePackagesRepositoryUpdater(object):
         # actually install
         mytxt = "%s: %s" % (
             purple(_("Installing GPG key for repository")),
-            brown(self.reponame),
+            brown(self.name),
         )
         self._entropy.output(
             mytxt,
@@ -1228,7 +1228,7 @@ class AvailablePackagesRepositoryUpdater(object):
             back = True
         )
         try:
-            fingerprint = repo_sec.install_key(self.reponame,
+            fingerprint = repo_sec.install_key(self.name,
                 gpg_path)
         except RepositorySecurity.GPGError as err:
             mytxt = "%s: %s" % (
@@ -1244,7 +1244,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         mytxt = "%s: %s" % (
             purple(_("Successfully installed GPG key for repository")),
-            brown(self.reponame),
+            brown(self.name),
         )
         self._entropy.output(
             mytxt,
@@ -1302,7 +1302,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 back = True
             )
 
-            is_valid, err_msg = repo_sec.verify_file(self.reponame,
+            is_valid, err_msg = repo_sec.verify_file(self.name,
                 target_path, sign_path)
             if is_valid:
                 mytxt = "%s: %s" % (
@@ -1447,7 +1447,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 fetch_count += 1
                 cmd_intf = eapi3_interface.CmdInterface
                 pkgdata = cmd_intf.get_strict_package_information(
-                    session, segment, self.reponame,
+                    session, segment, self.name,
                     etpConst['currentarch'], product
                 )
                 if pkgdata is None:
@@ -1533,7 +1533,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         # update treeupdates
         try:
-            mydbconn.setRepositoryUpdatesDigest(self.reponame,
+            mydbconn.setRepositoryUpdatesDigest(self.name,
                 repo_metadata['treeupdates_digest'])
             mydbconn.bumpTreeUpdatesActions(
                 repo_metadata['treeupdates_actions'])
@@ -1716,7 +1716,7 @@ class AvailablePackagesRepositoryUpdater(object):
                         return repo_rev
 
         avail_data = self._settings['repositories']['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
 
         url = repo_data['database'] + "/" + \
             etpConst['etpdatabaserevisionfile']
@@ -1773,7 +1773,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
         my_repos = self._settings['repositories']
         avail_data = my_repos['available']
-        repo_data = avail_data[self.reponame]
+        repo_data = avail_data[self.name]
 
         # some variables
         dumpfile = os.path.join(repo_data['dbpath'],
@@ -1960,7 +1960,7 @@ class AvailablePackagesRepositoryUpdater(object):
         try:
             spm_class = self._entropy.Spm_class()
             spm_class.entropy_client_post_repository_update_hook(
-                self._entropy, self.reponame)
+                self._entropy, self.name)
         except Exception as err:
             entropy.tools.print_traceback()
             mytxt = "%s: %s" % (
