@@ -2736,7 +2736,7 @@ def xml_from_dict(dictionary):
     from xml.dom import minidom
     doc = minidom.Document()
     ugc = doc.createElement("entropy")
-    for key, value in list(dictionary.items()):
+    for key, value in dictionary.items():
         item = doc.createElement('item')
         item.setAttribute('value', key)
         item_value = doc.createTextNode(value)
