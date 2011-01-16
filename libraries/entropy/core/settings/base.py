@@ -1397,9 +1397,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         EntropyCacher.clear_cache(excluded_items = ["db_match"])
 
         if repoid is not None:
-            EntropyCacher.clear_cache_item("%s/%s%s/" % (
-                EntropyCacher.CACHE_IDS['db_match'],
-                    etpConst['dbnamerepoprefix'], repoid,))
+            EntropyCacher.clear_cache_item("%s/%s/" % (
+                EntropyCacher.CACHE_IDS['db_match'], repoid,))
 
     def __generic_parser(self, filepath, comment_tag = "#"):
         """

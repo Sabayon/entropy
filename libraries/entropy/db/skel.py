@@ -378,7 +378,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         self.xcache = xcache
         self.temporary = temporary
         self.indexing = indexing
-        self.dbname = reponame
         self.reponame = reponame
         self._settings = SystemSettings()
         self._cacher = EntropyCacher()
@@ -3630,23 +3629,23 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         raise NotImplementedError()
 
-    def _maskFilter_live(self, package_id, reponame):
+    def _maskFilter_live(self, package_id):
 
         ref = self._settings['pkg_masking_reference']
-        if (package_id, reponame) in \
+        if (package_id, self.reponame) in \
             self._settings['live_packagemasking']['mask_matches']:
 
             # do not cache this
             return -1, ref['user_live_mask']
 
-        elif (package_id, reponame) in \
+        elif (package_id, self.reponame) in \
             self._settings['live_packagemasking']['unmask_matches']:
 
             return package_id, ref['user_live_unmask']
 
-    def _maskFilter_user_package_mask(self, package_id, reponame, live):
+    def _maskFilter_user_package_mask(self, package_id, live):
 
-        mykw = "%smask_ids" % (reponame,)
+        mykw = "%smask_ids" % (self.reponame,)
         user_package_mask_ids = self._settings.get(mykw)
 
         if not isinstance(user_package_mask_ids, (list, set)):
@@ -3670,19 +3669,18 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
                 cl_data = self._settings[self.__cs_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
-                validator_cache[(package_id, reponame, live)] = -1, myr
+                validator_cache[(package_id, self.reponame, live)] = -1, myr
 
             except KeyError: # system settings client plugin not found
                 pass
 
             return -1, myr
 
-    def _maskFilter_user_package_unmask(self, package_id, reponame,
-        live):
+    def _maskFilter_user_package_unmask(self, package_id, live):
 
         # see if we can unmask by just lookin into user
         # package.unmask stuff -> self._settings['unmask']
-        mykw = "%sunmask_ids" % (reponame,)
+        mykw = "%sunmask_ids" % (self.reponame,)
         user_package_unmask_ids = self._settings.get(mykw)
 
         if not isinstance(user_package_unmask_ids, (list, set)):
@@ -3705,14 +3703,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
                 cl_data = self._settings[self.__cs_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
-                validator_cache[(package_id, reponame, live)] = package_id, myr
+                validator_cache[(package_id, self.reponame, live)] = \
+                    package_id, myr
 
             except KeyError: # system settings client plugin not found
                 pass
 
             return package_id, myr
 
-    def _maskFilter_packages_db_mask(self, package_id, reponame, live):
+    def _maskFilter_packages_db_mask(self, package_id, live):
 
         # check if repository packages.db.mask needs it masked
         repos_mask = {}
@@ -3721,12 +3720,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         if client_settings:
             repos_mask = client_settings['repositories']['mask']
 
-        repomask = repos_mask.get(reponame)
+        repomask = repos_mask.get(self.reponame)
         if isinstance(repomask, (list, set)):
 
             # first, seek into generic masking, all branches
             # (below) avoid issues with repository names
-            mask_repo_id = "%s_ids@@:of:%s" % (reponame, reponame,)
+            mask_repo_id = "%s_ids@@:of:%s" % (self.reponame, self.reponame,)
             repomask_ids = repos_mask.get(mask_repo_id)
 
             if not isinstance(repomask_ids, set):
@@ -3749,15 +3748,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     plg_id = self.__cs_plugin_id
                     cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
-                    validator_cache[(package_id, reponame, live)] = -1, myr
+                    validator_cache[(package_id, self.reponame, live)] = \
+                        -1, myr
 
                 except KeyError: # system settings client plugin not found
                     pass
 
                 return -1, myr
 
-    def _maskFilter_package_license_mask(self, package_id, reponame,
-        live):
+    def _maskFilter_package_license_mask(self, package_id, live):
 
         if not self._settings['license_mask']:
             return
@@ -3776,14 +3775,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
                 cl_data = self._settings[self.__cs_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
-                validator_cache[(package_id, reponame, live)] = -1, myr
+                validator_cache[(package_id, self.reponame, live)] = -1, myr
 
             except KeyError: # system settings client plugin not found
                 pass
 
             return -1, myr
 
-    def _maskFilter_keyword_mask(self, package_id, reponame, live):
+    def _maskFilter_keyword_mask(self, package_id, live):
 
         # WORKAROUND for buggy entries
         # ** is fine then
@@ -3803,7 +3802,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
                 cl_data = self._settings[self.__cs_plugin_id]
                 validator_cache = cl_data['masking_validation']['cache']
-                validator_cache[(package_id, reponame, live)] = package_id, myr
+                validator_cache[(package_id, self.reponame, live)] = \
+                    package_id, myr
 
             except KeyError: # system settings client plugin not found
                 pass
@@ -3816,12 +3816,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         # seek in repository first
         keyword_repo = self._settings['keywords']['repositories']
 
-        for keyword in list(keyword_repo.get(reponame, {}).keys()):
+        for keyword in keyword_repo.get(self.reponame, {}).keys():
 
             if keyword not in mykeywords:
                 continue
 
-            keyword_data = keyword_repo[reponame].get(keyword)
+            keyword_data = keyword_repo[self.reponame].get(keyword)
             if not keyword_data:
                 continue
 
@@ -3833,7 +3833,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     plg_id = self.__cs_plugin_id
                     cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
-                    validator_cache[(package_id, reponame, live)] = \
+                    validator_cache[(package_id, self.reponame, live)] = \
                         package_id, myr
 
                 except KeyError: # system settings client plugin not found
@@ -3842,7 +3842,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 return package_id, myr
 
             kwd_key = "%s_ids" % (keyword,)
-            keyword_data_ids = keyword_repo[reponame].get(kwd_key)
+            keyword_data_ids = keyword_repo[self.reponame].get(kwd_key)
             if not isinstance(keyword_data_ids, set):
 
                 keyword_data_ids = set()
@@ -3853,7 +3853,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                         continue
                     keyword_data_ids |= matches
 
-                keyword_repo[reponame][kwd_key] = keyword_data_ids
+                keyword_repo[self.reponame][kwd_key] = keyword_data_ids
 
             if package_id in keyword_data_ids:
 
@@ -3863,7 +3863,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     plg_id = self.__cs_plugin_id
                     cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
-                    validator_cache[(package_id, reponame, live)] = \
+                    validator_cache[(package_id, self.reponame, live)] = \
                         package_id, myr
 
                 except KeyError: # system settings client plugin not found
@@ -3886,7 +3886,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 continue
 
             kwd_key = "%s_ids" % (keyword,)
-            keyword_data_ids = keyword_pkg.get(reponame+kwd_key)
+            keyword_data_ids = keyword_pkg.get(self.reponame+kwd_key)
 
             if not isinstance(keyword_data_ids, (list, set)):
                 keyword_data_ids = set()
@@ -3898,7 +3898,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                         continue
                     keyword_data_ids |= matches
 
-                keyword_pkg[reponame+kwd_key] = keyword_data_ids
+                keyword_pkg[self.reponame+kwd_key] = keyword_data_ids
 
             if package_id in keyword_data_ids:
 
@@ -3909,7 +3909,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     plg_id = self.__cs_plugin_id
                     cl_data = self._settings[plg_id]
                     validator_cache = cl_data['masking_validation']['cache']
-                    validator_cache[(package_id, reponame, live)] = \
+                    validator_cache[(package_id, self.reponame, live)] = \
                         package_id, myr
 
                 except KeyError: # system settings client plugin not found
@@ -3929,7 +3929,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # SystemSettings Entropy Client plugin not available
             return
         # let's see if something is available in repository config
-        repo_keywords = cl_data['repositories']['repos_keywords'].get(reponame)
+        repo_keywords = cl_data['repositories']['repos_keywords'].get(
+            self.reponame)
         if repo_keywords is None:
             # nopers, sorry!
             return
@@ -3940,7 +3941,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # universal keyword matches!
             myr = mask_ref['repository_packages_db_keywords']
             validator_cache = cl_data['masking_validation']['cache']
-            validator_cache[(package_id, reponame, live)] = \
+            validator_cache[(package_id, self.reponame, live)] = \
                 package_id, myr
             return package_id, myr
 
@@ -3977,7 +3978,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             # found! this pkg is not masked, yay!
             myr = mask_ref['repository_packages_db_keywords']
             validator_cache = cl_data['masking_validation']['cache']
-            validator_cache[(package_id, reponame, live)] = \
+            validator_cache[(package_id, self.reponame, live)] = \
                 package_id, myr
             return package_id, myr
 
@@ -3997,7 +3998,6 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @rtype: tuple
         """
 
-        reponame = self.reponame[len(etpConst['dbnamerepoprefix']):]
         try:
             cl_data = self._settings[self.__cs_plugin_id]
             validator_cache = cl_data['masking_validation']['cache']
@@ -4005,7 +4005,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             validator_cache = {} # fake
 
         if validator_cache:
-            cached = validator_cache.get((package_id, reponame, live))
+            cached = validator_cache.get((package_id, self.reponame, live))
             if cached is not None:
                 return cached
 
@@ -4024,43 +4024,39 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             validator_cache.clear()
 
         if live:
-            data = self._maskFilter_live(package_id, reponame)
+            data = self._maskFilter_live(package_id)
             if data:
                 push_cache(package_id, live, data)
                 return data
 
-        data = self._maskFilter_user_package_mask(package_id,
-            reponame, live)
+        data = self._maskFilter_user_package_mask(package_id, live)
         if data:
             push_cache(package_id, live, data)
             return data
 
-        data = self._maskFilter_user_package_unmask(package_id,
-            reponame, live)
+        data = self._maskFilter_user_package_unmask(package_id, live)
         if data:
             push_cache(package_id, live, data)
             return data
 
-        data = self._maskFilter_packages_db_mask(package_id, reponame,
-            live)
+        data = self._maskFilter_packages_db_mask(package_id, live)
         if data:
             push_cache(package_id, live, data)
             return data
 
-        data = self._maskFilter_package_license_mask(package_id,
-            reponame, live)
+        data = self._maskFilter_package_license_mask(package_id, live)
         if data:
             push_cache(package_id, live, data)
             return data
 
-        data = self._maskFilter_keyword_mask(package_id, reponame, live)
+        data = self._maskFilter_keyword_mask(package_id, live)
         if data:
             push_cache(package_id, live, data)
             return data
 
         # holy crap, can't validate
         myr = self._settings['pkg_masking_reference']['completely_masked']
-        validator_cache[(package_id, reponame, live)] = -1, myr
+        validator_cache[(package_id, self.reponame, live)] = -1, myr
         push_cache(package_id, live, data)
         return -1, myr
 
@@ -4203,7 +4199,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             found_ids = self.__filterSlotTagUse(found_ids, matchSlot,
                 matchTag, matchUse, direction)
             if maskFilter:
-                found_ids = self._packagesFilter(found_ids)
+                def _filter(pkg_id):
+                    pkg_id, pkg_reason = self.maskFilter(pkg_id)
+                    return pkg_id != -1
+                found_ids = set(filter(_filter, found_ids))
 
         ### END FILTERING
 
@@ -4590,7 +4589,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             self._cacher.push("%s/%s/%s_%s" % (
-                self.__db_match_cache_key, self.reponame, ck_sum, hash(hash_str),),
+                self.__db_match_cache_key, self.reponame, ck_sum,
+                hash(hash_str),),
                 kwargs.get('result'), async = False
             )
 
@@ -4683,26 +4683,3 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             return True
 
         return set(filter(myfilter, found_ids))
-
-    def _packagesFilter(self, results):
-        """
-        Packages filter used by atomMatch, input must me found_ids,
-        a list like this: [608, 1867].
-
-        """
-
-        # keywordsFilter ONLY FILTERS results if
-        # self.reponame.startswith(etpConst['dbnamerepoprefix'])
-        # => repository database is open
-        if not self.reponame.startswith(etpConst['dbnamerepoprefix']):
-            return results
-
-        newresults = set()
-        for package_id in results:
-            package_id, reason = self.maskFilter(package_id)
-            if package_id == -1:
-                continue
-            newresults.add(package_id)
-        return newresults
-
-

@@ -427,9 +427,7 @@ class EntropyRepository(EntropyRepositoryBase):
     _LIVE_CACHE = {}
 
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
-        dbname = etpConst['serverdbid'], indexing = True, skipChecks = False,
-        temporary = False):
-
+        dbname = None, indexing = True, skipChecks = False, temporary = False):
         """
         EntropyRepository constructor.
 
@@ -453,6 +451,8 @@ class EntropyRepository(EntropyRepositoryBase):
         self.__cursor_cache = {}
         self.__connection_cache = {}
         self._cleanup_stale_cur_conn_t = time.time()
+        if dbname is None:
+            dbname = etpConst['genericdbid']
 
         EntropyRepositoryBase.__init__(self, readOnly, xcache, temporary,
             dbname, indexing)
@@ -4599,8 +4599,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # use sqlite3 pragma
         pingus = MtimePingus()
         # since quick_check is slow, run it every 72 hours
-        action_str = "EntropyRepository.validate(%s)" % (
-            self.reponame,)
+        action_str = "EntropyRepository.validate(%s)" % (self.reponame,)
         passed = pingus.hours_passed(action_str, 72)
         if passed:
             cur = self._cursor().execute("PRAGMA quick_check(1)")
@@ -5539,7 +5538,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # TODO: remove this before 31-12-2011
 
-        # entropy.qa uses this dbname, must skip migration
+        # entropy.qa uses this reponame, must skip migration
         if self.reponame in ("qa_testing", "mem_repo"):
             return
 

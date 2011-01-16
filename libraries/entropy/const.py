@@ -488,8 +488,6 @@ def const_default_settings(rootdir):
         'etpdatabaseclientfilepath': default_etp_dir + \
             default_etp_client_repodir + default_etp_dbdir + os.path.sep + \
             default_etp_dbclientfile,
-        # prefix of the name of EntropyRepository.reponame
-        'dbnamerepoprefix': "repo_",
         # prefix of database backups
         'dbbackupprefix': 'entropy_backup_',
 
@@ -616,7 +614,7 @@ def const_default_settings(rootdir):
 
         'clientserverrepoid': "__system__", # these two values have to match!
         'clientdbid': "__system__", # these two values have to match!
-        'serverdbid': "__etpdb:",
+        'serverdbid': "__server__",
         'genericdbid': "__generic__",
         'systemreleasefile': "/etc/sabayon-release",
 

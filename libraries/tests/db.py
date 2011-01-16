@@ -25,7 +25,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         self.Spm = self.Client.Spm()
-        self.test_db_name = "%s_test_suite" % (etpConst['dbnamerepoprefix'],)
+        self.test_db_name = "test_suite"
         self.client_sysset_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.test_db = self.__open_test_db(":memory:")
@@ -66,8 +66,8 @@ class EntropyRepositoryTest(unittest.TestCase):
             ('slotmove x11-libs/lesstif 2.1 0', '2020', '1210753863.16')
         )
         updates_out = (
-            (1, 'repo__test_suite', 'move media-libs/x264-svn media-libs/x264', '2020', '1210199116.46'),
-            (2, 'repo__test_suite', 'slotmove x11-libs/lesstif 2.1 0', '2020', '1210753863.16')
+            (1, 'test_suite', 'move media-libs/x264-svn media-libs/x264', '2020', '1210199116.46'),
+            (2, 'test_suite', 'slotmove x11-libs/lesstif 2.1 0', '2020', '1210753863.16')
         )
         actions = tuple(sorted(['move media-libs/x264-svn media-libs/x264',
             'slotmove x11-libs/lesstif 2.1 0']))
@@ -316,8 +316,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
             self._settings[plug_id]['masking_validation']['cache']
-        f_match_mask = (1, 
-            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+        f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
@@ -380,8 +379,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
             self._settings[plug_id]['masking_validation']['cache']
-        f_match_mask = (1, 
-            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+        f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
@@ -417,8 +415,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
             self._settings[plug_id]['masking_validation']['cache']
-        f_match_mask = (1, 
-            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+        f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
@@ -463,8 +460,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         plug_id = self.client_sysset_plugin_id
         masking_validation = \
             self._settings[plug_id]['masking_validation']['cache']
-        f_match_mask = (1, 
-            self.test_db_name[len(etpConst['dbnamerepoprefix']):],)
+        f_match_mask = (1, self.test_db_name,)
 
         self._settings['live_packagemasking']['mask_matches'].add(
             f_match_mask)

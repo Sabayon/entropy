@@ -260,11 +260,11 @@ class RepositoryMixin:
             conn = self.get_repository(repoid)(
                 readOnly = True,
                 dbFile = dbfile,
-                dbname = etpConst['dbnamerepoprefix']+repoid,
+                dbname = repoid,
                 xcache = xcache,
                 indexing = indexing
             )
-            self._add_plugin_to_client_repository(conn, repoid)
+            self._add_plugin_to_client_repository(conn)
 
         if (repoid not in self._treeupdates_repos) and \
             (entropy.tools.is_root()) and \
@@ -624,11 +624,10 @@ class RepositoryMixin:
         del mydbconn
         return 0, atoms_contained
 
-    def _add_plugin_to_client_repository(self, entropy_client_repository,
-        repo_id):
+    def _add_plugin_to_client_repository(self, entropy_client_repository):
         etp_db_meta = {
             'output_interface': self,
-            'repo_name': repo_id,
+            'repo_name': entropy_client_repository.reponame,
         }
         repo_plugin = ClientEntropyRepositoryPlugin(self,
             metadata = etp_db_meta)
@@ -672,8 +671,7 @@ class RepositoryMixin:
                 header = bold(" !!! "),
             )
             m_conn = self.open_temp_repository(dbname = etpConst['clientdbid'])
-            self._add_plugin_to_client_repository(m_conn,
-                etpConst['clientdbid'])
+            self._add_plugin_to_client_repository(m_conn)
             return m_conn
 
         db_dir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
@@ -692,8 +690,7 @@ class RepositoryMixin:
                     dbname = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing
                 )
-                self._add_plugin_to_client_repository(conn,
-                    etpConst['clientdbid'])
+                self._add_plugin_to_client_repository(conn)
                 # TODO: remove this in future, drop useless data from clientdb
             except (DatabaseError,):
                 entropy.tools.print_traceback(f = self.logger)
@@ -728,8 +725,6 @@ class RepositoryMixin:
             indexing = indexing_override
         else:
             indexing = self.indexing
-        if dbname is None:
-            dbname = etpConst['genericdbid']
         conn = GenericRepository(
             readOnly = read_only,
             dbFile = dbfile,
@@ -738,16 +733,13 @@ class RepositoryMixin:
             indexing = indexing,
             skipChecks = skip_checks
         )
-        self._add_plugin_to_client_repository(conn, dbname)
+        self._add_plugin_to_client_repository(conn)
         return conn
 
     def open_temp_repository(self, dbname = None, temp_file = None):
-        if dbname is None:
-            dbname = etpConst['genericdbid']
         if temp_file is None:
             tmp_fd, temp_file = tempfile.mkstemp()
             os.close(tmp_fd)
-
         dbc = GenericRepository(
             readOnly = False,
             dbFile = temp_file,
@@ -757,7 +749,7 @@ class RepositoryMixin:
             skipChecks = True,
             temporary = True
         )
-        self._add_plugin_to_client_repository(dbc, dbname)
+        self._add_plugin_to_client_repository(dbc)
         dbc.initializeRepository()
         return dbc
 
