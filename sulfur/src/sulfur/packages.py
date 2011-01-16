@@ -168,56 +168,47 @@ class Queue:
             [mynew.update(d[x]) for x in d]
             return mynew
 
-        try:
-            dep_tree = self.Entropy._get_required_packages(proposed_matches[:])
-        except DependenciesNotFound:
+        install, remove, rc = self.Entropy.get_install_queue(proposed_matches,
+            False, False)
+        if rc != 0:
             return proposed_matches, False # wtf?
-        except DependenciesCollision:
-            return proposed_matches, False # wtf, again?
 
-        if 0 in dep_tree:
-            dep_tree.pop(0)
-        new_deptree = flatten(dep_tree)
-
-        crying_items = [x for x in matches_to_be_removed if x in new_deptree]
+        crying_items = [x for x in matches_to_be_removed if x in install]
         if not crying_items:
             return proposed_matches, False
 
         # we need to get a list of packages that must be "undo-removed"
         crying_items = []
 
-        for match in proposed_matches:
+        for package_match in proposed_matches:
 
-            graph = Graph()
-            try:
-                xgraph, conflicts = self.Entropy._generate_dependency_tree(
-                    match, graph)
-            except DependenciesNotFound:
+            install, remove, rc = self.Entropy.get_install_queue(
+                [package_match], False, False)
+            if rc != 0:
                 return proposed_matches, False # wtf?
 
-            mm = [x for x in matches_to_be_removed if x in graph.raw()]
-            if mm:
-                crying_items.append(match)
-            del graph
+            if [x for x in matches_to_be_removed if x in install]:
+                crying_items.append(package_match)
 
         # just to make sure...
         if not crying_items:
             return proposed_matches, False
 
         atoms = []
-        for idpackage, repoid in crying_items:
-            dbconn = self.Entropy.open_repository(repoid)
+        for package_id, repo_id in crying_items:
+            pkg_repo = self.Entropy.open_repository(repo_id)
             mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
                 SulfurConf.color_title,
-                dbconn.retrieveAtom(idpackage),
+                pkg_repo.retrieveAtom(package_id),
                 SulfurConf.color_pkgsubtitle,
-                cleanMarkupString(dbconn.retrieveDescription(idpackage)),
+                cleanMarkupString(pkg_repo.retrieveDescription(package_id)),
             )
             atoms.append(mystring)
         atoms = sorted(atoms)
 
         ok = False
-        confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
+        confirmDialog = self.dialogs.ConfirmationDialog(
+            self.ui.main,
             atoms,
             top_text = _("These packages must be excluded"),
             sub_text = _("These packages must be removed from the queue because they depend on your last selection. Do you agree?"),
@@ -230,7 +221,8 @@ class Queue:
             ok = True
         confirmDialog.destroy()
 
-        if not ok: return proposed_matches, True
+        if not ok:
+            return proposed_matches, True
 
         return [x for x in proposed_matches if x not in crying_items], False
 
