@@ -627,7 +627,6 @@ class RepositoryMixin:
     def _add_plugin_to_client_repository(self, entropy_client_repository):
         etp_db_meta = {
             'output_interface': self,
-            'repo_name': entropy_client_repository.reponame,
         }
         repo_plugin = ClientEntropyRepositoryPlugin(self,
             metadata = etp_db_meta)
