@@ -791,16 +791,17 @@ class Dependency(object):
     expressions such as: (dep1 & dep2) | dep 3
     """
 
-    def __init__(self, entropy_dep, entropy_repository):
+    def __init__(self, entropy_dep, entropy_repository_list):
         """
         Dependency constructor.
 
         @param entropy_dep: entropy package dependency
         @type entropy_dep: string
-        @param entropy_repository: EntropyRepositoryBase instance
-        @type entropy_repository: EntropyRepositoryBase
+        @param entropy_repository_list: ordered list of EntropyRepositoryBase
+            instances
+        @type entropy_repository_list: list
         """
-        self.__entropy_repository = entropy_repository
+        self.__entropy_repository_list = entropy_repository_list
         self.__dep = entropy_dep
 
     def get(self):
@@ -816,8 +817,11 @@ class Dependency(object):
         Tries to match entropy_dep and returns True or False if dependency
         is matched.
         """
-        pkg_id, rc = self.__entropy_repository.atomMatch(self.__dep)
-        return rc == 0
+        for entropy_repository in self.__entropy_repository_list:
+            pkg_id, rc = entropy_repository.atomMatch(self.__dep)
+            if rc == 0:
+                return True
+        return False
 
 
 class DependencyStringParser(object):
@@ -844,23 +848,24 @@ class DependencyStringParser(object):
         Raised when dependency string is malformed.
         """
 
-    def __init__(self, entropy_dep, entropy_repository):
+    def __init__(self, entropy_dep, entropy_repository_list):
         """
         DependencyStringParser constructor.
 
         @param entropy_dep: the dependency string to parse
         @type entropy_dep: string
-        @param entropy_repository: EntropyRepositoryBase based instance
-        @type entropy_repository: EntropyRepositoryBase
+        @param entropy_repository_list: ordered list of EntropyRepositoryBase
+            based instances
+        @type entropy_repository_list: list
         """
         self.__dep = entropy_dep
-        self.__entropy_repository = entropy_repository
+        self.__entropy_repository_list = entropy_repository_list
 
     def __dependency(self, dep):
         """
         Helper function to make instantianting Dependency classes less annoying.
         """
-        return Dependency(dep, self.__entropy_repository)
+        return Dependency(dep, self.__entropy_repository_list)
 
     def __split_subs(self, substring):
         deep_count = 0
@@ -983,7 +988,7 @@ class DependencyStringParser(object):
         return matched, matched_deps
 
 
-def expand_dependencies(dependencies, entropy_repository):
+def expand_dependencies(dependencies, entropy_repository_list):
     """
     Expand a list of dependencies resolving conditional ones.
     NOTE: it automatically handles dependencies metadata extended format:
@@ -992,9 +997,9 @@ def expand_dependencies(dependencies, entropy_repository):
     @param dependencies: list of raw package dependencies, as
         returned by EntropyRepositoryBase.retrieveDependencies{,List}()
     @type dependencies: iterable
-    @param entropy_repository: EntropyRepositoryBase instance used to execute
-        the actual dependency resolution
-    @type entropy_repository: EntropyRepositoryBase
+    @param entropy_repository_list: ordered list of EntropyRepositoryBase instances
+        used to execute the actual resolution
+    @type entropy_repository_list: list
     @return: list (keeping the iterable order when possible) of expanded
         dependencies
     @rtype: list
@@ -1015,7 +1020,7 @@ def expand_dependencies(dependencies, entropy_repository):
         if dep.startswith("("):
             try:
                 deps = DependencyStringParser(dep,
-                    entropy_repository).parse()
+                    entropy_repository_list).parse()
             except DependencyStringParser.MalformedDependency:
                 # wtf! add as-is
                 if dep_type is None:

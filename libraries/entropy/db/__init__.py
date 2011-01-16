@@ -2946,7 +2946,7 @@ class EntropyRepository(EntropyRepositoryBase):
         WHERE idpackage = (?)""" % (excluded_deptypes_query,),
         (package_id, package_id,))
         if resolve_conditional_deps:
-            return frozenset(entropy.dep.expand_dependencies(cur, self))
+            return frozenset(entropy.dep.expand_dependencies(cur, [self]))
         else:
             return self._cur2frozenset(cur)
 
@@ -3003,7 +3003,7 @@ class EntropyRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return tuple(entropy.dep.expand_dependencies(cur, self))
+            return tuple(entropy.dep.expand_dependencies(cur, [self]))
         else:
             cur = self._cursor().execute("""
             SELECT dependenciesreference.dependency
@@ -3012,7 +3012,7 @@ class EntropyRepository(EntropyRepositoryBase):
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring, excluded_deptypes_query,), searchdata)
-            return frozenset(entropy.dep.expand_dependencies(cur, self))
+            return frozenset(entropy.dep.expand_dependencies(cur, [self]))
 
     def retrieveKeywords(self, package_id):
         """

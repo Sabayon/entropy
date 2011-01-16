@@ -198,7 +198,7 @@ class DepTest(unittest.TestCase):
         ]
 
         for depstring, expected_outcome in depstrings:
-            parser = et.DependencyStringParser(depstring, test_db)
+            parser = et.DependencyStringParser(depstring, [test_db])
             result, outcome = parser.parse()
             self.assertEqual(outcome, expected_outcome)
 
