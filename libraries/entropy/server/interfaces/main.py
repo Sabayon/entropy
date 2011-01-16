@@ -91,7 +91,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 self,)
             )
 
-        repo = self._metadata['repo_name']
+        repo = entropy_repository_instance.reponame
         local_dbfile = self._metadata['local_dbfile']
         taint_file = self._server._get_local_database_taint_file(repo)
         if os.path.isfile(taint_file):
@@ -131,7 +131,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         if self._server.Mirrors is None:
             return 0
 
-        repo = self._metadata['repo_name']
+        repo = entropy_repository_instance.reponame
         dbfile = self._metadata['local_dbfile']
         read_only = self._metadata['read_only']
         if not read_only:
@@ -159,7 +159,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         dbs = ServerRepositoryStatus()
         dbfile = self._metadata['local_dbfile']
-        repo = self._metadata['repo_name']
+        repo = entropy_repository_instance.reponame
         read_only = self._metadata['read_only']
         if read_only:
             # do not taint database
@@ -249,7 +249,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_removed_package(self, repo_db, package_id):
 
         # setup variables we're going to use
-        srv_repo = self._metadata['repo_name']
+        srv_repo = repo_db.reponame
         rss_revision = repo_db.retrieveRevision(package_id)
         rss_atom = "%s~%s" % (repo_db.retrieveAtom(package_id), rss_revision,)
         status = ServerRepositoryStatus()
@@ -294,7 +294,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_added_package(self, repo_db, package_data):
 
         # setup variables we're going to use
-        srv_repo = self._metadata['repo_name']
+        srv_repo = repo_db.reponame
         rss_atom = "%s~%s" % (package_data['atom'], package_data['revision'],)
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
@@ -3896,7 +3896,6 @@ class ServerRepositoryMixin:
             'no_upload': True,
             'output_interface': self,
             'read_only': False,
-            'repo_name': repoid,
             'local_dbfile': '##this_path_does_not_exist_for_sure#' + repoid,
             '__temporary__': True,
         }
@@ -4012,7 +4011,6 @@ class ServerRepositoryMixin:
             'no_upload': no_upload,
             'output_interface': self,
             'read_only': read_only,
-            'repo_name': repo,
             'local_dbfile': local_dbfile,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
