@@ -1,3 +1,27 @@
+commit 2ef784c89550442ca6f73254fb0d65a7f1da0d42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 15:29:34 2011 +0100
+
+    Release Entropy 1.0_alpha8
+
+commit 28c23d11374f9944df681fa79ce7cd7b98e102ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 15:29:08 2011 +0100
+
+    [entropy.client] fix regression in AvailablePackagesRepositoryUpdater
+
+commit 9f70204e372d7eb894f85130be13dcd534085ee7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 14:16:38 2011 +0100
+
+    [po] update translations (sync)
+
+commit 9c3ac5a8503f25010dbf28a8adab4f4f9e1a808f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 13:09:27 2011 +0100
+
+    Tagging Entropy version 1.0_alpha7
+
 commit 2c069a69a5fdc326dc8ffcf4ca237aafdf625250
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jan 17 13:09:16 2011 +0100
