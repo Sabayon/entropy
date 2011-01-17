@@ -739,11 +739,40 @@ class CalculatorsMixin:
         # conflict is installed, we need to record it
         conflicts.add(c_idpackage)
 
+    def __generate_dependency_tree_resolve_conditional(self, unsatisfied_deps,
+        selected_matches):
+
+        # expand list of package dependencies evaluating conditionals
+        unsatisfied_deps = entropy.dep.expand_dependencies(unsatisfied_deps,
+            [self.open_repository(repo_id) for repo_id in self._enabled_repos],
+            selected_matches = selected_matches)
+
+        def _simple_or_dep_map(dependency):
+            # simple or dependency format support.
+            if dependency.endswith(etpConst['entropyordepquestion']):
+                # or dependency!
+                deps = dependency[:-1].split(etpConst['entropyordepsep'])
+                matched_something = False
+                for dep in deps:
+                    matches, rc = self.atom_match(dep, multi_match = True,
+                        multi_repo = True)
+                    if rc == 0:
+                        difference = set(matches) - set(selected_matches)
+                        if len(difference) != len(matches):
+                            # ok, there is something in the selected data
+                            const_debug_write(__name__,
+                                "__generate_dependency_tree_resolve_conditional"
+                                " replaced %s with %s" % (dependency, dep,))
+                            return dep
+            return dependency
+
+        return set(map(_simple_or_dep_map, unsatisfied_deps))
+
     DISABLE_AUTOCONFLICT = os.getenv("ETP_DISABLE_AUTOCONFLICT")
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
         stack, deps_not_found, conflicts, unsat_cache, relaxed_deps,
-        build_deps, deep_deps, empty_deps, recursive):
+        build_deps, deep_deps, empty_deps, recursive, selected_matches):
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
@@ -751,7 +780,18 @@ class CalculatorsMixin:
         if not build_deps:
             excluded_deptypes = [etpConst['dependency_type_ids']['bdepend_id']]
         myundeps = repo_db.retrieveDependenciesList(pkg_id,
-            exclude_deptypes = excluded_deptypes)
+            exclude_deptypes = excluded_deptypes,
+            resolve_conditional_deps = False)
+
+        # this solves some conditional dependencies using selected_matches.
+        # also expands all the conditional dependencies using
+        # entropy.dep.expand_dependencies()
+        myundeps = self.__generate_dependency_tree_resolve_conditional(
+            myundeps, selected_matches)
+        const_debug_write(__name__,
+            "__generate_dependency_tree_analyze_deplist conditionals, "
+            "new dependency list => %s" % (myundeps,))
+
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
 
         # XXX Experimental feature, make possible to override it XXX
@@ -846,7 +886,7 @@ class CalculatorsMixin:
     def _generate_dependency_tree(self, matched_atom, graph,
         empty_deps = False, relaxed_deps = False, build_deps = False,
         deep_deps = False, unsatisfied_deps_cache = None,
-        elements_cache = None, recursive = True):
+        elements_cache = None, recursive = True, selected_matches = None):
 
         pkg_id, pkg_repo = matched_atom
         if (pkg_id == -1) or (pkg_repo == 1):
@@ -858,6 +898,8 @@ class CalculatorsMixin:
             elements_cache = set()
         if unsatisfied_deps_cache is None:
             unsatisfied_deps_cache = {}
+        if selected_matches is None:
+            selected_matches = []
         deps_not_found = set()
         conflicts = set()
         first_element = True
@@ -914,7 +956,8 @@ class CalculatorsMixin:
                 self.__generate_dependency_tree_analyze_deplist(
                     pkg_match, repo_db, stack, deps_not_found,
                     conflicts, unsatisfied_deps_cache, relaxed_deps,
-                    build_deps, deep_deps, empty_deps, recursive)
+                    build_deps, deep_deps, empty_deps, recursive,
+                    selected_matches)
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
@@ -1283,7 +1326,7 @@ class CalculatorsMixin:
                     deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                     build_deps = build_deps, elements_cache = elements_cache,
                     unsatisfied_deps_cache = unsat_deps_cache,
-                    recursive = recursive
+                    recursive = recursive, selected_matches = package_matches
                 )
             except DependenciesNotFound as err:
                 deps_not_found |= err.value
