@@ -1,3 +1,126 @@
+commit 2c069a69a5fdc326dc8ffcf4ca237aafdf625250
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 13:09:16 2011 +0100
+
+    Release Entropy 1.0_alpha7
+
+commit 084ac6f7088716eaac4dfd19c2092d748432e77b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 13:02:56 2011 +0100
+
+    [entropy.client.interfaces.dep] improve or-dependencies resolution
+    
+    NOTE: this will be merged into the future Graph refactoring.
+    Resolve or-dependencies taking advantage of package matches requested
+    by caller, when available.
+    For example: if user is requesting xfce4-panel and nm-applet, and
+    the former has an or dependency like this: "gnome-panel;xfce4-panel?"
+    or (using the new format) "( gnome-panel | xfce4-panel )", prefer
+    xfce4-panel over gnome-panel.
+
+commit 6bdb040e0ca8381b6963e3837a8e60398be4da60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 12:51:47 2011 +0100
+
+    [entropy.dep] DependencyStringParser: introduce support for preferred package matches in or-dependencies selection
+    
+    NOTE: this will go into the future Graph refactoring.
+    When calculating or-dependencies, it is now possible to provide
+    a list of preferred package matches that can be used to prioritize
+    certain packages over others.
+
+commit 4f563dd9c3f461dc77e586d2f3e915cdeb06ab5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 00:55:24 2011 +0100
+
+    [entropy.db] rename EntropyRepositoryBase "reponame" attribute to "name", keeping backward compat.
+
+commit 57b43a1094e0725b16e9639b68586c738d37aa66
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 00:34:42 2011 +0100
+
+    [entropy.client] drop superfluous metadatum from repository metadata (repo_name)
+
+commit 2f8a0e13ce455e8b11eeb774a1fdbb77d48242e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 00:34:16 2011 +0100
+
+    [entropy.server] drop superfluous metadatum from repository metadata (repo_name)
+
+commit d2326171a47e1647f68449e64f621a1a75de2087
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 00:28:09 2011 +0100
+
+    [entropy.db] make some order among repository identifier metadatum storage inside EntropyRepository*
+    
+    reponame attribute is now storing with 100% fidelilty the repository
+    identifier used to instantiate the EntropyRepositoryBase instance
+    through open_repository() and similar.
+
+commit 2243d82d18d7dde781e23a0bffdff8ff26ef9039
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 16 19:49:11 2011 +0100
+
+    [entropy.dep] update API of expand_dependencies, make possible to match multiple repos
+
+commit 37f10726dc1144660ba860f1b37531603e7ffb25
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 16 19:48:46 2011 +0100
+
+    [entropy.tools] trivial code update
+
+commit d9be1aa2f1865ced60aab2ad5b51086ca9414d91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 16 19:07:43 2011 +0100
+
+    [sulfur] do not use entropy.client Client protected methods, use public API instead
+
+commit e3da5a90a4aa27a32253c53827d3583e62c1406b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 13 00:18:34 2011 +0100
+
+    [entropy.db] add EntropyRepositoryBase.getInstalledPackageSource
+
+commit 246c976d26da5e9ecbc20f6be1223968a67c2fd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 10 23:41:33 2011 +0100
+
+    [entropy.client.interfaces.package] do not resume when trying to recover from checksum mismatch
+
+commit f5a6e1cf031a480936e2b452fbaadda70b1e630d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 10 23:38:33 2011 +0100
+
+    [entropy.fetchers] handle exceeding downloaded data when using urllib
+    
+    It can happen that downloaded data exceeds the size of the file
+    that is requested for download. In this case, resume should be
+    turned off and the file re-downloaded completely.
+
+commit 29e2aedda0ab53e9217c5c9aef1daf091bf18e52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 8 13:46:28 2011 +0100
+
+    [entropy.client] trivial code style update
+
+commit 67ea445389a81f89b48123b6558091677d48b4b7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 8 13:45:33 2011 +0100
+
+    [entropy.server] fix broken uri data handling
+
+commit 49edad7b7acb6d256a7c8a43ed5a419ff0e305e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 01:46:46 2011 +0100
+
+    [sulfur.packages] catch caching issues in time inside _pkg_get_masked
+
+commit 604e5700b45d9184989e600b80bd79b158db8906
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jan 6 01:22:09 2011 +0100
+
+    Tagging Entropy version 1.0_alpha6
+
 commit ae88cfd39ea54d70e9a1c6efa34aefbc5e259a72
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jan 6 01:22:06 2011 +0100
