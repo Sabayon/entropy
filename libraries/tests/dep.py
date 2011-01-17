@@ -202,6 +202,31 @@ class DepTest(unittest.TestCase):
             result, outcome = parser.parse()
             self.assertEqual(outcome, expected_outcome)
 
+    def test_parser_selected(self):
+        pkgs = _misc.get_test_packages_and_atoms()
+        test_db = self.__open_test_db()
+        spm = self.__open_spm()
+
+        deps = []
+        for dep, path in pkgs.items():
+            data = spm.extract_package_metadata(path)
+            idpackage, rev, new_data = test_db.addPackage(data)
+            self.assertEqual(data, new_data)
+            deps.append(dep)
+        deps.sort()
+        selected_matches = [(test_db.atomMatch(deps[2])[0], test_db.name)]
+
+        depstrings = [
+            ("( %s & %s ) | %s" % (deps[0], deps[1], deps[2]), [deps[2]]),
+            ("%s | ( cacca | cacca ) | %s" % (deps[0], deps[2],), [deps[2]]),
+        ]
+
+        for depstring, expected_outcome in depstrings:
+            parser = et.DependencyStringParser(depstring, [test_db],
+                selected_matches = selected_matches)
+            result, outcome = parser.parse()
+            self.assertEqual(outcome, expected_outcome)
+
 if __name__ == '__main__':
     if "--debug" in sys.argv:
         sys.argv.remove("--debug")

@@ -818,11 +818,24 @@ class Dependency(object):
         is matched.
         """
         for entropy_repository in self.__entropy_repository_list:
-            pkg_id, rc = entropy_repository.atomMatch(self.__dep)
-            if rc == 0:
+            pkg_id, res = entropy_repository.atomMatch(self.__dep)
+            if res == 0:
                 return True
         return False
 
+    def evaluate(self):
+        """
+        Evaluate dependency trying to match dentropy_dep across all the
+        available repositories and return package matches.
+        """
+        eval_data = set()
+        for entropy_repository in self.__entropy_repository_list:
+            repo_id = entropy_repository.name
+            pkg_deps, res = entropy_repository.atomMatch(self.__dep,
+                multiMatch = True)
+            if res == 0:
+                eval_data.update((x, repo_id) for x in pkg_deps)
+        return eval_data
 
 class DependencyStringParser(object):
 
@@ -848,7 +861,8 @@ class DependencyStringParser(object):
         Raised when dependency string is malformed.
         """
 
-    def __init__(self, entropy_dep, entropy_repository_list):
+    def __init__(self, entropy_dep, entropy_repository_list,
+        selected_matches = None):
         """
         DependencyStringParser constructor.
 
@@ -857,15 +871,45 @@ class DependencyStringParser(object):
         @param entropy_repository_list: ordered list of EntropyRepositoryBase
             based instances
         @type entropy_repository_list: list
+        @keyword selected_matches: if given, it will be used in the decisional
+            process of selecting conditional dependencies. Generally, a list
+            of selected matches comes directly from user packages selection.
+        @type selected_matches: set
         """
         self.__dep = entropy_dep
         self.__entropy_repository_list = entropy_repository_list
+        self.__selected_matches = None
+        if selected_matches:
+            self.__selected_matches = frozenset(selected_matches)
+        self.__dep_cache = {}
+        self.__eval_cache = {}
+
+    def __clear_cache(self):
+        self.__dep_cache.clear()
+        self.__eval_cache.clear()
 
     def __dependency(self, dep):
         """
         Helper function to make instantianting Dependency classes less annoying.
         """
-        return Dependency(dep, self.__entropy_repository_list)
+        cached = self.__dep_cache.get(dep)
+        if cached is not None:
+            return cached
+        obj = Dependency(dep, self.__entropy_repository_list)
+        self.__dep_cache[dep] = obj
+        return obj
+
+    def __evaluate(self, dep):
+        """
+        Helper function to make instantianting Dependency classes and retrieving
+        match results less annoying.
+        """
+        cached = self.__eval_cache.get(dep)
+        if cached is not None:
+            return cached
+        obj = Dependency(dep, self.__entropy_repository_list).evaluate()
+        self.__eval_cache[dep] = obj
+        return obj
 
     def __split_subs(self, substring):
         deep_count = 0
@@ -921,33 +965,54 @@ class DependencyStringParser(object):
 
         if self.LOGIC_AND in iterable:
             iterable = [x for x in iterable if x != self.LOGIC_AND]
+
             outcomes = []
             for and_el in iterable:
                 if isinstance(and_el, list):
-                    matched, outcome = self.__evaluate_subs(and_el)
-                    if matched:
+                    outcome = self.__evaluate_subs(and_el)
+                    if outcome:
                         outcomes.extend(outcome)
                     else:
-                        return False, []
+                        return []
                 elif self.__dependency(and_el):
                     outcomes.append(and_el)
                 else:
-                    return False, []
-            return True, outcomes
+                    return []
+            return outcomes
 
         elif self.LOGIC_OR in iterable:
             iterable = [x for x in iterable if x != self.LOGIC_OR]
+
+            if self.__selected_matches:
+                # if there is something to prioritize
+                for or_el in iterable:
+                    if isinstance(or_el, list):
+                        outcome = self.__evaluate_subs(or_el)
+                        if outcome:
+                            difference = set(outcome) - self.__selected_matches
+                            if not difference:
+                                # everything matched, so this should be taken
+                                return outcome
+                    else: # simple string
+                        outcome = self.__evaluate(or_el)
+                        if outcome:
+                            difference = set(outcome) - self.__selected_matches
+                            if len(outcome) != len(difference):
+                                # ok cool, got it!
+                                return [or_el]
+            # no match using selected_matches priority list, fallback to
+            # first available.
             for or_el in iterable:
                 if isinstance(or_el, list):
-                    matched, outcome = self.__evaluate_subs(or_el)
-                    if matched:
-                        return True, outcome
+                    outcome = self.__evaluate_subs(or_el)
+                    if outcome:
+                        return outcome
                 elif self.__dependency(or_el):
-                    return True, [or_el]
-            return False, []
+                    return [or_el]
+            return []
 
         # don't know what to do at the moment with this malformation
-        return False, []
+        return []
 
     def __encode_sub(self, dep):
         """
@@ -980,15 +1045,20 @@ class DependencyStringParser(object):
         @rtype: tuple
         @raise MalformedDependency: if dependency string is malformed
         """
+        self.__clear_cache()
+        matched = False
         try:
-            matched, matched_deps = self.__evaluate_subs(
+            matched_deps = self.__evaluate_subs(
                 self.__encode_sub("(" + self.__dep + ")"))
+            if matched_deps:
+                matched = True
         except DependencyStringParser.MalformedDependency:
-            return False, []
+            matched_deps = []
         return matched, matched_deps
 
 
-def expand_dependencies(dependencies, entropy_repository_list):
+def expand_dependencies(dependencies, entropy_repository_list,
+    selected_matches = None):
     """
     Expand a list of dependencies resolving conditional ones.
     NOTE: it automatically handles dependencies metadata extended format:
@@ -1000,6 +1070,9 @@ def expand_dependencies(dependencies, entropy_repository_list):
     @param entropy_repository_list: ordered list of EntropyRepositoryBase instances
         used to execute the actual resolution
     @type entropy_repository_list: list
+    @keyword selected_matches: list of preferred package matches used to
+        evaluate or-dependencies.
+    @type selected_matches: set
     @return: list (keeping the iterable order when possible) of expanded
         dependencies
     @rtype: list
@@ -1008,7 +1081,6 @@ def expand_dependencies(dependencies, entropy_repository_list):
     """
     pkg_deps = []
     for dep in dependencies:
-        is_tuple = False
         dep_type = None
         if isinstance(dep, tuple):
             if len(dep) == 2:
@@ -1020,7 +1092,8 @@ def expand_dependencies(dependencies, entropy_repository_list):
         if dep.startswith("("):
             try:
                 deps = DependencyStringParser(dep,
-                    entropy_repository_list).parse()
+                    entropy_repository_list,
+                    selected_matches = selected_matches).parse()
             except DependencyStringParser.MalformedDependency:
                 # wtf! add as-is
                 if dep_type is None:
