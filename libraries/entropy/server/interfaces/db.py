@@ -181,14 +181,6 @@ class ServerPackagesRepository(EntropyRepository):
         return ServerPackagesRepositoryUpdater(entropy_client, repository_id,
             force, gpg).update()
 
-    def maskFilter(self, package_id, live = True):
-        """
-        Reimplemented from EntropyRepository.
-        Server-side repositories do not feature any masked package. So, it's
-        safe to always consider package_id valid.
-        """
-        return package_id, 0
-
     def handlePackage(self, pkg_data, forcedRevision = -1,
         formattedContent = False):
         """

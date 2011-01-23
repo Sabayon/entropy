@@ -21,7 +21,7 @@ from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     etpUi, const_set_nice_level, const_setup_file
 from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold, \
     TextInterface
-from entropy.dump import dumpobj
+from entropy.dump import dumpobj, loadobj
 from entropy.cache import EntropyCacher
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
@@ -107,12 +107,6 @@ class InstalledPackagesRepository(EntropyRepository):
         return self.addPackage(pkg_data, revision = forcedRevision,
             formatted_content = formattedContent)
 
-    def maskFilter(self, package_id, live = True):
-        """
-        Reimplemented from EntropyRepository.
-        Installed packages are always valid, can't be otherwise.
-        """
-        return package_id, 0
 
 class AvailablePackagesRepositoryUpdater(object):
 
@@ -1979,7 +1973,421 @@ class AvailablePackagesRepositoryUpdater(object):
         return EntropyRepositoryBase.REPOSITORY_UPDATED_OK
 
 
-class AvailablePackagesRepository(EntropyRepository):
+_CL_PLUGIN_ID = etpConst['system_settings_plugins_ids']['client_plugin']
+
+class MaskableRepository(EntropyRepositoryBase):
+    """
+    Objects inheriting from this class support package masking.
+    A masked package is a package that is not visible to user and thus not
+    selectable in dependency calculation and also not directly installable.
+    The only repositories that need to support the feature are those containing
+    installable packages, like AvailablePackagesRepository.
+    """
+    _MASK_FILTER_CACHE_ID = EntropyCacher.CACHE_IDS['mask_filter']
+
+    def _mask_filter_fetch_cache(self, package_id):
+        if self._caching:
+            return loadobj("%s/%s/%s" % (
+                MaskableRepository._MASK_FILTER_CACHE_ID, self.name,
+                    package_id,))
+
+    def _mask_filter_store_cache(self, package_id, value):
+        if self._caching:
+            dumpobj("%s/%s/%s" % (MaskableRepository._MASK_FILTER_CACHE_ID,
+                self.name, package_id,), value)
+
+    def _maskFilter_live(self, package_id):
+
+        ref = self._settings['pkg_masking_reference']
+        if (package_id, self.name) in \
+            self._settings['live_packagemasking']['mask_matches']:
+
+            # do not cache this
+            return -1, ref['user_live_mask']
+
+        elif (package_id, self.name) in \
+            self._settings['live_packagemasking']['unmask_matches']:
+
+            return package_id, ref['user_live_unmask']
+
+    def _maskFilter_user_package_mask(self, package_id, live):
+
+        mykw = "%smask_ids" % (self.name,)
+        user_package_mask_ids = self._settings.get(mykw)
+
+        if not isinstance(user_package_mask_ids, (list, set, frozenset)):
+            user_package_mask_ids = set()
+
+            for atom in self._settings['mask']:
+                matches, r = self.atomMatch(atom, multiMatch = True,
+                    maskFilter = False)
+                if r != 0:
+                    continue
+                user_package_mask_ids |= set(matches)
+
+            self._settings[mykw] = user_package_mask_ids
+
+        if package_id in user_package_mask_ids:
+            # sorry, masked
+            ref = self._settings['pkg_masking_reference']
+            myr = ref['user_package_mask']
+
+            try:
+                cl_data = self._settings[_CL_PLUGIN_ID]
+                validator_cache = cl_data['masking_validation']['cache']
+                validator_cache[(package_id, self.name, live)] = -1, myr
+            except KeyError: # system settings client plugin not found
+                pass
+
+            return -1, myr
+
+    def _maskFilter_user_package_unmask(self, package_id, live):
+
+        # see if we can unmask by just lookin into user
+        # package.unmask stuff -> self._settings['unmask']
+        mykw = "%sunmask_ids" % (self.name,)
+        user_package_unmask_ids = self._settings.get(mykw)
+
+        if not isinstance(user_package_unmask_ids, (list, set, frozenset)):
+
+            user_package_unmask_ids = set()
+            for atom in self._settings['unmask']:
+                matches, r = self.atomMatch(atom, multiMatch = True,
+                    maskFilter = False)
+                if r != 0:
+                    continue
+                user_package_unmask_ids |= set(matches)
+
+            self._settings[mykw] = user_package_unmask_ids
+
+        if package_id in user_package_unmask_ids:
+
+            ref = self._settings['pkg_masking_reference']
+            myr = ref['user_package_unmask']
+            try:
+                cl_data = self._settings[_CL_PLUGIN_ID]
+                validator_cache = cl_data['masking_validation']['cache']
+                validator_cache[(package_id, self.name, live)] = \
+                    package_id, myr
+            except KeyError: # system settings client plugin not found
+                pass
+
+            return package_id, myr
+
+    def _maskFilter_packages_db_mask(self, package_id, live):
+
+        # check if repository packages.db.mask needs it masked
+        repos_mask = {}
+        client_plg_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        client_settings = self._settings.get(client_plg_id, {})
+        if client_settings:
+            repos_mask = client_settings['repositories']['mask']
+
+        repomask = repos_mask.get(self.name)
+        if isinstance(repomask, (list, set, frozenset)):
+
+            # first, seek into generic masking, all branches
+            # (below) avoid issues with repository names
+            mask_repo_id = "%s_ids@@:of:%s" % (self.name, self.name,)
+            repomask_ids = repos_mask.get(mask_repo_id)
+
+            if not isinstance(repomask_ids, set):
+                repomask_ids = set()
+                for atom in repomask:
+                    matches, r = self.atomMatch(atom, multiMatch = True,
+                        maskFilter = False)
+                    if r != 0:
+                        continue
+                    repomask_ids |= set(matches)
+                repos_mask[mask_repo_id] = repomask_ids
+
+            if package_id in repomask_ids:
+
+                ref = self._settings['pkg_masking_reference']
+                myr = ref['repository_packages_db_mask']
+
+                try:
+                    cl_data = self._settings[_CL_PLUGIN_ID]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(package_id, self.name, live)] = \
+                        -1, myr
+                except KeyError: # system settings client plugin not found
+                    pass
+
+                return -1, myr
+
+    def _maskFilter_package_license_mask(self, package_id, live):
+
+        if not self._settings['license_mask']:
+            return
+
+        mylicenses = self.retrieveLicense(package_id)
+        mylicenses = mylicenses.strip().split()
+        lic_mask = self._settings['license_mask']
+        for mylicense in mylicenses:
+
+            if mylicense not in lic_mask:
+                continue
+
+            ref = self._settings['pkg_masking_reference']
+            myr = ref['user_license_mask']
+            try:
+                cl_data = self._settings[_CL_PLUGIN_ID]
+                validator_cache = cl_data['masking_validation']['cache']
+                validator_cache[(package_id, self.name, live)] = -1, myr
+            except KeyError: # system settings client plugin not found
+                pass
+
+            return -1, myr
+
+    def _maskFilter_keyword_mask(self, package_id, live):
+
+        # WORKAROUND for buggy entries
+        # ** is fine then
+        # TODO: remove this before 31-12-2011
+        mykeywords = self.retrieveKeywords(package_id)
+        if mykeywords == set([""]):
+            mykeywords = set(['**'])
+
+        mask_ref = self._settings['pkg_masking_reference']
+
+        # firstly, check if package keywords are in etpConst['keywords']
+        # (universal keywords have been merged from package.keywords)
+        same_keywords = etpConst['keywords'] & mykeywords
+        if same_keywords:
+            myr = mask_ref['system_keyword']
+            try:
+
+                cl_data = self._settings[_CL_PLUGIN_ID]
+                validator_cache = cl_data['masking_validation']['cache']
+                validator_cache[(package_id, self.name, live)] = \
+                    package_id, myr
+
+            except KeyError: # system settings client plugin not found
+                pass
+
+            return package_id, myr
+
+        # if we get here, it means we didn't find mykeywords
+        # in etpConst['keywords']
+        # we need to seek self._settings['keywords']
+        # seek in repository first
+        keyword_repo = self._settings['keywords']['repositories']
+
+        for keyword in keyword_repo.get(self.name, {}).keys():
+
+            if keyword not in mykeywords:
+                continue
+
+            keyword_data = keyword_repo[self.name].get(keyword)
+            if not keyword_data:
+                continue
+
+            if "*" in keyword_data:
+                # all packages in this repo with keyword "keyword" are ok
+                myr = mask_ref['user_repo_package_keywords_all']
+                try:
+                    cl_data = self._settings[_CL_PLUGIN_ID]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(package_id, self.name, live)] = \
+                        package_id, myr
+                except KeyError: # system settings client plugin not found
+                    pass
+
+                return package_id, myr
+
+            kwd_key = "%s_ids" % (keyword,)
+            keyword_data_ids = keyword_repo[self.name].get(kwd_key)
+            if not isinstance(keyword_data_ids, set):
+
+                keyword_data_ids = set()
+                for atom in keyword_data:
+                    matches, r = self.atomMatch(atom, multiMatch = True,
+                        maskFilter = False)
+                    if r != 0:
+                        continue
+                    keyword_data_ids |= matches
+
+                keyword_repo[self.name][kwd_key] = keyword_data_ids
+
+            if package_id in keyword_data_ids:
+
+                myr = mask_ref['user_repo_package_keywords']
+                try:
+                    cl_data = self._settings[_CL_PLUGIN_ID]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(package_id, self.name, live)] = \
+                        package_id, myr
+                except KeyError: # system settings client plugin not found
+                    pass
+                return package_id, myr
+
+        keyword_pkg = self._settings['keywords']['packages']
+
+        # if we get here, it means we didn't find a match in repositories
+        # so we scan packages, last chance
+        for keyword in keyword_pkg.keys():
+            # use .keys() because keyword_pkg gets modified during iteration
+
+            # first of all check if keyword is in mykeywords
+            if keyword not in mykeywords:
+                continue
+
+            keyword_data = keyword_pkg.get(keyword)
+            if not keyword_data:
+                continue
+
+            kwd_key = "%s_ids" % (keyword,)
+            keyword_data_ids = keyword_pkg.get(self.name+kwd_key)
+
+            if not isinstance(keyword_data_ids, (list, set)):
+                keyword_data_ids = set()
+                for atom in keyword_data:
+                    # match atom
+                    matches, r = self.atomMatch(atom, multiMatch = True,
+                        maskFilter = False)
+                    if r != 0:
+                        continue
+                    keyword_data_ids |= matches
+
+                keyword_pkg[self.name+kwd_key] = keyword_data_ids
+
+            if package_id in keyword_data_ids:
+
+                # valid!
+                myr = mask_ref['user_package_keywords']
+                try:
+                    cl_data = self._settings[_CL_PLUGIN_ID]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(package_id, self.name, live)] = \
+                        package_id, myr
+                except KeyError: # system settings client plugin not found
+                    pass
+
+                return package_id, myr
+
+
+        ## if we get here, it means that pkg it keyword masked
+        ## and we should look at the very last resort, per-repository
+        ## package keywords
+        # check if repository contains keyword unmasking data
+
+        cl_data = self._settings.get(_CL_PLUGIN_ID)
+        if cl_data is None:
+            # SystemSettings Entropy Client plugin not available
+            return
+        # let's see if something is available in repository config
+        repo_keywords = cl_data['repositories']['repos_keywords'].get(
+            self.name)
+        if repo_keywords is None:
+            # nopers, sorry!
+            return
+
+        # check universal keywords
+        same_keywords = repo_keywords.get('universal') & mykeywords
+        if same_keywords:
+            # universal keyword matches!
+            myr = mask_ref['repository_packages_db_keywords']
+            validator_cache = cl_data['masking_validation']['cache']
+            validator_cache[(package_id, self.name, live)] = \
+                package_id, myr
+            return package_id, myr
+
+        ## if we get here, it means that even universal masking failed
+        ## and we need to look at per-package settings
+        repo_settings = repo_keywords.get('packages')
+        if not repo_settings:
+            # it's empty, not worth checking
+            return
+
+        cached_key = "packages_ids"
+        keyword_data_ids = repo_keywords.get(cached_key)
+        if not isinstance(keyword_data_ids, dict):
+            # create cache
+
+            keyword_data_ids = {}
+            for atom, values in repo_settings.items():
+                matches, r = self.atomMatch(atom, multiMatch = True,
+                    maskFilter = False)
+                if r != 0:
+                    continue
+                for match in matches:
+                    obj = keyword_data_ids.setdefault(match, set())
+                    obj.update(values)
+
+            repo_keywords[cached_key] = keyword_data_ids
+
+        pkg_keywords = keyword_data_ids.get(package_id, set())
+        if "**" in pkg_keywords:
+            same_keywords = True
+        else:
+            same_keywords = pkg_keywords & etpConst['keywords']
+        if same_keywords:
+            # found! this pkg is not masked, yay!
+            myr = mask_ref['repository_packages_db_keywords']
+            validator_cache = cl_data['masking_validation']['cache']
+            validator_cache[(package_id, self.name, live)] = \
+                package_id, myr
+            return package_id, myr
+
+    def maskFilter(self, package_id, live = True):
+        """
+        Reimplemented from EntropyRepositoryBase
+        """
+        validator_cache = self._settings.get(_CL_PLUGIN_ID, {}).get(
+            'masking_validation', {}).get('cache', {})
+
+        cached = validator_cache.get((package_id, self.name, live))
+        if cached is not None:
+            return cached
+
+        # use on-disk cache?
+        cached = self._mask_filter_fetch_cache(package_id)
+        if cached is not None:
+            return cached
+
+        # avoid memleaks
+        if len(validator_cache) > 100000:
+            validator_cache.clear()
+
+        if live:
+            data = self._maskFilter_live(package_id)
+            if data:
+                return data
+
+        data = self._maskFilter_user_package_mask(package_id, live)
+        if data:
+            self._mask_filter_store_cache(package_id, data)
+            return data
+
+        data = self._maskFilter_user_package_unmask(package_id, live)
+        if data:
+            self._mask_filter_store_cache(package_id, data)
+            return data
+
+        data = self._maskFilter_packages_db_mask(package_id, live)
+        if data:
+            self._mask_filter_store_cache(package_id, data)
+            return data
+
+        data = self._maskFilter_package_license_mask(package_id, live)
+        if data:
+            self._mask_filter_store_cache(package_id, data)
+            return data
+
+        data = self._maskFilter_keyword_mask(package_id, live)
+        if data:
+            self._mask_filter_store_cache(package_id, data)
+            return data
+
+        # holy crap, can't validate
+        myr = self._settings['pkg_masking_reference']['completely_masked']
+        validator_cache[(package_id, self.name, live)] = -1, myr
+        self._mask_filter_store_cache(package_id, data)
+        return -1, myr
+
+
+class AvailablePackagesRepository(EntropyRepository, MaskableRepository):
     """
     This class represents the available packages repository and is a direct
     subclass of EntropyRepository. It implements the update() method in order
@@ -2052,8 +2460,14 @@ class AvailablePackagesRepository(EntropyRepository):
         raise PermissionDenied(
             "cannot execute removePackage on this repository")
 
+    def clearCache(self):
+        # clear package masking filter
+        cl_data = self._settings.get(_CL_PLUGIN_ID, {})
+        cl_data.get('masking_validation', {}).get('cache', {}).clear()
+        EntropyRepository.clearCache(self)
 
-class GenericRepository(EntropyRepository):
+
+class GenericRepository(EntropyRepository, MaskableRepository):
     """
     This class represents a generic packages repository and is a direct
     subclass of EntropyRepository.
@@ -2086,4 +2500,4 @@ class GenericRepository(EntropyRepository):
         enabled = getattr(self, 'enable_mask_filter', False)
         if not enabled:
             return package_id, 0
-        return EntropyRepository.maskFilter(self, package_id, live = live)
+        return MaskableRepository.maskFilter(self, package_id, live = live)

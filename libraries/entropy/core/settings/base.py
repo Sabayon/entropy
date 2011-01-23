@@ -1399,6 +1399,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         if repoid is not None:
             EntropyCacher.clear_cache_item("%s/%s/" % (
                 EntropyCacher.CACHE_IDS['db_match'], repoid,))
+            EntropyCacher.clear_cache_item("%s/%s/" % (
+                EntropyCacher.CACHE_IDS['mask_filter'], repoid,))
 
     def __generic_parser(self, filepath, comment_tag = "#"):
         """

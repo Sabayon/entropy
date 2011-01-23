@@ -42,6 +42,7 @@ class EntropyCacher(Singleton):
             'depends_tree': 'depends/depends_tree_',
             'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
             'library_breakage': 'libs_break/library_breakage_',
+            'mask_filter': 'match/mask_filter',
         }
 
     # Max amount of processes to spawn
