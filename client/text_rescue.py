@@ -721,7 +721,10 @@ def _database_check(entropy_client):
 
     def client_repository_sanity_check():
         entropy_client.output(
-            darkred(_("Sanity Check") + ": " + _("system database")),
+            "%s: %s" % (
+                brown(_("Sanity Check")),
+                darkgreen(_("installed packages repository")),
+            ),
             importance = 2,
             level = "warning"
         )
@@ -754,27 +757,28 @@ def _database_check(entropy_client):
             )
             try:
                 entropy_client.installed_repository().getPackageData(x)
-            except Exception as e:
+            except Exception as err:
                 entropy.tools.print_traceback()
                 errors = True
                 entropy_client.output(
-                    darkred(_("Errors on package id %s, error: %s")) % (x, e),
+                    "%s: %s" % (
+                        darkred(_("Error checking package")),
+                        err,
+                    ),
                     importance = 0,
                     level = "warning"
                 )
 
         if not errors:
-            t = _("Sanity Check") + ": %s" % (bold(_("PASSED")),)
             entropy_client.output(
-                darkred(t),
+                "%s: %s" % (brown(_("Sanity Check")), bold(_("passed"))),
                 importance = 2,
                 level = "warning"
             )
             return 0
         else:
-            t = _("Sanity Check") + ": %s" % (bold(_("CORRUPTED")),)
             entropy_client.output(
-                darkred(t),
+                "%s: %s" % (brown(_("Sanity Check")), bold(_("corrupted"))),
                 importance = 2,
                 level = "warning"
             )
