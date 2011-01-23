@@ -3374,15 +3374,16 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        package_metadata['xpakpath'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + package_metadata['download'] + os.path.sep + \
-            etpConst['entropyxpakrelativepath']
+        package_metadata['xpakpath'] = os.path.join(
+            package_metadata['unpackdir'],
+            etpConst['entropyxpakrelativepath'])
 
         if not package_metadata['merge_from']:
 
             package_metadata['xpakstatus'] = None
-            package_metadata['xpakdir'] = package_metadata['xpakpath'] + \
-                os.path.sep + etpConst['entropyxpakdatarelativepath']
+            package_metadata['xpakdir'] = os.path.join(
+                package_metadata['xpakpath'],
+                etpConst['entropyxpakdatarelativepath'])
 
         else:
 
@@ -3415,13 +3416,13 @@ class PortagePlugin(SpmPlugin):
             shutil.rmtree(package_metadata['xpakpath'], True)
 
         # create data dir where we'll unpack the xpak
-        xpak_dir = package_metadata['xpakpath'] + os.path.sep + \
-            etpConst['entropyxpakdatarelativepath']
+        xpak_dir = os.path.join(package_metadata['xpakpath'],
+            etpConst['entropyxpakdatarelativepath'])
 
         os.makedirs(xpak_dir, 0o755)
 
-        xpak_path = package_metadata['xpakpath'] + os.path.sep + \
-            etpConst['entropyxpakfilename']
+        xpak_path = os.path.join(package_metadata['xpakpath'],
+            etpConst['entropyxpakfilename'])
 
         if not package_metadata['merge_from']:
 
