@@ -2520,8 +2520,9 @@ class PortagePlugin(SpmPlugin):
 
         if do_rescan or (str(stored_digest) != str(portage_dirs_digest)):
 
-            # force parameters
-            entropy_repository.readonly = False
+            # force parameters, only ServerEntropyRepository exposes
+            # the setReadonly method
+            entropy_repository.setReadonly(False)
             # disable upload trigger
             from entropy.server.interfaces.main import \
                 ServerEntropyRepositoryPlugin

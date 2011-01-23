@@ -372,7 +372,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param name: repository identifier (or name)
         @type name: string
         """
-        self.readonly = readonly
+        self._readonly = readonly
         self._caching = xcache
         self._temporary = temporary
         self.name = name
@@ -402,6 +402,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         return self._temporary
 
+    def readonly(self):
+        """
+        Return whether the repository is read-only.
+
+        @return: True, if repository is read-only
+        @rtype: bool
+        """
+        return self._readonly
+
     def close(self):
         """
         Close repository storage communication and open disk files.
@@ -409,7 +418,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         Attention: call this method from your subclass, otherwise
         EntropyRepositoryPlugins won't be notified of a repo close.
         """
-        if not self.readonly:
+        if not self._readonly:
             self.commit()
 
         plugins = self.get_plugins()

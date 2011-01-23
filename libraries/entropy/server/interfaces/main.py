@@ -108,7 +108,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         if not local_dbfile_exists:
             # better than having a completely broken db
             self._metadata['read_only'] = False
-            entropy_repository_instance.readonly = False
+            # force parameters, only ServerEntropyRepository exposes
+            # the setReadonly method
+            entropy_repository_instance.setReadonly(False)
             entropy_repository_instance.initializeRepository()
             entropy_repository_instance.commit()
 

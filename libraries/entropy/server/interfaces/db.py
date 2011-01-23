@@ -236,6 +236,15 @@ class ServerPackagesRepository(EntropyRepository):
         return self.addPackage(pkg_data, revision = current_rev,
             formatted_content = formattedContent)
 
+    def setReadonly(self, readonly):
+        """
+        Set or unset the repository as read-only.
+
+        @param readonly: True, enable read-only
+        @type readonly: bool
+        """
+        self._readonly = bool(readonly)
+
 
 class ServerPackagesRepositoryUpdater(object):
 
