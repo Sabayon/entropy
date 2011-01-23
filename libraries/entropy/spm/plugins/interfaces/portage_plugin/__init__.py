@@ -3491,36 +3491,6 @@ class PortagePlugin(SpmPlugin):
 
         return 0
 
-    def _extract_elog(self, logfile):
-        """
-        Extract Portage package merge log file information.
-
-        @param logfile: path to log file
-        @type logfile: string
-        @return: content of the log file
-        @rtype: string
-        """
-
-        logline = False
-        logoutput = []
-        f = open(logfile, "r")
-        reallog = f.readlines()
-        f.close()
-
-        for line in reallog:
-            if line.startswith("INFO: postinst") or \
-                line.startswith("LOG: postinst"):
-                logline = True
-                continue
-                # disable all the others
-            elif line.startswith("LOG:"):
-                logline = False
-                continue
-            if (logline) and (line.strip()):
-                # trap !
-                logoutput.append(line.strip())
-        return logoutput
-
     def _get_portage_vartree(self, root = None):
 
         if root is None:
