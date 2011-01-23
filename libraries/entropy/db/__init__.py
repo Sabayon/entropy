@@ -451,11 +451,12 @@ class EntropyRepository(EntropyRepositoryBase):
         self.__cursor_cache = {}
         self.__connection_cache = {}
         self._cleanup_stale_cur_conn_t = time.time()
+        self.__indexing = indexing
         if name is None:
             name = etpConst['genericdbid']
 
         EntropyRepositoryBase.__init__(self, readOnly, xcache, temporary,
-            name, indexing)
+            name)
 
         self._db_path = dbFile
         if self._db_path is None:
@@ -469,10 +470,10 @@ class EntropyRepository(EntropyRepositoryBase):
 
             if not entropy.tools.is_user_in_entropy_group():
                 # forcing since we won't have write access to db
-                self.indexing = False
+                self.__indexing = False
             # live systems don't like wasting RAM
-            if entropy.tools.islive():
-                self.indexing = False
+            if entropy.tools.islive() and not etpConst['systemroot']:
+                self.__indexing = False
 
             try:
                 if os.access(self._db_path, os.W_OK) and \
@@ -491,6 +492,15 @@ class EntropyRepository(EntropyRepositoryBase):
 
         if self.__structure_update:
             self._databaseStructureUpdates()
+
+    def setIndexing(self, indexing):
+        """
+        Enable or disable metadata indexing.
+
+        @param indexing: True, to enable indexing.
+        @type indexing: bool
+        """
+        self.__indexing = bool(indexing)
 
     def _get_cur_th_key(self):
         return thread.get_ident(), os.getpid()
@@ -583,7 +593,7 @@ class EntropyRepository(EntropyRepositoryBase):
         first_part = "<EntropyRepository instance at %s, %s" % (
             hex(id(self)), self._db_path,)
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
-            self.readonly, self.caching(), self.indexing,)
+            self.readonly, self.caching(), self.__indexing,)
         third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
             self.name, self.__skip_checks, self.__structure_update,)
         fourth_part = ", conn_cache: %s, cursor_cache: %s>" % (
@@ -5129,6 +5139,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        if not self.__indexing:
+            return
+
         self._createMirrorlinksIndex()
         self._createContentIndex()
         self._createBaseinfoIndex()
@@ -5155,225 +5168,203 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("ANALYZE").fetchall()
 
     def _createMirrorlinksIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().execute("""
-                CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
-                ON mirrorlinks ( mirrorname )""")
-            except OperationalError:
-                pass
+        try:
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
+            ON mirrorlinks ( mirrorname )""")
+        except OperationalError:
+            pass
 
     def _createCompileFlagsIndex(self):
-        if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS flagsindex ON flags
-                ( chost, cflags, cxxflags )
-            """)
+        self._cursor().execute("""
+        CREATE INDEX IF NOT EXISTS flagsindex ON flags
+            ( chost, cflags, cxxflags )
+        """)
 
     def _createDesktopMimeIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().execute("""
-                CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
-                ON packagedesktopmime ( idpackage )""")
-            except OperationalError:
-                pass
+        try:
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS packagedesktopmime_idpackage
+            ON packagedesktopmime ( idpackage )""")
+        except OperationalError:
+            pass
 
     def _createProvidedMimeIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().execute("""
-                CREATE INDEX IF NOT EXISTS provided_mime_idpackage
-                ON provided_mime ( idpackage )""")
-                self._cursor().execute("""
-                CREATE INDEX IF NOT EXISTS provided_mime_mimetype
-                ON provided_mime ( mimetype )""")
-            except OperationalError:
-                pass
+        try:
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS provided_mime_idpackage
+            ON provided_mime ( idpackage )""")
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS provided_mime_mimetype
+            ON provided_mime ( mimetype )""")
+        except OperationalError:
+            pass
 
     def _createPackagesetsIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().execute("""
-                CREATE INDEX IF NOT EXISTS packagesetsindex
-                ON packagesets ( setname )""")
-            except OperationalError:
-                pass
+        try:
+            self._cursor().execute("""
+            CREATE INDEX IF NOT EXISTS packagesetsindex
+            ON packagesets ( setname )""")
+        except OperationalError:
+            pass
 
     def _createProvidedLibsIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().executescript("""
-                    CREATE INDEX IF NOT EXISTS provided_libs_library
-                    ON provided_libs ( library );
-                    CREATE INDEX IF NOT EXISTS provided_libs_idpackage
-                    ON provided_libs ( idpackage );
-                    CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
-                    ON provided_libs ( library, elfclass );
-                """)
-            except OperationalError:
-                pass
+        try:
+            self._cursor().executescript("""
+                CREATE INDEX IF NOT EXISTS provided_libs_library
+                ON provided_libs ( library );
+                CREATE INDEX IF NOT EXISTS provided_libs_idpackage
+                ON provided_libs ( idpackage );
+                CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
+                ON provided_libs ( library, elfclass );
+            """)
+        except OperationalError:
+            pass
 
     def _createAutomergefilesIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().executescript("""
-                    CREATE INDEX IF NOT EXISTS automergefiles_idpackage 
-                    ON automergefiles ( idpackage );
-                    CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
-                    ON automergefiles ( configfile, md5 );
-                """)
-            except OperationalError:
-                pass
+        try:
+            self._cursor().executescript("""
+                CREATE INDEX IF NOT EXISTS automergefiles_idpackage 
+                ON automergefiles ( idpackage );
+                CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
+                ON automergefiles ( configfile, md5 );
+            """)
+        except OperationalError:
+            pass
 
     def _createNeededIndex(self):
-        if self.indexing:
-            try:
-                self._cursor().executescript("""
-                    CREATE INDEX IF NOT EXISTS neededindex ON neededreference
-                        ( library );
-                    CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed
-                        ( idneeded );
-                    CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed
-                        ( idpackage );
-                    CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed
-                        ( elfclass );
-                """)
-            except OperationalError:
-                pass
+        try:
+            self._cursor().executescript("""
+                CREATE INDEX IF NOT EXISTS neededindex ON neededreference
+                    ( library );
+                CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed
+                    ( idneeded );
+                CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed
+                    ( idpackage );
+                CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed
+                    ( elfclass );
+            """)
+        except OperationalError:
+            pass
 
     def _createUseflagsIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage
-                ON useflags ( idpackage );
-            CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag
-                ON useflags ( idflag );
-            CREATE INDEX IF NOT EXISTS useflagsindex
-                ON useflagsreference ( flagname );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage
+            ON useflags ( idpackage );
+        CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag
+            ON useflags ( idflag );
+        CREATE INDEX IF NOT EXISTS useflagsindex
+            ON useflagsreference ( flagname );
+        """)
 
     def _createContentIndex(self):
-        if self.indexing:
-            if self._doesTableExist("content"):
-                self._cursor().executescript("""
-                    CREATE INDEX IF NOT EXISTS contentindex_couple
-                        ON content ( idpackage );
-                    CREATE INDEX IF NOT EXISTS contentindex_file
-                        ON content ( file );
-                """)
+        if self._doesTableExist("content"):
+            self._cursor().executescript("""
+                CREATE INDEX IF NOT EXISTS contentindex_couple
+                    ON content ( idpackage );
+                CREATE INDEX IF NOT EXISTS contentindex_file
+                    ON content ( file );
+            """)
 
     def _createConfigProtectReferenceIndex(self):
-        if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS configprotectreferenceindex
-                ON configprotectreference ( protect )
-            """)
+        self._cursor().execute("""
+        CREATE INDEX IF NOT EXISTS configprotectreferenceindex
+            ON configprotectreference ( protect )
+        """)
 
     def _createBaseinfoIndex(self):
-        if self.indexing:
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS baseindex_atom
+            ON baseinfo ( atom );
+        CREATE INDEX IF NOT EXISTS baseindex_branch_name
+            ON baseinfo ( name,branch );
+        CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
+            ON baseinfo ( name,idcategory,branch );
+        """)
+        if self._isBaseinfoExtrainfo2010():
             self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS baseindex_atom
-                ON baseinfo ( atom );
-            CREATE INDEX IF NOT EXISTS baseindex_branch_name
-                ON baseinfo ( name,branch );
-            CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
-                ON baseinfo ( name,idcategory,branch );
+            CREATE INDEX IF NOT EXISTS baseindex_category
+                ON baseinfo ( category );
             """)
-            if self._isBaseinfoExtrainfo2010():
-                self._cursor().executescript("""
-                CREATE INDEX IF NOT EXISTS baseindex_category
-                    ON baseinfo ( category );
-                """)
 
     def _createLicensedataIndex(self):
-        if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS licensedataindex
-                ON licensedata ( licensename )
-            """)
+        self._cursor().execute("""
+        CREATE INDEX IF NOT EXISTS licensedataindex
+            ON licensedata ( licensename )
+        """)
 
     def _createLicensesIndex(self):
-        if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )
-            """)
+        self._cursor().execute("""
+        CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )
+        """)
 
     def _createCategoriesIndex(self):
-        if self.indexing:
-            self._cursor().execute("""
-            CREATE INDEX IF NOT EXISTS categoriesindex_category
-                ON categories ( category )
-            """)
+        self._cursor().execute("""
+        CREATE INDEX IF NOT EXISTS categoriesindex_category
+            ON categories ( category )
+        """)
 
     def _createKeywordsIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS keywordsreferenceindex
-                ON keywordsreference ( keywordname );
-            CREATE INDEX IF NOT EXISTS keywordsindex_idpackage
-                ON keywords ( idpackage );
-            CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword
-                ON keywords ( idkeyword );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS keywordsreferenceindex
+            ON keywordsreference ( keywordname );
+        CREATE INDEX IF NOT EXISTS keywordsindex_idpackage
+            ON keywords ( idpackage );
+        CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword
+            ON keywords ( idkeyword );
+        """)
 
     def _createDependenciesIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage
-                ON dependencies ( idpackage );
-            CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency
-                ON dependencies ( iddependency );
-            CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency
-                ON dependenciesreference ( dependency );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage
+            ON dependencies ( idpackage );
+        CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency
+            ON dependencies ( iddependency );
+        CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency
+            ON dependenciesreference ( dependency );
+        """)
 
     def _createCountersIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS countersindex_idpackage
-                ON counters ( idpackage );
-            CREATE INDEX IF NOT EXISTS countersindex_counter
-                ON counters ( counter );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS countersindex_idpackage
+            ON counters ( idpackage );
+        CREATE INDEX IF NOT EXISTS countersindex_counter
+            ON counters ( counter );
+        """)
 
     def _createSourcesIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS sourcesindex_idpackage
-                ON sources ( idpackage );
-            CREATE INDEX IF NOT EXISTS sourcesindex_idsource
-                ON sources ( idsource );
-            CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source
-                ON sourcesreference ( source );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS sourcesindex_idpackage
+            ON sources ( idpackage );
+        CREATE INDEX IF NOT EXISTS sourcesindex_idsource
+            ON sources ( idsource );
+        CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source
+            ON sourcesreference ( source );
+        """)
 
     def _createProvideIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS provideindex_idpackage
-                ON provide ( idpackage );
-            CREATE INDEX IF NOT EXISTS provideindex_atom
-                ON provide ( atom );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS provideindex_idpackage
+            ON provide ( idpackage );
+        CREATE INDEX IF NOT EXISTS provideindex_atom
+            ON provide ( atom );
+        """)
 
     def _createConflictsIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS conflictsindex_idpackage
-                ON conflicts ( idpackage );
-            CREATE INDEX IF NOT EXISTS conflictsindex_atom
-                ON conflicts ( conflict );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS conflictsindex_idpackage
+            ON conflicts ( idpackage );
+        CREATE INDEX IF NOT EXISTS conflictsindex_atom
+            ON conflicts ( conflict );
+        """)
 
     def _createExtrainfoIndex(self):
-        if self.indexing:
-            self._cursor().executescript("""
-            CREATE INDEX IF NOT EXISTS extrainfoindex
-                ON extrainfo ( description );
-            CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex
-                ON extrainfo ( idpackage );
-            """)
+        self._cursor().executescript("""
+        CREATE INDEX IF NOT EXISTS extrainfoindex
+            ON extrainfo ( description );
+        CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex
+            ON extrainfo ( idpackage );
+        """)
 
     def regenerateSpmUidMapping(self):
         """

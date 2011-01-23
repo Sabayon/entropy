@@ -359,7 +359,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
     VIRTUAL_META_PACKAGE_CATEGORY = "virtual"
 
-    def __init__(self, readonly, xcache, temporary, name, indexing):
+    def __init__(self, readonly, xcache, temporary, name):
         """
         EntropyRepositoryBase constructor.
 
@@ -371,13 +371,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type temporary: bool
         @param name: repository identifier (or name)
         @type name: string
-        @param indexing: enable metadata indexing (for faster retrieval)
-        @type indexing: bool
         """
         self.readonly = readonly
         self._caching = xcache
         self.temporary = temporary
-        self.indexing = indexing
         self.name = name
         # backward compatibility
         self.reponame = name
