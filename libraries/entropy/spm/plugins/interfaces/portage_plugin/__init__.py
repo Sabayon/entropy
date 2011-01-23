@@ -302,6 +302,15 @@ class PortagePlugin(SpmPlugin):
         'features': "FEATURES",
     }
 
+    _xpak_const = {
+        # xpak temp directory path
+        'entropyxpakrelativepath': "xpak",
+        # xpak metadata directory path
+        'entropyxpakdatarelativepath': "data",
+        # xpak metadata file name
+        'entropyxpakfilename': "metadata.xpak",
+    }
+
     _ebuild_entries = {
         'ebuild_pkg_tag_var': "ENTROPY_PROJECT_TAG",
     }
@@ -2846,7 +2855,7 @@ class PortagePlugin(SpmPlugin):
             shutil.rmtree(remove_path, True)
 
         # we now install it
-        xpak_rel_path = etpConst['entropyxpakdatarelativepath']
+        xpak_rel_path = PortagePlugin._xpak_const['entropyxpakdatarelativepath']
         proposed_xpak_dir = os.path.join(package_metadata['xpakpath'],
             xpak_rel_path)
 
@@ -3376,14 +3385,14 @@ class PortagePlugin(SpmPlugin):
         """
         package_metadata['xpakpath'] = os.path.join(
             package_metadata['unpackdir'],
-            etpConst['entropyxpakrelativepath'])
+            PortagePlugin._xpak_const['entropyxpakrelativepath'])
 
         if not package_metadata['merge_from']:
 
             package_metadata['xpakstatus'] = None
             package_metadata['xpakdir'] = os.path.join(
                 package_metadata['xpakpath'],
-                etpConst['entropyxpakdatarelativepath'])
+                PortagePlugin._xpak_const['entropyxpakdatarelativepath'])
 
         else:
 
@@ -3417,12 +3426,12 @@ class PortagePlugin(SpmPlugin):
 
         # create data dir where we'll unpack the xpak
         xpak_dir = os.path.join(package_metadata['xpakpath'],
-            etpConst['entropyxpakdatarelativepath'])
+            PortagePlugin._xpak_const['entropyxpakdatarelativepath'])
 
         os.makedirs(xpak_dir, 0o755)
 
         xpak_path = os.path.join(package_metadata['xpakpath'],
-            etpConst['entropyxpakfilename'])
+            PortagePlugin._xpak_const['entropyxpakfilename'])
 
         if not package_metadata['merge_from']:
 

@@ -272,12 +272,6 @@ def const_default_settings(rootdir):
         'entropyunpackdir': default_etp_vardir,
         # Entropy packages image directory
         'entropyimagerelativepath': "image",
-        # Gentoo xpak temp directory path
-        'entropyxpakrelativepath': "xpak",
-        # Gentoo xpak metadata directory path
-        'entropyxpakdatarelativepath': "data",
-        # Gentoo xpak metadata file name
-        'entropyxpakfilename': "metadata.xpak",
 
         # entropy repository database upload timestamp
         'etpdatabasetimestampfile': default_etp_dbfile+".timestamp",
