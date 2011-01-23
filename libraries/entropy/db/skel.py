@@ -374,7 +374,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         self.readonly = readonly
         self._caching = xcache
-        self.temporary = temporary
+        self._temporary = temporary
         self.name = name
         # backward compatibility
         self.reponame = name
@@ -392,6 +392,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @rtype: bool
         """
         return self._caching
+
+    def temporary(self):
+        """
+        Return wheter the repository is temporary (in-memory, for example).
+
+        @return: True, if repository is temporary
+        @rtype: bool
+        """
+        return self._temporary
 
     def close(self):
         """

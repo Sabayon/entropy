@@ -48,7 +48,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_server_repo(self):
         dbconn = self.Server.open_server_repository()
-        self.assertEqual(dbconn.temporary, True)
+        self.assertEqual(dbconn.temporary(), True)
 
     def test_server_repo_internal_cache(self):
         spm = self.Server.Spm()

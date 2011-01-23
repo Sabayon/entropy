@@ -686,7 +686,7 @@ class EntropyRepository(EntropyRepositoryBase):
         super(EntropyRepository, self).close()
 
         self._cleanup_stale_cur_conn(kill_all = True)
-        if self.temporary and os.path.isfile(self._db_path):
+        if self._temporary and os.path.isfile(self._db_path):
             try:
                 os.remove(self._db_path)
             except (OSError, IOError,):
