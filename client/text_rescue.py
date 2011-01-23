@@ -367,7 +367,6 @@ def _database_resurrect(entropy_client):
     print_info(red("  %s." % (_("Database resurrected successfully"),)))
 
     print_info(red("  %s..." % (_("Now indexing tables"),)))
-    entropy_client.installed_repository().indexing = True
     entropy_client.installed_repository().createAllIndexes()
     print_info(red("  %s." % (_("Database reinitialized successfully"),)))
 
@@ -712,7 +711,6 @@ def _database_generate(entropy_client):
     print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))
 
     print_info(red("  %s...") % (_("Now indexing tables"),) )
-    entropy_client.installed_repository().indexing = True
     entropy_client.installed_repository().createAllIndexes()
     print_info(red("  %s." % (_("Database reinitialized successfully"),) ))
     return 0
