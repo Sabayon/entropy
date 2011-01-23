@@ -583,7 +583,7 @@ class EntropyRepository(EntropyRepositoryBase):
         first_part = "<EntropyRepository instance at %s, %s" % (
             hex(id(self)), self._db_path,)
         second_part = ", ro: %s, caching: %s, indexing: %s" % (
-            self.readonly, self.xcache, self.indexing,)
+            self.readonly, self.caching(), self.indexing,)
         third_part = ", name: %s, skip_upd: %s, st_upd: %s" % (
             self.name, self.__skip_checks, self.__structure_update,)
         fourth_part = ", conn_cache: %s, cursor_cache: %s>" % (

@@ -265,7 +265,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         idpackage, rev, new_data = self.test_db.addPackage(data)
 
         # enable cache
-        self.test_db.xcache = True
+        self.test_db._caching = True
         key = new_data['category'] + "/" + new_data['name']
 
         from entropy.cache import EntropyCacher

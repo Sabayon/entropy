@@ -375,7 +375,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type indexing: bool
         """
         self.readonly = readonly
-        self.xcache = xcache
+        self._caching = xcache
         self.temporary = temporary
         self.indexing = indexing
         self.name = name
@@ -388,6 +388,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             etpConst['system_settings_plugins_ids']['client_plugin']
 
         EntropyRepositoryPluginStore.__init__(self)
+
+    def caching(self):
+        """
+        Return whether caching is enabled in this repository.
+
+        @return: True, if caching is enabled
+        @rtype: bool
+        """
+        return self._caching
 
     def close(self):
         """
@@ -4022,7 +4031,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 result = result)
 
         # avoid memleaks
-        if len(validator_cache) > 10000:
+        if len(validator_cache) > 100000:
             validator_cache.clear()
 
         if live:
@@ -4571,14 +4580,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         return dbpkginfo
 
     def __atomMatchFetchCache(self, *args):
-        if self.xcache:
+        if self._caching:
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             cached = entropy.dump.loadobj("%s/%s/%s_%s" % (
                 self.__db_match_cache_key, self.name, ck_sum,
                 hash(hash_str),))
-            if cached is not None:
-                return cached
+            return cached
 
     def __atomMatch_gen_hash_str(self, args):
         hash_str = '|'
@@ -4587,7 +4595,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         return hash_str
 
     def __atomMatchStoreCache(self, *args, **kwargs):
-        if self.xcache:
+        if self._caching:
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             self._cacher.push("%s/%s/%s_%s" % (
