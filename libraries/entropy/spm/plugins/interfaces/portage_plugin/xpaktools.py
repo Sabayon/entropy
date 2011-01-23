@@ -60,7 +60,7 @@ def read_xpak(tbz2file):
         done = suck_xpak(tbz2file, tmp_path)
         if not done:
             return None
-        with open(xpakpath, "rb") as f:
+        with open(tmp_path, "rb") as f:
             data = f.read()
         return data
     finally:
