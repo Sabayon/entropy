@@ -1168,7 +1168,8 @@ class LogFile:
                 self.__handler = logging.StreamHandler()
         else:
             self.__handler = logging.StreamHandler()
-        self.__handler.setLevel(self.__level)
+        if self.__level is not None:
+            self.__handler.setLevel(self.__level)
         self.__handler.setFormatter(logging.Formatter(LogFile.LOG_FORMAT,
             LogFile.DATE_FORMAT))
         self.__logger.addHandler(self.__handler)
