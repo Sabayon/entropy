@@ -1390,18 +1390,19 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     fallback_mirrors_file)
 
             pkgs_map = {}
-            for pkg_url in obj['plain_packages']:
-                urlobj = entropy.tools.spliturl(pkg_url)
-                try:
-                    url_key = urlobj.netloc
-                except AttributeError as err:
-                    const_debug_write(__name__,
-                        "error splitting url: %s" % (err,))
-                    url_key = None
-                if url_key is None:
-                    break
-                map_obj = pkgs_map.setdefault(url_key, [])
-                map_obj.append(pkg_url)
+            if fallback_mirrors:
+                for pkg_url in obj['plain_packages']:
+                    urlobj = entropy.tools.spliturl(pkg_url)
+                    try:
+                        url_key = urlobj.netloc
+                    except AttributeError as err:
+                        const_debug_write(__name__,
+                            "error splitting url: %s" % (err,))
+                        url_key = None
+                    if url_key is None:
+                        break
+                    map_obj = pkgs_map.setdefault(url_key, [])
+                    map_obj.append(pkg_url)
 
             fallback_urls = []
             if pkgs_map:
