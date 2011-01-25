@@ -1,5 +1,5 @@
 # Server and Client side packages.db.mirrors file.
-# In this file, repository administrators can list packages mirrors that
+# In this file, repository administrators can list package mirrors that
 # Entropy Client will use (beside the ones already in repositories.conf).
 # This makes possible to control and keep mirrors up-to-date without
 # bothering the user.

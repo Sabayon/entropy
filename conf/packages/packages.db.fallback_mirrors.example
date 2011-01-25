@@ -1,0 +1,14 @@
+# Server and Client side packages.db.fallback_mirrors file.
+# In this file, repository administrators can list package mirrors that
+# Entropy Client will always consider as fallback (so, keeping it at the
+# end of the retry list). You can just list the domain name and will be
+# matched against any URL (http://, ftp://).
+#
+
+# LINE CONSTRUCTION:
+# <mirror uri domain name>
+# NOTE: for inline comments, please use "##" instead of "#"
+
+# EXAMPLES:
+# pkg.sabayon.org
+

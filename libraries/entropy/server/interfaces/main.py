@@ -1121,6 +1121,13 @@ class ServerSettingsMixin:
         return os.path.join(self._get_local_database_dir(repo, branch),
             etpConst['etpdatabasemirrorsfile'])
 
+    def _get_local_database_fallback_mirrors_file(self, repo = None,
+        branch = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self._get_local_database_dir(repo, branch),
+            etpConst['etpdatabasefallbackmirrorsfile'])
+
     def _get_local_database_dep_rewrite_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository

@@ -22,7 +22,8 @@ import sys
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
-    const_convert_to_unicode, const_convert_to_rawstring
+    const_convert_to_unicode, const_convert_to_rawstring, \
+    const_debug_write
 from entropy.core import Singleton, EntropyPluginStore
 from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -1353,13 +1354,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 obj = data['excluded'][repoid]
             else:
                 continue
+
             mirrors_file = os.path.join(obj['dbpath'],
                 etpConst['etpdatabasemirrorsfile'])
+
+            raw_mirrors = []
             if not (os.path.isfile(mirrors_file) and \
                 os.access(mirrors_file, os.R_OK)):
-                continue
-            raw_mirrors = entropy.tools.generic_file_content_parser(
-                mirrors_file)
+                raw_mirrors = entropy.tools.generic_file_content_parser(
+                    mirrors_file)
 
             mirrors_data = []
             for mirror in raw_mirrors:
@@ -1368,11 +1371,63 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 if expanded_mirror is None:
                     continue
                 mirrors_data.append((mirror, expanded_mirror))
+
             # add in reverse order, at the beginning of the list
             mirrors_data.reverse()
             for mirror, expanded_mirror in mirrors_data:
                 obj['plain_packages'].insert(0, mirror)
                 obj['packages'].insert(0, expanded_mirror)
+
+            # now use fallback mirrors information to properly sort
+            # fallback mirrors, giving them the lowest priority even if
+            # they are listed on top.
+            fallback_mirrors_file = os.path.join(obj['dbpath'],
+                etpConst['etpdatabasefallbackmirrorsfile'])
+            fallback_mirrors = []
+            if os.path.isfile(fallback_mirrors_file) and \
+                os.access(fallback_mirrors_file, os.R_OK):
+                fallback_mirrors = entropy.tools.generic_file_content_parser(
+                    fallback_mirrors_file)
+
+            pkgs_map = {}
+            for pkg_url in obj['plain_packages']:
+                urlobj = entropy.tools.spliturl(pkg_url)
+                try:
+                    url_key = urlobj.netloc
+                except AttributeError as err:
+                    const_debug_write(__name__,
+                        "error splitting url: %s" % (err,))
+                    url_key = None
+                if url_key is None:
+                    break
+                map_obj = pkgs_map.setdefault(url_key, [])
+                map_obj.append(pkg_url)
+
+            fallback_urls = []
+            if pkgs_map:
+                for fallback_mirror in fallback_mirrors:
+                    belonging_urls = pkgs_map.get(fallback_mirror)
+                    if belonging_urls is None:
+                        # nothing to do
+                        continue
+                    fallback_urls.extend(belonging_urls)
+
+            if fallback_urls:
+                for fallback_url in fallback_urls:
+                    expanded_fallback_url = self.__expand_plain_package_mirror(
+                        fallback_url, data['product'], repoid)
+                    while True:
+                        try:
+                            obj['plain_packages'].remove(fallback_url)
+                        except ValueError:
+                            break
+                    while True:
+                        try:
+                            obj['packages'].remove(expanded_fallback_url)
+                        except ValueError:
+                            break
+                    obj['plain_packages'].insert(0, fallback_url)
+                    obj['packages'].insert(0, expanded_fallback_url)
 
         # override parsed branch from env
         override_branch = os.getenv('ETP_BRANCH')
