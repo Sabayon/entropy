@@ -1,3 +1,118 @@
+commit 6f25fbca7fc3974c7f1e16e9412c321c17f8c6e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 25 15:29:22 2011 +0100
+
+    Release Entropy 1.0_alpha9
+
+commit a49c4d54ca02900bb30e89b0f305f922ed804e75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 25 15:23:15 2011 +0100
+
+    [entropy.server,entropy.client] introduce support for fallback mirrors
+    
+    Fallback mirrors are those mirrors mainly used for providing packages
+    while other, main mirrors are still syncing. They are usually hosted
+    inside the same infrastructure where the repository is run and
+    are usually quite bandwidth constrained.
+    Through packages.db.fallback_mirrors file, configurable from inside
+    the repository database directory (server-side) it's now possible
+    to list these mirrors and make Entropy Client always use them with
+    the least priority possible.
+
+commit bbcd7fbca32f8f631f19c7f4b8a2cb60528e4304
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 25 15:19:16 2011 +0100
+
+    [conf] trivial typo fix
+
+commit 49b7781b99db24439c6da4d5f0e84a0e9b6a7e65
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 25 12:22:48 2011 +0100
+
+    [entropy.misc] LogFile, do not set logging level if level is None, close bug #2111
+
+commit d92f6d6bf4fdb99e4b2e0c2ef65957a007671645
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 23:06:21 2011 +0100
+
+    [entropy.server,entropy.db] make EntropyRepositoryBase.readonly property private
+    
+    Rename .readonly property to ._readonly and expose a setter only
+    where strictly required (entropy.server)
+
+commit a7fe6f97b8e73ef393f901f7907c29084e53d40f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 20:31:51 2011 +0100
+
+    [entropy.spm] PortagePlugin: remove unused method _extract_elog
+
+commit 87ca1452b8c7ae507ef088252a2270d3f9027c87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 18:41:57 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase: hide temporary property and provide temporary() getter
+
+commit 651d39d675d5aa6d17f7863caa08aedc9502423b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 16:59:44 2011 +0100
+
+    [entropy.db] EntropyRepository: hide indexing details as much as possible, provide public setIndexing() setter
+
+commit 9e08d1029c0109088938f10e5aa1a6f34550505d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 16:41:03 2011 +0100
+
+    [equo] text_rescue: remove useless code (do not access protected methods -- see next commit)
+
+commit fb2acecfc3c0da2b358dd18f09c15f646687a399
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 16:26:01 2011 +0100
+
+    [entropy.spm] PortagePlugin: fix undefined reference in xpaktools.read_xpak
+
+commit 276a7d8de75a740c3b35dfb51bb20192f7782e39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 16:24:55 2011 +0100
+
+    [entropy.spm,entropy.const] move Portage-specific constants to PortagePlugin class
+
+commit 8153ce65207d01c531ab7eb96731809c2eaf9e20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 16:18:10 2011 +0100
+
+    [entropy.spm] PortagePlugin: always use unpackdir path as base dir for xpak data.
+    
+    This fixes possible path escape issues by using already validated
+    temporary unpack directory path.
+
+commit 0e3d04cb968cce9e031cff0cf0fc645fa02a030b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 16:05:39 2011 +0100
+
+    [equo] improve error messages handling in text_rescue._database_check
+
+commit d70bb7ee4d45aa38ea92248c3880d216fa036c34
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 15:52:47 2011 +0100
+
+    [entropy.db] move package masking logic to entropy.client.interfaces.db repository subclasses
+
+commit 342b48cdb419571769048303e0911315489e3d1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 23 13:09:03 2011 +0100
+
+    [entropy.db] rename EntropyRepositoryBase.xcache to _caching and introduce caching()
+    
+    Hide internal details regarding cache status handling. Rename
+    .xcache property to ._caching and provide a getter that returns
+    the cache setting status (caching()).
+
+commit b7a3b2d6e6f7f4a83ceb97277dd6f5036a443ee6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 17 15:29:38 2011 +0100
+
+    Tagging Entropy version 1.0_alpha8
+
 commit 2ef784c89550442ca6f73254fb0d65a7f1da0d42
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jan 17 15:29:34 2011 +0100
