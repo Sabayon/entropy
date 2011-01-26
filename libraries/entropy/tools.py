@@ -619,11 +619,11 @@ def movefile(src, dest, src_basedir = None):
         try:
             os.rename(src, dest)
             renamefailed = False
-        except OSError as e:
-            if e[0] != errno.EXDEV:
+        except OSError as err:
+            if err.errno != errno.EXDEV:
                 # Some random error.
                 print_generic("!!! Failed to move", src, "to", dest)
-                print_generic("!!!", repr(e))
+                print_generic("!!!", repr(err))
                 return False
             # Invalid cross-device-link 'bind' mounted or actually Cross-Device
 
@@ -2263,7 +2263,9 @@ def write_parameter_to_file(config_file, name, data):
 
     try:
         os.rename(config_file_tmp, config_file)
-    except OSError:
+    except OSError as err:
+        if err.errno != errno.EXDEV:
+            raise
         shutil.move(config_file_tmp, config_file)
     return True
 
