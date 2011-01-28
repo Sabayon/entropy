@@ -14,22 +14,19 @@ import tempfile
 import shutil
 import time
 
-from entropy.exceptions import OnlineMirrorError, EntropyPackageException
+from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
-from entropy.const import etpConst, const_setup_file
+from entropy.const import etpConst
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS
-from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
-from entropy.security import Repository as RepositorySecurity
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
-from entropy.db.exceptions import Error
 from entropy.core.settings.base import SystemSettings
+from entropy.server.interfaces.db import ServerPackagesRepository
 
 import entropy.tools
-import entropy.dump
 
 class ServerNoticeBoardMixin:
 
@@ -37,7 +34,7 @@ class ServerNoticeBoardMixin:
 
         if repo is None:
             repo = self._entropy.default_repository
-        mirrors = self._entropy.get_remote_repository_mirrors(repo)
+        mirrors = self._entropy.remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
         mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
 
@@ -86,7 +83,7 @@ class ServerNoticeBoardMixin:
 
         if repo is None:
             repo = self._entropy.default_repository
-        mirrors = self._entropy.get_remote_repository_mirrors(repo)
+        mirrors = self._entropy.remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
         rss_file = os.path.basename(rss_path)
 
@@ -141,7 +138,7 @@ class ServerNoticeBoardMixin:
 
         if repo is None:
             repo = self._entropy.default_repository
-        mirrors = self._entropy.get_remote_repository_mirrors(repo)
+        mirrors = self._entropy.remote_repository_mirrors(repo)
         rss_path = self._entropy._get_local_database_notice_board_file(repo)
 
         self._entropy.output(
@@ -238,7 +235,7 @@ class Server(ServerNoticeBoardMixin):
     SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
 
     import socket
-    def __init__(self, server, repo = None):
+    def __init__(self, server, repository_id):
 
         from entropy.server.transceivers import TransceiverServerHandler
         from entropy.server.interfaces.main import Server as MainServer
@@ -258,7 +255,7 @@ class Server(ServerNoticeBoardMixin):
             level = "info",
             header = red(" @@ ")
         )
-        for mirror in self._entropy.get_remote_repository_mirrors(repo = repo):
+        for mirror in self._entropy.remote_repository_mirrors(repository_id):
             mytxt = _("repository mirror")
             mirror = EntropyTransceiver.hide_sensible_data(mirror)
             self._entropy.output(
@@ -267,7 +264,7 @@ class Server(ServerNoticeBoardMixin):
                 level = "info",
                 header = brown("   # ")
             )
-        for mirror in self._entropy.get_remote_packages_mirrors(repo = repo):
+        for mirror in self._entropy.remote_packages_mirrors(repository_id):
             mytxt = _("packages mirror")
             mirror = EntropyTransceiver.hide_sensible_data(mirror)
             self._entropy.output(
@@ -300,7 +297,7 @@ class Server(ServerNoticeBoardMixin):
             excluded_branches = []
 
         branch_data = {}
-        mirrors = self._entropy.get_remote_repository_mirrors(repo)
+        mirrors = self._entropy.remote_repository_mirrors(repo)
         for uri in mirrors:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
@@ -368,7 +365,7 @@ class Server(ServerNoticeBoardMixin):
             repo = self._entropy.default_repository
 
         if not mirrors:
-            mirrors = self._entropy.get_remote_repository_mirrors(repo)
+            mirrors = self._entropy.remote_repository_mirrors(repo)
 
         issues = False
         for uri in mirrors:
@@ -459,7 +456,7 @@ class Server(ServerNoticeBoardMixin):
             repo = self._entropy.default_repository
 
         if not mirrors:
-            mirrors = self._entropy.get_remote_repository_mirrors(repo)
+            mirrors = self._entropy.remote_repository_mirrors(repo)
 
         issues = False
         for uri in mirrors:
@@ -817,7 +814,7 @@ class Server(ServerNoticeBoardMixin):
 
             revision = 0
             if not (rc1 and rc2):
-                return [uri, revision]
+                return (uri, revision)
 
             tmp_fd, rev_tmp_path = tempfile.mkstemp(prefix = "entropy.server")
             try:
@@ -887,133 +884,55 @@ class Server(ServerNoticeBoardMixin):
                 os.close(tmp_fd)
                 os.remove(rev_tmp_path)
 
-            return [uri, revision]
+            return (uri, revision)
 
-    def get_remote_repositories_status(self, repo = None, mirrors = None):
+    def remote_repository_status(self, repository_id):
+        """
+        Return the repository status (revision) for every available mirror.
 
-        if repo is None:
-            repo = self._entropy.default_repository
-        if not mirrors:
-            mirrors = self._entropy.get_remote_repository_mirrors(repo)
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: dictionary, mirror URL (not URI) as key, revision as value
+            (int)
+        @rtype: dict
+        """
+        return dict(self._get_remote_db_status(uri, repository_id) for uri in \
+            self._entropy.remote_repository_mirrors(repository_id))
 
-        data = []
-        for uri in mirrors:
-            data.append(self._get_remote_db_status(uri, repo))
+    def mirrors_status(self, repository_id):
+        """
+        Return mirrors status for given repository identifier.
 
-        return data
-
-    def _is_local_repository_locked(self, repo = None):
-        local_repo = repo
-        if local_repo is None:
-            local_repo = self._entropy.default_repository
-        lock_file = self._entropy._get_database_lockfile(local_repo)
-        return os.path.isfile(lock_file)
-
-    def _get_mirrors_lock(self, repo = None):
-
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: list of tuples of length 3
+            [(uri, upload_lock_status_bool, download_lock_status_bool)]
+        @rtype: list
+        """
         dbstatus = []
         remote_dir = os.path.join(
-            self._entropy._get_remote_database_relative_path(repo),
+            self._entropy._get_remote_database_relative_path(repository_id),
             self._settings['repositories']['branch'])
         lock_file = os.path.join(remote_dir, etpConst['etpdatabaselockfile'])
         down_lock_file = os.path.join(remote_dir,
             etpConst['etpdatabasedownloadlockfile'])
 
-        for uri in self._entropy.get_remote_repository_mirrors(repo):
-            data = [uri, False, False]
+        for uri in self._entropy.remote_repository_mirrors(repository_id):
+            down_status = False
+            up_status = False
 
             # let raise exception if connection is impossible
             txc = self._entropy.Transceiver(uri)
             with txc as handler:
                 if handler.is_file(lock_file):
                     # upload locked
-                    data[1] = True
+                    up_status = True
                 if handler.is_file(down_lock_file):
                     # download locked
-                    data[2] = True
-                dbstatus.append(data)
+                    down_status = True
+                dbstatus.append((uri, up_status, down_status))
 
         return dbstatus
-
-    def _update_rss_feed(self, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        product = self._settings['repositories']['product']
-        #db_dir = self._entropy._get_local_database_dir(repo)
-        rss_path = self._entropy._get_local_database_rss_file(repo)
-        rss_light_path = self._entropy._get_local_database_rsslight_file(repo)
-        rss_dump_name = repo + etpConst['rss-dump-name']
-        db_revision_path = self._entropy._get_local_database_revision_file(repo)
-
-        rss_title = "%s Online Repository Status" % (
-            self._settings['system']['name'],)
-        rss_description = \
-            "Keep you updated on what's going on in the %s Repository." % (
-                self._settings['system']['name'],)
-
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-
-        rss_main = RSS(rss_path, rss_title, rss_description,
-            maxentries = srv_set['rss']['max_entries'])
-        # load dump
-        db_actions = self.Cacher.pop(rss_dump_name,
-            cache_dir = self._entropy.CACHE_DIR)
-        if db_actions:
-            try:
-                f_rev = open(db_revision_path)
-                revision = f_rev.readline().strip()
-                f_rev.close()
-            except (IOError, OSError):
-                revision = "N/A"
-            commitmessage = ''
-            if ServerRssMetadata()['commitmessage']:
-                commitmessage = ' :: ' + \
-                    ServerRssMetadata()['commitmessage']
-
-            title = ": " + self._settings['system']['name'] + " " + \
-                product[0].upper() + product[1:] + " " + \
-                self._settings['repositories']['branch'] + \
-                " :: Revision: " + revision + commitmessage
-
-            link = srv_set['rss']['base_url']
-            # create description
-            added_items = db_actions.get("added")
-
-            if added_items:
-                for atom in sorted(added_items):
-                    mylink = link + "?search=" + atom.split("~")[0] + \
-                        "&arch=" + etpConst['currentarch'] + "&product="+product
-                    description = atom + ": " + added_items[atom]['description']
-                    rss_main.add_item(title = "Added/Updated" + title,
-                        link = mylink, description = description)
-            removed_items = db_actions.get("removed")
-
-            if removed_items:
-                for atom in sorted(removed_items):
-                    description = atom + ": " + \
-                        removed_items[atom]['description']
-                    rss_main.add_item(title = "Removed" + title, link = link,
-                        description = description)
-
-            light_items = db_actions.get('light')
-            if light_items:
-                rss_light = RSS(rss_light_path, rss_title, rss_description,
-                    maxentries = srv_set['rss']['light_max_entries'])
-                for atom in sorted(light_items):
-                    mylink = link + "?search=" + atom.split("~")[0] + \
-                        "&arch=" + etpConst['currentarch'] + "&product=" + \
-                        product
-                    description = light_items[atom]['description']
-                    rss_light.add_item(title = "[" + revision + "] " + atom,
-                        link = mylink, description = description)
-                rss_light.write_changes()
-
-        rss_main.write_changes()
-        ServerRssMetadata().clear()
-        EntropyCacher.clear_cache_item(rss_dump_name,
-            cache_dir = self._entropy.CACHE_DIR)
 
     def _create_file_checksum(self, file_path, checksum_path):
         mydigest = entropy.tools.md5sum(file_path)
@@ -1023,532 +942,25 @@ class Server(ServerNoticeBoardMixin):
         f_ck.flush()
         f_ck.close()
 
-    def _compress_file(self, file_path, destination_path, opener):
-        f_out = opener(destination_path, "wb")
-        f_in = open(file_path, "rb")
-        data = f_in.read(8192)
-        while data:
-            f_out.write(data)
-            data = f_in.read(8192)
-        f_in.close()
-        if hasattr(f_out, 'flush'):
-            f_out.flush()
-        f_out.close()
-
-    def _get_files_to_sync(self, cmethod, download = False, repo = None,
-        disabled_eapis = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        if disabled_eapis is None:
-            disabled_eapis = []
-
-        critical = []
-        extra_text_files = []
-        gpg_signed_files = []
-        data = {}
-        db_rev_file = self._entropy._get_local_database_revision_file(repo)
-        # adding ~ at the beginning makes this file to be appended at the end
-        # of the upload queue
-        data['~database_revision_file'] = db_rev_file
-        extra_text_files.append(db_rev_file)
-        critical.append(db_rev_file)
-
-        # branch migration support scripts
-        post_branch_mig_file = self._entropy._get_local_post_branch_mig_script(
-            repo)
-        if os.path.isfile(post_branch_mig_file) or download:
-            if download:
-                data['database_post_branch_hop_script'] = post_branch_mig_file
-            extra_text_files.append(post_branch_mig_file)
-
-        post_branch_upg_file = self._entropy._get_local_post_branch_upg_script(
-            repo)
-        if os.path.isfile(post_branch_upg_file) or download:
-            if download:
-                data['database_post_branch_upgrade_script'] = \
-                    post_branch_upg_file
-            extra_text_files.append(post_branch_upg_file)
-
-        post_repo_update_file = self._entropy._get_local_post_repo_update_script(
-            repo)
-        if os.path.isfile(post_repo_update_file) or download:
-            if download:
-                data['database_post_repo_update_script'] = post_repo_update_file
-            extra_text_files.append(post_repo_update_file)
-
-        database_ts_file = self._entropy._get_local_database_timestamp_file(repo)
-        if os.path.isfile(database_ts_file) or download:
-            data['database_timestamp_file'] = database_ts_file
-            if not download:
-                critical.append(database_ts_file)
-
-        database_package_mask_file = \
-            self._entropy._get_local_database_mask_file(repo)
-        if os.path.isfile(database_package_mask_file) or download:
-            if download:
-                data['database_package_mask_file'] = database_package_mask_file
-            extra_text_files.append(database_package_mask_file)
-
-        database_package_system_mask_file = \
-            self._entropy._get_local_database_system_mask_file(repo)
-        if os.path.isfile(database_package_system_mask_file) or download:
-            if download:
-                data['database_package_system_mask_file'] = \
-                    database_package_system_mask_file
-            extra_text_files.append(database_package_system_mask_file)
-
-        database_package_confl_tagged_file = \
-            self._entropy._get_local_database_confl_tagged_file(repo)
-        if os.path.isfile(database_package_confl_tagged_file) or download:
-            if download:
-                data['database_package_confl_tagged_file'] = \
-                    database_package_confl_tagged_file
-            extra_text_files.append(database_package_confl_tagged_file)
-
-        database_license_whitelist_file = \
-            self._entropy._get_local_database_licensewhitelist_file(repo)
-        if os.path.isfile(database_license_whitelist_file) or download:
-            if download:
-                data['database_license_whitelist_file'] = \
-                    database_license_whitelist_file
-            extra_text_files.append(database_license_whitelist_file)
-
-        database_mirrors_file = \
-            self._entropy._get_local_database_mirrors_file(repo)
-        if os.path.isfile(database_mirrors_file) or download:
-            if download:
-                data['database_mirrors_file'] = \
-                    database_mirrors_file
-            extra_text_files.append(database_mirrors_file)
-
-        database_fallback_mirrors_file = \
-            self._entropy._get_local_database_fallback_mirrors_file(repo)
-        if os.path.isfile(database_fallback_mirrors_file) or download:
-            if download:
-                data['database_fallback_mirrors_file'] = \
-                    database_fallback_mirrors_file
-            extra_text_files.append(database_fallback_mirrors_file)
-
-        exp_based_pkgs_removal_file = \
-            self._entropy._get_local_exp_based_pkgs_rm_whitelist_file(repo)
-        if os.path.isfile(exp_based_pkgs_removal_file) or download:
-            if download:
-                data['exp_based_pkgs_removal_file'] = \
-                    exp_based_pkgs_removal_file
-            extra_text_files.append(exp_based_pkgs_removal_file)
-
-        database_rss_file = self._entropy._get_local_database_rss_file(repo)
-        if os.path.isfile(database_rss_file) or download:
-            data['database_rss_file'] = database_rss_file
-            if not download:
-                critical.append(data['database_rss_file'])
-        database_rss_light_file = \
-            self._entropy._get_local_database_rsslight_file(repo)
-
-        if os.path.isfile(database_rss_light_file) or download:
-            data['database_rss_light_file'] = database_rss_light_file
-            if not download:
-                critical.append(data['database_rss_light_file'])
-
-        pkglist_file = self._entropy._get_local_pkglist_file(repo)
-        data['pkglist_file'] = pkglist_file
-        if not download:
-            critical.append(data['pkglist_file'])
-
-        critical_updates_file = self._entropy._get_local_critical_updates_file(
-            repo)
-        if os.path.isfile(critical_updates_file) or download:
-            if download:
-                data['critical_updates_file'] = critical_updates_file
-            extra_text_files.append(critical_updates_file)
-
-        restricted_file = self._entropy._get_local_restricted_file(repo)
-        if os.path.isfile(restricted_file) or download:
-            if download:
-                data['restricted_file'] = restricted_file
-            extra_text_files.append(restricted_file)
-
-        keywords_file = self._entropy._get_local_database_keywords_file(
-            repo)
-        if os.path.isfile(keywords_file) or download:
-            if download:
-                data['keywords_file'] = keywords_file
-            extra_text_files.append(keywords_file)
-
-        gpg_file = self._entropy._get_local_database_gpg_signature_file(repo)
-        if os.path.isfile(gpg_file) or download:
-            data['gpg_file'] = gpg_file
-            # no need to add to extra_text_files, it will be added
-            # afterwards
-            gpg_signed_files.append(gpg_file)
-
-        # EAPI 2,3
-        if not download: # we don't need to get the dump
-
-            # upload eapi3 signal file
-            something_new = os.path.join(
-                self._entropy._get_local_database_dir(repo),
-                etpConst['etpdatabaseeapi3updates'])
-            with open(something_new, "w") as sn_f:
-                sn_f.flush()
-            data['~~something_new'] = something_new
-            critical.append(data['~~something_new'])
-
-            # always push metafiles file, it's cheap
-            data['metafiles_path'] = \
-                self._entropy._get_local_database_compressed_metafiles_file(repo)
-            critical.append(data['metafiles_path'])
-            gpg_signed_files.append(data['metafiles_path'])
-
-            if 2 not in disabled_eapis:
-
-                data['dump_path_light'] = os.path.join(
-                    self._entropy._get_local_database_dir(repo),
-                    etpConst[cmethod[5]])
-                critical.append(data['dump_path_light'])
-                gpg_signed_files.append(data['dump_path_light'])
-
-                data['dump_path_digest_light'] = os.path.join(
-                    self._entropy._get_local_database_dir(repo),
-                    etpConst[cmethod[6]])
-                critical.append(data['dump_path_digest_light'])
-                gpg_signed_files.append(data['dump_path_digest_light'])
-
-        # EAPI 1
-        if 1 not in disabled_eapis:
-
-            data['compressed_database_path'] = os.path.join(
-                self._entropy._get_local_database_dir(repo), etpConst[cmethod[2]])
-            critical.append(data['compressed_database_path'])
-            gpg_signed_files.append(data['compressed_database_path'])
-
-            data['compressed_database_path_light'] = os.path.join(
-                self._entropy._get_local_database_dir(repo), etpConst[cmethod[7]])
-            critical.append(data['compressed_database_path_light'])
-            gpg_signed_files.append(data['compressed_database_path_light'])
-
-            data['database_path_digest'] = os.path.join(
-                self._entropy._get_local_database_dir(repo),
-                etpConst['etpdatabasehashfile']
-            )
-            critical.append(data['database_path_digest'])
-            gpg_signed_files.append(data['database_path_digest'])
-
-            data['compressed_database_path_digest'] = os.path.join(
-                self._entropy._get_local_database_dir(repo),
-                etpConst[cmethod[2]] + etpConst['packagesmd5fileext']
-            )
-            critical.append(data['compressed_database_path_digest'])
-            gpg_signed_files.append(data['compressed_database_path_digest'])
-
-            data['compressed_database_path_digest_light'] = os.path.join(
-                self._entropy._get_local_database_dir(repo),
-                etpConst[cmethod[8]]
-            )
-            critical.append(data['compressed_database_path_digest_light'])
-            gpg_signed_files.append(
-                data['compressed_database_path_digest_light'])
-
-
-        # SSL cert file, just for reference
-        ssl_ca_cert = self._entropy._get_local_database_ca_cert_file()
-        if os.path.isfile(ssl_ca_cert):
-            if download:
-                data['ssl_ca_cert_file'] = ssl_ca_cert
-            extra_text_files.append(ssl_ca_cert)
-
-        ssl_server_cert = self._entropy._get_local_database_server_cert_file()
-        if os.path.isfile(ssl_server_cert):
-            if download:
-                data['ssl_server_cert_file'] = ssl_server_cert
-            extra_text_files.append(ssl_server_cert)
-
-        # Some information regarding how packages are built
-        spm_files_map = self._entropy.Spm_class().config_files_map()
-        spm_syms = {}
-        for myname, myfile in spm_files_map.items():
-            if os.path.islink(myfile):
-                spm_syms[myname] = myfile
-                continue # we don't want symlinks
-            if os.path.isfile(myfile) and os.access(myfile, os.R_OK):
-                if download:
-                    data[myname] = myfile
-                extra_text_files.append(myfile)
-
-        # NOTE: for symlinks, we read their link and send a file with that
-        # content. This is the default behaviour for now and allows to send
-        # /etc/make.profile link pointer correctly.
-        tmp_dirs = []
-        for symname, symfile in spm_syms.items():
-
-            mytmpdir = tempfile.mkdtemp(dir = etpConst['entropyunpackdir'])
-            tmp_dirs.append(mytmpdir)
-            mytmpfile = os.path.join(mytmpdir, os.path.basename(symfile))
-            mylink = os.readlink(symfile)
-            f_mkp = open(mytmpfile, "w")
-            f_mkp.write(mylink)
-            f_mkp.flush()
-            f_mkp.close()
-
-            if download:
-                data[symname] = mytmpfile
-            extra_text_files.append(mytmpfile)
-
-        return data, critical, extra_text_files, tmp_dirs, gpg_signed_files
-
-    def _show_package_sets_messages(self, repo):
-
-        self._entropy.output(
-            "[repo:%s] %s:" % (
-                brown(repo),
-                blue(_("configured package sets")),
-            ),
-            importance = 0,
-            level = "info",
-            header = darkgreen(" * ")
-        )
-        sets_data = self._entropy.sets_available(match_repo = [repo])
-        if not sets_data:
-            self._entropy.output(
-                "%s" % (_("None configured"),),
-                importance = 0,
-                level = "info",
-                header = brown("    # ")
-            )
-            return
-        sorter = lambda (x, y, z): y
-        for s_repo, s_name, s_sets in sorted(sets_data, key = sorter):
-            self._entropy.output(
-                blue("%s" % (s_name,)),
-                importance = 0,
-                level = "info",
-                header = brown("    # ")
-            )
-
-    def _show_eapi3_upload_messages(self, crippled_uri, database_path, repo):
-
-        self._entropy.output(
-            "[repo:%s|%s|%s:%s] %s" % (
-                brown(repo),
-                darkgreen(crippled_uri),
-                red("EAPI"),
-                bold("3"),
-                blue(_("preparing uncompressed repository for the upload")),
-            ),
-            importance = 0,
-            level = "info",
-            header = darkgreen(" * ")
-        )
-        self._entropy.output(
-            "%s: %s" % (_("repository path"), blue(database_path),),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-
-    def _show_eapi2_upload_messages(self, crippled_uri, database_path,
-        upload_data, cmethod, repo):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        self._entropy.output(
-            "[repo:%s|%s|%s:%s] %s" % (
-                brown(repo),
-                darkgreen(crippled_uri),
-                red("EAPI"),
-                bold("2"),
-                blue(_("creating compressed repository dump + checksum")),
-            ),
-            importance = 0,
-            level = "info",
-            header = darkgreen(" * ")
-        )
-        self._entropy.output(
-            "%s: %s" % (_("repository path"), blue(database_path),),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-        self._entropy.output(
-            "%s: %s" % (
-                _("dump light"),
-                blue(upload_data['dump_path_light']),
-            ),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-        self._entropy.output(
-            "%s: %s" % (
-                _("dump light checksum"),
-                blue(upload_data['dump_path_digest_light']),
-            ),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-
-        self._entropy.output(
-            "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-
-    def _show_eapi1_upload_messages(self, crippled_uri, database_path,
-        upload_data, cmethod, repo):
-
-        self._entropy.output(
-            "[repo:%s|%s|%s:%s] %s" % (
-                brown(repo),
-                darkgreen(crippled_uri),
-                red("EAPI"),
-                bold("1"),
-                blue(_("compressing repository + checksum")),
-            ),
-            importance = 0,
-            level = "info",
-            header = darkgreen(" * "),
-            back = True
-        )
-        self._entropy.output(
-            "%s: %s" % (_("repository path"), blue(database_path),),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-        self._entropy.output(
-            "%s: %s" % (
-                _("compressed repository path"),
-                blue(upload_data['compressed_database_path']),
-            ),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-        self._entropy.output(
-            "%s: %s" % (
-                _("repository checksum"),
-                blue(upload_data['database_path_digest']),
-            ),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-        self._entropy.output(
-            "%s: %s" % (
-                _("compressed checksum"),
-                blue(upload_data['compressed_database_path_digest']),
-            ),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-        self._entropy.output(
-            "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
-            importance = 0,
-            level = "info",
-            header = brown("    # ")
-        )
-
-    def __get_repo_security_intf(self, repo):
-        try:
-            repo_sec = RepositorySecurity()
-            if not repo_sec.is_keypair_available(repo):
-                raise KeyError("no key avail")
-        except RepositorySecurity.KeyExpired:
-            self._entropy.output("%s: %s" % (
-                    darkred(_("Keys for repository are expired")),
-                    bold(repo),
-                ),
-                level = "warning",
-                header = bold(" !!! ")
-            )
-        except RepositorySecurity.GPGError:
-            return
-        except KeyError:
-            return
-        return repo_sec
-
-    def __write_gpg_pubkey(self, repo_sec, repo):
-        pubkey = repo_sec.get_pubkey(repo)
-        # write pubkey to file and add to data upload
-        gpg_path = self._entropy._get_local_database_gpg_signature_file(repo)
-        with open(gpg_path, "w") as gpg_f:
-            gpg_f.write(pubkey)
-            gpg_f.flush()
-        return gpg_path
-
-    def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
-
-        found_file_list = [x for x in file_list if os.path.isfile(x) and \
-            os.path.isfile(x) and os.access(x, os.R_OK)]
-
-        not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in \
-            file_list if x not in found_file_list]
-
-        # GPG, also pack signature.asc inside
-        repo_sec = self.__get_repo_security_intf(repo)
-        if repo_sec is not None:
-            gpg_path = self.__write_gpg_pubkey(repo_sec, repo)
-            if gpg_path is not None:
-                found_file_list.append(gpg_path)
-            else:
-                gpg_path = \
-                    self._entropy._get_local_database_gpg_signature_file(repo)
-                not_found_file_list.append(gpg_path) # not found
-
-        metafile_not_found_file = \
-            self._entropy._get_local_database_metafiles_not_found_file(repo)
-        f_meta = open(metafile_not_found_file, "w")
-        f_meta.writelines(not_found_file_list)
-        f_meta.flush()
-        f_meta.close()
-        found_file_list.append(metafile_not_found_file)
-        if os.path.isfile(compressed_dest_path):
-            os.remove(compressed_dest_path)
-
-        entropy.tools.compress_files(compressed_dest_path, found_file_list)
-
-    def _create_upload_gpg_signatures(self, upload_data, to_sign_files, repo):
-        """
-        This method creates .asc files for every path that is going to be
-        uploaded. upload_data directly comes from _upload_database()
-        """
-        repo_sec = self.__get_repo_security_intf(repo)
-        if repo_sec is None:
-            return
-
-        # for every item in upload_data, create a gpg signature
-        gpg_upload_data = {}
-        for item_id, item_path in upload_data.items():
-            if item_path not in to_sign_files:
-                continue
-            if os.path.isfile(item_path) and os.access(item_path, os.R_OK):
-                gpg_item_id = item_id + "_gpg_sign_part"
-                if gpg_item_id in upload_data:
-                    raise KeyError("wtf!")
-                sign_path = repo_sec.sign_file(repo, item_path)
-                gpg_upload_data[gpg_item_id] = sign_path
-        upload_data.update(gpg_upload_data)
-
-    def _mirror_lock_check(self, uri, repo = None):
+    def mirror_locked(self, repository_id, uri):
         """
         Return whether mirror is locked.
-        """
 
-        if repo is None:
-            repo = self._entropy.default_repository
+        @param repository_id: the repository identifier
+        @type repository_id: string
+        @param uri: mirror uri, as listed in repository metadata
+        @type uri: string
+        @return: True, if mirror is locked
+        @rtype: bool
+        """
         gave_up = False
 
-        lock_file = self._entropy._get_database_lockfile(repo)
+        lock_file = self._entropy._get_database_lockfile(repo = repository_id)
         lock_filename = os.path.basename(lock_file)
 
         remote_dir = os.path.join(
-            self._entropy._get_remote_database_relative_path(repo),
+            self._entropy._get_remote_database_relative_path(
+                repo = repository_id),
             self._settings['repositories']['branch'])
         remote_lock_file = os.path.join(remote_dir, lock_filename)
 
@@ -1561,7 +973,7 @@ class Server(ServerNoticeBoardMixin):
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
                 self._entropy.output(
                     "[repo:%s|%s|%s] %s, %s" % (
-                        brown(str(repo)),
+                        brown(str(repository_id)),
                         darkgreen(crippled_uri),
                         red(_("locking")),
                         darkblue(_("mirror already locked")),
@@ -1581,7 +993,7 @@ class Server(ServerNoticeBoardMixin):
                     if not handler.is_file(remote_lock_file):
                         self._entropy.output(
                             red("[repo:%s|%s|%s] %s !" % (
-                                    repo,
+                                    repository_id,
                                     crippled_uri,
                                     _("locking"),
                                     _("mirror unlocked"),
@@ -1598,687 +1010,6 @@ class Server(ServerNoticeBoardMixin):
                     gave_up = True
 
         return gave_up
-
-    def _shrink_database_and_close(self, repo = None):
-        dbconn = self._entropy.open_server_repository(read_only = False,
-            no_upload = True, repo = repo, indexing = False,
-            do_treeupdates = False)
-        dbconn.clean()
-        dbconn.dropAllIndexes()
-        dbconn.vacuum()
-        dbconn.vacuum()
-        dbconn.commit()
-        self._entropy.close_repository(dbconn)
-
-    def _get_current_timestamp(self):
-        from datetime import datetime
-        return "%s" % (datetime.fromtimestamp(time.time()),)
-
-    def _update_repository_timestamp(self, repo = None):
-        if repo is None:
-            repo = self._entropy.default_repository
-        ts_file = self._entropy._get_local_database_timestamp_file(repo)
-        current_ts = self._get_current_timestamp()
-        ts_f = open(ts_file, "w")
-        ts_f.write(current_ts)
-        ts_f.flush()
-        ts_f.close()
-
-    def _sync_database_treeupdates(self, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-        dbconn = self._entropy.open_server_repository(read_only = False,
-            no_upload = True, repo = repo, do_treeupdates = False)
-        # grab treeupdates from other databases and inject
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        server_repos = list(srv_set['repositories'].keys())
-        all_actions = set()
-        for myrepo in server_repos:
-
-            # avoid __default__
-            if myrepo == etpConst['clientserverrepoid']:
-                continue
-
-            mydbc = self._entropy.open_server_repository(just_reading = True,
-                repo = myrepo)
-            actions = mydbc.listAllTreeUpdatesActions(no_ids_repos = True)
-            for data in actions:
-                all_actions.add(data)
-            if not actions:
-                continue
-        backed_up_entries = dbconn.listAllTreeUpdatesActions()
-        try:
-            # clear first
-            dbconn.removeTreeUpdatesActions(repo)
-            dbconn.insertTreeUpdatesActions(all_actions, repo)
-        except Error as err:
-            entropy.tools.print_traceback()
-            mytxt = "%s, %s: %s. %s" % (
-                _("Troubles with treeupdates"),
-                _("error"),
-                err,
-                _("Bumping old data back"),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 1,
-                level = "warning"
-            )
-            # restore previous data
-            dbconn.bumpTreeUpdatesActions(backed_up_entries)
-
-        dbconn.commit()
-
-    def _create_repository_pkglist(self, repo = None, branch = None):
-        pkglist_file = self._entropy._get_local_pkglist_file(repo = repo,
-            branch = branch)
-
-        tmp_pkglist_file = pkglist_file + ".tmp"
-        dbconn = self._entropy.open_server_repository(repo = repo,
-            just_reading = True, do_treeupdates = False)
-        pkglist = dbconn.listAllDownloads(do_sort = True, full_path = True)
-
-        with open(tmp_pkglist_file, "w") as pkg_f:
-            for pkg in pkglist:
-                pkg_f.write(pkg + "\n")
-            pkg_f.flush()
-
-        os.rename(tmp_pkglist_file, pkglist_file)
-
-    def _upload_database(self, uris, lock_check = False, pretend = False,
-            repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        if srv_set['rss']['enabled']:
-            self._update_rss_feed(repo = repo)
-
-        upload_errors = False
-        broken_uris = set()
-        fine_uris = set()
-
-        disabled_eapis = sorted(srv_set['disabled_eapis'])
-        db_format = srv_set['database_file_format']
-        cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
-        if cmethod is None:
-            raise AttributeError("wrong repository compression method passed")
-        database_path = self._entropy._get_local_database_file(repo)
-
-        if disabled_eapis:
-            self._entropy.output(
-                "[repo:%s|%s] %s: %s" % (
-                    blue(repo),
-                    darkgreen(_("upload")),
-                    darkred(_("disabled EAPI")),
-                    bold(', '.join([str(x) for x in disabled_eapis])),
-                ),
-                importance = 1,
-                level = "warning",
-                header = darkgreen(" * ")
-            )
-
-        # create/update timestamp file
-        self._update_repository_timestamp(repo)
-        # create pkglist service file
-        self._create_repository_pkglist(repo)
-
-        upload_data, critical, text_files, tmp_dirs, gpg_to_sign_files = \
-            self._get_files_to_sync(cmethod, repo = repo,
-                disabled_eapis = disabled_eapis)
-
-        self._entropy.output(
-            "[repo:%s|%s] %s" % (
-                blue(repo),
-                darkgreen(_("upload")),
-                darkgreen(_("preparing to upload repository to mirror")),
-            ),
-            importance = 1,
-            level = "info",
-            header = darkgreen(" * ")
-        )
-
-        self._sync_database_treeupdates(repo)
-        self._entropy._update_database_package_sets(repo)
-        dbconn = self._entropy.open_server_repository(
-            read_only = False, no_upload = True, repo = repo,
-            do_treeupdates = False)
-        dbconn.commit()
-        # now we can safely copy it
-
-        # Package Sets info
-        self._show_package_sets_messages(repo)
-
-        # backup current database to avoid re-indexing
-        old_dbpath = self._entropy._get_local_database_file(repo)
-        backup_dbpath = old_dbpath + ".up_backup"
-        copy_back = False
-        if not pretend:
-            try:
-                if os.access(backup_dbpath, os.R_OK) and \
-                    os.path.isfile(backup_dbpath):
-                    os.remove(backup_dbpath)
-
-                shutil.copy2(old_dbpath, backup_dbpath)
-                copy_back = True
-            except shutil.Error:
-                copy_back = False
-
-        self._shrink_database_and_close(repo)
-
-        if 2 not in disabled_eapis:
-            self._show_eapi2_upload_messages("~all~", database_path,
-                upload_data, cmethod, repo)
-
-            # create compressed dump + checksum
-            eapi2_dbfile = self._entropy._get_local_database_file(repo)
-            temp_eapi2_dbfile = eapi2_dbfile+".light_eapi2.tmp"
-            shutil.copy2(eapi2_dbfile, temp_eapi2_dbfile)
-            # open and remove content table
-            eapi2_tmp_dbconn = \
-                self._entropy.open_generic_repository(
-                    temp_eapi2_dbfile, indexing_override = False,
-                    xcache = False)
-            eapi2_tmp_dbconn.dropContent()
-            eapi2_tmp_dbconn.dropChangelog()
-            eapi2_tmp_dbconn.commit()
-
-            # opener = cmethod[0]
-            f_out = cmethod[0](upload_data['dump_path_light'], "wb")
-            try:
-                eapi2_tmp_dbconn.exportRepository(f_out)
-            finally:
-                f_out.close()
-                eapi2_tmp_dbconn.close()
-
-            os.remove(temp_eapi2_dbfile)
-            self._create_file_checksum(upload_data['dump_path_light'],
-                upload_data['dump_path_digest_light'])
-
-        if 1 not in disabled_eapis:
-
-            self._show_eapi1_upload_messages("~all~", database_path,
-                upload_data, cmethod, repo)
-
-            # compress the database and create uncompressed
-            # database checksum -- DEPRECATED
-            self._compress_file(database_path,
-                upload_data['compressed_database_path'], cmethod[0])
-            self._create_file_checksum(database_path,
-                upload_data['database_path_digest'])
-
-            # create compressed database checksum
-            self._create_file_checksum(
-                upload_data['compressed_database_path'],
-                upload_data['compressed_database_path_digest'])
-
-            # create light version of the compressed db
-            eapi1_dbfile = self._entropy._get_local_database_file(repo)
-            temp_eapi1_dbfile = eapi1_dbfile+".light"
-            shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
-            # open and remove content table
-            eapi1_tmp_dbconn = \
-                self._entropy.open_generic_repository(
-                    temp_eapi1_dbfile, indexing_override = False,
-                    xcache = False)
-            eapi1_tmp_dbconn.dropContent()
-            eapi1_tmp_dbconn.dropChangelog()
-            eapi1_tmp_dbconn.commit()
-            eapi1_tmp_dbconn.vacuum()
-            eapi1_tmp_dbconn.close()
-
-            # compress
-            self._compress_file(temp_eapi1_dbfile,
-                upload_data['compressed_database_path_light'], cmethod[0])
-            # go away, we don't need you anymore
-            os.remove(temp_eapi1_dbfile)
-            # create compressed light database checksum
-            self._create_file_checksum(
-                upload_data['compressed_database_path_light'],
-                upload_data['compressed_database_path_digest_light'])
-
-        # always upload metafile, it's cheap and also used by EAPI1,2
-        self._create_metafiles_file(upload_data['metafiles_path'],
-            text_files, repo)
-        # Setup GPG signatures for files that are going to be uploaded
-        self._create_upload_gpg_signatures(upload_data, gpg_to_sign_files,
-            repo)
-
-        for uri in uris:
-
-            if lock_check:
-                given_up = self._mirror_lock_check(uri, repo = repo)
-                if given_up:
-                    upload_errors = True
-                    broken_uris.add(uri)
-                    continue
-
-            crippled_uri = EntropyTransceiver.get_uri_name(uri)
-
-            # EAPI 3
-            if 3 not in disabled_eapis:
-                self._show_eapi3_upload_messages(crippled_uri, database_path,
-                    repo)
-
-            if not pretend:
-
-                uploader = self.TransceiverServerHandler(
-                    self._entropy,
-                    [uri],
-                    [upload_data[x] for x in sorted(upload_data)],
-                    critical_files = critical,
-                    repo = repo
-                )
-                errors, m_fine_uris, m_broken_uris = uploader.go()
-                if errors:
-                    my_broken_uris = sorted([
-                        (EntropyTransceiver.get_uri_name(x_uri),
-                            x_uri_rc) for x_uri, x_uri_rc in m_broken_uris])
-                    self._entropy.output(
-                        "[repo:%s|%s|%s] %s" % (
-                            repo,
-                            crippled_uri,
-                            _("errors"),
-                            _("upload failed, locking and continuing"),
-                        ),
-                        importance = 0,
-                        level = "error",
-                        header = darkred(" !!! ")
-                    )
-                    # get reason
-                    reason = my_broken_uris[0][1]
-                    self._entropy.output(
-                        blue("%s: %s" % (_("reason"), reason,)),
-                        importance = 0,
-                        level = "error",
-                        header = blue("    # ")
-                    )
-                    upload_errors = True
-                    broken_uris |= m_broken_uris
-                    self.lock_mirrors_for_download(True, [uri], repo = repo)
-                    continue
-
-            fine_uris |= m_fine_uris
-
-        if (not pretend) and copy_back and os.path.isfile(backup_dbpath):
-            # copy db back
-            self._entropy.close_repositories()
-            further_backup_dbpath = old_dbpath+".security_backup"
-            if os.path.isfile(further_backup_dbpath):
-                os.remove(further_backup_dbpath)
-            shutil.copy2(old_dbpath, further_backup_dbpath)
-            shutil.move(backup_dbpath, old_dbpath)
-
-        if not fine_uris:
-            upload_errors = True
-
-        # remove temporary directories
-        for tmp_dir in tmp_dirs:
-            try:
-                shutil.rmtree(tmp_dir, True)
-            except shutil.Error:
-                continue
-
-        return upload_errors, broken_uris, fine_uris
-
-
-    def _download_database(self, uris, lock_check = False, pretend = False,
-        repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        download_errors = False
-        broken_uris = set()
-        fine_uris = set()
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        disabled_eapis = sorted(srv_set['disabled_eapis'])
-
-        for uri in uris:
-
-            db_format = srv_set['database_file_format']
-            cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
-            if cmethod is None:
-                raise AttributeError("wrong repository compression method passed")
-
-            crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            database_path = self._entropy._get_local_database_file(repo)
-            database_dir_path = os.path.dirname(
-                self._entropy._get_local_database_file(repo))
-
-            download_data, critical, text_files, tmp_dirs, \
-                gpg_to_verify_files = self._get_files_to_sync(cmethod,
-                    download = True, repo = repo,
-                        disabled_eapis = disabled_eapis)
-            try:
-
-                mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
-
-                self._entropy.output(
-                    "[repo:%s|%s|%s] %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        red(_("download")),
-                        blue(_("preparing to download repository from mirror")),
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = darkgreen(" * ")
-                )
-                files_to_sync = sorted(download_data.keys())
-                for myfile in files_to_sync:
-                    self._entropy.output(
-                        "%s: %s" % (
-                            blue(_("download path")),
-                            brown(download_data[myfile]),
-                        ),
-                        importance = 0,
-                        level = "info",
-                        header = brown("    # ")
-                    )
-
-                if lock_check:
-                    given_up = self._mirror_lock_check(uri, repo = repo)
-                    if given_up:
-                        download_errors = True
-                        broken_uris.add(uri)
-                        continue
-
-                # avoid having others messing while we're downloading
-                self.lock_mirrors(True, [uri], repo = repo)
-
-                if not pretend:
-                    # download
-                    downloader = self.TransceiverServerHandler(
-                        self._entropy, [uri],
-                        [download_data[x] for x in download_data], download = True,
-                        local_basedir = mytmpdir, critical_files = critical,
-                        repo = repo
-                    )
-                    errors, m_fine_uris, m_broken_uris = downloader.go()
-                    if errors:
-                        my_broken_uris = sorted([
-                            (EntropyTransceiver.get_uri_name(x_uri),
-                                x_uri_rc) for x_uri, x_uri_rc in m_broken_uris])
-                        self._entropy.output(
-                            "[repo:%s|%s|%s] %s" % (
-                                brown(repo),
-                                darkgreen(crippled_uri),
-                                red(_("errors")),
-                                blue(_("failed to download from mirror")),
-                            ),
-                            importance = 0,
-                            level = "error",
-                            header = darkred(" !!! ")
-                        )
-                        # get reason
-                        reason = my_broken_uris[0][1]
-                        self._entropy.output(
-                            blue("%s: %s" % (_("reason"), reason,)),
-                            importance = 0,
-                            level = "error",
-                            header = blue("    # ")
-                        )
-                        download_errors = True
-                        broken_uris |= m_broken_uris
-                        self.lock_mirrors(False, [uri], repo = repo)
-                        continue
-
-                    # all fine then, we need to move data from mytmpdir
-                    # to database_dir_path
-
-                    # EAPI 1 -- unpack database
-                    if 1 not in disabled_eapis:
-                        compressed_db_filename = os.path.basename(
-                            download_data['compressed_database_path'])
-                        uncompressed_db_filename = os.path.basename(database_path)
-                        compressed_file = os.path.join(mytmpdir,
-                            compressed_db_filename)
-                        uncompressed_file = os.path.join(mytmpdir,
-                            uncompressed_db_filename)
-                        entropy.tools.uncompress_file(compressed_file,
-                            uncompressed_file, cmethod[0])
-
-                    # now move
-                    for myfile in os.listdir(mytmpdir):
-                        fromfile = os.path.join(mytmpdir, myfile)
-                        tofile = os.path.join(database_dir_path, myfile)
-                        shutil.move(fromfile, tofile)
-                        const_setup_file(tofile, etpConst['entropygid'], 0o664)
-
-                if os.path.isdir(mytmpdir):
-                    shutil.rmtree(mytmpdir)
-                if os.path.isdir(mytmpdir):
-                    os.rmdir(mytmpdir)
-
-                fine_uris.add(uri)
-                self.lock_mirrors(False, [uri], repo = repo)
-
-            finally:
-                # remove temporary directories
-                for tmp_dir in tmp_dirs:
-                    try:
-                        shutil.rmtree(tmp_dir, True)
-                    except shutil.Error:
-                        continue
-
-        return download_errors, fine_uris, broken_uris
-
-    def _calculate_database_sync_queues(self, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        remote_status =  self.get_remote_repositories_status(repo)
-        local_revision = self._entropy.get_local_repository_revision(repo)
-        upload_queue = []
-        download_latest = ()
-
-        # all mirrors are empty ? I rule
-        if not [x for x in remote_status if x[1]]:
-            upload_queue = remote_status[:]
-        else:
-            highest_remote_revision = max([x[1] for x in remote_status])
-
-            if local_revision < highest_remote_revision:
-                for remote_item in remote_status:
-                    if remote_item[1] == highest_remote_revision:
-                        download_latest = remote_item
-                        break
-
-            if download_latest:
-                upload_queue = [x for x in remote_status if \
-                    (x[1] < highest_remote_revision)]
-            else:
-                upload_queue = [x for x in remote_status if \
-                    (x[1] < local_revision)]
-
-        return download_latest, upload_queue
-
-    def sync_repositories(self, no_upload = False, unlock_mirrors = False,
-        repo = None, conf_files_qa_test = True):
-
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        while True:
-
-            db_locked = False
-            if self._is_local_repository_locked(repo):
-                db_locked = True
-
-            lock_data = self._get_mirrors_lock(repo)
-            mirrors_locked = [x for x in lock_data if x[1]]
-
-            if not mirrors_locked and db_locked:
-                # mirrors not locked remotely but only locally
-                mylock_file = self._entropy._get_database_lockfile(repo)
-                if os.access(mylock_file, os.W_OK) and \
-                    os.path.isfile(mylock_file):
-
-                    os.remove(mylock_file)
-                    continue
-
-            break
-
-        if mirrors_locked and not db_locked:
-            mytxt = "%s, %s %s" % (
-                _("Mirrors are locked, someone is working on the repository"),
-                _("try again later"),
-                "...",
-            )
-            raise OnlineMirrorError("OnlineMirrorError: %s" % (mytxt,))
-
-        download_latest, upload_queue = self._calculate_database_sync_queues(
-            repo)
-
-        if not download_latest and not upload_queue:
-            self._entropy.output(
-                "[repo:%s|%s] %s" % (
-                    brown(repo),
-                    red(_("sync")), # something short please
-                    blue(_("repository already in sync")),
-                ),
-                importance = 1,
-                level = "info",
-                header = blue(" @@ ")
-            )
-            return 0, set(), set()
-
-        if download_latest:
-            # close all the currently open repos
-            self._entropy.close_repositories()
-            download_uri = download_latest[0]
-            download_errors, fine_uris, broken_uris = self._download_database(
-                [download_uri], repo = repo)
-            if download_errors:
-                self._entropy.output(
-                    "[repo:%s|%s] %s: %s" % (
-                        brown(repo),
-                        red(_("sync")),
-                        blue(_("repository sync failed")),
-                        red(_("download issues")),
-                    ),
-                    importance = 1,
-                    level = "error",
-                    header = darkred(" !!! ")
-                )
-                return 1, fine_uris, broken_uris
-
-        if upload_queue and not no_upload:
-
-            # Some internal QA checks, make sure everything is fine
-            # on the repo
-
-            srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-            qa_sets = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['qa_sets']
-            base_repo = srv_set['base_repository_id']
-            if base_repo is None:
-                base_repo = repo
-
-            # check against missing package sets
-            pkg_sets_required = qa_sets.get(repo)
-            if pkg_sets_required is not None:
-                sets_data = self._entropy.sets_available(match_repo = [repo])
-                if sets_data:
-                    current_sets = set([s_name for s_repo, s_name, s_sets in \
-                        sets_data])
-                    missing_sets = pkg_sets_required - current_sets
-                    if missing_sets:
-                        missing_sets = sorted(missing_sets)
-                        self._entropy.output(
-                            "[repo:%s|%s] %s, %s:" % (
-                                brown(repo),
-                                red(_("sync")),
-                                blue(_("repository sync forbidden")),
-                                red(_("missing package sets")),
-                            ),
-                            importance = 1,
-                            level = "error",
-                            header = darkred(" !! ")
-                        )
-                        for missing_set in missing_sets:
-                            self._entropy.output(
-                                teal(missing_set),
-                                importance = 0,
-                                level = "error",
-                                header = brown("  # ")
-                            )
-                        return 5, set(), set()
-
-            base_deps_not_found = set()
-            if base_repo != repo:
-                base_deps_not_found = self._entropy.dependencies_test(
-                    repo = base_repo)
-
-            deps_not_found = self._entropy.dependencies_test(repo = repo)
-            if (deps_not_found or base_deps_not_found) \
-                and not self._entropy.community_repo:
-
-                self._entropy.output(
-                    "[repo:%s|%s] %s: %s" % (
-                        brown(repo),
-                        red(_("sync")),
-                        blue(_("repository sync forbidden")),
-                        red(_("dependencies_test() reported errors")),
-                    ),
-                    importance = 1,
-                    level = "error",
-                    header = darkred(" !!! ")
-                )
-                return 3, set(), set()
-
-            if conf_files_qa_test:
-                problems = self._entropy._check_config_file_updates()
-                if problems:
-                    return 4, set(), set()
-
-            self._entropy.output(
-                "[repo:%s|%s] %s" % (
-                    brown(repo),
-                    red(_("config files")), # something short please
-                    blue(_("no configuration files to commit. All fine.")),
-                ),
-                importance = 1,
-                level = "info",
-                header = blue(" @@ "),
-                back = True
-            )
-
-            uris = [x[0] for x in upload_queue]
-            errors, fine_uris, broken_uris = self._upload_database(uris,
-                repo = repo)
-            if errors:
-                self._entropy.output(
-                    "[repo:%s|%s] %s: %s" % (
-                        brown(repo),
-                        red(_("sync")),
-                        blue(_("repository sync failed")),
-                        red(_("upload issues")),
-                    ),
-                    importance = 1,
-                    level = "error",
-                    header = darkred(" !!! ")
-                )
-                return 2, fine_uris, broken_uris
-
-
-        self._entropy.output(
-            "[repo:%s|%s] %s" % (
-                brown(repo),
-                red(_("sync")),
-                blue(_("repository sync completed successfully")),
-            ),
-            importance = 1,
-            level = "info",
-            header = darkgreen(" * ")
-        )
-
-        if unlock_mirrors:
-            self.lock_mirrors(False, repo = repo)
-        return 0, set(), set()
 
     def _calculate_local_upload_files(self, repo = None):
         upload_files = 0
@@ -3022,6 +1753,20 @@ class Server(ServerNoticeBoardMixin):
             raise EntropyPackageException(
                 'EntropyPackageException: cannot continue')
 
+    def sync_repository(self, repository_id, enable_upload = True):
+        """
+        Synchronize the given repository identifier.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword enable_upload: enable upload in case it's required to push
+            the repository remotely
+        @type enable_upload: bool
+        @return: status code, 0 means all fine, non zero values mean error
+        @rtype: int
+        """
+        return ServerPackagesRepository.update(self._entropy, repository_id,
+            enable_upload, None)
 
     def sync_packages(self, ask = True, pretend = False, packages_check = False,
         repo = None):
@@ -3050,7 +1795,7 @@ class Server(ServerNoticeBoardMixin):
         mirror_errors = False
         mirrors_errors = False
 
-        for uri in self._entropy.get_remote_packages_mirrors(repo):
+        for uri in self._entropy.remote_packages_mirrors(repo):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             mirror_errors = False
@@ -3485,7 +2230,7 @@ class Server(ServerNoticeBoardMixin):
             obj.append(base_pkg)
             obj.append(base_pkg+etpConst['packagesmd5fileext'])
 
-        for uri in self._entropy.get_remote_packages_mirrors(repo):
+        for uri in self._entropy.remote_packages_mirrors(repo):
 
             ##
             # remove remotely

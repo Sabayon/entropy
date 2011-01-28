@@ -1002,7 +1002,7 @@ class Repository(SocketCommands):
     def docmd_get_available_repositories(self):
         data = {}
         sys_settings = SystemSettings()
-        data['available'] = self.HostInterface.Entropy.get_available_repositories()
+        data['available'] = self.HostInterface.Entropy.available_repositories()
         if etpConst['clientserverrepoid'] in data['available']:
             data['available'].pop(etpConst['clientserverrepoid'])
         data['community_mode'] = self.HostInterface.Entropy.community_repo
@@ -1015,7 +1015,7 @@ class Repository(SocketCommands):
         if not myargs:
             return False, 'wrong arguments'
         repoid = myargs[0]
-        if repoid not in self.HostInterface.Entropy.get_available_repositories():
+        if repoid not in self.HostInterface.Entropy.available_repositories():
             return False, 'repository id not available'
 
         status = True
@@ -1032,7 +1032,7 @@ class Repository(SocketCommands):
         if not myargs:
             return False, 'wrong arguments'
         repoid = myargs[0]
-        if repoid not in self.HostInterface.Entropy.get_available_repositories():
+        if repoid not in self.HostInterface.Entropy.available_repositories():
             return False, 'repository id not available'
 
         dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)

@@ -214,8 +214,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             cur_sets = entropy_repository_instance.retrievePackageSets()
             sys_sets = self._server._get_configured_package_sets(repo)
             if cur_sets != sys_sets:
-                self._server._update_database_package_sets(repo,
-                    dbconn = entropy_repository_instance)
+                self._server._update_package_sets(repo,
+                    entropy_repository_instance)
             entropy_repository_instance.commit(no_plugins = True)
 
         return 0
@@ -914,8 +914,8 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
             my_data['repoid'] = repoid
             my_data['dbpath'] = self._helper._get_local_database_dir(
                 repo = repoid)
-            my_data['dbrevision'] = self._helper.get_local_repository_revision(
-                repo = repoid)
+            my_data['dbrevision'] = self._helper.local_repository_revision(
+                repoid)
             cli_repodata['available'][repoid] = my_data
 
         cli_repodata['default_repository'] = \
@@ -1326,36 +1326,55 @@ class ServerSettingsMixin:
         return os.path.join(srv_set['repositories'][repo]['repo_basedir'],
             pkg_rel_url)
 
-    def get_remote_repository_mirrors(self, repo = None):
+    def remote_repository_mirrors(self, repository_id):
+        """
+        Return a list of remote repository mirrors (database) for given
+        repository.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: list of available repository mirrors
+        @rtype: list
+        @raise KeyError: if repository_id is invalid
+        """
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        if repo is None:
-            repo = self.default_repository
-        return srv_set['repositories'][repo]['repo_mirrors'][:]
+        return srv_set['repositories'][repository_id]['repo_mirrors'][:]
 
-    def get_remote_packages_mirrors(self, repo = None):
+    def remote_packages_mirrors(self, repository_id):
+        """
+        Return a list of remote packages mirrors (packages) for given
+        repository.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: list of available packages mirrors
+        @rtype: list
+        @raise KeyError: if repository_id is invalid
+        """
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        if repo is None:
-            repo = self.default_repository
-        return srv_set['repositories'][repo]['pkg_mirrors'][:]
+        return srv_set['repositories'][repository_id]['pkg_mirrors'][:]
 
-    def get_local_repository_revision(self, repo = None):
+    def local_repository_revision(self, repository_id):
+        """
+        Return local repository revision.
 
-        if repo is None:
-            repo = self.default_repository
-
-        dbrev_file = self._get_local_database_revision_file(repo)
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: the actual repository revision
+        @rtype: int
+        """
+        dbrev_file = self._get_local_database_revision_file(repository_id)
         if not os.path.isfile(dbrev_file):
             return 0
 
-        f_rev = open(dbrev_file)
-        rev = f_rev.readline().strip()
-        f_rev.close()
+        with open(dbrev_file, "r") as f_rev:
+            rev = f_rev.readline().strip()
         try:
             rev = int(rev)
         except ValueError:
             self.output(
                 "[repo:%s] %s: %s - %s" % (
-                        darkgreen(repo),
+                        darkgreen(repository_id),
                         blue(_("invalid repository revision")),
                         bold(rev),
                         blue(_("defaulting to 0")),
@@ -1367,18 +1386,21 @@ class ServerSettingsMixin:
             rev = 0
         return rev
 
-    def get_remote_repository_revision(self, repo = None):
+    def remote_repository_revision(self, repository_id):
+        """
+        Return the highest repository revision available on mirrors for
+        given repository.
 
-        if repo is None:
-            repo = self.default_repository
-
-        remote_status =  self.Mirrors.get_remote_repositories_status(repo)
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: remote repository revision
+        @rtype: int
+        """
+        repo_status = self.Mirrors.remote_repository_status(repository_id)
+        remote_status =  list(repo_status.items())
         if not [x for x in remote_status if x[1]]:
-            remote_revision = 0
-        else:
-            remote_revision = max([x[1] for x in remote_status])
-
-        return remote_revision
+            return 0
+        return max([x[1] for x in remote_status])
 
     def repositories(self):
         """
@@ -1774,7 +1796,7 @@ class ServerPackagesHandlingMixin:
                 if rc_question == _("No"):
                     continue
 
-            for uri in self.get_remote_packages_mirrors(repo):
+            for uri in self.remote_packages_mirrors(repo):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -2539,7 +2561,7 @@ class ServerPackagesHandlingMixin:
         not_match = set()
         broken_packages = {}
 
-        for uri in self.get_remote_packages_mirrors(repo):
+        for uri in self.remote_packages_mirrors(repo):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             self.output(
@@ -3104,7 +3126,7 @@ class ServerPackagesHandlingMixin:
             level = "info",
             header = "   "
         )
-        for uri in self.get_remote_packages_mirrors(repo):
+        for uri in self.remote_packages_mirrors(repo):
 
             if not_downloaded:
                 mytxt = blue("%s ...") % (
@@ -3627,7 +3649,13 @@ class ServerRepositoryMixin:
             instance = self._server_dbcache.pop(found)
             instance.close()
 
-    def get_available_repositories(self):
+    def available_repositories(self):
+        """
+        Return a dictionary representing available repositories metadata.
+
+        @return: available repository metadata
+        @rtype: dict
+        """
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return srv_set['repositories'].copy()
 
@@ -3819,11 +3847,11 @@ class ServerRepositoryMixin:
                 header = red(" * "),
                 back = True
             )
-            for uri in self.get_remote_repository_mirrors(repo):
+            for uri in self.remote_repository_mirrors(repo):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
-                given_up = self.Mirrors._mirror_lock_check(uri, repo = repo)
+                given_up = self.Mirrors.mirror_locked(repo, uri)
                 if given_up:
                     mytxt = "%s:" % (_("Mirrors status table"),)
                     self.output(
@@ -3863,7 +3891,7 @@ class ServerRepositoryMixin:
 
             # if we arrive here, it is because all the mirrors are unlocked
             self.Mirrors.lock_mirrors(True, repo = repo)
-            self.Mirrors.sync_repositories(no_upload, repo = repo)
+            self.Mirrors.sync_repository(repo, enable_upload = not no_upload)
 
 
     def _init_generic_memory_server_repository(self, repoid, description,
@@ -4558,7 +4586,7 @@ class ServerMiscMixin:
     def _setup_services(self):
         self._setup_entropy_settings()
         self._backup_entropy_settings()
-        self.Mirrors = MirrorsServer(self)
+        self.Mirrors = MirrorsServer(self, self.default_repository)
 
     def _setup_entropy_settings(self, repo = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -5179,14 +5207,11 @@ class ServerMiscMixin:
 
         return sets_data
 
-    def _update_database_package_sets(self, repo = None, dbconn = None):
-
-        if repo is None:
-            repo = self.default_repository
+    def _update_package_sets(self, repoitory_id, entropy_repository):
 
         self.output(
             "[%s|%s] %s..." % (
-                darkgreen(repo),
+                darkgreen(repoitory_id),
                 purple(_("sets")),
                 blue(_("updating package sets")),
             ),
@@ -5196,21 +5221,17 @@ class ServerMiscMixin:
             back = True
         )
 
-        package_sets = self._get_configured_package_sets(repo)
-        if dbconn is None:
-            dbconn = self.open_server_repository(
-                read_only = False, no_upload = True, repo = repo,
-                do_treeupdates = False)
+        package_sets = self._get_configured_package_sets(repoitory_id)
 
         # tell what package sets got added, and what got removed
-        current_sets = set(dbconn.retrievePackageSets())
+        current_sets = set(entropy_repository.retrievePackageSets())
         configured_sets = set(package_sets)
         new_sets = sorted(configured_sets - current_sets)
         removed_sets = sorted(current_sets - configured_sets)
         for new_set in new_sets:
             self.output(
                 "[%s|%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repoitory_id),
                     purple(_("sets")),
                     blue(_("adding package set")),
                     brown(new_set),
@@ -5222,7 +5243,7 @@ class ServerMiscMixin:
         for removed_set in removed_sets:
             self.output(
                 "[%s|%s] %s: %s" % (
-                    teal(repo),
+                    teal(repoitory_id),
                     brown(_("sets")),
                     purple(_("removing package set")),
                     bold(removed_set),
@@ -5232,10 +5253,10 @@ class ServerMiscMixin:
                 header = darkred(" @@ ")
             )
 
-        dbconn.clearPackageSets()
+        entropy_repository.clearPackageSets()
         if package_sets:
-            dbconn.insertPackageSets(package_sets)
-        dbconn.commit()
+            entropy_repository.insertPackageSets(package_sets)
+
 
 class Server(ServerSettingsMixin, ServerLoadersMixin,
     ServerPackageDepsMixin, ServerPackagesHandlingMixin, ServerQAMixin,

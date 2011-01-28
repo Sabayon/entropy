@@ -138,7 +138,7 @@ def _sync(entropy_server, options, just_tidy):
                 elif rss_enabled:
                     ServerRssMetadata()['commitmessage'] = "Autodriven Update"
 
-            errors, fine, broken = _sync_remote_databases(entropy_server)
+            errors = _sync_remote_databases(entropy_server)
             if not errors:
                 entropy_server.Mirrors.lock_mirrors(lock = False)
             if not errors and not do_noask:
@@ -474,7 +474,8 @@ def _repo(entropy_server, options):
     elif cmd == "lock-status":
 
         print_info(brown(" * ")+green("%s:" % (_("Mirrors status table"),) ))
-        dbstatus = entropy_server.Mirrors._get_mirrors_lock()
+        dbstatus = entropy_server.Mirrors.mirrors_status(
+            entropy_server.default_repository)
         for db in dbstatus:
             if (db[1]):
                 db[1] = red(_("Locked"))
@@ -511,7 +512,7 @@ def _repo(entropy_server, options):
                 entropy_server.switch_default_repository(repo)
 
             print_info(green(" * ")+red("%s ..." % (_("Syncing databases"),) ))
-            errors, fine, broken = _sync_remote_databases(entropy_server)
+            errors = _sync_remote_databases(entropy_server)
             if errors:
                 print_error(darkred(" !!! ") + \
                     green(_("Database sync errors, cannot continue.")))
@@ -542,31 +543,34 @@ def sync_remote_databases():
 
 def _sync_remote_databases(entropy_server):
 
-    remote_db_status = entropy_server.Mirrors.get_remote_repositories_status()
     print_info(green(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
-
-    for dbstat in remote_db_status:
-        host = EntropyTransceiver.get_uri_name(dbstat[0])
+    remote_db_status = entropy_server.Mirrors.remote_repository_status(
+        entropy_server.default_repository)
+    for url, revision in remote_db_status.items():
+        host = EntropyTransceiver.get_uri_name(url)
         print_info(green("    %s: " % (_("Host"),) )+bold(host))
         print_info(red("     * %s: " % (_("Database revision"),) ) + \
-            blue(str(dbstat[1])))
+            blue(str(revision)))
 
-    local_revision = entropy_server.get_local_repository_revision()
+    local_revision = entropy_server.local_repository_revision(
+        entropy_server.default_repository)
     print_info(red("      * %s: " % (
         _("Database local revision currently at"),) ) + \
             blue(str(local_revision)))
 
     # do the rest
-    errors, fine_uris, broken_uris = entropy_server.Mirrors.sync_repositories(
-        conf_files_qa_test = False)
-    remote_status = entropy_server.Mirrors.get_remote_repositories_status()
+    errors = entropy_server.Mirrors.sync_repository(
+        entropy_server.default_repository)
+
     print_info(darkgreen(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
-    for dbstat in remote_status:
-        host = EntropyTransceiver.get_uri_name(dbstat[0])
+    remote_status = entropy_server.Mirrors.remote_repository_status(
+        entropy_server.default_repository)
+    for url, revision in remote_status.items():
+        host = EntropyTransceiver.get_uri_name(url)
         print_info(darkgreen("    %s: " % (_("Host"),) )+bold(host))
         print_info(red("      * %s: " % (_("Database revision"),) ) + \
-            blue(str(dbstat[1])))
+            blue(str(revision)))
 
-    return errors, fine_uris, broken_uris
+    return errors

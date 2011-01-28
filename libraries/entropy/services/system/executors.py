@@ -477,7 +477,7 @@ class Base:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
 
-                for repoid in Entropy.get_available_repositories():
+                for repoid in Entropy.available_repositories():
                     self.run_entropy_treeupdates(queue_id, repoid)
 
                 stdout_err.write("\n"+_("Calculating updates...").encode('utf-8')+"\n")
@@ -584,7 +584,7 @@ class Base:
                         Entropy.Spm().generate_package(atom, store_dir)
 
                 # inject new into db
-                avail_repos = Entropy.get_available_repositories()
+                avail_repos = Entropy.available_repositories()
                 if etpConst['clientserverrepoid'] in avail_repos:
                     avail_repos.pop(etpConst['clientserverrepoid'])
                 matches_added = set()
@@ -812,7 +812,7 @@ class Base:
 
                     repo_data[repoid] = {}
 
-                    for uri in Entropy.get_remote_packages_mirrors(repoid):
+                    for uri in Entropy.remote_packages_mirrors(repoid):
 
                         crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -852,7 +852,7 @@ class Base:
                             'upload_queue': []
                         }
 
-                    for uri in Entropy.get_remote_repository_mirrors(repoid):
+                    for uri in Entropy.remote_repository_mirrors(repoid):
 
                         crippled_uri = EntropyTransceiver.get_uri_name(uri)
                         if crippled_uri not in repo_data[repoid]:
@@ -860,9 +860,9 @@ class Base:
                             repo_data[repoid][crippled_uri]['packages'] = {}
 
                         # now the db
-                        current_revision = Entropy.get_local_repository_revision(
+                        current_revision = Entropy.local_repository_revision(
                             repoid)
-                        remote_revision = Entropy.get_remote_repository_revision(
+                        remote_revision = Entropy.remote_repository_revision(
                             repoid)
                         download_latest, upload_queue = Entropy.Mirrors.calculate_database_sync_queues(repoid)
 
@@ -905,28 +905,27 @@ class Base:
 
         def sync_remote_databases(repoid, pretend):
 
-            rdb_status = Entropy.Mirrors.get_remote_repositories_status()
+            rdb_status = Entropy.Mirrors.remote_repository_status(repoid)
             Entropy.output(
                 "%s:" % (_("Remote Entropy Database Repository Status"),),
                 header = " * "
             )
-            for myuri, myrev in rdb_status:
+            for myuri, myrev in rdb_status.items():
                 Entropy.output("\t %s:\t %s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
                 Entropy.output("\t  * %s: %s" % (_("Database revision"), myrev,))
-            local_revision = Entropy.get_local_repository_revision(repoid)
+            local_revision = Entropy.local_repository_revision(repoid)
             Entropy.output("\t  * %s: %s" % (_("Database local revision currently at"), local_revision,))
             if pretend:
                 return 0, set(), set()
 
-            errors, fine_uris, broken_uris = Entropy.Mirrors.sync_repositories(
-                no_upload = False)
-            remote_status = Entropy.Mirrors.get_remote_repositories_status(repoid)
+            errors = Entropy.Mirrors.sync_repository(repoid)
+            remote_status = Entropy.Mirrors.remote_repository_status(repoid)
             Entropy.output(" * %s: " % (_("Remote Entropy Database Repository Status"),))
-            for myuri, myrev in remote_status:
+            for myuri, myrev in remote_status.items():
                 Entropy.output("\t %s:\t%s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
                 Entropy.output("\t  * %s: %s" % (_("Database revision"), myrev,) )
 
-            return errors, fine_uris, broken_uris
+            return errors
 
 
         def myfunc():
@@ -959,8 +958,6 @@ class Base:
                         'broken_mirrors': broken_mirrors.copy(),
                         'check_data': check_data,
                         'db_errors': 0,
-                        'db_fine': set(),
-                        'db_broken': set(),
                     }
 
                     if repository_data[repoid]['pkg']:
@@ -988,10 +985,8 @@ class Base:
                                 commit_msg = "Autodriven update"
                             ServerRssMetadata()['commitmessage'] = commit_msg
 
-                        errors, fine, broken = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
+                        errors = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
                         repo_data[repoid]['db_errors'] = errors
-                        repo_data[repoid]['db_fine'] = fine.copy()
-                        repo_data[repoid]['db_broken'] = broken.copy()
                         if errors:
                             continue
                         Entropy.Mirrors.lock_mirrors(lock = False, repo = repoid)

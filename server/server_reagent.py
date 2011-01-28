@@ -625,7 +625,7 @@ def repositories(options):
 
 def _repositories(entropy_server, options):
 
-    valid_repos = entropy_server.get_available_repositories()
+    valid_repos = entropy_server.available_repositories()
     repoid = None
     repoid_dest = None
     pull_deps = False
@@ -761,7 +761,8 @@ def _repositories(entropy_server, options):
             _("Bumping Repository database"),) ))
         entropy_server._bump_database()
         if request_sync:
-            errors, fine, broken = entropy_server.Mirrors.sync_repositories()
+            errors = entropy_server.Mirrors.sync_repository(
+                entropy_server.default_repository)
         return 0
 
     elif cmd == "backup":
@@ -1081,8 +1082,7 @@ def _status(entropy_server):
 
     for repo_id in sorted(repos_data):
         repo_data = repos_data[repo_id]
-        repo_rev = entropy_server.get_local_repository_revision(
-            repo = repo_id)
+        repo_rev = entropy_server.local_repository_revision(repo_id)
         store_dir = entropy_server._get_local_store_directory(repo = repo_id)
         upload_basedir = entropy_server._get_local_upload_directory(
             repo = repo_id)
