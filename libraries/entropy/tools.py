@@ -1447,14 +1447,13 @@ def create_md5_file(filepath):
     """
     md5hash = md5sum(filepath)
     hashfile = filepath+etpConst['packagesmd5fileext']
-    f = open(hashfile, "w")
-    name = os.path.basename(filepath)
-    if sys.hexversion >= 0x3000000:
-        f.write(md5hash+"  "+name+"\n")
-    else:
-        f.write(md5hash+"  "+name.encode('utf-8')+"\n")
-    f.flush()
-    f.close()
+    with open(hashfile, "w") as f:
+        name = os.path.basename(filepath)
+        if sys.hexversion >= 0x3000000:
+            f.write(md5hash+"  "+name+"\n")
+        else:
+            f.write(md5hash+"  "+name.encode('utf-8')+"\n")
+        f.flush()
     return hashfile
 
 def create_sha512_file(filepath):
