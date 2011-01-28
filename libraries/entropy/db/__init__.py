@@ -723,6 +723,12 @@ class EntropyRepository(EntropyRepositoryBase):
         super(EntropyRepository, self).commit(force = force,
             no_plugins = no_plugins)
 
+    def rollback(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        self._connection().rollback()
+
     def initializeRepository(self):
         """
         Reimplemented from EntropyRepositoryBase.

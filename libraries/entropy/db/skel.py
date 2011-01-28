@@ -466,6 +466,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 raise RepositoryPluginError("[commit_hook] %s: status: %s" % (
                     plug_inst.get_id(), exec_rc,))
 
+    def rollback(self):
+        """
+        Rollback last transaction, if it hasn't been already committed.
+        """
+        raise NotImplementedError()
+
     def commitChanges(self):
         """
         @deprecated, please see commit()
