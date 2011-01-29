@@ -334,6 +334,13 @@ def remove_slot(mydep):
             mydep = mydep[:bracket]
     return mydep
 
+def remove_tag_from_slot(slot):
+    """
+    Remove, if present, the tag part from SLOT string.
+    Packages append the kernel tag to the slot, by comma separating it.
+    """
+    return slot[::-1].split(",", 1)[-1][::-1]
+
 # input must be a valid package version or a full atom
 def remove_revision(ver):
     """

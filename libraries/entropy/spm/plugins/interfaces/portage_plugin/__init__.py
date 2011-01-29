@@ -2750,9 +2750,6 @@ class PortagePlugin(SpmPlugin):
 
         self._bump_vartree_mtime(portage_cpv)
 
-    def __remove_kernel_tag_from_slot(self, slot):
-        return slot[::-1].split(",", 1)[-1][::-1]
-
     def _get_portage_sets_object(self):
         try:
             import portage._sets as sets
@@ -2946,7 +2943,7 @@ class PortagePlugin(SpmPlugin):
         elif package_metadata['versiontag'] and \
             ("," in package_metadata['slot']):
             # new slot format for kernel tagged packages
-            myslot = self.__remove_kernel_tag_from_slot(myslot)
+            myslot = entropy.dep.remove_tag_from_slot(myslot)
 
         keyslot = const_convert_to_rawstring(key+":"+myslot)
         key = const_convert_to_rawstring(key)
@@ -3019,7 +3016,7 @@ class PortagePlugin(SpmPlugin):
                 slot = "0"
             elif tag and ("," in slot):
                 # new kernel tagged pkgs protocol
-                slot = self.__remove_kernel_tag_from_slot(slot)
+                slot = entropy.dep.remove_tag_from_slot(slot)
 
             def do_rm_path_atomic(xpath):
                 for my_el in os.listdir(xpath):
