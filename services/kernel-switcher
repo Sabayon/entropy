@@ -1,0 +1,198 @@
+#!/usr/bin/python2
+import sys
+sys.path.insert(0, '/usr/lib/entropy/libraries')
+sys.path.insert(0, '/usr/lib/entropy/server')
+sys.path.insert(0, '/usr/lib/entropy/client')
+sys.path.insert(0, '../libraries')
+sys.path.insert(0, '../server')
+sys.path.insert(0, '../client')
+
+import os
+
+from entropy.const import etpUi, etpConst
+from entropy.output import teal, purple, darkgreen, blue, brown, print_info, \
+    nocolor, print_warning, print_error
+from entropy.exceptions import DependenciesNotRemovable
+from entropy.i18n import _
+from entropy.client.interfaces import Client
+import entropy.dep
+
+# equo modules
+from text_query import print_package_info
+from text_tools import acquire_entropy_locks, release_entropy_locks
+from text_ui import install_packages
+
+APP_NAME = os.path.basename(sys.argv[0])
+KERNEL_BINARY_VIRTUAL = "virtual/linux-binary"
+
+def _get_kernels(etp_client):
+    matches, x_rc = etp_client.atom_match(KERNEL_BINARY_VIRTUAL,
+        multi_match = True, multi_repo = True)
+    return matches, x_rc
+
+def _remove_tag_from_slot(slot):
+    if not hasattr(entropy.dep, "remove_tag_from_slot"):
+        # backward compatibility
+        return slot[::-1].split(",", 1)[-1][::-1]
+    return entropy.dep.remove_tag_from_slot(slot)
+
+def _get_target_tag(etp_client, kernel_match):
+    try:
+        matches = etp_client.get_reverse_queue([kernel_match],
+            recursive = False)
+    except DependenciesNotRemovable:
+        # wtf should not happen
+        raise
+    tags = set()
+    for pkg_id, pkg_repo in matches:
+        tag = etp_client.open_repository(pkg_repo).retrieveTag(pkg_id)
+        if tag:
+            tags.add(tag)
+
+    if tags:
+        tags = sorted(tags, reverse = True)
+        return tags.pop(0)
+
+def _switch_kernel(args):
+    if not args:
+        print_error(brown(_("No kernel packages given")))
+        return 1
+    if len(args) > 1:
+        print_error(brown(_("More than one kernel package given")))
+        return 1
+    kernel_package = args.pop(0)
+
+    etp_client = None
+    acquired = False
+    try:
+        etp_client = Client()
+        acquired = acquire_entropy_locks(etp_client)
+        if not acquired:
+            print_error(brown(_("Another Entropy is currently running.")))
+            return 1
+
+        pkg_id, pkg_repo = etp_client.atom_match(kernel_package)
+        if pkg_id == -1:
+            print_error("%s: %s" % (brown(_("Package does not exist")),
+                teal(kernel_package),))
+            return 1
+        kernel_matches, rc = _get_kernels(etp_client)
+
+        kernel_match = (pkg_id, pkg_repo)
+        if kernel_match not in kernel_matches:
+            print_error("%s: %s" % (brown(_("Not a kernel")),
+                teal(kernel_package),))
+            return 1
+
+        target_tag = _get_target_tag(etp_client, kernel_match)
+
+        inst_repo = etp_client.installed_repository()
+        latest_kernel, k_rc = inst_repo.atomMatch(KERNEL_BINARY_VIRTUAL)
+        installed_revdeps = []
+        if (latest_kernel != -1) and target_tag:
+            installed_revdeps = etp_client.get_removal_queue([latest_kernel],
+                recursive = False)
+
+        # only pull in packages that are installed at this time.
+        def _installed_pkgs_translator(inst_pkg_id):
+            if inst_pkg_id == latest_kernel:
+                # will be added later
+                return None
+            key, slot = inst_repo.retrieveKeySlot(inst_pkg_id)
+            target_slot = _remove_tag_from_slot(slot) + "," + target_tag
+
+            pkg_id, pkg_repo = etp_client.atom_match(key,
+                match_slot = target_slot)
+            if pkg_id == -1:
+                return None
+            return pkg_id, pkg_repo
+
+        matches = map(_installed_pkgs_translator, installed_revdeps)
+        matches = [x for x in matches if x is not None]
+        matches.append(kernel_match)
+
+        rc, other = install_packages(
+            etp_client,
+            atomsdata = matches,
+            check_critical_updates = False
+        )
+        return rc
+
+    finally:
+        if acquired and (etp_client is not None):
+            release_entropy_locks(etp_client)
+        if etp_client is not None:
+            etp_client.shutdown()
+
+def _list_kernels(args):
+    etp_client = None
+    acquired = False
+    try:
+        etp_client = Client()
+        acquired = acquire_entropy_locks(etp_client)
+        if not acquired:
+            print_error(brown(_("Another Entropy is currently running.")))
+            return 1
+        matches, rc = _get_kernels(etp_client)
+        if (rc != 0) or (not matches):
+            print_warning(_("No kernel packages found"))
+            return 1
+
+        key_sorter = lambda (x, y): \
+            etp_client.open_repository(y).retrieveAtom(x)
+        for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
+            repo = etp_client.open_repository(pkg_repo)
+            print_package_info(pkg_id, repo,
+                showRepoOnQuiet = True, Equo = etp_client,
+                    extended = etpUi['verbose'])
+
+        return 0
+    finally:
+        if acquired and (etp_client is not None):
+            release_entropy_locks(etp_client)
+        if etp_client is not None:
+            etp_client.shutdown()
+
+def _print_help(args):
+    print_info("%s - %s" % (blue(APP_NAME),
+        teal(_("Sabayon Linux Kernel Switcher BETA")),))
+    print_info("  %s:\t%s %s" % (purple(_("switch kernel")),
+        brown(APP_NAME), darkgreen("switch <kernel package>")))
+    print_info("  %s:\t%s %s" % (purple(_("list kernels")), brown(APP_NAME),
+        darkgreen("list"),))
+    print_info("  %s:\t\t%s %s" % (purple(_("this help")), brown(APP_NAME),
+        darkgreen("help")))
+    if not args:
+        return 1
+    return 0
+
+args_map = {
+    'switch': _switch_kernel,
+    'list': _list_kernels,
+    'help': _print_help,
+    '__fallback__': _print_help,
+}
+
+argv = sys.argv[1:]
+argv = []
+for arg in sys.argv[1:]:
+    if arg == "--nocolor":
+        nocolor()
+    elif arg in ("--quiet", "-q"):
+        etpUi['quiet'] = True
+    elif arg in ("--verbose", "-v"):
+        etpUi['verbose'] = True
+    elif arg in ("--pretend", "-p"):
+        etpUi['pretend'] = True
+    elif arg in ("--ask", "-a"):
+        etpUi['ask'] = True
+    else:
+        argv.append(arg)
+
+if not argv:
+    argv.append("help")
+
+cmd, args = argv[0], argv[1:]
+func = args_map.get(cmd, args_map.get("__fallback__"))
+rc = func(args)
+raise SystemExit(rc)
