@@ -433,15 +433,15 @@ class RepositoryMixin:
                 x_repoid = x.split("|")[0].strip()
                 repolines_data[repocount] = {}
                 repolines_data[repocount]['repoid'] = x_repoid
-                repolines_data[repocount]['line'] = repolines_map[x]
+                repolines_data[repocount]['lines'] = [repolines_map[x]]
 
                 if x_repoid == repodata['repoid']:
                     if disable:
-                        repolines_data[repocount]['line'] = \
-                            "# repository = %s" % (x,)
+                        repolines_data[repocount]['lines'] = \
+                            ["# repository = %s" % (x,)]
                     elif enable:
-                        repolines_data[repocount]['line'] = \
-                            "repository = %s" % (x,)
+                        repolines_data[repocount]['lines'] = \
+                            ["repository = %s" % (x,)]
 
                 repocount += 1
 
@@ -450,38 +450,50 @@ class RepositoryMixin:
                 service_uri = repodata.get('service_uri', '')
                 if service_uri:
                     service_uri = ',%s' % (service_uri,)
-                repository_line = "repository = %s|%s|%s|%s%s#%s#%s,%s" % (
-                    repodata['repoid'],
-                    repodata['description'],
-                    ' '.join(repodata['plain_packages']),
-                    repodata['plain_database'],
-                    service_uri,
-                    repodata['dbcformat'],
-                    repodata['service_port'],
-                    repodata['ssl_service_port'],
-                )
+                repository_lines = []
+
+                mirror_count = 0
+                for mirror in repodata['plain_packages']:
+                    if mirror_count == 0:
+                        mirror_count += 1
+                        rline = "repository = %s|%s|%s|%s%s#%s#%s,%s" % (
+                            repodata['repoid'],
+                            repodata['description'],
+                            mirror,
+                            repodata['plain_database'],
+                            service_uri,
+                            repodata['dbcformat'],
+                            repodata['service_port'],
+                            repodata['ssl_service_port'],
+                        )
+                    else:
+                        rline = "repository = %s||%s|" % (
+                            repodata['repoid'],
+                            mirror,
+                        )
+                    repository_lines.append(rline)
 
                 # seek in repolines_data for a disabled entry and remove
                 for cc in repolines_data.keys():
-                    line = repolines_data[cc]['line']
-                    key, value = entropy.tools.extract_setting(line)
-                    if key is not None:
-                        key = key.replace(" ", "")
-                        key = key.replace("\t", "")
-                        r_value = value.split("|")[0].strip()
-                        if key in ("repository", "#repository") and \
-                            r_value == repodata['repoid']:
-                            del repolines_data[cc]
+                    lines = repolines_data[cc]['lines'][:]
+                    for line in lines:
+                        key, value = entropy.tools.extract_setting(line)
+                        if key is not None:
+                            key = key.replace(" ", "")
+                            key = key.replace("\t", "")
+                            r_value = value.split("|")[0].strip()
+                            if key in ("repository", "#repository") and \
+                                r_value == repodata['repoid']:
+                                del repolines_data[cc]
 
                 repocount += 1
                 repolines_data[repocount] = {}
                 repolines_data[repocount]['repoid'] = repodata['repoid']
-                repolines_data[repocount]['line'] = repository_line
+                repolines_data[repocount]['lines'] = repository_lines
 
             # inject new repodata
             for cc in sorted(repolines_data):
-                line = repolines_data[cc]['line']
-                content.append(line)
+                content.extend(repolines_data[cc]['lines'])
 
         # atomic write
         try:
