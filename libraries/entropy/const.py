@@ -178,8 +178,6 @@ def const_default_settings(rootdir):
 
     default_etp_dir = os.getenv('DEV_ETP_VAR_DIR', rootdir+"/var/lib/entropy")
     default_etp_tmpdir = "/tmp"
-    default_etp_portdir = rootdir+"/usr/portage"
-    default_etp_distfilesdir = "/distfiles"
     default_etp_dbdir = "/database/"+ETP_ARCH_CONST
     default_etp_dbfile = "packages.db"
     default_etp_dbclientfile = "equo.db"
@@ -236,10 +234,6 @@ def const_default_settings(rootdir):
         'smartpackagesdir': default_etp_dir+default_etp_smartpackagesdir,
         # etpConst['triggersdir'] location where external triggers are placed
         'triggersdir': default_etp_dir+default_etp_triggersdir,
-        # directory where is stored our local portage tree
-        'portagetreedir': default_etp_portdir,
-        # directory where our sources are downloaded
-        'distfilesdir': default_etp_portdir+default_etp_distfilesdir,
         # directory where entropy stores its configuration
         'confdir': default_etp_confdir,
         # same as above + /packages
