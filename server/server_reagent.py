@@ -558,7 +558,8 @@ def _switch_branch(entropy_server, args):
 
 def _restore_repository(entropy_server):
 
-    db_file = entropy_server._get_local_database_file()
+    db_file = entropy_server._get_local_repository_file(
+        entropy_server.default_repository)
     db_dir = os.path.dirname(db_file)
     dblist = entropy_server.installed_repository_backups(
         client_dbdir = db_dir)
@@ -767,11 +768,12 @@ def _repositories(entropy_server, options):
 
     elif cmd == "backup":
 
-        db_path = entropy_server._get_local_database_file()
+        db_path = entropy_server._get_local_repository_file(
+            entropy_server.default_repository)
         # make sure to close all repos before backing-up
         entropy_server.close_repositories()
-        rc, err_msg = entropy_server.backup_repository(entropy_server.default_repository,
-            os.path.dirname(db_path))
+        rc, err_msg = entropy_server.backup_repository(
+            entropy_server.default_repository, os.path.dirname(db_path))
         if not rc:
             print_info(darkred(" ** ")+red("%s: %s" % (
                 _("Error"), err_msg,) ))
@@ -1029,7 +1031,8 @@ def _update(entropy_server, options):
 
         # package them
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
-        store_dir = entropy_server._get_local_store_directory()
+        store_dir = entropy_server._get_local_store_directory(
+            entropy_server.default_repository)
         for x in to_be_added:
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
@@ -1039,7 +1042,8 @@ def _update(entropy_server, options):
                 print_info(brown("    !!! ")+bold("%s..." % (
                     _("Ignoring broken Spm entry, please recompile it"),) ))
 
-    store_dir = entropy_server._get_local_store_directory()
+    store_dir = entropy_server._get_local_store_directory(
+        entropy_server.default_repository)
     etp_pkg_files = []
     if os.path.isdir(store_dir):
         etp_pkg_files = os.listdir(store_dir)
@@ -1048,7 +1052,10 @@ def _update(entropy_server, options):
         # then exit gracefully
         return 0
 
-    etp_pkg_files = [(os.path.join(entropy_server._get_local_store_directory(), x), False,) for x in etp_pkg_files]
+    local_store_dir = entropy_server._get_local_store_directory(
+        entropy_server.default_repository)
+    etp_pkg_files = [(os.path.join(local_store_dir, x), False) \
+        for x in etp_pkg_files]
     idpackages = entropy_server.add_packages_to_repository(etp_pkg_files)
 
     if idpackages:
@@ -1083,9 +1090,8 @@ def _status(entropy_server):
     for repo_id in sorted(repos_data):
         repo_data = repos_data[repo_id]
         repo_rev = entropy_server.local_repository_revision(repo_id)
-        store_dir = entropy_server._get_local_store_directory(repo = repo_id)
-        upload_basedir = entropy_server._get_local_upload_directory(
-            repo = repo_id)
+        store_dir = entropy_server._get_local_store_directory(repo_id)
+        upload_basedir = entropy_server._get_local_upload_directory(repo_id)
         upload_files, upload_packages = \
             entropy_server.Mirrors._calculate_local_upload_files(
                 repo = repo_id)

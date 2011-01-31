@@ -35,7 +35,7 @@ class ServerNoticeBoardMixin:
         if repo is None:
             repo = self._entropy.default_repository
         mirrors = self._entropy.remote_repository_mirrors(repo)
-        rss_path = self._entropy._get_local_database_notice_board_file(repo)
+        rss_path = self._entropy._get_local_repository_notice_board_file(repo)
         mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
 
         self._entropy.output(
@@ -84,7 +84,7 @@ class ServerNoticeBoardMixin:
         if repo is None:
             repo = self._entropy.default_repository
         mirrors = self._entropy.remote_repository_mirrors(repo)
-        rss_path = self._entropy._get_local_database_notice_board_file(repo)
+        rss_path = self._entropy._get_local_repository_notice_board_file(repo)
         rss_file = os.path.basename(rss_path)
 
         self._entropy.output(
@@ -139,7 +139,7 @@ class ServerNoticeBoardMixin:
         if repo is None:
             repo = self._entropy.default_repository
         mirrors = self._entropy.remote_repository_mirrors(repo)
-        rss_path = self._entropy._get_local_database_notice_board_file(repo)
+        rss_path = self._entropy._get_local_repository_notice_board_file(repo)
 
         self._entropy.output(
             "[repo:%s] %s %s" % (
@@ -191,7 +191,7 @@ class ServerNoticeBoardMixin:
 
         rss_title = "%s Notice Board" % (self._settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
-        rss_path = self._entropy._get_local_database_notice_board_file(repo)
+        rss_path = self._entropy._get_local_repository_notice_board_file(repo)
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if not link:
             link = srv_set['rss']['website_url']
@@ -210,7 +210,7 @@ class ServerNoticeBoardMixin:
 
     def read_notice_board(self, do_download = True, repo = None):
 
-        rss_path = self._entropy._get_local_database_notice_board_file(repo)
+        rss_path = self._entropy._get_local_repository_notice_board_file(repo)
         if do_download:
             self.download_notice_board(repo)
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
@@ -220,7 +220,7 @@ class ServerNoticeBoardMixin:
 
     def remove_from_notice_board(self, identifier, repo = None):
 
-        rss_path = self._entropy._get_local_database_notice_board_file(repo)
+        rss_path = self._entropy._get_local_repository_notice_board_file(repo)
         rss_title = "%s Notice Board" % (self._settings['system']['name'],)
         rss_description = "Inform about important distribution activities."
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
@@ -314,7 +314,7 @@ class Server(ServerNoticeBoardMixin):
                 header = brown(" @@ ")
             )
 
-            branches_path = self._entropy._get_remote_database_relative_path(
+            branches_path = self._entropy._get_remote_repository_relative_path(
                 repo)
             txc = self._entropy.Transceiver(uri)
             txc.set_verbosity(False)
@@ -389,7 +389,7 @@ class Server(ServerNoticeBoardMixin):
             )
 
             base_path = os.path.join(
-                self._entropy._get_remote_database_relative_path(repo),
+                self._entropy._get_remote_repository_relative_path(repo),
                 self._settings['repositories']['branch'])
             lock_file = os.path.join(base_path,
                 etpConst['etpdatabaselockfile'])
@@ -434,7 +434,7 @@ class Server(ServerNoticeBoardMixin):
                 issues = True
 
         if not issues:
-            db_taint_file = self._entropy._get_local_database_taint_file(repo)
+            db_taint_file = self._entropy._get_local_repository_taint_file(repo)
             if os.path.isfile(db_taint_file):
                 os.remove(db_taint_file)
 
@@ -481,7 +481,7 @@ class Server(ServerNoticeBoardMixin):
 
             lock_file = etpConst['etpdatabasedownloadlockfile']
             my_path = os.path.join(
-                self._entropy._get_remote_database_relative_path(repo),
+                self._entropy._get_remote_repository_relative_path(repo),
                 self._settings['repositories']['branch'])
             lock_file = os.path.join(my_path, lock_file)
 
@@ -533,7 +533,7 @@ class Server(ServerNoticeBoardMixin):
             repo = self._entropy.default_repository
 
         my_path = os.path.join(
-            self._entropy._get_remote_database_relative_path(repo),
+            self._entropy._get_remote_repository_relative_path(repo),
             self._settings['repositories']['branch'])
 
         # create path to lock file if it doesn't exist
@@ -544,13 +544,13 @@ class Server(ServerNoticeBoardMixin):
         lock_string = ''
 
         if dblock:
-            self._entropy._create_local_database_lockfile(repo)
-            lock_file = self._entropy._get_database_lockfile(repo)
+            self._entropy._create_local_repository_lockfile(repo)
+            lock_file = self._entropy._get_repository_lockfile(repo)
         else:
             # locking/unlocking mirror1 for download
             lock_string = _('for download')
-            self._entropy._create_local_database_download_lockfile(repo)
-            lock_file = self._entropy._get_database_download_lockfile(repo)
+            self._entropy._create_local_repository_download_lockfile(repo)
+            lock_file = self._entropy._get_repository_download_lockfile(repo)
 
         remote_path = os.path.join(my_path, os.path.basename(lock_file))
 
@@ -581,7 +581,7 @@ class Server(ServerNoticeBoardMixin):
                 level = "error",
                 header = darkred(" * ")
             )
-            self._entropy._remove_local_database_lockfile(repo)
+            self._entropy._remove_local_repository_lockfile(repo)
 
         return rc_upload
 
@@ -592,7 +592,7 @@ class Server(ServerNoticeBoardMixin):
             repo = self._entropy.default_repository
 
         my_path = os.path.join(
-            self._entropy._get_remote_database_relative_path(repo),
+            self._entropy._get_remote_repository_relative_path(repo),
             self._settings['repositories']['branch'])
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
@@ -618,9 +618,9 @@ class Server(ServerNoticeBoardMixin):
                 header = darkgreen(" * ")
             )
             if dblock:
-                self._entropy._remove_local_database_lockfile(repo)
+                self._entropy._remove_local_repository_lockfile(repo)
             else:
-                self._entropy._remove_local_database_download_lockfile(repo)
+                self._entropy._remove_local_repository_download_lockfile(repo)
         else:
             self._entropy.output(
                 "[repo:%s|%s] %s: %s - %s" % (
@@ -667,9 +667,9 @@ class Server(ServerNoticeBoardMixin):
 
                 remote_path = \
                     self._entropy.complete_remote_package_relative_path(
-                        pkg_relative_path, repo = repo)
+                        pkg_relative_path, repo)
                 download_path = self._entropy.complete_local_package_path(
-                    pkg_relative_path, repo = repo)
+                    pkg_relative_path, repo)
 
                 download_dir = os.path.dirname(download_path)
 
@@ -798,7 +798,7 @@ class Server(ServerNoticeBoardMixin):
         if cmethod is None:
             raise AttributeError("Wrong repository compression method passed")
         remote_dir = os.path.join(
-            self._entropy._get_remote_database_relative_path(repo),
+            self._entropy._get_remote_repository_relative_path(repo),
             self._settings['repositories']['branch'])
 
         # let raise exception if connection is impossible
@@ -808,7 +808,7 @@ class Server(ServerNoticeBoardMixin):
             compressedfile = etpConst[cmethod[2]]
             rc1 = handler.is_file(os.path.join(remote_dir, compressedfile))
 
-            rev_file = self._entropy._get_local_database_revision_file(repo)
+            rev_file = self._entropy._get_local_repository_revision_file(repo)
             revfilename = os.path.basename(rev_file)
             rc2 = handler.is_file(os.path.join(remote_dir, revfilename))
 
@@ -911,7 +911,7 @@ class Server(ServerNoticeBoardMixin):
         """
         dbstatus = []
         remote_dir = os.path.join(
-            self._entropy._get_remote_database_relative_path(repository_id),
+            self._entropy._get_remote_repository_relative_path(repository_id),
             self._settings['repositories']['branch'])
         lock_file = os.path.join(remote_dir, etpConst['etpdatabaselockfile'])
         down_lock_file = os.path.join(remote_dir,
@@ -955,12 +955,11 @@ class Server(ServerNoticeBoardMixin):
         """
         gave_up = False
 
-        lock_file = self._entropy._get_database_lockfile(repo = repository_id)
+        lock_file = self._entropy._get_repository_lockfile(repository_id)
         lock_filename = os.path.basename(lock_file)
 
         remote_dir = os.path.join(
-            self._entropy._get_remote_database_relative_path(
-                repo = repository_id),
+            self._entropy._get_remote_repository_relative_path(repository_id),
             self._settings['repositories']['branch'])
         remote_lock_file = os.path.join(remote_dir, lock_filename)
 
@@ -1014,7 +1013,10 @@ class Server(ServerNoticeBoardMixin):
     def _calculate_local_upload_files(self, repo = None):
         upload_files = 0
         upload_packages = set()
-        upload_dir = self._entropy._get_local_upload_directory(repo = repo)
+        if repo is None:
+            repo = self._entropy.default_repository
+
+        upload_dir = self._entropy._get_local_upload_directory(repo)
 
         # check if it exists
         if not os.path.isdir(upload_dir):
@@ -1022,7 +1024,7 @@ class Server(ServerNoticeBoardMixin):
 
         branch = self._settings['repositories']['branch']
         upload_pkgs = self._entropy._get_basedir_pkg_listing(upload_dir,
-            repo = repo, branch = branch)
+            branch = branch)
 
         pkg_ext = etpConst['packagesext']
         pkg_md5_ext = etpConst['packagesmd5fileext']
@@ -1037,8 +1039,9 @@ class Server(ServerNoticeBoardMixin):
     def _calculate_local_package_files(self, repo = None):
         local_files = 0
         local_packages = set()
-        base_dir = self._entropy._get_local_repository_base_directory(
-            repo = repo)
+        if repo is None:
+            repo = self._entropy.default_repository
+        base_dir = self._entropy._get_local_repository_base_directory(repo)
 
         # check if it exists
         if not os.path.isdir(base_dir):
@@ -1046,7 +1049,7 @@ class Server(ServerNoticeBoardMixin):
 
         branch = self._settings['repositories']['branch']
         pkg_files = self._entropy._get_basedir_pkg_listing(base_dir,
-            repo = repo, branch = branch)
+            branch = branch)
 
         pkg_ext = etpConst['packagesext']
         pkg_md5_ext = etpConst['packagesmd5fileext']
@@ -1225,11 +1228,11 @@ class Server(ServerNoticeBoardMixin):
         for pkg_dir_type in pkgs_dir_types:
 
             remote_dir = self._entropy.complete_remote_package_relative_path(
-                pkg_dir_type, repo = repo)
+                pkg_dir_type, repo)
             remote_dir = os.path.join(remote_dir, etpConst['currentarch'],
                 branch)
             only_dir = self._entropy.complete_remote_package_relative_path("",
-                repo = repo)
+                repo)
             db_url_dir = remote_dir[len(only_dir):]
 
             # create path to lock file if it doesn't exist
@@ -1317,7 +1320,7 @@ class Server(ServerNoticeBoardMixin):
 
                 local_filepath = \
                     self._entropy.complete_local_upload_package_path(
-                        local_package, repo = repo)
+                        local_package, repo)
 
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
@@ -1343,7 +1346,7 @@ class Server(ServerNoticeBoardMixin):
 
             if local_package in remote_packages:
                 local_filepath = self._entropy.complete_local_package_path(
-                    local_package, repo = repo)
+                    local_package, repo)
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size is None:
@@ -1365,7 +1368,7 @@ class Server(ServerNoticeBoardMixin):
 
             if remote_package in local_packages:
                 local_filepath = self._entropy.complete_local_package_path(
-                    remote_package, repo = repo)
+                    remote_package, repo)
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size is None:
@@ -1434,7 +1437,7 @@ class Server(ServerNoticeBoardMixin):
 
         for item in removal_queue:
             local_filepath = self._entropy.complete_local_package_path(
-                item, repo = repo)
+                item, repo)
             size = entropy.tools.get_file_size(local_filepath)
             metainfo['removal'] += size
             removal.append((local_filepath, item, size))
@@ -1442,7 +1445,7 @@ class Server(ServerNoticeBoardMixin):
         for item in download_queue:
 
             local_filepath = self._entropy.complete_local_upload_package_path(
-                item, repo = repo)
+                item, repo)
             if not os.path.isfile(local_filepath):
                 size = remote_packages_data.get(item)
                 if size is None:
@@ -1457,10 +1460,10 @@ class Server(ServerNoticeBoardMixin):
         for item in upload_queue:
 
             local_filepath = self._entropy.complete_local_upload_package_path(
-                item, repo = repo)
+                item, repo)
 
             local_filepath_pkgs = self._entropy.complete_local_package_path(
-                item, repo = repo)
+                item, repo)
             if os.path.isfile(local_filepath):
                 size = entropy.tools.get_file_size(local_filepath)
                 upload.append((local_filepath, item, size))
@@ -1528,7 +1531,8 @@ class Server(ServerNoticeBoardMixin):
         for from_file, rel_file, size in copy_queue:
             from_file_hash = from_file + etpConst['packagesmd5fileext']
 
-            to_file = self._entropy.complete_local_package_path(rel_file)
+            to_file = self._entropy.complete_local_package_path(rel_file,
+                repo)
             to_file_hash = to_file+etpConst['packagesmd5fileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
 
@@ -1581,7 +1585,7 @@ class Server(ServerNoticeBoardMixin):
         for rel_path, myqueue in queue_map.items():
 
             remote_dir = self._entropy.complete_remote_package_relative_path(
-                rel_path, repo = repo)
+                rel_path, repo)
 
             uploader = self.TransceiverServerHandler(self._entropy, [uri],
                 myqueue, critical_files = myqueue,
@@ -1650,10 +1654,10 @@ class Server(ServerNoticeBoardMixin):
         for rel_path, myqueue in queue_map.items():
 
             remote_dir = self._entropy.complete_remote_package_relative_path(
-                rel_path, repo = repo)
+                rel_path, repo)
 
             local_basedir = self._entropy.complete_local_package_path(rel_path,
-                repo = repo)
+                repo)
             if not os.path.isdir(local_basedir):
                 self._entropy._ensure_dir_path(local_basedir)
 
@@ -2030,16 +2034,15 @@ class Server(ServerNoticeBoardMixin):
         if repo is None:
             repo = self._entropy.default_repository
 
-        upload_dir = self._entropy._get_local_upload_directory(repo = repo)
-        basedir_list = self._entropy._get_basedir_pkg_listing(upload_dir,
-            repo = repo)
+        upload_dir = self._entropy._get_local_upload_directory(repo)
+        basedir_list = self._entropy._get_basedir_pkg_listing(upload_dir)
 
         for pkg_rel in basedir_list:
 
             source_pkg = self._entropy.complete_local_upload_package_path(
-                pkg_rel, repo = repo)
+                pkg_rel, repo)
             dest_pkg = self._entropy.complete_local_package_path(pkg_rel,
-                repo = repo)
+                repo)
             dest_pkg_dir = os.path.dirname(dest_pkg)
             self._entropy._ensure_dir_path(dest_pkg_dir)
 
@@ -2067,7 +2070,7 @@ class Server(ServerNoticeBoardMixin):
     def _is_package_expired(self, package_rel, repo = None):
 
         pkg_path = self._entropy.complete_local_package_path(package_rel,
-            repo = repo)
+            repo)
         pkg_path += etpConst['packagesexpirationfileext']
         if not os.path.isfile(pkg_path):
             return False
@@ -2085,8 +2088,11 @@ class Server(ServerNoticeBoardMixin):
 
     def _create_expiration_file(self, package_rel, repo = None, gentle = False):
 
+        if repo is None:
+            repo = self._entropy.default_repository
+
         pkg_path = self._entropy.complete_local_package_path(package_rel,
-            repo = repo)
+            repo)
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
@@ -2096,17 +2102,19 @@ class Server(ServerNoticeBoardMixin):
 
     def _collect_expiring_packages(self, branch, repo = None):
 
+        if repo is None:
+            repo = self._entropy.default_repository
+
         dbconn = self._entropy.open_server_repository(just_reading = True,
             repo = repo)
 
         database_bins = set(dbconn.listAllDownloads(do_sort = False,
             full_path = True))
 
-        repo_basedir = self._entropy._get_local_repository_base_directory(
-            repo = repo)
+        repo_basedir = self._entropy._get_local_repository_base_directory(repo)
 
         repo_bins = self._entropy._get_basedir_pkg_listing(repo_basedir,
-            repo = repo, branch = branch)
+            branch = branch)
 
         # convert to set, so that we can do fast thingszzsd
         repo_bins = set(repo_bins)
@@ -2223,7 +2231,7 @@ class Server(ServerNoticeBoardMixin):
         removal_map = {}
         for package_rel in removal:
             rel_path = self._entropy.complete_remote_package_relative_path(
-                package_rel, repo = repo)
+                package_rel, repo)
             rel_dir = os.path.dirname(rel_path)
             obj = removal_map.setdefault(rel_dir, [])
             base_pkg = os.path.basename(package_rel)
@@ -2306,7 +2314,7 @@ class Server(ServerNoticeBoardMixin):
             for package_rel in removal:
 
                 package_path = self._entropy.complete_local_package_path(
-                    package_rel, repo = repo)
+                    package_rel, repo)
 
                 package_path_hash = package_path + \
                     etpConst['packagesmd5fileext']

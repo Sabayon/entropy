@@ -307,7 +307,7 @@ class ServerPackagesRepositoryUpdater(object):
     def __write_gpg_pubkey(self, repo_sec):
         pubkey = repo_sec.get_pubkey(self._repository_id)
         # write pubkey to file and add to data upload
-        gpg_path = self._entropy._get_local_database_gpg_signature_file(
+        gpg_path = self._entropy._get_local_repository_gpg_signature_file(
             self._repository_id)
         with open(gpg_path, "w") as gpg_f:
             gpg_f.write(pubkey)
@@ -325,7 +325,7 @@ class ServerPackagesRepositoryUpdater(object):
         """
         Return whether repository is locally locked (already).
         """
-        lock_file = self._entropy._get_database_lockfile(self._repository_id)
+        lock_file = self._entropy._get_repository_lockfile(self._repository_id)
         return os.path.isfile(lock_file)
 
     def _calculate_sync_queues(self):
@@ -368,8 +368,8 @@ class ServerPackagesRepositoryUpdater(object):
         extra_text_files = []
         gpg_signed_files = []
         data = {}
-        db_rev_file = self._entropy._get_local_database_revision_file(
-            repo = self._repository_id)
+        db_rev_file = self._entropy._get_local_repository_revision_file(
+            self._repository_id)
         # adding ~ at the beginning makes this file to be appended at the end
         # of the upload queue
         data['~database_revision_file'] = db_rev_file
@@ -378,14 +378,14 @@ class ServerPackagesRepositoryUpdater(object):
 
         # branch migration support scripts
         post_branch_mig_file = self._entropy._get_local_post_branch_mig_script(
-            repo = self._repository_id)
+            self._repository_id)
         if os.path.isfile(post_branch_mig_file) or download:
             if download:
                 data['database_post_branch_hop_script'] = post_branch_mig_file
             extra_text_files.append(post_branch_mig_file)
 
         post_branch_upg_file = self._entropy._get_local_post_branch_upg_script(
-            repo = self._repository_id)
+            self._repository_id)
         if os.path.isfile(post_branch_upg_file) or download:
             if download:
                 data['database_post_branch_upgrade_script'] = \
@@ -394,30 +394,29 @@ class ServerPackagesRepositoryUpdater(object):
 
         post_repo_update_file = \
             self._entropy._get_local_post_repo_update_script(
-                repo = self._repository_id)
+                self._repository_id)
         if os.path.isfile(post_repo_update_file) or download:
             if download:
                 data['database_post_repo_update_script'] = post_repo_update_file
             extra_text_files.append(post_repo_update_file)
 
-        database_ts_file = self._entropy._get_local_database_timestamp_file(
-            repo = self._repository_id)
+        database_ts_file = self._entropy._get_local_repository_timestamp_file(
+            self._repository_id)
         if os.path.isfile(database_ts_file) or download:
             data['database_timestamp_file'] = database_ts_file
             if not download:
                 critical.append(database_ts_file)
 
         database_package_mask_file = \
-            self._entropy._get_local_database_mask_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_mask_file(self._repository_id)
         if os.path.isfile(database_package_mask_file) or download:
             if download:
                 data['database_package_mask_file'] = database_package_mask_file
             extra_text_files.append(database_package_mask_file)
 
         database_package_system_mask_file = \
-            self._entropy._get_local_database_system_mask_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_system_mask_file(
+                self._repository_id)
         if os.path.isfile(database_package_system_mask_file) or download:
             if download:
                 data['database_package_system_mask_file'] = \
@@ -425,8 +424,8 @@ class ServerPackagesRepositoryUpdater(object):
             extra_text_files.append(database_package_system_mask_file)
 
         database_package_confl_tagged_file = \
-            self._entropy._get_local_database_confl_tagged_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_confl_tagged_file(
+                self._repository_id)
         if os.path.isfile(database_package_confl_tagged_file) or download:
             if download:
                 data['database_package_confl_tagged_file'] = \
@@ -434,8 +433,8 @@ class ServerPackagesRepositoryUpdater(object):
             extra_text_files.append(database_package_confl_tagged_file)
 
         database_license_whitelist_file = \
-            self._entropy._get_local_database_licensewhitelist_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_licensewhitelist_file(
+                self._repository_id)
         if os.path.isfile(database_license_whitelist_file) or download:
             if download:
                 data['database_license_whitelist_file'] = \
@@ -443,8 +442,8 @@ class ServerPackagesRepositoryUpdater(object):
             extra_text_files.append(database_license_whitelist_file)
 
         database_mirrors_file = \
-            self._entropy._get_local_database_mirrors_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_mirrors_file(
+                self._repository_id)
         if os.path.isfile(database_mirrors_file) or download:
             if download:
                 data['database_mirrors_file'] = \
@@ -452,8 +451,8 @@ class ServerPackagesRepositoryUpdater(object):
             extra_text_files.append(database_mirrors_file)
 
         database_fallback_mirrors_file = \
-            self._entropy._get_local_database_fallback_mirrors_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_fallback_mirrors_file(
+                self._repository_id)
         if os.path.isfile(database_fallback_mirrors_file) or download:
             if download:
                 data['database_fallback_mirrors_file'] = \
@@ -462,22 +461,22 @@ class ServerPackagesRepositoryUpdater(object):
 
         exp_based_pkgs_removal_file = \
             self._entropy._get_local_exp_based_pkgs_rm_whitelist_file(
-                repo = self._repository_id)
+                self._repository_id)
         if os.path.isfile(exp_based_pkgs_removal_file) or download:
             if download:
                 data['exp_based_pkgs_removal_file'] = \
                     exp_based_pkgs_removal_file
             extra_text_files.append(exp_based_pkgs_removal_file)
 
-        database_rss_file = self._entropy._get_local_database_rss_file(
-            repo = self._repository_id)
+        database_rss_file = self._entropy._get_local_repository_rss_file(
+            self._repository_id)
         if os.path.isfile(database_rss_file) or download:
             data['database_rss_file'] = database_rss_file
             if not download:
                 critical.append(data['database_rss_file'])
         database_rss_light_file = \
-            self._entropy._get_local_database_rsslight_file(
-                repo = self._repository_id)
+            self._entropy._get_local_repository_rsslight_file(
+                self._repository_id)
 
         if os.path.isfile(database_rss_light_file) or download:
             data['database_rss_light_file'] = database_rss_light_file
@@ -485,34 +484,34 @@ class ServerPackagesRepositoryUpdater(object):
                 critical.append(data['database_rss_light_file'])
 
         pkglist_file = self._entropy._get_local_pkglist_file(
-            repo = self._repository_id)
+            self._repository_id)
         data['pkglist_file'] = pkglist_file
         if not download:
             critical.append(data['pkglist_file'])
 
         critical_updates_file = self._entropy._get_local_critical_updates_file(
-            repo = self._repository_id)
+            self._repository_id)
         if os.path.isfile(critical_updates_file) or download:
             if download:
                 data['critical_updates_file'] = critical_updates_file
             extra_text_files.append(critical_updates_file)
 
         restricted_file = self._entropy._get_local_restricted_file(
-            repo = self._repository_id)
+            self._repository_id)
         if os.path.isfile(restricted_file) or download:
             if download:
                 data['restricted_file'] = restricted_file
             extra_text_files.append(restricted_file)
 
-        keywords_file = self._entropy._get_local_database_keywords_file(
-            repo = self._repository_id)
+        keywords_file = self._entropy._get_local_repository_keywords_file(
+            self._repository_id)
         if os.path.isfile(keywords_file) or download:
             if download:
                 data['keywords_file'] = keywords_file
             extra_text_files.append(keywords_file)
 
-        gpg_file = self._entropy._get_local_database_gpg_signature_file(
-            repo = self._repository_id)
+        gpg_file = self._entropy._get_local_repository_gpg_signature_file(
+            self._repository_id)
         if os.path.isfile(gpg_file) or download:
             data['gpg_file'] = gpg_file
             # no need to add to extra_text_files, it will be added
@@ -524,8 +523,7 @@ class ServerPackagesRepositoryUpdater(object):
 
             # upload eapi3 signal file
             something_new = os.path.join(
-                self._entropy._get_local_database_dir(
-                    repo = self._repository_id),
+                self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst['etpdatabaseeapi3updates'])
             with open(something_new, "w") as sn_f:
                 sn_f.flush()
@@ -534,24 +532,22 @@ class ServerPackagesRepositoryUpdater(object):
 
             # always push metafiles file, it's cheap
             data['metafiles_path'] = \
-                self._entropy._get_local_database_compressed_metafiles_file(
-                    repo = self._repository_id)
+                self._entropy._get_local_repository_compressed_metafiles_file(
+                    self._repository_id)
             critical.append(data['metafiles_path'])
             gpg_signed_files.append(data['metafiles_path'])
 
             if 2 not in disabled_eapis:
 
                 data['dump_path_light'] = os.path.join(
-                    self._entropy._get_local_database_dir(
-                        repo = self._repository_id),
-                    etpConst[cmethod[5]])
+                    self._entropy._get_local_repository_dir(
+                        self._repository_id), etpConst[cmethod[5]])
                 critical.append(data['dump_path_light'])
                 gpg_signed_files.append(data['dump_path_light'])
 
                 data['dump_path_digest_light'] = os.path.join(
-                    self._entropy._get_local_database_dir(
-                        repo = self._repository_id),
-                    etpConst[cmethod[6]])
+                    self._entropy._get_local_repository_dir(
+                        self._repository_id), etpConst[cmethod[6]])
                 critical.append(data['dump_path_digest_light'])
                 gpg_signed_files.append(data['dump_path_digest_light'])
 
@@ -559,38 +555,33 @@ class ServerPackagesRepositoryUpdater(object):
         if 1 not in disabled_eapis:
 
             data['compressed_database_path'] = os.path.join(
-                self._entropy._get_local_database_dir(
-                    repo = self._repository_id),
+                self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst[cmethod[2]])
             critical.append(data['compressed_database_path'])
             gpg_signed_files.append(data['compressed_database_path'])
 
             data['compressed_database_path_light'] = os.path.join(
-                self._entropy._get_local_database_dir(
-                    repo = self._repository_id),
+                self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst[cmethod[7]])
             critical.append(data['compressed_database_path_light'])
             gpg_signed_files.append(data['compressed_database_path_light'])
 
             data['database_path_digest'] = os.path.join(
-                self._entropy._get_local_database_dir(
-                    repo = self._repository_id),
+                self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst['etpdatabasehashfile']
             )
             critical.append(data['database_path_digest'])
             gpg_signed_files.append(data['database_path_digest'])
 
             data['compressed_database_path_digest'] = os.path.join(
-                self._entropy._get_local_database_dir(
-                    repo = self._repository_id),
+                self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst[cmethod[2]] + etpConst['packagesmd5fileext']
             )
             critical.append(data['compressed_database_path_digest'])
             gpg_signed_files.append(data['compressed_database_path_digest'])
 
             data['compressed_database_path_digest_light'] = os.path.join(
-                self._entropy._get_local_database_dir(
-                    repo = self._repository_id),
+                self._entropy._get_local_repository_dir(self._repository_id),
                 etpConst[cmethod[8]]
             )
             critical.append(data['compressed_database_path_digest_light'])
@@ -599,15 +590,15 @@ class ServerPackagesRepositoryUpdater(object):
 
 
         # SSL cert file, just for reference
-        ssl_ca_cert = self._entropy._get_local_database_ca_cert_file(
-            repo = self._repository_id)
+        ssl_ca_cert = self._entropy._get_local_repository_ca_cert_file(
+            self._repository_id)
         if os.path.isfile(ssl_ca_cert):
             if download:
                 data['ssl_ca_cert_file'] = ssl_ca_cert
             extra_text_files.append(ssl_ca_cert)
 
-        ssl_server_cert = self._entropy._get_local_database_server_cert_file(
-            repo = self._repository_id)
+        ssl_server_cert = self._entropy._get_local_repository_server_cert_file(
+            self._repository_id)
         if os.path.isfile(ssl_server_cert):
             if download:
                 data['ssl_server_cert_file'] = ssl_server_cert
@@ -665,11 +656,10 @@ class ServerPackagesRepositoryUpdater(object):
             raise AttributeError("wrong repository compression method")
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
-        database_path = self._entropy._get_local_database_file(
-            repo = self._repository_id)
+        database_path = self._entropy._get_local_repository_file(
+            self._repository_id)
         database_dir_path = os.path.dirname(
-            self._entropy._get_local_database_file(
-                repo = self._repository_id))
+            self._entropy._get_local_repository_file(self._repository_id))
 
         download_data, critical, text_files, tmp_dirs, \
             gpg_to_verify_files = self._get_files_to_sync(cmethod,
@@ -783,13 +773,13 @@ class ServerPackagesRepositoryUpdater(object):
     def _update_rss_feed(self):
 
         product = self._settings['repositories']['product']
-        rss_path = self._entropy._get_local_database_rss_file(
-            repo = self._repository_id)
-        rss_light_path = self._entropy._get_local_database_rsslight_file(
-            repo = self._repository_id)
+        rss_path = self._entropy._get_local_repository_rss_file(
+            self._repository_id)
+        rss_light_path = self._entropy._get_local_repository_rsslight_file(
+            self._repository_id)
         rss_dump_name = self._repository_id + etpConst['rss-dump-name']
-        db_revision_path = self._entropy._get_local_database_revision_file(
-            repo = self._repository_id)
+        db_revision_path = self._entropy._get_local_repository_revision_file(
+            self._repository_id)
 
         rss_title = "%s Online Repository Status" % (
             self._settings['system']['name'],)
@@ -866,7 +856,7 @@ class ServerPackagesRepositoryUpdater(object):
         Update the repository timestamp file.
         """
         from datetime import datetime
-        ts_file = self._entropy._get_local_database_timestamp_file(
+        ts_file = self._entropy._get_local_repository_timestamp_file(
             self._repository_id)
         current_ts = "%s" % (datetime.fromtimestamp(time.time()),)
         with open(ts_file, "w") as ts_f:
@@ -878,7 +868,7 @@ class ServerPackagesRepositoryUpdater(object):
         Create the repository packages list file.
         """
         pkglist_file = self._entropy._get_local_pkglist_file(
-            repo = self._repository_id)
+            self._repository_id)
 
         tmp_pkglist_file = pkglist_file + ".tmp"
         dbconn = self._entropy.open_server_repository(
@@ -1172,12 +1162,12 @@ class ServerPackagesRepositoryUpdater(object):
                 found_file_list.append(gpg_path)
             else:
                 gpg_path = \
-                    self._entropy._get_local_database_gpg_signature_file(
+                    self._entropy._get_local_repository_gpg_signature_file(
                         self._repository_id)
                 not_found_file_list.append(gpg_path) # not found
 
         metafile_not_found_file = \
-            self._entropy._get_local_database_metafiles_not_found_file(
+            self._entropy._get_local_repository_metafiles_not_found_file(
                 self._repository_id)
         with open(metafile_not_found_file, "w") as f_meta:
             f_meta.writelines(not_found_file_list)
@@ -1208,7 +1198,7 @@ class ServerPackagesRepositoryUpdater(object):
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
             raise AttributeError("wrong repository compression method passed")
-        database_path = self._entropy._get_local_database_file(
+        database_path = self._entropy._get_local_repository_file(
             self._repository_id)
 
         if disabled_eapis:
@@ -1255,7 +1245,7 @@ class ServerPackagesRepositoryUpdater(object):
         # now we can safely copy it
 
         # backup current database to avoid re-indexing
-        old_dbpath = self._entropy._get_local_database_file(self._repository_id)
+        old_dbpath = self._entropy._get_local_repository_file(self._repository_id)
         backup_dbpath = old_dbpath + ".up_backup"
         try:
             if os.access(backup_dbpath, os.R_OK) and \
@@ -1274,7 +1264,7 @@ class ServerPackagesRepositoryUpdater(object):
                 upload_data, cmethod)
 
             # create compressed dump + checksum
-            eapi2_dbfile = self._entropy._get_local_database_file(
+            eapi2_dbfile = self._entropy._get_local_repository_file(
                 self._repository_id)
             temp_eapi2_dbfile = eapi2_dbfile+".light_eapi2.tmp"
             shutil.copy2(eapi2_dbfile, temp_eapi2_dbfile)
@@ -1317,7 +1307,7 @@ class ServerPackagesRepositoryUpdater(object):
                 upload_data['compressed_database_path_digest'])
 
             # create light version of the compressed db
-            eapi1_dbfile = self._entropy._get_local_database_file(
+            eapi1_dbfile = self._entropy._get_local_repository_file(
                 self._repository_id)
             temp_eapi1_dbfile = eapi1_dbfile+".light"
             shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
@@ -1422,8 +1412,8 @@ class ServerPackagesRepositoryUpdater(object):
 
             if not mirrors_locked and db_locked:
                 # mirrors not locked remotely but only locally
-                mylock_file = self._entropy._get_database_lockfile(
-                    repo = self._repository_id)
+                mylock_file = self._entropy._get_repository_lockfile(
+                    self._repository_id)
 
                 if os.access(mylock_file, os.W_OK) and \
                     os.path.isfile(mylock_file):
@@ -1453,7 +1443,7 @@ class ServerPackagesRepositoryUpdater(object):
         if download_latest:
             # close all the currently open repos
             self._entropy.close_repositories()
-            download_uri = download_latest.pop(0)
+            download_uri = download_latest[0]
             error = self._download(download_uri)
             if error:
                 self._entropy.output(

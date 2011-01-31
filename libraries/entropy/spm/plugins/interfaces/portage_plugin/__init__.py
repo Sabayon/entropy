@@ -2374,7 +2374,7 @@ class PortagePlugin(SpmPlugin):
                     header = blue("  # ")
                 )
 
-            mydest = entropy_server._get_local_store_directory(repo = repo)
+            mydest = entropy_server._get_local_store_directory(repo)
             try:
                 mypath = self.generate_package(myatom, mydest)
             except Exception:
@@ -2493,8 +2493,9 @@ class PortagePlugin(SpmPlugin):
     def package_names_update(self, entropy_repository, entropy_repository_id,
         entropy_server, entropy_branch):
 
-        repo_updates_file = entropy_server._get_local_database_treeupdates_file(
-            entropy_repository_id)
+        repo_updates_file = \
+            entropy_server._get_local_repository_treeupdates_file(
+                entropy_repository_id)
         do_rescan = False
 
         stored_digest = entropy_repository.retrieveRepositoryUpdatesDigest(

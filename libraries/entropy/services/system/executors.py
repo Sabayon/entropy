@@ -579,7 +579,7 @@ class Base:
 
                 # run quickpkg
                 for repoid in to_add:
-                    store_dir = Entropy._get_local_store_directory(repo = repoid)
+                    store_dir = Entropy._get_local_store_directory(repoid)
                     for atom in to_add[repoid]:
                         Entropy.Spm().generate_package(atom, store_dir)
 
@@ -589,7 +589,7 @@ class Base:
                     avail_repos.pop(etpConst['clientserverrepoid'])
                 matches_added = set()
                 for repoid in avail_repos:
-                    store_dir = Entropy._get_local_store_directory(repo = repoid)
+                    store_dir = Entropy._get_local_store_directory(repoid)
                     package_files = os.listdir(store_dir)
                     if not package_files:
                         continue
