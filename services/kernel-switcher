@@ -12,7 +12,7 @@ import subprocess
 
 from entropy.const import etpUi, etpConst
 from entropy.output import teal, purple, darkgreen, blue, brown, print_info, \
-    nocolor, print_warning, print_error
+    red, nocolor, print_warning, print_error
 from entropy.exceptions import DependenciesNotRemovable
 from entropy.i18n import _
 from entropy.client.interfaces import Client
@@ -59,6 +59,12 @@ def _setup_kernel_symlink(target_tag):
     if os.access(eselect_exec, os.X_OK) and not etpUi['pretend']:
         subprocess.call((eselect_exec, "kernel", "set", target_tag))
 
+def _show_kernel_warnings(kernel_atom):
+    print_info("%s %s" % (purple(kernel_atom), teal(_("has been installed."))))
+    print_warning("%s: %s" % (red(_("Attention")),
+        brown(_("some external drivers cannot work across multiple kernels."))))
+    print_warning(darkgreen(_("Please reboot your computer now !")))
+
 def _switch_kernel(args):
     if not args:
         print_error(brown(_("No kernel packages given")))
@@ -90,6 +96,7 @@ def _switch_kernel(args):
                 teal(kernel_package),))
             return 1
 
+        kernel_atom = etp_client.open_repository(pkg_repo).retrieveAtom(pkg_id)
         target_tag = _get_target_tag(etp_client, kernel_match)
 
         inst_repo = etp_client.installed_repository()
@@ -124,6 +131,7 @@ def _switch_kernel(args):
         )
         if rc == 0:
             _setup_kernel_symlink(target_tag)
+            _show_kernel_warnings(kernel_atom)
         return rc
 
     finally:
