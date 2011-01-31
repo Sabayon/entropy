@@ -8,6 +8,7 @@ sys.path.insert(0, '../server')
 sys.path.insert(0, '../client')
 
 import os
+import subprocess
 
 from entropy.const import etpUi, etpConst
 from entropy.output import teal, purple, darkgreen, blue, brown, print_info, \
@@ -52,6 +53,11 @@ def _get_target_tag(etp_client, kernel_match):
     if tags:
         tags = sorted(tags, reverse = True)
         return tags.pop(0)
+
+def _setup_kernel_symlink(target_tag):
+    eselect_exec = "/usr/bin/eselect"
+    if os.access(eselect_exec, os.X_OK) and not etpUi['pretend']:
+        subprocess.call((eselect_exec, "kernel", "set", target_tag))
 
 def _switch_kernel(args):
     if not args:
@@ -116,6 +122,8 @@ def _switch_kernel(args):
             atomsdata = matches,
             check_critical_updates = False
         )
+        if rc == 0:
+            _setup_kernel_symlink(target_tag)
         return rc
 
     finally:
