@@ -2157,9 +2157,7 @@ class PortagePlugin(SpmPlugin):
             self.log_message(
                 "[PRE] ATTENTION Cannot properly run SPM %s"
                 " phase for %s. Something bad happened."
-                " Exception %s [%s]" % (
-                    phase, package, Exception, e,)
-            )
+                " Exception %s" % (phase, package, repr(e),))
 
             mytxt = "%s: %s %s." % (
                 bold(_("QA")),
@@ -2236,7 +2234,7 @@ class PortagePlugin(SpmPlugin):
             self.log_message(
                 "[PRE] ATTENTION Cannot properly run SPM %s"
                 " phase for %s. Something bad happened."
-                " Exception %s [%s]" % (phase, package, Exception, e,)
+                " Exception %s" % (phase, package, repr(e),)
             )
 
             mytxt = "%s: %s %s." % (
@@ -3502,7 +3500,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mytree = self._portage.vartree(root=root)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception, e,))
+            raise SPMError("SPMError: %s" % (e,))
         PortagePlugin.CACHE['vartree'][root] = mytree
         return mytree
 
@@ -3517,7 +3515,7 @@ class PortagePlugin(SpmPlugin):
             mytree = self._portage.portagetree(root=None,
                 settings=self._portage.settings)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception, e,))
+            raise SPMError("SPMError: %s" % (e,))
         PortagePlugin.CACHE['portagetree'][root] = mytree
         return mytree
 
@@ -3531,7 +3529,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mytree = self._portage.binarytree(root, pkgdir)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception, e,))
+            raise SPMError("SPMError: %s" % (e,))
         PortagePlugin.CACHE['binarytree'][root] = mytree
         return mytree
 
@@ -3547,7 +3545,7 @@ class PortagePlugin(SpmPlugin):
                 target_root = root,
                 config_incrementals = self._portage.const.INCREMENTALS)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception, e,))
+            raise SPMError("SPMError: %s" % (e,))
         if use_cache:
             PortagePlugin.CACHE['config'][(config_root, root)] = mysettings
 
@@ -3794,9 +3792,8 @@ class PortagePlugin(SpmPlugin):
             except Exception as e:
                 entropy.tools.print_traceback()
                 self.__output.output(
-                    darkred("%s: %s: %s :: %s") % (
+                    darkred("%s: %s :: %s") % (
                         _("Error calculating dependencies"),
-                        str(Exception),
                         k,
                         e,
                     ),
