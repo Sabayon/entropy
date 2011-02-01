@@ -300,7 +300,11 @@ class Package:
             else:
                 mirror_status.set_failing_mirror_status(best_mirror, 0)
 
-            remaining[repository].discard(best_mirror)
+            try:
+                remaining[repository].remove(best_mirror)
+            except ValueError:
+                # ignore
+                pass
             return True
 
         def show_download_summary(down_list):
