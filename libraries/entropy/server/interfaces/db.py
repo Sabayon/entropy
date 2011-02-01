@@ -27,7 +27,8 @@ from entropy.const import etpConst, const_setup_file
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
-from entropy.output import red, darkgreen, bold, brown, blue, darkred, teal
+from entropy.output import red, darkgreen, bold, brown, blue, darkred, teal, \
+    purple
 from entropy.misc import RSS
 from entropy.cache import EntropyCacher
 from entropy.exceptions import OnlineMirrorError
@@ -1506,6 +1507,7 @@ class ServerPackagesRepositoryUpdater(object):
                 base_deps_not_found = self._entropy.dependencies_test(
                     repo = base_repo)
 
+            # missing dependencies QA test
             deps_not_found = self._entropy.dependencies_test(
                 repo = self._repository_id)
             if (deps_not_found or base_deps_not_found) \
@@ -1523,6 +1525,35 @@ class ServerPackagesRepositoryUpdater(object):
                     header = darkred(" !!! ")
                 )
                 return 3, set(), set()
+
+            # scan and report package changes
+            _ignore_added, to_be_removed, _ignore_injected = \
+                self._entropy.scan_package_changes()
+            if to_be_removed:
+                key_sorter = lambda x: \
+                    self._entropy.open_repository(x[1]).retrieveAtom(x[0])
+                rm_sorted_matches = sorted(to_be_removed, key = key_sorter)
+                self._entropy.output(
+                    "[%s] %s:" % (
+                        red(_("sync")),
+                        red(_("these packages haven't been removed yet")),
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = darkred(" !!! ")
+                )
+                for rm_pkg_id, rm_repo_id in rm_sorted_matches:
+                    rm_atom = self._entropy.open_repository(
+                        rm_repo_id).retrieveAtom(rm_pkg_id)
+                    self._entropy.output(
+                        "[%s] %s" % (
+                            brown(rm_repo_id),
+                            purple(rm_atom),
+                        ),
+                        importance = 1,
+                        level = "warning",
+                        header = teal("   !! ")
+                    )
 
             uris = [x[0] for x in upload_queue]
             broken_uris = self._upload(uris)
