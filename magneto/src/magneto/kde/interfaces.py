@@ -9,6 +9,7 @@
     B{Entropy Updates Notification Applet (Magneto) KDE application}
 
 """
+import sys
 
 # PyQt4 imports
 from PyQt4.QtCore import QTimer, SIGNAL
@@ -51,7 +52,7 @@ class Magneto(MagnetoCore):
         self._kabout = KAboutData (app_name, catalog, prog_name, version,
             description, lic, cright, text, home_page, bug_mail)
 
-        argv = []
+        argv = [sys.argv[0]]
         KCmdLineArgs.init(argv, self._kabout)
         self._app = KApplication()
 
