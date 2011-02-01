@@ -452,7 +452,10 @@ def _check_notice_board_availability(entropy_client, reponame):
         print_error(darkred(" @@ ")+blue("%s" % (
             _("Notice board not available"),) ))
 
-    data = entropy_client.get_noticeboard(reponame)
+    try:
+        data = entropy_client.get_noticeboard(reponame)
+    except KeyError:
+        data = None
     if not data:
         show_err()
         return
