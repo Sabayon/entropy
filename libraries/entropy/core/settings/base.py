@@ -1359,7 +1359,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 etpConst['etpdatabasemirrorsfile'])
 
             raw_mirrors = []
-            if not (os.path.isfile(mirrors_file) and \
+            if (os.path.isfile(mirrors_file) and \
                 os.access(mirrors_file, os.R_OK)):
                 raw_mirrors = entropy.tools.generic_file_content_parser(
                     mirrors_file)
