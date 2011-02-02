@@ -1,3 +1,179 @@
+commit 0d603fb7d5a26b54a6ef7d74e0bb60f525d0b4e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:33:54 2011 +0100
+
+    Release Entropy 1.0_alpha10
+
+commit 1ed7db475b336d8bc0bb2171b7ff84dfdbffc89a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:30:49 2011 +0100
+
+    [entropy.misc] RSS: when file is not available or broken, don't touch it in the constructor
+
+commit e4e27b532e89eadfaf2abba40a70fcd740fd04f5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:27:50 2011 +0100
+
+    [entropy.output] catch UnicodeEncodeError in OutputInterface.input_box
+
+commit 57a3f2713edd758dc9637040953994d75002089e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:25:52 2011 +0100
+
+    [tests] improve db.test_search test
+
+commit 4e08ea72d3675bf71c6ba65d6ef8bbb8e50a458d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:24:16 2011 +0100
+
+    [entropy.db] EntropyRepository: fix regression in searchPackages(), properly deal with provide table
+
+commit af4ff692c0e5a546821b709f294bfd51f107e352
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 1 14:37:26 2011 +0100
+
+    [entropy.spm] some minor code tweaks
+
+commit d7e475c9505aade9d92ab136e50ff021d9ea8920
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 1 14:30:52 2011 +0100
+
+    [magneto] add workaround for bug in PyKDE4 causing null pointer dereferencing at PyKDE4/Sip C libraries level
+
+commit 6d4f75754a455b79f5e3b941414ef3519553f085
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 1 13:35:06 2011 +0100
+
+    [equo] catch KeyError when calling get_noticeboard()
+
+commit 6a926d96c122e3d2ef7a8a8d307086d4744d9c10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 1 13:32:58 2011 +0100
+
+    [entropy.server] add QA test that warns developer about unremoved packages
+
+commit c0a641111132ae3641dc1dd4ce1521a8d85857a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 1 09:22:15 2011 +0100
+
+    [entropy.client.interfaces.package] fix mirror_fail_check, discard is not available for list
+
+commit 985b35cdaba27835d6bdd90f296a1348ba9fa83c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 31 23:20:58 2011 +0100
+
+    [entropy.server] first chunk of refactoring and cleanup work (making repo=None argument die)
+
+commit ea95b269cc9418c21e71e1e7c26744d2abff3a71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 31 23:19:44 2011 +0100
+
+    [services] kernel-switcher: add some post-install warnings
+
+commit c743476dd04e535d0d2c4ce4919bb73bfd509f2c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 31 23:09:58 2011 +0100
+
+    [services] kernel-switcher: setup kernel symlink through eselect
+
+commit 5bc0ddbc9067917ea79d609b026a01ec488e2359
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 31 14:49:20 2011 +0100
+
+    [conf] update sabayon-limbo mirrors, remove pkg.sabayon.org
+
+commit 226b9f9a9e713829c32ee5d11e70efe44f22f111
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 31 14:08:35 2011 +0100
+
+    [sulfur] improve reliability of sulfur startup script
+
+commit 80cc6af90bad514e9c1f126aafd5b447bfe3322a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 30 12:25:32 2011 +0100
+
+    [entropy.const] remove unused Portage constants
+
+commit 6d0358ba8734f787e9d7c41867c565f185fd3573
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 30 11:49:38 2011 +0100
+
+    [entropy.db] EntropyRepository.searchPackages: also return matches from provide table (old-style virtuals)
+
+commit 3b0d66191374543126c7b4bae644efb01a9caffb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 30 09:14:45 2011 +0100
+
+    [misc/po] resync translations usping the template
+
+commit 45e197544655ea277284eb91528cf91401778f0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 30 09:13:57 2011 +0100
+
+    [misc/po] update German tranlsation, thanks to K4ph
+
+commit 4d39d5804d72fd280ddd13f8d966a7f39f667bea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 29 22:35:03 2011 +0100
+
+    [services] add kernel-switcher tool - a kernel switcher utility
+    
+    This should make many users happy :-)
+
+commit 040ed3859072d3bb7d64bffcef9a2cbe9c6d6e71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 29 21:59:35 2011 +0100
+
+    [entropy.dep] move helper function remove_tag_from_slot from entropy.spm to entropy.dep
+
+commit 98e5318207ff1108cb3f2534032ade52e431b9a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 29 18:49:35 2011 +0100
+
+    [entropy.client] when writing to repositories.conf, split repository metadata into multiple lines
+
+commit 4289b50f56af8f1cbf1acf34df18810bd897f99d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 28 19:43:15 2011 +0100
+
+    [entropy.server] moving repository sync code to ServerPackagesRepositoryUpdater, partial entropy.server refactoring
+
+commit c4a1fc398b418174e72e70698360412e4b05d04f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 28 19:26:50 2011 +0100
+
+    [entropy.const] make possible to enable entropy.server community repositories mode by setting ETP_COMMUNITY_MODE
+
+commit 1339af70228620c3b6f7823f7e83a4c108a92b6f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 28 18:50:45 2011 +0100
+
+    [entropy.tools] minor code style update in create_md5_file
+
+commit e9127844a5599d43be7114964da2fe1db37489e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 28 14:57:47 2011 +0100
+
+    [entropy.db] add new method rollback() to EntropyRepositoryBase
+
+commit e84cfba65def8ebf4b9941b40a8a253c3e0d3ba1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jan 26 19:47:25 2011 +0100
+
+    [entropy.tools] when using os.rename(), only catch OSError exception where errno = EXDEV
+
+commit 91ba747024a7b5a3b9c14454400a09730e219fcd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 25 18:46:38 2011 +0100
+
+    [entropy.core.settings.base] optimize execution of _repositories_parser
+
+commit edb41a71cf931fba70854b188c1011708c9793b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 25 15:29:31 2011 +0100
+
+    Tagging Entropy version 1.0_alpha9
+
 commit 6f25fbca7fc3974c7f1e16e9412c321c17f8c6e8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jan 25 15:29:22 2011 +0100
