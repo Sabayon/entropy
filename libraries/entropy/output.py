@@ -820,6 +820,8 @@ class TextInterface:
                     myresult = readtext("%s: " % (_('Selected number'),)).decode('utf-8')
                 except UnicodeDecodeError:
                     continue
+                except UnicodeEncodeError:
+                    continue
                 try:
                     myresult = int(myresult)
                 except ValueError:
