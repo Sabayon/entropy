@@ -1,3 +1,21 @@
+commit 1c3d64b6c61248c6c1e18948a3ae01d1f130c417
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 12:30:36 2011 +0100
+
+    Release Entropy 1.0_alpha12
+
+commit f349932ae2178fe9aa9742e11071212e24299f12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 12:30:05 2011 +0100
+
+    [entropy.core.settings.base] fix regression in packages.db.mirrors mirrors list parsing
+
+commit 61f41890883d5426eb1ee19f295ea5cbfd223cab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:46:56 2011 +0100
+
+    Tagging Entropy version 1.0_alpha11
+
 commit 8e3ca00dc285892280105279631815d67cd3fbb1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 2 01:46:54 2011 +0100
