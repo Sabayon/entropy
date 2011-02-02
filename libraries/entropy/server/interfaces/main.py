@@ -4525,18 +4525,23 @@ class ServerMiscMixin:
         # ..on repository: <repository_name>
         mytxt = _("Entropy Server Interface Instance on repository")
         self.output(
-            blue("%s: %s, %s: %s (%s: %s)" % (
-                    mytxt,
-                    red(self.default_repository),
-                    _("current branch"),
-                    darkgreen(self._settings['repositories']['branch']),
-                    purple(_("type")),
-                    bold(type_txt),
-                )
+            "%s: %s" % (blue(mytxt),
+                red(self.default_repository),
             ),
             importance = 2,
             level = "info",
             header = red(" @@ ")
+        )
+        self.output(
+            "%s: %s (%s: %s)" % (
+                brown(_("current branch")),
+                darkgreen(self._settings['repositories']['branch']),
+                purple(_("type")),
+                bold(type_txt),
+            ),
+            importance = 1,
+            level = "info",
+            header = red("    ")
         )
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         repos = list(srv_set['repositories'].keys())
