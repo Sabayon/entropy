@@ -872,10 +872,6 @@ class RSS:
             else:
                 srv_set = sys_set['server']
                 self.__link = srv_set['rss']['website_url']
-            rss_f = open(self.__file, "w")
-            rss_f.write('')
-            rss_f.flush()
-            rss_f.close()
 
         else:
 
