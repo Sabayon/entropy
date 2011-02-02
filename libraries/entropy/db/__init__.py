@@ -4084,12 +4084,12 @@ class EntropyRepository(EntropyRepositoryBase):
         slotstring = ''
         if slot:
             searchkeywords += (slot,)
-            slotstring = ' and baseinfo.slot = (?)'
+            slotstring = ' AND slot = (?)'
 
         tagstring = ''
         if tag:
             searchkeywords += (tag,)
-            tagstring = ' and baseinfo.versiontag = (?)'
+            tagstring = ' AND versiontag = (?)'
 
         order_by_string = ''
         if order_by is not None:
@@ -4099,27 +4099,49 @@ class EntropyRepository(EntropyRepositoryBase):
                 raise AttributeError("invalid order_by argument")
             if order_by == "package_id":
                 order_by = "idpackage"
-            order_by_string = ' order by baseinfo.%s' % (order_by,)
+            order_by_string = ' ORDER BY %s' % (order_by,)
 
-        search_elements = 'baseinfo.atom, baseinfo.idpackage, baseinfo.branch'
+        # atom idpackage branch
+        # idpackage
+        search_elements_all = """\
+        t.atom AS atom, t.idpackage AS idpackage, t.branch AS branch,
+        t.name AS name, t.version AS version, t.versiontag AS versiontag,
+        t.revision AS revision, t.slot AS slot"""
+        search_elements_provide_all = """\
+        d.atom AS atom, d.idpackage AS idpackage, d.branch AS branch,
+        d.name AS name, d.version AS version, d.versiontag AS versiontag,
+        d.revision AS revision, d.slot AS slot"""
+
+        search_elements = 'atom, idpackage, branch'
         if just_id:
-            search_elements = 'baseinfo.idpackage'
+            search_elements = 'idpackage'
 
         if sensitive:
             cur = self._cursor().execute("""
-            SELECT DISTINCT %s FROM baseinfo, provide
-            WHERE provide.idpackage = baseinfo.idpackage
-            AND ( baseinfo.atom LIKE (?) OR provide.atom LIKE (?) )
-            %s %s %s""" %  (search_elements, slotstring, tagstring,
-                order_by_string,), searchkeywords)
+            SELECT DISTINCT %s FROM (
+                SELECT %s FROM baseinfo t
+                    WHERE t.atom LIKE (?)
+                UNION ALL
+                SELECT %s FROM baseinfo d, provide as p
+                    WHERE d.idpackage = p.idpackage
+                    AND p.atom LIKE (?)
+            ) WHERE 1=1 %s %s %s
+            """ % (search_elements, search_elements_all,
+                search_elements_provide_all, slotstring, tagstring,
+                order_by_string), searchkeywords)
         else:
             cur = self._cursor().execute("""
-            SELECT DISTINCT %s FROM baseinfo, provide
-            WHERE provide.idpackage = baseinfo.idpackage
-            AND ( LOWER(baseinfo.atom) LIKE (?)
-                  OR LOWER(provide.atom) LIKE (?) )
-            %s %s %s""" % (search_elements, slotstring, tagstring,
-                order_by_string,), searchkeywords)
+            SELECT DISTINCT %s FROM (
+                SELECT %s FROM baseinfo t
+                    WHERE LOWER(t.atom) LIKE (?)
+                UNION ALL
+                SELECT %s FROM baseinfo d, provide as p
+                    WHERE d.idpackage = p.idpackage
+                    AND LOWER(p.atom) LIKE (?)
+            ) WHERE 1=1 %s %s %s
+            """ % (search_elements, search_elements_all,
+                search_elements_provide_all, slotstring, tagstring,
+                order_by_string), searchkeywords)
 
         if just_id:
             return self._cur2tuple(cur)
