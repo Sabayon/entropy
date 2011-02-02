@@ -1,3 +1,21 @@
+commit 8e3ca00dc285892280105279631815d67cd3fbb1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:46:54 2011 +0100
+
+    Release Entropy 1.0_alpha11
+
+commit 3d92e7d6573d7b03b6b72dbc8793a304c1e2023a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:45:57 2011 +0100
+
+    [services] kernel-switcher: add opengl switcher, improve application output
+
+commit 9d6c3d7967c0a44cf0484e721b04d63168dbc5f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 01:34:02 2011 +0100
+
+    Tagging Entropy version 1.0_alpha10
+
 commit 0d603fb7d5a26b54a6ef7d74e0bb60f525d0b4e9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 2 01:33:54 2011 +0100
