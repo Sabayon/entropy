@@ -568,6 +568,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(new_data, data)
         out = self.test_db.searchPackages(_misc.get_test_package_name())
         self.assertEqual(out, (('sys-libs/zlib-1.2.3-r1', 1, '5'),))
+        out = self.test_db.searchPackages(_misc.get_test_package_name(),
+            slot = "0")
+        self.assertEqual(out, (('sys-libs/zlib-1.2.3-r1', 1, '5'),))
+        out = self.test_db.searchPackages(_misc.get_test_package_name(),
+            slot = "0", just_id = True)
+        self.assertEqual(out, (1,))
 
     def test_list_packages(self):
         test_pkg = _misc.get_test_package()
