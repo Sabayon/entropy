@@ -1,3 +1,21 @@
+commit d5d287f81d610f16f84029789185721b32115472
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 22:17:02 2011 +0100
+
+    Release Entropy 1.0_alpha14
+
+commit 302faa6df4e93e9dfda6e1a42f43e61e91de4703
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 22:16:02 2011 +0100
+
+    [activator] fix syntax error
+
+commit 702616d76b4c2e5d203d1f3b5e72df07ab646d8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 21:17:44 2011 +0100
+
+    Tagging Entropy version 1.0_alpha13
+
 commit 7904c02ae1985d5e761e53783916ffa1bc05641e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 3 21:17:44 2011 +0100
