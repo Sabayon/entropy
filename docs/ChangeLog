@@ -1,3 +1,51 @@
+commit 7904c02ae1985d5e761e53783916ffa1bc05641e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 21:17:44 2011 +0100
+
+    Release Entropy 1.0_alpha13
+
+commit 733468befda40460b42f66e59e819899285c42cf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 21:06:14 2011 +0100
+
+    [entropy.client] fix bug in automatic conflicts resolution code causing false positives to be generated
+
+commit 4b1f15cd893bd266419f6cceb9b2f637b48d1b2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 18:17:45 2011 +0100
+
+    [entropy.server] several API change, improve code robustness by enforcing repository_id function parameter
+
+commit 9ff176d8dcdc2241ce660e789910dc4e45452d70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 23:05:42 2011 +0100
+
+    [entropy.server] update Entropy Server startup message
+
+commit e5400eb8f6b215372dbce6770117aa6d38501b80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 14:50:55 2011 +0100
+
+    [sulfur] update German translator info
+
+commit 6272a621f10c9fcf03167bf36c188188d95eb372
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 14:49:59 2011 +0100
+
+    [po] sync translations
+
+commit 5cd0f659a4c89e3ffd25154af2064f52f9ba7221
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 14:49:41 2011 +0100
+
+    [po] update German translation, thanks to K4ph
+
+commit 45e6141422ada67d638215452884534f7cd86449
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 2 12:30:44 2011 +0100
+
+    Tagging Entropy version 1.0_alpha12
+
 commit 1c3d64b6c61248c6c1e18948a3ae01d1f130c417
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 2 12:30:36 2011 +0100
