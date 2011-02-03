@@ -69,17 +69,14 @@ def _sync(entropy_server, options, just_tidy):
     print_info(green(" * ")+red("%s ..." % (
         _("Starting to sync data across mirrors (packages/database)"),) ))
 
-    old_default = entropy_server.default_repository
-
+    repository_id = entropy_server.default_repository
     sys_settings_plugin_id = \
         etpConst['system_settings_plugins_ids']['server_plugin']
     srv_data = entropy_server.Settings()[sys_settings_plugin_id]['server']
-
-    repos = [entropy_server.default_repository]
-    if sync_all:
-        repos = sorted(srv_data['repositories'].keys())
-
     rss_enabled = srv_data['rss']['enabled']
+    repos = [repository_id]
+    if sync_all:
+        repos = entropy_server.repositories()
 
     rc = 0
     for repo in repos:
@@ -88,15 +85,13 @@ def _sync(entropy_server, options, just_tidy):
         if repo == etpConst['clientserverrepoid']:
             continue
 
-        if repo != entropy_server.default_repository:
-            entropy_server.switch_default_repository(repo)
-
         errors = False
         if not just_tidy:
 
             mirrors_tainted, mirrors_errors, successfull_mirrors, \
-                broken_mirrors, check_data = entropy_server.Mirrors.sync_packages(
-                    ask = not do_noask, pretend = etpUi['pretend'])
+                broken_mirrors, check_data = \
+                    entropy_server.Mirrors.sync_packages(
+                        repo, ask = not do_noask, pretend = etpUi['pretend'])
 
             if mirrors_errors and not successfull_mirrors:
                 errors = True
@@ -138,26 +133,24 @@ def _sync(entropy_server, options, just_tidy):
                 elif rss_enabled:
                     ServerRssMetadata()['commitmessage'] = "Autodriven Update"
 
-            errors = _sync_remote_databases(entropy_server)
-            if not errors:
-                entropy_server.Mirrors.lock_mirrors(lock = False)
-            if not errors and not do_noask:
+            sts = _sync_remote_databases(entropy_server, repo)
+            if sts = 0:
+                entropy_server.Mirrors.lock_mirrors(repo, False)
+            if (sts == 0) and not do_noask:
                 q_rc = entropy_server.ask_question(
                     _("Should I continue with the tidy procedure ?"))
                 if q_rc == _("No"):
                     continue
-            elif errors:
+            elif sts != 0:
+                errors = True
                 print_error(darkred(" !!! ")+red(_("Aborting !")))
                 continue
 
         if not errors:
-            entropy_server.Mirrors.tidy_mirrors(ask = not do_noask,
+            entropy_server.Mirrors.tidy_mirrors(repo, ask = not do_noask,
                 pretend = etpUi['pretend'])
         else:
             rc = 1
-
-    if old_default != entropy_server.default_repository:
-        entropy_server.switch_default_repository(old_default)
 
     return rc
 
@@ -192,15 +185,13 @@ def _packages(entropy_server, options):
     if not options:
         return -10
 
+    repository_id = entropy_server.default_repository
+
     if options[0] == "sync":
 
-        repos = [entropy_server.default_repository]
-        old_default = entropy_server.default_repository
+        repos = [repository_id]
         if sync_all:
-            sys_settings_plugin_id = \
-                etpConst['system_settings_plugins_ids']['server_plugin']
-            srv_data = entropy_server.Settings()[sys_settings_plugin_id]['server']
-            repos = sorted(srv_data['repositories'].keys())
+            repos = entropy_server.repositories()
 
         rc = 0
         for repo in repos:
@@ -209,20 +200,14 @@ def _packages(entropy_server, options):
             if repo == etpConst['clientserverrepoid']:
                 continue
 
-            if repo != entropy_server.default_repository:
-                entropy_server.switch_default_repository(repo)
-
             mirrors_tainted, mirrors_errors, successfull_mirrors, \
             broken_mirrors, check_data = entropy_server.Mirrors.sync_packages(
-                ask = etpUi['ask'],
+                repo, ask = etpUi['ask'],
                 pretend = etpUi['pretend'],
                 packages_check = do_pkg_check)
 
             if mirrors_errors:
                 rc = 1
-
-        if old_default != entropy_server.default_repository:
-            entropy_server.switch_default_repository(old_default)
 
         return rc
 
@@ -311,6 +296,8 @@ def _notice(entropy_server, options):
         except ValueError:
             return -2
 
+    repository_id = entropy_server.default_repository
+
     if options[0] == "add":
 
         def fake_callback(s):
@@ -331,7 +318,7 @@ def _notice(entropy_server, options):
         if data is None:
             return 0
         status = entropy_server.Mirrors.update_notice_board(
-            title = data['title'], notice_text = data['text'],
+            repository_id, data['title'], data['text'],
             link = data['url'])
         if status:
             return 0
@@ -339,7 +326,7 @@ def _notice(entropy_server, options):
 
     elif options[0] == "read":
 
-        data = entropy_server.Mirrors.read_notice_board()
+        data = entropy_server.Mirrors.read_notice_board(repository_id)
         if data is None:
             print_error(darkred(" * ")+blue("%s" % (
                 _("Notice board not available"),) ))
@@ -359,7 +346,7 @@ def _notice(entropy_server, options):
 
     elif options[0] == "remove":
 
-        data = entropy_server.Mirrors.read_notice_board()
+        data = entropy_server.Mirrors.read_notice_board(repository_id)
         if data is None:
             print_error(darkred(" * ")+blue("%s" % (
                 _("Notice board not available"),) ))
@@ -378,18 +365,21 @@ def _notice(entropy_server, options):
                     _("Are you sure you want to remove this?"))
                 if q_rc == _("Yes"):
                     changed = True
-                    entropy_server.Mirrors.remove_from_notice_board(sel)
+                    entropy_server.Mirrors.remove_from_notice_board(
+                        repository_id, sel)
                     data = entropy_server.Mirrors.read_notice_board(
-                        do_download = False)
+                        repository_id, do_download = False)
                     items, counter = data
             elif sel == -1:
                 break
 
         if changed or (counter == 0):
             if counter == 0:
-                status = entropy_server.Mirrors.remove_notice_board()
+                status = entropy_server.Mirrors.remove_notice_board(
+                    repository_id)
             else:
-                status = entropy_server.Mirrors.upload_notice_board()
+                status = entropy_server.Mirrors.upload_notice_board(
+                    repository_id)
             if not status:
                 return 1
         return 0
@@ -422,12 +412,16 @@ def _repo(entropy_server, options):
         elif opt.startswith("--"):
             return -10
 
+    repository_id = entropy_server.default_repository
+
     if cmd == "lock":
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to lock mirrors databases"),) ))
-        rc = entropy_server.Mirrors.lock_mirrors(lock = True)
-        if rc:
+        done = entropy_server.Mirrors.lock_mirrors(repository_id, True)
+        rc = 0
+        if not done:
+            rc = 1
             print_info(green(" * ")+red("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
         else:
@@ -438,8 +432,10 @@ def _repo(entropy_server, options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to unlock mirrors databases"),)))
-        rc = entropy_server.Mirrors.lock_mirrors(lock = False)
-        if rc:
+        done = entropy_server.Mirrors.lock_mirrors(repository_id, False)
+        rc = 0
+        if not done:
+            rc = 1
             print_info(green(" * ")+green("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
         else:
@@ -451,8 +447,11 @@ def _repo(entropy_server, options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to lock download mirrors databases"),) ))
-        rc = entropy_server.Mirrors.lock_mirrors_for_download(lock = True)
-        if rc:
+        done = entropy_server.Mirrors.lock_mirrors_for_download(
+            repository_id, True)
+        rc = 0
+        if not done:
+            rc = 1
             print_info(green(" * ")+green("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
         else:
@@ -463,8 +462,11 @@ def _repo(entropy_server, options):
 
         print_info(green(" * ")+green("%s ..." % (
             _("Starting to unlock download mirrors databases"),) ))
-        rc = entropy_server.Mirrors.lock_mirrors_for_download(lock = False)
-        if rc:
+        done = entropy_server.Mirrors.lock_mirrors_for_download(repository_id,
+            False)
+        rc = 0
+        if not done:
+            rc = 1
             print_info(green(" * ")+green("%s ..." % (
                 _("A problem occured on at least one mirror"),) ))
         else:
@@ -474,8 +476,7 @@ def _repo(entropy_server, options):
     elif cmd == "lock-status":
 
         print_info(brown(" * ")+green("%s:" % (_("Mirrors status table"),) ))
-        dbstatus = entropy_server.Mirrors.mirrors_status(
-            entropy_server.default_repository)
+        dbstatus = entropy_server.Mirrors.mirrors_status(repository_id)
         for db in dbstatus:
             if (db[1]):
                 db[1] = red(_("Locked"))
@@ -493,35 +494,25 @@ def _repo(entropy_server, options):
 
     elif cmd == "sync":
 
-        repos = [entropy_server.default_repository]
-        old_default = entropy_server.default_repository
+        repos = [repository_id]
         if sync_all:
-            sys_settings_plugin_id = \
-                etpConst['system_settings_plugins_ids']['server_plugin']
-            srv_data = entropy_server.Settings()[sys_settings_plugin_id]['server']
-            repos = sorted(srv_data['repositories'].keys())
+            repos = entropy_server.repositories()
 
-        problems = 0
+        rc = 0
         for repo in repos:
 
             # avoid __default__
             if repo == etpConst['clientserverrepoid']:
                 continue
 
-            if repo != entropy_server.default_repository:
-                entropy_server.switch_default_repository(repo)
-
             print_info(green(" * ")+red("%s ..." % (_("Syncing databases"),) ))
-            errors = _sync_remote_databases(entropy_server)
-            if errors:
+            sts = _sync_remote_databases(entropy_server, repo)
+            if sts != 0:
                 print_error(darkred(" !!! ") + \
                     green(_("Database sync errors, cannot continue.")))
-                problems = 1
+                rc = 1
 
-        if old_default != entropy_server.default_repository:
-            entropy_server.switch_default_repository(old_default)
-
-        return problems
+        return rc
 
     return -10
 
@@ -534,43 +525,42 @@ def sync_remote_databases():
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
-        return _sync_remote_databases(server)
+        return _sync_remote_databases(server,
+            server.default_repository)
     finally:
         if server is not None:
             if acquired:
                 release_entropy_locks(server)
             server.shutdown()
 
-def _sync_remote_databases(entropy_server):
+def _sync_remote_databases(entropy_server, repository_id):
 
     print_info(green(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
     remote_db_status = entropy_server.Mirrors.remote_repository_status(
-        entropy_server.default_repository)
+        repository_id)
     for url, revision in remote_db_status.items():
         host = EntropyTransceiver.get_uri_name(url)
         print_info(green("    %s: " % (_("Host"),) )+bold(host))
         print_info(red("     * %s: " % (_("Database revision"),) ) + \
             blue(str(revision)))
 
-    local_revision = entropy_server.local_repository_revision(
-        entropy_server.default_repository)
+    local_revision = entropy_server.local_repository_revision(repository_id)
     print_info(red("      * %s: " % (
         _("Database local revision currently at"),) ) + \
             blue(str(local_revision)))
 
     # do the rest
-    errors = entropy_server.Mirrors.sync_repository(
-        entropy_server.default_repository)
+    sts = entropy_server.Mirrors.sync_repository(repository_id)
 
     print_info(darkgreen(" * ")+red("%s:" % (
         _("Remote Entropy Database Repository Status"),) ))
     remote_status = entropy_server.Mirrors.remote_repository_status(
-        entropy_server.default_repository)
+        repository_id)
     for url, revision in remote_status.items():
         host = EntropyTransceiver.get_uri_name(url)
         print_info(darkgreen("    %s: " % (_("Host"),) )+bold(host))
         print_info(red("      * %s: " % (_("Database revision"),) ) + \
             blue(str(revision)))
 
-    return errors
+    return sts

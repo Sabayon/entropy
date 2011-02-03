@@ -965,8 +965,9 @@ class Base:
                         mirrors_tainted, mirrors_errors, \
                         successfull_mirrors, broken_mirrors, \
                         check_data = Entropy.Mirrors.sync_packages(
-                            ask = False, pretend = repository_data[repoid]['pretend'],
-                            packages_check = repository_data[repoid]['pkg_check'], repo = repoid)
+                            repo, ask = False,
+                            pretend = repository_data[repoid]['pretend'],
+                            packages_check = repository_data[repoid]['pkg_check'])
 
                         repo_data[repoid]['mirrors_tainted'] = mirrors_tainted
                         repo_data[repoid]['mirrors_errors'] = mirrors_errors
@@ -989,11 +990,10 @@ class Base:
                         repo_data[repoid]['db_errors'] = errors
                         if errors:
                             continue
-                        Entropy.Mirrors.lock_mirrors(lock = False, repo = repoid)
+                        Entropy.Mirrors.lock_mirrors(repoid, False)
                         Entropy.Mirrors.tidy_mirrors(
-                            repo = repoid, ask = False,
-                            pretend = repository_data[repoid]['pretend']
-                        )
+                            repoid, ask = False,
+                            pretend = repository_data[repoid]['pretend'])
 
                 return True, repo_data
 
@@ -1046,7 +1046,7 @@ class Base:
             if mystdin:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.read_notice_board(repo = repoid)
+                data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.read_notice_board(repoid)
                 if data is None:
                     return False, None
                 return True, data
@@ -1084,8 +1084,8 @@ class Base:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 for entry_id in entry_ids:
-                    data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.remove_from_notice_board(entry_id, repo = repoid)
-                self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.upload_notice_board(repo = repoid)
+                    self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.remove_from_notice_board(repoid, entry_id)
+                self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.upload_notice_board(repoid)
                 return True, data
             except Exception as e:
                 entropy.tools.print_traceback()
@@ -1120,7 +1120,8 @@ class Base:
             if mystdin:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.update_notice_board(title, notice_text, link = link, repo = repoid)
+                data = self.SystemManagerExecutor.SystemInterface.Entropy.Mirrors.update_notice_board(
+                    repoid, title, notice_text, link = link)
                 return True, data
             except Exception as e:
                 entropy.tools.print_traceback()

@@ -692,8 +692,8 @@ class ServerPackagesRepositoryUpdater(object):
                 )
 
             # avoid having others messing while we're downloading
-            self._mirrors.lock_mirrors(True, [uri],
-                repo = self._repository_id)
+            self._mirrors.lock_mirrors(self._repository_id, True,
+                mirrors = [uri])
 
             # download
             downloader = self._mirrors.TransceiverServerHandler(
@@ -721,8 +721,8 @@ class ServerPackagesRepositoryUpdater(object):
                     level = "error",
                     header = blue("    # ")
                 )
-                self._mirrors.lock_mirrors(False, [uri],
-                    repo = self._repository_id)
+                self._mirrors.lock_mirrors(self._repository_id, False,
+                    mirrors = [uri])
                 return False
 
                 # all fine then, we need to move data from mytmpdir
@@ -758,8 +758,8 @@ class ServerPackagesRepositoryUpdater(object):
             if os.path.isdir(mytmpdir):
                 os.rmdir(mytmpdir)
 
-            self._mirrors.lock_mirrors(False, [uri],
-                repo = self._repository_id)
+            self._mirrors.lock_mirrors(self._repository_id, False,
+                mirrors = [uri])
 
         finally:
             # remove temporary directories
@@ -1378,8 +1378,8 @@ class ServerPackagesRepositoryUpdater(object):
                     header = blue("    # ")
                 )
                 broken_uris |= m_broken_uris
-                self._entropy.lock_mirrors_for_download(True, [uri],
-                    repo = self._repository_id)
+                self._mirrors.lock_mirrors_for_download(self._repository_id,
+                    True, mirrors = [uri])
                 continue
 
         if copy_back and os.path.isfile(backup_dbpath):

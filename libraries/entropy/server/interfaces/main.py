@@ -3053,8 +3053,7 @@ class ServerPackagesHandlingMixin:
                 not_downloaded = set()
 
             for idpackage, pkg_path in to_download:
-                rc_down = self.Mirrors.download_package(uri,
-                    pkg_path, repo = repo)
+                rc_down = self.Mirrors.download_package(repo, uri, pkg_path)
                 if rc_down:
                     downloaded_fine.add(idpackage)
                     available.add(idpackage)
@@ -3803,7 +3802,7 @@ class ServerRepositoryMixin:
                     )
 
             # if we arrive here, it is because all the mirrors are unlocked
-            self.Mirrors.lock_mirrors(True, repo = repo)
+            self.Mirrors.lock_mirrors(repo, True)
             self.Mirrors.sync_repository(repo, enable_upload = not no_upload)
 
 
