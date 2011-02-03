@@ -134,7 +134,7 @@ def _sync(entropy_server, options, just_tidy):
                     ServerRssMetadata()['commitmessage'] = "Autodriven Update"
 
             sts = _sync_remote_databases(entropy_server, repo)
-            if sts = 0:
+            if sts == 0:
                 entropy_server.Mirrors.lock_mirrors(repo, False)
             if (sts == 0) and not do_noask:
                 q_rc = entropy_server.ask_question(
