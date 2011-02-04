@@ -1646,8 +1646,7 @@ class MiscMixin:
         @return: Entropy Package Groups metadata
         @rtype: dict
         """
-        from entropy.spm.plugins.factory import get_default_class
-        spm = get_default_class()
+        spm = self.Spm_class()
         groups = spm.get_package_groups().copy()
 
         # expand metadata
