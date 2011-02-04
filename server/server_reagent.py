@@ -1093,11 +1093,9 @@ def _status(entropy_server):
         store_dir = entropy_server._get_local_store_directory(repo_id)
         upload_basedir = entropy_server._get_local_upload_directory(repo_id)
         upload_files, upload_packages = \
-            entropy_server.Mirrors._calculate_local_upload_files(
-                repo = repo_id)
+            entropy_server.Mirrors._calculate_local_upload_files(repo_id)
         local_files, local_packages = \
-            entropy_server.Mirrors._calculate_local_package_files(
-                repo = repo_id)
+            entropy_server.Mirrors._calculate_local_package_files(repo_id)
 
         toc = []
 

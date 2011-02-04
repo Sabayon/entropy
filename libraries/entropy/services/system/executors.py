@@ -821,8 +821,8 @@ class Base:
 
                         try:
                             upload_queue, download_queue, removal_queue, \
-                                fine_queue, remote_packages_data = Entropy.Mirrors.calculate_packages_to_sync(
-                                    uri, repoid)
+                                fine_queue, remote_packages_data = Entropy.Mirrors._calculate_packages_to_sync(
+                                    repoid, uri)
                         except socket.error:
                             entropy.tools.print_traceback(f = stdout_err)
                             stdout_err.write("\n"+_("Socket error, continuing...").encode('utf-8')+"\n")

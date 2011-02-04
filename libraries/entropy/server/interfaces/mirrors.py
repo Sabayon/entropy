@@ -332,37 +332,35 @@ class Server(ServerNoticeBoardMixin):
                 header = brown("   # ")
             )
 
-    def _read_remote_file_in_branches(self, filename, repo = None,
-            excluded_branches = None):
+    def _read_remote_file_in_branches(self, repository_id, filename,
+        excluded_branches = None):
         """
         Reads a file remotely located in all the available branches, in
         repository directory.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
         @param filename: name of the file that should be located inside
             repository database directory
         @type filename: string
-        @keyword repo: repository identifier
-        @type repo: string
         @keyword excluded_branches: list of branch identifiers excluded or None
         @type excluded_branches: list or None
         @return: dictionary with branches as key and raw file content as value:
             {'4': 'abcd\n', '5': 'defg\n'}
         @rtype: dict
         """
-        if repo is None:
-            repo = self._entropy.default_repository
         if excluded_branches is None:
             excluded_branches = []
 
         branch_data = {}
-        mirrors = self._entropy.remote_repository_mirrors(repo)
+        mirrors = self._entropy.remote_repository_mirrors(repository_id)
         for uri in mirrors:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
             self._entropy.output(
                 "[repo:%s] %s: %s => %s" % (
-                    brown(repo),
+                    brown(repository_id),
                     blue(_("looking for file in mirror")),
                     darkgreen(crippled_uri),
                     filename,
@@ -373,7 +371,7 @@ class Server(ServerNoticeBoardMixin):
             )
 
             branches_path = self._entropy._get_remote_repository_relative_path(
-                repo)
+                repository_id)
             txc = self._entropy.Transceiver(uri)
             txc.set_verbosity(False)
 
@@ -496,11 +494,10 @@ class Server(ServerNoticeBoardMixin):
                     continue
 
                 if lock:
-                    rc_lock = self._do_mirror_lock(uri, handler,
-                        repo = repository_id)
+                    rc_lock = self._do_mirror_lock(repository_id, uri, handler)
                 else:
-                    rc_lock = self._do_mirror_unlock(uri, handler,
-                        repo = repository_id)
+                    rc_lock = self._do_mirror_unlock(repository_id, uri,
+                        handler)
 
             if not rc_lock:
                 done = False
@@ -592,23 +589,20 @@ class Server(ServerNoticeBoardMixin):
                     continue
 
                 if lock:
-                    rc_lock = self._do_mirror_lock(uri, handler, dblock = False,
-                        repo = repository_id)
+                    rc_lock = self._do_mirror_lock(repository_id, uri, handler,
+                        dblock = False)
                 else:
-                    rc_lock = self._do_mirror_unlock(uri, handler,
-                        dblock = False, repo = repository_id)
+                    rc_lock = self._do_mirror_unlock(repository_id, uri,
+                        handler, dblock = False)
                 if not rc_lock:
                     done = False
 
         return done
 
-    def _do_mirror_lock(self, uri, txc_handler, dblock = True, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
+    def _do_mirror_lock(self, repository_id, uri, txc_handler, dblock = True):
 
         my_path = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repo),
+            self._entropy._get_remote_repository_relative_path(repository_id),
             self._settings['repositories']['branch'])
 
         # create path to lock file if it doesn't exist
@@ -619,13 +613,15 @@ class Server(ServerNoticeBoardMixin):
         lock_string = ''
 
         if dblock:
-            self._entropy._create_local_repository_lockfile(repo)
-            lock_file = self._entropy._get_repository_lockfile(repo)
+            self._entropy._create_local_repository_lockfile(repository_id)
+            lock_file = self._entropy._get_repository_lockfile(repository_id)
         else:
             # locking/unlocking mirror1 for download
             lock_string = _('for download')
-            self._entropy._create_local_repository_download_lockfile(repo)
-            lock_file = self._entropy._get_repository_download_lockfile(repo)
+            self._entropy._create_local_repository_download_lockfile(
+                repository_id)
+            lock_file = self._entropy._get_repository_download_lockfile(
+                repository_id)
 
         remote_path = os.path.join(my_path, os.path.basename(lock_file))
 
@@ -633,7 +629,7 @@ class Server(ServerNoticeBoardMixin):
         if rc_upload:
             self._entropy.output(
                 "[repo:%s|%s] %s %s" % (
-                    blue(repo),
+                    blue(repository_id),
                     red(crippled_uri),
                     blue(_("mirror successfully locked")),
                     blue(lock_string),
@@ -645,7 +641,7 @@ class Server(ServerNoticeBoardMixin):
         else:
             self._entropy.output(
                 "[repo:%s|%s] %s: %s - %s %s" % (
-                    blue(repo),
+                    blue(repository_id),
                     red(crippled_uri),
                     blue("lock error"),
                     rc_upload,
@@ -656,18 +652,15 @@ class Server(ServerNoticeBoardMixin):
                 level = "error",
                 header = darkred(" * ")
             )
-            self._entropy._remove_local_repository_lockfile(repo)
+            self._entropy._remove_local_repository_lockfile(repository_id)
 
         return rc_upload
 
 
-    def _do_mirror_unlock(self, uri, txc_handler, dblock = True, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
+    def _do_mirror_unlock(self, repository_id, uri, txc_handler, dblock = True):
 
         my_path = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repo),
+            self._entropy._get_remote_repository_relative_path(repository_id),
             self._settings['repositories']['branch'])
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
@@ -684,22 +677,23 @@ class Server(ServerNoticeBoardMixin):
         if rc_delete:
             self._entropy.output(
                 "[repo:%s|%s] %s" % (
-                            blue(repo),
-                            red(crippled_uri),
-                            blue(_("mirror successfully unlocked")),
-                    ),
+                    blue(repository_id),
+                    red(crippled_uri),
+                    blue(_("mirror successfully unlocked")),
+                ),
                 importance = 1,
                 level = "info",
                 header = darkgreen(" * ")
             )
             if dblock:
-                self._entropy._remove_local_repository_lockfile(repo)
+                self._entropy._remove_local_repository_lockfile(repository_id)
             else:
-                self._entropy._remove_local_repository_download_lockfile(repo)
+                self._entropy._remove_local_repository_download_lockfile(
+                    repository_id)
         else:
             self._entropy.output(
                 "[repo:%s|%s] %s: %s - %s" % (
-                    blue(repo),
+                    blue(repository_id),
                     red(crippled_uri),
                     blue(_("unlock error")),
                     rc_delete,
@@ -1094,13 +1088,11 @@ class Server(ServerNoticeBoardMixin):
 
         return gave_up
 
-    def _calculate_local_upload_files(self, repo = None):
+    def _calculate_local_upload_files(self, repository_id):
+
         upload_files = 0
         upload_packages = set()
-        if repo is None:
-            repo = self._entropy.default_repository
-
-        upload_dir = self._entropy._get_local_upload_directory(repo)
+        upload_dir = self._entropy._get_local_upload_directory(repository_id)
 
         # check if it exists
         if not os.path.isdir(upload_dir):
@@ -1120,12 +1112,11 @@ class Server(ServerNoticeBoardMixin):
 
         return upload_files, upload_packages
 
-    def _calculate_local_package_files(self, repo = None):
+    def _calculate_local_package_files(self, repository_id):
         local_files = 0
         local_packages = set()
-        if repo is None:
-            repo = self._entropy.default_repository
-        base_dir = self._entropy._get_local_repository_base_directory(repo)
+        base_dir = self._entropy._get_local_repository_base_directory(
+            repository_id)
 
         # check if it exists
         if not os.path.isdir(base_dir):
@@ -1301,7 +1292,7 @@ class Server(ServerNoticeBoardMixin):
             header = blue(" @@ ")
         )
 
-    def _calculate_remote_package_files(self, uri, txc_handler, repo = None):
+    def _calculate_remote_package_files(self, repository_id, uri, txc_handler):
 
         remote_files = 0
         remote_packages_data = {}
@@ -1312,11 +1303,11 @@ class Server(ServerNoticeBoardMixin):
         for pkg_dir_type in pkgs_dir_types:
 
             remote_dir = self._entropy.complete_remote_package_relative_path(
-                pkg_dir_type, repo)
+                pkg_dir_type, repository_id)
             remote_dir = os.path.join(remote_dir, etpConst['currentarch'],
                 branch)
             only_dir = self._entropy.complete_remote_package_relative_path("",
-                repo)
+                repository_id)
             db_url_dir = remote_dir[len(only_dir):]
 
             # create path to lock file if it doesn't exist
@@ -1337,14 +1328,13 @@ class Server(ServerNoticeBoardMixin):
 
         return remote_files, remote_packages, remote_packages_data
 
-    def calculate_packages_to_sync(self, uri, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
+    def _calculate_packages_to_sync(self, repository_id, uri):
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
-        upload_files, upload_packages = self._calculate_local_upload_files(repo)
-        local_files, local_packages = self._calculate_local_package_files(repo)
+        upload_files, upload_packages = self._calculate_local_upload_files(
+            repository_id)
+        local_files, local_packages = self._calculate_local_package_files(
+            repository_id)
         self._show_local_sync_stats(upload_files, local_files)
 
         self._entropy.output(
@@ -1357,7 +1347,8 @@ class Server(ServerNoticeBoardMixin):
         txc = self._entropy.Transceiver(uri)
         with txc as handler:
             remote_files, remote_packages, remote_packages_data = \
-                self._calculate_remote_package_files(uri, handler, repo = repo)
+                self._calculate_remote_package_files(repository_id, uri,
+                    handler)
 
         self._entropy.output(
             "%s:  %s %s" % (
@@ -1381,13 +1372,13 @@ class Server(ServerNoticeBoardMixin):
         )
 
         upload_queue, download_queue, removal_queue, fine_queue = \
-            self._calculate_sync_queues(upload_packages, local_packages,
-                remote_packages, remote_packages_data, repo)
+            self._calculate_sync_queues(repository_id, upload_packages,
+                local_packages, remote_packages, remote_packages_data)
         return upload_queue, download_queue, removal_queue, fine_queue, \
             remote_packages_data
 
-    def _calculate_sync_queues(self, upload_packages, local_packages,
-        remote_packages, remote_packages_data, repo = None):
+    def _calculate_sync_queues(self, repository_id, upload_packages,
+        local_packages, remote_packages, remote_packages_data):
 
         upload_queue = set()
         download_queue = set()
@@ -1404,7 +1395,7 @@ class Server(ServerNoticeBoardMixin):
 
                 local_filepath = \
                     self._entropy.complete_local_upload_package_path(
-                        local_package, repo)
+                        local_package, repository_id)
 
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
@@ -1430,7 +1421,7 @@ class Server(ServerNoticeBoardMixin):
 
             if local_package in remote_packages:
                 local_filepath = self._entropy.complete_local_package_path(
-                    local_package, repo)
+                    local_package, repository_id)
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size is None:
@@ -1452,7 +1443,7 @@ class Server(ServerNoticeBoardMixin):
 
             if remote_package in local_packages:
                 local_filepath = self._entropy.complete_local_package_path(
-                    remote_package, repo)
+                    remote_package, repository_id)
                 local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size is None:
@@ -1479,7 +1470,7 @@ class Server(ServerNoticeBoardMixin):
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
         dbconn = self._entropy.open_server_repository(just_reading = True,
-            repo = repo)
+            repo = repository_id)
         db_files = dbconn.listAllDownloads(do_sort = False,
             full_path = True)
         db_files = set([x for x in db_files if \
@@ -1919,8 +1910,8 @@ class Server(ServerNoticeBoardMixin):
 
             try:
                 upload_queue, download_queue, removal_queue, fine_queue, \
-                    remote_packages_data = self.calculate_packages_to_sync(uri,
-                        repository_id)
+                    remote_packages_data = self._calculate_packages_to_sync(
+                        repository_id, uri)
             except self.socket.error as err:
                 self._entropy.output(
                     "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
@@ -2186,32 +2177,27 @@ class Server(ServerNoticeBoardMixin):
             return True
         return False
 
-    def _create_expiration_file(self, package_rel, repo = None, gentle = False):
-
-        if repo is None:
-            repo = self._entropy.default_repository
+    def _create_expiration_file(self, repository_id, package_rel,
+        gentle = False):
 
         pkg_path = self._entropy.complete_local_package_path(package_rel,
-            repo)
+            repository_id)
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
-        f_exp = open(pkg_path, "w")
-        f_exp.flush()
-        f_exp.close()
+        with open(pkg_path, "w") as f_exp:
+            f_exp.flush()
 
-    def _collect_expiring_packages(self, branch, repo = None):
-
-        if repo is None:
-            repo = self._entropy.default_repository
+    def _collect_expiring_packages(self, repository_id, branch):
 
         dbconn = self._entropy.open_server_repository(just_reading = True,
-            repo = repo)
+            repo = repository_id)
 
         database_bins = set(dbconn.listAllDownloads(do_sort = False,
             full_path = True))
 
-        repo_basedir = self._entropy._get_local_repository_base_directory(repo)
+        repo_basedir = self._entropy._get_local_repository_base_directory(
+            repository_id)
 
         repo_bins = self._entropy._get_basedir_pkg_listing(repo_basedir,
             branch = branch)
@@ -2267,8 +2253,8 @@ class Server(ServerNoticeBoardMixin):
         )
 
         # collect removed packages
-        expiring_packages = self._collect_expiring_packages(branch,
-            repository_id)
+        expiring_packages = self._collect_expiring_packages(repository_id,
+            branch)
         if expiring_packages:
 
             # filter expired packages used by other branches
@@ -2277,7 +2263,7 @@ class Server(ServerNoticeBoardMixin):
             # has been ported to latest Entropy
 
             branch_pkglist_data = self._read_remote_file_in_branches(
-                etpConst['etpdatabasepkglist'], repo = repository_id,
+                repository_id, etpConst['etpdatabasepkglist'],
                 excluded_branches = [branch])
             # format data
             for key, val in branch_pkglist_data.items():
@@ -2293,7 +2279,7 @@ class Server(ServerNoticeBoardMixin):
             if expired:
                 removal.append(package_rel)
             else:
-                self._create_expiration_file(package_rel, repository_id,
+                self._create_expiration_file(repository_id, package_rel,
                     gentle = True)
 
         if not removal:
