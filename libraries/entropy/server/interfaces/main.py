@@ -202,7 +202,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
             # auto-update package sets
             self._server.output(
-                "[repo:%s|%s] %s" % (
+                "[%s|%s] %s" % (
                         blue(repo),
                         red(_("repository")),
                         blue(_("syncing package sets")),
@@ -1285,7 +1285,7 @@ class ServerSettingsMixin:
             rev = int(rev)
         except ValueError:
             self.output(
-                "[repo:%s] %s: %s - %s" % (
+                "[%s] %s: %s - %s" % (
                         darkgreen(repository_id),
                         blue(_("invalid repository revision")),
                         bold(rev),
@@ -2216,7 +2216,7 @@ class ServerPackagesHandlingMixin:
             except RepositorySecurity.GPGError as err:
                 if old_gpg:
                     self.output(
-                        "[repo:%s] %s %s: %s." % (
+                        "[%s] %s %s: %s." % (
                             darkgreen(to_repo),
                             darkred(_("GPG key was available in")),
                             bold(from_repo),
@@ -2304,7 +2304,7 @@ class ServerPackagesHandlingMixin:
 
         # now inject metadata into tbz2 packages
         self.output(
-            "[repo:%s] %s:" % (
+            "[%s] %s:" % (
                 darkgreen(repo),
                 blue(_("Injecting entropy metadata into built packages")),
             ),
@@ -2320,7 +2320,7 @@ class ServerPackagesHandlingMixin:
             repo_sec = RepositorySecurity()
         except RepositorySecurity.GPGError as err:
             self.output(
-                "[repo:%s] %s: %s" % (
+                "[%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("JFYI, GPG infrastructure failed to load")),
                     err,
@@ -2333,7 +2333,7 @@ class ServerPackagesHandlingMixin:
 
         for idpackage, package_path in injection_data:
             self.output(
-                "[repo:%s|%s] %s: %s" % (
+                "[%s|%s] %s: %s" % (
                     darkgreen(repo),
                     brown(str(idpackage)),
                     blue(_("injecting entropy metadata")),
@@ -2372,7 +2372,7 @@ class ServerPackagesHandlingMixin:
             entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
             self.output(
-                "[repo:%s|%s] %s: %s" % (
+                "[%s|%s] %s: %s" % (
                     darkgreen(repo),
                     brown(str(idpackage)),
                     blue(_("injection complete")),
@@ -2393,7 +2393,7 @@ class ServerPackagesHandlingMixin:
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
             self.output(
-                "[repo:%s] %s: %s" % (
+                "[%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("removing package")),
                     darkgreen(atom),
@@ -2406,7 +2406,7 @@ class ServerPackagesHandlingMixin:
             dbconn.commit()
         self.close_repository(dbconn)
         self.output(
-            "[repo:%s] %s" % (
+            "[%s] %s" % (
                 darkgreen(repo),
                 blue(_("removal complete")),
             ),
@@ -2477,7 +2477,7 @@ class ServerPackagesHandlingMixin:
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             self.output(
-                "[repo:%s] %s: %s" % (
+                "[%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("Working on mirror")),
                     brown(crippled_uri),
@@ -3993,7 +3993,7 @@ class ServerRepositoryMixin:
         if not read_only and valid and indexing:
 
             self.output(
-                "[repo:%s|%s] %s" % (
+                "[%s|%s] %s" % (
                         blue(repo),
                         red(_("repository")),
                         blue(_("indexing repository")),
@@ -4146,7 +4146,7 @@ class ServerRepositoryMixin:
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
         self.output(
-            red("[repo: %s] %s: %s" % (
+            red("[%s] %s: %s" % (
                     darkgreen(repo),
                     _("adding package"),
                     bold(os.path.basename(package_file)),
@@ -4225,7 +4225,7 @@ class ServerRepositoryMixin:
         atom = dbconn.retrieveAtom(idpackage)
 
         self.output(
-            "[repo:%s] %s: %s %s: %s" % (
+            "[%s] %s: %s %s: %s" % (
                     darkgreen(repo),
                     blue(_("added package")),
                     darkgreen(atom),
@@ -4241,7 +4241,7 @@ class ServerRepositoryMixin:
             resolve_conditional_deps = False))
         if manual_deps:
             self.output(
-                "[repo:%s] %s: %s" % (
+                "[%s] %s: %s" % (
                         darkgreen(repo),
                         blue(_("manual dependencies for")),
                         darkgreen(atom),
@@ -4399,7 +4399,7 @@ class ServerRepositoryMixin:
 
             mycount += 1
             self.output(
-                "[repo:%s] %s: %s" % (
+                "[%s] %s: %s" % (
                     darkgreen(repo),
                     blue(_("adding package")),
                     darkgreen(os.path.basename(package_filepath)),
@@ -4422,7 +4422,7 @@ class ServerRepositoryMixin:
             except Exception as err:
                 entropy.tools.print_traceback()
                 self.output(
-                    "[repo:%s] %s: %s" % (
+                    "[%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(_("Exception caught, closing tasks")),
                         darkgreen(str(err)),
@@ -4572,7 +4572,7 @@ class ServerMiscMixin:
                 return None # GPG is not enabled
         except RepositorySecurity.KeyExpired as err:
             self.output(
-                "[repo:%s] %s: %s, %s." % (
+                "[%s] %s: %s, %s." % (
                     darkgreen(repo),
                     darkred(_("GPG key expired")),
                     err,
@@ -4585,7 +4585,7 @@ class ServerMiscMixin:
             return None
         except RepositorySecurity.GPGError as err:
             self.output(
-                "[repo:%s] %s: %s, %s." % (
+                "[%s] %s: %s, %s." % (
                     darkgreen(repo),
                     darkred(_("GPG got unexpected error")),
                     err,
@@ -4907,7 +4907,7 @@ class ServerMiscMixin:
             return
 
         self.output(
-            "[repo:%s|%s] %s:" % (
+            "[%s|%s] %s:" % (
                     blue(repo),
                     brown(pkg_atom),
                     teal(_("found available dep_rewrites for this package")),
