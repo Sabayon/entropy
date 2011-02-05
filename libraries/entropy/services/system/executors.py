@@ -606,7 +606,7 @@ class Base:
                     matches_added |= set([(x, repoid,) for x in idpackages])
 
 
-                Entropy.dependencies_test(Entropy.default_repository)
+                Entropy.dependencies_test(Entropy.repository())
 
                 for idpackage, repoid in matches_added:
                     dbconn = Entropy.open_server_repository(repoid,
@@ -651,7 +651,7 @@ class Base:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test(
-                    self.SystemManagerExecutor.SystemInterface.Entropy.default_repository)
+                    self.SystemManagerExecutor.SystemInterface.Entropy.repository())
                 return True, deps_not_matched
             except Exception as e:
                 entropy.tools.print_traceback()
@@ -687,7 +687,7 @@ class Base:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 entropy = self.SystemManagerExecutor.SystemInterface.Entropy
-                return entropy.test_shared_objects(entropy.default_repository)
+                return entropy.test_shared_objects(entropy.repository())
             except Exception as e:
                 entropy.tools.print_traceback()
                 return False, str(e)

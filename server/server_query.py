@@ -28,7 +28,7 @@ def query(myopts):
 
     rc = -10
     Entropy = Server()
-    dbconn = Entropy.open_server_repository(Entropy.default_repository,
+    dbconn = Entropy.open_server_repository(Entropy.repository(),
         just_reading = True)
 
     if cmd == "search":
@@ -115,7 +115,7 @@ def search_tagged_packages(tags, dbconn, entropy):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),) ))
-        print_info(blue("  # ")+bold(entropy.default_repository))
+        print_info(blue("  # ")+bold(entropy.repository()))
 
     key_sorter = lambda x: dbconn.retrieveAtom(x[1])
     for tag in tags:

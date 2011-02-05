@@ -69,7 +69,7 @@ def _sync(entropy_server, options, just_tidy):
     print_info(green(" * ")+red("%s ..." % (
         _("Starting to sync data across mirrors (packages/database)"),) ))
 
-    repository_id = entropy_server.default_repository
+    repository_id = entropy_server.repository()
     sys_settings_plugin_id = \
         etpConst['system_settings_plugins_ids']['server_plugin']
     srv_data = entropy_server.Settings()[sys_settings_plugin_id]['server']
@@ -185,7 +185,7 @@ def _packages(entropy_server, options):
     if not options:
         return -10
 
-    repository_id = entropy_server.default_repository
+    repository_id = entropy_server.repository()
 
     if options[0] == "sync":
 
@@ -296,7 +296,7 @@ def _notice(entropy_server, options):
         except ValueError:
             return -2
 
-    repository_id = entropy_server.default_repository
+    repository_id = entropy_server.repository()
 
     if options[0] == "add":
 
@@ -412,7 +412,7 @@ def _repo(entropy_server, options):
         elif opt.startswith("--"):
             return -10
 
-    repository_id = entropy_server.default_repository
+    repository_id = entropy_server.repository()
 
     if cmd == "lock":
 
@@ -525,8 +525,7 @@ def sync_remote_databases():
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
-        return _sync_remote_databases(server,
-            server.default_repository)
+        return _sync_remote_databases(server, server.repository())
     finally:
         if server is not None:
             if acquired:

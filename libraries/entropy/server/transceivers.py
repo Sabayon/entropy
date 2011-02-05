@@ -54,7 +54,7 @@ class TransceiverServerHandler:
         self.remove = remove
         self.repo = repo
         if self.repo == None:
-            self.repo = self.Entropy.default_repository
+            self.repo = self.Entropy.repository()
         if self.remove:
             self.download = False
 

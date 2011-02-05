@@ -1325,6 +1325,12 @@ class ServerSettingsMixin:
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return sorted(srv_set['repositories'])
 
+    def repository(self):
+        """
+        Return the current repository marked as default.
+        """
+        return self._repository
+
 
 class ServerLoadersMixin:
 
@@ -3621,7 +3627,7 @@ class ServerRepositoryMixin:
             )
         self.close_repositories()
         srv_set['default_repository_id'] = repoid
-        self.default_repository = repoid
+        self._repository = repoid
         self._setup_services()
         if save:
             self._save_default_repository(repoid)
@@ -3769,7 +3775,7 @@ class ServerRepositoryMixin:
     def _server_repository_sync_lock(self, repo, no_upload):
 
         if repo is None:
-            repo = self.default_repository
+            repo = self._repository
 
         # check if the database is locked locally
         lock_file = self._get_repository_lockfile(repo)
@@ -4536,9 +4542,9 @@ class ServerMiscMixin:
                 recursion = False, uid = etpConst['uid'])
 
     def _setup_services(self):
-        self._setup_entropy_settings(self.default_repository)
+        self._setup_entropy_settings(self._repository)
         self._backup_entropy_settings()
-        self.Mirrors = MirrorsServer(self, self.default_repository)
+        self.Mirrors = MirrorsServer(self, self._repository)
 
     def _setup_entropy_settings(self, repository_id):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -4565,7 +4571,7 @@ class ServerMiscMixin:
         mytxt = _("Entropy Server Interface Instance on repository")
         self.output(
             "%s: %s" % (blue(mytxt),
-                red(self.default_repository),
+                red(self._repository),
             ),
             importance = 2,
             level = "info",
@@ -4814,7 +4820,7 @@ class ServerMiscMixin:
             # checking if we are allowed to remove stuff on this repo
             # it xrepo is not the default one, we MUST skip this to
             # avoid touching what developer doesn't expect
-            if dorm and (xrepo == self.default_repository):
+            if dorm and (xrepo == self._repository):
                 trashed = self._is_spm_uid_trashed(counter)
                 if trashed:
                     # search into portage then
@@ -5266,27 +5272,27 @@ class Server(ServerSettingsMixin, ServerLoadersMixin,
                 fake_default_repo_desc, set_as_default = True)
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        self.default_repository = default_repository
-        if self.default_repository is None:
-            self.default_repository = srv_set['default_repository_id']
+        self._repository = default_repository
+        if self._repository is None:
+            self._repository = srv_set['default_repository_id']
 
-        if self.default_repository in srv_set['repositories']:
-            self._ensure_paths(self.default_repository)
+        if self._repository in srv_set['repositories']:
+            self._ensure_paths(self._repository)
 
-        if self.default_repository not in srv_set['repositories']:
+        if self._repository not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
-                        self.default_repository,
+                        self._repository,
                         _("repository not configured"),
                     )
             )
-        if etpConst['clientserverrepoid'] == self.default_repository:
+        if etpConst['clientserverrepoid'] == self._repository:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                     etpConst['clientserverrepoid'],
                     _("protected repository id, can't use this, sorry dude..."),
                 )
             )
 
-        self.switch_default_repository(self.default_repository)
+        self.switch_default_repository(self._repository)
         # initialize Entropy Client superclass
         _Client.init_singleton(self,
             indexing = self.indexing,

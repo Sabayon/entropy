@@ -1006,7 +1006,7 @@ class Repository(SocketCommands):
         if etpConst['clientserverrepoid'] in data['available']:
             data['available'].pop(etpConst['clientserverrepoid'])
         data['community_mode'] = self.HostInterface.Entropy.community_repo
-        data['current'] = self.HostInterface.Entropy.default_repository
+        data['current'] = self.HostInterface.Entropy.repository()
         data['branch'] = sys_settings['repositories']['branch']
         return True, data
 

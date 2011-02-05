@@ -56,10 +56,10 @@ def inject(options):
 
         etp_pkg_files = [(x, True,) for x in etp_pkg_files]
         idpackages = server.add_packages_to_repository(
-            server.default_repository, etp_pkg_files)
+            server.repository(), etp_pkg_files)
         if idpackages:
             # checking dependencies and print issues
-            server.dependencies_test(server.default_repository)
+            server.dependencies_test(server.repository())
         server.close_repositories()
 
     finally:
@@ -426,7 +426,7 @@ def _remove_packages(entropy_server, args, request_nodeps):
         print_error(brown(" * ")+red(_("Not enough parameters")))
         return 1
 
-    def_repo = entropy_server.default_repository
+    def_repo = entropy_server.repository()
     dbconn = entropy_server.open_repository(def_repo)
     pkglist = set()
     for atom in args:
@@ -436,7 +436,7 @@ def _remove_packages(entropy_server, args, request_nodeps):
 
     pkg_matches = [(x, def_repo) for x in pkglist]
     if not request_nodeps:
-        # entropy_server.default_repository
+        # entropy_server.repository()
         pkg_matches = entropy_server.get_reverse_queue(pkg_matches,
             system_packages = False)
 
@@ -473,7 +473,7 @@ def _multiremove_packages(entropy_server, args):
         red("%s..." % (_("Searching injected packages to remove"),) ),
             back = True)
 
-    repository_id = entropy_server.default_repository
+    repository_id = entropy_server.repository()
     dbconn = entropy_server.open_server_repository(repository_id,
         read_only = True, no_upload = True)
 
@@ -558,7 +558,7 @@ def _switch_branch(entropy_server, args):
 def _restore_repository(entropy_server):
 
     db_file = entropy_server._get_local_repository_file(
-        entropy_server.default_repository)
+        entropy_server.repository())
     db_dir = os.path.dirname(db_file)
     dblist = entropy_server.installed_repository_backups(
         client_dbdir = db_dir)
@@ -602,7 +602,7 @@ def _restore_repository(entropy_server):
     # make sure to close all repos before restoring
     entropy_server.close_repositories()
     status, err_msg = entropy_server.restore_repository(dbpath, db_file,
-        entropy_server.default_repository)
+        entropy_server.repository())
     if status:
         return 0
     return 1
@@ -682,7 +682,7 @@ def _repositories(entropy_server, options):
         return 2
 
     # default repository identifier
-    default_repository_id = entropy_server.default_repository
+    default_repository_id = entropy_server.repository()
 
     if cmd == "enable":
         return _enable_repo(entropy_server, repoid)
@@ -760,20 +760,20 @@ def _repositories(entropy_server, options):
 
         print_info(green(" * ")+red("%s..." % (
             _("Bumping Repository database"),) ))
-        entropy_server._bump_database(entropy_server.default_repository)
+        entropy_server._bump_database(entropy_server.repository())
         if request_sync:
             errors = entropy_server.Mirrors.sync_repository(
-                entropy_server.default_repository)
+                entropy_server.repository())
         return 0
 
     elif cmd == "backup":
 
         db_path = entropy_server._get_local_repository_file(
-            entropy_server.default_repository)
+            entropy_server.repository())
         # make sure to close all repos before backing-up
         entropy_server.close_repositories()
         rc, err_msg = entropy_server.backup_repository(
-            entropy_server.default_repository, os.path.dirname(db_path))
+            entropy_server.repository(), os.path.dirname(db_path))
         if not rc:
             print_info(darkred(" ** ")+red("%s: %s" % (
                 _("Error"), err_msg,) ))
@@ -845,7 +845,7 @@ def _update(entropy_server, options):
 
     key_sorter = lambda x: \
         entropy_server.open_repository(x[1]).retrieveAtom(x[0])
-    repository_id = entropy_server.default_repository
+    repository_id = entropy_server.repository()
 
     if not r_request_seek_store:
 
@@ -1019,7 +1019,7 @@ def _update(entropy_server, options):
                 rc = entropy_server.ask_question(">>   %s (%s %s)" % (
                         _("Would you like to package them now ?"),
                         _("inside"),
-                        entropy_server.default_repository,
+                        entropy_server.repository(),
                     )
                 )
                 if rc == _("No"):
@@ -1032,7 +1032,7 @@ def _update(entropy_server, options):
         # package them
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
         store_dir = entropy_server._get_local_store_directory(
-            entropy_server.default_repository)
+            entropy_server.repository())
         for x in to_be_added:
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
@@ -1043,7 +1043,7 @@ def _update(entropy_server, options):
                     _("Ignoring broken Spm entry, please recompile it"),) ))
 
     store_dir = entropy_server._get_local_store_directory(
-        entropy_server.default_repository)
+        entropy_server.repository())
     etp_pkg_files = []
     if os.path.isdir(store_dir):
         etp_pkg_files = os.listdir(store_dir)
@@ -1053,15 +1053,15 @@ def _update(entropy_server, options):
         return 0
 
     local_store_dir = entropy_server._get_local_store_directory(
-        entropy_server.default_repository)
+        entropy_server.repository())
     etp_pkg_files = [(os.path.join(local_store_dir, x), False) \
         for x in etp_pkg_files]
     idpackages = entropy_server.add_packages_to_repository(
-        entropy_server.default_repository, etp_pkg_files)
+        entropy_server.repository(), etp_pkg_files)
 
     if idpackages:
         # checking dependencies and print issues
-        entropy_server.dependencies_test(entropy_server.default_repository)
+        entropy_server.dependencies_test(entropy_server.repository())
     entropy_server.close_repositories()
     print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
     return 0
