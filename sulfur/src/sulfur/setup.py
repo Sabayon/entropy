@@ -82,6 +82,7 @@ class const:
                 "fr_CA - Benjamin Guay",
                 "it - Fabio Erculiani",
                 "nl - Andre Parhan",
+		"pl - Enlik",
                 "pt - Lucas Paulino Azevedo",
                 "ru - Maksim Belyanovskiy",
                 "sk - Bystrík Pešl",
