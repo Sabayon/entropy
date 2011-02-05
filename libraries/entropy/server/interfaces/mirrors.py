@@ -2171,8 +2171,8 @@ class Server(ServerNoticeBoardMixin):
 
     def _collect_expiring_packages(self, repository_id, branch):
 
-        dbconn = self._entropy.open_server_repository(just_reading = True,
-            repo = repository_id)
+        dbconn = self._entropy.open_server_repository(repository_id,
+            just_reading = True)
 
         database_bins = set(dbconn.listAllDownloads(do_sort = False,
             full_path = True))
