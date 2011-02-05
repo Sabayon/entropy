@@ -1035,7 +1035,8 @@ class Repository(SocketCommands):
         if repoid not in self.HostInterface.Entropy.available_repositories():
             return False, 'repository id not available'
 
-        dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+        dbconn = self.HostInterface.Entropy.open_server_repository(repoid,
+            just_reading = True, warnings = False, do_cache = False)
         idpackages = dbconn.listAllPackageIds(order_by = 'atom')
         package_data = []
         package_data = {
@@ -1058,7 +1059,8 @@ class Repository(SocketCommands):
         idpackage = myargs[0]
         repoid = myargs[1]
 
-        dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+        dbconn = self.HostInterface.Entropy.open_server_repository(repoid,
+            just_reading = True, warnings = False, do_cache = False)
         package_data = dbconn.getPackageData(idpackage)
         dbconn.close()
         return True, package_data
@@ -1085,7 +1087,8 @@ class Repository(SocketCommands):
         msg = 'ok'
         try:
             for repoid in repo_data:
-                self.HostInterface.Entropy.remove_packages(repo_data[repoid], repo = repoid)
+                self.HostInterface.Entropy.remove_packages(repoid,
+                    repo_data[repoid])
         except Exception as e:
             status = False
             msg = str(e)
@@ -1276,7 +1279,8 @@ class Repository(SocketCommands):
             'data': {},
         }
 
-        dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+        dbconn = self.HostInterface.Entropy.open_server_repository(repoid,
+            just_reading = True, warnings = False, do_cache = False)
 
         if search_type == "atom":
 

@@ -563,7 +563,7 @@ def _do_text_community(main_cmd, options):
             rc = 1
         else:
             server = server_reagent.get_entropy_server()
-            server.dependencies_test()
+            server.dependencies_test(server.default_repository)
             server.close_repositories()
             rc = 0
 
@@ -575,7 +575,8 @@ def _do_text_community(main_cmd, options):
             rc = 1
         else:
             server = server_reagent.get_entropy_server()
-            server.verify_local_packages([], ask = etpUi['ask'])
+            server._verify_local_packages(server.default_repository,
+                [], ask = etpUi['ask'])
             server.close_repositories()
             rc = 0
 

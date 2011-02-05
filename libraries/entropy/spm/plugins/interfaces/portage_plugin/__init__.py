@@ -2397,8 +2397,8 @@ class PortagePlugin(SpmPlugin):
                 continue
             package_paths.add(mypath)
         packages_data = [(x, False,) for x in package_paths]
-        idpackages = entropy_server.add_packages_to_repository(packages_data,
-            repo = repo)
+        idpackages = entropy_server.add_packages_to_repository(repo,
+            packages_data)
 
         if not idpackages:
 

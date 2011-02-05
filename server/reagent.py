@@ -232,7 +232,7 @@ elif main_cmd == "deptest":
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
-            server.dependencies_test()
+            server.dependencies_test(server.default_repository)
             rc = 0
     finally:
         if server is not None:
@@ -250,7 +250,8 @@ elif main_cmd == "pkgtest":
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
-            server.verify_local_packages([], ask = etpUi['ask'])
+            server._verify_local_packages(server.default_repository, 
+                [], ask = etpUi['ask'])
             rc = 0
     finally:
         if server is not None:
@@ -269,7 +270,7 @@ elif main_cmd == "libtest":
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
-            rc, pkgs = server.test_shared_objects(
+            rc = server.test_shared_objects(server.default_repository,
                 dump_results_to_file = dump)
     finally:
         if server is not None:

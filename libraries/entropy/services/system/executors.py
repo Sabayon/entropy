@@ -422,11 +422,6 @@ class Base:
         if queue_data is None:
             return False, 'no item in queue'
 
-        # run
-        matches = []
-        for idpackage in idpackages:
-            matches.append((idpackage, from_repo,))
-
         stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
@@ -435,12 +430,12 @@ class Base:
             mystdin = self._get_stdin(queue_id)
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                switched = self.SystemManagerExecutor.SystemInterface.Entropy.move_packages(
-                    matches, to_repo,
-                    from_repo = from_repo,
-                    ask = False,
-                    do_copy = do_copy
-                )
+                if do_copy:
+                    switched = self.SystemManagerExecutor.SystemInterface.Entropy.copy_packages(
+                        idpackages, from_repo, to_repo, ask = False)
+                else:
+                    switched = self.SystemManagerExecutor.SystemInterface.Entropy.move_packages(
+                        idpackages, from_repo, to_repo, ask = False)
                 return switched
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -493,13 +488,15 @@ class Base:
 
                 mydict['remove_data'] = {}
                 for idpackage, repoid in to_remove:
-                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repoid,
+                        just_reading = True, warnings = False, do_cache = False)
                     mydict['remove_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.close()
 
                 mydict['inject_data'] = {}
                 for idpackage, repoid in to_inject:
-                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repoid,
+                        just_reading = True, warnings = False, do_cache = False)
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.close()
 
@@ -547,8 +544,7 @@ class Base:
                 # run inject
                 for idpackage, repoid in to_inject:
                     matches_injected.add((idpackage, repoid,))
-                    Entropy._transform_package_into_injected(idpackage,
-                        repo = repoid)
+                    Entropy._transform_package_into_injected(idpackage, repoid)
 
                 if to_remove:
                     Entropy.output(_("Running package removal"))
@@ -556,14 +552,15 @@ class Base:
                 # run remove
                 remdata = {}
                 for idpackage, repoid in to_remove:
-                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repoid,
+                        just_reading = True, warnings = False, do_cache = False)
                     atoms_removed.append(dbconn.retrieveAtom(idpackage))
                     dbconn.close()
                     if repoid not in remdata:
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
                 for repoid in remdata:
-                    Entropy.remove_packages(remdata[repoid], repo = repoid)
+                    Entropy.remove_packages(repoid, remdata[repoid])
 
                 mydict = {
                     'added_data': {},
@@ -604,18 +601,21 @@ class Base:
                     for package_file, inject in package_files:
                         Entropy.output("    %s" % (package_file,))
 
-                    idpackages = Entropy.add_packages_to_repository(package_files, ask = False, repo = repoid)
+                    idpackages = Entropy.add_packages_to_repository(repoid,
+                        package_files, ask = False)
                     matches_added |= set([(x, repoid,) for x in idpackages])
 
 
-                Entropy.dependencies_test()
+                Entropy.dependencies_test(Entropy.default_repository)
 
                 for idpackage, repoid in matches_added:
-                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repoid,
+                        just_reading = True, warnings = False, do_cache = False)
                     mydict['added_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.close()
                 for idpackage, repoid in matches_injected:
-                    dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
+                    dbconn = Entropy.open_server_repository(repoid,
+                        just_reading = True, warnings = False, do_cache = False)
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.close()
                 return True, mydict
@@ -650,7 +650,8 @@ class Base:
             if mystdin:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
+                deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test(
+                    self.SystemManagerExecutor.SystemInterface.Entropy.default_repository)
                 return True, deps_not_matched
             except Exception as e:
                 entropy.tools.print_traceback()
@@ -685,7 +686,8 @@ class Base:
             if mystdin:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
+                entropy = self.SystemManagerExecutor.SystemInterface.Entropy
+                return entropy.test_shared_objects(entropy.default_repository)
             except Exception as e:
                 entropy.tools.print_traceback()
                 return False, str(e)
@@ -699,16 +701,14 @@ class Base:
         def write_pid(pid):
             self._set_processing_pid(queue_id, pid)
 
-        status, result = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
+        status = entropy.tools.spawn_function(myfunc, write_pid_func = write_pid)
         stdout_err.flush()
         stdout_err.close()
 
         mystatus = False
         if status == 0:
             mystatus = True
-        if not result:
-            result = set()
-        return mystatus, result
+        return mystatus, set()
 
     def run_entropy_checksum_test(self, queue_id, repoid, mode):
 
@@ -726,9 +726,9 @@ class Base:
                 sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 if mode == "local":
-                    data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_local_packages([], ask = False, repo = repoid)
+                    data = self.SystemManagerExecutor.SystemInterface.Entropy._verify_local_packages(repoid, [], ask = False)
                 else:
-                    data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_remote_packages([], ask = False, repo = repoid)
+                    data = self.SystemManagerExecutor.SystemInterface.Entropy._verify_remote_packages(repoid, [], ask = False)
                 return True, data
             except Exception as e:
                 entropy.tools.print_traceback()
@@ -765,9 +765,7 @@ class Base:
             try:
                 sys.stdout.write(_("Opening database to let it run treeupdates. If you won't see anything below, it's just fine.").encode('utf-8')+"\n")
                 dbconn = self.SystemManagerExecutor.SystemInterface.Entropy.open_server_repository(
-                    repo = repoid, do_cache = False,
-                    read_only = True
-                )
+                    repoid, do_cache = False, read_only = True)
                 dbconn.close()
             except Exception as e:
                 entropy.tools.print_traceback()

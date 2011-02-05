@@ -420,7 +420,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             #if rc_ask == _("Yes"):
                             #    new_blacklist.add(dependency)
                     if new_blacklist and (black_list_adder != None):
-                        black_list_adder(new_blacklist, repo = repo)
+                        black_list_adder(new_blacklist, repo)
                     missing = newmissing
             if missing:
                 obj = missing_map.setdefault((package_id, repo), [])

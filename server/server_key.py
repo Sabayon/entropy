@@ -288,7 +288,7 @@ def _create_keys(entropy_srv, repo):
     )
 
     # remove signatures from repository database
-    dbconn = entropy_srv.open_server_repository(repo = repo, read_only = False)
+    dbconn = entropy_srv.open_server_repository(repo, read_only = False)
     dbconn.dropGpgSignatures()
 
     return 0
@@ -323,7 +323,7 @@ def _delete_keys(entropy_srv, repo):
         return 1
 
     # remove signatures from repository database
-    dbconn = entropy_srv.open_server_repository(repo = repo, read_only = False)
+    dbconn = entropy_srv.open_server_repository(repo, read_only = False)
     dbconn.dropGpgSignatures()
 
     repo_sec.delete_keypair(repo)
@@ -386,8 +386,7 @@ def _show_status(entropy_srv, repo):
 
 def _sign_packages(entropy_srv, repo):
 
-    errors, fine, failed = entropy_srv.sign_local_packages(repo = repo,
-        ask = True)
+    errors, fine, failed = entropy_srv.sign_local_packages(repo, ask = True)
     if errors:
         return 2
 

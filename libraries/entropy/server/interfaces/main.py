@@ -16,6 +16,7 @@ import copy
 import tempfile
 import time
 import re
+import errno
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
@@ -869,8 +870,8 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
             idpackages = set()
             exp_fp = self._helper._get_local_exp_based_pkgs_rm_whitelist_file(
                 repoid)
-            dbconn = self._helper.open_server_repository(
-                just_reading = True, repo = repoid)
+            dbconn = self._helper.open_server_repository(repoid,
+                just_reading = True)
 
             if os.access(exp_fp, os.R_OK) and os.path.isfile(exp_fp):
                 pkgs = entropy.tools.generic_file_content_parser(exp_fp)
@@ -1387,10 +1388,10 @@ class ServerPackageDepsMixin:
         kwargs['mask_filter'] = False
         return _Client.atom_match(self, *args, **kwargs)
 
-    def match_packages(self, packages, repo = None):
+    def _match_packages(self, repository_id, packages):
 
-        dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, read_only = True,
+            no_upload = True)
         if ("world" in packages) or not packages:
             return dbconn.listAllPackageIds(), True
         else:
@@ -1413,19 +1414,19 @@ class ServerPackageDepsMixin:
                     )
             return idpackages, False
 
-    def mask_packages(self, packages, repo = None):
+    def mask_packages(self, repository_id, packages):
         """
         Mask given package dependencies for given repository, if any (otherwise
         use default one).
 
+        @param repository_id: repository identifier
+        @type repository_id: string
         @param packages: list of package dependency strings
         @type packages: list
-        @keyword repo: repository identifier
-        @type repo: string
         @return: mask status, True if ok, False if not
         @rtype: bool
         """
-        mask_file = self._get_local_repository_mask_file(repo)
+        mask_file = self._get_local_repository_mask_file(repository_id)
         current_packages = []
 
         if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
@@ -1444,19 +1445,19 @@ class ServerPackageDepsMixin:
 
         return True
 
-    def unmask_packages(self, packages, repo = None):
+    def unmask_packages(self, repository_id, packages):
         """
         Unmask given package dependencies for given repository, if any (otherwise
         use default one).
 
+        @param repository_id: repository identifier
+        @type repository_id: string
         @param packages: list of package dependency strings
         @type packages: list
-        @keyword repo: repository identifier
-        @type repo: string
         @return: mask status, True if ok, False if not
         @rtype: bool
         """
-        mask_file = self._get_local_repository_mask_file(repo)
+        mask_file = self._get_local_repository_mask_file(repository_id)
         current_packages = []
 
         if os.path.isfile(mask_file) and os.access(mask_file, os.R_OK):
@@ -1491,59 +1492,63 @@ class ServerPackageDepsMixin:
 
 class ServerPackagesHandlingMixin:
 
-    def initialize_server_repository(self, repo = None, show_warnings = True):
+    def initialize_repository(self, repository_id, ask = True):
+        """
+        Initialize (and wipe all data!) given repository to empty status.
 
-        if repo is None:
-            repo = self.default_repository
-
-        self.close_repositories()
-
-        mytxt = red("%s ...") % (_("Initializing Entropy repository"),)
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword ask: ask before making any change?
+        @type ask: bool
+        @return: execution status (0 = fine)
+        @rtype: int
+        """
         self.output(
-            mytxt, importance = 1,
+            "[%s] %s..." % (
+                purple(repository_id), darkgreen(_("initializing repository")),
+            ),
+            importance = 1,
             level = "info", header = darkgreen(" * "),
             back = True
         )
+        self.close_repositories()
 
-        if os.path.isfile(self._get_local_repository_file(repo)):
+        rc_question = self.ask_question(
+            "[%s] %s" % (
+                purple(repository_id),
+                teal(_("do you really want to initialize this repository ?"))
+            )
+        )
+        if rc_question == _("No"):
+            return 1
 
-            # test out
-            if show_warnings:
-                dbconn = self.open_server_repository(read_only = True,
-                    no_upload = True, repo = repo, warnings = show_warnings)
-                self.close_repository(dbconn)
-
-                mytxt = "%s: %s: %s" % (
-                    bold(_("WARNING")),
-                    red(_("repository already exists")),
-                    self._get_local_repository_file(repo),
-                )
-                self.output(
-                    mytxt,
-                    importance = 1,
-                    level = "warning",
-                    header = darkred(" !!! ")
-                )
-
-                rc_question = self.ask_question(_("Do you want to continue ?"))
-                if rc_question == _("No"):
-                    return
-
-            os.remove(self._get_local_repository_file(repo))
+        try:
+            os.remove(self._get_local_repository_file(repository_id))
+        except OSError as err:
+            if err.errno != errno.ENOENT:
+                raise
 
         # initialize
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo, is_new = True)
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True, is_new = True)
         dbconn.initializeRepository()
-
         dbconn.commit()
-        self.close_repositories()
 
         return 0
 
-    def tag_packages(self, package_tag, idpackages, repo = None, ask = True):
+    def tag_packages(self, package_matches, package_tag, ask = True):
+        """
+        Change version tag for given package matches.
 
-        # check package_tag "no spaces"
+        @param package_matches: list of Entropy package matches
+        @type package_matches: list
+        @param package_tag: new Entropy package tag string
+        @type package_tag: string
+        @return: execution status (0 = fine)
+        @rtype: int
+        """
+        # repo
+        # idpackages
 
         try:
             package_tag = str(package_tag)
@@ -1557,39 +1562,21 @@ class ServerPackagesHandlingMixin:
                 ),
                 importance = 1, level = "error", header = darkred(" !! ")
             )
-            return 1, package_tag
+            return 1
 
-        if repo is None:
-            repo = self.default_repository
+        pkg_map = {}
+        for pkg_id, pkg_repo in package_matches:
+            obj = pkg_map.setdefault(pkg_repo, [])
+            obj.append(pkg_id)
 
-        # sanity check
-        invalid_atoms = []
-        dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = repo)
-        for idpackage in idpackages:
-            ver_tag = dbconn.retrieveTag(idpackage)
-            if ver_tag:
-                invalid_atoms.append(dbconn.retrieveAtom(idpackage))
+        for pkg_repo in sorted(pkg_map.keys()):
+            switched = self._move_packages(pkg_map[pkg_repo], pkg_repo,
+                pkg_repo, ask = ask, do_copy = True, new_tag = package_tag)
+            if not switched:
+                return 1
+        return 0
 
-        if invalid_atoms:
-            self.output(
-                "%s: %s" % (
-                    blue(_("Packages already tagged, action aborted")),
-                    ', '.join([darkred(str(x)) for x in invalid_atoms]),
-                ),
-                importance = 1, level = "error", header = darkred(" !! ")
-            )
-            return 2, invalid_atoms
-
-        matches = [(x, repo) for x in idpackages]
-        status = 0
-        data = self.move_packages(
-            matches, to_repo = repo, from_repo = repo, ask = ask,
-            do_copy = True, new_tag = package_tag
-        )
-        return status, data
-
-    def flushback_packages(self, from_branches, repo = None, ask = True):
+    def flushback_packages(self, repository_id, from_branches, ask = True):
         """
         When creating a new branch, for space reasons, packages are not
         moved to a new location. This works fine until old branch is removed.
@@ -1597,19 +1584,15 @@ class ServerPackagesHandlingMixin:
         in the old branch should be flushed back to the the currently configured
         branch.
 
-        @param from_branches -- list of branches to move packages from
-        @type from_branches -- list
-        @param repo -- repository to work on
-        @type repo -- str
-        @param ask -- user interactivity
-        @type ask -- bool
-
-        @return status
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param from_branches: list of branches to move packages from
+        @type from_branches: list
+        @keyword ask: ask before making any change?
+        @type ask: bool
+        @return execution status (0 = fine)
+        @rtype: int
         """
-
-        status = True
-        if repo is None:
-            repo = self.default_repository
         branch = self._settings['repositories']['branch']
 
         if branch in from_branches:
@@ -1619,7 +1602,7 @@ class ServerPackagesHandlingMixin:
             "[%s=>%s|%s] %s" % (
                 darkgreen(', '.join(from_branches)),
                 darkred(branch),
-                brown(repo),
+                brown(repository_id),
                 blue(_("flushing back selected packages from branches")),
             ),
             importance = 2,
@@ -1627,8 +1610,8 @@ class ServerPackagesHandlingMixin:
             header = red(" @@ ")
         )
 
-        dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, read_only = True,
+            no_upload = True)
 
         idpackage_map = dict(((x, [],) for x in from_branches))
         idpackages = dbconn.listAllPackageIds(order_by = 'atom')
@@ -1645,30 +1628,31 @@ class ServerPackagesHandlingMixin:
                 "[%s=>%s|%s] %s !" % (
                     darkgreen(', '.join(from_branches)),
                     darkred(branch),
-                    brown(repo),
+                    brown(repository_id),
                     blue(_("nothing to do")),
                 ),
                 importance = 0,
                 level = "warning",
                 header = blue(" @@ ")
             )
-            return status
+            return 0
 
 
         all_fine = True
         tmp_down_dir = tempfile.mkdtemp(prefix = "entropy.server")
 
         download_queue = {}
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True)
 
-        def generate_queue(branch, repo, from_branch, down_q, idpackage_map):
+        def generate_queue(branch, repository_id, from_branch, down_q,
+            idpackage_map):
 
             self.output(
                 "[%s=>%s|%s] %s" % (
                     darkgreen(from_branch),
                     darkred(branch),
-                    brown(repo),
+                    brown(repository_id),
                     brown(_("these are the packages that will be flushed")),
                 ),
                 importance = 1,
@@ -1683,7 +1667,7 @@ class ServerPackagesHandlingMixin:
                     "[%s=>%s|%s] %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
-                        brown(repo),
+                        brown(repository_id),
                         purple(atom),
                     ),
                     importance = 0,
@@ -1699,7 +1683,7 @@ class ServerPackagesHandlingMixin:
 
             download_queue[from_branch] = []
             all_fine = False
-            generate_queue(branch, repo, from_branch,
+            generate_queue(branch, repository_id, from_branch,
                 download_queue[from_branch], idpackage_map)
 
             if ask:
@@ -1708,7 +1692,7 @@ class ServerPackagesHandlingMixin:
                 if rc_question == _("No"):
                     continue
 
-            for uri in self.remote_packages_mirrors(repo):
+            for uri in self.remote_packages_mirrors(repository_id):
 
                 crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
@@ -1717,7 +1701,7 @@ class ServerPackagesHandlingMixin:
                 for pkg_fp, idpackage in download_queue[from_branch]:
                     down_url = dbconn.retrieveDownloadURL(idpackage)
                     down_rel = self.complete_remote_package_relative_path(
-                        down_url, repo)
+                        down_url, repository_id)
                     down_rel_dir = os.path.dirname(down_rel)
                     obj = queue_map.setdefault(down_rel_dir, [])
                     obj.append(pkg_fp)
@@ -1736,7 +1720,7 @@ class ServerPackagesHandlingMixin:
                         txc_basedir = down_rel_dir,
                         local_basedir = tmp_down_dir,
                         download = True,
-                        repo = repo
+                        repo = repository_id
                     )
                     xerrors, xm_fine_uris, xm_broken_uris = downloader.go()
                     if xerrors:
@@ -1752,7 +1736,7 @@ class ServerPackagesHandlingMixin:
                             "[%s=>%s|%s|%s] %s: %s" % (
                                 darkgreen(from_branch),
                                 darkred(branch),
-                                brown(repo),
+                                brown(repository_id),
                                 dbconn.retrieveAtom(idpackage),
                                 blue(_("checking package hash")),
                                 darkgreen(os.path.basename(downloaded_path)),
@@ -1771,7 +1755,7 @@ class ServerPackagesHandlingMixin:
                                 "[%s=>%s|%s|%s] %s: %s" % (
                                     darkgreen(from_branch),
                                     darkred(branch),
-                                    brown(repo),
+                                    brown(repository_id),
                                     dbconn.retrieveAtom(idpackage),
                                     blue(_("hash does not match for")),
                                     darkgreen(os.path.basename(downloaded_path)),
@@ -1794,7 +1778,7 @@ class ServerPackagesHandlingMixin:
                         "[%s=>%s|%s] %s, %s: %s" % (
                             darkgreen(from_branch),
                             darkred(branch),
-                            brown(repo),
+                            brown(repository_id),
                             blue(_("download errors")),
                             blue(_("reason")),
                             reason,
@@ -1812,7 +1796,7 @@ class ServerPackagesHandlingMixin:
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
-                        brown(repo),
+                        brown(repository_id),
                         blue(_("download completed successfully")),
                         darkgreen(crippled_uri),
                     ),
@@ -1826,14 +1810,14 @@ class ServerPackagesHandlingMixin:
                 "[%s=>%s|%s] %s" % (
                     darkgreen(', '.join(from_branches)),
                     darkred(branch),
-                    brown(repo),
+                    brown(repository_id),
                     blue(_("error downloading packages from mirrors")),
                 ),
                 importance = 2,
                 level = "error",
                 header = darkred(" !!! ")
             )
-            return False
+            return 1
 
         for from_branch in sorted(mapped_branches):
 
@@ -1841,7 +1825,7 @@ class ServerPackagesHandlingMixin:
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(from_branch),
                     darkred(branch),
-                    brown(repo),
+                    brown(repository_id),
                     blue(_("working on branch")),
                     darkgreen(from_branch),
                 ),
@@ -1857,7 +1841,7 @@ class ServerPackagesHandlingMixin:
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
-                        brown(repo),
+                        brown(repository_id),
                         blue(_("updating package")),
                         darkgreen(os.path.basename(package_path)),
                     ),
@@ -1875,7 +1859,7 @@ class ServerPackagesHandlingMixin:
 
                 # move files to upload
                 new_package_path = self.complete_local_upload_package_path(
-                    download_url, repo)
+                    download_url, repository_id)
                 self._ensure_dir_path(os.path.dirname(new_package_path))
 
                 try:
@@ -1896,7 +1880,7 @@ class ServerPackagesHandlingMixin:
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
-                        brown(repo),
+                        brown(repository_id),
                         blue(_("package flushed")),
                         darkgreen(os.path.basename(package_path)),
                     ),
@@ -1910,19 +1894,71 @@ class ServerPackagesHandlingMixin:
         except OSError:
             pass
 
-        return True
+        return 0
 
-    def move_packages(self, matches, to_repo, from_repo = None, ask = True,
-        do_copy = False, new_tag = None, pull_deps = False):
+    def move_packages(self, package_ids, from_repository_id, to_repository_id,
+        ask = True, pull_dependencies = False):
+        """
+        Move packages from a repository to another.
 
-        if from_repo is None:
-            from_repo = self.default_repository
+        @param package_ids: list of package identifiers contained in
+            from_repository_id repository
+        @type package_ids: list
+        @param from_repository_id: source repository identifier
+        @type from_repository_id: string
+        @param to_repository_id: destination repository identifier
+        @type to_repository_id: string
+        @keyword ask: execute in interactive mode
+        @type ask: bool
+        @keyword pull_dependencies: also include reverse dependencies in
+            move
+        @type pull_dependencies: bool
+        @return: list (set) of moved package identifiers
+        @rtype: set
+        """
+        return self._move_packages(package_ids, from_repository_id,
+            to_repository_id, ask = ask, pull_deps = pull_dependencies,
+            do_copy = False)
+
+    def copy_packages(self, package_ids, from_repository_id, to_repository_id,
+        ask = True, pull_dependencies = False):
+        """
+        Copy packages from a repository to another.
+
+        @param package_ids: list of package identifiers contained in
+            from_repository_id repository
+        @type package_ids: list
+        @param from_repository_id: source repository identifier
+        @type from_repository_id: string
+        @param to_repository_id: destination repository identifier
+        @type to_repository_id: string
+        @keyword ask: execute in interactive mode
+        @type ask: bool
+        @keyword pull_dependencies: also include reverse dependencies in
+            copy
+        @type pull_dependencies: bool
+        @return: list (set) of copied package identifiers
+        @rtype: set
+        """
+        return self._move_packages(package_ids, from_repository_id,
+            to_repository_id, ask = ask, pull_deps = pull_dependencies,
+            do_copy = True)
+
+    def _move_packages(self, package_ids, from_repository_id, to_repository_id,
+        ask = True, do_copy = False, new_tag = None, pull_deps = False):
+        """
+        Move, copy or re-tag packages in repositories.
+        If do_copy is True, a copy is executed of package_ids from
+        from_repository_id to to_repository_id. If new_tag is not None,
+        and from_repository_id == to_repository_id a re-tag will be executed.
+        """
+
         switched = set()
-
-        my_matches = list(matches)
+        my_matches = [(x, from_repository_id) for x in package_ids]
 
         # avoid setting __default__ as default server repo
-        if etpConst['clientserverrepoid'] in (to_repo, from_repo):
+        if etpConst['clientserverrepoid'] in (to_repository_id, 
+            from_repository_id):
             self.output(
                 "%s: %s" % (
                     blue(_("Cannot touch system repository")),
@@ -1932,11 +1968,11 @@ class ServerPackagesHandlingMixin:
             )
             return switched
 
-        if not my_matches and from_repo:
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = from_repo)
+        if not my_matches and from_repository_id:
+            dbconn = self.open_server_repository(from_repository_id,
+                read_only = True, no_upload = True)
             my_matches = set( \
-                [(x, from_repo) for x in \
+                [(x, from_repository_id) for x in \
                     dbconn.listAllPackageIds()]
             )
 
@@ -1946,7 +1982,7 @@ class ServerPackagesHandlingMixin:
         self.output(
             "%s %s:" % (
                 blue(mytxt),
-                red(to_repo),
+                red(to_repository_id),
             ),
             importance = 2,
             level = "info",
@@ -1969,23 +2005,23 @@ class ServerPackagesHandlingMixin:
                 brown(new_tag),)
 
         # open both repos here to make sure it's all fine with them
-        dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = from_repo)
-        todbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = to_repo)
+        dbconn = self.open_server_repository(from_repository_id,
+            read_only = True, no_upload = True)
+        todbconn = self.open_server_repository(to_repository_id,
+            read_only = False, no_upload = True)
 
         my_qa = self.QA()
         branch = self._settings['repositories']['branch']
         pull_deps_matches = []
         for idpackage, repo in my_matches:
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(repo, read_only = True,
+                no_upload = True)
             self.output(
                 "[%s=>%s|%s] %s " % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(dbconn.retrieveAtom(idpackage)),
+                    darkgreen(repo),
+                    darkred(to_repository_id),
+                    brown(branch),
+                    blue(dbconn.retrieveAtom(idpackage)),
                 ) + new_tag_string,
                 importance = 0,
                 level = "info",
@@ -2004,7 +2040,7 @@ class ServerPackagesHandlingMixin:
             for to_rm_idpackage in to_rm_idpackages:
                 self.output(
                     "    [=>%s|%s] %s" % (
-                            darkred(to_repo),
+                            darkred(to_repository_id),
                             bold(_("remove")),
                             blue(todbconn.retrieveAtom(to_rm_idpackage)),
                     ),
@@ -2031,8 +2067,8 @@ class ServerPackagesHandlingMixin:
                         continue
 
                     pull_deps_matches.append(my_dep_match)
-                    dep_dbconn = self.open_server_repository(read_only = True,
-                        no_upload = True, repo = dep_repo)
+                    dep_dbconn = self.open_server_repository(dep_repo,
+                        read_only = True, no_upload = True)
                     dep_atom = dep_dbconn.retrieveAtom(dep_idpackage)
                     if my_dep_match in revdep_matches:
                         self.output(
@@ -2070,8 +2106,8 @@ class ServerPackagesHandlingMixin:
         package_ids_added = set()
         for idpackage, repo in my_matches:
 
-            dbconn = self.open_server_repository(read_only = False,
-                no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(repo, read_only = False,
+                no_upload = True)
 
             match_atom = dbconn.retrieveAtom(idpackage)
             package_rel_path = dbconn.retrieveDownloadURL(idpackage)
@@ -2079,7 +2115,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
-                    darkred(to_repo),
+                    darkred(to_repository_id),
                     brown(branch),
                     blue(_("switching")),
                     darkgreen(match_atom),
@@ -2099,7 +2135,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     "[%s=>%s|%s] %s: %s -> %s" % (
                         darkgreen(repo),
-                        darkred(to_repo),
+                        darkred(to_repository_id),
                         brown(branch),
                         bold(_("cannot switch, package not found, skipping")),
                         darkgreen(match_atom),
@@ -2118,14 +2154,14 @@ class ServerPackagesHandlingMixin:
 
             def _package_injector_check_license(pkg_data):
                 licenses = pkg_data['license'].split()
-                return self._is_pkg_free(licenses, repo = to_repo)
+                return self._is_pkg_free(to_repository_id, licenses)
 
             def _package_injector_check_restricted(pkg_data):
                 pkgatom = entropy.dep.create_package_atom_string(
                     pkg_data['category'], pkg_data['name'], pkg_data['version'],
                     pkg_data['versiontag'])
-                return self._is_pkg_restricted(pkgatom, pkg_data['slot'],
-                    repo = to_repo)
+                return self._is_pkg_restricted(to_repository_id, pkgatom,
+                    pkg_data['slot'])
 
             # check if pkg is restricted
             # and check if pkg is free, we must do this step in any case
@@ -2141,7 +2177,7 @@ class ServerPackagesHandlingMixin:
             del tmp_data
 
             to_file = self.complete_local_upload_package_path(
-                updated_package_rel_path, to_repo)
+                updated_package_rel_path, to_repository_id)
 
             if new_tag != None:
 
@@ -2153,7 +2189,7 @@ class ServerPackagesHandlingMixin:
                         match_category, match_name, match_version, new_tag)
 
                 to_file = self.complete_local_upload_package_path(
-                    updated_package_rel_path, to_repo)
+                    updated_package_rel_path, to_repository_id)
                 # directly move to correct place, tag changed, so file name
                 to_file = os.path.join(os.path.dirname(to_file),
                     tagged_package_filename)
@@ -2172,7 +2208,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
-                        darkred(to_repo),
+                        darkred(to_repository_id),
                         brown(branch),
                         blue(_("moving file")),
                         darkgreen(os.path.basename(from_item)),
@@ -2188,7 +2224,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
-                    darkred(to_repo),
+                    darkred(to_repository_id),
                     brown(branch),
                     blue(_("loading data from source repository")),
                     darkgreen(repo),
@@ -2217,9 +2253,9 @@ class ServerPackagesHandlingMixin:
                 if old_gpg:
                     self.output(
                         "[%s] %s %s: %s." % (
-                            darkgreen(to_repo),
+                            darkgreen(to_repository_id),
                             darkred(_("GPG key was available in")),
-                            bold(from_repo),
+                            bold(from_repository_id),
                             err,
                         ),
                         importance = 1,
@@ -2230,15 +2266,15 @@ class ServerPackagesHandlingMixin:
 
             if repo_sec is not None:
                 data['signatures']['gpg'] = self._get_gpg_signature(repo_sec,
-                    to_repo, to_file)
+                    to_repository_id, to_file)
 
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
-                    darkred(to_repo),
+                    darkred(to_repository_id),
                     brown(branch),
                     blue(_("injecting data to destination repository")),
-                    darkgreen(to_repo),
+                    darkgreen(to_repository_id),
                 ),
                 importance = 0,
                 level = "info",
@@ -2248,7 +2284,7 @@ class ServerPackagesHandlingMixin:
             new_idpackage, new_revision, new_data = todbconn.handlePackage(data)
             del data
             todbconn.commit()
-            todbconn.storeInstalledPackage(new_idpackage, to_repo)
+            todbconn.storeInstalledPackage(new_idpackage, to_repository_id)
             todbconn.commit()
             package_ids_added.add(new_idpackage)
 
@@ -2256,7 +2292,7 @@ class ServerPackagesHandlingMixin:
                 self.output(
                     "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
-                        darkred(to_repo),
+                        darkred(to_repository_id),
                         brown(branch),
                         blue(_("removing entry from source repository")),
                         darkgreen(repo),
@@ -2274,7 +2310,7 @@ class ServerPackagesHandlingMixin:
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
                     darkgreen(repo),
-                    darkred(to_repo),
+                    darkred(to_repository_id),
                     brown(branch),
                     blue(_("successfully handled atom")),
                     darkgreen(match_atom),
@@ -2283,29 +2319,26 @@ class ServerPackagesHandlingMixin:
                 level = "info",
                 header = blue(" @@ ")
             )
-            switched.add((idpackage, repo,))
+            switched.add(idpackage)
 
-        todbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = to_repo)
+        todbconn = self.open_server_repository(to_repository_id,
+            read_only = False, no_upload = True)
         todbconn.clean()
 
         if package_ids_added:
             self._add_packages_qa_libtests(
-                [(x, to_repo) for x in package_ids_added], ask = ask)
+                [(x, to_repository_id) for x in package_ids_added], ask = ask)
             # just run this to make dev aware
-            self.dependencies_test(to_repo)
+            self.dependencies_test(to_repository_id)
 
         return switched
 
-    def _inject_database_into_packages(self, injection_data, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
+    def _inject_database_into_packages(self, repository_id, injection_data):
 
         # now inject metadata into tbz2 packages
         self.output(
             "[%s] %s:" % (
-                darkgreen(repo),
+                darkgreen(repository_id),
                 blue(_("Injecting entropy metadata into built packages")),
             ),
             importance = 1,
@@ -2313,15 +2346,15 @@ class ServerPackagesHandlingMixin:
             header = red(" @@ ")
         )
 
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True)
 
         try:
             repo_sec = RepositorySecurity()
         except RepositorySecurity.GPGError as err:
             self.output(
                 "[%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     blue(_("JFYI, GPG infrastructure failed to load")),
                     err,
                 ),
@@ -2334,7 +2367,7 @@ class ServerPackagesHandlingMixin:
         for idpackage, package_path in injection_data:
             self.output(
                 "[%s|%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     brown(str(idpackage)),
                     blue(_("injecting entropy metadata")),
                     darkgreen(os.path.basename(package_path)),
@@ -2352,7 +2385,7 @@ class ServerPackagesHandlingMixin:
             # GPG-sign package if GPG signature is set
             gpg_sign = None
             if repo_sec is not None:
-                gpg_sign = self._get_gpg_signature(repo_sec, repo,
+                gpg_sign = self._get_gpg_signature(repo_sec, repository_id,
                     package_path)
 
             digest = entropy.tools.md5sum(package_path)
@@ -2373,7 +2406,7 @@ class ServerPackagesHandlingMixin:
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
             self.output(
                 "[%s|%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     brown(str(idpackage)),
                     blue(_("injection complete")),
                     darkgreen(os.path.basename(package_path)),
@@ -2383,18 +2416,23 @@ class ServerPackagesHandlingMixin:
                 header = red(" @@ ")
             )
 
-    def remove_packages(self, idpackages, repo = None):
+    def remove_packages(self, repository_id, package_ids):
+        """
+        Remove packages from given repository.
 
-        if repo is None:
-            repo = self.default_repository
-
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
-        for idpackage in idpackages:
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param package_ids: list of package identifiers contained in
+            from_repository_id repository
+        @type package_ids: list
+        """
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True)
+        for idpackage in package_ids:
             atom = dbconn.retrieveAtom(idpackage)
             self.output(
                 "[%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     blue(_("removing package")),
                     darkgreen(atom),
                 ),
@@ -2407,7 +2445,7 @@ class ServerPackagesHandlingMixin:
         self.close_repository(dbconn)
         self.output(
             "[%s] %s" % (
-                darkgreen(repo),
+                darkgreen(repository_id),
                 blue(_("removal complete")),
             ),
             importance = 1,
@@ -2415,10 +2453,7 @@ class ServerPackagesHandlingMixin:
             header = brown(" @@ ")
         )
 
-    def verify_remote_packages(self, packages, ask = True, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
+    def _verify_remote_packages(self, repository_id, packages, ask = True):
 
         self.output(
             "[%s] %s:" % (
@@ -2430,9 +2465,9 @@ class ServerPackagesHandlingMixin:
             header = blue(" @@ ")
         )
 
-        idpackages, world = self.match_packages(packages)
-        dbconn = self.open_server_repository(read_only = True, no_upload = True,
-            repo = repo)
+        idpackages, world = self._match_packages(repository_id, packages)
+        dbconn = self.open_server_repository(repository_id, read_only = True,
+            no_upload = True)
         branch = self._settings['repositories']['branch']
 
         if world:
@@ -2473,12 +2508,12 @@ class ServerPackagesHandlingMixin:
         not_match = set()
         broken_packages = {}
 
-        for uri in self.remote_packages_mirrors(repo):
+        for uri in self.remote_packages_mirrors(repository_id):
 
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
             self.output(
                 "[%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     blue(_("Working on mirror")),
                     brown(crippled_uri),
                 ),
@@ -2500,7 +2535,7 @@ class ServerPackagesHandlingMixin:
                     currentcounter += 1
                     pkgfile = dbconn.retrieveDownloadURL(idpackage)
                     pkgfile = self.complete_remote_package_relative_path(
-                        pkgfile, repo)
+                        pkgfile, repository_id)
                     pkghash = dbconn.retrieveDigest(idpackage)
 
                     self.output(
@@ -2621,10 +2656,7 @@ class ServerPackagesHandlingMixin:
 
         return match, not_match, broken_packages
 
-    def verify_local_packages(self, packages, ask = True, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
+    def _verify_local_packages(self, repository_id, packages, ask = True):
 
         self.output(
             "[%s] %s:" % (
@@ -2636,10 +2668,8 @@ class ServerPackagesHandlingMixin:
             header = darkgreen(" * ")
         )
 
-        idpackages, world = self.match_packages(packages)
-        dbconn = self.open_server_repository(read_only = True,
-            repo = repo)
-
+        idpackages, world = self._match_packages(repository_id, packages)
+        dbconn = self.open_server_repository(repository_id, read_only = True)
         if world:
             self.output(
                 blue(_("All the packages in repository will be checked.")),
@@ -2652,7 +2682,7 @@ class ServerPackagesHandlingMixin:
         failed = set()
 
         rc_status, available, downloaded_fine, downloaded_errors = \
-            self._download_locally_missing_files(idpackages, repo = repo,
+            self._download_locally_missing_files(idpackages, repository_id,
                 ask = ask)
         if not rc_status:
             return fine, failed, downloaded_fine, downloaded_errors
@@ -2678,7 +2708,7 @@ class ServerPackagesHandlingMixin:
             )
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
-            pkgpath = self._get_package_path(repo, dbconn, idpackage)
+            pkgpath = self._get_package_path(repository_id, dbconn, idpackage)
             result = entropy.tools.compare_md5(pkgpath, storedmd5)
             qa_fine = my_qa.entropy_package_checks(pkgpath)
             if result and qa_fine:
@@ -2777,30 +2807,26 @@ class ServerPackagesHandlingMixin:
         self.close_repository(dbconn)
         return fine, failed, downloaded_fine, downloaded_errors
 
-    def sign_local_packages(self, repo = None, ask = True):
+    def sign_local_packages(self, repository_id, ask = True):
         """
         Sign local packages in given repository using GPG key hopefully set
         for it.
 
-        @raise OnlineMirrorError: if package path is not available after
+        @raises OnlineMirrorError: if package path is not available after
             having tried to download it, this should never happen btw.
         """
-
-        if repo is None:
-            repo = self.default_repository
-
         self.output(
             "[%s] %s: %s" % (
                 red(_("local")),
                 blue(_("GPG signing packages for repository")),
-                repo,
+                repository_id,
             ),
             importance = 1,
             level = "info",
             header = darkgreen(" @@ ")
         )
 
-        dbconn = self.open_server_repository(repo = repo, read_only = False)
+        dbconn = self.open_server_repository(repository_id, read_only = False)
         idpackages = dbconn.listAllPackageIds()
 
         self.output(
@@ -2811,7 +2837,7 @@ class ServerPackagesHandlingMixin:
         )
 
         rc_status, available, downloaded_fine, downloaded_errors = \
-            self._download_locally_missing_files(idpackages, repo = repo,
+            self._download_locally_missing_files(idpackages, repository_id,
                 ask = ask)
         if not rc_status:
             return False, 0, 0
@@ -2829,7 +2855,7 @@ class ServerPackagesHandlingMixin:
 
         kp_expired = False
         try:
-            kp_avail = repo_sec.is_keypair_available(repo)
+            kp_avail = repo_sec.is_keypair_available(repository_id)
         except RepositorySecurity.KeyExpired:
             kp_avail = False
             kp_expired = True
@@ -2839,7 +2865,7 @@ class ServerPackagesHandlingMixin:
                 # SPAM!
                 self.output("%s: %s" % (
                         darkred(_("Keys for repository are expired")),
-                        bold(repo),
+                        bold(repository_id),
                     ),
                     level = "warning",
                     header = bold(" !!! ")
@@ -2847,7 +2873,7 @@ class ServerPackagesHandlingMixin:
         elif not kp_avail:
             self.output("%s: %s" % (
                     darkgreen(_("Keys not available for")),
-                    bold(repo),
+                    bold(repository_id),
                 ),
                 level = "error"
             )
@@ -2865,9 +2891,9 @@ class ServerPackagesHandlingMixin:
 
             currentcounter += 1
 
-            pkg_path = self._get_package_path(repo, dbconn, idpackage)
+            pkg_path = self._get_package_path(repository_id, dbconn, idpackage)
             if not os.path.isfile(pkg_path):
-                pkg_path = self._get_upload_package_path(repo, dbconn,
+                pkg_path = self._get_upload_package_path(repository_id, dbconn,
                     idpackage)
             if not os.path.isfile(pkg_path):
                 # wtf!?
@@ -2887,7 +2913,8 @@ class ServerPackagesHandlingMixin:
                 count = (currentcounter, totalcounter,)
             )
 
-            gpg_sign = self._get_gpg_signature(repo_sec, repo, pkg_path)
+            gpg_sign = self._get_gpg_signature(repo_sec, repository_id,
+                pkg_path)
             if gpg_sign is None:
                 self.output(
                     "%s: %s" % (
@@ -2962,22 +2989,18 @@ class ServerPackagesHandlingMixin:
         self.close_repository(dbconn)
         return True, fine, failed
 
-    def _download_locally_missing_files(self, idpackages, repo = None,
+    def _download_locally_missing_files(self, package_ids, repository_id,
         ask = True):
 
-        if repo is None:
-            repo = self.default_repository
-
-        dbconn = self.open_server_repository(read_only = True,
-            repo = repo)
-
+        dbconn = self.open_server_repository(repository_id, read_only = True)
         to_download = set()
         available = set()
-        for idpackage in idpackages:
+        for idpackage in package_ids:
 
-            bindir_path = self._get_package_path(repo, dbconn, idpackage)
-            uploaddir_path = self._get_upload_package_path(repo, dbconn,
+            bindir_path = self._get_package_path(repository_id, dbconn,
                 idpackage)
+            uploaddir_path = self._get_upload_package_path(repository_id,
+                dbconn, idpackage)
             pkg_path = dbconn.retrieveDownloadURL(idpackage)
 
             pkgatom = dbconn.retrieveAtom(idpackage)
@@ -3038,7 +3061,7 @@ class ServerPackagesHandlingMixin:
             level = "info",
             header = "   "
         )
-        for uri in self.remote_packages_mirrors(repo):
+        for uri in self.remote_packages_mirrors(repository_id):
 
             if not_downloaded:
                 mytxt = blue("%s ...") % (
@@ -3053,7 +3076,8 @@ class ServerPackagesHandlingMixin:
                 not_downloaded = set()
 
             for idpackage, pkg_path in to_download:
-                rc_down = self.Mirrors.download_package(repo, uri, pkg_path)
+                rc_down = self.Mirrors.download_package(repository_id, uri,
+                    pkg_path)
                 if rc_down:
                     downloaded_fine.add(idpackage)
                     available.add(idpackage)
@@ -3097,10 +3121,7 @@ class ServerPackagesHandlingMixin:
 
         return True, available, downloaded_fine, downloaded_errors
 
-    def switch_packages_branch(self, from_branch, to_branch, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
+    def _switch_packages_branch(self, repository_id, from_branch, to_branch):
 
         if to_branch != self._settings['repositories']['branch']:
             mytxt = "%s: %s %s" % (
@@ -3123,8 +3144,8 @@ class ServerPackagesHandlingMixin:
             level = "info",
             header = darkgreen(" @@ ")
         )
-        branch_dbdir = self._get_local_repository_dir(repo)
-        old_branch_dbdir = self._get_local_repository_dir(repo,
+        branch_dbdir = self._get_local_repository_dir(repository_id)
+        old_branch_dbdir = self._get_local_repository_dir(repository_id,
             branch = from_branch)
 
         # close all our databases
@@ -3132,7 +3153,7 @@ class ServerPackagesHandlingMixin:
 
         # if database file did not exist got created as an empty file
         # we can just rm -rf it
-        branch_dbfile = self._get_local_repository_file(repo)
+        branch_dbfile = self._get_local_repository_file(repository_id)
         if os.path.isfile(branch_dbfile):
             if entropy.tools.get_file_size(branch_dbfile) == 0:
                 shutil.rmtree(branch_dbdir, True)
@@ -3157,14 +3178,14 @@ class ServerPackagesHandlingMixin:
             header = darkgreen(" @@ ")
         )
 
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo, lock_remote = False)
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True, lock_remote = False)
         try:
             dbconn.validate()
         except SystemDatabaseError:
-            self._handle_uninitialized_repository(repo)
-            dbconn = self.open_server_repository(read_only = False,
-                no_upload = True, repo = repo, lock_remote = False)
+            self._handle_uninitialized_repository(repository_id)
+            dbconn = self.open_server_repository(repository_id,
+                read_only = False, no_upload = True, lock_remote = False)
 
         idpackages = dbconn.listAllPackageIds()
         already_switched = set()
@@ -3301,18 +3322,18 @@ class ServerQAMixin:
 
         return not_found
 
-    def _deps_tester(self, default_repo = None):
+    def _deps_tester(self, default_repository_id):
 
         sys_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(sys_set['repositories'].keys())
         installed_packages = set()
         # if a default repository is passed, we will just test against it
-        if default_repo:
-            server_repos = [default_repo]
+        if default_repository_id:
+            server_repos = [default_repository_id]
 
         for repo in server_repos:
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo, do_treeupdates = False)
+            dbconn = self.open_server_repository(repo, read_only = True,
+                no_upload = True, do_treeupdates = False)
             installed_packages |= set([(x, repo) for x in \
                 dbconn.listAllPackageIds()])
 
@@ -3324,8 +3345,8 @@ class ServerQAMixin:
 
         for idpackage, repo in installed_packages:
             count += 1
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo, do_treeupdates = False)
+            dbconn = self.open_server_repository(repo, read_only = True,
+                no_upload = True, do_treeupdates = False)
 
             if (count%150 == 0) or (count == length) or (count == 1):
                 atom = dbconn.retrieveAtom(idpackage)
@@ -3348,8 +3369,15 @@ class ServerQAMixin:
 
         return deps_not_satisfied
 
-    def dependencies_test(self, repo = None):
+    def dependencies_test(self, repository_id):
+        """
+        Test repository against missing dependencies.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: list (set) of unsatisfied dependencies
+        @rtype: set
+        """
         mytxt = "%s %s" % (blue(_("Running dependencies test")), red("..."))
         self.output(
             mytxt,
@@ -3360,15 +3388,15 @@ class ServerQAMixin:
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(srv_set['repositories'].keys())
-        deps_not_matched = self._deps_tester(repo)
+        deps_not_matched = self._deps_tester(repository_id)
 
         if deps_not_matched:
 
             crying_atoms = {}
             for atom in deps_not_matched:
                 for repo in server_repos:
-                    dbconn = self.open_server_repository(just_reading = True,
-                        repo = repo, do_treeupdates = False)
+                    dbconn = self.open_server_repository(repo,
+                        just_reading = True, do_treeupdates = False)
                     riddep = dbconn.searchDependency(atom)
                     if riddep == -1:
                         continue
@@ -3424,9 +3452,17 @@ class ServerQAMixin:
 
         return deps_not_matched
 
-    def test_shared_objects(self, get_files = False, repo = None,
-        dump_results_to_file = False):
+    def test_shared_objects(self, repository_id, dump_results_to_file = False):
+        """
+        Test packages in repository, against missing shared objects.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword dump_results_to_file: dump results to file
+        @type dump_results_to_file: bool
+        @return: execution status (0 = fine)
+        @rtype: int
+        """
         pkg_list_path = None
         if dump_results_to_file:
             tmp_dir = tempfile.mkdtemp(prefix = "entropy.server")
@@ -3450,18 +3486,14 @@ class ServerQAMixin:
                     header = darkgreen("   ## ")
                 )
 
-
         # load db
-        dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, read_only = True,
+            no_upload = True)
         QA = self.QA()
         packages_matched, brokenexecs, status = QA.test_shared_objects(dbconn,
             broken_symbols = True, dump_results_to_file = dump_results_to_file)
         if status != 0:
-            return 1, None
-
-        if get_files:
-            return 0, brokenexecs
+            return 1
 
         if (not brokenexecs) and (not packages_matched):
             mytxt = "%s." % (_("System is healthy"),)
@@ -3471,7 +3503,7 @@ class ServerQAMixin:
                 level = "info",
                 header = red(" @@ ")
             )
-            return 0, None
+            return 0
 
         mytxt = "%s..." % (_("Matching libraries with Spm, please wait"),)
         self.output(
@@ -3537,7 +3569,7 @@ class ServerQAMixin:
                 header = red(" @@ ")
             )
 
-        return 0, packages
+        return 0
 
 class ServerRepositoryMixin:
 
@@ -3642,8 +3674,7 @@ class ServerRepositoryMixin:
             dbfile = self._get_local_repository_file(repoid)
             if os.path.isfile(dbfile):
                 shutil.move(dbfile, dbfile+".backup")
-            self.initialize_server_repository(repo = repoid,
-                show_warnings = False)
+            self.initialize_repository(repoid)
 
     def _save_default_repository(self, repoid):
 
@@ -3726,11 +3757,11 @@ class ServerRepositoryMixin:
             except SystemDatabaseError:
                 return False
 
-        dbc = self.open_server_repository(just_reading = True, repo = repo)
+        dbc = self.open_server_repository(repo, just_reading = True)
         valid = do_validate(dbc)
         if not valid:
-            dbc = self.open_server_repository(read_only = False,
-                no_upload = True, repo = repo, is_new = True)
+            dbc = self.open_server_repository(repo, read_only = False,
+                no_upload = True, is_new = True)
             valid = do_validate(dbc)
 
         return valid
@@ -3898,42 +3929,65 @@ class ServerRepositoryMixin:
         @return: ServerPackagesRepository instance
         @rtype: entropy.server.interfaces.ServerPackagesRepository
         """
-        return self.open_server_repository(repo = repository_id,
+        return self.open_server_repository(repository_id,
             just_reading = True, do_treeupdates = False)
 
-    def open_server_repository(
-            self,
-            read_only = True,
-            no_upload = True,
-            just_reading = False,
-            repo = None,
-            indexing = True,
-            warnings = True,
-            do_cache = True,
-            use_branch = None,
-            lock_remote = True,
-            is_new = False,
-            do_treeupdates = True
-        ):
+    def open_server_repository(self, repository_id, read_only = True,
+            no_upload = True, just_reading = False, indexing = True,
+            warnings = True, do_cache = True, use_branch = None,
+            lock_remote = True, is_new = False, do_treeupdates = True):
+        """
+        Open Server-side Entropy repository given its repository identifier.
 
-        if repo is None:
-            repo = self.default_repository
-
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword read_only: open repository in read-only
+        @type read_only: bool
+        @param no_upload: allow to force the upload of the repository if
+            required
+        @type no_upload: bool
+        @keyword just_reading: open the repository just for the purpose of
+            getting data from it, without any fancy action. This avoids
+            triggering some forced behaviours. If just_reading is True,
+            read_only is forced to True.
+        @type just_reading: bool
+        @keyword indexing: allow repository indexing
+        @type indexing: bool
+        @keyword warnings: show warnings to user if True
+        @type warnings: bool
+        @keyword do_cache: use cache to retrieve a fresh repository object
+        @type do_cache: bool
+        @keyword use_branch: override default package branch when opening a
+            new repository
+        @type use_branch: bool
+        @keyword lock_remote: lock remote mirrors when opening
+        @type lock_remote: bool
+        @keyword is_new: set this to True if the repository has been just
+            created
+        @type is_new: bool
+        @type do_treeupdates: allow the execution of package names and slot
+            updates
+        @type do_treeupdates: bool
+        @return: EntropyRepositoryBase instance
+        @rtype: EntropyRepositoryBase
+        """
         # in-memory server repos
-        if repo in self._memory_db_srv_instances:
-            return self._memory_db_srv_instances[repo]
+        if repository_id in self._memory_db_srv_instances:
+            return self._memory_db_srv_instances[repository_id]
 
-        if repo == etpConst['clientserverrepoid'] and self.community_repo:
+        if repository_id == etpConst['clientserverrepoid'] and \
+            self.community_repo:
             return self.installed_repository()
 
         if just_reading:
             read_only = True
             no_upload = True
 
-        local_dbfile = self._get_local_repository_file(repo, branch = use_branch)
+        local_dbfile = self._get_local_repository_file(repository_id,
+            branch = use_branch)
         if do_cache:
             cached = self._server_dbcache.get(
-                (repo, etpConst['systemroot'], local_dbfile, read_only,
+                (repository_id, etpConst['systemroot'], local_dbfile, read_only,
                     no_upload, just_reading, use_branch, lock_remote,)
             )
             if cached != None:
@@ -3943,14 +3997,14 @@ class ServerRepositoryMixin:
         self._ensure_dir_path(local_dbfile_dir)
 
         if (not read_only) and (lock_remote) and \
-            (repo not in self._sync_lock_cache):
-            self._server_repository_sync_lock(repo, no_upload)
-            self._sync_lock_cache.add(repo)
+            (repository_id not in self._sync_lock_cache):
+            self._server_repository_sync_lock(repository_id, no_upload)
+            self._sync_lock_cache.add(repository_id)
 
         conn = ServerPackagesRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
-            name = repo,
+            name = repository_id,
             xcache = False # always set to False, if you want to enable
             # you need to make sure that client-side and server-side caches
             # don't collide due to sharing ServerPackagesRepository.name
@@ -3973,16 +4027,16 @@ class ServerRepositoryMixin:
 
         # verify if we need to update the database to sync
         # with portage updates, we just ignore being readonly in the case
-        if (repo not in self._treeupdates_repos) and \
+        if (repository_id not in self._treeupdates_repos) and \
             (not just_reading):
             # sometimes, when filling a new server db
             # we need to avoid tree updates
             if valid:
                 if do_treeupdates:
-                    self._repository_packages_spm_sync(conn,
-                        branch = use_branch, repo = repo)
+                    self._repository_packages_spm_sync(repository_id, conn,
+                        branch = use_branch)
             elif warnings and not is_new:
-                mytxt = _("Entropy database is corrupted!")
+                mytxt = _("Repository is corrupted!")
                 self.output(
                     darkred(mytxt),
                     importance = 1,
@@ -3994,7 +4048,7 @@ class ServerRepositoryMixin:
 
             self.output(
                 "[%s|%s] %s" % (
-                        blue(repo),
+                        blue(repository_id),
                         red(_("repository")),
                         blue(_("indexing repository")),
                     ),
@@ -4009,13 +4063,13 @@ class ServerRepositoryMixin:
             # !!! also cache just_reading otherwise there will be
             # real issues if the connection is opened several times
             self._server_dbcache[
-                (repo, etpConst['systemroot'], local_dbfile, read_only,
+                (repository_id, etpConst['systemroot'], local_dbfile, read_only,
                 no_upload, just_reading, use_branch, lock_remote,)] = conn
 
         return conn
 
-    def _repository_packages_spm_sync(self, repo_db, branch = None,
-        repo = None):
+    def _repository_packages_spm_sync(self, repository_id, repo_db,
+        branch = None):
         """
         Service method used to sync package names with Source Package Manager.
         Source Package Manager can change package names, categories or slot
@@ -4023,17 +4077,12 @@ class ServerRepositoryMixin:
         """
         if branch is None:
             branch = self._settings['repositories']['branch']
-        if repo is None:
-            repo = self.default_repository
-        self._treeupdates_repos.add(repo)
-        self.Spm().package_names_update(repo_db, repo, self, branch)
+        self._treeupdates_repos.add(repository_id)
+        self.Spm().package_names_update(repo_db, repository_id, self, branch)
 
-    def setup_empty_repository(self, dbpath = None, repo = None):
+    def _setup_empty_repository(self, repository_path):
 
-        if dbpath is None:
-            dbpath = self._get_local_repository_file(repo)
-
-        dbdir = os.path.dirname(dbpath)
+        dbdir = os.path.dirname(repository_path)
         if not os.path.isdir(dbdir):
             os.makedirs(dbdir)
 
@@ -4045,13 +4094,13 @@ class ServerRepositoryMixin:
             header = darkgreen(" * "),
             back = True
         )
-        dbconn = self.open_generic_repository(dbpath)
+        dbconn = self.open_generic_repository(repository_path)
         dbconn.initializeRepository()
         dbconn.commit()
         dbconn.close()
         mytxt = "%s %s %s." % (
             red(_("Entropy repository file")),
-            bold(dbpath),
+            bold(repository_path),
             red(_("successfully initialized")),
         )
         self.output(
@@ -4061,33 +4110,23 @@ class ServerRepositoryMixin:
             header = darkgreen(" * ")
         )
 
-    def _get_whitelisted_licenses(self, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
-
-        wl_file = self._get_local_repository_licensewhitelist_file(repo)
+    def _get_whitelisted_licenses(self, repository_id):
+        wl_file = self._get_local_repository_licensewhitelist_file(
+            repository_id)
         if not os.path.isfile(wl_file):
             return []
         return entropy.tools.generic_file_content_parser(wl_file)
 
-    def _get_restricted_packages(self, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
-
-        rl_file = self._get_local_restricted_file(repo)
+    def _get_restricted_packages(self, repository_id):
+        rl_file = self._get_local_restricted_file(repository_id)
         if not os.path.isfile(rl_file):
             return []
         return entropy.tools.generic_file_content_parser(rl_file,
             comment_tag = "##")
 
-    def _is_pkg_restricted(self, pkg_atom, pkg_slot, repo = None):
+    def _is_pkg_restricted(self, repository_id, pkg_atom, pkg_slot):
 
-        if repo is None:
-            repo = self.default_repository
-
-        restricted_pkgs = self._get_restricted_packages(repo = repo)
+        restricted_pkgs = self._get_restricted_packages(repository_id)
         if not restricted_pkgs:
             return False
 
@@ -4103,10 +4142,7 @@ class ServerRepositoryMixin:
 
         return False
 
-    def _is_pkg_free(self, pkg_licenses, repo = None):
-
-        if repo is None:
-            repo = self.default_repository
+    def _is_pkg_free(self, repository_id, pkg_licenses):
 
         # check if nonfree directory support is enabled, if not,
         # always return True.
@@ -4114,7 +4150,7 @@ class ServerRepositoryMixin:
         if not srv_set['nonfree_packages_dir_support']:
             return True
 
-        wl_licenses = self._get_whitelisted_licenses(repo = repo)
+        wl_licenses = self._get_whitelisted_licenses(repository_id)
 
         if not pkg_licenses:
             return True # free if no licenses provided
@@ -4126,28 +4162,26 @@ class ServerRepositoryMixin:
                 return False
         return True
 
-    def _package_injector(self, package_file, inject = False, repo = None):
+    def _package_injector(self, repository_id, package_file, inject = False):
 
-        if repo is None:
-            repo = self.default_repository
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
         def _package_injector_check_license(pkg_data):
             licenses = pkg_data['license'].split()
-            return self._is_pkg_free(licenses, repo = repo)
+            return self._is_pkg_free(repository_id, licenses)
 
         def _package_injector_check_restricted(pkg_data):
             pkgatom = entropy.dep.create_package_atom_string(
                 pkg_data['category'], pkg_data['name'], pkg_data['version'],
                 pkg_data['versiontag'])
-            return self._is_pkg_restricted(pkgatom, pkg_data['slot'],
-                repo = repo)
+            return self._is_pkg_restricted(repository_id,
+                pkgatom, pkg_data['slot'])
 
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True)
         self.output(
             red("[%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     _("adding package"),
                     bold(os.path.basename(package_file)),
                 )
@@ -4160,7 +4194,7 @@ class ServerRepositoryMixin:
         mydata = self.Spm().extract_package_metadata(package_file,
             license_callback = _package_injector_check_license,
             restricted_callback = _package_injector_check_restricted)
-        self._pump_extracted_package_metadata(mydata, repo,
+        self._pump_extracted_package_metadata(mydata, repository_id,
             {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
         # make sure that info have been written to disk
@@ -4176,11 +4210,11 @@ class ServerRepositoryMixin:
         for myrepo in myserver_repos:
 
             # not myself
-            if myrepo == repo:
+            if myrepo == repository_id:
                 continue
 
-            mydbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = myrepo)
+            mydbconn = self.open_server_repository(myrepo, read_only = True,
+                no_upload = True)
 
             myrepo_idpackages = mydbconn.getPackageIds(rev_test_atom)
             for myrepo_idpackage in myrepo_idpackages:
@@ -4202,8 +4236,8 @@ class ServerRepositoryMixin:
         trashing_counters = set()
 
         for myrepo in myserver_repos:
-            mydbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = myrepo)
+            mydbconn = self.open_server_repository(myrepo, read_only = True,
+                no_upload = True)
             mylist = mydbconn.getPackagesToRemove(
                     mydata['name'],
                     mydata['category'],
@@ -4221,12 +4255,12 @@ class ServerRepositoryMixin:
 
         # add package info to our current server repository
         dbconn.dropInstalledPackageFromStore(idpackage)
-        dbconn.storeInstalledPackage(idpackage, repo)
+        dbconn.storeInstalledPackage(idpackage, repository_id)
         atom = dbconn.retrieveAtom(idpackage)
 
         self.output(
             "[%s] %s: %s %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     blue(_("added package")),
                     darkgreen(atom),
                     blue(_("rev")), # as in revision
@@ -4242,7 +4276,7 @@ class ServerRepositoryMixin:
         if manual_deps:
             self.output(
                 "[%s] %s: %s" % (
-                        darkgreen(repo),
+                        darkgreen(repository_id),
                         blue(_("manual dependencies for")),
                         darkgreen(atom),
                     ),
@@ -4261,7 +4295,7 @@ class ServerRepositoryMixin:
         download_url = self._setup_repository_package_filename(dbconn,
             idpackage)
         destination_path = self.complete_local_upload_package_path(
-            download_url, repo)
+            download_url, repository_id)
         destination_dir = os.path.dirname(destination_path)
         self._ensure_dir_path(destination_dir)
 
@@ -4332,11 +4366,10 @@ class ServerRepositoryMixin:
 
         for pkg_repo, package_ids in pkg_map.items():
 
-            repo_blacklist = self._get_missing_dependencies_blacklist(
-                repo = pkg_repo)
+            repo_blacklist = self._get_missing_dependencies_blacklist(pkg_repo)
 
-            dbconn = self.open_server_repository(read_only = False,
-                no_upload = True, repo = pkg_repo)
+            dbconn = self.open_server_repository(pkg_repo, read_only = False,
+                no_upload = True)
             pkg_blacklisted_deps = get_blacklisted_deps(package_ids, dbconn)
             pkg_blacklisted_deps |= repo_blacklist
 
@@ -4384,12 +4417,21 @@ class ServerRepositoryMixin:
         my_qa = self.QA()
         my_qa.test_reverse_dependencies_linking(self, package_matches)
 
-    def add_packages_to_repository(self, packages_data, ask = True,
-        repo = None):
+    def add_packages_to_repository(self, repository_id, packages_data,
+        ask = True):
+        """
+        Add package files to given repository. packages_data contains a list
+        of tuples composed by (path to package file, execute_injection boolean).
+        Injection is a way to avoid a package being removed from the repository
+        automatically when an updated package is added.
 
-        if repo is None:
-            repo = self.default_repository
-
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param packages_data: list of tuples composed by (path, bool)
+        @type packages_data: list
+        @return: list (set) of package identifiers added
+        @rtype: set
+        """
         mycount = 0
         maxcount = len(packages_data)
         idpackages_added = set()
@@ -4400,7 +4442,7 @@ class ServerRepositoryMixin:
             mycount += 1
             self.output(
                 "[%s] %s: %s" % (
-                    darkgreen(repo),
+                    darkgreen(repository_id),
                     blue(_("adding package")),
                     darkgreen(os.path.basename(package_filepath)),
                 ),
@@ -4413,17 +4455,15 @@ class ServerRepositoryMixin:
             try:
                 # add to database
                 idpackage, destination_path = self._package_injector(
-                    package_filepath,
-                    inject = inject,
-                    repo = repo
-                )
+                    repository_id, package_filepath,
+                    inject = inject)
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage, destination_path))
             except Exception as err:
                 entropy.tools.print_traceback()
                 self.output(
                     "[%s] %s: %s" % (
-                        darkgreen(repo),
+                        darkgreen(repository_id),
                         darkred(_("Exception caught, closing tasks")),
                         darkgreen(str(err)),
                     ),
@@ -4435,35 +4475,34 @@ class ServerRepositoryMixin:
                 # reinit librarypathsidpackage table
                 if idpackages_added:
                     self._add_packages_qa_libtests(
-                        [(x, repo) for x in idpackages_added], ask = ask)
+                        [(x, repository_id) for x in idpackages_added],
+                        ask = ask)
                 if to_be_injected:
-                    self._inject_database_into_packages(to_be_injected,
-                        repo = repo)
+                    self._inject_database_into_packages(repository_id,
+                        to_be_injected)
                 self.close_repositories()
                 raise
 
         # make sure packages are really available, it can happen
         # after a previous failure to have garbage here
-        dbconn = self.open_server_repository(just_reading = True, repo = repo)
+        dbconn = self.open_server_repository(repository_id, just_reading = True)
         idpackages_added = set((x for x in idpackages_added if \
             dbconn.isPackageIdAvailable(x)))
 
         if idpackages_added:
             self._add_packages_qa_libtests(
-                [(x, repo) for x in idpackages_added], ask = ask)
+                [(x, repository_id) for x in idpackages_added], ask = ask)
 
         # inject database into packages
-        self._inject_database_into_packages(to_be_injected, repo = repo)
+        self._inject_database_into_packages(repository_id, to_be_injected)
 
         return idpackages_added
 
-    def _taint_database(self, repo = None):
-        if repo is None:
-            repo = self.default_repository
+    def _taint_database(self, repository_id):
 
         # taint the database status
-        db_file = self._get_local_repository_file(repo)
-        taint_file = self._get_local_repository_taint_file(repo)
+        db_file = self._get_local_repository_file(repository_id)
+        taint_file = self._get_local_repository_taint_file(repository_id)
         f = open(taint_file, "w")
         f.write("repository tainted\n")
         f.flush()
@@ -4471,12 +4510,13 @@ class ServerRepositoryMixin:
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         ServerRepositoryStatus().set_tainted(db_file)
 
-    def _bump_database(self, repo = None):
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
-        self._taint_database(repo = repo)
+    def _bump_database(self, repository_id):
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True)
+        self._taint_database(repository_id)
         dbconn.commit()
         self.close_repository(dbconn)
+
 
 class ServerMiscMixin:
 
@@ -4636,12 +4676,10 @@ class ServerMiscMixin:
             return True
         return False
 
-    def _get_missing_dependencies_blacklist(self, repo = None, branch = None):
-        if repo is None:
-            repo = self.default_repository
+    def _get_missing_dependencies_blacklist(self, repository_id, branch = None):
         if branch is None:
             branch = self._settings['repositories']['branch']
-        wl_file = self._get_missing_dependencies_blacklist_file(repo,
+        wl_file = self._get_missing_dependencies_blacklist_file(repository_id,
             branch = branch)
         wl_data = []
         if os.path.isfile(wl_file) and os.access(wl_file, os.R_OK):
@@ -4651,24 +4689,18 @@ class ServerMiscMixin:
             f_wl.close()
         return set(wl_data)
 
-    def _add_missing_dependencies_blacklist_items(self, items, repo = None,
-        branch = None):
-
-        if repo is None:
-            repo = self.default_repository
-        if branch is None:
-            branch = self._settings['repositories']['branch']
-        wl_file = self._get_missing_dependencies_blacklist_file(repo,
+    def _add_missing_dependencies_blacklist_items(self, items, repository_id):
+        branch = self._settings['repositories']['branch']
+        wl_file = self._get_missing_dependencies_blacklist_file(repository_id,
             branch = branch)
         wl_dir = os.path.dirname(wl_file)
         if not (os.path.isdir(wl_dir) and os.access(wl_dir, os.W_OK)):
             return
         if os.path.isfile(wl_file) and not os.access(wl_file, os.W_OK):
             return
-        f_wl = open(wl_file, "a+")
-        f_wl.write('\n'.join(items)+'\n')
-        f_wl.flush()
-        f_wl.close()
+        with open(wl_file, "a+") as f_wl:
+            f_wl.write('\n'.join(items)+'\n')
+            f_wl.flush()
 
     def _get_package_path(self, repo, dbconn, idpackage):
         """
@@ -4717,8 +4749,8 @@ class ServerMiscMixin:
             found = False
             for server_repo in server_repos:
                 installed_counters.add(spm_counter)
-                server_dbconn = self.open_server_repository(read_only = True,
-                    no_upload = True, repo = server_repo)
+                server_dbconn = self.open_server_repository(server_repo, 
+                    read_only = True, no_upload = True)
                 counter = server_dbconn.isSpmUidAvailable(spm_counter)
                 if counter:
                     found = True
@@ -4729,8 +4761,8 @@ class ServerMiscMixin:
         # packages to be removed from the database
         database_counters = {}
         for server_repo in server_repos:
-            server_dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = server_repo)
+            server_dbconn = self.open_server_repository(server_repo,
+                read_only = True, no_upload = True)
             database_counters[server_repo] = server_dbconn.listAllSpmUids()
 
         ordered_counters = set()
@@ -4747,8 +4779,8 @@ class ServerMiscMixin:
             if counter in installed_counters:
                 continue
 
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = xrepo)
+            dbconn = self.open_server_repository(xrepo, read_only = True,
+                no_upload = True)
 
             dorm = True
             # check if the package is in to_be_added
@@ -4835,7 +4867,7 @@ class ServerMiscMixin:
     def _is_match_expired(self, match):
 
         idpackage, repoid = match
-        dbconn = self.open_server_repository(repo = repoid, just_reading = True)
+        dbconn = self.open_server_repository(repoid, just_reading = True)
         # 3600 * 24 = 86400
         my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
@@ -4854,18 +4886,18 @@ class ServerMiscMixin:
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(srv_set['repositories'].keys())
         for repo in server_repos:
-            dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(repo, read_only = True,
+                no_upload = True)
             if dbconn.isSpmUidTrashed(counter):
                 return True
         return False
 
-    def _transform_package_into_injected(self, idpackage, repo = None):
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
+    def _transform_package_into_injected(self, package_id, repository_id):
+        dbconn = self.open_server_repository(repository_id, read_only = False,
+            no_upload = True)
         counter = dbconn.getFakeSpmUid()
-        dbconn.setSpmUid(idpackage, counter)
-        dbconn.setInjected(idpackage)
+        dbconn.setSpmUid(package_id, counter)
+        dbconn.setInjected(package_id)
         dbconn.commit()
 
     def _pump_extracted_package_metadata(self, pkg_meta, repo, extra_metadata):
@@ -5060,14 +5092,11 @@ class ServerMiscMixin:
         # save conflicts metadata back in place
         pkg_meta['conflicts'] = frozenset(conflicts)
 
-    def _get_entropy_sets(self, repo = None, branch = None):
-
+    def _get_entropy_sets(self, repository_id, branch = None):
         if branch is None:
             branch = self._settings['repositories']['branch']
-        if repo is None:
-            repo = self.default_repository
-
-        sets_dir = self._get_local_database_sets_dir(repo, branch = branch)
+        sets_dir = self._get_local_database_sets_dir(repository_id,
+            branch = branch)
         if not (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
             return {}
 
@@ -5090,37 +5119,31 @@ class ServerMiscMixin:
 
         return mydata
 
-    def _get_configured_package_sets(self, repo = None, branch = None,
-        validate = True):
+    def _get_configured_package_sets(self, repository_id):
 
-        if branch is None:
-            branch = self._settings['repositories']['branch']
-        if repo is None:
-            repo = self.default_repository
-
+        branch = self._settings['repositories']['branch']
         # portage sets
         sets_data = self.Spm().get_package_sets(False)
-        sets_data.update(self._get_entropy_sets(repo, branch))
+        sets_data.update(self._get_entropy_sets(repository_id, branch = branch))
 
-        if validate:
-            invalid_sets = set()
-            # validate
-            for setname in sets_data:
-                good = True
-                for atom in sets_data[setname]:
-                    if atom.startswith(etpConst['packagesetprefix']):
-                        # ignore nested package sets
-                        continue
-                    dbconn = self.open_server_repository(just_reading = True,
-                        repo = repo)
-                    match = dbconn.atomMatch(atom)
-                    if match[0] == -1:
-                        good = False
-                        break
-                if not good:
-                    invalid_sets.add(setname)
-            for invalid_set in invalid_sets:
-                del sets_data[invalid_set]
+        invalid_sets = set()
+        # validate
+        for setname in sets_data:
+            good = True
+            for atom in sets_data[setname]:
+                if atom.startswith(etpConst['packagesetprefix']):
+                    # ignore nested package sets
+                    continue
+                dbconn = self.open_server_repository(repository_id,
+                    just_reading = True)
+                match = dbconn.atomMatch(atom)
+                if match[0] == -1:
+                    good = False
+                    break
+            if not good:
+                invalid_sets.add(setname)
+        for invalid_set in invalid_sets:
+            del sets_data[invalid_set]
 
         return sets_data
 

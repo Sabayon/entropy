@@ -785,8 +785,8 @@ class Server(ServerNoticeBoardMixin):
                     )
                     return False
 
-                dbconn = self._entropy.open_server_repository(read_only = True,
-                    no_upload = True, repo = repository_id)
+                dbconn = self._entropy.open_server_repository(repository_id,
+                    read_only = True, no_upload = True)
                 idpackage = dbconn.getPackageIdFromDownload(pkg_relative_path)
                 if idpackage == -1:
                     self._entropy.output(
@@ -1469,8 +1469,8 @@ class Server(ServerNoticeBoardMixin):
 
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
-        dbconn = self._entropy.open_server_repository(just_reading = True,
-            repo = repository_id)
+        dbconn = self._entropy.open_server_repository(repository_id,
+            just_reading = True)
         db_files = dbconn.listAllDownloads(do_sort = False,
             full_path = True)
         db_files = set([x for x in db_files if \
@@ -1717,7 +1717,7 @@ class Server(ServerNoticeBoardMixin):
         for rel_path, myqueue in queue_map.items():
 
             remote_dir = self._entropy.complete_remote_package_relative_path(
-                rel_path, repo)
+                rel_path, repository_id)
 
             local_basedir = self._entropy.complete_local_package_path(rel_path,
                 repository_id)
@@ -2098,8 +2098,8 @@ class Server(ServerNoticeBoardMixin):
             self._move_files_over_from_upload(repository_id)
 
         if packages_check:
-            check_data = self._entropy.verify_local_packages([], ask = ask,
-                repo = repository_id)
+            check_data = self._entropy._verify_local_packages(repository_id,
+                [], ask = ask)
 
         return mirrors_tainted, mirrors_errors, successfull_mirrors, \
             broken_mirrors, check_data

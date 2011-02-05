@@ -25,7 +25,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # create fake server repo
         self.Server = Server(fake_default_repo_id = self.default_repo,
             fake_default_repo_desc = 'foo desc', fake_default_repo = True)
-        foo_db = self.Server.open_server_repository(repo = self.default_repo,
+        foo_db = self.Server.open_server_repository(self.default_repo,
             read_only = False, lock_remote = False, is_new = True)
         foo_db.initializeRepository()
 
@@ -47,12 +47,14 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(self.default_repo, self.Server.default_repository)
 
     def test_server_repo(self):
-        dbconn = self.Server.open_server_repository()
+        dbconn = self.Server.open_server_repository(
+            self.Server.default_repository)
         self.assertEqual(dbconn.temporary(), True)
 
     def test_server_repo_internal_cache(self):
         spm = self.Server.Spm()
-        dbconn = self.Server.open_server_repository()
+        dbconn = self.Server.open_server_repository(
+            self.Server.default_repository)
         test_pkg = _misc.get_test_package()
         data = spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = dbconn.handlePackage(data)
@@ -71,7 +73,8 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_rev_bump(self):
         spm = self.Server.Spm()
-        test_db = self.Server.open_server_repository()
+        test_db = self.Server.open_server_repository(
+            self.Server.default_repository)
         test_pkg = _misc.get_test_package()
         data = spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = test_db.handlePackage(data)
@@ -84,7 +87,8 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_rev_bump_2(self):
         spm = self.Server.Spm()
-        test_db = self.Server.open_server_repository()
+        test_db = self.Server.open_server_repository(
+            self.Server.default_repository)
         test_pkg = _misc.get_test_package()
         data = spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = test_db.handlePackage(data)
@@ -100,26 +104,30 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_entropy_package()
         tmp_test_pkg = test_pkg+".tmp"
         shutil.copy2(test_pkg, tmp_test_pkg)
-        added = self.Server.add_packages_to_repository([(tmp_test_pkg, False,)],
+        added = self.Server.add_packages_to_repository(
+            self.Server.default_repository, [(tmp_test_pkg, False,)],
             ask = False)
         self.assertEqual(set([1]), added)
         def do_stat():
             os.stat(tmp_test_pkg)
         self.assertRaises(OSError, do_stat)
-        dbconn = self.Server.open_server_repository()
+        dbconn = self.Server.open_server_repository(
+            self.Server.default_repository)
         self.assertNotEqual(None, dbconn.retrieveAtom(1))
 
     def test_package_injection2(self):
         test_pkg = _misc.get_test_entropy_package5()
         tmp_test_pkg = test_pkg+".tmp"
         shutil.copy2(test_pkg, tmp_test_pkg)
-        added = self.Server.add_packages_to_repository([(tmp_test_pkg, False,)],
+        added = self.Server.add_packages_to_repository(
+            self.Server.default_repository, [(tmp_test_pkg, False,)],
             ask = False)
         self.assertEqual(set([1]), added)
         def do_stat():
             os.stat(tmp_test_pkg)
         self.assertRaises(OSError, do_stat)
-        dbconn = self.Server.open_server_repository()
+        dbconn = self.Server.open_server_repository(
+            self.Server.default_repository)
         self.assertNotEqual(None, dbconn.retrieveAtom(1))
 
 if __name__ == '__main__':

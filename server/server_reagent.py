@@ -56,10 +56,10 @@ def inject(options):
 
         etp_pkg_files = [(x, True,) for x in etp_pkg_files]
         idpackages = server.add_packages_to_repository(
-            etp_pkg_files)
+            server.default_repository, etp_pkg_files)
         if idpackages:
             # checking dependencies and print issues
-            server.dependencies_test()
+            server.dependencies_test(server.default_repository)
         server.close_repositories()
 
     finally:
@@ -133,9 +133,8 @@ def _package_tag(entropy_server, args):
             )
     if not idpackages:
         return 2
-    status, data = entropy_server.tag_packages(tag_string, idpackages,
-        repo = repo)
-    return status
+    return entropy_server.tag_packages([(x, repo) for x in idpackages],
+        tag_string)
 
 def _package_dep_check(entropy_server, args):
 
@@ -206,7 +205,7 @@ def _package_dep(entropy_server, args):
     if not idpackages:
         print_error(darkred(" !!! ")+red(_("No packages selected.")))
         return 2
-    dbconn = entropy_server.open_server_repository(repo = repo,
+    dbconn = entropy_server.open_server_repository(repo,
         just_reading = True)
 
     def _show_dependencies_legend(indent = ''):
@@ -303,7 +302,7 @@ def _package_dep(entropy_server, args):
             continue
 
 
-        w_dbconn = entropy_server.open_server_repository(repo = repo,
+        w_dbconn = entropy_server.open_server_repository(repo,
             read_only = False)
 
         # save new dependencies
@@ -346,9 +345,8 @@ def _package_mask(entropy_server, args):
         " %s..." % (purple(_("repository")),) )
 
     # taint repository
-    w_dbconn = entropy_server.open_server_repository(repo = repo,
-        read_only = False)
-    status = entropy_server.mask_packages(packages, repo = repo)
+    w_dbconn = entropy_server.open_server_repository(repo, read_only = False)
+    status = entropy_server.mask_packages(repo, packages)
     entropy_server.close_repositories()
     if status:
         return 0
@@ -374,9 +372,8 @@ def _package_unmask(entropy_server, args):
         " %s..." % (purple(_("repository")),) )
 
     # taint repository
-    w_dbconn = entropy_server.open_server_repository(repo = repo,
-        read_only = False)
-    status = entropy_server.unmask_packages(packages, repo = repo)
+    w_dbconn = entropy_server.open_server_repository(repo, read_only = False)
+    status = entropy_server.unmask_packages(repo, packages)
     entropy_server.close_repositories()
     if status:
         return 0
@@ -385,7 +382,7 @@ def _package_unmask(entropy_server, args):
 def _package_move_copy(entropy_server, args, repoid, cmd, repoid_dest,
     pull_deps):
 
-    matches = []
+    package_ids = []
 
     # from repo: repoid
     # to repo: repoid_dest
@@ -403,18 +400,19 @@ def _package_move_copy(entropy_server, args, repoid, cmd, repoid_dest,
                         red(" %s" % (_("repository"),) )
                 )
             else:
-                matches += [x for x in p_matches if (x not in matches)]
+                package_ids += [pkg_id for pkg_id, r_id in p_matches if \
+                    (pkg_id not in matches)]
 
-        if not matches:
+        if not package_ids:
             return 1
 
     rc = 1
     if cmd == "move":
-        rc = entropy_server.move_packages(matches, repoid_dest, repoid,
-            pull_deps = pull_deps)
+        rc = entropy_server.move_packages(package_ids, repoid, repoid_dest,
+            pull_dependencies = pull_deps)
     elif cmd == "copy":
-        rc = entropy_server.move_packages(matches, repoid_dest, repoid,
-            do_copy = True, pull_deps = pull_deps)
+        rc = entropy_server.copy_packages(package_ids, repoid, repoid_dest,
+            pull_dependencies = pull_deps)
 
     if rc:
         return 0
@@ -464,7 +462,7 @@ def _remove_packages(entropy_server, args, request_nodeps):
     print_info(darkgreen(" * ") + \
         red("%s..." % (_("Removing selected packages"),) ))
     for repo_id, idpackages in repo_map.items():
-        entropy_server.remove_packages(idpackages, repo = repo_id)
+        entropy_server.remove_packages(repo_id, idpackages)
     print_info(darkgreen(" * ") + \
         red(_("Packages removed. To remove binary packages, run activator.")))
 
@@ -475,8 +473,9 @@ def _multiremove_packages(entropy_server, args):
         red("%s..." % (_("Searching injected packages to remove"),) ),
             back = True)
 
-    dbconn = entropy_server.open_server_repository(read_only = True,
-        no_upload = True)
+    repository_id = entropy_server.default_repository
+    dbconn = entropy_server.open_server_repository(repository_id,
+        read_only = True, no_upload = True)
 
     idpackages = set()
     if not args:
@@ -509,7 +508,7 @@ def _multiremove_packages(entropy_server, args):
         return 0
 
     print_info(green(" * ")+red("%s ..." % (_("Removing selected packages"),) ))
-    entropy_server.remove_packages(idpackages)
+    entropy_server.remove_packages(repository_id, idpackages)
 
     entropy_server.close_repository(dbconn)
     print_info(darkgreen(" * ") + \
@@ -533,8 +532,8 @@ def _switch_branch(entropy_server, args):
             blue(_("Collecting packages that would be marked")),
             bold(to_branch), blue(_("on")), purple(repoid),) )
 
-        dbconn_old = entropy_server.open_server_repository(read_only = True,
-            no_upload = True, repo = repoid, use_branch = from_branch,
+        dbconn_old = entropy_server.open_server_repository(repoid,
+            read_only = True, no_upload = True, use_branch = from_branch,
             do_treeupdates = False)
         pkglist = dbconn_old.listAllPackageIds()
 
@@ -546,8 +545,8 @@ def _switch_branch(entropy_server, args):
         if rc == _("No"):
             return 4
 
-        status = entropy_server.switch_packages_branch(from_branch, to_branch,
-            repo = repoid)
+        status = entropy_server._switch_packages_branch(repoid, from_branch,
+            to_branch)
         if status is None:
             return 1
 
@@ -682,6 +681,9 @@ def _repositories(entropy_server, options):
             red(_("Invalid repositories specified.")))
         return 2
 
+    # default repository identifier
+    default_repository_id = entropy_server.default_repository
+
     if cmd == "enable":
         return _enable_repo(entropy_server, repoid)
 
@@ -718,7 +720,7 @@ def _repositories(entropy_server, options):
         return _multiremove_packages(entropy_server, myopts)
 
     elif cmd == "--initialize":
-        rc = entropy_server.initialize_server_repository()
+        rc = entropy_server.initialize_repository(default_repository_id)
         if rc == 0:
             print_info(darkgreen(" * ") + \
                 red(_("Entropy repository has been initialized")))
@@ -734,7 +736,7 @@ def _repositories(entropy_server, options):
             print_error(darkgreen(" * ")+red("%s: " % (
                 _("Cannot overwrite already existing file"),) )+dbpath)
             return 1
-        entropy_server.setup_empty_repository(dbpath)
+        entropy_server._setup_empty_repository(dbpath)
         return 0
 
     elif cmd == "switchbranch":
@@ -745,22 +747,20 @@ def _repositories(entropy_server, options):
         if not myopts:
             print_error(brown(" * ")+red(_("Not enough parameters")))
             return 1
-
-        status = entropy_server.flushback_packages(myopts)
-        if status:
-            return 0
-        return 1
+        return entropy_server.flushback_packages(default_repository_id,
+            myopts)
 
     elif cmd == "md5remote":
 
-        entropy_server.verify_remote_packages(myopts, ask = not request_noask)
+        entropy_server._verify_remote_packages(default_repository_id, myopts,
+            ask = not request_noask)
         return 0
 
     elif cmd == "bump":
 
         print_info(green(" * ")+red("%s..." % (
             _("Bumping Repository database"),) ))
-        entropy_server._bump_database()
+        entropy_server._bump_database(entropy_server.default_repository)
         if request_sync:
             errors = entropy_server.Mirrors.sync_repository(
                 entropy_server.default_repository)
@@ -843,16 +843,17 @@ def _update(entropy_server, options):
     to_be_removed = set()
     to_be_injected = set()
 
-    key_sorter = lambda x: entropy_server.open_server_repository(read_only = True,
-        no_upload = True, repo = x[1]).retrieveAtom(x[0])
+    key_sorter = lambda x: \
+        entropy_server.open_repository(x[1]).retrieveAtom(x[0])
+    repository_id = entropy_server.default_repository
 
     if not r_request_seek_store:
 
         if repackage_items:
 
             packages = []
-            dbconn = entropy_server.open_server_repository(read_only = True,
-                no_upload = True)
+            dbconn = entropy_server.open_server_repository(repository_id,
+                read_only = True, no_upload = True)
 
             spm = entropy_server.Spm()
             for item in repackage_items:
@@ -913,7 +914,7 @@ def _update(entropy_server, options):
         if to_be_injected:
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be changed to injected status"),) ))
             for idpackage, repoid in sorted(to_be_injected, key = key_sorter):
-                dbconn = entropy_server.open_server_repository(read_only = True, no_upload = True, repo = repoid)
+                dbconn = entropy_server.open_server_repository(repoid, read_only = True, no_upload = True)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
             if r_request_ask:
@@ -922,16 +923,15 @@ def _update(entropy_server, options):
                 rc = _("Yes")
             if rc == _("Yes"):
                 for idpackage, repoid in sorted(to_be_injected, key = key_sorter):
-                    dbconn = entropy_server.open_server_repository(read_only = True, no_upload = True, repo = repoid)
+                    dbconn = entropy_server.open_server_repository(repoid, read_only = True, no_upload = True)
                     atom = dbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("%s: " % (_("Transforming from database"),) )+red(atom))
-                    entropy_server._transform_package_into_injected(idpackage,
-                        repo = repoid)
+                    entropy_server._transform_package_into_injected(idpackage, repoid)
                 print_info(brown(" @@ ")+blue("%s." % (_("Database transform complete"),) ))
 
         def show_rm(idpackage, repoid):
-            dbconn = entropy_server.open_server_repository(read_only = True,
-                no_upload = True, repo = repoid)
+            dbconn = entropy_server.open_server_repository(repoid, read_only = True,
+                no_upload = True)
             atom = dbconn.retrieveAtom(idpackage)
             exp_string = ''
             pkg_expired = entropy_server._is_match_expired((idpackage, repoid,))
@@ -966,7 +966,7 @@ def _update(entropy_server, options):
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
                 for repoid in remdata:
-                    entropy_server.remove_packages(remdata[repoid], repo = repoid)
+                    entropy_server.remove_packages(repoid, remdata[repoid])
 
         if r_request_interactive and to_be_added:
             print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to add ?")))
@@ -1006,7 +1006,7 @@ def _update(entropy_server, options):
                         match_slot = spm_slot)
                     if repo_id != 1:
                         repo_db = entropy_server.open_server_repository(
-                            repo = repo_id, just_reading = True)
+                            repo_id, just_reading = True)
                         etp_repo = repo_db.retrieveSpmRepository(pkg_id)
 
                         if (etp_repo is not None) and (etp_repo != spm_repo):
@@ -1056,11 +1056,12 @@ def _update(entropy_server, options):
         entropy_server.default_repository)
     etp_pkg_files = [(os.path.join(local_store_dir, x), False) \
         for x in etp_pkg_files]
-    idpackages = entropy_server.add_packages_to_repository(etp_pkg_files)
+    idpackages = entropy_server.add_packages_to_repository(
+        entropy_server.default_repository, etp_pkg_files)
 
     if idpackages:
         # checking dependencies and print issues
-        entropy_server.dependencies_test()
+        entropy_server.dependencies_test(entropy_server.default_repository)
     entropy_server.close_repositories()
     print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
     return 0

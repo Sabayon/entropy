@@ -873,8 +873,7 @@ class ServerPackagesRepositoryUpdater(object):
 
         tmp_pkglist_file = pkglist_file + ".tmp"
         dbconn = self._entropy.open_server_repository(
-            repo = self._repository_id,
-                just_reading = True, do_treeupdates = False)
+            self._repository_id, just_reading = True, do_treeupdates = False)
         pkglist = dbconn.listAllDownloads(do_sort = True, full_path = True)
 
         with open(tmp_pkglist_file, "w") as pkg_f:
@@ -902,8 +901,8 @@ class ServerPackagesRepositoryUpdater(object):
             if myrepo == etpConst['clientserverrepoid']:
                 continue
 
-            mydbc = self._entropy.open_server_repository(just_reading = True,
-                repo = myrepo)
+            mydbc = self._entropy.open_server_repository(myrepo,
+                just_reading = True)
             actions = mydbc.listAllTreeUpdatesActions(no_ids_repos = True)
             for data in actions:
                 all_actions.add(data)
@@ -1234,9 +1233,8 @@ class ServerPackagesRepositoryUpdater(object):
             header = darkgreen(" * ")
         )
 
-        dbconn = self._entropy.open_server_repository(
-            read_only = False, no_upload = True, repo = self._repository_id,
-            do_treeupdates = False)
+        dbconn = self._entropy.open_server_repository(self._repository_id,
+            read_only = False, no_upload = True, do_treeupdates = False)
         self._rewrite_treeupdates(dbconn)
         self._entropy._update_package_sets(self._repository_id, dbconn)
         # Package Sets info
@@ -1504,12 +1502,11 @@ class ServerPackagesRepositoryUpdater(object):
 
             base_deps_not_found = set()
             if base_repo != self._repository_id:
-                base_deps_not_found = self._entropy.dependencies_test(
-                    repo = base_repo)
+                base_deps_not_found = self._entropy.dependencies_test(base_repo)
 
             # missing dependencies QA test
             deps_not_found = self._entropy.dependencies_test(
-                repo = self._repository_id)
+                self._repository_id)
             if (deps_not_found or base_deps_not_found) \
                 and not self._entropy.community_repo:
 
@@ -1518,7 +1515,7 @@ class ServerPackagesRepositoryUpdater(object):
                         brown(self._repository_id),
                         red(_("sync")),
                         blue(_("repository sync forbidden")),
-                        red(_("dependencies_test() reported errors")),
+                        red(_("dependencies test reported errors")),
                     ),
                     importance = 1,
                     level = "error",
