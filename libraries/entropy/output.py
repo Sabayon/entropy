@@ -558,9 +558,12 @@ def print_generic(*args, **kwargs):
         return
 
     stderr = kwargs.get('stderr', False)
+    msg_idx = 1
     for msg in args:
         _std_write(msg, stderr = stderr)
-        sys.stdout.write(" ")
+        if len(args) != msg_idx:
+            sys.stdout.write(" ")
+        msg_idx += 1
 
     end = kwargs.get('end', '\n')
     _std_write(end, stderr = stderr)
