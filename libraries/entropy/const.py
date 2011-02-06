@@ -467,14 +467,12 @@ def const_default_settings(rootdir):
         'entropyloglevel': 1,
         # Entropy Socket Interface log level
         'socketloglevel': 2,
-        'spmloglevel': 1,
         # Log dir where ebuilds store their stuff
         'logdir': default_etp_logdir,
 
         'syslogdir': default_etp_syslogdir, # Entropy system tools log directory
         'entropylogfile': default_etp_syslogdir+"entropy.log",
         'securitylogfile': default_etp_syslogdir+"security.log",
-        'spmlogfile': default_etp_syslogdir+"spm.log",
 
         'etpdatabaseclientdir': default_etp_dir + default_etp_client_repodir + \
             default_etp_dbdir,

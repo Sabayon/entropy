@@ -710,8 +710,8 @@ class PortagePlugin(SpmPlugin):
                 os.waitpid(pid, 0)
             else:
                 log = LogFile(
-                    level = etpConst['spmloglevel'],
-                    filename = etpConst['spmlogfile'],
+                    level = SystemSettings()['system']['log_level'],
+                    filename = etpConst['entropylogfile'],
                     header = "[spm]"
                 )
                 old_stdout = sys.stdout
@@ -2265,7 +2265,7 @@ class PortagePlugin(SpmPlugin):
             mytxt = "%s. %s: %s [%s]" % (
                 brown(_("Please report it")),
                 bold(_("Attach this")),
-                darkred(etpConst['spmlogfile']),
+                darkred(etpConst['entropylogfile']),
                 brown(phase),
             )
             self.__output.output(
@@ -2343,7 +2343,7 @@ class PortagePlugin(SpmPlugin):
             mytxt = "%s. %s: %s [%s]" % (
                 brown(_("Please report it")),
                 bold(_("Attach this")),
-                darkred(etpConst['spmlogfile']),
+                darkred(etpConst['entropylogfile']),
                 brown(phase),
             )
             self.__output.output(

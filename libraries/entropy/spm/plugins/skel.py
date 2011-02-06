@@ -15,6 +15,7 @@ import os
 from entropy.const import etpConst
 from entropy.core import Singleton
 from entropy.misc import LogFile
+from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
@@ -303,14 +304,10 @@ class SpmPlugin(Singleton):
         @param message: message string to log
         @type message: string
         """
-        log = LogFile(
-            level = etpConst['spmloglevel'],
-            filename = etpConst['spmlogfile'],
-            header = "[spm]"
-        )
-        log.write(message)
-        log.flush()
-        log.close()
+        with LogFile(
+            level = SystemSettings()['system']['log_level'],
+            filename = etpConst['entropylogfile'], header = "[spm]") as log:
+            log.write(message)
 
     def match_package(self, package, match_type = None):
         """
