@@ -72,7 +72,7 @@ def _enable_repo(entropy_server, repoid):
     print_info(brown(" @@ ")+red(_("Enabling"))+" "+bold(str(repoid)) + \
         red(" %s..." % (_("repository"),) ), back = True)
 
-    rc = entropy_server.toggle_repository(repoid, enable = True)
+    rc = entropy_server.enable_repository(repoid)
     if rc:
         print_info(brown(" @@ ")+red(_("Enabled"))+" "+bold(str(repoid)) + \
             red(" %s." % (_("repository"),) ))
@@ -89,7 +89,7 @@ def _enable_repo(entropy_server, repoid):
 def _disable_repo(entropy_server, repoid):
     print_info(brown(" @@ ")+red(_("Disabling"))+" "+bold(str(repoid)) + \
         red(" %s..." % (_("repository"),) ), back = True)
-    rc = entropy_server.toggle_repository(repoid, enable = False)
+    rc = entropy_server.disable_repository(repoid)
     if rc:
         print_info(brown(" @@ ")+red(_("Disabled"))+" " + \
             bold(str(repoid)) + red(" %s." % (_("repository"),) ))
