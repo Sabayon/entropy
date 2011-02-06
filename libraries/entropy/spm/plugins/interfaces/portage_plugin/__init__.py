@@ -27,7 +27,7 @@ from entropy.const import etpConst, etpUi, const_get_stringtype, \
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
-    bold, blue, getcolor
+    bold, blue, getcolor, decolorize
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
@@ -1832,6 +1832,93 @@ class PortagePlugin(SpmPlugin):
         if key == PortagePlugin._PORTAGE_ENTROPY_PACKAGE_NAME:
             self._reload_modules()
 
+    class StdoutSplitter(object):
+
+        def __init__(self, phase, logger, std):
+            self._phase = phase
+            self._logger = logger
+            self._std = std
+
+        @property
+        def softspace(self):
+            return self._std.softspace
+
+        @property
+        def name(self):
+            return self._std.name
+
+        @property
+        def newlines(self):
+            return self._std.newlines
+
+        @property
+        def mode(self):
+            return self._std.mode
+
+        @property
+        def errors(self):
+            return self._std.errors
+
+        @property
+        def encoding(self):
+            return self._std.encoding
+
+        @property
+        def closed(self):
+            return self._std.closed
+
+        def fileno(self):
+            return self._std.fileno()
+
+        def flush(self):
+            self._logger.flush()
+            return self._std.flush()
+
+        def close(self):
+            self._logger.close()
+            return self._std.close()
+
+        def isatty(self):
+            return self._std.isatty()
+
+        def next(self):
+            return self._std.next()
+
+        def read(self, *args, **kwargs):
+            return self._std.read(*args, **kwargs)
+
+        def readline(*args, **kwargs):
+            return self._std.readline(*args, **kwargs)
+
+        def readlines(*args, **kwargs):
+            return self._std.readlines(*args, **kwargs)
+
+        def seek(self, *args, **kwargs):
+            return self._std.seek(*args, **kwargs)
+
+        def tell(self):
+            return self._std.tell()
+
+        def truncate(self, *args, **kwargs):
+            return self._std.truncate(*args, **kwargs)
+
+        def write(self, mystr):
+            self._logger.log(
+                "[Portage %s]" % (self._phase,),
+                etpConst['logging']['normal_loglevel_id'], "\n" + \
+                    decolorize(mystr))
+            return self._std.write(mystr)
+
+        def writelines(self, lst):
+            self._logger.log(
+                "[Portage %s]" % (self._phase,),
+                etpConst['logging']['normal_loglevel_id'], "")
+            self._logger.writelines([decolorize(x) for x in lst])
+            return self._std.writelines(lst)
+
+        def xreadlines(self):
+            return self._std.xreadlines()
+
     def _portage_doebuild(self, myebuild, mydo, tree, cpv,
         portage_tmpdir = None, licenses = None):
 
@@ -1963,55 +2050,61 @@ class PortagePlugin(SpmPlugin):
                 header = ""
             )
 
-        # if mute, supress portage output
-        if etpUi['mute']:
-            tmp_fd, tmp_file = tempfile.mkstemp()
-            tmp_fw = os.fdopen(tmp_fd, "w")
+        with LogFile(level = SystemSettings()['system']['log_level'],
+            filename = etpConst['entropylogfile'], header = "[spm]") as logger:
+
             oldsysstdout = sys.stdout
             oldsysstderr = sys.stderr
-            sys.stdout = tmp_fw
-            sys.stderr = tmp_fw
-
-        try:
-            rc = self._portage.doebuild(
-                myebuild = str(myebuild),
-                mydo = str(mydo),
-                myroot = root,
-                tree = tree,
-                mysettings = mysettings,
-                mydbapi = mydbapi,
-                vartree = vartree,
-                use_cache = 0,
-                debug = etpUi['debug']
-            )
-        except:
-            self.log_message(entropy.tools.get_traceback())
-            raise
-        finally:
-            # if mute, restore old stdout/stderr
             if etpUi['mute']:
+                tmp_fd, tmp_file = tempfile.mkstemp()
+                tmp_fw = os.fdopen(tmp_fd, "w")
+                sys.stdout = tmp_fw
+                sys.stderr = tmp_fw
+            else:
+                splitter_out = self.StdoutSplitter(mydo, logger, sys.stdout)
+                splitter_err = self.StdoutSplitter(mydo, logger, sys.stderr)
+                sys.stdout = splitter_out
+                sys.stderr = splitter_err
+
+            try:
+                rc = self._portage.doebuild(
+                    myebuild = str(myebuild),
+                    mydo = str(mydo),
+                    myroot = root,
+                    tree = tree,
+                    mysettings = mysettings,
+                    mydbapi = mydbapi,
+                    vartree = vartree,
+                    use_cache = 0,
+                    debug = etpUi['debug']
+                )
+            except:
+                logger.write(entropy.tools.get_traceback())
+                raise
+            finally:
                 sys.stdout = oldsysstdout
                 sys.stderr = oldsysstderr
-                tmp_fw.flush()
-                tmp_fw.close()
-                try:
-                    os.remove(tmp_file)
-                except OSError:
-                    pass
+                if etpUi['mute']:
+                    tmp_fw.flush()
+                    tmp_fw.close()
+                    try:
+                        os.remove(tmp_file)
+                    except OSError:
+                        pass
 
-            # remove self-created portdir directory in any case
-            shutil.rmtree(portdir, True)
-            if portage_tmpdir_created:
-                shutil.rmtree(portage_tmpdir, True)
+                # remove self-created portdir directory in any case
+                shutil.rmtree(portdir, True)
+                if portage_tmpdir_created:
+                    shutil.rmtree(portage_tmpdir, True)
 
-            # reset PORTDIR back to its old path
-            # for security !
-            mysettings["PORTDIR"] = old_portdir
-            mysettings.backup_changes("PORTDIR")
+                # reset PORTDIR back to its old path
+                # for security !
+                mysettings["PORTDIR"] = old_portdir
+                mysettings.backup_changes("PORTDIR")
 
-            del mydbapi
-            del metadata
-            del keys
+                del mydbapi
+                del metadata
+                del keys
 
         return rc
 
