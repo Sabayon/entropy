@@ -40,7 +40,7 @@ from entropy.spm.plugins.factory import get_default_instance as get_spm, \
 from entropy.qa import QAInterfacePlugin
 from entropy.security import Repository as RepositorySecurity
 from entropy.db.exceptions import ProgrammingError
-from entropy.client.interfaces import Client as _Client
+from entropy.client.interfaces import Client
 from entropy.client.interfaces.db import InstalledPackagesRepository
 
 import entropy.dep
@@ -993,7 +993,126 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
         return SERVER_QA_PLUGIN
 
 
-class ServerSettingsMixin:
+class Server(Client):
+
+    # Entropy Server cache directory, mainly used for storing commit changes
+    CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "server_cache")
+
+    # SystemSettings class variables
+    SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
+
+    def init_singleton(self, default_repository = None, save_repository = False,
+            community_repo = False, fake_default_repo = False,
+            fake_default_repo_id = None,
+            fake_default_repo_desc = 'this is a fake repository'):
+
+        self.__instance_destroyed = False
+        if etpConst['uid'] != 0:
+            mytxt = _("Entropy Server interface must be run as root")
+            import warnings
+            warnings.warn(mytxt)
+
+        self._cacher = EntropyCacher()
+        # settings
+        self._memory_db_srv_instances = {}
+        self._treeupdates_repos = set()
+        self._server_dbcache = {}
+        self._settings = SystemSettings()
+        self.community_repo = community_repo
+        etpSys['serverside'] = True
+        self.fake_default_repo = fake_default_repo
+        self.fake_default_repo_id = fake_default_repo_id
+        self.indexing = False
+        self.xcache = False
+        self.Mirrors = None
+        self._settings_to_backup = []
+        self._save_repository = save_repository
+        self._sync_lock_cache = set()
+
+        self.sys_settings_fake_cli_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin_fake_client']
+        self.sys_settings_fatscope_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
+
+        # create our SystemSettings plugin
+        with self._settings:
+            self.sys_settings_plugin = ServerSystemSettingsPlugin(
+                Server.SYSTEM_SETTINGS_PLG_ID, self)
+            self._settings.add_plugin(self.sys_settings_plugin)
+
+            # Fatscope support SystemSettings plugin
+            self.sys_settings_fatscope_plugin = \
+                ServerFatscopeSystemSettingsPlugin(
+                    self.sys_settings_fatscope_plugin_id, self)
+            self._settings.add_plugin(self.sys_settings_fatscope_plugin)
+
+            # Fatscope support SystemSettings plugin
+            self.sys_settings_fake_cli_plugin = \
+                ServerFakeClientSystemSettingsPlugin(
+                    self.sys_settings_fake_cli_plugin_id, self)
+            self._settings.add_plugin(self.sys_settings_fake_cli_plugin)
+
+        # setup fake repository
+        if fake_default_repo:
+            default_repository = fake_default_repo_id
+            self._init_generic_memory_server_repository(fake_default_repo_id,
+                fake_default_repo_desc, set_as_default = True)
+
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        self._repository = default_repository
+        if self._repository is None:
+            self._repository = srv_set['default_repository_id']
+
+        if self._repository in srv_set['repositories']:
+            self._ensure_paths(self._repository)
+
+        if self._repository not in srv_set['repositories']:
+            raise PermissionDenied("PermissionDenied: %s %s" % (
+                        self._repository,
+                        _("repository not configured"),
+                    )
+            )
+        if etpConst['clientserverrepoid'] == self._repository:
+            raise PermissionDenied("PermissionDenied: %s %s" % (
+                    etpConst['clientserverrepoid'],
+                    _("protected repository id, can't use this, sorry dude..."),
+                )
+            )
+
+        self.switch_default_repository(self._repository)
+        # initialize Entropy Client superclass
+        Client.init_singleton(self,
+            indexing = self.indexing,
+            xcache = self.xcache,
+            repo_validation = False,
+            noclientdb = 1
+        )
+
+    def destroy(self, _from_shutdown = False):
+        self.__instance_destroyed = True
+        Client.close_repositories(self, mask_clear = False)
+        Client.destroy(self, _from_shutdown = _from_shutdown)
+
+        if not _from_shutdown:
+            plug_id2 = self.sys_settings_fake_cli_plugin_id
+            plug_id1 = self.sys_settings_fatscope_plugin_id
+            plug_id = Server.SYSTEM_SETTINGS_PLG_ID
+            # reverse insert order
+            plugs = [plug_id2, plug_id1, plug_id]
+            for plug in plugs:
+                if plug is None:
+                    continue
+                if not self._settings.has_plugin(plug):
+                    continue
+                self._settings.remove_plugin(plug)
+
+        self.close_repositories()
+
+    def is_destroyed(self):
+        return self.__instance_destroyed
+
+    def __del__(self):
+        self.destroy()
 
     def _get_branch_from_download_relative_uri(self, db_download_uri):
         return db_download_uri.split("/")[2]
@@ -1332,8 +1451,6 @@ class ServerSettingsMixin:
         return self._repository
 
 
-class ServerLoadersMixin:
-
     def QA(self):
         """
         Get Entropy QA Interface instance.
@@ -1342,7 +1459,7 @@ class ServerLoadersMixin:
         @rtype: entropy.qa.QAInterface instance
         """
         qa_plugin = ServerQAInterfacePlugin(self)
-        qa = _Client.QA(self)
+        qa = Client.QA(self)
         qa.add_plugin(qa_plugin)
         return qa
 
@@ -1350,7 +1467,7 @@ class ServerLoadersMixin:
         """
         Get Source Package Manager interface instance.
 
-        @return: Source Package Manager interface instance
+        #@return: Source Package Manager interface instance
         @rtype: entropy.spm.plugins.skel.SpmPlugin based instance
         """
         return get_spm(self)
@@ -1375,24 +1492,22 @@ class ServerLoadersMixin:
         return txc
 
 
-class ServerPackageDepsMixin:
-
     def sets_available(self, *args, **kwargs):
-        sets = _Client.Sets(self)
+        sets = Client.Sets(self)
         return sets.available(*args, **kwargs)
 
     def sets_search(self, *args, **kwargs):
-        sets = _Client.Sets(self)
+        sets = Client.Sets(self)
         return sets.search(*args, **kwargs)
 
     def sets_match(self, *args, **kwargs):
-        sets = _Client.Sets(self)
+        sets = Client.Sets(self)
         return sets.match(*args, **kwargs)
 
     def atom_match(self, *args, **kwargs):
         # disable masked packages for server-side repos
         kwargs['mask_filter'] = False
-        return _Client.atom_match(self, *args, **kwargs)
+        return Client.atom_match(self, *args, **kwargs)
 
     def _match_packages(self, repository_id, packages):
 
@@ -1495,8 +1610,6 @@ class ServerPackageDepsMixin:
         os.rename(mask_file_tmp, mask_file)
 
         return True
-
-class ServerPackagesHandlingMixin:
 
     def initialize_repository(self, repository_id, ask = True):
         """
@@ -3262,8 +3375,6 @@ class ServerPackagesHandlingMixin:
         return switched, already_switched, ignored, not_found, no_checksum
 
 
-class ServerQAMixin:
-
     def orphaned_spm_packages_test(self):
 
         mytxt = "%s %s" % (
@@ -3576,8 +3687,6 @@ class ServerQAMixin:
             )
 
         return 0
-
-class ServerRepositoryMixin:
 
     def close_repositories(self, mask_clear = False):
         for item in self._server_dbcache.keys():
@@ -4524,8 +4633,6 @@ class ServerRepositoryMixin:
         self.close_repository(dbconn)
 
 
-class ServerMiscMixin:
-
     def _ensure_paths(self, repo):
         upload_dir = self._get_local_upload_directory(repo)
         db_dir = self._get_local_repository_dir(repo)
@@ -5202,127 +5309,3 @@ class ServerMiscMixin:
         entropy_repository.clearPackageSets()
         if package_sets:
             entropy_repository.insertPackageSets(package_sets)
-
-
-class Server(ServerSettingsMixin, ServerLoadersMixin,
-    ServerPackageDepsMixin, ServerPackagesHandlingMixin, ServerQAMixin,
-    ServerRepositoryMixin, ServerMiscMixin, _Client):
-
-    # Entropy Server cache directory, mainly used for storing commit changes
-    CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "server_cache")
-
-    # SystemSettings class variables
-    SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
-
-    def init_singleton(self, default_repository = None, save_repository = False,
-            community_repo = False, fake_default_repo = False,
-            fake_default_repo_id = None,
-            fake_default_repo_desc = 'this is a fake repository'):
-
-        self.__instance_destroyed = False
-        if etpConst['uid'] != 0:
-            mytxt = _("Entropy Server interface must be run as root")
-            import warnings
-            warnings.warn(mytxt)
-
-        self._cacher = EntropyCacher()
-        # settings
-        self._memory_db_srv_instances = {}
-        self._treeupdates_repos = set()
-        self._server_dbcache = {}
-        self._settings = SystemSettings()
-        self.community_repo = community_repo
-        etpSys['serverside'] = True
-        self.fake_default_repo = fake_default_repo
-        self.fake_default_repo_id = fake_default_repo_id
-        self.indexing = False
-        self.xcache = False
-        self.Mirrors = None
-        self._settings_to_backup = []
-        self._save_repository = save_repository
-        self._sync_lock_cache = set()
-
-        self.sys_settings_fake_cli_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin_fake_client']
-        self.sys_settings_fatscope_plugin_id = \
-            etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
-
-        # create our SystemSettings plugin
-        with self._settings:
-            self.sys_settings_plugin = ServerSystemSettingsPlugin(
-                Server.SYSTEM_SETTINGS_PLG_ID, self)
-            self._settings.add_plugin(self.sys_settings_plugin)
-
-            # Fatscope support SystemSettings plugin
-            self.sys_settings_fatscope_plugin = \
-                ServerFatscopeSystemSettingsPlugin(
-                    self.sys_settings_fatscope_plugin_id, self)
-            self._settings.add_plugin(self.sys_settings_fatscope_plugin)
-
-            # Fatscope support SystemSettings plugin
-            self.sys_settings_fake_cli_plugin = \
-                ServerFakeClientSystemSettingsPlugin(
-                    self.sys_settings_fake_cli_plugin_id, self)
-            self._settings.add_plugin(self.sys_settings_fake_cli_plugin)
-
-        # setup fake repository
-        if fake_default_repo:
-            default_repository = fake_default_repo_id
-            self._init_generic_memory_server_repository(fake_default_repo_id,
-                fake_default_repo_desc, set_as_default = True)
-
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        self._repository = default_repository
-        if self._repository is None:
-            self._repository = srv_set['default_repository_id']
-
-        if self._repository in srv_set['repositories']:
-            self._ensure_paths(self._repository)
-
-        if self._repository not in srv_set['repositories']:
-            raise PermissionDenied("PermissionDenied: %s %s" % (
-                        self._repository,
-                        _("repository not configured"),
-                    )
-            )
-        if etpConst['clientserverrepoid'] == self._repository:
-            raise PermissionDenied("PermissionDenied: %s %s" % (
-                    etpConst['clientserverrepoid'],
-                    _("protected repository id, can't use this, sorry dude..."),
-                )
-            )
-
-        self.switch_default_repository(self._repository)
-        # initialize Entropy Client superclass
-        _Client.init_singleton(self,
-            indexing = self.indexing,
-            xcache = self.xcache,
-            repo_validation = False,
-            noclientdb = 1
-        )
-
-    def destroy(self, _from_shutdown = False):
-        self.__instance_destroyed = True
-        _Client.close_repositories(self, mask_clear = False)
-        _Client.destroy(self, _from_shutdown = _from_shutdown)
-
-        if not _from_shutdown:
-            plug_id2 = self.sys_settings_fake_cli_plugin_id
-            plug_id1 = self.sys_settings_fatscope_plugin_id
-            plug_id = Server.SYSTEM_SETTINGS_PLG_ID
-            # reverse insert order
-            plugs = [plug_id2, plug_id1, plug_id]
-            for plug in plugs:
-                if plug is None:
-                    continue
-                if not self._settings.has_plugin(plug):
-                    continue
-                self._settings.remove_plugin(plug)
-
-        self.close_repositories()
-
-    def is_destroyed(self):
-        return self.__instance_destroyed
-
-    def __del__(self):
-        self.destroy()
