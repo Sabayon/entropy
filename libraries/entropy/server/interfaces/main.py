@@ -1089,6 +1089,9 @@ class Server(Client):
         )
 
     def destroy(self, _from_shutdown = False):
+        """
+        Destroy this singleton instance.
+        """
         self.__instance_destroyed = True
         Client.close_repositories(self, mask_clear = False)
         Client.destroy(self, _from_shutdown = _from_shutdown)
@@ -1109,6 +1112,9 @@ class Server(Client):
         self.close_repositories()
 
     def is_destroyed(self):
+        """
+        Return whether the singleton instance is destroyed.
+        """
         return self.__instance_destroyed
 
     def __del__(self):
@@ -3698,13 +3704,19 @@ class Server(Client):
         if mask_clear:
             self._settings.clear()
 
-    def close_repository(self, dbinstance):
+    def close_repository(self, entropy_repository):
+        """
+        Close single EntropyRepositoryBase instance, given its class object.
+
+        @param entropy_repository: EntropyRepositoryBase instance
+        @type entropy_repository: entropy.db.skel.EntropyRepositoryBase
+        """
         found = None
         for item in self._server_dbcache:
-            if dbinstance == self._server_dbcache[item]:
+            if entropy_repository is self._server_dbcache[item]:
                 found = item
                 break
-        if found:
+        if found is not None:
             instance = self._server_dbcache.pop(found)
             instance.close()
 
@@ -3718,33 +3730,44 @@ class Server(Client):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return srv_set['repositories'].copy()
 
-    def switch_default_repository(self, repoid, save = None,
+    def switch_default_repository(self, repository_id, save = None,
         handle_uninitialized = True):
+        """
+        Change Entropy Server default (current) repository.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword save: if True, save the default repository in server
+            configuration
+        @type save: bool
+        @keyword handle_uninitialized: if repository is uninitialized, handle
+            the case automatically
+        @type handle_uninitialized: bool
+        """
         # avoid setting __default__ as default server repo
-        if repoid == etpConst['clientserverrepoid']:
+        if repository_id == etpConst['clientserverrepoid']:
             return
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
         if save is None:
             save = self._save_repository
-        if repoid not in srv_set['repositories']:
+        if repository_id not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
-                        repoid,
+                        repository_id,
                         _("repository not configured"),
                     )
             )
         self.close_repositories()
-        srv_set['default_repository_id'] = repoid
-        self._repository = repoid
+        srv_set['default_repository_id'] = repository_id
+        self._repository = repository_id
         self._setup_services()
         if save:
-            self._save_default_repository(repoid)
+            self._save_default_repository(repository_id)
 
         self._setup_community_repositories_settings()
         self._show_interface_status()
         if handle_uninitialized and etpUi['warn']:
-            self._handle_uninitialized_repository(repoid)
+            self._handle_uninitialized_repository(repository_id)
 
     def _setup_community_repositories_settings(self):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
@@ -3825,10 +3848,44 @@ class Server(Client):
             f_srv.flush()
             f_srv.close()
 
-    def toggle_repository(self, repoid, enable = True):
+    def enable_repository(self, repository_id):
+        """
+        Enable a repository.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param enable: True for enable, False for disable
+        @type enable: bool
+        @return: True, if switch went fine, False otherwise
+        @rtype: bool
+        """
+        return self._toggle_repository(repository_id, True)
+
+    def disable_repository(self, repository_id):
+        """
+        Disable a repository.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True, if switch went fine, False otherwise
+        @rtype: bool
+        """
+        return self._toggle_repository(repository_id, False)
+
+    def _toggle_repository(self, repository_id, enable):
+        """
+        Enable or disable a repository.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param enable: True for enable, False for disable
+        @type enable: bool
+        @return: True, if switch went fine, False otherwise
+        @rtype: bool
+        """
 
         # avoid setting __default__ as default server repo
-        if repoid == etpConst['clientserverrepoid']:
+        if repository_id == etpConst['clientserverrepoid']:
             return False
 
         if not os.path.isfile(etpConst['serverconf']):
@@ -3918,7 +3975,7 @@ class Server(Client):
                         level = "info",
                         header = brown(" * ")
                     )
-                    dbstatus = self.Mirrors.get_mirrors_lock(repo = repo)
+                    dbstatus = self.Mirrors.mirrors_status(repo) 
                     for db_uri, db_st1, db_st2 in dbstatus:
                         db_st1_info = darkgreen(_("Unlocked"))
                         if db_st1:
@@ -4834,7 +4891,13 @@ class Server(Client):
         return os.path.join(self._get_local_upload_directory(repo), pkg_path)
 
     def scan_package_changes(self):
+        """
+        Scan, using Source Package Manager, for added/removed/updated packages.
 
+        @return: tuple composed of (1) list of spm package name and spm package
+        id, (2) list of entropy package matches for packages to be removed (3)
+        list of entropy package matches for packages to be injected.
+        """
         spm = self.Spm()
 
         spm_packages = spm.get_installed_packages()

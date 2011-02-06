@@ -28,267 +28,8 @@ from entropy.server.interfaces.db import ServerPackagesRepository
 
 import entropy.tools
 
-class ServerNoticeBoardMixin:
 
-    def download_notice_board(self, repository_id):
-        """
-        Download notice board for given repository identifier.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: True if download went successful.
-        @rtype: bool
-        """
-        mirrors = self._entropy.remote_repository_mirrors(repository_id)
-        rss_path = self._entropy._get_local_repository_notice_board_file(
-            repository_id)
-        mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
-
-        self._entropy.output(
-            "[%s] %s %s" % (
-                brown(repository_id),
-                blue(_("downloading notice board from mirrors to")),
-                red(rss_path),
-            ),
-            importance = 1,
-            level = "info",
-            header = blue(" @@ ")
-        )
-
-        downloaded = False
-        for uri in mirrors:
-            crippled_uri = EntropyTransceiver.get_uri_name(uri)
-            downloader = self.TransceiverServerHandler(
-                self._entropy, [uri],
-                [rss_path], download = True,
-                local_basedir = mytmpdir, critical_files = [rss_path],
-                repo = repository_id
-            )
-            errors, m_fine_uris, m_broken_uris = downloader.go()
-            if not errors:
-                self._entropy.output(
-                    "[%s] %s: %s" % (
-                        brown(repository_id),
-                        blue(_("notice board downloaded successfully from")),
-                        red(crippled_uri),
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = blue(" @@ ")
-                )
-                downloaded = True
-                break
-
-        if downloaded:
-            shutil.move(os.path.join(mytmpdir, os.path.basename(rss_path)),
-                rss_path)
-
-        return downloaded
-
-    def remove_notice_board(self, repository_id):
-        """
-        Remove notice board for given repository identifier.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: True if removal went successful.
-        @rtype: bool
-        """
-        mirrors = self._entropy.remote_repository_mirrors(repository_id)
-        rss_path = self._entropy._get_local_repository_notice_board_file(
-            repository_id)
-        rss_file = os.path.basename(rss_path)
-
-        self._entropy.output(
-            "[%s] %s %s" % (
-                    brown(repository_id),
-                    blue(_("removing notice board from")),
-                    red(rss_file),
-            ),
-            importance = 1,
-            level = "info",
-            header = blue(" @@ ")
-        )
-
-        destroyer = self.TransceiverServerHandler(
-            self._entropy,
-            mirrors,
-            [rss_file],
-            critical_files = [rss_file],
-            remove = True,
-            repo = repository_id
-        )
-        errors, m_fine_uris, m_broken_uris = destroyer.go()
-        if errors:
-            m_broken_uris = sorted(m_broken_uris)
-            m_broken_uris = [EntropyTransceiver.get_uri_name(x_uri) \
-                for x_uri, x_uri_rc in m_broken_uris]
-            self._entropy.output(
-                "[%s] %s %s" % (
-                        brown(repository_id),
-                        blue(_("notice board removal failed on")),
-                        red(', '.join(m_broken_uris)),
-                ),
-                importance = 1,
-                level = "info",
-                header = blue(" @@ ")
-            )
-            return False
-        self._entropy.output(
-            "[%s] %s" % (
-                    brown(repository_id),
-                    blue(_("notice board removal success")),
-            ),
-            importance = 1,
-            level = "info",
-            header = blue(" @@ ")
-        )
-        return True
-
-
-    def upload_notice_board(self, repository_id):
-        """
-        Upload notice board for given repository identifier.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: True if upload went successful.
-        @rtype: bool
-        """
-        mirrors = self._entropy.remote_repository_mirrors(repository_id)
-        rss_path = self._entropy._get_local_repository_notice_board_file(
-            repository_id)
-
-        self._entropy.output(
-            "[%s] %s %s" % (
-                brown(repository_id),
-                blue(_("uploading notice board from")),
-                red(rss_path),
-            ),
-            importance = 1,
-            level = "info",
-            header = blue(" @@ ")
-        )
-
-        uploader = self.TransceiverServerHandler(
-            self._entropy,
-            mirrors,
-            [rss_path],
-            critical_files = [rss_path],
-            repo = repository_id
-        )
-        errors, m_fine_uris, m_broken_uris = uploader.go()
-        if errors:
-            m_broken_uris = sorted(m_broken_uris)
-            m_broken_uris = [EntropyTransceiver.get_uri_name(x_uri) \
-                for x_uri, x_uri_rc in m_broken_uris]
-            self._entropy.output(
-                "[%s] %s %s" % (
-                        brown(repository_id),
-                        blue(_("notice board upload failed on")),
-                        red(', '.join(m_broken_uris)),
-                ),
-                importance = 1,
-                level = "info",
-                header = blue(" @@ ")
-            )
-            return False
-        self._entropy.output(
-            "[%s] %s" % (
-                    brown(repository_id),
-                    blue(_("notice board upload success")),
-            ),
-            importance = 1,
-            level = "info",
-            header = blue(" @@ ")
-        )
-        return True
-
-
-    def update_notice_board(self, repository_id, title, notice_text,
-        link = None):
-        """
-        Update notice board adding a new entry, provided by a title and a
-        body message (notice_text). Providing a link is optional.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @param title: noticeboard new entry title
-        @type title: string
-        @param notice_text: noticeboard new entry text
-        @type notice_text: string
-        @keyword link: optional link to provide with the noticeboard entry
-        @type link: string
-        @return: True if update went successful.
-        @rtype: bool
-        """
-        rss_title = "%s Notice Board" % (self._settings['system']['name'],)
-        rss_description = "Inform about important distribution activities."
-        rss_path = self._entropy._get_local_repository_notice_board_file(
-            repository_id)
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        if not link:
-            link = srv_set['rss']['website_url']
-
-        self.download_notice_board(repository_id)
-        rss_main = RSS(rss_path, rss_title, rss_description,
-            maxentries = 20)
-        rss_main.add_item(title, link, description = notice_text)
-        rss_main.write_changes()
-        dict_list, items = rss_main.get_entries()
-        if items == 0:
-            status = self.remove_notice_board(repository_id)
-        else:
-            status = self.upload_notice_board(repository_id)
-        return status
-
-    def read_notice_board(self, repository_id, do_download = True):
-        """
-        Read content of noticeboard for given repository. do_download, if True,
-        fetches the noticeboard directly from the remote repository before
-        returning its content. If noticeboard cannot be downloaded or
-        do_download is False and there is any local cache, None will be
-        returned.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: the output of entropy.misc.RSS.get_entries() or None
-        @rtype: tuple or None
-        """
-        rss_path = self._entropy._get_local_repository_notice_board_file(
-            repository_id)
-        if do_download:
-            self.download_notice_board(repository_id)
-        if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
-            return None
-        rss_main = RSS(rss_path, '', '')
-        return rss_main.get_entries()
-
-    def remove_from_notice_board(self, repository_id, identifier):
-        """
-        Remove entry from noticeboard of given repository. read_notice_board()
-        returns an object containing a list of entries, identifier here
-        represents the index of that list, if it exists.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @param identifier: notice board identifier
-        @type identifier: int
-        @return: True, if operation is successful, False otherwise
-        @rtype: bool
-        """
-        rss_path = self._entropy._get_local_repository_notice_board_file(
-            repository_id)
-        rss_title = "%s Notice Board" % (self._settings['system']['name'],)
-        rss_description = "Inform about important distribution activities."
-        if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
-            return False
-        rss_main = RSS(rss_path, rss_title, rss_description)
-        counter = rss_main.remove_entry(identifier)
-        rss_main.write_changes()
-        return True
-
-class Server(ServerNoticeBoardMixin):
+class Server(object):
 
     SYSTEM_SETTINGS_PLG_ID = etpConst['system_settings_plugins_ids']['server_plugin']
 
@@ -2414,3 +2155,261 @@ class Server(ServerNoticeBoardMixin):
                         os.remove(myfile)
 
         return done
+
+    def download_notice_board(self, repository_id):
+        """
+        Download notice board for given repository identifier.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True if download went successful.
+        @rtype: bool
+        """
+        mirrors = self._entropy.remote_repository_mirrors(repository_id)
+        rss_path = self._entropy._get_local_repository_notice_board_file(
+            repository_id)
+        mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
+
+        self._entropy.output(
+            "[%s] %s %s" % (
+                brown(repository_id),
+                blue(_("downloading notice board from mirrors to")),
+                red(rss_path),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ ")
+        )
+
+        downloaded = False
+        for uri in mirrors:
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
+            downloader = self.TransceiverServerHandler(
+                self._entropy, [uri],
+                [rss_path], download = True,
+                local_basedir = mytmpdir, critical_files = [rss_path],
+                repo = repository_id
+            )
+            errors, m_fine_uris, m_broken_uris = downloader.go()
+            if not errors:
+                self._entropy.output(
+                    "[%s] %s: %s" % (
+                        brown(repository_id),
+                        blue(_("notice board downloaded successfully from")),
+                        red(crippled_uri),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = blue(" @@ ")
+                )
+                downloaded = True
+                break
+
+        if downloaded:
+            shutil.move(os.path.join(mytmpdir, os.path.basename(rss_path)),
+                rss_path)
+
+        return downloaded
+
+    def remove_notice_board(self, repository_id):
+        """
+        Remove notice board for given repository identifier.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True if removal went successful.
+        @rtype: bool
+        """
+        mirrors = self._entropy.remote_repository_mirrors(repository_id)
+        rss_path = self._entropy._get_local_repository_notice_board_file(
+            repository_id)
+        rss_file = os.path.basename(rss_path)
+
+        self._entropy.output(
+            "[%s] %s %s" % (
+                    brown(repository_id),
+                    blue(_("removing notice board from")),
+                    red(rss_file),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ ")
+        )
+
+        destroyer = self.TransceiverServerHandler(
+            self._entropy,
+            mirrors,
+            [rss_file],
+            critical_files = [rss_file],
+            remove = True,
+            repo = repository_id
+        )
+        errors, m_fine_uris, m_broken_uris = destroyer.go()
+        if errors:
+            m_broken_uris = sorted(m_broken_uris)
+            m_broken_uris = [EntropyTransceiver.get_uri_name(x_uri) \
+                for x_uri, x_uri_rc in m_broken_uris]
+            self._entropy.output(
+                "[%s] %s %s" % (
+                        brown(repository_id),
+                        blue(_("notice board removal failed on")),
+                        red(', '.join(m_broken_uris)),
+                ),
+                importance = 1,
+                level = "info",
+                header = blue(" @@ ")
+            )
+            return False
+        self._entropy.output(
+            "[%s] %s" % (
+                    brown(repository_id),
+                    blue(_("notice board removal success")),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ ")
+        )
+        return True
+
+
+    def upload_notice_board(self, repository_id):
+        """
+        Upload notice board for given repository identifier.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True if upload went successful.
+        @rtype: bool
+        """
+        mirrors = self._entropy.remote_repository_mirrors(repository_id)
+        rss_path = self._entropy._get_local_repository_notice_board_file(
+            repository_id)
+
+        self._entropy.output(
+            "[%s] %s %s" % (
+                brown(repository_id),
+                blue(_("uploading notice board from")),
+                red(rss_path),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ ")
+        )
+
+        uploader = self.TransceiverServerHandler(
+            self._entropy,
+            mirrors,
+            [rss_path],
+            critical_files = [rss_path],
+            repo = repository_id
+        )
+        errors, m_fine_uris, m_broken_uris = uploader.go()
+        if errors:
+            m_broken_uris = sorted(m_broken_uris)
+            m_broken_uris = [EntropyTransceiver.get_uri_name(x_uri) \
+                for x_uri, x_uri_rc in m_broken_uris]
+            self._entropy.output(
+                "[%s] %s %s" % (
+                        brown(repository_id),
+                        blue(_("notice board upload failed on")),
+                        red(', '.join(m_broken_uris)),
+                ),
+                importance = 1,
+                level = "info",
+                header = blue(" @@ ")
+            )
+            return False
+        self._entropy.output(
+            "[%s] %s" % (
+                    brown(repository_id),
+                    blue(_("notice board upload success")),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ ")
+        )
+        return True
+
+
+    def update_notice_board(self, repository_id, title, notice_text,
+        link = None):
+        """
+        Update notice board adding a new entry, provided by a title and a
+        body message (notice_text). Providing a link is optional.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param title: noticeboard new entry title
+        @type title: string
+        @param notice_text: noticeboard new entry text
+        @type notice_text: string
+        @keyword link: optional link to provide with the noticeboard entry
+        @type link: string
+        @return: True if update went successful.
+        @rtype: bool
+        """
+        rss_title = "%s Notice Board" % (self._settings['system']['name'],)
+        rss_description = "Inform about important distribution activities."
+        rss_path = self._entropy._get_local_repository_notice_board_file(
+            repository_id)
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        if not link:
+            link = srv_set['rss']['website_url']
+
+        self.download_notice_board(repository_id)
+        rss_main = RSS(rss_path, rss_title, rss_description,
+            maxentries = 20)
+        rss_main.add_item(title, link, description = notice_text)
+        rss_main.write_changes()
+        dict_list, items = rss_main.get_entries()
+        if items == 0:
+            status = self.remove_notice_board(repository_id)
+        else:
+            status = self.upload_notice_board(repository_id)
+        return status
+
+    def read_notice_board(self, repository_id, do_download = True):
+        """
+        Read content of noticeboard for given repository. do_download, if True,
+        fetches the noticeboard directly from the remote repository before
+        returning its content. If noticeboard cannot be downloaded or
+        do_download is False and there is any local cache, None will be
+        returned.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: the output of entropy.misc.RSS.get_entries() or None
+        @rtype: tuple or None
+        """
+        rss_path = self._entropy._get_local_repository_notice_board_file(
+            repository_id)
+        if do_download:
+            self.download_notice_board(repository_id)
+        if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
+            return None
+        rss_main = RSS(rss_path, '', '')
+        return rss_main.get_entries()
+
+    def remove_from_notice_board(self, repository_id, identifier):
+        """
+        Remove entry from noticeboard of given repository. read_notice_board()
+        returns an object containing a list of entries, identifier here
+        represents the index of that list, if it exists.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param identifier: notice board identifier
+        @type identifier: int
+        @return: True, if operation is successful, False otherwise
+        @rtype: bool
+        """
+        rss_path = self._entropy._get_local_repository_notice_board_file(
+            repository_id)
+        rss_title = "%s Notice Board" % (self._settings['system']['name'],)
+        rss_description = "Inform about important distribution activities."
+        if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
+            return False
+        rss_main = RSS(rss_path, rss_title, rss_description)
+        counter = rss_main.remove_entry(identifier)
+        rss_main.write_changes()
+        return True
