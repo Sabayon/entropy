@@ -1170,6 +1170,19 @@ class LogFile:
             LogFile.DATE_FORMAT))
         self.__logger.addHandler(self.__handler)
 
+    def __enter__(self):
+        """
+        Just return self, configuration is done in __init__
+        """
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Make sure any resource is closed.
+        """
+        self.flush()
+        self.close()
+
     def fileno(self):
         return self.__handler.stream.fileno()
 
