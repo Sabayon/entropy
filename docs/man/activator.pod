@@ -112,6 +112,16 @@ repository handling functions
 
 sync the current repository database across primary mirrors
 
+=over
+
+
+=item B<--syncall>
+
+sync all the configured repositories
+
+=back
+
+
 =item B<lock>
 
 lock the current repository database (server-side)
@@ -131,10 +141,6 @@ unlock the current repository database (client-side)
 =item B<lock-status>
 
 show current lock status
-
-=item B<--syncall>
-
-sync all the configured repositories
 
 =back
 

@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "ACTIVATOR 1"
-.TH ACTIVATOR 1 "2010-03-25" "perl v5.12.2" "Entropy"
+.TH ACTIVATOR 1 "2011-02-07" "perl v5.12.2" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -209,6 +209,13 @@ repository handling functions
 .IP "\fBsync\fR" 4
 .IX Item "sync"
 sync the current repository database across primary mirrors
+.RS 4
+.IP "\fB\-\-syncall\fR" 4
+.IX Item "--syncall"
+sync all the configured repositories
+.RE
+.RS 4
+.RE
 .IP "\fBlock\fR" 4
 .IX Item "lock"
 lock the current repository database (server-side)
@@ -224,9 +231,6 @@ unlock the current repository database (client-side)
 .IP "\fBlock-status\fR" 4
 .IX Item "lock-status"
 show current lock status
-.IP "\fB\-\-syncall\fR" 4
-.IX Item "--syncall"
-sync all the configured repositories
 .RE
 .RS 4
 .RE
@@ -268,6 +272,6 @@ Fabio Erculiani <lxnay@sabayon.org>
 .SH "POD ERRORS"
 .IX Header "POD ERRORS"
 Hey! \fBThe above document had some coding errors, which are explained below:\fR
-.IP "Around line 164:" 4
-.IX Item "Around line 164:"
+.IP "Around line 170:" 4
+.IX Item "Around line 170:"
 You forgot a '=back' before '=head1'
