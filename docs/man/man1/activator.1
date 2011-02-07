@@ -216,6 +216,16 @@ sync all the configured repositories
 .RE
 .RS 4
 .RE
+.IP "\fBvacuum\fR" 4
+.IX Item "vacuum"
+clean unavaiable packages from mirrors
+.RS 4
+.IP "\fB\-\-days=<days\fR>" 4
+.IX Item "--days=<days>"
+expiration days [default is: 0]
+.RE
+.RS 4
+.RE
 .IP "\fBlock\fR" 4
 .IX Item "lock"
 lock the current repository database (server-side)
@@ -272,6 +282,6 @@ Fabio Erculiani <lxnay@sabayon.org>
 .SH "POD ERRORS"
 .IX Header "POD ERRORS"
 Hey! \fBThe above document had some coding errors, which are explained below:\fR
-.IP "Around line 170:" 4
-.IX Item "Around line 170:"
+.IP "Around line 184:" 4
+.IX Item "Around line 184:"
 You forgot a '=back' before '=head1'

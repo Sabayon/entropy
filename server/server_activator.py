@@ -14,7 +14,8 @@ import tempfile
 import subprocess
 from entropy.const import etpConst, etpUi
 from entropy.output import red, green, print_info, bold, darkgreen, blue, \
-    darkred, brown, print_error, readtext, print_generic
+    darkred, brown, purple, teal, print_error, print_warning, readtext, \
+        print_generic
 from entropy.server.interfaces import Server
 from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
@@ -404,13 +405,10 @@ def repo(options):
 
 def _repo(entropy_server, options):
 
-    cmd = options[0]
-    sync_all = False
-    for opt in options:
-        if opt == "--syncall":
-            sync_all = True
-        elif opt.startswith("--"):
-            return -10
+    if not options:
+        return -10
+
+    cmd, args = options[0], options[1:]
 
     repository_id = entropy_server.repository()
 
@@ -495,7 +493,7 @@ def _repo(entropy_server, options):
     elif cmd == "sync":
 
         repos = [repository_id]
-        if sync_all:
+        if "--syncall" in args:
             repos = entropy_server.repositories()
 
         rc = 0
@@ -513,6 +511,34 @@ def _repo(entropy_server, options):
                 rc = 1
 
         return rc
+
+    elif cmd == "vacuum":
+
+        days = 0
+        for arg in args:
+            if arg.startswith("--days="):
+                s_days = arg[len("--days="):]
+                try:
+                    days = int(s_days)
+                    if days < 0:
+                        raise ValueError()
+                except ValueError:
+                    return -10
+                break
+            else:
+                return -10
+
+        print_info(green(" * ")+darkgreen("%s ..." % (
+            _("Cleaning unavailable packages from repository"),) ))
+        print_warning(teal(" * ") + \
+            purple(_("Removing unavailable packages, overriding Entropy defaults is generally bad.")))
+        print_warning(teal(" * ") + \
+            purple(_("Users with outdated repositories, won't be able to find package files remotely.")))
+        sts = entropy_server.Mirrors.tidy_mirrors(repository_id, ask = True,
+            pretend = etpUi['pretend'], expiration_days = days)
+        if sts:
+            return 0
+        return 1
 
     return -10
 

@@ -17,7 +17,7 @@ import time
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
-from entropy.const import etpConst
+from entropy.const import etpConst, const_get_int
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
 from entropy.misc import RSS
@@ -1880,7 +1880,7 @@ class Server(object):
             if os.path.isfile(dest_expiration):
                 os.remove(dest_expiration)
 
-    def _is_package_expired(self, repository_id, package_rel):
+    def _is_package_expired(self, repository_id, package_rel, days):
 
         pkg_path = self._entropy.complete_local_package_path(package_rel,
             repository_id)
@@ -1888,10 +1888,8 @@ class Server(object):
         if not os.path.isfile(pkg_path):
             return False
 
-        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         mtime = os.path.getmtime(pkg_path)
-        days = srv_set['packages_expiration_days']
-        delta = int(days)*24*3600
+        delta = days*24*3600
         currmtime = time.time()
         file_delta = currmtime - mtime
 
@@ -1930,7 +1928,8 @@ class Server(object):
         return repo_bins
 
 
-    def tidy_mirrors(self, repository_id, ask = True, pretend = False):
+    def tidy_mirrors(self, repository_id, ask = True, pretend = False,
+        expiration_days = None):
         """
         Cleanup package mirrors for given repository from outdated package
         files. A package file is considered outdated if the corresponding
@@ -1944,10 +1943,21 @@ class Server(object):
         @type ask: bool
         @keyword pretend: just execute without effectively change anything on
             mirrors
+        @keyword expiration_days: days after a package is considered expired
+        @type: int
         @type pretend: bool
         @return: True, if tidy went successful, False if not
         @rtype: bool
         """
+        if expiration_days is None:
+            srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+            expiration_days = srv_set['packages_expiration_days']
+        else:
+            if not isinstance(expiration_days, const_get_int()):
+                raise AttributeError("invalid expiration_days")
+            if expiration_days < 0:
+                raise AttributeError("invalid expiration_days")
+
         self._entropy.output(
             "[%s|%s|%s] %s" % (
                 brown(repository_id),
@@ -1997,7 +2007,8 @@ class Server(object):
 
         removal = []
         for package_rel in expiring_packages:
-            expired = self._is_package_expired(repository_id, package_rel)
+            expired = self._is_package_expired(repository_id, package_rel,
+                expiration_days)
             if expired:
                 removal.append(package_rel)
             else:

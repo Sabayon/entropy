@@ -122,6 +122,20 @@ sync all the configured repositories
 =back
 
 
+=item B<vacuum>
+
+clean unavaiable packages from mirrors
+
+=over
+
+
+=item B<--days=<days>>
+
+expiration days [default is: 0]
+
+=back
+
+
 =item B<lock>
 
 lock the current repository database (server-side)
