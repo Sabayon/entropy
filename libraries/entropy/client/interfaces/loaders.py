@@ -15,6 +15,7 @@ from entropy.spm.plugins.factory import get_default_instance as get_spm, \
 from entropy.const import etpConst
 from entropy.qa import QAInterface
 from entropy.security import System
+from entropy.security import Repository as RepositorySecurity
 
 class LoadersMixin:
 
@@ -24,39 +25,48 @@ class LoadersMixin:
         from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
-        from entropy.security import Repository as RepositorySecurity
         from entropy.client.interfaces.sets import Sets
-        self.__PackageLoader = Package
-        self.__RepositoryLoader = Repository
-        self.__TriggerLoader = Trigger
-        self.__RepositorySecurityLoader = RepositorySecurity
-        self.__SetsLoader = Sets
+        self.__package_loader = Package
+        self.__repository_loader = Repository
+        self.__trigger_loader = Trigger
+        self.__sets_loader = Sets
 
     def Sets(self):
         """
-        Load Package Sets interface
+        Load Package Sets interface object
+
+        @return: Sets instance object
+        @rtype: entropy.client.interfaces.sets.Sets
         """
-        return self.__SetsLoader(self)
+        return self.__sets_loader(self)
 
     def Security(self):
         """
-        Load Entropy Security Advisories interface
+        Load Entropy Security Advisories interface object
+
+        @return: Repository Security instance object
+        @rtype: entropy.security.System
         """
         return System(self)
 
     def RepositorySecurity(self, keystore_dir = None):
         """
+        Load Entropy Repository Security interface object
+
+        @return: Repository Repository Security instance object
+        @rtype: entropy.security.Repository
         @raise RepositorySecurity.GPGError: GPGError based instances in case
             of problems.
         """
         if keystore_dir is None:
             keystore_dir = etpConst['etpclientgpgdir']
-        return self.__RepositorySecurityLoader(
-            keystore_dir = keystore_dir)
+        return RepositorySecurity(keystore_dir = keystore_dir)
 
     def QA(self):
         """
-        Load Entropy QA interface
+        Load Entropy QA interface object
+
+        @rtype: entropy.qa.QAInterface
         """
         qa_intf = QAInterface()
         qa_intf.output = self.output
@@ -66,15 +76,24 @@ class LoadersMixin:
         return qa_intf
 
     def Triggers(self, *args, **kwargs):
-        return self.__TriggerLoader(self, *args, **kwargs)
+        return self.__trigger_loader(self, *args, **kwargs)
 
     def Repositories(self, *args, **kwargs):
+        """
+        Load Entropy Repositories manager instance object
+
+        @return: Repository instance object
+        @rtype: entropy.client.interfaces.repository.Repository
+        """
         cl_id = self.sys_settings_client_plugin_id
         client_data = self._settings[cl_id]['misc']
         kwargs['gpg'] = client_data['gpg']
-        return self.__RepositoryLoader(self, *args, **kwargs)
+        return self.__repository_loader(self, *args, **kwargs)
 
     def Spm(self):
+        """
+        Load Source Package Manager instance object
+        """
         myroot = etpConst['systemroot']
         cached = self._spm_cache.get(myroot)
         if cached is not None:
@@ -85,22 +104,30 @@ class LoadersMixin:
 
     def Spm_class(self):
         """
-        Return Source Package Manager default plugin class.
+        Load Source Package Manager default plugin class
         """
         return get_spm_default_class()
 
     def Package(self):
-        return self.__PackageLoader(self)
+        """
+        Load Entropy Package instance object
+
+        @return:
+        @rtype: entropy.client.interfaces.package.Package
+        """
+        return self.__package_loader(self)
 
     def Settings(self):
         """
-        Return SystemSettings instance
+        Return SystemSettings instance object
         """
         return self._settings
 
     def Cacher(self):
         """
-        Return EntropyCacher instance
+        Return EntropyCacher instance object
+
+        @return: EntropyCacher instance object
+        @rtype: entropy.cache.EntropyCacher
         """
         return self._cacher
-
