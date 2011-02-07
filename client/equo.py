@@ -286,14 +286,16 @@ help_opts_extended = [
                 (4, '--pretend', 2, _('only show what would be done')),
                 (4, '--syncall', 2, _('sync all the configured repositories')),
                 (4, '--do-packages-check', 1, _('also verify packages integrity')),
-            (3, 'db-sync', 3, _('sync the current repository database across primary mirrors')),
+            (3, 'repo-sync', 2, _('sync the current repository database across primary mirrors')),
                 (4, '--syncall', 2, _('sync all the configured repositories')),
-            (3, 'db-lock', 3, _('lock the current repository database (server-side)')),
-            (3, 'db-unlock', 2, _('unlock the current repository database (server-side)')),
-            (3, 'db-download-lock', 1, _('lock the current repository database (client-side)')),
-            (3, 'db-download-unlock', 1, _('unlock the current repository database (client-side)')),
-            (3, 'db-lock-status', 2, _('show current lock status')),
+            (3, 'repo-lock', 2, _('lock the current repository database (server-side)')),
+            (3, 'repo-unlock', 2, _('unlock the current repository database (server-side)')),
+            (3, 'repo-download-lock', 1, _('lock the current repository database (client-side)')),
+            (3, 'repo-download-unlock', 1, _('unlock the current repository database (client-side)')),
+            (3, 'repo-lock-status', 1, _('show current lock status')),
             (3, 'tidy', 3, _('remove binary packages not in repositories and expired')),
+            (3, 'vacuum', 3, _('clean unavaiable packages from mirrors (similar to tidy, but more nazi)')),
+                (4, '--days=<days>', 2, _('expiration days [default is: 0, dangerous!]')),
 
         None,
 
@@ -490,8 +492,10 @@ def _do_text_community(main_cmd, options):
                     rc = server_activator.sync(options[1:])
                 elif options[0] == "tidy":
                     rc = server_activator.sync(options[1:], just_tidy = True)
-                elif options[0].startswith("db-"):
-                    options[0] = options[0][3:]
+                elif options[0].startswith("repo-"):
+                    options[0] = options[0][5:]
+                    rc = server_activator.repo(options)
+                elif options[0] == "vacuum":
                     rc = server_activator.repo(options)
 
     elif sub_cmd == "repo":

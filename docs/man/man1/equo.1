@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2010-12-02" "perl v5.12.2" "Entropy"
+.TH EQUO 1 "2011-02-07" "perl v5.12.2" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -844,8 +844,8 @@ also verify packages integrity
 .RE
 .RS 4
 .RE
-.IP "\fBdb-sync\fR" 4
-.IX Item "db-sync"
+.IP "\fBrepo-sync\fR" 4
+.IX Item "repo-sync"
 sync the current repository database across primary mirrors
 .RS 4
 .IP "\fB\-\-syncall\fR" 4
@@ -854,24 +854,34 @@ sync all the configured repositories
 .RE
 .RS 4
 .RE
-.IP "\fBdb-lock\fR" 4
-.IX Item "db-lock"
+.IP "\fBrepo-lock\fR" 4
+.IX Item "repo-lock"
 lock the current repository database (server-side)
-.IP "\fBdb-unlock\fR" 4
-.IX Item "db-unlock"
+.IP "\fBrepo-unlock\fR" 4
+.IX Item "repo-unlock"
 unlock the current repository database (server-side)
-.IP "\fBdb-download-lock\fR" 4
-.IX Item "db-download-lock"
+.IP "\fBrepo-download-lock\fR" 4
+.IX Item "repo-download-lock"
 lock the current repository database (client-side)
-.IP "\fBdb-download-unlock\fR" 4
-.IX Item "db-download-unlock"
+.IP "\fBrepo-download-unlock\fR" 4
+.IX Item "repo-download-unlock"
 unlock the current repository database (client-side)
-.IP "\fBdb-lock-status\fR" 4
-.IX Item "db-lock-status"
+.IP "\fBrepo-lock-status\fR" 4
+.IX Item "repo-lock-status"
 show current lock status
 .IP "\fBtidy\fR" 4
 .IX Item "tidy"
 remove binary packages not in repositories and expired
+.IP "\fBvacuum\fR" 4
+.IX Item "vacuum"
+clean unavaiable packages from mirrors (similar to tidy, but more nazi)
+.RS 4
+.IP "\fB\-\-days=<days\fR>" 4
+.IX Item "--days=<days>"
+expiration days [default is: 0, dangerous!]
+.RE
+.RS 4
+.RE
 .RE
 .RS 4
 .RE

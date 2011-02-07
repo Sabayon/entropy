@@ -943,7 +943,7 @@ also verify packages integrity
 =back
 
 
-=item B<db-sync>
+=item B<repo-sync>
 
 sync the current repository database across primary mirrors
 
@@ -957,29 +957,43 @@ sync all the configured repositories
 =back
 
 
-=item B<db-lock>
+=item B<repo-lock>
 
 lock the current repository database (server-side)
 
-=item B<db-unlock>
+=item B<repo-unlock>
 
 unlock the current repository database (server-side)
 
-=item B<db-download-lock>
+=item B<repo-download-lock>
 
 lock the current repository database (client-side)
 
-=item B<db-download-unlock>
+=item B<repo-download-unlock>
 
 unlock the current repository database (client-side)
 
-=item B<db-lock-status>
+=item B<repo-lock-status>
 
 show current lock status
 
 =item B<tidy>
 
 remove binary packages not in repositories and expired
+
+=item B<vacuum>
+
+clean unavaiable packages from mirrors (similar to tidy, but more nazi)
+
+=over
+
+
+=item B<--days=<days>>
+
+expiration days [default is: 0, dangerous!]
+
+=back
+
 
 =back
 
