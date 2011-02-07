@@ -18,6 +18,7 @@
 
 """
 import os
+import errno
 import sys
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
@@ -1494,7 +1495,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             try:
                 os.makedirs(etpConst['dumpstoragedir'])
             except IOError as e:
-                if e.errno == 30: # readonly filesystem
+                if e.errno == errno.EROFS: # readonly filesystem
                     etpUi['pretend'] = True
                 return
             except OSError:
@@ -1522,7 +1523,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 const_setup_perms(etpConst['dumpstoragedir'],
                     etpConst['entropygid'])
             except IOError as e:
-                if e.errno == 30: # readonly filesystem
+                if e.errno == errno.EROFS: # readonly filesystem
                     etpUi['pretend'] = True
                 return
             except (OSError,) as e:
@@ -1533,7 +1534,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         try:
             mtime_f = open(tosaveinto, "w")
         except IOError as e: # unable to write?
-            if e.errno == 30: # readonly filesystem
+            if e.errno == errno.EROFS: # readonly filesystem
                 etpUi['pretend'] = True
             return
         else:

@@ -601,7 +601,7 @@ class SocketHost:
                             try:
                                 dead = os.waitpid(pid, os.WNOHANG)[0]
                             except OSError as e:
-                                if e.errno != 10:
+                                if e.errno != errno.ECHILD:
                                     raise
                                 dead = True
                             if passed_away:

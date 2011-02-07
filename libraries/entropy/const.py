@@ -826,7 +826,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                         pid_f.write(str(pid))
                         pid_f.flush()
                 except IOError as err:
-                    if err.errno != 30: # readonly filesystem
+                    if err.errno != errno.EROFS: # readonly filesystem
                         raise
                 try:
                     const_chmod_entropy_pid()

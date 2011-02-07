@@ -10,6 +10,7 @@
 
 """
 import os
+import errno
 import sys
 import shutil
 import tempfile
@@ -349,7 +350,7 @@ def showdiff(fromfile, tofile):
     try:
         subprocess.call(args)
     except OSError as err:
-        if err.errno != 2:
+        if err.errno != errno.ENOENT:
             raise
         args = ["cat", tmp_path]
         subprocess.call(args)
@@ -366,7 +367,7 @@ def interactive_merge(source, destination):
     try:
         rc = subprocess.call(args)
     except OSError:
-        if err.errno != 2:
+        if err.errno != errno.ENOENT:
             raise
         rc = 2
         os.remove(tmp_path)

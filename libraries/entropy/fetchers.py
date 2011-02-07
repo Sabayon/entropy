@@ -10,6 +10,7 @@
 
 """
 import os
+import errno
 import sys
 import time
 import httplib
@@ -241,7 +242,7 @@ class UrlFetcher(TextInterface):
                 try:
                     dead, return_code = os.waitpid(pid, os.WNOHANG)
                 except OSError as e:
-                    if e.errno != 10:
+                    if e.errno != errno.ECHILD:
                         raise
                     dead = True
 

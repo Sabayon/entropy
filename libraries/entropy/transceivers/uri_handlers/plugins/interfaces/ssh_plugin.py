@@ -10,6 +10,7 @@
 
 """
 import os
+import errno
 import time
 import tempfile
 import shutil
@@ -161,7 +162,7 @@ class EntropySshUriHandler(EntropyUriHandler):
                 try:
                     dead, return_code = os.waitpid(pid, os.WNOHANG)
                 except OSError as e:
-                    if e.errno != 10:
+                    if e.errno != errno.ECHILD:
                         raise
                     dead = True
 

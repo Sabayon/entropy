@@ -1347,7 +1347,7 @@ class Repository:
             try:
                 os.makedirs(self.__keystore, 0o775)
             except OSError as err:
-                if err.errno != 13:
+                if err.errno != errno.EACCES:
                     raise
                 raise Repository.GPGServiceNotAvailable(err)
 

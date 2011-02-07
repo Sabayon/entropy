@@ -10,6 +10,7 @@
 
 """
 import os
+import errno
 import bz2
 import hashlib
 import shlex
@@ -1620,7 +1621,7 @@ class PortagePlugin(SpmPlugin):
             proc = subprocess.Popen(args, stdout = sys.stdout,
                 stderr = sys.stderr, stdin = sys.stdin)
         except OSError as err:
-            if err.errno != 2:
+            if err.errno != errno.ENOENT:
                 raise
             return
         proc.wait()
@@ -3571,7 +3572,7 @@ class PortagePlugin(SpmPlugin):
         try:
             os.makedirs(portage_db_fakedir, 0o755)
         except OSError as err:
-            if err.errno != 17:
+            if err.errno != errno.EEXIST:
                 raise
             shutil.rmtree(portage_db_fakedir, True)
             os.makedirs(portage_db_fakedir, 0o755)

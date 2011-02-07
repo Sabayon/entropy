@@ -16,6 +16,7 @@
 
 """
 import os
+import errno
 import sys
 import tempfile
 from entropy.const import etpConst, etpUi, const_debug_write, \
@@ -137,7 +138,7 @@ class EntropyCacher(Singleton):
                 try:
                     dead = os.waitpid(pid, os.WNOHANG)[0]
                 except OSError as err:
-                    if err.errno != 10:
+                    if err.errno != errno.ECHILD:
                         raise
                     dead = True
                 if dead:
@@ -227,7 +228,7 @@ class EntropyCacher(Singleton):
                     try:
                         os.waitpid(pid, 0)
                     except OSError as err:
-                        if err.errno != 10:
+                        if err.errno != errno.ECHILD:
                             raise
                 for (key, cache_dir), data in massive_data:
                     try:
