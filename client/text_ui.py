@@ -289,10 +289,10 @@ def show_config_files_to_update(entropy_client):
             blue(_("Scanning configuration files to update")), back = True)
 
     try:
+        file_updates = entropy_client.PackageFileUpdates()
         while True:
             try:
-                scandata = entropy_client.FileUpdates.scan(
-                    dcache = True, quiet = True)
+                scandata = file_updates.scan(dcache = True, quiet = True)
                 break
             except KeyboardInterrupt:
                 continue

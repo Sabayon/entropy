@@ -226,6 +226,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.gtk_loop()
         gobject.idle_add(_pkg_install)
 
+    def _get_file_updates(self):
+        # delayed loading, use cache.
+        if not hasattr(self, "_file_updates"):
+            self._file_updates = self._entropy.PackageFileUpdates()
+        return self._file_updates
+
     def quit(self, widget = None, event = None, sysexit = 0):
 
         def do_kill(pid):
@@ -1384,7 +1390,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def _populate_files_update(self):
         # load filesUpdate interface and fill self.filesView
         with self._privileges:
-            cached = self._entropy.FileUpdates.scan(quiet = True)
+            file_updates = self._get_file_updates()
+            cached = file_updates.scan(quiet = True)
             if cached:
                 self.filesView.populate(cached)
 
@@ -2105,10 +2112,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if direct_install_matches is None:
             direct_install_matches = []
         self.show_progress_bars()
+        file_updates = self._get_file_updates()
 
         def do_file_updates_check():
-            self._entropy.FileUpdates.scan(dcache = False, quiet = True)
-            fs_data = self._entropy.FileUpdates.scan()
+            file_updates.scan(dcache = False, quiet = True)
+            fs_data = file_updates.scan()
             if fs_data:
                 if len(fs_data) > 0:
                     switch_back_page = 'filesconf'

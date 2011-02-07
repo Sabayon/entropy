@@ -616,7 +616,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
 
-        self.FileUpdates = None
         self._enabled_repos = []
         self.UGC = None
         self.safe_mode = 0
@@ -646,9 +645,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.MultipleUrlFetcher = MultipleUrlFetcher
 
         self._cacher = EntropyCacher()
-
-        from entropy.client.misc import FileUpdates
-        self.FileUpdates = FileUpdates(self)
 
         if noclientdb in (False, 0):
             self.noclientdb = False

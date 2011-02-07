@@ -2482,7 +2482,8 @@ class Package:
 
             if protected:
                 # add to disk cache
-                self._entropy.FileUpdates.add(tofile, quiet = True)
+                file_updates = self._entropy.PackageFileUpdates()
+                file_updates.add(tofile, quiet = True)
 
             return 0
 

@@ -4824,7 +4824,8 @@ class Server(Client):
             back = True
         )
         # scanning for config files not updated
-        scandata = self.FileUpdates.scan(dcache = False)
+        file_updates = self.PackageFileUpdates()
+        scandata = file_updates.scan(dcache = False)
         if scandata:
             self.output(
                 "[%s] %s" % (

@@ -26,10 +26,12 @@ class LoadersMixin:
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
         from entropy.client.interfaces.sets import Sets
+        from entropy.client.misc import FileUpdates
         self.__package_loader = Package
         self.__repository_loader = Repository
         self.__trigger_loader = Trigger
         self.__sets_loader = Sets
+        self.__package_files_loader = FileUpdates
 
     def Sets(self):
         """
@@ -116,6 +118,16 @@ class LoadersMixin:
         @rtype: entropy.client.interfaces.package.Package
         """
         return self.__package_loader(self)
+
+    def PackageFileUpdates(self):
+        """
+        Load Entropy Package Files instance object. Through this interface,
+        you can scan for package files updates (usually configuration files)
+        and let user merge, remove them interactively.
+
+        @rtype: entropy.client.misc.FileUpdates
+        """
+        return self.__package_files_loader(self)
 
     def Settings(self):
         """
