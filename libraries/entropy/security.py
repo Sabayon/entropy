@@ -1869,7 +1869,13 @@ class Repository:
         """
         args = self.__default_gpg_args(preserve_perms = False) + \
             ["--import", key_path]
-        current_keys = set([x['fingerprint'] for x in self.__list_keys()])
+        try:
+            current_keys = set([x['fingerprint'] for x in self.__list_keys()])
+        except OSError as err:
+            if err.errno == errno.EIO:
+                raise Repository.GPGError(
+                    "cannot list keys for %s" % (repository_identifier))
+            raise
 
         proc = subprocess.Popen(args, **self.__default_popen_args())
 
