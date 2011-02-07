@@ -423,7 +423,7 @@ def _repo(entropy_server, options):
             print_info(green(" * ")+red("%s !" % (
                 _("A problem occured on at least one mirror"),) ))
         else:
-            print_info(green(" * ")+green(_("Databases lock complete")))
+            print_info(green(" * ")+green(_("Repositories lock complete")))
         return rc
 
     elif cmd == "unlock":
@@ -438,7 +438,7 @@ def _repo(entropy_server, options):
                 _("A problem occured on at least one mirror"),) ))
         else:
             print_info(green(" * ")+green(
-                _("Databases unlock complete")))
+                _("Repositories unlock complete")))
         return rc
 
     elif cmd == "download-lock":
@@ -503,11 +503,11 @@ def _repo(entropy_server, options):
             if repo == etpConst['clientserverrepoid']:
                 continue
 
-            print_info(green(" * ")+red("%s ..." % (_("Syncing databases"),) ))
+            print_info(green(" * ")+red("%s ..." % (_("Syncing repositories"),) ))
             sts = _sync_remote_databases(entropy_server, repo)
             if sts != 0:
                 print_error(darkred(" !!! ") + \
-                    green(_("Database sync errors, cannot continue.")))
+                    green(_("Repositories sync error, cannot continue.")))
                 rc = 1
 
         return rc
@@ -561,31 +561,31 @@ def sync_remote_databases():
 def _sync_remote_databases(entropy_server, repository_id):
 
     print_info(green(" * ")+red("%s:" % (
-        _("Remote Entropy Database Repository Status"),) ))
+        _("Remote Entropy Repository Status"),) ))
     remote_db_status = entropy_server.Mirrors.remote_repository_status(
         repository_id)
     for url, revision in remote_db_status.items():
         host = EntropyTransceiver.get_uri_name(url)
         print_info(green("    %s: " % (_("Host"),) )+bold(host))
-        print_info(red("     * %s: " % (_("Database revision"),) ) + \
+        print_info(red("     * %s: " % (_("Revision"),) ) + \
             blue(str(revision)))
 
     local_revision = entropy_server.local_repository_revision(repository_id)
     print_info(red("      * %s: " % (
-        _("Database local revision currently at"),) ) + \
+        _("Local revision currently at"),) ) + \
             blue(str(local_revision)))
 
     # do the rest
     sts = entropy_server.Mirrors.sync_repository(repository_id)
 
     print_info(darkgreen(" * ")+red("%s:" % (
-        _("Remote Entropy Database Repository Status"),) ))
+        _("Remote Entropy Repository Status"),) ))
     remote_status = entropy_server.Mirrors.remote_repository_status(
         repository_id)
     for url, revision in remote_status.items():
         host = EntropyTransceiver.get_uri_name(url)
         print_info(darkgreen("    %s: " % (_("Host"),) )+bold(host))
-        print_info(red("      * %s: " % (_("Database revision"),) ) + \
+        print_info(red("      * %s: " % (_("Revision"),) ) + \
             blue(str(revision)))
 
     return sts
