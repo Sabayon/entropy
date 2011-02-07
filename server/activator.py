@@ -63,7 +63,7 @@ help_opts = [
     (1, 'repo', 1, _('repository handling functions')),
         (2, 'sync', 3, _('sync the current repository database across primary mirrors')),
             (3, '--syncall', 1, _('sync all the configured repositories')),
-        (2, 'vacuum', 3, _('clean unavaiable packages from mirrors')),
+        (2, 'vacuum', 3, _('clean unavaiable packages from mirrors (similar to tidy, but more nazi)')),
             (3, '--days=<days>', 1, _('expiration days [default is: 0, dangerous!]')),
         (2, 'lock', 3, _('lock the current repository database (server-side)')),
         (2, 'unlock', 3, _('unlock the current repository database (server-side)')),
