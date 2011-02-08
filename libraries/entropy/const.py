@@ -846,10 +846,11 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                     import shutil
                     shutil.rmtree(pid_file)
 
-            with open(pid_file, "w") as pid_fw:
+            with open(pid_file, "a+") as pid_fw:
 
                 try:
                     fcntl.flock(pid_fw.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    pid_fw.truncate()
                     pid_fw.write(str(pid))
                     pid_fw.flush()
                 except IOError as err:
