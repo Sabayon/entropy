@@ -1323,7 +1323,7 @@ class MiscMixin:
         const_setup_perms(lockdir, etpConst['entropygid'], recursion = False)
         mypid = os.getpid()
 
-        pid_f = open(pidfile, "w")
+        pid_f = open(pidfile, "a+")
         try:
             fcntl.flock(pid_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
         except IOError as err:
@@ -1333,6 +1333,7 @@ class MiscMixin:
             pid_f.close()
             return False # lock already acquired
 
+        pid_f.truncate()
         pid_f.write(str(mypid))
         pid_f.flush()
         MiscMixin.RESOURCES_LOCK_F_REF = pid_f
