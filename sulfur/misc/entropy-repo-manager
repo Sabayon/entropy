@@ -1,4 +1,0 @@
-#!/usr/bin/python2
-import subprocess
-rc = subprocess.call(["python2","/usr/lib/entropy/repoman/repo-manager-client.py"])
-raise SystemExit(rc)

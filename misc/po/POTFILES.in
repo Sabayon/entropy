@@ -2,6 +2,7 @@
 ../libraries/entropy/transceivers/uri_handlers/skel.py
 ../libraries/entropy/transceivers/uri_handlers/plugins/factory.py
 ../libraries/entropy/transceivers/uri_handlers/plugins/__init__.py
+../libraries/entropy/transceivers/exceptions.py
 ../libraries/entropy/transceivers/__init__.py
 ../libraries/entropy/db/exceptions.py
 ../libraries/entropy/db/__init__.py
@@ -21,10 +22,6 @@
 ../libraries/entropy/spm/plugins/interfaces/portage_plugin/xpak.py
 ../libraries/entropy/spm/plugins/interfaces/portage_plugin/xpaktools.py
 ../libraries/entropy/spm/plugins/interfaces/__init__.py
-../libraries/entropy/services/system/commands.py
-../libraries/entropy/services/system/executors.py
-../libraries/entropy/services/system/__init__.py
-../libraries/entropy/services/system/interfaces.py
 ../libraries/entropy/services/ugc/commands.py
 ../libraries/entropy/services/ugc/__init__.py
 ../libraries/entropy/services/ugc/interfaces.py
@@ -34,6 +31,7 @@
 ../libraries/entropy/services/authenticators.py
 ../libraries/entropy/services/auth_interfaces.py
 ../libraries/entropy/services/commands.py
+../libraries/entropy/services/exceptions.py
 ../libraries/entropy/services/__init__.py
 ../libraries/entropy/services/interfaces.py
 ../libraries/entropy/services/skel.py
@@ -47,10 +45,6 @@
 ../libraries/entropy/client/services/ugc/commands.py
 ../libraries/entropy/client/services/ugc/__init__.py
 ../libraries/entropy/client/services/ugc/interfaces.py
-../libraries/entropy/client/services/system/commands.py
-../libraries/entropy/client/services/system/__init__.py
-../libraries/entropy/client/services/system/interfaces.py
-../libraries/entropy/client/services/system/methods.py
 ../libraries/entropy/client/services/__init__.py
 ../libraries/entropy/client/__init__.py
 ../libraries/entropy/client/mirrors.py
@@ -83,6 +77,11 @@
 ../libraries/entropy/qa.py
 ../libraries/entropy/security.py
 ../libraries/entropy/tools.py
+../libraries/test_db_search.py
+../libraries/test_qa.py
+../libraries/test_qa_sets.py
+../libraries/test_rsync.py
+../libraries/test_speed.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
@@ -100,7 +99,6 @@
 ../server/server_key.py
 ../server/server_query.py
 ../server/server_reagent.py
-../sulfur/src/repo-manager-client.py
 ../sulfur/src/sulfur_client.py
 ../sulfur/src/sulfur/core.py
 ../sulfur/src/sulfur/dialogs.py
@@ -124,5 +122,6 @@
 ../magneto/src/magneto/core/config.py
 ../magneto/src/magneto/core/__init__.py
 ../magneto/src/magneto/core/interfaces.py
+../services/kernel-switcher
 ../sulfur/src/sulfur/sulfur.glade
 ../magneto/src/magneto/gtk/magneto.glade

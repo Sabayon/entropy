@@ -1,7 +1,7 @@
 PKGNAME = entropy
 PYTHON = python2
 SUBDIRS = magneto misc/po sulfur
-SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon repository-services-daemon.example server_query.py
+SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-services-daemon.example server_query.py
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
@@ -25,10 +25,8 @@ entropy-install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
 
 	cp libraries/entropy $(DESTDIR)/$(LIBDIR)/entropy/libraries/ -Ra
-	install -m 755 services/repository-admin-daemon $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 services/repository-services-daemon.example $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 misc/entropy.sh $(DESTDIR)$(PREFIX)/sbin/
-	install -m 755 services/repository_admin $(DESTDIR)/etc/init.d/
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
 	install -m 755 services/smartapp_wrapper $(DESTDIR)/$(LIBDIR)/entropy/services/
 	install -m 755 misc/entropy_hwgen.sh $(DESTDIR)$(BINDIR)/
@@ -82,7 +80,6 @@ equo-install:
 
 	install -m 644 client/*.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 644 client/revision $(DESTDIR)/$(LIBDIR)/entropy/client/
-	install -m 644 client/entropy-system-test-client $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 755 client/equo.py $(DESTDIR)/$(LIBDIR)/entropy/client/
 	install -m 755 services/kernel-switcher $(DESTDIR)$(BINDIR)/
 

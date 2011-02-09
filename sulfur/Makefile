@@ -34,7 +34,6 @@ install:
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
 
-	install -m755 $(MISCDIR)/entropy-repo-manager $(DESTDIR)$(BINDIR)/.
 	install -m755 $(MISCDIR)/sulfur $(DESTDIR)$(BINDIR)/.
 	install -m755 $(MISCDIR)/sulfur-uri-handler $(DESTDIR)$(BINDIR)/.
 	install -m644 $(MISCDIR)/entropy-handler.schemas $(DESTDIR)/etc/gconf/schemas/.
