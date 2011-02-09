@@ -246,7 +246,7 @@ class System:
         @return: download status (True if download succeeded)
         @rtype: bool
         """
-        fetcher = self._entropy.urlFetcher(url, save_to, resume = False,
+        fetcher = self._entropy._url_fetcher(url, save_to, resume = False,
             show_speed = show_speed)
         rc_fetch = fetcher.download()
         del fetcher

@@ -309,7 +309,6 @@ class Equo(Client):
         self.progress = None
         self.progress_log = None
         self.std_output = None
-        self.urlFetcher = None
         Client.init_singleton(self, *args, **kwargs)
         self._progress_divider = 1
         self.xcache = True # force xcache enabling
@@ -323,7 +322,7 @@ class Equo(Client):
     def connect_to_gui(self, application):
         self.progress = application.progress
         GuiUrlFetcher.progress = application.progress
-        self.urlFetcher = GuiUrlFetcher
+        self._url_fetcher = GuiUrlFetcher
         self.progress_log = application.progress_log_write
         self.std_output = application.std_output
         self.ui = application.ui

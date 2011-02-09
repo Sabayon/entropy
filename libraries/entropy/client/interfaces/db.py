@@ -820,7 +820,7 @@ class AvailablePackagesRepositoryUpdater(object):
             const_setup_perms(filepath_dir, etpConst['entropygid'],
                 f_perms = 0o644)
 
-        fetcher = self._entropy.urlFetcher(
+        fetcher = self._entropy._url_fetcher(
             url,
             filepath,
             resume = False,

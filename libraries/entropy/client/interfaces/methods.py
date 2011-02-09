@@ -1539,8 +1539,8 @@ class MiscMixin:
 
                 start_time = time.time()
                 for idx in range(retries):
-                    fetcher = self.urlFetcher(mirror, tmp_path, resume = False,
-                        show_speed = False)
+                    fetcher = self._url_fetcher(mirror, tmp_path,
+                        resume = False, show_speed = False)
                     fetcher.download()
                 end_time = time.time()
 

@@ -171,13 +171,13 @@ class Package:
             for pkg_id, repo, url, dest_path, cksum in url_data:
                 url_path_list.append((url, dest_path,))
                 self._setup_differential_download(
-                    self._entropy.MultipleUrlFetcher, url, resume, dest_path,
+                    self._entropy._multiple_url_fetcher, url, resume, dest_path,
                         repo, pkg_id)
 
             # load class
-            fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
+            fetch_intf = self._entropy._multiple_url_fetcher(url_path_list,
                 resume = resume, abort_check_func = fetch_abort_function,
-                url_fetcher_class = self._entropy.urlFetcher,
+                url_fetcher_class = self._entropy._url_fetcher,
                 checksum = checksum)
             try:
                 data = fetch_intf.download()
@@ -627,9 +627,9 @@ class Package:
             return [], 0.0, False
 
         fetch_abort_function = self.pkgmeta.get('fetch_abort_function')
-        fetch_intf = self._entropy.MultipleUrlFetcher(url_path_list,
+        fetch_intf = self._entropy._multiple_url_fetcher(url_path_list,
             resume = resume, abort_check_func = fetch_abort_function,
-            url_fetcher_class = self._entropy.urlFetcher)
+            url_fetcher_class = self._entropy._url_fetcher)
         try:
             data = fetch_intf.download()
         except KeyboardInterrupt:
@@ -724,7 +724,7 @@ class Package:
 
         for delta_url, delta_save in download_plan:
 
-            delta_fetcher = self._entropy.urlFetcher(delta_url,
+            delta_fetcher = self._entropy._url_fetcher(delta_url,
                 delta_save, resume = delta_resume,
                 abort_check_func = fetch_abort_function)
 
@@ -802,12 +802,12 @@ class Package:
         if os.path.isfile(save_path) and os.path.exists(save_path):
             existed_before = True
 
-        fetch_intf = self._entropy.urlFetcher(url, save_path, resume = resume,
+        fetch_intf = self._entropy._url_fetcher(url, save_path, resume = resume,
             abort_check_func = fetch_abort_function)
         if (download is not None) and (package_id is not None) and \
             (repository is not None):
             fetch_path = self.__get_fetch_disk_path(download)
-            self._setup_differential_download(self._entropy.urlFetcher, url,
+            self._setup_differential_download(self._entropy._url_fetcher, url,
                 resume, fetch_path, repository, package_id)
 
         # start to download

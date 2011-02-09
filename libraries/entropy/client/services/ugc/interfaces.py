@@ -673,7 +673,7 @@ class Cache:
                 raise PermissionDenied("PermissionDenied: %s %s" % (
                     _("Cannot remove cache file"), cache_file,))
 
-        fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file,
+        fetcher = self.Service.Entropy._url_fetcher(doc_url, cache_file,
             resume = False)
         rc = fetcher.download()
         if rc in ("-1", "-2", "-3", "-4"):

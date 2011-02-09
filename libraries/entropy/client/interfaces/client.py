@@ -12,6 +12,7 @@
 
 import os
 from entropy.core import Singleton
+from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.client.interfaces.loaders import LoadersMixin
 from entropy.client.interfaces.cache import CacheMixin
@@ -635,14 +636,12 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             level = self._settings['system']['log_level'],
             filename = etpConst['entropylogfile'], header = "[client]")
 
-        self.MultipleUrlFetcher = multiple_url_fetcher
-        self.urlFetcher = url_fetcher
-        if self.urlFetcher == None:
-            from entropy.fetchers import UrlFetcher
-            self.urlFetcher = UrlFetcher
-        if self.MultipleUrlFetcher == None:
-            from entropy.fetchers import MultipleUrlFetcher
-            self.MultipleUrlFetcher = MultipleUrlFetcher
+        self._multiple_url_fetcher = multiple_url_fetcher
+        self._url_fetcher = url_fetcher
+        if url_fetcher is None:
+            self._url_fetcher = UrlFetcher
+        if multiple_url_fetcher is None:
+            self._multiple_url_fetcher = MultipleUrlFetcher
 
         self._cacher = EntropyCacher()
 
