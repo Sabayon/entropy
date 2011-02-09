@@ -716,7 +716,7 @@ def _search_bashcomp(cmdline, from_installed = False, ignore_installed = False):
         if client.installed_repository() is None:
             return []
         import text_query
-        return text_query.search_package([cmdline[-1]], Equo = client,
+        return text_query.search_package([cmdline[-1]], client,
             get_results = True, from_installed = from_installed,
                 ignore_installed = ignore_installed)
     finally:

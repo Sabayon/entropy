@@ -9,21 +9,19 @@
     B{Entropy Package Manager Client}.
 
 """
-
 import os
 from entropy.const import etpUi, const_convert_to_unicode, \
     const_convert_to_rawstring, const_convert_to_unicode, etpConst
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic, \
     print_warning, teal
+from entropy.exceptions import DependenciesNotRemovable
 from entropy.misc import Lifo
-from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
 import entropy.dep
 import entropy.tools
-from entropy.db.exceptions import DatabaseError
 
-from text_tools import print_table, get_file_mime
+from text_tools import print_table, get_file_mime, enlightenatom
 
 def query(options):
 
@@ -57,7 +55,8 @@ def query(options):
             multi_match = True
         elif (opt == "--multirepo") and (first_opt == "match"):
             multi_repo = True
-        elif (opt == "--installed") and (first_opt in ("match", "mimetype", "associate",)):
+        elif (opt == "--installed") and (first_opt in ("match", "mimetype",
+            "associate",)):
             match_installed = True
         elif (opt == "--showrepo") and (first_opt == "match"):
             show_repo = True
@@ -74,99 +73,122 @@ def query(options):
     if not myopts:
         return -10
 
-    if myopts[0] == "match":
-        rc_status = match_package(myopts[1:],
-            multiMatch = multi_match,
-            multiRepo = multi_repo,
-            showRepo = show_repo,
-            showDesc = show_desc,
-            installed = match_installed)
+    cmd, args = myopts[0], myopts[1:]
 
-    elif myopts[0] == "search":
-        rc_status = search_package(myopts[1:])
+    etp_client = None
+    try:
+        from entropy.client.interfaces import Client
+        etp_client = Client()
+        if cmd == "match":
+            rc_status = match_package(args,
+                multiMatch = multi_match,
+                multiRepo = multi_repo,
+                showRepo = show_repo,
+                showDesc = show_desc,
+                installed = match_installed)
 
-    elif myopts[0] == "graph":
-        rc_status = graph_packages(myopts[1:], complete = complete_graph)
+        elif cmd == "search":
+            rc_status = search_package(args, etp_client)
 
-    elif myopts[0] == "revgraph":
-        rc_status = revgraph_packages(myopts[1:], complete = complete_graph)
+        elif cmd == "graph":
+            rc_status = graph_packages(args, etp_client,
+                complete = complete_graph)
 
-    elif myopts[0] == "installed":
-        rc_status = search_installed_packages(myopts[1:])
+        elif cmd == "revgraph":
+            rc_status = revgraph_packages(args, etp_client,
+                complete = complete_graph)
 
-    elif myopts[0] == "belongs":
-        rc_status = search_belongs(myopts[1:])
+        elif cmd == "installed":
+            rc_status = search_repository_packages(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] == "changelog":
-        rc_status = search_changelog(myopts[1:])
+        elif cmd == "belongs":
+            rc_status = search_belongs(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] == "revdeps":
-        rc_status = search_reverse_dependencies(myopts[1:])
+        elif cmd == "changelog":
+            rc_status = search_changelog(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] == "files":
-        rc_status = search_files(myopts[1:])
+        elif cmd == "revdeps":
+            rc_status = search_reverse_dependencies(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] == "needed":
-        rc_status = search_needed_libraries(myopts[1:])
+        elif cmd == "files":
+            rc_status = search_files(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] in ("mimetype", "associate"):
-        associate = myopts[0] == "associate"
-        rc_status = search_mimetype(myopts[1:], installed = match_installed,
-            associate = associate)
+        elif cmd == "needed":
+            rc_status = search_needed_libraries(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] == "required":
-        rc_status = search_required_libraries(myopts[1:])
+        elif cmd in ("mimetype", "associate"):
+            associate = cmd == "associate"
+            rc_status = search_mimetype(args, etp_client,
+                installed = match_installed,
+                associate = associate)
 
-    elif myopts[0] == "removal":
-        rc_status = search_removal_dependencies(myopts[1:], deep = do_deep)
+        elif cmd == "required":
+            rc_status = search_required_libraries(args, etp_client,
+                etp_client.installed_repository())
 
-    elif myopts[0] == "tags":
-        rc_status = search_tagged_packages(myopts[1:])
+        elif cmd == "removal":
+            rc_status = search_removal_dependencies(args, etp_client,
+                etp_client.installed_repository(), deep = do_deep)
 
-    elif myopts[0] == "revisions":
-        rc_status = search_rev_packages(myopts[1:])
+        elif cmd == "tags":
+            rc_status = search_tagged_packages(args, etp_client)
 
-    elif myopts[0] == "sets":
-        rc_status = search_package_sets(myopts[1:])
+        elif cmd == "revisions":
+            rc_status = search_rev_packages(args, etp_client)
 
-    elif myopts[0] == "license":
-        rc_status = search_licenses(myopts[1:])
+        elif cmd == "sets":
+            rc_status = search_package_sets(args, etp_client)
 
-    elif myopts[0] == "slot":
-        if (len(myopts) > 1):
-            rc_status = search_slotted_packages(myopts[1:])
+        elif cmd == "license":
+            rc_status = search_licenses(args, etp_client)
 
-    elif myopts[0] == "orphans":
-        rc_status = search_orphaned_files()
-
-    elif myopts[0] == "list":
-        mylistopts = options[1:]
-        if len(mylistopts) > 0:
-            if mylistopts[0] == "installed":
-                rc_status = list_installed_packages()
-            elif mylistopts[0] == "available" and len(mylistopts) > 1:
-                repoid = mylistopts[1]
-                equo = EquoInterface()
-                if repoid in equo.repositories():
-                    repo_dbconn = equo.open_repository(repoid)
-                    rc_status = list_installed_packages(dbconn = repo_dbconn)
-                else:
-                    rc_status = -10
+        elif cmd == "slot":
+            if args:
+                rc_status = search_slotted_packages(args, etp_client)
             else:
                 rc_status = -10
 
-    elif myopts[0] == "description":
-        rc_status = search_description(myopts[1:])
+        elif cmd == "orphans":
+            rc_status = search_orphaned_files(etp_client)
 
-    else:
-        rc_status = -10
+        elif cmd == "list":
+            mylistopts = options[1:]
+            if len(mylistopts) > 0:
+                if mylistopts[0] == "installed":
+                    rc_status = list_installed_packages()
+                elif mylistopts[0] == "available" and len(mylistopts) > 1:
+                    repoid = mylistopts[1]
+                    equo = Client()
+                    if repoid in equo.repositories():
+                        repo_dbconn = equo.open_repository(repoid)
+                        rc_status = list_installed_packages(
+                            dbconn = repo_dbconn)
+                    else:
+                        rc_status = -10
+                else:
+                    rc_status = -10
+
+        elif cmd == "description":
+            rc_status = search_description(args, etp_client)
+
+        else:
+            rc_status = -10
+    finally:
+        if etp_client is not None:
+            etp_client.shutdown()
 
     return rc_status
 
 def get_installed_packages(packages, dbconn = None, entropy_intf = None):
 
     if entropy_intf is None:
-        entropy_intf = EquoInterface()
+        entropy_intf = Client()
 
     repo_db = dbconn
     if not dbconn:
@@ -189,56 +211,56 @@ def get_installed_packages(packages, dbconn = None, entropy_intf = None):
 
     return pkg_data, flat_results
 
-def search_installed_packages(packages, dbconn = None, Equo = None):
+def search_repository_packages(packages, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(brown(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
 
-    if Equo is None:
-        Equo = EquoInterface()
-    if dbconn is None:
-        dbconn = Equo.installed_repository()
+    if entropy_repository is None:
+        if not etpUi['quiet']:
+            print_warning(purple(" !!! ") + \
+                teal(_("Repository is not available")))
+        return 127
 
     if not packages:
-        packages = [dbconn.retrieveAtom(x) for x in \
-            dbconn.listAllPackageIds(order_by = "atom")]
+        packages = [entropy_repository.retrieveAtom(x) for x in \
+            entropy_repository.listAllPackageIds(order_by = "atom")]
 
-    pkg_data, flat_data = get_installed_packages(packages, dbconn = dbconn,
-        entropy_intf = Equo)
+    pkg_data, flat_data = get_installed_packages(packages,
+        dbconn = entropy_repository, entropy_intf = entropy_client)
 
-    key_sorter = lambda x: dbconn.retrieveAtom(x)
+    key_sorter = lambda x: entropy_repository.retrieveAtom(x)
     for package in sorted(pkg_data):
-        idpackages = pkg_data[package]
+        pkg_ids = pkg_data[package]
 
-        for idpackage in sorted(idpackages, key = key_sorter):
-            print_package_info(idpackage, dbconn, clientSearch = True,
-                Equo = Equo, extended = etpUi['verbose'])
+        for pkg_id in sorted(pkg_ids, key = key_sorter):
+            print_package_info(pkg_id, entropy_repository,
+                clientSearch = True, Equo = entropy_client,
+                extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(package)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(idpackages), brown(_("entries")),)))
+                len(pkg_ids), brown(_("entries")),)))
             print_table(toc)
 
     return 0
 
-def revgraph_packages(packages, dbconn = None, complete = False):
+def revgraph_packages(packages, entropy_client, complete = False):
 
-    if dbconn is None:
-        entropy_intf = EquoInterface()
-        dbconn = entropy_intf.installed_repository()
-
+    entropy_repository = entropy_client.installed_repository()
     for package in packages:
-        pkg_id, pkg_rc = dbconn.atomMatch(package)
+        pkg_id, pkg_rc = entropy_repository.atomMatch(package)
         if pkg_rc == 1:
             continue
         if not etpUi['quiet']:
             print_info(brown(" @@ ")+darkgreen("%s %s..." % (
                 _("Reverse graphing installed package"), purple(package),) ))
 
-        g_pkg = dbconn.retrieveAtom(pkg_id)
-        _revgraph_package(pkg_id, g_pkg, dbconn, show_complete = complete)
+        g_pkg = entropy_repository.retrieveAtom(pkg_id)
+        _revgraph_package(pkg_id, g_pkg, entropy_repository,
+            show_complete = complete)
 
     return 0
 
@@ -384,13 +406,10 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
     del graph
     return 0
 
-def graph_packages(packages, entropy_intf = None, complete = False):
-
-    if entropy_intf is None:
-        entropy_intf = EquoInterface()
+def graph_packages(packages, entropy_client, complete = False):
 
     for package in packages:
-        match = entropy_intf.atom_match(package)
+        match = entropy_client.atom_match(package)
         if match[0] == -1:
             continue
         if not etpUi['quiet']:
@@ -398,9 +417,9 @@ def graph_packages(packages, entropy_intf = None, complete = False):
                 _("Graphing"), purple(package),) ))
 
         pkg_id, repo_id = match
-        repodb = entropy_intf.open_repository(repo_id)
+        repodb = entropy_client.open_repository(repo_id)
         g_pkg = repodb.retrieveAtom(pkg_id)
-        _graph_package(match, g_pkg, entropy_intf, show_complete = complete)
+        _graph_package(match, g_pkg, entropy_client, show_complete = complete)
 
     return 0
 
@@ -515,61 +534,55 @@ def _graph_to_stdout(graph, start_item, item_translation_callback,
 
     del stack
 
-def search_belongs(files, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_belongs(files, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Belong Search"),)))
 
-    if dbconn is None:
-        dbconn = Equo.installed_repository()
+    if entropy_repository is None:
+        if not etpUi['quiet']:
+            print_warning(purple(" !!! ") + \
+                teal(_("Repository is not available")))
+        return 127
 
     results = {}
     flatresults = {}
-    reverse_symlink_map = Equo.Settings()['system_rev_symlinks']
+    reverse_symlink_map = entropy_client.Settings()['system_rev_symlinks']
     for xfile in files:
-        like = False
-        if xfile.find("*") != -1:
-            xfile.replace("*", "%")
-            like = True
         results[xfile] = set()
-        idpackages = dbconn.searchBelongs(xfile, like)
-        if not idpackages:
+        pkg_ids = entropy_repository.searchBelongs(xfile)
+        if not pkg_ids:
             # try real path if possible
-            idpackages = dbconn.searchBelongs(
-                os.path.realpath(xfile), like)
-        if not idpackages:
+            pkg_ids = entropy_repository.searchBelongs(os.path.realpath(xfile))
+        if not pkg_ids:
             # try using reverse symlink mapping
             for sym_dir in reverse_symlink_map:
                 if xfile.startswith(sym_dir):
                     for sym_child in reverse_symlink_map[sym_dir]:
                         my_file = sym_child+xfile[len(sym_dir):]
-                        idpackages = dbconn.searchBelongs(my_file, like)
-                        if idpackages:
+                        pkg_ids = entropy_repository.searchBelongs(my_file)
+                        if pkg_ids:
                             break
 
-        for idpackage in idpackages:
-            if not flatresults.get(idpackage):
-                results[xfile].add(idpackage)
-                flatresults[idpackage] = True
+        for pkg_id in pkg_ids:
+            if not flatresults.get(pkg_id):
+                results[xfile].add(pkg_id)
+                flatresults[pkg_id] = True
 
     if results:
-
-        key_sorter = lambda x: dbconn.retrieveAtom(x)
+        key_sorter = lambda x: entropy_repository.retrieveAtom(x)
         for result in results:
 
             # print info
             xfile = result
             result = results[result]
 
-            for idpackage in sorted(result, key = key_sorter):
+            for pkg_id in sorted(result, key = key_sorter):
                 if etpUi['quiet']:
-                    print_generic(dbconn.retrieveAtom(idpackage))
+                    print_generic(entropy_repository.retrieveAtom(pkg_id))
                 else:
-                    print_package_info(idpackage, dbconn,
-                        clientSearch = True, Equo = Equo,
+                    print_package_info(pkg_id, entropy_repository,
+                        clientSearch = True, Equo = entropy_client,
                         extended = etpUi['verbose'])
             if not etpUi['quiet']:
                 toc = []
@@ -580,36 +593,36 @@ def search_belongs(files, dbconn = None, Equo = None):
 
     return 0
 
-def search_changelog(atoms, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_changelog(atoms, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("ChangeLog Search"),)))
 
     for atom in atoms:
-        if dbconn != None:
-            idpackage, rc = dbconn.atomMatch(atom)
+        repo = entropy_repository
+        if entropy_repository is not None:
+            pkg_id, rc = entropy_repository.atomMatch(atom)
             if rc != 0:
                 print_info(darkred("%s: %s" % (_("No match for"), bold(atom),)))
                 continue
         else:
-            idpackage, r_id = Equo.atom_match(atom)
-            if idpackage == -1:
+            pkg_id, r_id = entropy_client.atom_match(atom)
+            if pkg_id == -1:
                 print_info(darkred("%s: %s" % (_("No match for"), bold(atom),)))
                 continue
-            dbconn = Equo.open_repository(r_id)
+            repo = entropy_client.open_repository(r_id)
 
-        db_atom = dbconn.retrieveAtom(idpackage)
+        repo_atom = repo.retrieveAtom(pkg_id)
         if etpUi['quiet']:
-            print_generic("%s :" % (db_atom,))
+            print_generic("%s :" % (repo_atom,))
         else:
-            print_info(blue(" %s: " % (_("Atom"),) ) + bold(db_atom))
+            print_info(blue(" %s: " % (_("Package"),) ) + bold(repo_atom))
 
-        changelog = dbconn.retrieveChangelog(idpackage)
-        if not changelog:
+        changelog = repo.retrieveChangelog(pkg_id)
+        if not changelog or (changelog == "None"):
+            # == "None" is a bug, see:
+            # 685b865453d552d37ce3a9559f4cefb9a88f8beb
             print_generic(_("No ChangeLog available"))
         else:
             print_generic(changelog)
@@ -617,7 +630,7 @@ def search_changelog(atoms, dbconn = None, Equo = None):
 
     if not etpUi['quiet']:
         # check developer repo mode
-        dev_repo = Equo.Settings()['repositories']['developer_repo']
+        dev_repo = entropy_client.Settings()['repositories']['developer_repo']
         if not dev_repo:
             print_warning(bold(" !!! ") + \
                 brown("%s ! [%s]" % (
@@ -628,21 +641,11 @@ def search_changelog(atoms, dbconn = None, Equo = None):
     return 0
 
 
-def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_reverse_dependencies(atoms, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Inverse Dependencies Search"),) ))
-
-    match_repo = True
-    if not hasattr(Equo, 'atom_match'):
-        match_repo = False
-
-    if dbconn is None:
-        dbconn = Equo.installed_repository()
 
     include_build_deps = False
     excluded_dep_types = None
@@ -651,36 +654,35 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
     for atom in atoms:
 
-        result = dbconn.atomMatch(atom)
+        result = entropy_repository.atomMatch(atom)
         match_in_repo = False
         repo_masked = False
 
-        if (result[0] == -1) and match_repo:
+        if result[0] == -1:
             match_in_repo = True
-            result = Equo.atom_match(atom)
+            result = entropy_client.atom_match(atom)
 
-        if (result[0] == -1) and match_repo:
-            result = Equo.atom_match(atom, mask_filter = False)
+        if result[0] == -1:
+            result = entropy_client.atom_match(atom, mask_filter = False)
             if result[0] != -1:
                 repo_masked = True
 
         if result[0] != -1:
 
-            mdbconn = dbconn
+            repo = entropy_repository
             if match_in_repo:
-                mdbconn = Equo.open_repository(result[1])
-            key_sorter = lambda x: mdbconn.retrieveAtom(x)
+                repo = entropy_client.open_repository(result[1])
+            key_sorter = lambda x: repo.retrieveAtom(x)
 
-            found_atom = mdbconn.retrieveAtom(result[0])
+            found_atom = repo.retrieveAtom(result[0])
             if repo_masked:
-                idpackage_masked, idmasking_reason = mdbconn.maskFilter(
-                    result[0])
+                idpackage_masked, idmasking_reason = repo.maskFilter(result[0])
 
-            search_results = mdbconn.retrieveReverseDependencies(result[0],
+            search_results = repo.retrieveReverseDependencies(result[0],
                 exclude_deptypes = excluded_dep_types)
-            for idpackage in sorted(search_results, key = key_sorter):
-                print_package_info(idpackage, mdbconn, clientSearch = True,
-                    strictOutput = etpUi['quiet'], Equo = Equo,
+            for pkg_id in sorted(search_results, key = key_sorter):
+                print_package_info(pkg_id, repo, clientSearch = True,
+                    strictOutput = etpUi['quiet'], Equo = entropy_client,
                     extended = etpUi['verbose'])
 
             # print info
@@ -689,7 +691,7 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
                 masking_reason = ''
                 if repo_masked:
                     masking_reason = ", %s" % (
-                        Equo.Settings()['pkg_masking_reasons'].get(
+                        entropy_client.Settings()['pkg_masking_reasons'].get(
                             idmasking_reason),
                     )
                 mask_str = bold(str(repo_masked)) + masking_reason
@@ -711,62 +713,57 @@ def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
     return 0
 
-def search_needed_libraries(atoms, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
-
+def search_needed_libraries(packages, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Needed Search"),) ))
 
-    if dbconn is None:
-        dbconn = Equo.installed_repository()
+    if entropy_repository is None:
+        if not etpUi['quiet']:
+            print_warning(purple(" !!! ") + \
+                teal(_("Repository is not available")))
+        return 127
 
-    for atom in atoms:
-        match = dbconn.atomMatch(atom)
-        if match[0] != -1:
-            # print info
-            myatom = dbconn.retrieveAtom(match[0])
-            myneeded = dbconn.retrieveNeeded(match[0])
-            for needed in myneeded:
-                if etpUi['quiet']:
-                    print_generic(needed)
-                else:
-                    print_info(blue("       # ") + red(str(needed)))
-            if not etpUi['quiet']:
-                toc = []
-                toc.append(("%s:" % (blue(_("Package")),), purple(myatom)))
-                toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                    len(myneeded), brown(_("libraries")),)))
-                print_table(toc)
+    for package in packages:
+        pkg_id, pkg_rc = entropy_repository.atomMatch(package)
+        if pkg_id == -1:
+            continue
+
+        # print info
+        myatom = entropy_repository.retrieveAtom(pkg_id)
+        myneeded = entropy_repository.retrieveNeeded(pkg_id)
+        for needed in myneeded:
+            if etpUi['quiet']:
+                print_generic(needed)
+            else:
+                print_info(blue("       # ") + red(str(needed)))
+        if not etpUi['quiet']:
+            toc = []
+            toc.append(("%s:" % (blue(_("Package")),), purple(myatom)))
+            toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+                len(myneeded), brown(_("libraries")),)))
+            print_table(toc)
 
     return 0
 
-def search_required_libraries(libraries, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
-
+def search_required_libraries(libraries, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Required Search"),)))
 
-    if dbconn is None:
-        dbconn = Equo.installed_repository()
-    key_sorter = lambda x: dbconn.retrieveAtom(x)
+    key_sorter = lambda x: entropy_repository.retrieveAtom(x)
 
     for library in libraries:
-        results = dbconn.searchNeeded(library, like = True)
+        results = entropy_repository.searchNeeded(library, like = True)
         for pkg_id in sorted(results, key = key_sorter):
 
             if etpUi['quiet']:
-                print_generic(dbconn.retrieveAtom(pkg_id))
+                print_generic(entropy_repository.retrieveAtom(pkg_id))
                 continue
 
-            print_package_info(pkg_id, dbconn, clientSearch = True,
-                strictOutput = True, Equo = Equo,
+            print_package_info(pkg_id, entropy_repository, clientSearch = True,
+                strictOutput = True, Equo = entropy_client,
                 extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -778,25 +775,25 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
 
     return 0
 
-def search_files(atoms, dbconn = None, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_files(packages, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
-    if not dbconn:
-        dbconn = Equo.installed_repository()
-    dict_results, results = get_installed_packages(atoms, dbconn = dbconn,
-        entropy_intf = Equo)
+    if entropy_repository is None:
+        if not etpUi['quiet']:
+            print_warning(purple(" !!! ") + \
+                teal(_("Repository is not available")))
+        return 127
 
-    for result in results:
-        if result == -1:
+    for package in packages:
+
+        pkg_id, pkg_rc = entropy_repository.atomMatch(package)
+        if pkg_id == -1:
             continue
 
-        files = dbconn.retrieveContent(result)
-        atom = dbconn.retrieveAtom(result)
+        files = entropy_repository.retrieveContent(pkg_id)
+        atom = entropy_repository.retrieveAtom(pkg_id)
         files = sorted(files)
         if etpUi['quiet']:
             for xfile in files:
@@ -814,29 +811,24 @@ def search_files(atoms, dbconn = None, Equo = None):
 
     return 0
 
-
-
-def search_orphaned_files(Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_orphaned_files(entropy_client):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Orphans Search"),)))
 
-    clientDbconn = Equo.installed_repository()
-
+    sys_set = entropy_client.Settings()
+    repo = entropy_client.installed_repository()
     # start to list all files on the system:
-    dirs = Equo.Settings()['system_dirs']
+    dirs = sys_set['system_dirs']
     file_data = set()
 
     import re
-    reverse_symlink_map = Equo.Settings()['system_rev_symlinks']
-    system_dirs_mask = [x for x in Equo.Settings()['system_dirs_mask'] \
+    reverse_symlink_map = sys_set['system_rev_symlinks']
+    system_dirs_mask = [x for x in sys_set['system_dirs_mask'] \
         if entropy.tools.is_valid_path(x)]
     system_dirs_mask_regexp = []
-    for mask in Equo.Settings()['system_dirs_mask']:
+    for mask in sys_set['system_dirs_mask']:
         reg_mask = re.compile(mask)
         system_dirs_mask_regexp.append(reg_mask)
 
@@ -896,9 +888,9 @@ def search_orphaned_files(Equo = None):
 
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s: " % (_("Analyzed directories"),) )+ \
-            ' '.join(Equo.Settings()['system_dirs']))
+            ' '.join(sys_set['system_dirs']))
         print_info(red(" @@ ") + blue("%s: " % (_("Masked directories"),) ) + \
-            ' '.join(Equo.Settings()['system_dirs_mask']))
+            ' '.join(sys_set['system_dirs_mask']))
         print_info(red(" @@ ")+blue("%s: " % (
             _("Number of files collected on the filesystem"),) ) + \
             bold(str(totalfiles)))
@@ -906,12 +898,12 @@ def search_orphaned_files(Equo = None):
             _("Now looking into Installed Packages database"),)))
 
 
-    idpackages = clientDbconn.listAllPackageIds()
-    length = str(len(idpackages))
+    pkg_ids = repo.listAllPackageIds()
+    length = str(len(pkg_ids))
     count = 0
 
-    def gen_cont(idpackage):
-        for path in clientDbconn.retrieveContent(idpackage):
+    def gen_cont(pkg_id):
+        for path in repo.retrieveContent(pkg_id):
             # reverse sym
             for sym_dir in reverse_symlink_map:
                 if path.startswith(sym_dir):
@@ -922,18 +914,18 @@ def search_orphaned_files(Equo = None):
             yield os.path.join(dirname_real, os.path.basename(path))
             yield path
 
-    for idpackage in idpackages:
+    for pkg_id in pkg_ids:
 
         if not etpUi['quiet']:
             count += 1
-            atom = clientDbconn.retrieveAtom(idpackage)
+            atom = repo.retrieveAtom(pkg_id)
             txt = "["+str(count)+"/"+length+"] "
             print_info(red(" @@ ") + blue("%s: " % (
                 _("Intersecting with content of the package"),) ) + txt + \
                 bold(str(atom)), back = True)
 
         # remove from file_data
-        file_data -= set(gen_cont(idpackage))
+        file_data -= set(gen_cont(pkg_id))
 
     orpanedfiles = len(file_data)
 
@@ -947,33 +939,30 @@ def search_orphaned_files(Equo = None):
             bold(str(totalfiles - orpanedfiles)))
         print_info(red(" @@ ") + blue("%s: " % (
             _("Number of orphaned files"),) ) + bold(str(orpanedfiles)))
-
-    fname = "/tmp/entropy-orphans.txt"
-    f_out = open(fname, "wb")
-    if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 
+    fname = "/tmp/entropy-orphans.txt"
     sizecount = 0
     file_data = list(file_data)
     file_data.sort(reverse = True)
 
-    for myfile in file_data:
+    with open(fname, "wb") as f_out:
 
-        myfile = const_convert_to_rawstring(myfile)
-        mysize = 0
-        try:
-            mysize += os.stat(myfile)[6]
-        except OSError:
+        for myfile in file_data:
+            myfile = const_convert_to_rawstring(myfile)
             mysize = 0
-        sizecount += mysize
+            try:
+                mysize += os.stat(myfile)[6]
+            except OSError:
+                mysize = 0
+            sizecount += mysize
 
-        f_out.write(myfile + const_convert_to_rawstring("\n"))
-        if etpUi['quiet']:
-            print_generic(myfile)
+            f_out.write(myfile + const_convert_to_rawstring("\n"))
+            if etpUi['quiet']:
+                print_generic(myfile)
 
-    f_out.flush()
-    f_out.close()
+        f_out.flush()
 
     humansize = entropy.tools.bytes_into_human(sizecount)
     if not etpUi['quiet']:
@@ -985,64 +974,81 @@ def search_orphaned_files(Equo = None):
     return 0
 
 
-def search_removal_dependencies(atoms, deep = False, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
-
-    clientDbconn = Equo.installed_repository()
+def search_removal_dependencies(packages, entropy_client, entropy_repository,
+    deep = False):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Removal Search"),) ))
 
-    found_atoms = [clientDbconn.atomMatch(x) for x in atoms]
-    found_atoms = [(x[0], etpConst['clientdbid']) for x \
-        in found_atoms if x[1] == 0]
+    if entropy_repository is None:
+        if not etpUi['quiet']:
+            print_warning(purple(" !!! ") + \
+                teal(_("Repository is not available")))
+        return 127
 
-    if not found_atoms:
+    found_pkg_ids = [entropy_repository.atomMatch(x) for x in packages]
+    found_matches = [(x[0], etpConst['clientdbid']) for x \
+        in found_pkg_ids if x[1] == 0]
+
+    if not found_matches:
         print_error(red("%s." % (_("No packages found"),) ))
         return 127
 
-    removal_queue = []
-    if not etpUi['quiet']:
-        print_info(red(" @@ ") + blue("%s..." % (
-            _("Calculating removal dependencies, please wait"),) ), back = True)
-    treeview = Equo._generate_reverse_dependency_tree(found_atoms, deep = deep,
-        system_packages = True)
-    for dep_lev in sorted(treeview, reverse = True):
-        for dep_sub_el in treeview[dep_lev]:
-            removal_queue.append(dep_sub_el)
+    try:
+        removal_queue = entropy_client.get_reverse_queue(found_matches,
+            deep = deep)
+    except DependenciesNotRemovable as err:
+        pkg_atoms = sorted([entropy_client.open_repository(x[1]).retrieveAtom(
+            x[0]) for x in err.value])
+        # otherwise we need to deny the request
+        print_error("")
+        print_error("  %s, %s:" % (
+            purple(_("Ouch!")),
+            brown(_("the following system packages were pulled in")),
+            )
+        )
+        for pkg_atom in pkg_atoms:
+            print_error("    %s %s" % (purple("#"), teal(pkg_atom),))
+        print_error("")
+        return 126
 
-    if removal_queue:
+    if not removal_queue:
         if not etpUi['quiet']:
-            print_info(red(" @@ ") + \
-                blue("%s:" % (
-                _("These are the packages that would added to the removal queue"),)))
+            print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
+        return 0
 
-        totalatoms = str(len(removal_queue))
-        atomscounter = 0
+    totalatoms = str(len(removal_queue))
+    atomscounter = 0
 
-        for idpackage in removal_queue:
+    for pkg_id, pkg_repo in removal_queue:
 
-            atomscounter += 1
-            rematom = clientDbconn.retrieveAtom(idpackage)
-            if etpUi['quiet']:
-                print_generic(rematom)
-                continue
+        atomscounter += 1
+        repo = entropy_client.open_repository(pkg_repo)
+        rematom = repo.retrieveAtom(pkg_id)
+        if etpUi['quiet']:
+            print_generic(rematom)
+            continue
 
-            installedfrom = clientDbconn.getInstalledPackageRepository(
-                idpackage)
-            if installedfrom is None:
-                installedfrom = _("Not available")
-            repo_info = bold("[") + red("%s: " % (_("from"),)) + \
-                brown(installedfrom)+bold("]")
-            stratomscounter = str(atomscounter)
-            while len(stratomscounter) < len(totalatoms):
-                stratomscounter = " "+stratomscounter
-            print_info("   # " + red("(") + bold(stratomscounter) + "/" + \
-                blue(str(totalatoms)) + red(")") + repo_info + " " + \
-                blue(rematom))
+        installedfrom = repo.getInstalledPackageRepository(pkg_id)
+        if installedfrom is None:
+            installedfrom = _("Not available")
+        repo_info = bold("[") + red("%s: " % (_("from"),)) + \
+            brown(installedfrom)+bold("]")
+        stratomscounter = str(atomscounter)
+        while len(stratomscounter) < len(totalatoms):
+            stratomscounter = " "+stratomscounter
+        print_info("   # " + red("(") + bold(stratomscounter) + "/" + \
+            blue(str(totalatoms)) + red(")") + repo_info + " " + \
+            enlightenatom(rematom))
+
+    if not etpUi['quiet']:
+        toc = []
+        toc.append(("%s:" % (blue(_("Keywords")),),
+            purple(', '.join(packages))))
+        toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+            atomscounter, brown(_("entries")),)))
+        print_table(toc)
 
     return 0
 
@@ -1051,7 +1057,7 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
 def list_installed_packages(Equo = None, dbconn = None):
 
     if Equo is None:
-        Equo = EquoInterface()
+        Equo = Client()
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
@@ -1086,11 +1092,8 @@ def list_installed_packages(Equo = None, dbconn = None):
     return 0
 
 
-def search_package(packages, Equo = None, get_results = False,
+def search_package(packages, entropy_client, get_results = False,
     from_installed = False, ignore_installed = False):
-
-    if Equo is None:
-        Equo = EquoInterface()
 
     if not etpUi['quiet'] and not get_results:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
@@ -1103,16 +1106,13 @@ def search_package(packages, Equo = None, get_results = False,
             package = entropy.dep.remove_slot(package)
             package = entropy.dep.remove_tag(package)
 
-            try:
-                result = set(dbconn.searchPackages(package, slot = slot,
-                    tag = tag, just_id = True, order_by = "atom"))
-                if not result: # look for something else?
-                    pkg_id, rc = dbconn.atomMatch(package, matchSlot = slot)
-                    if pkg_id != -1:
-                        result = set([pkg_id])
-                pkg_ids |= result
-            except DatabaseError:
-                continue
+            result = set(dbconn.searchPackages(package, slot = slot,
+                tag = tag, just_id = True, order_by = "atom"))
+            if not result: # look for something else?
+                pkg_id, rc = dbconn.atomMatch(package, matchSlot = slot)
+                if pkg_id != -1:
+                    result = set([pkg_id])
+            pkg_ids |= result
 
         return pkg_ids
 
@@ -1121,46 +1121,47 @@ def search_package(packages, Equo = None, get_results = False,
     rc_results = []
 
     if not from_installed:
-        for repo in Equo.repositories():
+        for repo in entropy_client.repositories():
 
-            dbconn = Equo.open_repository(repo)
+            dbconn = entropy_client.open_repository(repo)
             pkg_ids = do_adv_search(dbconn)
             if pkg_ids:
                 found = True
             search_data.update(((x, repo) for x in pkg_ids))
 
     # try to actually match something in installed packages db
-    if not found and (Equo.installed_repository() is not None) and not ignore_installed:
-        pkg_ids = do_adv_search(Equo.installed_repository(), from_client = True)
+    if not found and (entropy_client.installed_repository() is not None) \
+        and not ignore_installed:
+        pkg_ids = do_adv_search(entropy_client.installed_repository(),
+            from_client = True)
         if pkg_ids:
             found = True
         search_data.update(((x, etpConst['clientdbid']) for x in pkg_ids))
 
     if get_results:
-        return sorted((Equo.open_repository(y).retrieveAtom(x) for x, y in \
-            search_data))
+        return sorted((entropy_client.open_repository(y).retrieveAtom(x) for \
+            x, y in search_data))
 
-    key_sorter = lambda (x, y): Equo.open_repository(y).retrieveAtom(x)
+    key_sorter = lambda (x, y): \
+        entropy_client.open_repository(y).retrieveAtom(x)
     for pkg_id, pkg_repo in sorted(search_data, key = key_sorter):
-        dbconn = Equo.open_repository(pkg_repo)
+        dbconn = entropy_client.open_repository(pkg_repo)
         from_client = pkg_repo == etpConst['clientdbid']
-        print_package_info(pkg_id, dbconn, Equo = Equo,
+        print_package_info(pkg_id, dbconn, Equo = entropy_client,
             extended = etpUi['verbose'], clientSearch = from_client)
 
     if not etpUi['quiet']:
         toc = []
-        toc.append(("%s:" % (blue(_("Keywords")),), purple(', '.join(packages))))
+        toc.append(("%s:" % (blue(_("Keywords")),),
+            purple(', '.join(packages))))
         toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
             len(search_data), brown(_("entries")),)))
         print_table(toc)
 
     return 0
 
-def search_mimetype(mimetypes, Equo = None, installed = False,
+def search_mimetype(mimetypes, entropy_client, installed = False,
     associate = False):
-
-    if Equo is None:
-        Equo = EquoInterface()
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (
@@ -1180,17 +1181,18 @@ def search_mimetype(mimetypes, Equo = None, installed = False,
 
         if installed:
             matches = [(x, etpConst['clientdbid']) for x in \
-                Equo.search_installed_mimetype(mimetype)]
+                entropy_client.search_installed_mimetype(mimetype)]
         else:
-            matches = Equo.search_available_mimetype(mimetype)
+            matches = entropy_client.search_available_mimetype(mimetype)
 
         if matches:
             found = True
 
-        key_sorter = lambda (x, y): Equo.open_repository(y).retrieveAtom(x)
+        key_sorter = lambda (x, y): \
+            entropy_client.open_repository(y).retrieveAtom(x)
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
-            dbconn = Equo.open_repository(pkg_repo)
-            print_package_info(pkg_id, dbconn, Equo = Equo,
+            repo = entropy_client.open_repository(pkg_repo)
+            print_package_info(pkg_id, repo, Equo = entropy_client,
                 extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -1210,7 +1212,7 @@ def match_package(packages, multiMatch = False, multiRepo = False,
     installed = False):
 
     if Equo is None:
-        Equo = EquoInterface()
+        Equo = Client()
 
     if not etpUi['quiet'] and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Matching"),) ),
@@ -1273,10 +1275,7 @@ def match_package(packages, multiMatch = False, multiRepo = False,
         return rc_results
     return 0
 
-def search_slotted_packages(slots, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_slotted_packages(slots, entropy_client):
 
     found = False
     if not etpUi['quiet']:
@@ -1284,21 +1283,23 @@ def search_slotted_packages(slots, Equo = None):
 
     # search inside each available database
     repo_number = 0
-    for repo in Equo.repositories():
+    sys_set = entropy_client.Settings()
+    for repo_id in entropy_client.repositories():
         repo_number += 1
+        repo_data = sys_set['repositories']['available'][repo_id]
 
         if not etpUi['quiet']:
             print_info(blue("  #"+str(repo_number)) + \
-                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
+                bold(" " + repo_data['description']))
 
-        dbconn = Equo.open_repository(repo)
+        repo = entropy_client.open_repository(repo_id)
         for slot in slots:
 
-            results = dbconn.searchSlotted(slot, just_id = True)
-            key_sorter = lambda x: dbconn.retrieveAtom(x)
-            for idpackage in sorted(results, key = key_sorter):
+            results = repo.searchSlotted(slot, just_id = True)
+            key_sorter = lambda x: repo.retrieveAtom(x)
+            for pkg_id in sorted(results, key = key_sorter):
                 found = True
-                print_package_info(idpackage, dbconn, Equo = Equo,
+                print_package_info(pkg_id, repo, Equo = entropy_client,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -1313,10 +1314,7 @@ def search_slotted_packages(slots, Equo = None):
 
     return 0
 
-def search_package_sets(items, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_package_sets(items, entropy_client):
 
     found = False
     if not etpUi['quiet']:
@@ -1326,7 +1324,7 @@ def search_package_sets(items, Equo = None):
     if not items:
         items.append('*')
 
-    sets = Equo.Sets()
+    sets = entropy_client.Sets()
 
     matchNumber = 0
     for item in items:
@@ -1357,30 +1355,30 @@ def search_package_sets(items, Equo = None):
 
     return 0
 
-def search_tagged_packages(tags, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_tagged_packages(tags, entropy_client):
 
     found = False
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),)))
 
     repo_number = 0
-    for repo in Equo.repositories():
+    sys_set = entropy_client.Settings()
+
+    for repo_id in entropy_client.repositories():
         repo_number += 1
+        repo_data = sys_set['repositories']['available'][repo_id]
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
+                bold(" " + repo_data['description']))
 
-        dbconn = Equo.open_repository(repo)
-        key_sorter = lambda x: dbconn.retrieveAtom(x[1])
+        repo = entropy_client.open_repository(repo_id)
+        key_sorter = lambda x: repo.retrieveAtom(x[1])
         for tag in tags:
-            results = dbconn.searchTaggedPackages(tag, atoms = True)
+            results = repo.searchTaggedPackages(tag, atoms = True)
             found = True
             for result in sorted(results, key = key_sorter):
-                print_package_info(result[1], dbconn, Equo = Equo,
+                print_package_info(result[1], repo, Equo = entropy_client,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -1395,24 +1393,21 @@ def search_tagged_packages(tags, Equo = None):
 
     return 0
 
-def search_rev_packages(revisions, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_rev_packages(revisions, entropy_client):
 
     found = False
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Revision Search"),)))
         print_info(bold(_("Installed packages repository")))
 
-    dbconn = Equo.installed_repository()
-    key_sorter = lambda x: dbconn.retrieveAtom(x)
+    repo = entropy_client.installed_repository()
+    key_sorter = lambda x: repo.retrieveAtom(x)
 
     for revision in revisions:
-        results = dbconn.searchRevisionedPackages(revision)
+        results = repo.searchRevisionedPackages(revision)
         found = True
-        for idpackage in sorted(results, key = key_sorter):
-            print_package_info(idpackage, dbconn, Equo = Equo,
+        for pkg_id in sorted(results, key = key_sorter):
+            print_package_info(pkg_id, repo, Equo = entropy_client,
                 extended = etpUi['verbose'], strictOutput = etpUi['quiet'],
                 clientSearch = True)
 
@@ -1428,10 +1423,7 @@ def search_rev_packages(revisions, Equo = None):
 
     return 0
 
-def search_licenses(licenses, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_licenses(licenses, entropy_client):
 
     found = False
     if not etpUi['quiet']:
@@ -1440,24 +1432,26 @@ def search_licenses(licenses, Equo = None):
 
     # search inside each available database
     repo_number = 0
-    for repo in Equo.repositories():
+    sys_set = entropy_client.Settings()
+    for repo_id in entropy_client.repositories():
         repo_number += 1
+        repo_data = sys_set['repositories']['available'][repo_id]
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
+                bold(" " + repo_data['description']))
 
-        dbconn = Equo.open_repository(repo)
-        key_sorter = lambda x: dbconn.retrieveAtom(x)
+        repo = entropy_client.open_repository(repo_id)
+        key_sorter = lambda x: repo.retrieveAtom(x)
 
         for mylicense in licenses:
 
-            results = dbconn.searchLicense(mylicense, just_id = True)
+            results = repo.searchLicense(mylicense, just_id = True)
             if not results:
                 continue
             found = True
-            for idpackage in sorted(results, key = key_sorter):
-                print_package_info(idpackage, dbconn, Equo = Equo,
+            for pkg_id in sorted(results, key = key_sorter):
+                print_package_info(pkg_id, repo, Equo = entropy_client,
                     extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
 
             if not etpUi['quiet']:
@@ -1472,10 +1466,7 @@ def search_licenses(licenses, Equo = None):
 
     return 0
 
-def search_description(descriptions, Equo = None):
-
-    if Equo is None:
-        Equo = EquoInterface()
+def search_description(descriptions, entropy_client):
 
     found = False
     if not etpUi['quiet']:
@@ -1483,15 +1474,18 @@ def search_description(descriptions, Equo = None):
             darkgreen("%s..." % (_("Description Search"),) ))
 
     repo_number = 0
-    for repo in Equo.repositories():
+    sys_set = entropy_client.Settings()
+    for repo_id in entropy_client.repositories():
         repo_number += 1
+        repo_data = sys_set['repositories']['available'][repo_id]
 
         if not etpUi['quiet']:
             print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.Settings()['repositories']['available'][repo]['description']))
+                bold(" " + repo_data['description']))
 
-        dbconn = Equo.open_repository(repo)
-        descdata = search_descriptions(descriptions, dbconn, Equo = Equo)
+        repo = entropy_client.open_repository(repo_id)
+        descdata = search_descriptions(descriptions, repo,
+            Equo = entropy_client)
         if descdata:
             found = True
 
@@ -1533,7 +1527,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
     showRepoOnQuiet = False, showDescOnQuiet = False):
 
     if Equo is None:
-        Equo = EquoInterface()
+        Equo = Client()
 
     # now fetch essential info
     corrupted_str = _("CORRUPTED")

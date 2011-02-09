@@ -73,45 +73,44 @@ def query(myopts):
         rc = 0
 
     elif cmd == "tags":
-        rc = search_tagged_packages(myopts, dbconn, Entropy)
+        rc = search_tagged_packages(myopts, Entropy, dbconn)
     elif cmd == "sets":
-        rc = text_query.search_package_sets(myopts, Equo = Entropy)
+        rc = text_query.search_package_sets(myopts, Entropy)
     elif cmd == "files":
-        rc = text_query.search_files(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_files(myopts, Entropy, dbconn)
     elif cmd == "belongs":
-        rc = text_query.search_belongs(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_belongs(myopts, Entropy, dbconn)
     elif cmd == "description":
         text_query.search_descriptions(myopts, dbconn = dbconn, Equo = Entropy)
         rc = 0
     elif cmd == "needed":
-        rc = text_query.search_needed_libraries(myopts, dbconn = dbconn,
-            Equo = Entropy)
+        rc = text_query.search_needed_libraries(myopts, Entropy, dbconn)
     elif cmd == "revdeps":
-        rc = text_query.search_reverse_dependencies(myopts, dbconn = dbconn,
-            Equo = Entropy)
+        rc = text_query.search_reverse_dependencies(myopts, Entropy, dbconn)
     elif cmd == "list":
-        rc = text_query.search_installed_packages(myopts, dbconn = dbconn,
-            Equo = Entropy)
+        rc = text_query.search_repository_packages(myopts, Entropy, dbconn)
     elif cmd == "changelog":
-        rc = text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_changelog(myopts, Entropy, dbconn)
     elif cmd == "graph":
         complete_graph = False
         if "--complete" in myopts:
             complete_grah = True
             myopts = [x for x in myopts if x != "--complete"]
-        rc = text_query.graph_packages(myopts, complete = complete_graph)
+        rc = text_query.graph_packages(myopts, Entropy,
+            complete = complete_graph)
     elif cmd == "revgraph":
         complete_graph = False
         if "--complete" in myopts:
             complete_grah = True
             myopts = [x for x in myopts if x != "--complete"]
-        rc = text_query.revgraph_packages(myopts, complete = complete_graph)
+        rc = text_query.revgraph_packages(myopts, Entropy,
+            complete = complete_graph)
 
     del Entropy
     return rc
 
 
-def search_tagged_packages(tags, dbconn, entropy):
+def search_tagged_packages(tags, entropy, dbconn):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Tag Search"),) ))
