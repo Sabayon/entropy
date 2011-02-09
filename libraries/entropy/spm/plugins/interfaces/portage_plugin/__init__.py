@@ -1134,8 +1134,11 @@ class PortagePlugin(SpmPlugin):
         pkgatom = "%s/%s-%s" % (data['category'], data['name'],
             data['version'],)
         try:
-            data['changelog'] = const_convert_to_unicode(
-                self.get_package_changelog(pkgatom))
+            changelog = self.get_package_changelog(pkgatom)
+            if changelog is not None:
+                data['changelog'] = const_convert_to_unicode(changelog)
+            else:
+                data['changelog'] = None
         except (UnicodeEncodeError, UnicodeDecodeError,) as e:
             sys.stderr.write("%s: %s, %s\n" % (
                 "changelog string conversion error", e,
