@@ -1011,8 +1011,8 @@ class PortagePlugin(SpmPlugin):
 
             value = ''
             try:
-
-                item_path = os.path.join(meta_dir, portage_entries[item]['path'])
+                item_path = os.path.join(meta_dir,
+                    portage_entries[item]['path'])
                 with open(item_path, "rb") as item_f:
                     value = item_f.readline().strip()
                     value = const_convert_to_unicode(value)

@@ -20,7 +20,7 @@
 import sys
 import os, shutil, errno
 from stat import ST_SIZE, ST_MTIME, ST_CTIME
-from entropy.const import const_convert_to_rawstring
+from entropy.const import const_convert_to_rawstring, const_convert_to_unicode
 
 if sys.hexversion >= 0x3000000:
     XPAKPACK = b"XPAKPACK"
@@ -231,7 +231,7 @@ def xpand(myid, mydest):
         datapos = decodeint(myindex[startpos+4+namelen:startpos+8+namelen])
         datalen = decodeint(myindex[startpos+8+namelen:startpos+12+namelen])
         myname = myindex[startpos+4:startpos+4+namelen]
-        myname = os.path.join(mydest, myname)
+        myname = os.path.join(mydest, const_convert_to_unicode(myname))
         dirname = os.path.dirname(myname)
         if not os.path.exists(dirname):
             os.makedirs(dirname)

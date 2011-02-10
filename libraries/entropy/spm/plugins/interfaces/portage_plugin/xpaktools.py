@@ -79,13 +79,8 @@ def unpack_xpak(xpakfile, tmpdir = None):
     """
     if tmpdir is None:
         tmpdir = tempfile.mkdtemp()
-    elif os.path.isdir(tmpdir):
-        shutil.rmtree(tmpdir, True)
-        try:
-            os.remove(tmpdir)
-        except OSError:
-            pass
-        os.makedirs(tmpdir)
+    elif not os.path.isdir(tmpdir):
+        raise AttributeError("tmpdir %s does not exist" % (tmpdir,))
     try:
         xpakdata = xpak.getboth(xpakfile)
         xpak.xpand(xpakdata, tmpdir)
