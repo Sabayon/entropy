@@ -1996,6 +1996,8 @@ class EntropyRepository(EntropyRepositoryBase):
         # setup random table name
         random_str = "%svs%s_%s" % (package_id, id(dbconn),
             dbconn_package_id)
+        if sys.hexversion >= 0x3000000:
+            random_str = const_convert_to_rawstring(random_str)
         randomtable = "cdiff%s" % (hashlib.md5(random_str).hexdigest(),)
 
         # create random table
