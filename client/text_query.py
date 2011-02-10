@@ -1514,7 +1514,7 @@ def print_package_info(package_id, entropy_client, entropy_repository,
         repoinfo = ''
         desc = ''
         if show_repo_if_quiet:
-            repoinfo = "[%s] " % (entropy_repository.name,)
+            repoinfo = "[%s] " % (entropy_repository.repository_id(),)
         if show_desc_if_quiet:
             desc = ' %s' % (entropy_repository.retrieveDescription(package_id),)
         print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
@@ -1566,7 +1566,7 @@ def print_package_info(package_id, entropy_client, entropy_repository,
 
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
-        ", [" + purple(str(entropy_repository.name)) + "] ")
+        ", [" + purple(str(entropy_repository.repository_id())) + "] ")
     if not strict_output and extended:
         pkgname = entropy_repository.retrieveName(package_id) or corrupted_str
         pkgcat = entropy_repository.retrieveCategory(package_id) or \

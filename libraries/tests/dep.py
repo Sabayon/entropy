@@ -214,7 +214,8 @@ class DepTest(unittest.TestCase):
             self.assertEqual(data, new_data)
             deps.append(dep)
         deps.sort()
-        selected_matches = [(test_db.atomMatch(deps[2])[0], test_db.name)]
+        selected_matches = [(test_db.atomMatch(deps[2])[0],
+            test_db.repository_id())]
 
         depstrings = [
             ("( %s & %s ) | %s" % (deps[0], deps[1], deps[2]), [deps[2]]),

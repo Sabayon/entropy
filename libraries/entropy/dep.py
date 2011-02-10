@@ -837,7 +837,7 @@ class Dependency(object):
         """
         eval_data = set()
         for entropy_repository in self.__entropy_repository_list:
-            repo_id = entropy_repository.name
+            repo_id = entropy_repository.repository_id()
             pkg_deps, res = entropy_repository.atomMatch(self.__dep,
                 multiMatch = True)
             if res == 0:

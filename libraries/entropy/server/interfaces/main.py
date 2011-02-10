@@ -92,7 +92,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 self,)
             )
 
-        repo = entropy_repository_instance.name
+        repo = entropy_repository_instance.repository_id()
         local_dbfile = self._metadata['local_dbfile']
         taint_file = self._server._get_local_repository_taint_file(repo)
         if os.path.isfile(taint_file):
@@ -134,7 +134,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         if self._server.Mirrors is None:
             return 0
 
-        repo = entropy_repository_instance.name
+        repo = entropy_repository_instance.repository_id()
         dbfile = self._metadata['local_dbfile']
         read_only = self._metadata['read_only']
         if not read_only:
@@ -162,7 +162,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         dbs = ServerRepositoryStatus()
         dbfile = self._metadata['local_dbfile']
-        repo = entropy_repository_instance.name
+        repo = entropy_repository_instance.repository_id()
         read_only = self._metadata['read_only']
         if read_only:
             # do not taint database
@@ -252,7 +252,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_removed_package(self, repo_db, package_id):
 
         # setup variables we're going to use
-        srv_repo = repo_db.name
+        srv_repo = repo_db.repository_id()
         rss_revision = repo_db.retrieveRevision(package_id)
         rss_atom = "%s~%s" % (repo_db.retrieveAtom(package_id), rss_revision,)
         status = ServerRepositoryStatus()
@@ -297,7 +297,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_added_package(self, repo_db, package_data):
 
         # setup variables we're going to use
-        srv_repo = repo_db.name
+        srv_repo = repo_db.repository_id()
         rss_atom = "%s~%s" % (package_data['atom'], package_data['revision'],)
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
@@ -4179,7 +4179,7 @@ class Server(Client):
             name = repository_id,
             xcache = False # always set to False, if you want to enable
             # you need to make sure that client-side and server-side caches
-            # don't collide due to sharing ServerPackagesRepository.name
+            # don't collide due to sharing ServerPackagesRepository.repository_id()
         )
         etp_repo_meta = {
             'lock_remote': lock_remote,

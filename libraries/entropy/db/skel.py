@@ -411,6 +411,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         """
         return self._readonly
 
+    def repository_id(self):
+        """
+        Return the repository identifier assigned to this instance.
+
+        @return: the repository identifier
+        @rtype: string
+        """
+        return self.name
+
     def close(self):
         """
         Close repository storage communication and open disk files.
