@@ -1078,7 +1078,7 @@ class Package:
 
             # write gpg signature to disk for verification
             tmp_fd, tmp_path = tempfile.mkstemp()
-            with os.fdopen(tmp_fd, "wb") as tmp_f:
+            with os.fdopen(tmp_fd, "w") as tmp_f:
                 tmp_f.write(hash_val)
                 tmp_f.flush()
 
