@@ -2174,7 +2174,7 @@ class MaskableRepository(EntropyRepositoryBase):
         # seek in repository first
         keyword_repo = self._settings['keywords']['repositories']
 
-        for keyword in keyword_repo.get(self.name, {}).keys():
+        for keyword in tuple(keyword_repo.get(self.name, {}).keys()):
 
             if keyword not in mykeywords:
                 continue

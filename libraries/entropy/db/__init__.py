@@ -646,12 +646,9 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def __discardLiveCache(self):
         cache_key = self.__getLiveCacheKey()
-        keys = set()
-        for key in EntropyRepository._LIVE_CACHE.keys():
+        for key in tuple(EntropyRepository._LIVE_CACHE.keys()):
             if key.startswith(cache_key):
-                keys.add(key)
-        for key in keys:
-            del EntropyRepository._LIVE_CACHE[key]
+                del EntropyRepository._LIVE_CACHE[key]
 
     def __setLiveCache(self, key, value):
         EntropyRepository._LIVE_CACHE[self.__getLiveCacheKey() + key] = value

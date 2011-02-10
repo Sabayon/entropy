@@ -2869,7 +2869,7 @@ def recursive_directory_relative_listing(empty_list, base_directory,
             empty_list.append(x_path)
 
     if not _nested:
-        for idx in xrange(len(empty_list)):
+        for idx in range(len(empty_list)):
             empty_list[idx] = empty_list[idx][len(base_directory)+1:]
 
 def flatten(mylist):

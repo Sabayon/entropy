@@ -195,7 +195,7 @@ class Package:
 
         if diff_map:
             defval = -1
-            for key, val in diff_map.items():
+            for key, val in tuple(diff_map.items()):
                 if val == "-1": # general error
                     diff_map[key] = -1
                 elif val == "-2":
@@ -637,7 +637,7 @@ class Package:
         data_transfer = fetch_intf.get_transfer_rate()
 
         valid_idxs = []
-        for url_data_map_idx, cksum in data.items():
+        for url_data_map_idx, cksum in tuple(data.items()):
 
             if cksum.startswith("-"):
                 # download failed => "-1", "-2", "-3", etc

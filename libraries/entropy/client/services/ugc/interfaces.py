@@ -391,7 +391,7 @@ class Client:
         docs_data, err_msg = self.get_docs(repository, pkgkey)
         if not docs_data:
             return None
-        elif not isinstance(docs_data, (tuple, list,)):
+        elif not isinstance(docs_data, (tuple, list)):
             return None
         return self.UGCCache.get_icon_cache(pkgkey, repository)
 

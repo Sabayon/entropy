@@ -11,7 +11,10 @@
 """
 from entropy.core import EntropyPluginFactory
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
-from . import interfaces as plugs
+try:
+    from . import interfaces as plugs
+except ImportError:
+    from .. import interfaces as plugs
 
 # get available plugins from Factory
 # returns a dict, see EntropyPluginFactory documentation

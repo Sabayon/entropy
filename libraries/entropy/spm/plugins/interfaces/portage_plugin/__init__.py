@@ -1887,6 +1887,9 @@ class PortagePlugin(SpmPlugin):
         def next(self):
             return self._std.next()
 
+        def __next__(self):
+            return next(self._std)
+
         def read(self, *args, **kwargs):
             return self._std.read(*args, **kwargs)
 
@@ -1920,7 +1923,10 @@ class PortagePlugin(SpmPlugin):
             return self._std.writelines(lst)
 
         def xreadlines(self):
-            return self._std.xreadlines()
+            if sys.hexversion >= 0x3000000:
+                return self._std
+            else:
+                return self._std.xreadlines()
 
     def _portage_doebuild(self, myebuild, mydo, tree, cpv,
         portage_tmpdir = None, licenses = None):
