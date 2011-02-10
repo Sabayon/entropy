@@ -181,9 +181,8 @@ def _list_kernels(args):
             etp_client.open_repository(y).retrieveAtom(x)
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
             repo = etp_client.open_repository(pkg_repo)
-            print_package_info(pkg_id, repo,
-                showRepoOnQuiet = True, Equo = etp_client,
-                    extended = etpUi['verbose'])
+            print_package_info(pkg_id, etp_client, repo,
+                show_repo_if_quiet = True, extended = etpUi['verbose'])
 
         return 0
     finally:

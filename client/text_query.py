@@ -80,11 +80,11 @@ def query(options):
         from entropy.client.interfaces import Client
         etp_client = Client()
         if cmd == "match":
-            rc_status = match_package(args,
-                multiMatch = multi_match,
-                multiRepo = multi_repo,
-                showRepo = show_repo,
-                showDesc = show_desc,
+            rc_status = match_package(args, etp_client,
+                multi_match = multi_match,
+                multi_repo = multi_repo,
+                show_repo = show_repo,
+                show_desc = show_desc,
                 installed = match_installed)
 
         elif cmd == "search":
@@ -217,9 +217,8 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
         pkg_ids = pkg_data[package]
 
         for pkg_id in sorted(pkg_ids, key = key_sorter):
-            print_package_info(pkg_id, entropy_repository,
-                clientSearch = True, Equo = entropy_client,
-                extended = etpUi['verbose'])
+            print_package_info(pkg_id, entropy_client, entropy_repository,
+                installed_search = True, extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
             toc = []
@@ -564,8 +563,8 @@ def search_belongs(files, entropy_client, entropy_repository):
                 if etpUi['quiet']:
                     print_generic(entropy_repository.retrieveAtom(pkg_id))
                 else:
-                    print_package_info(pkg_id, entropy_repository,
-                        clientSearch = True, Equo = entropy_client,
+                    print_package_info(pkg_id, entropy_client,
+                        entropy_repository, installed_search = True,
                         extended = etpUi['verbose'])
             if not etpUi['quiet']:
                 toc = []
@@ -659,13 +658,13 @@ def search_reverse_dependencies(atoms, entropy_client, entropy_repository):
 
             found_atom = repo.retrieveAtom(result[0])
             if repo_masked:
-                idpackage_masked, idmasking_reason = repo.maskFilter(result[0])
+                package_id_masked, idmasking_reason = repo.maskFilter(result[0])
 
             search_results = repo.retrieveReverseDependencies(result[0],
                 exclude_deptypes = excluded_dep_types)
             for pkg_id in sorted(search_results, key = key_sorter):
-                print_package_info(pkg_id, repo, clientSearch = True,
-                    strictOutput = etpUi['quiet'], Equo = entropy_client,
+                print_package_info(pkg_id, entropy_client, repo,
+                    installed_search = True, strict_output = etpUi['quiet'],
                     extended = etpUi['verbose'])
 
             # print info
@@ -745,8 +744,8 @@ def search_required_libraries(libraries, entropy_client, entropy_repository):
                 print_generic(entropy_repository.retrieveAtom(pkg_id))
                 continue
 
-            print_package_info(pkg_id, entropy_repository, clientSearch = True,
-                strictOutput = True, Equo = entropy_client,
+            print_package_info(pkg_id, entropy_client, entropy_repository,
+                installed_search = True, strict_output = True,
                 extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -1135,8 +1134,8 @@ def search_package(packages, entropy_client, get_results = False,
     for pkg_id, pkg_repo in sorted(search_data, key = key_sorter):
         dbconn = entropy_client.open_repository(pkg_repo)
         from_client = pkg_repo == etpConst['clientdbid']
-        print_package_info(pkg_id, dbconn, Equo = entropy_client,
-            extended = etpUi['verbose'], clientSearch = from_client)
+        print_package_info(pkg_id, entropy_client, dbconn,
+            extended = etpUi['verbose'], installed_search = from_client)
 
     if not etpUi['quiet']:
         toc = []
@@ -1180,7 +1179,7 @@ def search_mimetype(mimetypes, entropy_client, installed = False,
             entropy_client.open_repository(y).retrieveAtom(x)
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
             repo = entropy_client.open_repository(pkg_repo)
-            print_package_info(pkg_id, repo, Equo = entropy_client,
+            print_package_info(pkg_id, entropy_client, repo,
                 extended = etpUi['verbose'])
 
         if not etpUi['quiet']:
@@ -1195,12 +1194,9 @@ def search_mimetype(mimetypes, entropy_client, installed = False,
 
     return 0
 
-def match_package(packages, multiMatch = False, multiRepo = False,
-    showRepo = False, showDesc = False, Equo = None, get_results = False,
-    installed = False):
-
-    if Equo is None:
-        Equo = Client()
+def match_package(packages, entropy_client, multi_match = False,
+    multi_repo = False, show_repo = False, show_desc = False,
+    get_results = False, installed = False):
 
     if not etpUi['quiet'] and not get_results:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Matching"),) ),
@@ -1214,38 +1210,39 @@ def match_package(packages, multiMatch = False, multiRepo = False,
             print_info("%s: %s" % (blue("  # "), bold(package),))
 
         if installed:
-            inst_pkg_id, inst_rc = Equo.installed_repository().atomMatch(
-                package, multiMatch = multiMatch)
+            inst_pkg_id, inst_rc = entropy_client.installed_repository(
+                ).atomMatch(package, multiMatch = multi_match)
             if inst_rc != 0:
                 match = (-1, 1)
             else:
-                if multiMatch:
+                if multi_match:
                     match = ([(x, etpConst['clientdbid']) for x in inst_pkg_id],
                         0)
                 else:
                     match = (inst_pkg_id, etpConst['clientdbid'])
         else:
-            match = Equo.atom_match(package, multi_match = multiMatch,
-                multi_repo = multiRepo, mask_filter = False)
+            match = entropy_client.atom_match(package,
+                multi_match = multi_match, multi_repo = multi_repo,
+                    mask_filter = False)
         if match[1] != 1:
 
-            if not multiMatch:
-                if multiRepo:
+            if not multi_match:
+                if multi_repo:
                     matches = match[0]
                 else:
                     matches = [match]
             else:
                 matches = match[0]
 
-            key_sorter = lambda (x, y): Equo.open_repository(y).retrieveAtom(x)
+            key_sorter = lambda (x, y): entropy_client.open_repository(y).retrieveAtom(x)
             for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
-                dbconn = Equo.open_repository(pkg_repo)
+                dbconn = entropy_client.open_repository(pkg_repo)
                 if get_results:
                     rc_results.append(dbconn.retrieveAtom(pkg_id))
                 else:
-                    print_package_info(pkg_id, dbconn,
-                        showRepoOnQuiet = showRepo,
-                            showDescOnQuiet = showDesc, Equo = Equo,
+                    print_package_info(pkg_id, entropy_client, dbconn,
+                        show_repo_if_quiet = show_repo,
+                            show_desc_if_quiet = show_desc,
                                 extended = etpUi['verbose'])
                 found = True
 
@@ -1287,8 +1284,8 @@ def search_slotted_packages(slots, entropy_client):
             key_sorter = lambda x: repo.retrieveAtom(x)
             for pkg_id in sorted(results, key = key_sorter):
                 found = True
-                print_package_info(pkg_id, repo, Equo = entropy_client,
-                    extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
+                print_package_info(pkg_id, entropy_client, repo,
+                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
 
             if not etpUi['quiet']:
                 toc = []
@@ -1366,8 +1363,8 @@ def search_tagged_packages(tags, entropy_client):
             results = repo.searchTaggedPackages(tag, atoms = True)
             found = True
             for result in sorted(results, key = key_sorter):
-                print_package_info(result[1], repo, Equo = entropy_client,
-                    extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
+                print_package_info(result[1], entropy_client, repo,
+                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
 
             if not etpUi['quiet']:
                 toc = []
@@ -1395,9 +1392,9 @@ def search_rev_packages(revisions, entropy_client):
         results = repo.searchRevisionedPackages(revision)
         found = True
         for pkg_id in sorted(results, key = key_sorter):
-            print_package_info(pkg_id, repo, Equo = entropy_client,
-                extended = etpUi['verbose'], strictOutput = etpUi['quiet'],
-                clientSearch = True)
+            print_package_info(pkg_id, entropy_client, repo,
+                extended = etpUi['verbose'], strict_output = etpUi['quiet'],
+                installed_search = True)
 
         if not etpUi['quiet']:
             toc = []
@@ -1439,8 +1436,8 @@ def search_licenses(licenses, entropy_client):
                 continue
             found = True
             for pkg_id in sorted(results, key = key_sorter):
-                print_package_info(pkg_id, repo, Equo = entropy_client,
-                    extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
+                print_package_info(pkg_id, entropy_client, repo,
+                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
 
             if not etpUi['quiet']:
                 toc = []
@@ -1494,9 +1491,8 @@ def search_descriptions(descriptions, entropy_client, entropy_repository):
             if etpUi['quiet']:
                 print_generic(entropy_repository.retrieveAtom(pkg_id))
             else:
-                print_package_info(pkg_id, entropy_repository,
-                    Equo = entropy_client, extended = etpUi['verbose'],
-                    strictOutput = etpUi['quiet'])
+                print_package_info(pkg_id, entropy_client, entropy_repository,
+                    extended = etpUi['verbose'], strict_output = etpUi['quiet'])
 
         if not etpUi['quiet']:
             toc = []
@@ -1507,75 +1503,74 @@ def search_descriptions(descriptions, entropy_client, entropy_repository):
 
     return found
 
-def print_package_info(idpackage, dbconn, clientSearch = False,
-    strictOutput = False, extended = False, Equo = None,
-    showRepoOnQuiet = False, showDescOnQuiet = False):
-
-    if Equo is None:
-        Equo = Client()
+def print_package_info(package_id, entropy_client, entropy_repository,
+    installed_search = False, strict_output = False, extended = False,
+    show_repo_if_quiet = False, show_desc_if_quiet = False):
 
     # now fetch essential info
     corrupted_str = _("CORRUPTED")
-    pkgatom = dbconn.retrieveAtom(idpackage) or corrupted_str
+    pkgatom = entropy_repository.retrieveAtom(package_id) or corrupted_str
     if etpUi['quiet']:
         repoinfo = ''
         desc = ''
-        if showRepoOnQuiet:
-            repoinfo = "[%s] " % (dbconn.name,)
-        if showDescOnQuiet:
-            desc = ' %s' % (dbconn.retrieveDescription(idpackage),)
+        if show_repo_if_quiet:
+            repoinfo = "[%s] " % (entropy_repository.name,)
+        if show_desc_if_quiet:
+            desc = ' %s' % (entropy_repository.retrieveDescription(package_id),)
         print_generic("%s%s%s" % (repoinfo, pkgatom, desc,))
         return
 
-    pkghome = dbconn.retrieveHomepage(idpackage)
+    pkghome = entropy_repository.retrieveHomepage(package_id)
     if pkghome is None:
         pkghome = corrupted_str
-    pkgslot = dbconn.retrieveSlot(idpackage) or corrupted_str
-    pkgver = dbconn.retrieveVersion(idpackage) or corrupted_str
-    pkgtag = dbconn.retrieveTag(idpackage)
+    pkgslot = entropy_repository.retrieveSlot(package_id) or corrupted_str
+    pkgver = entropy_repository.retrieveVersion(package_id) or corrupted_str
+    pkgtag = entropy_repository.retrieveTag(package_id)
     if pkgtag is None:
         pkgtag = corrupted_str
-    pkgrev = dbconn.retrieveRevision(idpackage)
+    pkgrev = entropy_repository.retrieveRevision(package_id)
     if pkgrev is None:
         pkgrev = 0
-    pkgdesc = dbconn.retrieveDescription(idpackage)
+    pkgdesc = entropy_repository.retrieveDescription(package_id)
     if pkgdesc is None:
         pkgdesc = corrupted_str
-    pkgbranch = dbconn.retrieveBranch(idpackage) or corrupted_str
+    pkgbranch = entropy_repository.retrieveBranch(package_id) or corrupted_str
     if not pkgtag:
         pkgtag = "NoTag"
 
-    if not clientSearch:
+    installed_ver = _("Not installed")
+    installed_tag = _("N/A")
+    installed_rev = _("N/A")
+    if not installed_search:
 
         # client info
-        installedVer = _("Not installed")
-        installedTag = _("N/A")
-        installedRev = _("N/A")
-        try:
-            pkginstalled = Equo.installed_repository().atomMatch(
-                entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
-            if pkginstalled[1] == 0:
-                idx = pkginstalled[0]
-                # found
-                installedVer = Equo.installed_repository().retrieveVersion(idx) \
-                     or corrupted_str
-                installedTag = Equo.installed_repository().retrieveTag(idx)
-                if not installedTag:
-                    installedTag = "NoTag"
-                installedRev = Equo.installed_repository().retrieveRevision(idx)
-                if installedRev is None:
-                    installedRev = 0
-        except:
-            clientSearch = True
+        pkginstalled = entropy_client.installed_repository().atomMatch(
+            entropy.dep.dep_getkey(pkgatom), matchSlot = pkgslot)
+        if pkginstalled[1] == 0:
+            idx = pkginstalled[0]
+            # found
+            installed_ver = entropy_client.installed_repository(
+                ).retrieveVersion(idx) or corrupted_str
+            installed_tag = entropy_client.installed_repository(
+                ).retrieveTag(idx)
+            if not installed_tag:
+                installed_tag = "NoTag"
+            installed_rev = entropy_client.installed_repository(
+                ).retrieveRevision(idx)
+            if installed_rev is None:
+                installed_rev = const_convert_to_unicode("0")
+            else:
+                installed_rev = const_convert_to_unicode(installed_rev)
 
     toc = []
 
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
         " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
-        ", [" + purple(str(dbconn.name)) + "] ")
-    if not strictOutput and extended:
-        pkgname = dbconn.retrieveName(idpackage) or corrupted_str
-        pkgcat = dbconn.retrieveCategory(idpackage) or corrupted_str
+        ", [" + purple(str(entropy_repository.name)) + "] ")
+    if not strict_output and extended:
+        pkgname = entropy_repository.retrieveName(package_id) or corrupted_str
+        pkgcat = entropy_repository.retrieveCategory(package_id) or \
+            corrupted_str
         toc.append((darkgreen("       %s:" % (_("Category"),)),
             blue(pkgcat)))
         toc.append((darkgreen("       %s:" % (_("Name"),)),
@@ -1586,18 +1581,19 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         pkgmasked = False
         masking_reason = ''
         # check if it's masked
-        idpackage_masked, idmasking_reason = dbconn.maskFilter(idpackage)
-        if idpackage_masked == -1:
+        package_id_masked, idmasking_reason = entropy_repository.maskFilter(
+            package_id)
+        if package_id_masked == -1:
             pkgmasked = True
             masking_reason = ", %s" % (
-                Equo.Settings()['pkg_masking_reasons'].get(
+                entropy_client.Settings()['pkg_masking_reasons'].get(
                     idmasking_reason),)
 
         toc.append((darkgreen("       %s:" % (_("Masked"),)),
             blue(str(pkgmasked)) + masking_reason,))
 
     avail_str = _("Available")
-    if clientSearch:
+    if installed_search:
         avail_str = _("Installed")
     toc.append((
         darkgreen("       %s:" % (avail_str,)),
@@ -1605,34 +1601,33 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         bold(pkgtag) + blue(" ~ %s: " % (_("revision"),) ) + bold(str(pkgrev)),)
     )
 
-    if not clientSearch:
+    if not installed_search:
         toc.append((darkgreen("       %s:" % (_("Installed"),) ),
-            blue("%s: " % (_("version"),) ) + bold(installedVer) + \
-            blue(" ~ tag: ") + bold(installedTag) + \
-            blue(" ~ %s: " % (_("revision"),) ) + bold(str(installedRev)),))
+            blue("%s: " % (_("version"),) ) + bold(installed_ver) + \
+            blue(" ~ tag: ") + bold(installed_tag) + \
+            blue(" ~ %s: " % (_("revision"),) ) + bold(installed_rev),))
 
-    if not strictOutput:
+    if not strict_output:
         toc.append((darkgreen("       %s:" % (_("Slot"),) ),
             blue(str(pkgslot)),))
 
         if extended:
-            pkgsize = dbconn.retrieveSize(idpackage)
+            pkgsize = entropy_repository.retrieveSize(package_id)
             pkgsize = entropy.tools.bytes_into_human(pkgsize)
-            pkgbin = dbconn.retrieveDownloadURL(idpackage)
+            pkgbin = entropy_repository.retrieveDownloadURL(package_id)
             if pkgbin is None:
                 pkgbin = corrupted_str
-            pkgdigest = dbconn.retrieveDigest(idpackage) or corrupted_str
-            pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True,
-                resolve_conditional_deps = False)
-            pkgconflicts = dbconn.retrieveConflicts(idpackage)
+            pkgdigest = entropy_repository.retrieveDigest(package_id) or \
+                corrupted_str
+            pkgdeps = entropy_repository.retrieveDependencies(package_id,
+                extended = True, resolve_conditional_deps = False)
+            pkgconflicts = entropy_repository.retrieveConflicts(package_id)
             depsorter = lambda x: entropy.dep.dep_getcpv(x[0])
 
             toc.append((darkgreen("       %s:" % (_("Size"),) ),
                 blue(str(pkgsize)),))
-
             toc.append((darkgreen("       %s:" % (_("Download"),) ),
                 brown(str(pkgbin)),))
-
             toc.append((darkgreen("       %s:" % (_("Checksum"),) ),
                 brown(str(pkgdigest)),))
 
@@ -1667,7 +1662,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         toc.append((darkgreen(home_txt), home_line,))
         home_txt = " "
 
-    if not strictOutput:
+    if not strict_output:
 
         desc_txt = "       %s:" % (_("Description"),)
         desc_lines = _my_formatted_print(pkgdesc, "", "", get_data = True)
@@ -1676,7 +1671,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             desc_txt = " "
 
         if extended:
-            pkguseflags = dbconn.retrieveUseflags(idpackage)
+            pkguseflags = entropy_repository.retrieveUseflags(package_id)
             use_txt = "       %s:" % (_("USE flags"),)
             use_lines = _my_formatted_print(pkguseflags, "", "", color = teal,
                 get_data = True)
@@ -1684,13 +1679,14 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 toc.append((darkgreen(use_txt), use_line))
                 use_txt = " "
 
-    if not strictOutput:
+    if not strict_output:
 
         if extended:
 
-            chost, cflags, cxxflags = dbconn.retrieveCompileFlags(idpackage)
-            sources = dbconn.retrieveSources(idpackage)
-            etpapi = dbconn.retrieveApi(idpackage)
+            chost, cflags, cxxflags = entropy_repository.retrieveCompileFlags(
+                package_id)
+            sources = entropy_repository.retrieveSources(package_id)
+            etpapi = entropy_repository.retrieveApi(package_id)
             if etpapi is None:
                 etpapi =  corrupted_str
 
@@ -1712,7 +1708,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             toc.append((darkgreen("       %s:" % (_("Compiled with"),)),
                 blue(cflags)))
 
-            pkgkeywords = ' '.join(sorted(dbconn.retrieveKeywords(idpackage)))
+            pkgkeywords = ' '.join(
+                sorted(entropy_repository.retrieveKeywords(package_id)))
             keyword_txt = "       %s:" % (_("Keywords"),)
             keyword_lines = _my_formatted_print(pkgkeywords, "", "",
                 color = brown, get_data = True)
@@ -1720,7 +1717,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 toc.append((darkgreen(keyword_txt), brown(keyword_line)))
                 keyword_txt = " "
 
-            mydate = dbconn.retrieveCreationDate(idpackage)
+            mydate = entropy_repository.retrieveCreationDate(package_id)
             pkgcreatedate = "N/A"
             if mydate:
                 pkgcreatedate = entropy.tools.convert_unix_time_to_human_time(
@@ -1729,7 +1726,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             toc.append((darkgreen("       %s:" % (_("Created"),)),
                 purple(pkgcreatedate)))
 
-        pkglic = dbconn.retrieveLicense(idpackage)
+        pkglic = entropy_repository.retrieveLicense(package_id)
         if pkglic is None:
             pkglic = corrupted_str
         toc.append((darkgreen("       %s:" % (_("License"),)),

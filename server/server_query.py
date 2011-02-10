@@ -41,10 +41,10 @@ def query(myopts):
                 count += 1
                 text_query.print_package_info(
                     result[1],
+                    Entropy,
                     dbconn,
-                    clientSearch = True,
-                    extended = True,
-                    Equo = Entropy
+                    installed_search = True,
+                    extended = True
                 )
 
         if not count:
@@ -62,10 +62,10 @@ def query(myopts):
             count += 1
             text_query.print_package_info(
                 pkg_id,
+                Entropy,
                 dbconn,
-                clientSearch = True,
-                extended = True,
-                Equo = Entropy
+                installed_search = True,
+                extended = True
             )
 
         if not count:
@@ -124,7 +124,7 @@ def search_tagged_packages(tags, entropy, dbconn):
             if etpUi['quiet']:
                 print_generic(dbconn.retrieveAtom(result[1]))
             else:
-                text_query.print_package_info(result[1], dbconn, Equo = entropy)
+                text_query.print_package_info(result[1], entropy, dbconn)
         if not etpUi['quiet']:
             print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+tag))
             print_info(blue(" %s:   " % (_("Found"),) ) + \

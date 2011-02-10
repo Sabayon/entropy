@@ -701,9 +701,9 @@ def _match_bashcomp(cmdline):
         if client.installed_repository() is None:
             return []
         import text_query
-        return text_query.match_package([cmdline[-1]], Equo = client,
-            get_results = True, multiMatch = "--multimatch" in cmdline,
-            multiRepo = "--multirepo" in cmdline)
+        return text_query.match_package([cmdline[-1]], client,
+            get_results = True, multi_match = "--multimatch" in cmdline,
+            multi_repo = "--multirepo" in cmdline)
     finally:
         client.shutdown()
 
