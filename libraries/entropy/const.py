@@ -60,7 +60,11 @@ import bz2
 import grp
 import pwd
 import threading
-import thread
+try:
+    import thread
+except ImportError:
+    # python 3.x
+    import _thread as thread
 from entropy.i18n import _
 
 
