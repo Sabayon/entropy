@@ -928,7 +928,6 @@ class PortagePlugin(SpmPlugin):
         tmp_fd, tmp_file = tempfile.mkstemp(prefix = "etp_portage")
         try:
             with os.fdopen(tmp_fd, "w") as std_f:
-                cmd = const_convert_to_rawstring(cmd)
                 proc = subprocess.Popen(shlex.split(cmd), stdout = std_f,
                     stderr = std_f)
                 sts = proc.wait()
@@ -1686,7 +1685,7 @@ class PortagePlugin(SpmPlugin):
             static_file_class = sets_obj.files.StaticFileSet
             # filter out Portage-generated sets object, those not being
             # an instance of portage._sets.files.StaticFileSet
-            for key, obj in mysets.items():
+            for key, obj in tuple(mysets.items()):
                 if not isinstance(obj, static_file_class):
                     mysets.pop(key)
 
@@ -2518,7 +2517,10 @@ class PortagePlugin(SpmPlugin):
         portdb = self._get_portage_portagetree(root).dbapi
         mdigest = hashlib.md5()
         # this way, if no matches are found, the same value is returned
-        mdigest.update("begin")
+        if sys.hexversion >= 0x3000000:
+            mdigest.update(const_convert_to_rawstring("begin"))
+        else:
+            mdigest.update("begin")
 
         for repo_name in portdb.getRepositories():
             repo_path = portdb.getRepositoryPath(repo_name)
@@ -3172,12 +3174,12 @@ class PortagePlugin(SpmPlugin):
                 new = open(world_file_tmp, "wb")
                 old = open(world_file, "rb")
                 line = old.readline()
-                key = const_convert_to_rawstring(key)
+                key_raw = const_convert_to_rawstring(key)
                 keyslot = const_convert_to_rawstring(key+":"+slot)
 
                 while line:
 
-                    if line.find(key) != -1:
+                    if line.find(key_raw) != -1:
                         line = old.readline()
                         continue
                     if line.find(keyslot) != -1:

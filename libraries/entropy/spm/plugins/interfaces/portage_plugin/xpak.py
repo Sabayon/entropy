@@ -45,7 +45,7 @@ def _addtolist(mylist, curdir, _nested = False):
             mylist.append(x_path)
 
     if not _nested:
-        for idx in xrange(len(mylist)):
+        for idx in range(len(mylist)):
             mylist[idx] = mylist[idx][len(curdir)+1:]
 
 def encodeint(myint):
@@ -86,10 +86,9 @@ def xpak(rootdir, outfile=None):
     mylist.sort()
     mydata = {}
     for x in mylist:
-        x_path = os.path.join(rootdir, x)
-        a = open(x_path, "rb")
-        mydata[x] = a.read()
-        a.close()
+        x_path = os.path.join(const_convert_to_rawstring(rootdir), x)
+        with open(x_path, "rb") as a:
+            mydata[x] = a.read()
 
     xpak_segment = xpak_mem(mydata)
     if outfile:

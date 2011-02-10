@@ -819,6 +819,16 @@ class Dependency(object):
         """
         return self.__dep
 
+    def __bool__(self):
+        """
+        Same as __nonzero__ but meant for Python 3.x support
+        """
+        for entropy_repository in self.__entropy_repository_list:
+            pkg_id, res = entropy_repository.atomMatch(self.__dep)
+            if res == 0:
+                return True
+        return False
+
     def __nonzero__(self):
         """
         Tries to match entropy_dep and returns True or False if dependency

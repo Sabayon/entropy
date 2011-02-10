@@ -13,6 +13,7 @@
 
 """
 import os
+import sys
 import errno
 import shutil
 import subprocess
@@ -22,7 +23,8 @@ import time
 
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, etpUi, const_setup_perms, \
-    const_debug_write, const_setup_file, const_convert_to_unicode
+    const_debug_write, const_setup_file, const_convert_to_unicode, \
+    const_convert_to_rawstring
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -1558,6 +1560,8 @@ class Repository:
         proc = subprocess.Popen(args,
             **self.__default_popen_args(stderr = True))
         try:
+            if sys.hexversion >= 0x3000000:
+                key_input = const_convert_to_rawstring(key_input)
             # feed gpg with data
             proc_stdout, proc_stderr = proc.communicate(input = key_input)
             # wait for process to terminate
@@ -1569,6 +1573,9 @@ class Repository:
             raise Repository.GPGError(
                 "cannot generate key, exit status %s" % (proc_rc,))
 
+        if sys.hexversion >= 0x3000000:
+            proc_stdout = const_convert_to_unicode(proc_stdout)
+            proc_stderr = const_convert_to_unicode(proc_stderr)
         # now get fucking fingerprint
         key_data = [x.strip() for x in (proc_stdout+proc_stderr).split("\n") \
             if x.strip() and "KEY_CREATED" in x.split()]
@@ -1812,6 +1819,8 @@ class Repository:
                         fingerprint, proc_rc,))
 
             key_string = proc.stdout.read()
+            if sys.hexversion >= 0x3000000:
+                key_string = const_convert_to_unicode(key_string)
             return key_string
         finally:
             self.__default_popen_close(proc)

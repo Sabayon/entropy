@@ -148,7 +148,7 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        for key, buf_entry in self.__buf.items():
+        for key, buf_entry in tuple(self.__buf.items()):
             # identity is generally faster, so try
             # this first
             if self.__buf is None: # shutting down py
