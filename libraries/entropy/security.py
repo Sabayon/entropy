@@ -1444,17 +1444,16 @@ class Repository:
                 "--with-colons"]
 
         proc = subprocess.Popen(args, **self.__default_popen_args())
+        try:
+            # wait for process to terminate
+            proc_rc = proc.wait()
+            if proc_rc != 0:
+                raise Repository.GPGError("cannot list keys, exit status %s" % (
+                    proc_rc,))
 
-        # wait for process to terminate
-        proc_rc = proc.wait()
-
-        if proc_rc != 0:
+            out_data = proc.stdout.readlines()
+        finally:
             self.__default_popen_close(proc)
-            raise Repository.GPGError("cannot list keys, exit status %s" % (
-                proc_rc,))
-
-        out_data = proc.stdout.readlines()
-        self.__default_popen_close(proc)
 
         valid_keywords = ['pub', 'uid', 'sec', 'fpr']
         result = Repository.ListKeys()
@@ -1558,13 +1557,13 @@ class Repository:
             args,))
         proc = subprocess.Popen(args,
             **self.__default_popen_args(stderr = True))
-
-        # feed gpg with data
-        proc_stdout, proc_stderr = proc.communicate(input = key_input)
-
-        # wait for process to terminate
-        proc_rc = proc.wait()
-        self.__default_popen_close(proc)
+        try:
+            # feed gpg with data
+            proc_stdout, proc_stderr = proc.communicate(input = key_input)
+            # wait for process to terminate
+            proc_rc = proc.wait()
+        finally:
+            self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError(
@@ -1652,10 +1651,11 @@ class Repository:
         const_debug_write(__name__, "Repository.__delete_key args => %s" % (
             args,))
         proc = subprocess.Popen(args, **self.__default_popen_args())
-
-        # wait for process to terminate
-        proc_rc = proc.wait()
-        self.__default_popen_close(proc)
+        try:
+            # wait for process to terminate
+            proc_rc = proc.wait()
+        finally:
+            self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError(
@@ -1802,19 +1802,19 @@ class Repository:
         args.append(fingerprint)
 
         proc = subprocess.Popen(args, **self.__default_popen_args())
+        try:
+            # wait for process to terminate
+            proc_rc = proc.wait()
 
-        # wait for process to terminate
-        proc_rc = proc.wait()
+            if proc_rc != 0:
+                raise Repository.GPGError(
+                    "cannot export key which fingerprint is %s, error: %s" % (
+                        fingerprint, proc_rc,))
 
-        if proc_rc != 0:
+            key_string = proc.stdout.read()
+            return key_string
+        finally:
             self.__default_popen_close(proc)
-            raise Repository.GPGError(
-                "cannot export key which fingerprint is %s, error: %s" % (
-                    fingerprint, proc_rc,))
-
-        key_string = proc.stdout.read()
-        self.__default_popen_close(proc)
-        return key_string
 
     def get_pubkey(self, repository_identifier):
         """
@@ -1879,10 +1879,11 @@ class Repository:
             raise
 
         proc = subprocess.Popen(args, **self.__default_popen_args())
-
-        # wait for process to terminate
-        proc_rc = proc.wait()
-        self.__default_popen_close(proc)
+        try:
+            # wait for process to terminate
+            proc_rc = proc.wait()
+        finally:
+            self.__default_popen_close(proc)
 
         if proc_rc != 0:
             raise Repository.GPGError(
@@ -1973,20 +1974,24 @@ class Repository:
                 "Repository.__sign_file had to rm %s" % (asc_path,))
             os.remove(asc_path)
 
+
         proc = subprocess.Popen(args, **self.__default_popen_args())
+        try:
+            # wait for process to terminate
+            proc_rc = proc.wait()
 
-        # wait for process to terminate
-        proc_rc = proc.wait()
-        self.__default_popen_close(proc)
+            if proc_rc != 0:
+                raise Repository.GPGError(
+                    "cannot sign file %s, exit status %s" % (
+                        file_path, proc_rc,))
 
-        if proc_rc != 0:
-            raise Repository.GPGError("cannot sign file %s, exit status %s" % (
-                file_path, proc_rc,))
+            if not os.path.isfile(asc_path):
+                raise OSError("cannot find %s" % (asc_path,))
 
-        if not os.path.isfile(asc_path):
-            raise OSError("cannot find %s" % (asc_path,))
+            return asc_path
 
-        return asc_path
+        finally:
+            self.__default_popen_close(proc)
 
     def sign_file(self, repository_identifier, file_path):
         """
@@ -2013,14 +2018,15 @@ class Repository:
             args,))
 
         proc = subprocess.Popen(args, **self.__default_popen_args())
+        try:
+            # wait for process to terminate
+            proc_rc = proc.wait()
 
-        # wait for process to terminate
-        proc_rc = proc.wait()
-        self.__default_popen_close(proc)
-
-        if proc_rc != 0:
-            raise Repository.GPGError("cannot verify file %s, exit status %s" % (
-                file_path, proc_rc,))
+            if proc_rc != 0:
+                raise Repository.GPGError("cannot verify file %s, exit status %s" % (
+                    file_path, proc_rc,))
+        finally:
+             self.__default_popen_close(proc)
 
     def verify_file(self, repository_identifier, file_path, signature_path):
         """
