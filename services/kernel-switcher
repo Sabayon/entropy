@@ -177,8 +177,8 @@ def _list_kernels(args):
             print_warning(_("No kernel packages found"))
             return 1
 
-        key_sorter = lambda (x, y): \
-            etp_client.open_repository(y).retrieveAtom(x)
+        key_sorter = lambda x: \
+            etp_client.open_repository(x[1]).retrieveAtom(x[0])
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
             repo = etp_client.open_repository(pkg_repo)
             print_package_info(pkg_id, etp_client, repo,

@@ -1129,8 +1129,8 @@ def search_package(packages, entropy_client, get_results = False,
         return sorted((entropy_client.open_repository(y).retrieveAtom(x) for \
             x, y in search_data))
 
-    key_sorter = lambda (x, y): \
-        entropy_client.open_repository(y).retrieveAtom(x)
+    key_sorter = lambda x: \
+        entropy_client.open_repository(x[1]).retrieveAtom(x[0])
     for pkg_id, pkg_repo in sorted(search_data, key = key_sorter):
         dbconn = entropy_client.open_repository(pkg_repo)
         from_client = pkg_repo == etpConst['clientdbid']
@@ -1175,8 +1175,8 @@ def search_mimetype(mimetypes, entropy_client, installed = False,
         if matches:
             found = True
 
-        key_sorter = lambda (x, y): \
-            entropy_client.open_repository(y).retrieveAtom(x)
+        key_sorter = lambda x: \
+            entropy_client.open_repository(x[1]).retrieveAtom(x[0])
         for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
             repo = entropy_client.open_repository(pkg_repo)
             print_package_info(pkg_id, entropy_client, repo,
@@ -1234,7 +1234,7 @@ def match_package(packages, entropy_client, multi_match = False,
             else:
                 matches = match[0]
 
-            key_sorter = lambda (x, y): entropy_client.open_repository(y).retrieveAtom(x)
+            key_sorter = lambda x: entropy_client.open_repository(x[1]).retrieveAtom(x[0])
             for pkg_id, pkg_repo in sorted(matches, key = key_sorter):
                 dbconn = entropy_client.open_repository(pkg_repo)
                 if get_results:
@@ -1314,7 +1314,7 @@ def search_package_sets(items, entropy_client):
     matchNumber = 0
     for item in items:
         results = sets.search(item)
-        key_sorter = lambda (x, y, z): y
+        key_sorter = lambda x: x[1]
         for repo, set_name, set_data in sorted(results, key = key_sorter):
             matchNumber += 1
             found = True

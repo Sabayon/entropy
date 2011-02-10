@@ -952,7 +952,7 @@ class ServerPackagesRepositoryUpdater(object):
                 header = brown("    # ")
             )
             return
-        sorter = lambda (x, y, z): y
+        sorter = lambda x: x[1]
         for s_repo, s_name, s_sets in sorted(sets_data, key = sorter):
             self._entropy.output(
                 blue("%s" % (s_name,)),

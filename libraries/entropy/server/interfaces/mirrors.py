@@ -929,7 +929,7 @@ class Server(object):
                 level = "info",
                 header = red("    # ")
             )
-        key_sorter = lambda (pkg, rel, size): rel
+        key_sorter = lambda x: x[1]
 
         for package, rel_pkg, size in sorted(download, key = key_sorter):
             package = darkred(rel_pkg)

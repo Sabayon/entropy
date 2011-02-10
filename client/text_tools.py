@@ -244,7 +244,7 @@ def print_table(lines_data, cell_spacing = 2, cell_padding = 0,
     @type side_color: callable
     """
     column_sizes = {}
-    padding_side = cell_padding / 2
+    padding_side = int((cell_padding / 2))
     for cols in lines_data:
         if not isinstance(cols, (list, tuple)):
             # can be a plain string

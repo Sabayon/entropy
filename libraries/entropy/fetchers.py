@@ -13,7 +13,11 @@ import os
 import errno
 import sys
 import time
-import httplib
+try:
+    import httplib
+except ImportError:
+    # python 3.x
+    import http.client as httplib
 import hashlib
 import socket
 import pty

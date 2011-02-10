@@ -28,7 +28,10 @@ import os
 import hashlib
 import itertools
 import time
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 import threading
 import subprocess
 from sqlite3 import dbapi2
@@ -643,9 +646,12 @@ class EntropyRepository(EntropyRepositoryBase):
 
     def __discardLiveCache(self):
         cache_key = self.__getLiveCacheKey()
+        keys = set()
         for key in EntropyRepository._LIVE_CACHE.keys():
             if key.startswith(cache_key):
-                del EntropyRepository._LIVE_CACHE[key]
+                keys.add(key)
+        for key in keys:
+            del EntropyRepository._LIVE_CACHE[key]
 
     def __setLiveCache(self, key, value):
         EntropyRepository._LIVE_CACHE[self.__getLiveCacheKey() + key] = value
@@ -4963,8 +4969,12 @@ class EntropyRepository(EntropyRepositoryBase):
             # interpreter independent results. Cannot use hash() then.
             # Even repr() might be risky! But on the other hand, the
             # conversion to string cannot take forever.
-            for record in cursor:
-                m.update(repr(record))
+            if sys.hexversion >= 0x3000000:
+                for record in cursor:
+                    m.update(repr(record).encode("utf-8"))
+            else:
+                for record in cursor:
+                    m.update(repr(record))
 
         if strings:
             m = hashlib.md5()

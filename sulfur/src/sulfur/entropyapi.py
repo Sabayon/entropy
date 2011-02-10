@@ -19,7 +19,10 @@
 import gtk
 import sys
 import time
-import thread
+try:
+    import thread
+except ImportError:
+    import _thread as thread
 from sulfur.setup import const, SulfurConf
 from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
