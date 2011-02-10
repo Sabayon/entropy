@@ -161,14 +161,13 @@ def query(options):
             mylistopts = options[1:]
             if len(mylistopts) > 0:
                 if mylistopts[0] == "installed":
-                    rc_status = list_installed_packages()
+                    rc_status = list_packages(etp_client,
+                        etp_client.installed_repository())
                 elif mylistopts[0] == "available" and len(mylistopts) > 1:
                     repoid = mylistopts[1]
-                    equo = Client()
-                    if repoid in equo.repositories():
-                        repo_dbconn = equo.open_repository(repoid)
-                        rc_status = list_installed_packages(
-                            dbconn = repo_dbconn)
+                    if repoid in etp_client.repositories():
+                        repo_dbconn = etp_client.open_repository(repoid)
+                        rc_status = list_packages(etp_client, repo_dbconn)
                     else:
                         rc_status = -10
                 else:
@@ -185,32 +184,6 @@ def query(options):
 
     return rc_status
 
-def get_installed_packages(packages, dbconn = None, entropy_intf = None):
-
-    if entropy_intf is None:
-        entropy_intf = Client()
-
-    repo_db = dbconn
-    if not dbconn:
-        repo_db = entropy_intf.installed_repository()
-
-    pkg_data = {}
-    flat_results = set()
-    for real_package in packages:
-        pkg_data[real_package] = set()
-
-        slot = entropy.dep.dep_getslot(real_package)
-        tag = entropy.dep.dep_gettag(real_package)
-        package = entropy.dep.remove_slot(real_package)
-        package = entropy.dep.remove_tag(package)
-
-        idpackages = repo_db.searchPackages(package, slot = slot, tag = tag,
-            just_id = True, order_by = "atom")
-        pkg_data[real_package].update(idpackages)
-        flat_results.update(idpackages)
-
-    return pkg_data, flat_results
-
 def search_repository_packages(packages, entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
@@ -226,8 +199,18 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
         packages = [entropy_repository.retrieveAtom(x) for x in \
             entropy_repository.listAllPackageIds(order_by = "atom")]
 
-    pkg_data, flat_data = get_installed_packages(packages,
-        dbconn = entropy_repository, entropy_intf = entropy_client)
+    pkg_data = {}
+    for real_package in packages:
+        obj = pkg_data.setdefault(real_package, set())
+
+        slot = entropy.dep.dep_getslot(real_package)
+        tag = entropy.dep.dep_gettag(real_package)
+        package = entropy.dep.remove_slot(real_package)
+        package = entropy.dep.remove_tag(package)
+
+        pkg_ids = entropy_repository.searchPackages(package, slot = slot,
+            tag = tag, just_id = True, order_by = "atom")
+        obj.update(pkg_ids)
 
     key_sorter = lambda x: entropy_repository.retrieveAtom(x)
     for package in sorted(pkg_data):
@@ -1054,37 +1037,42 @@ def search_removal_dependencies(packages, entropy_client, entropy_repository,
 
 
 
-def list_installed_packages(Equo = None, dbconn = None):
-
-    if Equo is None:
-        Equo = Client()
+def list_packages(entropy_client, entropy_repository):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
             darkgreen("%s..." % (_("Installed Search"),)))
 
-    clientDbconn = Equo.installed_repository()
-    if dbconn:
-        clientDbconn = dbconn
+    if entropy_repository is None:
+        if not etpUi['quiet']:
+            print_warning(purple(" !!! ") + \
+                teal(_("Repository is not available")))
+        return 127
 
-    inst_packages = clientDbconn.listAllPackages(order_by = "atom")
+    pkg_ids = entropy_repository.listAllPackageIds(order_by = "atom")
 
     if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("%s:" % (
             _("These are the installed packages"),) ))
 
-    for atom, idpackage, branch in inst_packages:
+    for pkg_id in pkg_ids:
+        atom = entropy_repository.retrieveAtom(pkg_id)
+        if atom is None:
+            continue
         if not etpUi['verbose']:
             atom = entropy.dep.dep_getkey(atom)
+
         branchinfo = ""
         sizeinfo = ""
         if etpUi['verbose']:
+            branch = entropy_repository.retrieveBranch(pkg_id)
             branchinfo = darkgreen(" [")+red(branch)+darkgreen("] ")
-            mysize = clientDbconn.retrieveOnDiskSize(idpackage)
+            mysize = entropy_repository.retrieveOnDiskSize(pkg_id)
             mysize = entropy.tools.bytes_into_human(mysize)
             sizeinfo = brown(" [")+purple(mysize)+brown("]")
+
         if not etpUi['quiet']:
-            print_info(red("  # ") + blue(str(idpackage)) + sizeinfo + \
+            print_info(red("  # ") + blue(str(pkg_id)) + sizeinfo + \
                 branchinfo + " " + atom)
         else:
             print_generic(atom)
@@ -1484,43 +1472,40 @@ def search_description(descriptions, entropy_client):
                 bold(" " + repo_data['description']))
 
         repo = entropy_client.open_repository(repo_id)
-        descdata = search_descriptions(descriptions, repo,
-            Equo = entropy_client)
-        if descdata:
-            found = True
+        found = search_descriptions(descriptions, entropy_client, repo)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
 
     return 0
 
-def search_descriptions(descriptions, dbconn, Equo = None):
+def search_descriptions(descriptions, entropy_client, entropy_repository):
 
-    key_sorter = lambda x: dbconn.retrieveAtom(x[1])
-    mydescdata = {}
+    key_sorter = lambda x: entropy_repository.retrieveAtom(x)
+    found = 0
     for desc in descriptions:
 
-        result = dbconn.searchDescription(desc)
-        if not result:
+        pkg_ids = entropy_repository.searchDescription(desc, just_id = True)
+        if not pkg_ids:
             continue
 
-        mydescdata[desc] = result
-        for pkg in sorted(mydescdata[desc], key = key_sorter):
-            idpackage = pkg[1]
-            if (etpUi['quiet']):
-                print_generic(dbconn.retrieveAtom(idpackage))
+        found += len(pkg_ids)
+        for pkg_id in sorted(pkg_ids, key = key_sorter):
+            if etpUi['quiet']:
+                print_generic(entropy_repository.retrieveAtom(pkg_id))
             else:
-                print_package_info(idpackage, dbconn, Equo = Equo,
-                    extended = etpUi['verbose'], strictOutput = etpUi['quiet'])
+                print_package_info(pkg_id, entropy_repository,
+                    Equo = entropy_client, extended = etpUi['verbose'],
+                    strictOutput = etpUi['quiet'])
 
         if not etpUi['quiet']:
             toc = []
             toc.append(("%s:" % (blue(_("Keyword")),), purple(desc)))
             toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
-                len(mydescdata[desc]), brown(_("entries")),)))
+                len(pkg_ids), brown(_("entries")),)))
             print_table(toc)
 
-    return mydescdata
+    return found
 
 def print_package_info(idpackage, dbconn, clientSearch = False,
     strictOutput = False, extended = False, Equo = None,
