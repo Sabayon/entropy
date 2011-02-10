@@ -22,7 +22,7 @@ import time
 
 from entropy.exceptions import EntropyException
 from entropy.const import etpConst, etpUi, const_setup_perms, \
-    const_debug_write, const_setup_file
+    const_debug_write, const_setup_file, const_convert_to_unicode
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred, purple, brown
 from entropy.cache import EntropyCacher
@@ -1459,6 +1459,7 @@ class Repository:
         valid_keywords = ['pub', 'uid', 'sec', 'fpr']
         result = Repository.ListKeys()
         for line in out_data:
+            line = const_convert_to_unicode(line)
 
             const_debug_write(__name__, "_list_keys: read => %s" % (
                 line.strip(),))
