@@ -641,7 +641,7 @@ def _my_raw_input(txt = ''):
             pass
     return response
 
-class TextInterface:
+class TextInterface(object):
 
     """
     TextInterface is a base class for handling the communication between
@@ -654,7 +654,6 @@ class TextInterface:
 
     Every part of Entropy is using the methods in this class to communicate
     with the user, channel is bi-directional.
-
     """
 
     def output(self, text, header = "", footer = "", back = False,
