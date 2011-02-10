@@ -12,7 +12,7 @@
 from entropy.const import const_isnumber
 from entropy.output import TextInterface
 
-class EntropyUriHandler(object, TextInterface):
+class EntropyUriHandler(TextInterface):
 
     """
     Base class for EntropyTransceiver URI handler interfaces. This provides
