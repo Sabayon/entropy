@@ -1334,12 +1334,14 @@ class CalculatorsMixin:
             deptree_conflicts |= conflicts
 
         if deps_not_found:
+            graph.destroy()
             del graph
             raise DependenciesNotFound(deps_not_found)
 
         # solve depgraph and append conflicts
         deptree = graph.solve()
         if 0 in deptree:
+            graph.destroy()
             del graph
             raise KeyError("Graph contains a dep_level == 0")
 
@@ -1354,6 +1356,7 @@ class CalculatorsMixin:
         _colliding_deps = [x for x in _dup_deps_collisions.values() if \
             len(x) > 1]
         if _colliding_deps:
+            graph.destroy()
             del graph
             raise DependenciesCollision(_colliding_deps)
 
@@ -1364,6 +1367,7 @@ class CalculatorsMixin:
             level_count += 1
             reverse_tree[level_count] = deptree[key]
 
+        graph.destroy()
         del deptree, graph
         reverse_tree[0] = deptree_conflicts
 
@@ -1660,6 +1664,7 @@ class CalculatorsMixin:
             deptree = graph.solve()
             del flat_dep_tree
 
+        graph.destroy()
         del graph
 
         if self.xcache:

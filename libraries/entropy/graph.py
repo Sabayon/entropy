@@ -35,6 +35,25 @@ class GraphNode(object):
         self.__item = item
         self.__arches = set()
 
+    def __del__(self):
+        try:
+            self._clear()
+        except (NameError, AttributeError):
+            pass
+
+    def _clear(self):
+        """
+        Clear the object
+        """
+        try:
+            self.__arches.clear()
+        except (NameError, AttributeError):
+            pass
+        try:
+            self.__item = None
+        except (NameError, AttributeError):
+            pass
+
     def __str__(self):
         """
         Default string representation.
@@ -135,6 +154,22 @@ class GraphArchSet(object):
         self.__origin = starting_point
         self.__endpoints = set()
 
+    def __del__(self):
+        try:
+            self._clear()
+        except (NameError, AttributeError):
+            pass
+
+    def _clear(self):
+        """
+        Cleanup the object
+        """
+        try:
+            self.__endpoints.clear()
+            del self.__origin
+        except (NameError, AttributeError):
+            pass
+
     def __str__(self):
         """
         Default string representation.
@@ -209,6 +244,16 @@ class TopologicalSorter(object):
         object.__init__(self)
         self.__adjacency_map = adjacency_map
         self.__stack = Lifo()
+
+    def __del__(self):
+        try:
+            self.__adjacency_map.clear()
+        except (NameError, AttributeError):
+            pass
+        try:
+            self.__stack.clear()
+        except (NameError, AttributeError):
+            pass
 
     def __topological_sort_visit_node(self, node, low, result):
         """
@@ -339,6 +384,36 @@ class Graph(object):
         self.__graph = {}
         self.__archs_map = {}
         self.__graph_map_cache = None
+
+    def __del__(self):
+        try:
+            self.destroy()
+        except (AttributeError, NameError):
+            pass
+
+    def destroy(self):
+        """
+        Cleanup any reference.
+        """
+        try:
+            for obj in self.__graph.values():
+                obj._clear()
+            self.__graph.clear()
+        except (NameError, AttributeError):
+            pass
+        try:
+            for obj in self.__archs_map.values():
+                obj._clear()
+            self.__archs_map.clear()
+        except (NameError, AttributeError):
+            pass
+        try:
+            if self.__graph_map_cache is not None:
+                for obj in self.__graph_map_cache.values():
+                    obj._clear()
+                self.__graph_map_cache.clear()
+        except (NameError, AttributeError):
+            pass
 
     def __invalidate_cache(self):
         """

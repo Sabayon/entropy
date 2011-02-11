@@ -385,6 +385,7 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
         _show_graph_legend()
 
     del stack
+    graph.destroy()
     del graph
     return 0
 
@@ -471,6 +472,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
         _show_dependencies_legend()
 
     del stack
+    graph.destroy()
     del graph
     return 0
 
