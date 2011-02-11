@@ -167,7 +167,10 @@ def get_traceback(tb_obj = None):
         from cStringIO import StringIO
     buf = StringIO()
     if tb_obj is not None:
-        traceback.print_last(tb_obj, file = buf)
+        if sys.hexversion >= 0x3000000:
+            traceback.print_tb(tb_obj, file = buf)
+        else:
+            traceback.print_last(tb_obj, file = buf)
     else:
         last_type, last_value, last_traceback = sys.exc_info()
         traceback.print_exception(last_type, last_value, last_traceback,
