@@ -2198,13 +2198,10 @@ class PortagePlugin(SpmPlugin):
             bzf = bz2.BZ2File(bz2envfile, "w")
             f = open(envfile, "rb")
             line = f.readline()
+            root_tag = const_convert_to_rawstring("ROOT=")
             while line:
-                if sys.hexversion >= 0x3000000:
-                    if line.startswith(b"ROOT="):
-                        line = b"ROOT=%s\n" % (myroot,)
-                else:
-                    if line.startswith("ROOT="):
-                        line = "ROOT=%s\n" % (myroot,)
+                if line.startswith(root_tag):
+                    line = const_convert_to_rawstring("ROOT=%s\n" % (myroot,))
                 bzf.write(line)
                 line = f.readline()
 
@@ -2886,7 +2883,7 @@ class PortagePlugin(SpmPlugin):
         portage_cpv = PortagePlugin._pkg_compose_atom(entropy_package_metadata)
         self._bump_vartree_mtime(portage_cpv)
 
-        with open(cont_path, "wb") as cont_f:
+        with open(cont_path, "w") as cont_f:
             utf_sys_root = etpConst['systemroot'] + os.path.sep
             # NOTE: content_meta contains paths with ROOT prefix, it's ok
             write_contents(content_meta, utf_sys_root, cont_f)
