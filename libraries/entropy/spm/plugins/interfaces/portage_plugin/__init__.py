@@ -412,7 +412,7 @@ class PortagePlugin(SpmPlugin):
             header = red("   ## ")
         )
 
-        for obj in PortagePlugin.CACHE.values():
+        for obj in tuple(PortagePlugin.CACHE.values()):
             obj.clear()
 
         port_key = "portage"
@@ -423,7 +423,7 @@ class PortagePlugin(SpmPlugin):
         if current_module_name in sys.modules:
             del sys.modules[current_module_name]
 
-        for key in sys.modules.keys():
+        for key in tuple(sys.modules.keys()):
             if key.startswith(port_key):
                 del sys.modules[key]
             elif key.startswith(emerge_key):
@@ -1842,6 +1842,30 @@ class PortagePlugin(SpmPlugin):
             self._logger = logger
             self._std = std
 
+            if sys.hexversion >= 0x3000000:
+
+                class Writer(object):
+
+                    def __init__(self, parent, buf):
+                        self._buf = buf
+                        self._parent = parent
+
+                    def write(self, b):
+                        self._buf.write(b)
+                        self._parent.write(const_convert_to_unicode(b))
+
+                    def flush(self):
+                        self._buf.flush()
+                        self._parent.flush()
+
+                self.buffer = Writer(self, self._std.buffer)
+
+        def __iter__(self):
+            return self._std
+
+        def __hash__(self):
+            return hash(self._std)
+
         @property
         def softspace(self):
             return self._std.softspace
@@ -1884,19 +1908,20 @@ class PortagePlugin(SpmPlugin):
         def isatty(self):
             return self._std.isatty()
 
-        def next(self):
-            return self._std.next()
-
-        def __next__(self):
-            return next(self._std)
+        if sys.hexversion < 0x3000000:
+            def next(self):
+                return self._std.next()
+        else:
+            def __next__(self):
+                return next(self._std)
 
         def read(self, *args, **kwargs):
             return self._std.read(*args, **kwargs)
 
-        def readline(*args, **kwargs):
+        def readline(self, *args, **kwargs):
             return self._std.readline(*args, **kwargs)
 
-        def readlines(*args, **kwargs):
+        def readlines(self, *args, **kwargs):
             return self._std.readlines(*args, **kwargs)
 
         def seek(self, *args, **kwargs):
@@ -1922,10 +1947,25 @@ class PortagePlugin(SpmPlugin):
             self._logger.writelines([decolorize(x) for x in lst])
             return self._std.writelines(lst)
 
-        def xreadlines(self):
-            if sys.hexversion >= 0x3000000:
-                return self._std
-            else:
+        if sys.hexversion >= 0x3000000:
+
+            # line_buffering readable seekable writable
+            def readable(self):
+                return self._std.readable()
+
+            def seekable(self):
+                return self._std.seekable()
+
+            def writable(self):
+                return self._std.writable()
+
+            @property
+            def line_buffering(self):
+                return self._std.line_buffering
+
+        else:
+
+            def xreadlines(self):
                 return self._std.xreadlines()
 
     def _portage_doebuild(self, myebuild, mydo, tree, cpv,
