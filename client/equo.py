@@ -11,6 +11,7 @@
 
 """
 import os
+import pdb
 import sys
 import errno
 import re
@@ -892,6 +893,12 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         raise SystemExit(1)
 
     t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+    if etpUi['debug']:
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        sys.stdin = sys.__stdin__
+        entropy.tools.print_exception(tb_data = exc_tb)
+        pdb.set_trace()
 
     if exc_class is OSError:
         if exc_instance.errno == errno.ENOSPC:
