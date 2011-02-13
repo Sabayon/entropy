@@ -1034,10 +1034,12 @@ class PortagePlugin(SpmPlugin):
 
         if not data['sources']:
             env_bz2 = os.path.join(meta_dir, PortagePlugin.ENV_FILE_COMP)
-            uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
-            # unfortunately upstream dropped SRC_URI file support
-            data['sources'] = self.__source_env_get_var(uncompressed_env_file,
-                "SRC_URI")
+            if os.path.isfile(env_bz2) and os.access(env_bz2, os.R_OK):
+                # when extracting fake metadata, env_bz2 can be unavailable
+                uncompressed_env_file = entropy.tools.unpack_bzip2(env_bz2)
+                # unfortunately upstream dropped SRC_URI file support
+                data['sources'] = self.__source_env_get_var(
+                    uncompressed_env_file, "SRC_URI")
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
@@ -1509,8 +1511,9 @@ class PortagePlugin(SpmPlugin):
         cps = portdb.cp_all()
         visibles = set()
         for cp in cps:
-            if categories and cp.split("/")[0] not in categories:
-                continue
+            if categories:
+                if cp.split("/")[0] not in categories:
+                    continue
 
             # get slots
             slots = set()
