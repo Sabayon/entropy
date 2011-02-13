@@ -4235,7 +4235,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         if just_id:
             return self._cur2tuple(cur)
-        return tuple(cur)
+        return frozenset(cur)
 
 
     def searchCategory(self, keyword, like = False):
@@ -4258,7 +4258,7 @@ class EntropyRepository(EntropyRepositoryBase):
             baseinfo.idcategory = categories.idcategory
             """ % (like_string,), (keyword,))
 
-        return tuple(cur)
+        return frozenset(cur)
 
     def searchNameCategory(self, name, category, just_id = False):
         """
@@ -4274,17 +4274,19 @@ class EntropyRepository(EntropyRepositoryBase):
             else:
                 cur = self._cursor().execute("""
                 SELECT baseinfo.name,categories.category,
-                baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
+                baseinfo.atom, baseinfo.idpackage FROM baseinfo,categories
                 WHERE baseinfo.idcategory = categories.idcategory
                 """)
             cached = {}
             for nam, cat, atom, pkg_id in cur.fetchall():
-                obj = cached.setdefault((nam, cat), [])
-                obj.append((atom, pkg_id))
+                obj = cached.setdefault((nam, cat), set())
+                obj.add((atom, pkg_id))
+            for key in tuple(cached.keys()):
+                cached[key] = frozenset(cached[key])
             self.__setLiveCache("searchNameCategory", cached)
-        data = cached.get((name, category), [])
+        data = cached.get((name, category), frozenset())
         if just_id:
-            return [y for x, y in data]
+            return frozenset((y for x, y in data))
         return data
 
     def isPackageScopeAvailable(self, atom, slot, revision):

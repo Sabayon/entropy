@@ -709,7 +709,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 self.name)
             if idpkgs:
                 if -1 in idpkgs:
-                    del searchsimilar[:]
+                    searchsimilar = []
                 else:
                     searchsimilar = [x for x in searchsimilar if x[1] \
                         not in idpkgs]
@@ -3161,8 +3161,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             return a list of tuples of length 2 containing atom and package_id
             values
         @type just_id: bool
-        @return: list (tuple) of packages found
-        @rtype: tuple
+        @return: list (frozenset) of packages found
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -3174,9 +3174,9 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @type keyword: string
         @keyword like: do not match exact case
         @type like: bool
-        @return: list of tuples of length 2 containing atom and package_id
-            values
-        @rtype: list
+        @return: list (frozenset) of tuples of length 2 containing atom and
+            package_id values
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -3193,8 +3193,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             return a list of tuples of length 2 containing atom and package_id
             values
         @type just_id: bool
-        @return: list of packages found
-        @rtype: list
+        @return: list (frozenset) of packages found
+        @rtype: frozenset
         """
         raise NotImplementedError()
 
@@ -4039,7 +4039,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         ### just found one result
         ###
 
-        package_id = results[0]
+        package_id = set(results).pop()
         # if pkgcat is virtual, it can be forced
         if (pkgcat == self.VIRTUAL_META_PACKAGE_CATEGORY) and \
             (old_style_virtuals is not None):
