@@ -349,7 +349,7 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
         meta[key] = value
 
 
-class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object):
+class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
     """
     EntropyRepository interface base class.
     This is an abstact class containing abstract methods that
@@ -372,6 +372,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
         @param name: repository identifier (or name)
         @type name: string
         """
+        TextInterface.__init__(self)
         self._readonly = readonly
         self._caching = xcache
         self._temporary = temporary
@@ -3984,6 +3985,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                 results = flat_virtuals
 
         if not results: # nothing found
+            del results
             return set(), old_style_virtuals
 
         if len(results) > 1: # need to choose
@@ -3998,6 +4000,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
                     v_result = self.searchNameCategory(
                         virtual_name, virtual_cat, just_id = True)
                     v_results.update(v_result)
+                del results
                 return set(v_results), old_style_virtuals
 
             # if it's because category differs, it's a problem
@@ -4021,6 +4024,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
 
             if not found_cat:
                 # got the issue
+                del results
                 return set(), old_style_virtuals
 
             # we can use found_cat
@@ -4052,9 +4056,11 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore, object)
             found_cat = self.retrieveCategory(package_id)
             if pkgcat == found_cat:
                 return set([package_id]), old_style_virtuals
+            del results
             return set(), old_style_virtuals # nope nope
 
         # very good, here it is
+        del results
         return set([package_id]), old_style_virtuals
 
 

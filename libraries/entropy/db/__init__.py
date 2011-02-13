@@ -48,10 +48,65 @@ from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
     DatabaseError
 from entropy.db.skel import EntropyRepositoryBase
 from entropy.i18n import _
+from entropy.core import Singleton
 
 import entropy.dep
 import entropy.tools
 import entropy.dump
+
+import weakref
+
+class EntropyRepositoryCacher(Singleton):
+    """
+    Tiny singleton-based helper class used by EntropyRepository in order
+    to keep cached items in RAM.
+    """
+    def init_singleton(self):
+        self.__live_cache = {}
+
+    def clear(self):
+        """
+        Clear all the cached items
+        """
+        self.__live_cache.clear()
+
+    def clear_key(self, key):
+        """
+        Clear just the cached item at key (hash table).
+        """
+        try:
+            del self.__live_cache[key]
+        except KeyError:
+            pass
+
+    def discard(self, key):
+        """
+        Discard all the cache items with hash table key starting with "key".
+        """
+        for dkey in tuple(self.__live_cache.keys()):
+            if dkey.startswith(key):
+                try:
+                    self.__live_cache.pop(dkey)
+                except KeyError:
+                    pass
+
+    def get(self, key):
+        """
+        Get the cached item, if exists.
+        """
+        obj = self.__live_cache.get(key)
+        if isinstance(obj, weakref.ref):
+            return obj()
+        return obj
+
+    def set(self, key, value):
+        """
+        Set item in cache.
+        """
+        if isinstance(value, (set, frozenset)):
+            self.__live_cache[key] = weakref.ref(value)
+        else:
+            self.__live_cache[key] = value
 
 
 class EntropyRepository(EntropyRepositoryBase):
@@ -426,9 +481,6 @@ class EntropyRepository(EntropyRepositoryBase):
             """
             return data
 
-    # static live cache object
-    _LIVE_CACHE = {}
-
     def __init__(self, readOnly = False, dbFile = None, xcache = False,
         name = None, indexing = True, skipChecks = False, temporary = False):
         """
@@ -450,6 +502,7 @@ class EntropyRepository(EntropyRepositoryBase):
             on close()
         @type temporary: bool
         """
+        self._live_cacher = EntropyRepositoryCacher()
         self.__settings_cache = {}
         self.__cursor_cache = {}
         self.__connection_cache = {}
@@ -634,27 +687,21 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._cursor().execute('PRAGMA default_cache_size = %s' % (size,))
 
-    def __getLiveCacheKey(self):
+    def _getLiveCacheKey(self):
         return etpConst['systemroot'] + "_" + self._db_path + "_" + \
             self.name + "_"
 
-    def __clearLiveCache(self, key):
-        try:
-            del EntropyRepository._LIVE_CACHE[self.__getLiveCacheKey() + key]
-        except KeyError:
-            pass
+    def _clearLiveCache(self, key):
+        self._live_cacher.clear_key(self._getLiveCacheKey() + key)
 
-    def __discardLiveCache(self):
-        cache_key = self.__getLiveCacheKey()
-        for key in tuple(EntropyRepository._LIVE_CACHE.keys()):
-            if key.startswith(cache_key):
-                del EntropyRepository._LIVE_CACHE[key]
+    def _discardLiveCache(self):
+        self._live_cacher.discard(self._getLiveCacheKey())
 
-    def __setLiveCache(self, key, value):
-        EntropyRepository._LIVE_CACHE[self.__getLiveCacheKey() + key] = value
+    def _setLiveCache(self, key, value):
+        self._live_cacher.set(self._getLiveCacheKey() + key, value)
 
-    def __getLiveCache(self, key):
-        return EntropyRepository._LIVE_CACHE.get(self.__getLiveCacheKey() + key)
+    def _getLiveCache(self, key):
+        return self._live_cacher.get(self._getLiveCacheKey() + key)
 
     def __del__(self):
         self.close()
@@ -698,7 +745,7 @@ class EntropyRepository(EntropyRepositoryBase):
         # in order to avoid data mismatches for long-running processes
         # that load and unload Entropy Framework often.
         # like "client-updates-daemon".
-        self.__discardLiveCache()
+        self._discardLiveCache()
 
     def vacuum(self):
         """
@@ -746,8 +793,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 continue
         self._cursor().executescript(my.get_init())
         self.commit()
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
         self._setupInitialSettings()
         # set cache size
         self._setCacheSize(8192)
@@ -755,8 +802,8 @@ class EntropyRepository(EntropyRepositoryBase):
         self._databaseStructureUpdates()
 
         self.commit()
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
         super(EntropyRepository, self).initializeRepository()
 
     def handlePackage(self, pkg_data, forcedRevision = -1,
@@ -1116,13 +1163,13 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         INSERT into categories VALUES (NULL,?)
         """, (category,))
-        self.__clearLiveCache("retrieveCategory")
-        self.__clearLiveCache("searchNameCategory")
-        self.__clearLiveCache("retrieveKeySlot")
-        self.__clearLiveCache("retrieveKeySplit")
-        self.__clearLiveCache("searchKeySlot")
-        self.__clearLiveCache("retrieveKeySlotAggregated")
-        self.__clearLiveCache("getStrictData")
+        self._clearLiveCache("retrieveCategory")
+        self._clearLiveCache("searchNameCategory")
+        self._clearLiveCache("retrieveKeySlot")
+        self._clearLiveCache("retrieveKeySplit")
+        self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("retrieveKeySlotAggregated")
+        self._clearLiveCache("getStrictData")
         return cur.lastrowid
 
     def _addProtect(self, protect):
@@ -1195,7 +1242,7 @@ class EntropyRepository(EntropyRepositoryBase):
         @return: useflag identifier (iduseflag)
         @rtype: int
         """
-        self.__clearLiveCache("retrieveUseflags")
+        self._clearLiveCache("retrieveUseflags")
         cur = self._cursor().execute("""
         INSERT into useflagsreference VALUES (NULL,?)
         """, (useflag,))
@@ -1299,7 +1346,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)
         """, (digest, package_id,))
-        self.__clearLiveCache("retrieveDigest")
+        self._clearLiveCache("retrieveDigest")
         self.commit()
 
     def setSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
@@ -1343,13 +1390,13 @@ class EntropyRepository(EntropyRepositoryBase):
             UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)
             """, (catid, package_id,))
 
-        self.__clearLiveCache("retrieveCategory")
-        self.__clearLiveCache("searchNameCategory")
-        self.__clearLiveCache("retrieveKeySlot")
-        self.__clearLiveCache("retrieveKeySplit")
-        self.__clearLiveCache("searchKeySlot")
-        self.__clearLiveCache("retrieveKeySlotAggregated")
-        self.__clearLiveCache("getStrictData")
+        self._clearLiveCache("retrieveCategory")
+        self._clearLiveCache("searchNameCategory")
+        self._clearLiveCache("retrieveKeySlot")
+        self._clearLiveCache("retrieveKeySplit")
+        self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("retrieveKeySlotAggregated")
+        self._clearLiveCache("getStrictData")
         self.commit()
 
     def setCategoryDescription(self, category, description_data):
@@ -1374,12 +1421,12 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET name = (?) WHERE idpackage = (?)
         """, (name, package_id,))
-        self.__clearLiveCache("searchNameCategory")
-        self.__clearLiveCache("retrieveKeySlot")
-        self.__clearLiveCache("retrieveKeySplit")
-        self.__clearLiveCache("searchKeySlot")
-        self.__clearLiveCache("retrieveKeySlotAggregated")
-        self.__clearLiveCache("getStrictData")
+        self._clearLiveCache("searchNameCategory")
+        self._clearLiveCache("retrieveKeySlot")
+        self._clearLiveCache("retrieveKeySplit")
+        self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("retrieveKeySlotAggregated")
+        self._clearLiveCache("getStrictData")
         self.commit()
 
     def setDependency(self, iddependency, dependency):
@@ -1399,9 +1446,9 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)
         """, (atom, package_id,))
-        self.__clearLiveCache("searchNameCategory")
-        self.__clearLiveCache("getStrictScopeData")
-        self.__clearLiveCache("getStrictData")
+        self._clearLiveCache("searchNameCategory")
+        self._clearLiveCache("getStrictScopeData")
+        self._clearLiveCache("getStrictData")
         self.commit()
 
     def setSlot(self, package_id, slot):
@@ -1411,12 +1458,12 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)
         """, (slot, package_id,))
-        self.__clearLiveCache("retrieveSlot")
-        self.__clearLiveCache("retrieveKeySlot")
-        self.__clearLiveCache("searchKeySlot")
-        self.__clearLiveCache("retrieveKeySlotAggregated")
-        self.__clearLiveCache("getStrictScopeData")
-        self.__clearLiveCache("getStrictData")
+        self._clearLiveCache("retrieveSlot")
+        self._clearLiveCache("retrieveKeySlot")
+        self._clearLiveCache("searchKeySlot")
+        self._clearLiveCache("retrieveKeySlotAggregated")
+        self._clearLiveCache("getStrictScopeData")
+        self._clearLiveCache("getStrictData")
         self.commit()
 
     def setRevision(self, package_id, revision):
@@ -1426,10 +1473,10 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE baseinfo SET revision = (?) WHERE idpackage = (?)
         """, (revision, package_id,))
-        self.__clearLiveCache("retrieveRevision")
-        self.__clearLiveCache("getVersioningData")
-        self.__clearLiveCache("getStrictScopeData")
-        self.__clearLiveCache("getStrictData")
+        self._clearLiveCache("retrieveRevision")
+        self._clearLiveCache("getVersioningData")
+        self._clearLiveCache("getStrictScopeData")
+        self._clearLiveCache("getStrictData")
         self.commit()
 
     def removeDependencies(self, package_id):
@@ -1658,7 +1705,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().executemany("""
         INSERT into useflags VALUES (?,?)
         """, list(map(mymf, useflags)))
-        self.__clearLiveCache("retrieveUseflags")
+        self._clearLiveCache("retrieveUseflags")
 
     def _insertSignatures(self, package_id, sha1, sha256, sha512, gpg = None):
         """
@@ -2169,21 +2216,24 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("getVersioningData")
+        cached = self._getLiveCache("getVersioningData")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, version, versiontag, revision FROM baseinfo
             """)
             cached = dict((pkg_id, (ver, tag, rev)) for pkg_id, ver, tag,
                 rev in cur.fetchall())
-            self.__setLiveCache("getVersioningData", cached)
-        return cached.get(package_id)
+            self._setLiveCache("getVersioningData", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def getStrictData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("getStrictData")
+        cached = self._getLiveCache("getStrictData")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
                 cur = self._cursor().execute("""
@@ -2201,22 +2251,28 @@ class EntropyRepository(EntropyRepositoryBase):
                 """)
             cached = dict((pkg_id, (key, slot, version, tag, rev, atom)) for
                 pkg_id, key, slot, version, tag, rev, atom in cur.fetchall())
-            self.__setLiveCache("getStrictData", cached)
-        return cached.get(package_id)
+            self._setLiveCache("getStrictData", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def getStrictScopeData(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("getStrictScopeData")
+        cached = self._getLiveCache("getStrictScopeData")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, atom, slot, revision FROM baseinfo
             """)
             cached = dict((pkg_id, (atom, slot, rev)) for pkg_id, atom, slot,
                 rev in cur.fetchall())
-            self.__setLiveCache("getStrictScopeData", cached)
-        return cached.get(package_id)
+            self._setLiveCache("getStrictScopeData", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def getScopeData(self, package_id):
         """
@@ -2333,9 +2389,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
+        self._live_cacher.clear()
         super(EntropyRepository, self).clearCache()
-
-        EntropyRepository._LIVE_CACHE.clear()
+        self._live_cacher.clear()
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         """
@@ -2613,14 +2669,17 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveDigest")
+        cached = self._getLiveCache("retrieveDigest")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, digest FROM extrainfo
             """)
             cached = dict(cur)
-            self.__setLiveCache("retrieveDigest", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveDigest", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveSignatures(self, package_id):
         """
@@ -2663,7 +2722,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveKeySplit")
+        cached = self._getLiveCache("retrieveKeySplit")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
                 cur = self._cursor().execute("""
@@ -2677,15 +2736,18 @@ class EntropyRepository(EntropyRepositoryBase):
                 """)
             cached = dict((pkg_id, (category, name)) for pkg_id, category,
                 name in cur.fetchall())
-            self.__setLiveCache("retrieveKeySplit", cached)
+            self._setLiveCache("retrieveKeySplit", cached)
 
-        return cached.get(package_id)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveKeySlot(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveKeySlot")
+        cached = self._getLiveCache("retrieveKeySlot")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
                 cur = self._cursor().execute("""
@@ -2700,14 +2762,17 @@ class EntropyRepository(EntropyRepositoryBase):
                 """)
             cached = dict((pkg_id, (key, slot)) for pkg_id, key, slot in \
                 cur.fetchall())
-            self.__setLiveCache("retrieveKeySlot", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveKeySlot", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveKeySlotAggregated(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveKeySlotAggregated")
+        cached = self._getLiveCache("retrieveKeySlotAggregated")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
                 cur = self._cursor().execute("""
@@ -2722,8 +2787,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 WHERE baseinfo.idcategory = categories.idcategory
                 """ % (etpConst['entropyslotprefix'],))
             cached = dict((pkg_id, key) for pkg_id, key in cur.fetchall())
-            self.__setLiveCache("retrieveKeySlotAggregated", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveKeySlotAggregated", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveKeySlotTag(self, package_id):
         """
@@ -2748,27 +2816,33 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveVersion")
+        cached = self._getLiveCache("retrieveVersion")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, version FROM baseinfo
             """)
             cached = dict(cur)
-            self.__setLiveCache("retrieveVersion", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveVersion", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveRevision(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveRevision")
+        cached = self._getLiveCache("retrieveRevision")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, revision FROM baseinfo
             """)
             cached = dict(cur)
-            self.__setLiveCache("retrieveRevision", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveRevision", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveCreationDate(self, package_id):
         """
@@ -2796,7 +2870,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveUseflags")
+        cached = self._getLiveCache("retrieveUseflags")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT useflags.idpackage, useflagsreference.flagname
@@ -2807,8 +2881,11 @@ class EntropyRepository(EntropyRepositoryBase):
             for pkg_id, flag in cur.fetchall():
                 obj = cached.setdefault(pkg_id, set())
                 obj.add(flag)
-            self.__setLiveCache("retrieveUseflags", cached)
-        return frozenset(cached.get(package_id, frozenset()))
+            self._setLiveCache("retrieveUseflags", cached)
+        # avoid python3.x memleak
+        obj = frozenset(cached.get(package_id, frozenset()))
+        del cached
+        return obj
 
     def retrieveSpmPhases(self, package_id):
         """
@@ -3265,28 +3342,34 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveSlot")
+        cached = self._getLiveCache("retrieveSlot")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, slot FROM baseinfo
             """)
             cached = dict(cur)
-            self.__setLiveCache("retrieveSlot", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveSlot", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveTag(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveTag")
+        cached = self._getLiveCache("retrieveTag")
         # gain 2% speed on atomMatch()
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, versiontag FROM baseinfo
             """)
             cached = dict(cur)
-            self.__setLiveCache("retrieveTag", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveTag", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveMirrorData(self, mirrorname):
         """
@@ -3301,7 +3384,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("retrieveCategory")
+        cached = self._getLiveCache("retrieveCategory")
         # this gives 14% speed boost in atomMatch()
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -3315,8 +3398,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 baseinfo.idcategory = categories.idcategory
                 """)
             cached = dict(cur)
-            self.__setLiveCache("retrieveCategory", cached)
-        return cached.get(package_id)
+            self._setLiveCache("retrieveCategory", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def retrieveCategoryDescription(self, category):
         """
@@ -3443,12 +3529,14 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("reverseDependenciesMetadata")
+        cached = self._getLiveCache("reverseDependenciesMetadata")
         if cached is None:
             cached = self.__generateReverseDependenciesMetadata()
 
         dep_ids = set((k for k, v in cached.items() if package_id in v))
         if not dep_ids:
+            # avoid python3.x memleak
+            del cached
             if key_slot:
                 return tuple()
             return frozenset()
@@ -3496,13 +3584,15 @@ class EntropyRepository(EntropyRepositoryBase):
             WHERE dependencies.iddependency IN ( %s )""" % (dep_ids_str,))
             result = self._cur2frozenset(cur)
 
+        # avoid python3.x memleak
+        del cached
         return result
 
     def retrieveUnusedPackageIds(self):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("reverseDependenciesMetadata")
+        cached = self._getLiveCache("reverseDependenciesMetadata")
         if cached is None:
             cached = self.__generateReverseDependenciesMetadata()
 
@@ -3510,6 +3600,8 @@ class EntropyRepository(EntropyRepositoryBase):
         for v in cached.values():
             pkg_ids |= v
         if not pkg_ids:
+            # avoid python3.x memleak
+            del cached
             return tuple()
         pkg_ids_str = ', '.join((str(x) for x in pkg_ids))
 
@@ -3518,6 +3610,8 @@ class EntropyRepository(EntropyRepositoryBase):
         WHERE idpackage NOT IN ( %s )
         ORDER BY atom
         """ % (pkg_ids_str,))
+        # avoid python3.x memleak
+        del cached
         return self._cur2tuple(cur)
 
     def arePackageIdsAvailable(self, package_ids):
@@ -3936,7 +4030,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("searchKeySlot")
+        cached = self._getLiveCache("searchKeySlot")
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
                 cur = self._cursor().execute("""
@@ -3953,9 +4047,12 @@ class EntropyRepository(EntropyRepositoryBase):
             for d_cat, d_name, d_slot, pkg_id in cur.fetchall():
                 obj = cached.setdefault((d_cat, d_name, d_slot), set())
                 obj.add(pkg_id)
-            self.__setLiveCache("searchKeySlot", cached)
+            self._setLiveCache("searchKeySlot", cached)
         cat, name = key.split("/", 1)
-        return frozenset(cached.get((cat, name, slot), frozenset()))
+        # avoid python3.x memleak
+        obj = frozenset(cached.get((cat, name, slot), frozenset()))
+        del cached
+        return obj
 
     def searchNeeded(self, needed, elfclass = -1, like = False):
         """
@@ -4264,7 +4361,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("searchNameCategory")
+        cached = self._getLiveCache("searchNameCategory")
         # this gives 30% speed boost on atomMatch()
         if cached is None:
             if self._isBaseinfoExtrainfo2010():
@@ -4281,10 +4378,10 @@ class EntropyRepository(EntropyRepositoryBase):
             for nam, cat, atom, pkg_id in cur.fetchall():
                 obj = cached.setdefault((nam, cat), set())
                 obj.add((atom, pkg_id))
-            for key in tuple(cached.keys()):
-                cached[key] = frozenset(cached[key])
-            self.__setLiveCache("searchNameCategory", cached)
-        data = cached.get((name, category), frozenset())
+            self._setLiveCache("searchNameCategory", cached)
+        data = frozenset(cached.get((name, category), frozenset()))
+        # This avoids memory leaks with python 3.x
+        del cached
         if just_id:
             return frozenset((y for x, y in data))
         return data
@@ -4641,10 +4738,14 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("validate")
+        cached = self._getLiveCache("validate")
         if cached is not None:
+            # avoid python3.x memleak
+            del cached
             return
-        self.__setLiveCache("validate", True)
+        self._setLiveCache("validate", True)
+        # avoid python3.x memleak
+        del cached
 
         # use sqlite3 pragma
         pingus = MtimePingus()
@@ -4906,11 +5007,14 @@ class EntropyRepository(EntropyRepositoryBase):
             return True
 
         # speed up a bit if we already reported a table as existing
-        cached = self.__getLiveCache("_doesTableExist")
+        cached = self._getLiveCache("_doesTableExist")
         if cached is None:
             cached = {}
         elif table in cached:
-            return cached[table]
+            # avoid memleak with python3.x
+            obj = cached[table]
+            del cached
+            return obj
 
         cur = self._cursor().execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "table" AND name = (?)
@@ -4920,7 +5024,9 @@ class EntropyRepository(EntropyRepositoryBase):
         exists = rslt is not None
 
         cached[table] = exists
-        self.__setLiveCache("_doesTableExist", cached)
+        self._setLiveCache("_doesTableExist", cached)
+        # avoid python3.x memleak
+        del cached
 
         return exists
 
@@ -4928,18 +5034,23 @@ class EntropyRepository(EntropyRepositoryBase):
 
         # speed up a bit if we already reported a column as existing
         d_tup = (table, column,)
-        cached = self.__getLiveCache("_doesColumnInTableExist")
+        cached = self._getLiveCache("_doesColumnInTableExist")
         if cached is None:
             cached = {}
         elif d_tup in cached:
-            return cached[d_tup]
+            # avoid memleak with python3.x
+            obj = cached[d_tup]
+            del cached
+            return obj
 
         cur = self._cursor().execute('PRAGMA table_info( %s )' % (table,))
         rslt = (x[1] for x in cur.fetchall())
 
         exists = column in rslt
         cached[d_tup] = exists
-        self.__setLiveCache("_doesColumnInTableExist", cached)
+        self._setLiveCache("_doesColumnInTableExist", cached)
+        # avoid python3.x memleak
+        del cached
 
         return exists
 
@@ -4950,9 +5061,11 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cache_key = "checksum_%s_%s_%s_%s" % (do_order, strict, strings,
             include_signatures)
-        cached = self.__getLiveCache(cache_key)
+        cached = self._getLiveCache(cache_key)
         if cached is not None:
             return cached
+        # avoid memleak with python3.x
+        del cached
 
         package_id_order = ''
         category_order = ''
@@ -4986,7 +5099,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 result = m.hexdigest()
             else:
                 result = "~empty_db~"
-                self.__setLiveCache(cache_key, result)
+                self._setLiveCache(cache_key, result)
             return result
 
         cur = self._cursor().execute("""
@@ -5050,15 +5163,15 @@ class EntropyRepository(EntropyRepositoryBase):
         else:
             result = "%s:%s:%s:%s:%s" % (a_hash, b_hash, c_hash, d_hash, e_hash)
 
-        self.__setLiveCache(cache_key, result)
+        self._setLiveCache(cache_key, result)
         return result
 
     def storeInstalledPackage(self, package_id, repoid, source = 0):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        self.__clearLiveCache("getInstalledPackageRepository")
-        self.__clearLiveCache("getInstalledPackageSource")
+        self._clearLiveCache("getInstalledPackageRepository")
+        self._clearLiveCache("getInstalledPackageSource")
         self._cursor().execute('INSERT into installedtable VALUES (?,?,?)',
             (package_id, repoid, source,))
 
@@ -5066,20 +5179,23 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("getInstalledPackageRepository")
+        cached = self._getLiveCache("getInstalledPackageRepository")
         if cached is None:
             cur = self._cursor().execute("""
             SELECT idpackage, repositoryname FROM installedtable
             """)
             cached = dict(cur)
-            self.__setLiveCache("getInstalledPackageRepository", cached)
-        return cached.get(package_id)
+            self._setLiveCache("getInstalledPackageRepository", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def getInstalledPackageSource(self, package_id):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        cached = self.__getLiveCache("getInstalledPackageSource")
+        cached = self._getLiveCache("getInstalledPackageSource")
         if cached is None:
             cached = {}
             # TODO: drop this check in future, backward compatibility
@@ -5088,8 +5204,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 SELECT idpackage, source FROM installedtable
                 """)
                 cached = dict(cur)
-            self.__setLiveCache("getInstalledPackageSource", cached)
-        return cached.get(package_id)
+            self._setLiveCache("getInstalledPackageSource", cached)
+        # avoid python3.x memleak
+        obj = cached.get(package_id)
+        del cached
+        return obj
 
     def dropInstalledPackageFromStore(self, package_id):
         """
@@ -5098,8 +5217,8 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         DELETE FROM installedtable
         WHERE idpackage = (?)""", (package_id,))
-        self.__clearLiveCache("getInstalledPackageRepository")
-        self.__clearLiveCache("getInstalledPackageSource")
+        self._clearLiveCache("getInstalledPackageRepository")
+        self._clearLiveCache("getInstalledPackageSource")
 
     def storeSpmMetadata(self, package_id, blob):
         """
@@ -5674,8 +5793,8 @@ class EntropyRepository(EntropyRepositoryBase):
             ALTER TABLE counterstemp RENAME TO counters;
             COMMIT;
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createSettingsTable(self):
         self._cursor().executescript("""
@@ -5686,8 +5805,8 @@ class EntropyRepository(EntropyRepositoryBase):
             );
         """)
         self._setupInitialSettings()
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createProvidedLibs(self):
 
@@ -5702,8 +5821,8 @@ class EntropyRepository(EntropyRepositoryBase):
                     ON DELETE CASCADE
                 );
             """)
-            self.__clearLiveCache("_doesTableExist")
-            self.__clearLiveCache("_doesColumnInTableExist")
+            self._clearLiveCache("_doesTableExist")
+            self._clearLiveCache("_doesColumnInTableExist")
 
         if self.name != etpConst['clientdbid']:
             return do_create()
@@ -5794,15 +5913,15 @@ class EntropyRepository(EntropyRepositoryBase):
         ALTER TABLE provided_libs_tmp RENAME TO provided_libs;
         """)
         # make sure that live_cache reports correct info regarding tables
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createProvideDefault(self):
         self._cursor().execute("""
         ALTER TABLE provide ADD COLUMN is_default INTEGER DEFAULT 0
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createInstalledTableSource(self):
         self._cursor().execute("""
@@ -5811,18 +5930,18 @@ class EntropyRepository(EntropyRepositoryBase):
         self._cursor().execute("""
         UPDATE installedtable SET source = (?)
         """, (etpConst['install_sources']['unknown'],))
-        self.__clearLiveCache("getInstalledPackageRepository")
-        self.__clearLiveCache("getInstalledPackageSource")
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("getInstalledPackageRepository")
+        self._clearLiveCache("getInstalledPackageSource")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagechangelogsTable(self):
         self._cursor().execute("""
         CREATE TABLE packagechangelogs ( category VARCHAR,
             name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createAutomergefilesTable(self):
         self._cursor().execute("""
@@ -5831,8 +5950,8 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage)
             ON DELETE CASCADE );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagesignaturesTable(self):
         self._cursor().execute("""
@@ -5844,14 +5963,14 @@ class EntropyRepository(EntropyRepositoryBase):
         gpg BLOB,
         FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagesignaturesGpgColumn(self):
         self._cursor().execute("""
         ALTER TABLE packagesignatures ADD gpg BLOB;
         """)
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagespmphases(self):
         self._cursor().execute("""
@@ -5861,8 +5980,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagespmrepository(self):
         self._cursor().execute("""
@@ -5872,8 +5991,8 @@ class EntropyRepository(EntropyRepositoryBase):
                 FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createEntropyBranchMigrationTable(self):
         self._cursor().execute("""
@@ -5886,15 +6005,15 @@ class EntropyRepository(EntropyRepositoryBase):
                 PRIMARY KEY (repository, from_branch, to_branch)
             );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackagesetsTable(self):
         self._cursor().execute("""
         CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createPackageDesktopMimeTable(self):
         self._cursor().execute("""
@@ -5907,8 +6026,8 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createProvidedMimeTable(self):
         self._cursor().execute("""
@@ -5918,15 +6037,15 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createLicensesAcceptedTable(self):
         self._cursor().execute("""
         CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _createContentSafetyTable(self):
         self._cursor().execute("""
@@ -5938,8 +6057,8 @@ class EntropyRepository(EntropyRepositoryBase):
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
         );
         """)
-        self.__clearLiveCache("_doesTableExist")
-        self.__clearLiveCache("_doesColumnInTableExist")
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def __generateReverseDependenciesMetadata(self):
         """
@@ -5950,7 +6069,7 @@ class EntropyRepository(EntropyRepositoryBase):
             etpConst['systemroot'], self.name, checksum,)
         rev_deps_data = self._cacher.pop(cache_key)
         if rev_deps_data is not None:
-            self.__setLiveCache("reverseDependenciesMetadata",
+            self._setLiveCache("reverseDependenciesMetadata",
                 rev_deps_data)
             return rev_deps_data
 
@@ -5966,7 +6085,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 obj = dep_data.setdefault(iddep, set())
                 obj.add(package_id)
 
-        self.__setLiveCache("reverseDependenciesMetadata",
+        self._setLiveCache("reverseDependenciesMetadata",
                 dep_data)
         self._cacher.push(cache_key, dep_data, async = False)
         return dep_data
