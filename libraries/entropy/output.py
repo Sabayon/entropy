@@ -635,7 +635,7 @@ def _my_raw_input(txt = ''):
     # way, fix bug #2006.
     if not const_isunicode(response):
         try:
-            response = const_convert_to_unicode(response, "utf-8")
+            response = const_convert_to_unicode(response, enctype = "utf-8")
         except (UnicodeDecodeError, UnicodeEncodeError):
             # be fault tolerant, we just tried
             pass
@@ -819,7 +819,13 @@ class TextInterface(object):
                 counter += 1
             while True:
                 try:
-                    myresult = readtext("%s: " % (_('Selected number'),)).decode('utf-8')
+                    if sys.hexversion >= 0x3000000:
+                        myresult = const_convert_to_unicode(
+                            readtext("%s: " % (_('Selected number'),)),
+                            enctype = "utf-8")
+                    else:
+                        myresult = readtext(
+                            "%s: " % (_('Selected number'),)).decode('utf-8')
                 except UnicodeDecodeError:
                     continue
                 except UnicodeEncodeError:
