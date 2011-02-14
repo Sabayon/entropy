@@ -9,8 +9,10 @@
     B{Entropy Framework repository database prototype classes module}.
 """
 import os
+import sys
 import shutil
 import warnings
+import hashlib
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
@@ -4207,25 +4209,25 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             cached = entropy.dump.loadobj("%s/%s/%s_%s" % (
-                self.__db_match_cache_key, self.name, ck_sum,
-                hash(hash_str),))
+                self.__db_match_cache_key, self.name, ck_sum, hash_str,))
             return cached
 
     def __atomMatch_gen_hash_str(self, args):
-        hash_str = '|'
-        for arg in args:
-            hash_str += '%s|' % (arg,)
-        return hash_str
+        data_str = repr(args)
+        sha1 = hashlib.sha1()
+        if sys.hexversion >= 0x3000000:
+            sha1.update(data_str.encode("utf-8"))
+        else:
+            sha1.update(data_str)
+        return sha1.hexdigest()
 
     def __atomMatchStoreCache(self, *args, **kwargs):
         if self._caching:
             ck_sum = self.checksum(strict = False)
             hash_str = self.__atomMatch_gen_hash_str(args)
             self._cacher.push("%s/%s/%s_%s" % (
-                self.__db_match_cache_key, self.name, ck_sum,
-                hash(hash_str),),
-                kwargs.get('result'), async = False
-            )
+                self.__db_match_cache_key, self.name, ck_sum, hash_str,),
+                kwargs.get('result'), async = False)
 
     def __atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
         """
