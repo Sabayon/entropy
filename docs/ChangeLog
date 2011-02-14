@@ -1,3 +1,450 @@
+commit f141a26784e555cc43a718ce99fa3640be4e3af8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 22:42:01 2011 +0100
+
+    Release Entropy 1.0_alpha15
+
+commit 6b3baaefc3b404ef6b763140abb97c78f42067bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 22:20:16 2011 +0100
+
+    [entropy.db] improve the improbability of getting cache collisions in atomMatch() cache
+    
+    <i>as the "birthday paradox" says</i> ;-)
+
+commit 9c6ede2d9b4e3785f29ffd28e55218fecc74fb50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 21:52:15 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase.__atomMatchValidateCache(): fix bug in validation code (check rc after type validation)
+
+commit 8b636b6820dd546f270d361e40b1f7235c0b0d42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 19:39:38 2011 +0100
+
+    [services] portage-repository-converter: add lock handling
+
+commit aad340926c888461c936fecc969b50257ee8a8b4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 18:36:59 2011 +0100
+
+    [sulfur] change .desktop icon name to "Entropy Store"
+
+commit 4825bcd522b499dec2ed154846918476be23222a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 18:16:45 2011 +0100
+
+    [services] add portage-repository-converter
+    
+    This tool aims to easily convert a Portage packages repository,
+    including attached overlays, to Entropy repository database format,
+    which is (currently, but well abstracted) SQLite3 based.
+    This is a very lowlevel tool that allows to use the EntropyRepositoryBase
+    API in order to search, match and retrieve metadata off snapshots of
+    Portage packages repository.
+    
+    Usage is simple:
+    
+        $ portage-repository-converter sync <path to entropy database file>
+    
+    If the Entropy database file already exists, a differential sync will
+    be executed between Portage and the database itself.
+    This would allow to keep your Entropy-based metadata up-to-date in
+    the following way:
+    
+        $ emerge --sync
+        $ portage-repository-converter sync /tmp/portage.entropy.sqlite
+        $ sleep <a few hours>
+        $ emerge --sync
+        # sync again
+        $ portage-repository-converter sync /tmp/portage.entropy.sqlite
+    
+    How to read metadata off /tmp/portage.entropy.sqlite ?
+    Using Python and Entropy API!
+    
+        >>> from entropy.client.interfaces import Client
+        >>> client = Client()
+        >>> repo = client.open_generic_repository("/tmp/portage.entropy.sqlite")
+        >>> repo.atomMatch("sys-libs/db")
+        >>> repo.searchPackages("something")
+        >>> repo.close()
+        >>> client.shutdown()
+    
+    For more information regarding Entropy API, please visit:
+    http://www.sabayon.org/entropy/api/docs
+
+commit 61b398dd38b0569657e1103ed51022765e4e248d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 17:13:29 2011 +0100
+
+    [tests] fix server tests
+
+commit 667e5e5ecee7d461fb48d6db3d0b27cdb8b3b887
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 17:13:19 2011 +0100
+
+    [entropy.db] EntropyRepositoryCacher add keys()
+
+commit 399c63a6ad5db98133e56043ccbf5aceb1b0a178
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 13 19:41:44 2011 +0100
+
+    [entropy.spm] PortagePlugin: trivial improvements
+
+commit 0d93fee168dddb009315b631376aff35ac12b6e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 13 19:40:14 2011 +0100
+
+    [entropy.output] TextInterface.input_box(): python3.x fixes
+
+commit fb2b565ac131a65cb3232864c795ca282941a1d6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 13 14:08:14 2011 +0100
+
+    [entropy.db] EntropyRepository: rewrite static cache management, make it smarter and less prone to memleaks (Python3.x bug)
+
+commit cc36139bfc6b4ba1b1614f2b9c5af5ac3eae919d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 13 10:11:12 2011 +0100
+
+    [entropy.db] uniform searchName, searchNameCategory, searchCategory, make them return frozenset instead of list
+
+commit bf4dc1cd37acfdf32c9d70531914bd58f06bbd84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 11 19:06:22 2011 +0100
+
+    [entropy.graph] implement Graph.destroy() to free circular references (was causing interesting memleak)
+
+commit 2d7d1675b22249b1e4b98fff03d091c03cc54908
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 11 18:22:24 2011 +0100
+
+    [entropy.spm] another set of python3.x fixes
+
+commit 3643b4affb5dcf88fe3db6d13ee629cd41d1d150
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 11 18:05:47 2011 +0100
+
+    [equo] when running with --debug, enter pdb if an exception is raised
+
+commit 531c0d47542efe715fab862e7e58e1fb7fae6660
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 11 18:02:39 2011 +0100
+
+    [entropy.tools] make get_traceback() work with python3.x
+
+commit 7473c63a8fc751e1b14223a82b5ab90f259f9fad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 11 12:28:08 2011 +0100
+
+    [entropy.spm] some Python3.x compatibility fixes
+
+commit a80a82f8ff812b9a1b635bc8f374e734d09d2a94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 21:02:25 2011 +0100
+
+    [entropy] even more python3.x fixes (yeah I am getting bored)
+
+commit c5d13d0c60703bf4e15d67dfc2cb37a453060e02
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 19:57:22 2011 +0100
+
+    [entropy] some more misc python3.x fixes
+
+commit 65ddc4e412991fe84310e4d2ec57b4f472db7aa0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 18:15:51 2011 +0100
+
+    [entropy.db] EntropyRepository.contentDiff: small python3.x fix
+
+commit d9d055b64d3510fc3711d655612cb57fcbf2754d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 18:08:12 2011 +0100
+
+    [entropy.spm] some python 3.x fixes
+
+commit 7857f9244c6629f3748197c3e2028e50096eab91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 16:15:16 2011 +0100
+
+    [entropy.client] open fd in ascii mode, that's enough
+
+commit eb2e6c65f08d6602dc017ba85b2ef6103cecad4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 16:14:54 2011 +0100
+
+    [entropy.security] avoid resources leaking (file descriptors)
+
+commit 9fcacbd3b59e7101d0bba932d1142ecfa1b1196f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 16:08:34 2011 +0100
+
+    [entropy.security] a small python3.x fix
+
+commit f9226e6e3d3d6f15000ce0a80a6140db9fdbb0d5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 15:44:14 2011 +0100
+
+    [entropy] some python3.x fixes
+
+commit d7925b8322ff78fcffa39378b8b62baec51b4704
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 15:27:10 2011 +0100
+
+    [entropy.transceivers] python3.x fixup
+
+commit 71353d6c00ce74e016a510c025c00b148eab4aa2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 15:26:49 2011 +0100
+
+    [entropy.output] make TextInterface inherit object
+
+commit 6b0f16bffdc59c8c291fff7a5537dee0a7f36c74
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 15:26:29 2011 +0100
+
+    [entropy.const] python3.x fixup
+
+commit 7738f688a6e21b3caf07aaa321de87e2e10efa41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 11:42:19 2011 +0100
+
+    [entropy.db] introduce EntropyRepositoryBase.repository_id()
+
+commit 4a3d6b079233c088c4485e14b00482b767edb554
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 11:34:47 2011 +0100
+
+    [equo] complete text_query refactoring, API for text apps there should be almost stable
+
+commit 155accecbac334660515b47b92cb8b4103b38998
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 09:08:09 2011 +0100
+
+    [equo] more refactoring work on text_query
+
+commit ce2842258a77222fa88cec9c118eea99e6491bb5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 10 00:41:51 2011 +0100
+
+    [equo] first chunk of cleansing inside text_query module
+
+commit 685b865453d552d37ce3a9559f4cefb9a88f8beb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 9 23:34:53 2011 +0100
+
+    [entropy.spm] PortagePlugin: set changelog to None if changelog is not available (don't convert None to string!)
+
+commit df3bb8005dfee8fcb5109f524933c7af1777cabe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 9 19:22:20 2011 +0100
+
+    [entropy] drop repository manager code, R.I.P.
+
+commit 3e2136024edde271e9d72d981ed4b1930dbdcb67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 9 17:58:20 2011 +0100
+
+    [entropy.client] drop urlFetcher and MultipleUrlFetcher properties, make them protected
+
+commit fb3d5e1a034f8d52941cfa60c50deb556c1c8a99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 8 13:35:22 2011 +0100
+
+    [magneto] implement execution lock, avoid multiple magneto applets popping up
+
+commit 9bee5444c3f20c173fd2a9d6587c698ed897fd3d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 8 13:20:33 2011 +0100
+
+    [entropy.client] do not overwrite pid file lock before having acquired the lock, open it using a+ and use truncate()
+
+commit f01f077b7b4b87653547b71e82aab52e9f282523
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 8 13:19:26 2011 +0100
+
+    [entropy.const] do not overwrite pid file lock before having acquired the lock, open it using a+ and use truncate()
+
+commit 97690b77a0e94be715c65a8c6f4e1050be206f53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 23:08:00 2011 +0100
+
+    [magneto] drop duplicated autostart .desktop file, not needed anymore
+
+commit a1671b89d15589706ddd3c9cb9ad46824e723bff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 14:25:33 2011 +0100
+
+    [entropy] don't use hardcoded errno values, but rather use errno module
+
+commit 27076ee14352e4c28e2d774b238b7990279156e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 14:16:10 2011 +0100
+
+    [entropy.security] catch OSError(5) on install_key when listing keys
+
+commit 28456b4121fbf308ea816c556c03bfbaf0d0b0df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 14:07:42 2011 +0100
+
+    [entropy.client] drop FileUpdates attribute, replace with Client.PackageFileUpdates() loader
+
+commit 4201ddb5d9c1f6d164aec437b63ce9d1a94854c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 13:42:50 2011 +0100
+
+    [entropy.client.interfaces.loaders] some more documentation
+
+commit 14083908492e5ce0b07ce63ec2676bd5e8d8c04a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 13:17:20 2011 +0100
+
+    [equo] export "repo vacuum" from entropy-server, fixup mirrors calls (rename db- to repo-)
+
+commit bba1eac20aba29f84990be4b42822bea89d623e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 12:26:46 2011 +0100
+
+    [activator] tweak description of "equo repo vacuum"
+
+commit 7e7e48acd158770ba454e28a47198107cb70497d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 12:24:05 2011 +0100
+
+    [activator] rename "Database" to "Repository"
+
+commit c25ff59fd5ff0a05edf98c445438c91cd2eeb292
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 12:23:00 2011 +0100
+
+    [activator] add "activator repo vacuum" tool
+
+commit be6110a1bcf60e12c0cca956990d81b04d480fc8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 11:57:07 2011 +0100
+
+    [activator] update man page
+
+commit 6d5ae7fe6994ddc8d57db6eb9a02857aa3e8559e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 11:53:29 2011 +0100
+
+    [activator] fixup --help
+
+commit 5c1606cd799b44ea05103292046578ec48a12789
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 7 11:27:29 2011 +0100
+
+    [activator] trivial code update
+
+commit c17ae1fad036ed71058fd3742815a98914a2ee6e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 18:54:26 2011 +0100
+
+    [entropy.spm] drop spmloglevel and spmlogfile from etpConst, force SPM log to entropylogfile (entropy.log)
+
+commit b809409503e1c4f3fac84668d61bec9d07917555
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 18:43:42 2011 +0100
+
+    [entropy.spm] PortagePlugin: log portage output to entropy.log, together with other data
+
+commit 8e9afc1b7af4c5e7e05ee85ed0076a30dec01046
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 18:13:05 2011 +0100
+
+    [entropy.misc] add context support to LogFile
+
+commit 8c34b5c126a2f938d0ba94b0fa9302b994117599
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 17:56:47 2011 +0100
+
+    [entropy.server] complete refactoring, mark API as stable
+
+commit 8bf5023ef149c571609e847687ad36806c49660b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 17:56:47 2011 +0100
+
+    [entropy.server] complete refactoring, mark API as stable
+
+commit a62c864e7195fd478cde8f8c69a9b2a71c5806ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 17:34:56 2011 +0100
+
+    [entropy.server] remove mixin classes, merge back into a single one
+
+commit 3e9d7996c0ff3083660a4c1bb71b7c9d820d2487
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 6 15:28:37 2011 +0100
+
+    [entropy.output] remove trailing whitespace when using print_generic(), close bug #2101
+
+commit 2ed70884593f4b73f2234aeb044dcbb44b00ead4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 19:30:42 2011 +0100
+
+    [entropy.server] fix another refactoring regression
+
+commit a49fe5593b837e9358fecf5ff944f24712691e5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 19:28:40 2011 +0100
+
+    [entropy.server] fix undefined reference (regression)
+
+commit 23285e6c77e653424556f071d784b5c800af9712
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 18:15:49 2011 +0100
+
+    [entropy.server] out default_repository, in .repository()
+
+commit ab93aee68b6c5c77c4edc32bb8078436f6ed0a73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 18:07:09 2011 +0100
+
+    [entropy.server] complete the robustness work on the package, completely drop repo=None from function args
+
+commit eee86bfe3e35372b63b03a47bfde106aeb7b3daa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 13:00:58 2011 +0100
+
+    [entropy.server] more robustness work, drop repo=None keyword arg, remove untranslated strings
+
+commit c974f865cf9394e17078dfc8b9e5ebb7b060542d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 12:19:33 2011 +0100
+
+    [sulfur] add Polish translator info
+
+commit 5e7c9407ad4e05898cbe317663c213e8b1881cce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 12:18:41 2011 +0100
+
+    [po] sync all translations
+
+commit d74b62d23a91fd63f2b9e8fd3da6e35a05b326ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 5 12:18:28 2011 +0100
+
+    [po] add Polish translation thanks to Enlik
+
+commit 6ea078c35da5669c77f1eebbf99904569e7ebc24
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 4 14:47:04 2011 +0100
+
+    [entropy.client.interfaces.methods] use Spm_class() in get_package_groups()
+
+commit 4294b605b67628a9191c649e3c8c7136a3debd0a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 4 12:13:23 2011 +0100
+
+    [entropy.server] some more migration and stabilization work (repo=None removal)
+
+commit c070969e08fefcf6e84625e28e7a9220b023be8f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 3 22:17:03 2011 +0100
+
+    Tagging Entropy version 1.0_alpha14
+
 commit d5d287f81d610f16f84029789185721b32115472
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Feb 3 22:17:02 2011 +0100
