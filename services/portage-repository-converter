@@ -5,6 +5,8 @@ sys.path.insert(0, '../libraries')
 
 import os
 import tempfile
+import fcntl
+import errno
 
 from entropy.i18n import _
 from entropy.output import print_info, blue, teal, brown, darkgreen, purple, \
@@ -289,6 +291,41 @@ class EntropyPortageConverter(TextInterface):
         # update eclass cache
         self._set_eclass_cache(self._get_eclass_data())
 
+_LOCK_HANDLES = {}
+
+def _acquire_lock(lock_file):
+    lock_f = open(lock_file, "a+")
+    try:
+        fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+    except IOError as err:
+        if err.errno not in (errno.EACCES, errno.EAGAIN,):
+            # ouch, wtf?
+            raise
+        lock_f.close()
+        return False # lock already acquired
+
+    lock_f.truncate()
+    lock_f.write(str(os.getpid()))
+    lock_f.flush()
+    _LOCK_HANDLES[lock_file] = lock_f
+    return True
+
+def _release_lock(lock_file):
+    try:
+        lock_f = _LOCK_HANDLES.pop(lock_file)
+    except KeyError:
+        lock_f = None
+
+    if lock_f is not None:
+        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+        lock_f.close()
+
+    try:
+        os.remove(lock_file)
+    except OSError as err:
+        # cope with possible race conditions
+        if err.errno != errno.ENOENT:
+            raise
 
 def _print_help(args):
     app_name = os.path.basename(sys.argv[0])
@@ -309,6 +346,7 @@ def _sync_tree(args):
     if not args:
         print_error(brown(_("Invalid Entropy repository file path")))
         return 1
+
     entropy_repository_path = args.pop(0)
     portdir = None
     if args:
@@ -320,32 +358,46 @@ def _sync_tree(args):
         print_error(brown(_("Invalid Entropy repository file path")))
         return 1
 
-    if portdir is not None:
-        os.environ['PORTDIR'] = portdir
-    import portage
 
-    repo = GenericRepository(
-            dbFile = entropy_repository_path,
-            name = "portage",
-            indexing = False)
+    # acquire lock
+    lock_file = "/tmp/.portage-repository-converter.lock"
+    acquired = _acquire_lock(lock_file)
     try:
-        repo.validate()
-    except SystemDatabaseError:
-        # intialize
-        repo.initializeRepository()
-        repo.validate()
 
-    repo.dropAllIndexes()
-    converter = EntropyPortageConverter(entropy_repository_path_dir, repo,
-        portage)
-    sts = converter.sync()
-    repo.setIndexing(True)
-    repo.createAllIndexes()
-    repo.vacuum()
-    repo.close()
-    if sts:
-        return 0
-    return 1
+        if not acquired:
+            print_error(brown(_("Another instance is running.")))
+            return 1
+
+        if portdir is not None:
+            os.environ['PORTDIR'] = portdir
+        import portage
+
+        repo = GenericRepository(
+                dbFile = entropy_repository_path,
+                name = "portage",
+                indexing = False)
+        try:
+            repo.validate()
+        except SystemDatabaseError:
+            # intialize
+            repo.initializeRepository()
+            repo.validate()
+
+        repo.dropAllIndexes()
+        converter = EntropyPortageConverter(entropy_repository_path_dir, repo,
+            portage)
+        sts = converter.sync()
+        repo.setIndexing(True)
+        repo.createAllIndexes()
+        repo.vacuum()
+        repo.close()
+        if sts:
+            return 0
+        return 1
+
+    finally:
+        if acquired:
+            _release_lock(lock_file)
 
 
 if __name__ == "__main__":
