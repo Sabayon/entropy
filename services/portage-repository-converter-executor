@@ -19,7 +19,7 @@ fi
 repo_path="${WORK_DIR}/${REPOSITORY_FILE_NAME}"
 
 # call the converter
-${CONVERTER_EXEC} "${repo_path}" "${PORTDIR}" || exit 1
+${CONVERTER_EXEC} sync "${repo_path}" "${PORTDIR}" || exit 1
 
 # set a new timestamp
 ts=$(python -c "import time; from datetime import datetime; print(str(datetime.fromtimestamp(time.time())))")
