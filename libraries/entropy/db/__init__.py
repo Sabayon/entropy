@@ -79,6 +79,12 @@ class EntropyRepositoryCacher(Singleton):
         except KeyError:
             pass
 
+    def keys(self):
+        """
+        Return a list of available cache keys
+        """
+        return list(self.__live_cache.keys())
+
     def discard(self, key):
         """
         Discard all the cache items with hash table key starting with "key".
