@@ -1,7 +1,7 @@
 [Desktop Entry]
 Encoding=UTF-8
-Name=Sulfur
-Comment=Entropy Graphical Package Manager
+Name=Entropy Store
+Comment=Install Sabayon Applications
 Categories=Application;System;Settings
 Icon=/usr/share/pixmaps/sulfur/sulfur-icon.png
 Exec=sulfur %U
