@@ -4228,11 +4228,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             )
 
     def __atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
+        """
+        This method validates the cache in order to avoid cache keys collissions
+        or corruption that could lead to improper data returned.
+        """
 
         # time wasted for a reason
         data, rc = cached_obj
-        if rc != 0:
-            return cached_obj
 
         if multiMatch:
             # data must be set !
@@ -4243,6 +4245,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             if not entropy.tools.isnumber(data):
                 return None
 
+        if rc != 0:
+            return cached_obj
 
         if (not extendedResults) and (not multiMatch):
             if not self.isPackageIdAvailable(data):
