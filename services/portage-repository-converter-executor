@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# Data is moved atomically from WORK_DIR to PROD_DIR
+# PROD means PRODUCTION
+# WORK means WORK, sheesh
+PROD_DIR="/tmp/prod"
+WORK_DIR="/tmp/work"
+REPOSITORY_FILE_NAME="packages.db"
+CONVERTER_EXEC="./portage-repository-converter"
+PORTDIR="${PORTDIR:-/usr/portage}"
+
+if [ ! -d "${WORK_DIR}" ]; then
+	mkdir -p "${WORK_DIR}" || exit 1
+fi
+if [ ! -d "${PROD_DIR}" ]; then
+	mkdir -p "${PROD_DIR}" || exit 1
+fi
+
+repo_path="${WORK_DIR}/${REPOSITORY_FILE_NAME}"
+
+# call the converter
+${CONVERTER_EXEC} "${repo_path}" "${PORTDIR}" || exit 1
+
+# set a new timestamp
+ts=$(python -c "import time; from datetime import datetime; print(str(datetime.fromtimestamp(time.time())))")
+echo "${ts}" > "${WORK_DIR}/${REPOSITORY_FILE_NAME}.timestamp"
+
+# do the atomic copy
+for path in "${WORK_DIR}"/*; do
+	path_name=$(basename "${path}")
+	dest_path="${PROD_DIR}/${path_name}"
+	dest_path_tmp="${dest_path}.prc_tmp"
+	cp "${path}" "${dest_path_tmp}" -p || exit 1
+	# atomic move
+	mv "${dest_path_tmp}" "${dest_path}" || exit 1
+done
+# get current revision file if any
+rev_file="${WORK_DIR}/${REPOSITORY_FILE_NAME}.revision"
+dest_rev_file="${PROD_DIR}/${REPOSITORY_FILE_NAME}.revision"
+if [ ! -f "${rev_file}" ]; then
+	echo "1" > "${rev_file}" || exit 1
+else
+	rev=$(cat "${rev_file}")
+	rev=$((rev+1))
+	echo "${rev}" > "${rev_file}" || exit 1
+fi
+cp "${rev_file}" "${dest_rev_file}.prc_tmp" -p || exit 1
+mv "${dest_rev_file}.prc_tmp" "${dest_rev_file}" || exit 1
+# enable the signal
+touch "${PROD_DIR}/${REPOSITORY_FILE_NAME}.eapi3_updates"
+
+# now ${PROD_DIR} is ready to be pushed
+echo "now ${PROD_DIR} is ready to be pushed"
+
+# now execute rsync
