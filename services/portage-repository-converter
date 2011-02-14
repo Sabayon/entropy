@@ -1,0 +1,367 @@
+#!/usr/bin/python2
+import sys
+sys.path.insert(0, '/usr/lib/entropy/libraries')
+sys.path.insert(0, '../libraries')
+
+import os
+import tempfile
+
+from entropy.i18n import _
+from entropy.output import print_info, blue, teal, brown, darkgreen, purple, \
+    print_error, TextInterface
+from entropy.exceptions import SystemDatabaseError
+from entropy.client.interfaces.db import GenericRepository
+
+from entropy.spm.plugins.interfaces.portage_plugin import PortagePlugin
+from entropy.spm.plugins.interfaces.portage_plugin import xpak
+from entropy.spm.plugins.factory import get_default_instance as \
+    get_spm
+from entropy.const import const_convert_to_rawstring
+import entropy.dep
+import entropy.dump
+
+
+class EntropyPortageConverter(TextInterface):
+
+    def __init__(self, work_dir, entropy_repository, portage_mod):
+        self._repo = entropy_repository
+        self._portage = portage_mod
+        self._portdb = self._portage.portagetree()
+        self._fallback_spm_repo = "gentoo"
+        self._work_dir = work_dir
+        self._xpak_keys = list(PortagePlugin.xpak_entries.values())
+        self._spm = get_spm(self)
+
+    def _get_eclass_cache(self):
+        return entropy.dump.loadobj("eclass_map", dump_dir = self._work_dir)
+
+    def _set_eclass_cache(self, eclass_map):
+        entropy.dump.dumpobj("eclass_map", eclass_map,
+            dump_dir = self._work_dir, ignore_exceptions = False)
+
+    def _get_eclass_data(self):
+        return self._portdb.dbapi.eclassdb.eclasses.copy()
+
+    def __from_pkg_id_to_atom_repo(self, package_id):
+        pkg_atom, spm_repo = self._repo.retrieveAtom(package_id), \
+                self._repo.retrieveSpmRepository(package_id)
+        if spm_repo is None:
+            spm_repo = self._fallback_spm_repo
+        return pkg_atom, spm_repo
+
+    def _find_differences(self, expanded_cpvs):
+
+        package_ids = self._repo.listAllPackageIds()
+        pkg_map = {}
+        for package_id in package_ids:
+            pkg_atom, spm_repo = self.__from_pkg_id_to_atom_repo(package_id)
+            pkg_map[(pkg_atom, spm_repo)] = package_id
+
+        expanded_cpvs_set = set(expanded_cpvs)
+        current_cpvs_set = set(pkg_map.keys())
+        removed_cpvs = current_cpvs_set - expanded_cpvs_set
+        added_cpvs = expanded_cpvs_set - current_cpvs_set
+
+        # now comes the hard part, determine if ebuild changed without bump
+        # both ebuild mtime and eclass mtime should be taken into consideration
+        # first one is easy
+
+        # key "eclass name", value "(u'/usr/portage/eclass', 1289159215)"
+        eclass_map = self._get_eclass_data()
+        eclass_cached_map = self._get_eclass_cache()
+        added_eclasses = set()
+        changed_eclasses = set()
+        # - if an eclass is removed, the package is bumped
+        # - if an eclass is added, relative packages are bumped too, at least
+        # with mtime
+        if eclass_cached_map is not None:
+            for k in eclass_map.keys():
+                if k not in eclass_cached_map:
+                    added_eclasses.add(k)
+                elif eclass_cached_map[k] != eclass_map[k]:
+                    changed_eclasses.add(k)
+
+        kept_cpvs = expanded_cpvs_set & current_cpvs_set
+        modified_cpvs = set()
+        for pkg_atom, spm_repo in kept_cpvs:
+            cpv_key = (pkg_atom, spm_repo)
+            ebuild_path = self._portdb.dbapi.findname(pkg_atom, myrepo=spm_repo)
+            if ebuild_path is None:
+                # then remove the item!!
+                removed_cpvs.add(cpv_key)
+                continue
+            e_mtime = str(os.path.getmtime(ebuild_path))
+            package_id = pkg_map.get(cpv_key)
+            r_mtime = self._repo.retrieveCreationDate(package_id)
+            if e_mtime != r_mtime:
+                modified_cpvs.add(cpv_key)
+                continue
+
+            if eclass_cached_map is None:
+                continue
+
+            # check if eclass changed
+            try:
+                cur_eclasses = self._portdb.dbapi.aux_get(pkg_atom,
+                    ["INHERITED"], myrepo=spm_repo)[0].split()
+            except KeyError:
+                continue
+            for cur_eclass in cur_eclasses:
+                if cur_eclass in changed_eclasses:
+                    modified_cpvs.add(cpv_key)
+                    break
+                if cur_eclass in added_eclasses:
+                    modified_cpvs.add(cpv_key)
+                    break
+
+        removed_package_ids = set()
+        for k in removed_cpvs:
+            removed_package_ids.add(pkg_map[k])
+        modified_package_ids = set()
+        for k in modified_cpvs:
+            modified_package_ids.add(pkg_map[k])
+
+        return added_cpvs, removed_package_ids, modified_package_ids
+
+    def _expand_cpvs(self, cpvs):
+        """
+        Add repository metadata to atoms in cpvs list.
+        """
+        expanded_cpvs = []
+        for repo_id in self._portdb.dbapi.getRepositories():
+            def _filter_cpv(cpv):
+                return self._portdb.dbapi.cpv_exists(cpv, myrepo=repo_id)
+            repo_cpvs = [(x, repo_id) for x in filter(_filter_cpv, cpvs)]
+            expanded_cpvs.extend(repo_cpvs)
+        return expanded_cpvs
+
+    def _remove_packages(self, package_ids):
+        self.output(purple("Removing packages..."),
+            header = teal(" @@ "),
+            importance = 1, back = True)
+
+        max_count = len(package_ids)
+        count = 0
+        for package_id in package_ids:
+            count += 1
+            pkg_atom = self._repo.retrieveAtom(package_id)
+            self.output("%s: %s" % (purple("removing"), pkg_atom),
+                header = teal(" @@ "),
+                count = (count, max_count),
+                importance = 0,
+                back = True)
+            self._repo.removePackage(package_id, do_cleanup = False,
+                do_commit = False)
+
+        self.output(purple("Done removing packages."),
+            header = teal(" @@ "),
+            importance = 1)
+
+        self._repo.commit()
+        self._repo.clean()
+        self._repo.commit()
+
+    def __add_package(self, pkg_atom, spm_repo, count, max_count):
+
+        try:
+            data = self._portdb.dbapi.aux_get(pkg_atom, self._xpak_keys)
+        except KeyError:
+            self.output("%s: %s" % (
+                    teal("error adding"),
+                    pkg_atom,
+                ),
+                header = brown(" @@ "),
+                count = (count, max_count),
+                level = "warning",
+                importance = 0
+            )
+            # corrupted entry
+            return
+
+        meta_map = {}
+        data_count = 0
+        for key in self._xpak_keys:
+            meta_map[key] = const_convert_to_rawstring(data[data_count],
+                from_enctype = "utf-8")
+            data_count += 1
+
+        # fix missing data
+        meta_map['CATEGORY'] = const_convert_to_rawstring(
+            entropy.dep.dep_getcat(pkg_atom), from_enctype = "utf-8")
+        meta_map['PF'] = const_convert_to_rawstring(
+            pkg_atom.split("/", 1)[1], from_enctype = "utf-8")
+        meta_map['repository'] = const_convert_to_rawstring(spm_repo,
+            from_enctype = "utf-8")
+        stream = xpak.xpak_mem(meta_map)
+
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        try:
+            with os.fdopen(tmp_fd, "wb") as xpak_f:
+                xpak_f.write(stream)
+                xpak_f.flush()
+            entropy_meta = self._spm.extract_package_metadata(tmp_path)
+
+            # this ensures that mtime is considered for pkg metadata updates
+            ebuild_path = self._portdb.dbapi.findname(pkg_atom,
+                myrepo=spm_repo)
+            if ebuild_path is None:
+                e_mtime = "0"
+            else:
+                e_mtime = str(os.path.getmtime(ebuild_path))
+            entropy_meta['datecreation'] = e_mtime
+
+            self._repo.addPackage(entropy_meta, do_commit = False)
+
+        finally:
+            os.remove(tmp_path)
+
+    def _add_packages(self, extended_cpvs):
+        self.output(purple("Adding packages..."),
+            header = teal(" @@ "),
+            importance = 1, back = True)
+
+        max_count = len(extended_cpvs)
+        count = 0
+
+        for pkg_atom, spm_repo in extended_cpvs:
+            count += 1
+            self.output("%s: %s" % (purple("adding"), pkg_atom),
+                header = darkgreen(" @@ "),
+                count = (count, max_count),
+                importance = 0, back = True)
+            self.__add_package(pkg_atom, spm_repo, count, max_count)
+
+        self._repo.commit()
+        self._repo.clean()
+        self._repo.commit()
+
+        self.output(purple("Done adding packages."),
+            header = teal(" @@ "),
+            importance = 1)
+
+    def _bump_packages(self, package_ids):
+
+        self.output(purple("Updating packages..."),
+            header = teal(" @@ "),
+            importance = 1, back = True)
+
+        max_count = len(package_ids)
+        count = 0
+        for package_id in package_ids:
+            count += 1
+
+            pkg_atom, spm_repo = self.__from_pkg_id_to_atom_repo(package_id)
+            self.output("%s: %s" % (purple("adding"), pkg_atom),
+                header = darkgreen(" @@ "),
+                count = (count, max_count),
+                importance = 0, back = True)
+
+            self._repo.removePackage(package_id, do_cleanup = False,
+                do_commit = False)
+            self.__add_package(pkg_atom, spm_repo, count, max_count)
+
+        self._repo.commit()
+        self._repo.clean()
+        self._repo.commit()
+
+        self.output(purple("Done updating packages."),
+            header = teal(" @@ "),
+            importance = 1)
+
+    def sync(self):
+        avail_repos = self._portdb.dbapi.getRepositories()
+        cpvs = self._portdb.dbapi.cpv_all()
+        expanded_cpvs = self._expand_cpvs(cpvs)
+        del cpvs
+        added_cpvs, removed_package_ids, modified_package_ids = \
+            self._find_differences(expanded_cpvs)
+
+        # execute the removal
+        if removed_package_ids:
+            self._remove_packages(removed_package_ids)
+        # execute the add
+        if added_cpvs:
+            self._add_packages(added_cpvs)
+
+        if modified_package_ids:
+            self._bump_packages(modified_package_ids)
+
+        # update eclass cache
+        self._set_eclass_cache(self._get_eclass_data())
+
+
+def _print_help(args):
+    app_name = os.path.basename(sys.argv[0])
+    print_info("%s - %s" % (blue(app_name),
+        teal(_("Portage -> Entropy Repository converter")),))
+    print_info("  %s:\t%s %s" % (
+        purple(_("sync entropy")),
+        brown(app_name),
+        darkgreen("sync <entropy repository file path> [<portage PORTDIR>]"))
+    )
+    print_info("  %s:\t\t%s %s" % (purple(_("this help")), brown(app_name),
+        darkgreen("help")))
+    if not args:
+        return 1
+    return 0
+
+def _sync_tree(args):
+    if not args:
+        print_error(brown(_("Invalid Entropy repository file path")))
+        return 1
+    entropy_repository_path = args.pop(0)
+    portdir = None
+    if args:
+        portdir = args.pop(0)
+
+    entropy_repository_path_dir = os.path.dirname(entropy_repository_path)
+    if not (os.path.isdir(entropy_repository_path_dir) and \
+        os.access(entropy_repository_path_dir, os.W_OK | os.R_OK)):
+        print_error(brown(_("Invalid Entropy repository file path")))
+        return 1
+
+    if portdir is not None:
+        os.environ['PORTDIR'] = portdir
+    import portage
+
+    repo = GenericRepository(
+            dbFile = entropy_repository_path,
+            name = "portage",
+            indexing = False)
+    try:
+        repo.validate()
+    except SystemDatabaseError:
+        # intialize
+        repo.initializeRepository()
+        repo.validate()
+
+    repo.dropAllIndexes()
+    converter = EntropyPortageConverter(entropy_repository_path_dir, repo,
+        portage)
+    sts = converter.sync()
+    repo.setIndexing(True)
+    repo.createAllIndexes()
+    repo.vacuum()
+    repo.close()
+    if sts:
+        return 0
+    return 1
+
+
+if __name__ == "__main__":
+
+    args_map = {
+    'sync': _sync_tree,
+    'help': _print_help,
+    '__fallback__': _print_help,
+    }
+
+    argv = sys.argv[1:]
+
+    if not argv:
+        argv.append("help")
+
+    cmd, args = argv[0], argv[1:]
+    func = args_map.get(cmd, args_map.get("__fallback__"))
+    rc = func(args)
+    raise SystemExit(rc)
