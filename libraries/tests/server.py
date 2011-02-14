@@ -8,7 +8,7 @@ import shutil
 from entropy.server.interfaces import Server
 from entropy.const import etpConst
 from entropy.core.settings.base import SystemSettings
-from entropy.db import EntropyRepository
+from entropy.db import EntropyRepository, EntropyRepositoryCacher
 from entropy.exceptions import RepositoryError
 import entropy.tools
 import tests._misc as _misc
@@ -59,17 +59,17 @@ class EntropyRepositoryTest(unittest.TestCase):
         data = spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = dbconn.handlePackage(data)
         # now it should be empty
-        self.assertEqual(EntropyRepository._LIVE_CACHE, {})
+        cacher = EntropyRepositoryCacher()
+        self.assertEqual(cacher.keys(), [])
         self.assertNotEqual(dbconn.retrieveRevision(idpackage), None)
         # now it should be filled
-        cache_key = dbconn._EntropyRepository__getLiveCacheKey() + \
-            'retrieveRevision'
+        cache_key = dbconn._getLiveCacheKey() + 'retrieveRevision'
         self.assertEqual(
-            EntropyRepository._LIVE_CACHE[cache_key],
+            cacher.get(cache_key),
             {1: 0})
         # clear again
         dbconn.clearCache()
-        self.assertEqual(EntropyRepository._LIVE_CACHE, {})
+        self.assertEqual(cacher.keys(), [])
 
     def test_rev_bump(self):
         spm = self.Server.Spm()
