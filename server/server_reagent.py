@@ -401,7 +401,7 @@ def _package_move_copy(entropy_server, args, repoid, cmd, repoid_dest,
                 )
             else:
                 package_ids += [pkg_id for pkg_id, r_id in p_matches if \
-                    (pkg_id not in matches)]
+                    (pkg_id not in package_ids)]
 
         if not package_ids:
             return 1
