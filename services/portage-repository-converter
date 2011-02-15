@@ -291,6 +291,16 @@ class EntropyPortageConverter(TextInterface):
         # update eclass cache
         self._set_eclass_cache(self._get_eclass_data())
 
+        total_queue = len(removed_package_ids) + len(added_cpvs) + \
+            len(modified_package_ids)
+        if total_queue == 0:
+            self.output(purple("Nothing to sync."),
+                header = teal(" @@ "),
+                importance = 1)
+            return False
+
+        return True
+
 _LOCK_HANDLES = {}
 
 def _acquire_lock(lock_file):
