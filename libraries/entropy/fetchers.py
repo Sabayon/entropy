@@ -298,6 +298,15 @@ class UrlFetcher(TextInterface):
         """
         protocol = UrlFetcher._get_url_protocol(self.__url)
         downloader = self.__supported_uris.get(protocol)
+        const_debug_write(__name__,
+            "UrlFetcher.download(%s), save: %s, checksum: %s, resume: %s, "
+            "show speed: %s, abort func: %s, thread stop func: %s, "
+            "disallow redir: %s, speed limit: %s" % (
+                self.__url, self.__path_to_save, self.__checksum,
+                self.__resume, self.__show_speed, self.__abort_check_func,
+                self.__thread_stop_func, self.__disallow_redirect,
+                self.__speedlimit)
+        )
         if downloader is None:
             # return error, protocol not supported
             self._update_speed()
