@@ -1,3 +1,63 @@
+commit c51101b4b645c9d4359bc5f1546cec64e9d9b888
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 16 00:26:57 2011 +0100
+
+    Release Entropy 1.0_alpha16
+
+commit faf25d68b12a164ad1a43721d14f517e46895713
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 16 00:26:16 2011 +0100
+
+    [reagent] fix undefined reference
+
+commit fe093983f04e50a4d5eb476950add542729f06f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 15 15:39:48 2011 +0100
+
+    [entropy.fetchers] UrlFetcher: add debug info in download()
+
+commit 2c4e5cacc3b30991f4af0b789f3750e2895d538d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 15 12:24:42 2011 +0100
+
+    [services] portage-repository-converter: return 1 if there is nothing to sync
+
+commit cb31fac262c916593698eb78fdccc55c73470e68
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 15 12:11:49 2011 +0100
+
+    [po] sync translations
+
+commit 699d99e7208ffbfa26c4d0c0e8899d865246da39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 15 12:11:34 2011 +0100
+
+    [po] assimilate new (incomplete) Dutch translation
+
+commit de08eeed907f3dbf9775aaa5067c2a701d2e12eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 15 00:10:28 2011 +0100
+
+    [services] portage-repository-converter-executor: trivial fix
+
+commit 0a790d73ad6c1060d47a6dc5c127e4faf4b07d4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 23:41:27 2011 +0100
+
+    [services] update default perms of portage-repository-converter-executor
+
+commit 9cf8a57b53effa4c312c93c91ff68ba038467447
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 23:38:44 2011 +0100
+
+    [services] add portage-repository-converter script example
+
+commit 4c02640562d74828f95996b93810a1fb2a436c95
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 14 22:42:14 2011 +0100
+
+    Tagging Entropy version 1.0_alpha15
+
 commit f141a26784e555cc43a718ce99fa3640be4e3af8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 14 22:42:01 2011 +0100
