@@ -15,7 +15,7 @@ import time
 import tempfile
 import shutil
 
-from entropy.const import const_isnumber
+from entropy.const import const_isnumber, const_debug_write
 from entropy.output import brown, darkgreen, teal
 from entropy.i18n import _
 from entropy.transceivers.exceptions import TransceiverConnectionError
@@ -111,9 +111,14 @@ class EntropySshUriHandler(EntropyUriHandler):
 
         line_data = line.strip().split()
         if len(line_data) < 5:
+            const_debug_write(__name__,
+                "_parse_progress_line: cannot parse: %s" % (line_data,))
             # mmh... not possible to properly parse data
             self.output(line.strip(), back = True)
             return
+
+        const_debug_write(__name__,
+            "_parse_progress_line: parsing: %s" % (line_data,))
 
         file_name = line_data[0]
         percent = line_data[1]
