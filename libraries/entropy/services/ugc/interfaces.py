@@ -486,7 +486,7 @@ class Server(RemoteDatabase):
     def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
         self.check_connection()
         self.execute_query("""
-            SELECT * FROM entropy_docs,entropy_base WHERE 
+            SELECT SQL_CACHE * FROM entropy_docs,entropy_base WHERE 
             entropy_docs.`idkey` = entropy_base.`idkey` AND 
             entropy_base.`key` = %s AND 
             entropy_docs.`iddoctype` IN %s 
@@ -549,7 +549,7 @@ class Server(RemoteDatabase):
         """
         self.check_connection()
         self.execute_query("""
-        SELECT * FROM entropy_docs, entropy_base
+        SELECT SQL_CACHE * FROM entropy_docs, entropy_base
         WHERE entropy_base.`idkey` = entropy_docs.`idkey`
         AND entropy_base.`key` = %s
         AND entropy_docs.iddoctype = %s
@@ -566,7 +566,7 @@ class Server(RemoteDatabase):
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
         self.execute_query("""
-        SELECT avg(entropy_votes.`vote`) as avg_vote FROM entropy_votes,entropy_base WHERE 
+        SELECT SQL_CACHE avg(entropy_votes.`vote`) as avg_vote FROM entropy_votes,entropy_base WHERE 
         entropy_base.`key` = %s AND 
         entropy_base.idkey = entropy_votes.idkey""", (pkgkey,))
         data = self.fetchone() or {}
