@@ -544,7 +544,7 @@ class Server(RemoteDatabase):
 
     def get_ugc_icon(self, pkgkey):
         """
-        Retrieve UGC icon metadata for package key. Relative path if found,
+        Retrieve UGC icon URL for package key. URL if found (using store_url),
         None otherwise.
         """
         self.check_connection()
@@ -561,6 +561,8 @@ class Server(RemoteDatabase):
         if not isinstance(icon_path, const_get_stringtype()) \
             and (icon_path is not None):
             icon_path = icon_path.tostring()
+        if icon_path is not None:
+            icon_path = os.path.join(self.store_url, icon_path.lstrip("/"))
         return icon_path
 
     def get_ugc_vote(self, pkgkey):
