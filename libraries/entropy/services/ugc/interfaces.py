@@ -542,6 +542,27 @@ class Server(RemoteDatabase):
                 pass
         return mydict
 
+    def get_ugc_icon(self, pkgkey):
+        """
+        Retrieve UGC icon metadata for package key. Relative path if found,
+        None otherwise.
+        """
+        self.check_connection()
+        self.execute_query("""
+        SELECT * FROM entropy_docs, entropy_base
+        WHERE entropy_base.`idkey` = entropy_docs.`idkey`
+        AND entropy_base.`key` = %s
+        AND entropy_docs.iddoctype = %s
+        AND entropy_docs.title = "__icon__"
+        ORDER BY entropy_docs.ts DESC
+        LIMIT 1""", (pkgkey, etpConst['ugc_doctypes']['image']))
+        data = self.fetchone() or {}
+        icon_path = data.get('ddata')
+        if not isinstance(icon_path, const_get_stringtype()) \
+            and (icon_path is not None):
+            icon_path = icon_path.tostring()
+        return icon_path
+
     def get_ugc_vote(self, pkgkey):
         self.check_connection()
         self.execute_query("""
