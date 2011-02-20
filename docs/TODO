@@ -2,14 +2,28 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.services, entropy.client: love and refactoring (API break!)
-    - collect metadata regarding: postscript drivers, fonts (PackageKit req)
+    - stale files in /var/lib/entropy/server/<repo>/packages/<arch>/<branch>/*.asc
+    - if repo is opened using open_repository() cannot use close(), avoid by design
+
+    - downgrade-repo, if enabled, puts the to-be-upgraded
+        package to a separate repo before overwriting
+        => higher priority than all other repos
+        => no packages mirror
+        => "equo downgrade" (installs all the packages from the downgrade-repo)
+
+    - entropy.client: refactoring
+    - entropy.services: refactoring
+        rewrite UGC using HTTP protocol
+
+    - python3.x tests
+        entropy ugc fixes
+        xorg-server install problem? /etc/init.d/xdm was not found
+
+    - evaluate or-dependencies after complete dependency graph calculation.
+        definitely fixes or dependencies
+
     - complete README
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
       - conditional deps support, implement in entropy.spm, class is there (add unit test)
-
-  1.1:
-
-    - UGC based on HTTP requests (using HTTP-alike headers) containing XML data (real requests)
