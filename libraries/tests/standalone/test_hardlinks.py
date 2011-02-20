@@ -1,4 +1,4 @@
-import os, errno
+import os, errno, stat
 from entropy.const import etpUi
 etpUi['quiet'] = True
 from entropy.server.interfaces import Server
@@ -21,7 +21,8 @@ for repo_id in repos:
             except OSError as err:
                 if err.errno != errno.ENOENT:
                     raise
-            if st.st_nlink > 1:
+                continue
+            if stat.S_ISREG(st.st_mode) and (st.st_nlink > 1):
                 # hard link !
                 print(atom)
                 atom_cache.add(atom)
