@@ -22,7 +22,7 @@ for repo_id in repos:
                 if err.errno != errno.ENOENT:
                     raise
                 continue
-            if stat.S_ISREG(st.st_mode) and (st.st_nlink > 1):
+            if stat.S_ISREG(st.st_mode) and (st.st_nlink > 1) and (st.st_size == 0):
                 # hard link !
                 print(atom)
                 atom_cache.add(atom)
