@@ -926,10 +926,7 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
             if not stat.S_ISREG(exist.st_mode):
                 continue
             # explicitly NOT supporting hard links!
-            if tarinfo.islnk() and not tarinfo.islnk():
-                # do not touch the type attribute !
-                pass
-            else:
+            if tarinfo.issym():
                 # zap symlinks to empty files
                 tarinfo.type = tarfile.REGTYPE
             with open(path, "rb") as f:
