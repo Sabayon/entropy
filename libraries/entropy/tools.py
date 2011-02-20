@@ -925,7 +925,13 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
             if not stat.S_ISREG(exist.st_mode):
                 continue
-            tarinfo.type = tarfile.REGTYPE
+            # explicitly NOT supporting hard links!
+            if tarinfo.islnk() and not tarinfo.islnk():
+                # do not touch the type attribute !
+                pass
+            else:
+                # zap symlinks to empty files
+                tarinfo.type = tarfile.REGTYPE
             with open(path, "rb") as f:
                 tar.addfile(tarinfo, f)
     finally:
@@ -974,7 +980,6 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
                 directories.append(tarinfo)
             tar.extract(tarinfo, dest_path)
             del tar.members[:]
-
             directories.append(tarinfo)
 
         directories.sort(key = lambda x: x.name, reverse = True)
@@ -2066,8 +2071,9 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
         if sys.hexversion < 0x3000000:
             encoded_path = encoded_path.encode('utf-8')
         entries = []
-        for tarinfo in tar:
 
+        deleter_counter = 3
+        for tarinfo in tar:
             epath = os.path.join(encoded_path, tarinfo.name)
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
@@ -2078,9 +2084,15 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
                     pass
                 entries.append((tarinfo, epath,))
 
+
             tar.extract(tarinfo, encoded_path)
-            del tar.members[:]
+            deleter_counter -= 1
+            if deleter_counter == 0:
+                del tar.members[:]
+                deleter_counter = 3
             entries.append((tarinfo, epath,))
+
+        del tar.members[:]
 
         entries.sort(key = lambda x: x[0].name, reverse = True)
         # Set correct owner, mtime and filemode on directories.
