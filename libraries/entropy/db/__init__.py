@@ -4484,15 +4484,21 @@ class EntropyRepository(EntropyRepositoryBase):
         order_by_string = ''
         if order_by is not None:
             valid_order_by = ("atom", "idpackage", "package_id", "branch",
-                "name", "version", "versiontag", "revision", "slot")
+                "name", "version", "versiontag", "revision", "slot", "date")
             if order_by not in valid_order_by:
                 raise AttributeError("invalid order_by argument")
             if order_by == "package_id":
                 order_by = "idpackage"
             order_by_string = ' order by %s' % (order_by,)
 
-        cur = self._cursor().execute("""
-        SELECT idpackage FROM baseinfo""" + order_by_string)
+        if order_by == "date":
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage FROM baseinfo, extrainfo
+            WHERE baseinfo.idpackage = extrainfo.idpackage
+            ORDER BY extrainfo.datecreation DESC""")
+        else:
+            cur = self._cursor().execute("""
+            SELECT idpackage FROM baseinfo""" + order_by_string)
 
         try:
             if order_by:

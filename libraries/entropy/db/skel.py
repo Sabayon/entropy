@@ -3272,7 +3272,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         List all package identifiers available in repository.
 
         @keyword order_by: order by "atom", "idpackage", "package_id", "branch",
-            "name", "version", "versiontag", "revision", "slot"
+            "name", "version", "versiontag", "revision", "slot", "date"
         @type order_by: string
         @return: tuple (if order_by) or frozenset of package identifiers
         @rtype: tuple or frozenset
