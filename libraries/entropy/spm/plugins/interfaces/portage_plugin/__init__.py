@@ -804,8 +804,6 @@ class PortagePlugin(SpmPlugin):
             tarinfo = tar.gettarinfo(lpath, arcname)
 
             if stat.S_ISREG(exist.st_mode):
-                tarinfo.mode = stat.S_IMODE(exist.st_mode)
-                tarinfo.type = tarfile.REGTYPE
                 with open(path, "rb") as f:
                     tar.addfile(tarinfo, f)
             else:
