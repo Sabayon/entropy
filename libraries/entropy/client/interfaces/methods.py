@@ -1733,9 +1733,6 @@ class MiscMixin:
                 tarinfo = tar.gettarinfo(path, arcname)
 
                 if stat.S_ISREG(exist.st_mode):
-                    tarinfo.mode = stat.S_IMODE(exist.st_mode)
-                    tarinfo.type = tarfile.REGTYPE
-                    f = None
                     with open(path, "rb") as f:
                         tar.addfile(tarinfo, f)
                 else:
