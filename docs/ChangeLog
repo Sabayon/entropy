@@ -1,3 +1,77 @@
+commit c5a9f2531ca76dbbbcc536610f41e3c9d06a3009
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:22:27 2011 +0100
+
+    Release Entropy 1.0_alpha18
+
+commit 79d08eebf23a0ef1acf2ab2426973ce6b202b402
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:18:02 2011 +0100
+
+    [entropy.tools] improve handling of non-standard file types (hard-links) and improve speed of uncompress_tarball()
+
+commit a10d2ef7710cec1a538f6c8e5a18bc17b6220b8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:10:41 2011 +0100
+
+    [entropy.client] quickpkg(): fix broken handling of hard-links
+    
+    Since tar-1.24, tar supports hard links, same for python-2.6.6.
+    However, generate_package() was resetting the file type on the
+    tarinfo object, causing the extractor (either tar or python tarfile)
+    to handle the file like it was a 0-size one.
+    dev-vcs/git package was broken due to this and there are probably
+    others.
+
+commit c9b166a9fbe54aa32f038b33e824f8a600f0e2e6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:04:27 2011 +0100
+
+    [entropy.spm] generate_package(): fix broken handling of hard-links
+    
+    Since tar-1.24, tar supports hard links, same for python-2.6.6.
+    However, generate_package() was resetting the file type on the
+    tarinfo object, causing the extractor (either tar or python tarfile)
+    to handle the file like it was a 0-size one.
+    dev-vcs/git package was broken due to this and there are probably
+    others.
+
+commit 7b6e07e53516d812cb215d533c0385c4be191a84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:03:13 2011 +0100
+
+    [todo] update TODO
+
+commit fe3ed07102c46ac2fe479db4cdc973eaa4c34c61
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 18 12:00:23 2011 +0100
+
+    [entropy.services.ugc] get_ugc_icon(): return full URL instead of relative
+
+commit 9890f799e597162eeab09b6faa44b6e953538e80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 18 02:33:30 2011 +0100
+
+    [entropy.services.ugc] add caching
+
+commit e019225f002a6ffc20c553d81bbf1dc5108d4203
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 18 01:31:03 2011 +0100
+
+    [entropy.services.ugc] add get_ugc_icon helper method
+
+commit 6614c5d67d1c43009def5b33774eb4f335b89d46
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 17 11:46:39 2011 +0100
+
+    [entropy.transceivers] EntropySshUriHandler: add some debug output in _parse_progress_line
+
+commit a1c556919991013c4b772a6b7053e8eb23640728
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Feb 16 00:27:08 2011 +0100
+
+    Tagging Entropy version 1.0_alpha16
+
 commit c51101b4b645c9d4359bc5f1546cec64e9d9b888
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Feb 16 00:26:57 2011 +0100
