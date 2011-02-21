@@ -3136,6 +3136,23 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def searchUseflag(self, keyword, just_id = False):
+        """
+        Search packages using given use flag string as keyword. An exact search
+        will be performed (keyword must match use flag)
+
+        @param keyword: use flag to search
+        @type keyword: string
+        @keyword just_id: if True, only return a list of Entropy package
+            identifiers
+        @type just_id: bool
+        @return: frozenset of tuples of length 2 containing atom and package_id
+            values. While if just_id is True, return a list (frozenset) of
+            package_ids
+        @rtype: frozenset
+        """
+        raise NotImplementedError()
+
     def searchHomepage(self, keyword, just_id = False):
         """
         Search packages using given homepage string as keyword.

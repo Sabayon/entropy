@@ -4298,6 +4298,27 @@ class EntropyRepository(EntropyRepositoryBase):
             """, ("%"+keyword.lower()+"%",))
             return frozenset(cur)
 
+    def searchUseflag(self, keyword, just_id = False):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        if just_id:
+            cur = self._cursor().execute("""
+            SELECT useflags.idpackage FROM useflags, useflagsreference
+            WHERE useflags.idflag = useflagsreference.idflag
+            AND useflagsreference.flagname = (?)
+            """, (keyword,))
+            return self._cur2frozenset(cur)
+        else:
+            cur = self._cursor().execute("""
+            SELECT baseinfo.atom, useflags.idpackage
+            FROM baseinfo, useflags, useflagsreference
+            WHERE useflags.idflag = useflagsreference.idflag
+            AND baseinfo.idpackage = useflags.idpackage
+            AND useflagsreference.flagname = (?)
+            """, (keyword,))
+            return frozenset(cur)
+
     def searchHomepage(self, keyword, just_id = False):
         """
         Reimplemented from EntropyRepositoryBase.
