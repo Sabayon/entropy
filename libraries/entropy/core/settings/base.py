@@ -1163,6 +1163,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'differential_update': True,
         }
 
+        # supporting our web app
+        repo_conf = os.getenv("ETP_REPOSITORIES_CONF",
+            etpConst['repositoriesconf'])
         repo_conf = etpConst['repositoriesconf']
         if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
             return data
