@@ -3186,7 +3186,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
-    def searchCategory(self, keyword, like = False):
+    def searchCategory(self, keyword, like = False, just_id = False):
         """
         Search packages by category name.
 
@@ -3194,6 +3194,10 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @type keyword: string
         @keyword like: do not match exact case
         @type like: bool
+        @keyword just_id: return list of package identifiers (set()) otherwise
+            return a list of tuples of length 2 containing atom and package_id
+            values
+        @type just_id: bool
         @return: list (frozenset) of tuples of length 2 containing atom and
             package_id values
         @rtype: frozenset

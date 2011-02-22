@@ -4362,7 +4362,7 @@ class EntropyRepository(EntropyRepositoryBase):
         return frozenset(cur)
 
 
-    def searchCategory(self, keyword, like = False):
+    def searchCategory(self, keyword, like = False, just_id = True):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -4371,16 +4371,29 @@ class EntropyRepository(EntropyRepositoryBase):
             like_string = "LIKE (?)"
 
         if self._isBaseinfoExtrainfo2010():
-            cur = self._cursor().execute("""
-            SELECT atom, idpackage FROM baseinfo
-            WHERE baseinfo.category %s
-            """ % (like_string,), (keyword,))
+            if just_id:
+                cur = self._cursor().execute("""
+                SELECT idpackage FROM baseinfo
+                WHERE baseinfo.category %s
+                """ % (like_string,), (keyword,))
+            else:
+                cur = self._cursor().execute("""
+                SELECT atom, idpackage FROM baseinfo
+                WHERE baseinfo.category %s
+                """ % (like_string,), (keyword,))
         else:
-            cur = self._cursor().execute("""
-            SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
-            WHERE categories.category %s AND
-            baseinfo.idcategory = categories.idcategory
-            """ % (like_string,), (keyword,))
+            if just_id:
+                cur = self._cursor().execute("""
+                SELECT baseinfo.idpackage FROM baseinfo,categories
+                WHERE categories.category %s AND
+                baseinfo.idcategory = categories.idcategory
+                """ % (like_string,), (keyword,))
+            else:
+                cur = self._cursor().execute("""
+                SELECT baseinfo.atom,baseinfo.idpackage FROM baseinfo,categories
+                WHERE categories.category %s AND
+                baseinfo.idcategory = categories.idcategory
+                """ % (like_string,), (keyword,))
 
         return frozenset(cur)
 
