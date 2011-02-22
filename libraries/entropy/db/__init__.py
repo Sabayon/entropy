@@ -4396,7 +4396,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 """ % (like_string,), (keyword,))
 
         if just_id:
-            self._cur2frozenset(cur)
+            return self._cur2frozenset(cur)
         return frozenset(cur)
 
     def searchNameCategory(self, name, category, just_id = False):
