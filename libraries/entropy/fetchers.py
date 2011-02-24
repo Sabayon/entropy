@@ -528,6 +528,11 @@ class UrlFetcher(TextInterface):
             except KeyboardInterrupt:
                 self.__urllib_close(False)
                 raise
+            except httplib.InvalidURL:
+                # malformed url!
+                self.__urllib_close(True)
+                self.__status = "-3"
+                do_return = True
 
             except urlmod_error.HTTPError as e:
                 if (e.code == 405) and not u_agent_error:
