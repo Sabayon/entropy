@@ -4801,14 +4801,28 @@ class EntropyRepository(EntropyRepositoryBase):
         action_str = "EntropyRepository.validate(%s)" % (self.name,)
         passed = pingus.hours_passed(action_str, 72)
         if passed:
-            cur = self._cursor().execute("PRAGMA quick_check(1)")
-            try:
-                check_data = cur.fetchone()[0]
-                if check_data != "ok":
-                    raise ValueError()
-            except (IndexError, ValueError, TypeError,):
-                mytxt = "sqlite3 reports database being corrupted"
-                raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
+            # check if mtime is changed !
+            sha = hashlib.sha1()
+            hash_str = "%s|%s|%s|%s" % (
+                repr(self._db_path),
+                repr(etpConst['systemroot']),
+                repr(self.name),
+                repr(os.path.getmtime(self._db_path)),
+            )
+            if sys.hexversion >= 0x3000000:
+                hash_str = hash_str.encode("utf-8")
+            cache_key = "_EntropyRepository_validate_" + sha.hexdigest()
+            cached = self._cacher.pop(cache_key)
+            if cached is None:
+                cur = self._cursor().execute("PRAGMA quick_check(1)")
+                try:
+                    check_data = cur.fetchone()[0]
+                    if check_data != "ok":
+                        raise ValueError()
+                except (IndexError, ValueError, TypeError,):
+                    mytxt = "sqlite3 reports database being corrupted"
+                    raise SystemDatabaseError(mytxt)
+                self._cacher.save(cache_key, True)
             pingus.ping(action_str)
 
         mytxt = "Repository is corrupted, missing SQL tables!"
@@ -4818,18 +4832,16 @@ class EntropyRepository(EntropyRepositoryBase):
         """)
         rslt = cur.fetchone()
         if rslt is None:
-            raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
+            raise SystemDatabaseError(mytxt)
         elif rslt[0] != 3:
-            raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
+            raise SystemDatabaseError(mytxt)
 
         # execute checksum
         try:
             self.checksum()
         except (OperationalError, DatabaseError,) as err:
             mytxt = "Repository is corrupted, checksum error"
-            raise SystemDatabaseError("SystemDatabaseError: %s: %s" % (
-                mytxt, err,)
-            )
+            raise SystemDatabaseError("%s: %s" % (mytxt, err,))
 
     def _getIdpackagesDifferences(self, foreign_package_ids):
         """
@@ -5125,7 +5137,7 @@ class EntropyRepository(EntropyRepositoryBase):
             license_order = 'order by license'
             flags_order = 'order by chost'
 
-        def do_update_md5(m, cursor):
+        def do_update_hash(m, cursor):
             # this could slow things down a lot, so be careful
             # NOTE: this function must guarantee platform, architecture,
             # interpreter independent results. Cannot use hash() then.
@@ -5139,7 +5151,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     m.update(repr(record))
 
         if strings:
-            m = hashlib.md5()
+            m = hashlib.sha1()
 
         if not self._doesTableExist("baseinfo"):
             if strings:
@@ -5153,14 +5165,14 @@ class EntropyRepository(EntropyRepositoryBase):
         cur = self._cursor().execute("""
         SELECT * FROM baseinfo %s""" % (package_id_order,))
         if strings:
-            do_update_md5(m, cur)
+            do_update_hash(m, cur)
         else:
             a_hash = hash(tuple(cur))
 
         cur = self._cursor().execute("""
         SELECT * FROM extrainfo %s""" % (package_id_order,))
         if strings:
-            do_update_md5(m, cur)
+            do_update_hash(m, cur)
         else:
             b_hash = hash(tuple(cur))
 
@@ -5171,7 +5183,7 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT category FROM categories %s
             """ % (category_order,))
             if strings:
-                do_update_md5(m, cur)
+                do_update_hash(m, cur)
             else:
                 c_hash = hash(tuple(cur))
 
@@ -5182,14 +5194,14 @@ class EntropyRepository(EntropyRepositoryBase):
                 cur = self._cursor().execute("""
                 SELECT * FROM licenses %s""" % (license_order,))
                 if strings:
-                    do_update_md5(m, cur)
+                    do_update_hash(m, cur)
                 else:
                     d_hash = hash(tuple(cur))
 
                 cur = self._cursor().execute('select * from flags %s' % (
                     flags_order,))
                 if strings:
-                    do_update_md5(m, cur)
+                    do_update_hash(m, cur)
                 else:
                     e_hash = hash(tuple(cur))
 
@@ -5202,7 +5214,7 @@ class EntropyRepository(EntropyRepositoryBase):
             SELECT idpackage, sha1%s FROM
             packagesignatures %s""" % (gpg_str, package_id_order,))
             if strings:
-                do_update_md5(m, cur)
+                do_update_hash(m, cur)
             else:
                 b_hash = "%s%s" % (b_hash, hash(tuple(cur)),)
 
