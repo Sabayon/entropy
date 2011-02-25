@@ -2360,6 +2360,27 @@ def setting_to_int(setting, lower_bound, upper_bound):
     except ValueError:
         return None
 
+def expand_plain_package_mirror(mirror, product, repository_id):
+    """
+    Expand plain mirror URL adding product and repository identifier data to it.
+
+    @param mirror: mirror URL
+    @type mirror: string
+    @param product: Entropy repository product
+    @type product: string
+    @param repository_id: repository identifier
+    @type repository_id: string
+    @return: expanded URL or None, if mirror url is invalid
+    @rtype: string or None
+    """
+    if not is_valid_uri(mirror):
+        return None
+    try:
+        mirror = str(mirror)
+    except (UnicodeDecodeError, UnicodeEncodeError,):
+        return None
+    return mirror + os.path.sep + product + os.path.sep + repository_id
+
 def is_entropy_package_file(entropy_package_path):
     """
     Determine whether given package path is a valid Entropy package file.

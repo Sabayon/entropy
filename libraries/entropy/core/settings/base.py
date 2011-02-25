@@ -1121,23 +1121,14 @@ class SystemSettings(Singleton, EntropyPluginStore):
         repopackages = [x.strip() for x in repopackages.split() if x.strip()]
 
         for repo_package in repopackages:
-            new_repo_package = self.__expand_plain_package_mirror(repo_package,
-                product, reponame)
+            new_repo_package = entropy.tools.expand_plain_package_mirror(
+                repo_package, product, reponame)
             if new_repo_package is None:
                 continue
             mydata['plain_packages'].append(repo_package)
             mydata['packages'].append(new_repo_package)
 
         return reponame, mydata
-
-    def __expand_plain_package_mirror(self, mirror, product, reponame):
-        if not entropy.tools.is_valid_uri(mirror):
-            return None
-        try:
-            mirror = str(mirror)
-        except (UnicodeDecodeError, UnicodeEncodeError,):
-            return None
-        return mirror + os.path.sep + product + os.path.sep + reponame
 
     def _repositories_parser(self):
 
@@ -1370,7 +1361,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
             mirrors_data = []
             for mirror in raw_mirrors:
-                expanded_mirror = self.__expand_plain_package_mirror(
+                expanded_mirror = entropy.tools.expand_plain_package_mirror(
                     mirror, data['product'], repoid)
                 if expanded_mirror is None:
                     continue
@@ -1419,8 +1410,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
             if fallback_urls:
                 for fallback_url in fallback_urls:
-                    expanded_fallback_url = self.__expand_plain_package_mirror(
-                        fallback_url, data['product'], repoid)
+                    expanded_fallback_url = \
+                        entropy.tools.expand_plain_package_mirror(
+                            fallback_url, data['product'], repoid)
                     while True:
                         try:
                             obj['plain_packages'].remove(fallback_url)
