@@ -220,7 +220,8 @@ class RepositoryMixin:
         _enabled_repos = None):
 
         if const_isstring(repoid):
-            if repoid.endswith(etpConst['packagesext']):
+            if repoid.endswith(etpConst['packagesext']) or \
+                repoid.endswith(etpConst['packagesext_webinstall']):
                 xcache = False
         if _enabled_repos is None:
             _enabled_repos = self._enabled_repos
@@ -268,7 +269,8 @@ class RepositoryMixin:
 
         if (repoid not in self._treeupdates_repos) and \
             (entropy.tools.is_root()) and \
-            (not repoid.endswith(etpConst['packagesext'])):
+            (not (repoid.endswith(etpConst['packagesext']) or \
+                repoid.endswith(etpConst['packagesext_webinstall']))):
 
             # only as root due to Portage
             try:
@@ -297,9 +299,11 @@ class RepositoryMixin:
 
         avail_data[repoid] = {}
         avail_data[repoid]['description'] = repodata['description']
+        is_webinstall_pkg = repodata.get('webinstall_package', False)
+        is_package_file = repoid.endswith(etpConst['packagesext'])
+        is_temp = repodata.get('__temporary__')
 
-        if repoid.endswith(etpConst['packagesext']) or \
-            repodata.get('__temporary__'):
+        if is_package_file or is_webinstall_pkg or is_temp:
             # dynamic repository
 
             # no need # avail_data[repoid]['plain_packages'] = \
@@ -312,6 +316,7 @@ class RepositoryMixin:
             avail_data[repoid]['dbpath'] = repodata.get('dbpath')
             avail_data[repoid]['pkgpath'] = repodata.get('pkgpath')
             avail_data[repoid]['__temporary__'] = repodata.get('__temporary__')
+            avail_data[repoid]['webinstall_package'] = is_webinstall_pkg
             # put at top priority, shift others
             self._settings['repositories']['order'].insert(0, repoid)
 
@@ -375,7 +380,11 @@ class RepositoryMixin:
     def __save_repository_settings(self, repodata, remove = False,
         disable = False, enable = False):
 
-        if repodata['repoid'].endswith(etpConst['packagesext']):
+        # package files as repository are ignored. there are usually two cases
+        # a webinstall package and a simple plain package file.
+        is_webinstall_pkg = repodata.get('webinstall_package', False)
+        is_package_file = repodata['repoid'].endswith(etpConst['packagesext'])
+        if is_package_file or is_webinstall_pkg:
             return
 
         content = []
@@ -604,36 +613,53 @@ class RepositoryMixin:
         # add dbfile
         repodata = {}
         repodata['repoid'] = basefile
-        repodata['description'] = "Dynamic database from " + basefile
-        repodata['packages'] = []
+        repodata['description'] = "Dynamic Entropy Repository " + basefile
         repodata['dbpath'] = os.path.dirname(dbfile)
         repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
         repodata['smartpackage'] = False # extra info added
+        repodata['webinstall_package'] = False
 
-        mydbconn = self.open_generic_repository(dbfile)
+        repo = self.open_generic_repository(dbfile)
         # read all idpackages
         try:
             # all branches admitted from external files
-            myidpackages = mydbconn.listAllPackageIds()
+            package_ids = repo.listAllPackageIds()
         except (AttributeError, DatabaseError, IntegrityError,
             OperationalError,):
             return -2, atoms_contained
 
-        if len(myidpackages) > 1:
-            repodata[basefile]['smartpackage'] = True
-        for myidpackage in myidpackages:
-            compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
+        product = self._settings['repositories']['product']
+        repodata['packages'] = []
+        repodata['plain_packages'] = []
+        if pkg_file.endswith(etpConst['packagesext_webinstall']):
+            repodata['webinstall_package'] = True
+            try:
+                plain_packages = repo.getSetting("plain_packages")
+            except KeyError:
+                plain_packages = None
+            if plain_packages is not None:
+                repodata['plain_packages'] = plain_packages.split("\n")
+
+        if len(package_ids) > 1:
+            repodata['smartpackage'] = True
+        is_webinstall_pkg = repodata['webinstall_package']
+        for package_id in package_ids:
+            compiled_arch = repo.retrieveDownloadURL(package_id)
             if compiled_arch.find("/"+etpConst['currentarch']+"/") == -1:
                 return -3, atoms_contained
-            atoms_contained.append((int(myidpackage), basefile))
+            if is_webinstall_pkg:
+                source = repo.getInstalledPackageSource(package_id)
+                if source != etpConst['install_sources']['user']:
+                    continue
+                # otherwise, add to atoms_contained
+            atoms_contained.append((int(package_id), basefile))
 
         self.add_repository(repodata)
         self._validate_repositories()
         if basefile not in self._enabled_repos:
             self.remove_repository(basefile)
             return -4, atoms_contained
-        mydbconn.close()
-        del mydbconn
+        repo.close()
         return 0, atoms_contained
 
     def _add_plugin_to_client_repository(self, entropy_client_repository):
