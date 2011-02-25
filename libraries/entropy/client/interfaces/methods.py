@@ -618,6 +618,16 @@ class RepositoryMixin:
         repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
         repodata['smartpackage'] = False # extra info added
         repodata['webinstall_package'] = False
+        if pkg_file.endswith(etpConst['packagesext_webinstall']):
+            repodata['webinstall_package'] = True
+            # unbzip2
+            tmp_fd, tmp_path = tempfile.mkstemp(dir = db_dir)
+            try:
+                entropy.tools.uncompress_file(dbfile, tmp_path, bz2.BZ2File)
+            finally:
+                os.close(tmp_fd)
+            os.rename(tmp_path, dbfile)
+
 
         repo = self.open_generic_repository(dbfile)
         # read all idpackages
@@ -631,8 +641,7 @@ class RepositoryMixin:
         product = self._settings['repositories']['product']
         repodata['packages'] = []
         repodata['plain_packages'] = []
-        if pkg_file.endswith(etpConst['packagesext_webinstall']):
-            repodata['webinstall_package'] = True
+        if repodata['webinstall_package']:
             try:
                 plain_packages = repo.getSetting("plain_packages")
             except KeyError:
