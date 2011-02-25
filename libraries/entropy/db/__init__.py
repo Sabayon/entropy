@@ -6125,8 +6125,19 @@ class EntropyRepository(EntropyRepositoryBase):
         Reverse dependencies dynamic metadata generation.
         """
         checksum = self.checksum()
-        cache_key = "__generateReverseDependenciesMetadata_%s_%s_%s" % (
-            etpConst['systemroot'], self.name, checksum,)
+        hash_str = "%s|%s|%s|%s|%s" % (
+            repr(self._db_path),
+            repr(etpConst['systemroot']),
+            repr(self.name),
+            repr(checksum),
+            repr(os.path.getmtime(self._db_path)),
+        )
+        if sys.hexversion >= 0x3000000:
+            hash_str = hash_str.encode("utf-8")
+        sha = hashlib.sha1()
+        sha.update(hash_str)
+        cache_key = "__generateReverseDependenciesMetadata_" + \
+            sha.hexdigest()
         rev_deps_data = self._cacher.pop(cache_key)
         if rev_deps_data is not None:
             self._setLiveCache("reverseDependenciesMetadata",
@@ -6147,7 +6158,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         self._setLiveCache("reverseDependenciesMetadata",
                 dep_data)
-        self._cacher.push(cache_key, dep_data, async = False)
+        self._cacher.save(cache_key, dep_data)
         return dep_data
 
     def moveSpmUidsToBranch(self, to_branch):
