@@ -322,8 +322,9 @@ class EntropyCacher(Singleton):
         try:
             entropy.dump.dumpobj(key, data, dump_dir = cache_dir,
                 ignore_exceptions = False)
-        except (EOFError, IOError, OSError):
-            raise IOError("cannot store %s to %s" % (key, cache_dir))
+        except (EOFError, IOError, OSError) as err:
+            raise IOError("cannot store %s to %s. err: %s" % (
+                key, cache_dir, repr(err)))
 
     def push(self, key, data, async = True, cache_dir = None):
         """
