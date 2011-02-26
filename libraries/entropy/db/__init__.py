@@ -4799,11 +4799,15 @@ class EntropyRepository(EntropyRepositoryBase):
         if passed:
             # check if mtime is changed !
             sha = hashlib.sha1()
+            try: # temporary db can cause this
+                mtime = repr(os.path.getmtime(self._db_path))
+            except OSError:
+                mtime = "0.0"
             hash_str = "%s|%s|%s|%s" % (
                 repr(self._db_path),
                 repr(etpConst['systemroot']),
                 repr(self.name),
-                repr(os.path.getmtime(self._db_path)),
+                mtime,
             )
             if sys.hexversion >= 0x3000000:
                 hash_str = hash_str.encode("utf-8")
@@ -6121,12 +6125,16 @@ class EntropyRepository(EntropyRepositoryBase):
         Reverse dependencies dynamic metadata generation.
         """
         checksum = self.checksum()
+        try:
+            mtime = repr(os.path.getmtime(self._db_path))
+        except OSError:
+            mtime = "0.0"
         hash_str = "%s|%s|%s|%s|%s" % (
             repr(self._db_path),
             repr(etpConst['systemroot']),
             repr(self.name),
             repr(checksum),
-            repr(os.path.getmtime(self._db_path)),
+            mtime,
         )
         if sys.hexversion >= 0x3000000:
             hash_str = hash_str.encode("utf-8")
