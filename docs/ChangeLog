@@ -1,3 +1,226 @@
+commit fbcca7384636628dfae154c7ece8867c3cfa78c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 00:11:09 2011 +0100
+
+    Release Entropy 1.0_alpha20
+
+commit 6db0d716a3f80c16fe49069fd3740fcb6c0c7a54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 23:59:30 2011 +0100
+
+    [entropy.db] EntropyRepository: when hashing the repo, handle the case where there is no database file
+
+commit 7801132610a30ac9bc173bddc9fee710007d3e38
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 23:49:55 2011 +0100
+
+    [tests] db: improve settings management test
+
+commit 6cb731f63ee060d7772a8c83b47a9a2d9b7a8819
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 23:45:38 2011 +0100
+
+    [entropy.server] fix operation between set and list in _move_packages()
+
+commit d9b6a481949222d68bd677d76560c87b1bf5641c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 19:47:15 2011 +0100
+
+    [services] repository-webinstall-generator: improve speed even more (add caching), add repository tree updates metadata to repo
+
+commit 868d6e4303d4693b4bd1d92b9a6f69478a90955b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 19:32:47 2011 +0100
+
+    [services] repository-webinstall-generator: no need to get content metadata, improve speed
+
+commit dad927648ec9c22a2f3d75f07b363396b7e43c33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 18:31:56 2011 +0100
+
+    [services] repository-webinstall-generator: ensure that indexing is always True
+
+commit 58c9ae01b8d9a16caa52b3a857c300ca8c65d09e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 18:25:25 2011 +0100
+
+    [services] repository-webinstall-generator: improve mkstemp usage, disable read-only
+    
+    Read-only is disabled to allow createAllIndexes() to do its job.
+    This is required in order to improve the performance.
+
+commit 8e89209f9979d083e208870b9395d6f063e60281
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 18:23:05 2011 +0100
+
+    [services] repository-webinstall-generator: some minor performance tweaks
+
+commit 79e13cdaa29675cefb7cbe280c299f7952cc88fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 17:54:40 2011 +0100
+
+    [services] add repository-webinstall-generator
+    
+    This is a server-side tool that makes possible to generate
+    executable packages that can be redistributed via web, which once
+    extracted install the encapsulated packages
+
+commit d38414de29cb902a54c78d05467376d2deb77965
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 17:54:06 2011 +0100
+
+    [entropy.dep] get_entropy_newer_version(): make possible to provide different package file extension
+
+commit 5f32bfab82d2902b826d2e51c36d8da25b66f49c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 17:53:41 2011 +0100
+
+    [entropy.qa] make possible to use get_deep_dependency_list() with a single repository
+
+commit c35b50fadc448d7a1222bec10ad8979bd77893cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 17:53:13 2011 +0100
+
+    [entropy.tools] introduce validate_repository_id()
+
+commit 1719e1d0c28b6fbb77d58e390d7bbfd60386d420
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 17:10:31 2011 +0100
+
+    [entropy.db] EntropyRepository: allow any setting to be stored inside settings table
+
+commit b4379c6219dcc1ac9075dc99c72fe5d19503db90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 12:53:46 2011 +0100
+
+    [entropy.tools] provide general purpose NB EX file locking/unlocking functions
+
+commit 9c9f19f77cbfad6637d79ae1cd476fc997d6f318
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 09:48:56 2011 +0100
+
+    [sulfur] change entropy package file mime type to application/entropy-package
+
+commit fd5ee2dc62d15893fc85fc7e677954588db67d83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 09:46:47 2011 +0100
+
+    [sulfur] add web-install file format handling to mime type
+
+commit bd631724d2ca4487212689d08e6fdae188688e9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 01:18:08 2011 +0100
+
+    [sulfur] add support for web-install package files
+
+commit 80cd9366b8ef2651360df2ac6355019710e700a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 00:51:14 2011 +0100
+
+    [entropy.client] web-install package files are bzip2 compressed, add complete support
+
+commit eff0b02e6b62f80f33ad3aaa30bd1d3363087741
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 00:11:33 2011 +0100
+
+    [entropy.client] add web-install package file format support
+
+commit 488634830dc1c16a7df0cc89759bf06fcd0538df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Feb 26 00:10:56 2011 +0100
+
+    [entropy.core] move expand_plain_package_mirror function to entropy.tools, make public
+
+commit c958537c9e44f026895c679c5cca2b1ef4c31bb0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 25 19:01:03 2011 +0100
+
+    [entropy.db] drastically reduce collisions in __generateReverseDependenciesMetadata by using sha1, uniform usage
+
+commit 378cb098dfc194db9530b3bc07d60df69dcc8acb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 25 18:52:48 2011 +0100
+
+    [entropy.db] improve caching strategy of validate(), execute only if mtime, path, name, root change
+
+commit 0ba3b8bf0d0b18bd9862e38d7076b841f8316801
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Feb 25 09:05:44 2011 +0100
+
+    [entropy.cache] make EntropyCacher.save report the original exception inside the IOError exception string
+
+commit b836fe0b0afae6ec390fd13453656a61032154f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Feb 24 17:08:32 2011 +0100
+
+    [entropy.fetchers] catch httplib.InvalidURL, raised by malformed url passed to urlopen()
+
+commit 150384d273b8971741f3e17a200cd1981548fd5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 22 19:58:57 2011 +0100
+
+    [entropy.db] EntropyRepository.searchCategory: missed the return statement
+
+commit 473be8624156bfce51a9fbbb4631f109a52e2d7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 22 19:53:27 2011 +0100
+
+    [entropy.db] EntropyRepository: fix searchCategory return data when just_id = True
+
+commit fa4681e391011e4b89a4b57978843cf8af19ec7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Feb 22 19:23:25 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase: add just_id argument support to searchCategory
+
+commit b057f8ccbd23d96c0c588a186c92beb670f7031d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 21 19:03:35 2011 +0100
+
+    [entropy.core] make possible to override default repositories.conf path using ETP_REPOSITORIES_CONF
+
+commit 8eb3eef87b407a3247213a08838157921d9d1f70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 21 13:05:26 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase: introduce searchUseflag
+
+commit e2f5f9d61128db30abfe7c83763b6781c431e99f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:53:56 2011 +0100
+
+    [tests] also check for st_size=0 on hardlinks
+
+commit af2cb248bcb95c13b93de775c2ea6f367e2c0f8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:51:52 2011 +0100
+
+    [tests] fixup hardlink test
+
+commit 65f741078dfe1a37750c787fda58bc7ce0301d11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:43:24 2011 +0100
+
+    [tests+ add hardlink test
+
+commit 4e0d24d11c628a7dcaf65feaabcf78d0cea5ca30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:33:32 2011 +0100
+
+    [entropy.db] add order_by="date" support to listAllPackageIds
+
+commit 2e3398f92884642281664a10d203cb0a3c28e4e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:31:51 2011 +0100
+
+    [entropy.tools] compress_files(): only change tarinfo file type for symlinks
+
+commit 8ffe419cd00051af3ff1b1f95b4a7e5722b642fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 20 19:22:30 2011 +0100
+
+    Tagging Entropy version 1.0_alpha18
+
 commit c5a9f2531ca76dbbbcc536610f41e3c9d06a3009
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 20 19:22:27 2011 +0100
