@@ -4656,10 +4656,6 @@ class EntropyRepository(EntropyRepositoryBase):
         elif cached is not None:
             return cached
 
-        if setting_name not in EntropyRepository._SETTING_KEYS:
-            obj = KeyError("invalid setting_name '%s'" % (setting_name,))
-            self.__settings_cache[setting_name] = obj
-            raise obj
         try:
             cur = self._cursor().execute("""
             SELECT setting_value FROM settings WHERE setting_name = (?)
