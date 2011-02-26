@@ -2180,8 +2180,7 @@ class Server(Client):
                     (idpackage, repo), match_repo = (repo,))
                 revdep_matches = self.get_reverse_queue(dep_matches,
                     system_packages = False)
-                dep_matches += [x for x in revdep_matches if x not in \
-                    dep_matches]
+                dep_matches.update(revdep_matches)
 
                 for dep_idpackage, dep_repo in dep_matches:
 
