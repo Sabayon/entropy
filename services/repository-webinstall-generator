@@ -1,0 +1,437 @@
+#!/usr/bin/python2
+import sys
+sys.path.insert(0, '/usr/lib/entropy/libraries')
+sys.path.insert(0, '../libraries')
+
+import os
+import tempfile
+import errno
+import bz2
+
+from entropy.i18n import _
+from entropy.output import print_info, blue, teal, brown, darkgreen, purple, \
+    print_error, print_warning, TextInterface
+from entropy.exceptions import SystemDatabaseError
+from entropy.client.interfaces.db import GenericRepository
+from entropy.qa import QAInterface
+from entropy.core.settings.base import SystemSettings
+
+from entropy.const import const_convert_to_rawstring, etpConst
+import entropy.dep
+import entropy.tools
+
+class WebinstallGenerator(TextInterface):
+
+    SHELL_PREAMBLE = const_convert_to_rawstring("""\
+#!/bin/sh
+
+function execute_app() {
+    match=$(grep --text --line-number '^PAYLOAD:$' $0 | cut -d ':' -f 1)
+    payload_start=$((match + 1))
+    tmp_file="$(mktemp).etp"
+    # add magic, very important, don't remove
+    echo -n 'etp:web:magic_____________' >> "${tmp_file}"
+    tail -n +$payload_start $0 >> "${tmp_file}"
+    equo install "${tmp_file}"
+    rc=${?}
+    rm -f "${tmp_file}"
+    return ${rc}
+}
+
+execute_app
+exit ${?}
+
+PAYLOAD:
+"""+ etpConst['databasestarttag'])
+
+    def __init__(self, repository_id, entropy_repository, package_dirs,
+        mirror_urls):
+        self._repo_id = repository_id
+        self._repo = entropy_repository
+        self._package_dirs = package_dirs
+        # this is part of the (unwritten) specification, don't change it!
+        self._mirror_urls_str = "\n".join(mirror_urls)
+        self._qa = QAInterface()
+
+    def __copy_data(self, f_obj_source, f_obj_dest):
+        while True:
+            chunk = f_obj_source.read(16384)
+            if not chunk:
+                break
+            f_obj_dest.write(chunk)
+        f_obj_dest.flush()
+
+    def sync(self):
+
+        self.output(purple("Scanning..."),
+            header = teal(" @@ "),
+            importance = 1, back = True)
+
+        package_ids = self._repo.listAllPackageIds()
+        download_map = dict((x, self._repo.retrieveDownloadURL(x)) for x in
+            package_ids)
+
+        package_dirs_cache = {}
+        expired_webinstall_files = set()
+        work_queue = []
+        max_count = len(package_ids)
+        count = 0
+        for package_id in sorted(package_ids, reverse = True):
+            count += 1
+            # locating package in self._package_dirs
+            download_path = download_map[package_id]
+            download_path_dir, download_file_name = os.path.split(download_path)
+            local_package_dir = package_dirs_cache.get(download_path_dir)
+            if local_package_dir is None:
+                for package_dir in self._package_dirs:
+                    if package_dir.endswith(download_path_dir):
+                        local_package_dir = package_dir
+                        package_dirs_cache[download_path_dir] = package_dir
+                        break
+            if local_package_dir is None:
+                self.output("%s: %s" % (
+                        brown("Cannot find local package directory for"),
+                        download_path,
+                    ),
+                    header = teal(" @@ "),
+                    importance = 1, back = True,
+                    level = "error"
+                )
+                return False
+
+            if (count % 150 == 0) or (count == 0) or (count == max_count):
+                self.output("%s: %s" % (purple("scanning"), download_path),
+                    header = teal(" @@ "),
+                    count = (count, max_count),
+                    importance = 0,
+                    back = True)
+
+            local_package_path = os.path.join(local_package_dir,
+                download_file_name)
+
+            atom, category, name, version, slot, tag, revision, branch, \
+                etpapi = self._repo.getScopeData(package_id)
+            version += "%s%s" % (etpConst['entropyrevisionprefix'], revision,)
+            local_etp_fn = entropy.dep.create_package_filename(category,
+                name, version, tag, ext = etpConst['packagesext_webinstall'])
+            local_etp_path = os.path.join(local_package_dir, local_etp_fn)
+
+            if not os.path.isfile(local_package_path) and \
+                os.path.isfile(local_etp_path):
+                expired_webinstall_files.add(local_etp_path)
+                continue
+            if not os.path.isfile(local_package_path):
+                # local_etp_path does not exist and package file is not
+                # available, skip!
+                continue
+            if os.path.isfile(local_etp_path):
+                # already available
+                continue
+
+            work_queue.append((package_id, local_package_path, local_etp_path))
+
+        if not work_queue:
+            # nothing to do
+            self.output(purple("Nothing to do."),
+                header = teal(" @@ "),
+                importance = 1)
+            return True
+
+        max_count = len(work_queue)
+        count = 0
+
+        self.output(purple("Generating web-install packages..."),
+            header = teal(" @@ "),
+            count = (count, max_count),
+            importance = 1)
+
+        # generate empty repository file and re-use it every time
+        # this improves the execution a lot
+        orig_fd, tmp_repo_orig_path = tempfile.mkstemp()
+        try:
+            empty_repo = GenericRepository(
+                readOnly = False,
+                dbFile = tmp_repo_orig_path,
+                name = "empty",
+                xcache = False,
+                indexing = False,
+                skipChecks = True)
+            empty_repo.initializeRepository()
+            empty_repo.commit()
+            empty_repo.close()
+        except Exception:
+            os.close(orig_fd)
+            os.remove(tmp_repo_orig_path)
+            raise
+
+        try:
+            for package_id, package_path, etp_path in work_queue:
+
+                count += 1
+                atom = self._repo.retrieveAtom(package_id)
+                self.output("%s: %s" % (purple("generating for"), atom),
+                    header = teal(" @@ "),
+                    count = (count, max_count),
+                    importance = 0,
+                    back = True)
+                # WARNING: usage of undocumented feature of
+                # get_deep_dependency_list
+                pkg_match = (package_id, self._repo)
+                matches = self._qa.get_deep_dependency_list(None, pkg_match) 
+
+                tmp_fd, tmp_repo_path = tempfile.mkstemp()
+                with os.fdopen(tmp_fd, "wb") as tmp_repo_f:
+                    with open(tmp_repo_orig_path, "rb") as tmp_repo_source_f:
+                        self.__copy_data(tmp_repo_source_f, tmp_repo_f)
+
+                dest_repo = None
+                compressed_tmp_path = None
+                compressed_fd = None
+                try:
+
+                    dest_repo = GenericRepository(
+                        readOnly = False,
+                        dbFile = tmp_repo_path,
+                        name = atom,
+                        xcache = False,
+                        indexing = False,
+                        skipChecks = True)
+
+                    deps_pkg_ids = set([pkg_id for pkg_id, _repo in matches])
+                    deps_pkg_ids.add(package_id)
+                    for dep_package_id in deps_pkg_ids:
+                        data = self._repo.getPackageData(dep_package_id,
+                            get_content = True, get_changelog = False,
+                            content_insert_formatted = True)
+
+                        dest_package_id, xxx, yyy = dest_repo.addPackage(data,
+                            formatted_content = True,
+                            revision = data['revision'],
+                            do_commit = False)
+                        del yyy
+
+                        source = etpConst['install_sources']['unknown']
+                        if dep_package_id == package_id:
+                            source = etpConst['install_sources']['user']
+                        # required in order to make mirror URL to be
+                        # resolved correctly, and, to make only the main
+                        # package to be pulled in for install.
+                        dest_repo.storeInstalledPackage(dest_package_id,
+                            self._repo_id, source = source)
+
+                    dest_repo._setSetting("plain_packages",
+                        self._mirror_urls_str)
+                    dest_repo.commit()
+                    dest_repo.close()
+                    dest_repo = None
+
+                    # ready to bzip2
+                    compressed_fd = None
+                    compressed_tmp_path = None
+                    try:
+                        compressed_fd, compressed_tmp_path = tempfile.mkstemp()
+                        entropy.tools.compress_file(tmp_repo_path,
+                            compressed_tmp_path, bz2.BZ2File)
+                        try:
+                            os.rename(compressed_tmp_path, tmp_repo_path)
+                        except OSError as err:
+                            if err.errno != errno.EXDEV:
+                                raise
+                            shutil.move(compressed_tmp_path, tmp_repo_path)
+                    finally:
+                        if compressed_fd is not None:
+                            os.close(compressed_fd)
+
+                    tmp_etp_path = etp_path + "._etp_work"
+                    with open(tmp_etp_path, "wb") as etp_f:
+                        etp_f.write(WebinstallGenerator.SHELL_PREAMBLE)
+                        with open(tmp_repo_path, "rb") as bin_f:
+                            while True:
+                                chunk = bin_f.read(16384)
+                                if not chunk:
+                                    break
+                                etp_f.write(chunk)
+                            bin_f.flush()
+                        etp_f.flush()
+                    os.rename(tmp_etp_path, etp_path)
+                    entropy.tools.create_md5_file(etp_path)
+
+                    self.output("%s: %s" % (purple("generated"), etp_path),
+                        header = teal(" @@ "),
+                        count = (count, max_count),
+                        importance = 0)
+
+                finally:
+                    if compressed_fd is not None:
+                        try:
+                            os.close(compressed_fd)
+                        except OSError:
+                            pass
+                    if compressed_tmp_path is not None:
+                        try:
+                            os.remove(compressed_tmp_path)
+                        except (IOError, OSError):
+                            pass
+                    if dest_repo is not None:
+                        dest_repo.close()
+                    try:
+                        os.close(tmp_fd)
+                    except (OSError, IOError):
+                        pass
+                    try:
+                        os.remove(tmp_repo_path)
+                    except (OSError, IOError):
+                        pass
+
+        finally:
+            try:
+                os.remove(tmp_repo_orig_path)
+            except (OSError, IOError):
+                pass
+
+        # now remove expired packages
+        for expired_file in sorted(expired_webinstall_files):
+            for path in (expired_file,
+                expired_file + etpConst['packagesmd5fileext']):
+                try:
+                    os.remove(path)
+                except OSError as err:
+                    self.output("%s %s: %s" % (
+                            teal("cannot remove"),
+                            path,
+                            repr(err),
+                        ),
+                        header = brown(" @@ "),
+                        level = "warning",
+                        importance = 1
+                    )
+
+        return True
+
+def _print_help(args):
+    app_name = os.path.basename(sys.argv[0])
+    print_info("%s - %s" % (blue(app_name),
+        teal(_("Repository web-install packages generator tool")),))
+    print_info("  %s:\t%s %s" % (
+        purple(_("generate packages")),
+        brown(app_name),
+        darkgreen("generate <repository id> <repository file path> <packages dirs [list]> -- [<mirror urls [list]>]"))
+    )
+    print_info("    %s = %s" % (
+        teal("<packages dirs [list]>"),
+        _("dirs where package files are storied for repository"),)
+    )
+    print_info("    %s = %s" % (
+        teal("<mirror urls [list]>"),
+        _("list of package mirror urls (not mandatory)"),)
+    )
+    print_info("  %s:\t\t%s %s" % (purple(_("this help")), brown(app_name),
+        darkgreen("help")))
+    if not args:
+        return 1
+    return 0
+
+def _generate(args):
+    if not args:
+        print_error(brown(_("Invalid Entropy repository file path")))
+        return 1
+
+    repository_id = args.pop(0)
+    if not entropy.tools.validate_repository_id(repository_id):
+        print_error(brown(_("Invalid repository identifier.")))
+        return 1
+    entropy_repository_path = args.pop(0)
+    entropy_repository_path_dir = os.path.dirname(entropy_repository_path)
+    if not (os.path.isdir(entropy_repository_path_dir) and \
+        os.access(entropy_repository_path_dir, os.W_OK | os.R_OK)):
+        print_error(brown(_("Invalid Entropy repository file path")))
+        return 1
+
+    packages_dirs = []
+    mirror_urls = []
+    do_packages_dirs = True
+    for arg in args:
+        if arg == "--":
+            do_packages_dirs = False
+            continue
+        elif do_packages_dirs:
+            packages_dirs.append(arg)
+        else:
+            mirror_urls.append(arg)
+
+    if not packages_dirs:
+        print_error(brown(_("Missing packages directories")))
+        return 1
+
+    if not mirror_urls:
+        # coupled with ETP_REPOSITORIES_CONF
+        print_warning(brown(_("Using repositories.conf settings for mirrors")))
+        sys_set = SystemSettings()
+        mirror_urls = sys_set['repositories']['available'].get(
+            repository_id, {}).get('plain_packages', [])
+
+    if not mirror_urls:
+        print_error(brown(_("Missing mirror urls")))
+        return 1
+
+    for package_dir in packages_dirs:
+        if not (os.path.isdir(package_dir) and \
+            os.access(package_dir, os.R_OK | os.W_OK)):
+            print_error("%s: %s" % (
+                brown(_("Insufficient permissions")),
+                package_dir,))
+            return 1
+
+    lock_map = {}
+
+    # acquire lock
+    lock_file = entropy_repository_path + ".webinstall.lock"
+    acquired = False
+    try:
+
+        acquired = entropy.tools.acquire_lock(lock_file, lock_map)
+        if not acquired:
+            print_error(brown(_("Another instance is running.")))
+            return 1
+
+        repo = GenericRepository(
+                dbFile = entropy_repository_path,
+                name = repository_id,
+                indexing = False,
+                readOnly = True)
+        try:
+            repo.validate()
+        except SystemDatabaseError:
+            print_error(brown(_("Invalid repository.")))
+            return 1
+
+        generator = WebinstallGenerator(repository_id, repo, packages_dirs,
+            mirror_urls)
+        sts = generator.sync()
+        repo.close()
+        if sts:
+            return 0
+        return 1
+
+    finally:
+        if acquired:
+            entropy.tools.release_lock(lock_file, lock_map)
+
+
+if __name__ == "__main__":
+
+    args_map = {
+    'generate': _generate,
+    'help': _print_help,
+    '__fallback__': _print_help,
+    }
+
+    argv = sys.argv[1:]
+
+    if not argv:
+        argv.append("help")
+
+    cmd, args = argv[0], argv[1:]
+    func = args_map.get(cmd, args_map.get("__fallback__"))
+    rc = func(args)
+    raise SystemExit(rc)
