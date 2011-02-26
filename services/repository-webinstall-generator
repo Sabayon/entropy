@@ -147,7 +147,8 @@ PAYLOAD:
 
         # generate empty repository file and re-use it every time
         # this improves the execution a lot
-        orig_fd, tmp_repo_orig_path = tempfile.mkstemp()
+        orig_fd, tmp_repo_orig_path = tempfile.mkstemp(
+            suffix="repo-webinst-gen")
         try:
             empty_repo = GenericRepository(
                 readOnly = False,
@@ -180,7 +181,8 @@ PAYLOAD:
                 pkg_match = (package_id, self._repo)
                 matches = self._qa.get_deep_dependency_list(None, pkg_match) 
 
-                tmp_fd, tmp_repo_path = tempfile.mkstemp()
+                tmp_fd, tmp_repo_path = tempfile.mkstemp(
+                    suffix="repo-webinst-gen")
                 with os.fdopen(tmp_fd, "wb") as tmp_repo_f:
                     with open(tmp_repo_orig_path, "rb") as tmp_repo_source_f:
                         self.__copy_data(tmp_repo_source_f, tmp_repo_f)
@@ -230,7 +232,8 @@ PAYLOAD:
                     compressed_fd = None
                     compressed_tmp_path = None
                     try:
-                        compressed_fd, compressed_tmp_path = tempfile.mkstemp()
+                        compressed_fd, compressed_tmp_path = tempfile.mkstemp(
+                             suffix="repo-webinst-gen")
                         entropy.tools.compress_file(tmp_repo_path,
                             compressed_tmp_path, bz2.BZ2File)
                         try:
@@ -403,7 +406,7 @@ def _generate(args):
                 dbFile = entropy_repository_path,
                 name = repository_id,
                 indexing = True,
-                readOnly = True,
+                readOnly = False,
                 xcache = True)
         try:
             repo.validate()
