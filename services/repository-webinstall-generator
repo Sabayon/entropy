@@ -176,6 +176,7 @@ PAYLOAD:
                     back = True)
                 # WARNING: usage of undocumented feature of
                 # get_deep_dependency_list
+                # NOTE: how about build deps?
                 pkg_match = (package_id, self._repo)
                 matches = self._qa.get_deep_dependency_list(None, pkg_match) 
 
@@ -333,13 +334,17 @@ def _print_help(args):
 
 def _generate(args):
     if not args:
-        print_error(brown(_("Invalid Entropy repository file path")))
+        print_error(brown(_("Invalid arguments")))
         return 1
 
     repository_id = args.pop(0)
     if not entropy.tools.validate_repository_id(repository_id):
         print_error(brown(_("Invalid repository identifier.")))
         return 1
+    if not args:
+        print_error(brown(_("Invalid Entropy repository file path")))
+        return 1
+
     entropy_repository_path = args.pop(0)
     entropy_repository_path_dir = os.path.dirname(entropy_repository_path)
     if not (os.path.isdir(entropy_repository_path_dir) and \
@@ -397,13 +402,15 @@ def _generate(args):
         repo = GenericRepository(
                 dbFile = entropy_repository_path,
                 name = repository_id,
-                indexing = False,
-                readOnly = True)
+                indexing = True,
+                readOnly = True,
+                xcache = True)
         try:
             repo.validate()
         except SystemDatabaseError:
             print_error(brown(_("Invalid repository.")))
             return 1
+        repo.createAllIndexes()
 
         generator = WebinstallGenerator(repository_id, repo, packages_dirs,
             mirror_urls)
