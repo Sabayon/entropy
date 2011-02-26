@@ -1,10 +1,10 @@
 [Desktop Entry]
 Encoding=UTF-8
-MimeType=application/x-tar;application/x-tgz;application/x-tbz;application/x-tbz2;application/x-tarz;application/x-bzip-compressed-tar
+MimeType=application/x-tar;application/x-tgz;application/x-tbz;application/x-tbz2;application/x-tarz;application/x-bzip-compressed-tar;application/entropy-webinstall
 Comment=Entropy Graphical Package Manager
 Icon=/usr/share/pixmaps/sulfur/sulfur-icon.png
 Type=MimeType
-Patterns=*.tbz2
+Patterns=*.tbz2 *.etp
 Hidden=false
 X-KDE-AutoEmbed=false
 InitialPreference=100

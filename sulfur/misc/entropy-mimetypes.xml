@@ -1,8 +1,14 @@
 <?xml version="1.0"?>
 <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
-    <mime-type type="application/x-bzip-compressed-tar">
-    <comment>Entropy package</comment>
-    <glob pattern="*.tbz2"/>
-  </mime-type>
+	<mime-type type="application/x-bzip-compressed-tar">
+		<comment>Entropy package</comment>
+    		<glob pattern="*.tbz2"/>
+		<generic-icon name="system-installer"/>
+	</mime-type>
+	<mime-type type="application/entropy-webinstall">
+		<comment>Entropy Web Install</comment>
+    		<glob pattern="*.etp"/>
+		<generic-icon name="web-browser"/>
+	</mime-type>
 </mime-info>
 
