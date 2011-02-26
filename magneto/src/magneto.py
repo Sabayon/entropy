@@ -14,43 +14,7 @@ import os
 import errno
 import sys
 import time
-import fcntl
-
-_LOCK_HANDLES = {}
-
-def _acquire_lock(lock_file):
-    lock_f = open(lock_file, "a+")
-    try:
-        fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except IOError as err:
-        if err.errno not in (errno.EACCES, errno.EAGAIN,):
-            # ouch, wtf?
-            raise
-        lock_f.close()
-        return False # lock already acquired
-
-    lock_f.truncate()
-    lock_f.write(str(os.getpid()))
-    lock_f.flush()
-    _LOCK_HANDLES[lock_file] = lock_f
-    return True
-
-def _release_lock(lock_file):
-    try:
-        lock_f = _LOCK_HANDLES.pop(lock_file)
-    except KeyError:
-        lock_f = None
-
-    if lock_f is not None:
-        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
-        lock_f.close()
-
-    try:
-        os.remove(lock_file)
-    except OSError as err:
-        # cope with possible race conditions
-        if err.errno != errno.ENOENT:
-            raise
+import entropy.tools
 
 def _startup():
     sys.path.insert(0, '/usr/lib/entropy/client')
@@ -115,8 +79,9 @@ if __name__ == "__main__":
         if os.path.isdir(user_home):
             magneto_lock_dir = user_home
 
+    lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
-    acquired = _acquire_lock(magneto_lock)
+    acquired = entropy.tools.acquire_lock(magneto_lock, lock_map)
     try:
         if acquired:
             _startup()
@@ -125,4 +90,4 @@ if __name__ == "__main__":
             raise SystemExit(1)
     finally:
         if acquired:
-            _release_lock(magneto_lock)
+            entropy.tools.release_lock(magneto_lock, lock_map)

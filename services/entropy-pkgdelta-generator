@@ -2,9 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-import errno
 import sys
-import fcntl
 sys.path.insert(0, "../libraries")
 import tempfile
 import subprocess
@@ -217,55 +215,22 @@ def _print_help():
     sys.stdout.write("\tgenerate\tgenerate pkgdelta files for given package directories\n")
     sys.stdout.write("\tcleanup\t\tclean pkgdelta files for unavailable packages\n\n")
 
-_LOCK_HANDLES = {}
-
-def _acquire_lock(lock_file):
-    lock_f = open(lock_file, "w")
-    try:
-        fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-    except IOError as err:
-        if err.errno not in (errno.EACCES, errno.EAGAIN,):
-            # ouch, wtf?
-            raise
-        lock_f.close()
-        return False # lock already acquired
-
-    lock_f.write(str(os.getpid()))
-    lock_f.flush()
-    _LOCK_HANDLES[lock_file] = lock_f
-    return True
-
-def _release_lock(lock_file):
-    try:
-        lock_f = _LOCK_HANDLES.pop(lock_file)
-    except KeyError:
-        lock_f = None
-
-    if lock_f is not None:
-        fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
-        lock_f.close()
-
-    try:
-        os.remove(lock_file)
-    except OSError as err:
-        # cope with possible race conditions
-        if err.errno != errno.ENOENT:
-            raise
-
 if __name__ == "__main__":
     func, argv, quiet, lock_file = _opts_parser(sys.argv[1:])
     if func is not None:
         # acquire lock
+        lock_map = {}
+        acquired = False
         if lock_file:
-            acquired = _acquire_lock(lock_file)
+            acquired = entropy.tools.acquire_lock(lock_file, lock_map)
             if not acquired:
                 sys.stderr.write("cannot acquire lock on " + lock_file + "\n")
                 raise SystemExit(5)
         try:
             rc = func(argv, quiet)
         finally:
-            if lock_file:
-                _release_lock(lock_file)
+            if acquired:
+                entropy.tools.release_lock(lock_file, lock_map)
     else:
         _print_help()
         rc = 1
