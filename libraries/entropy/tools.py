@@ -2382,6 +2382,20 @@ def expand_plain_package_mirror(mirror, product, repository_id):
         return None
     return mirror + os.path.sep + product + os.path.sep + repository_id
 
+_repo_re = re.compile("^(([a-zA-Z]|[a-zA-Z][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z]|[A-Za-z][A-Za-z0-9\-]*[A-Za-z0-9])$", re.IGNORECASE)
+def validate_repository_id(repository_id):
+    """
+    Validate Entropy repository identifier string.
+
+    @param repository_id: entropy repository identifier
+    @type repository_id: string
+    @return: True if repository_id is a valid string, False otherwise
+    @rtype: bool
+    """
+    if _repo_re.match(repository_id):
+        return True
+    return False
+
 def is_entropy_package_file(entropy_package_path):
     """
     Determine whether given package path is a valid Entropy package file.
