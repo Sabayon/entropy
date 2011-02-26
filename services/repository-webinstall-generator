@@ -413,6 +413,9 @@ def _generate(args):
         except SystemDatabaseError:
             print_error(brown(_("Invalid repository.")))
             return 1
+        # force indexing, if user is not in entropy group, indexing is
+        # forced to False.
+        repo.setIndexing(True)
         repo.createAllIndexes()
 
         generator = WebinstallGenerator(repository_id, repo, packages_dirs,
