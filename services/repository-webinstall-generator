@@ -145,6 +145,8 @@ PAYLOAD:
             count = (count, max_count),
             importance = 1)
 
+        treeupdates_actions = self._repo.listAllTreeUpdatesActions()
+
         # generate empty repository file and re-use it every time
         # this improves the execution a lot
         orig_fd, tmp_repo_orig_path = tempfile.mkstemp(
@@ -158,6 +160,7 @@ PAYLOAD:
                 indexing = False,
                 skipChecks = True)
             empty_repo.initializeRepository()
+            empty_repo.bumpTreeUpdatesActions(treeupdates_actions)
             empty_repo.commit()
             empty_repo.close()
         except Exception:
@@ -166,7 +169,21 @@ PAYLOAD:
             raise
 
         try:
+            pkg_data_cache = {}
+            pkg_data_cache_len_threshold = 500
+
             for package_id, package_path, etp_path in work_queue:
+
+                pkg_data_cache_len = len(pkg_data_cache)
+                # perhaps use LRU logic?
+                if pkg_data_cache_len > pkg_data_cache_len_threshold:
+                    to_remove = pkg_data_cache_len_threshold - \
+                        pkg_data_cache_len
+                    for key in list(pkg_data_cache.keys()):
+                        if to_remove < 1:
+                            break
+                        to_remove -= 1
+                        pkg_data_cache.pop(key)
 
                 count += 1
                 atom = self._repo.retrieveAtom(package_id)
@@ -203,13 +220,16 @@ PAYLOAD:
                     deps_pkg_ids = set([pkg_id for pkg_id, _repo in matches])
                     deps_pkg_ids.add(package_id)
                     for dep_package_id in deps_pkg_ids:
-                        data = self._repo.getPackageData(dep_package_id,
-                            get_content = False, get_changelog = False)
+                        data = pkg_data_cache.get(dep_package_id)
+                        if data is None:
+                            data = self._repo.getPackageData(dep_package_id,
+                                get_content = False, get_changelog = False)
+                            pkg_data_cache[dep_package_id] = data
 
                         dest_package_id, xxx, yyy = dest_repo.addPackage(data,
                             revision = data['revision'],
-                            do_commit = False)
-                        del yyy
+                            do_commit = False,
+                            formatted_content = True)
 
                         source = etpConst['install_sources']['unknown']
                         if dep_package_id == package_id:
@@ -290,6 +310,12 @@ PAYLOAD:
                 os.remove(tmp_repo_orig_path)
             except (OSError, IOError):
                 pass
+
+        # help the garbage collector
+        for key in list(pkg_data_cache.keys()):
+            del pkg_data_cache[key]
+        pkg_data_cache.clear()
+        del pkg_data_cache
 
         # now remove expired packages
         for expired_file in sorted(expired_webinstall_files):
