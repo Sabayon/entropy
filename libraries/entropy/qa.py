@@ -32,7 +32,7 @@ from entropy.exceptions import PermissionDenied, SystemDatabaseError
 from entropy.i18n import _
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
-from entropy.db.skel import EntropyRepositoryPlugin
+from entropy.db.skel import EntropyRepositoryPlugin, EntropyRepositoryBase
 
 import entropy.tools
 
@@ -1195,7 +1195,19 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @rtype: set
         """
         package_id, repo = package_match
-        dbconn = entropy_client.open_repository(repo)
+        # WARNING: in order to avoid code duplication, an undocumented feature
+        # has been implemented, which is required by
+        # repository-webinstall-generator
+        single_repo_mode = False
+        if isinstance(repo, EntropyRepositoryBase):
+            dbconn = repo
+            single_repo_mode = True
+            if entropy_client is not None:
+                # written in stone here, the day that the code has to be split
+                # this will be even more clear.
+                raise AttributeError("in this case, entropy_client == None!")
+        else:
+            dbconn = entropy_client.open_repository(repo)
 
         excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         mybuffer = Lifo()
@@ -1220,8 +1232,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     break # stack empty
                 continue
 
-            pkg_id, pkg_repo = entropy_client.atom_match(mydep,
-                match_repo = match_repo)
+            if single_repo_mode:
+                pkg_id, pkg_rc = dbconn.atomMatch(mydep)
+                pkg_repo = dbconn.repository_id()
+            else:
+                pkg_id, pkg_repo = entropy_client.atom_match(mydep,
+                    match_repo = match_repo)
 
             match = (pkg_id, pkg_repo)
             if match in matchcache:
@@ -1239,7 +1255,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
             if pkg_id != -1:
                 if not atoms:
                     result.add(match)
-                pkg_dbconn = entropy_client.open_repository(pkg_repo)
+                if single_repo_mode:
+                    pkg_dbconn = dbconn
+                else:
+                    pkg_dbconn = entropy_client.open_repository(pkg_repo)
                 owndeps = pkg_dbconn.retrieveDependencies(pkg_id,
                     exclude_deptypes = excluded_dep_types)
                 for owndep in owndeps:
