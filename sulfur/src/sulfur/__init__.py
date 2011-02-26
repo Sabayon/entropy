@@ -184,9 +184,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             os.access(x, os.R_OK) and os.path.isfile(x)]
 
         for arg in sys.argv:
-            if arg.endswith(etpConst['packagesext']) and \
-                os.access(arg, os.R_OK) and os.path.isfile(arg):
-
+            is_pkg_file = (arg.endswith(etpConst['packagesext']) or \
+                arg.endswith(etpConst['packagesext_webinstall']))
+            if is_pkg_file and os.access(arg, os.R_OK) and os.path.isfile(arg):
                 arg = os.path.realpath(arg)
                 packages_install.append(arg)
 
@@ -223,6 +223,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         self.show_notice_board(force = False)
                     else:
                         self.show_sulfur_tips()
+                self.show_packages()
         self.gtk_loop()
         gobject.idle_add(_pkg_install)
 
@@ -737,8 +738,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if packages_install:
             fn = packages_install[0]
-            self.on_installPackageItem_activate(None, fn)
-            return True
+            st = self.on_installPackageItem_activate(None, fn, get_st = True)
+            if not st:
+                self._startup_packages_install = None
+            return st
 
         elif atoms_install: # --install <atom1> <atom2> ... support
             self.atoms_install(atoms_install, fetch = do_fetch)

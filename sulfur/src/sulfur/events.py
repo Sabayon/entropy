@@ -437,17 +437,21 @@ class SulfurApplicationEventsMixin:
             model.remove(myiter)
             self.configProtectSkipModel.append([data])
 
-    def on_installPackageItem_activate(self, widget = None, fn = None):
+    def on_installPackageItem_activate(self, widget = None, fn = None, get_st = False):
 
         if (widget and self._is_working) or self.isBusy:
-            return
+            return False
 
         if not fn:
             mypattern = '*'+etpConst['packagesext']
             fn = FileChooser(pattern = mypattern)
         if not fn:
+            if get_st:
+                return False
             return
         elif not os.access(fn, os.R_OK):
+            if get_st:
+                return False
             return
 
         msg = "%s: %s. %s" % (
@@ -457,6 +461,8 @@ class SulfurApplicationEventsMixin:
         )
         rc = questionDialog(self.ui.main, msg)
         if not rc:
+            if get_st:
+                return False
             return
 
         # clear all caches
@@ -476,6 +482,8 @@ class SulfurApplicationEventsMixin:
                 _("Cannot install"),
             )
             okDialog(self.ui.main, mytxt)
+            if get_st:
+                return False
             return
 
         def clean_n_quit(newrepo):
@@ -487,6 +495,8 @@ class SulfurApplicationEventsMixin:
 
         if not atomsfound:
             clean_n_quit(newrepo)
+            if get_st:
+                return False
             return
 
         pkgs = []
@@ -500,6 +510,8 @@ class SulfurApplicationEventsMixin:
         if not done:
             clean_n_quit(newrepo)
             normal_cursor(self.ui.main)
+            if get_st:
+                return False
             return
 
         normal_cursor(self.ui.main)
@@ -511,6 +523,9 @@ class SulfurApplicationEventsMixin:
 
         self.install_queue(remove_repos = [newrepo], status_cb = status_cb)
         self.reset_queue_progress_bars()
+        if get_st:
+            return True
+
 
     def on_PageButton_changed(self, widget, page, do_set = True):
 

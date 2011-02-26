@@ -1,5 +1,13 @@
 #!/usr/bin/python2 -O
 import sys, os
+try:
+    from entropy.const import etpConst
+    package_file_ext = etpConst['packagesext']
+    web_install_ext = etpConst['packagesext_webinstall']
+except ImportError:
+    package_file_ext = ".tbz2"
+    web_install_ext = ".etp"
+
 if "--debug" in sys.argv:
     os.environ['SULFUR_DEBUG'] = "1"
     sys.argv.remove("--debug")
@@ -43,7 +51,8 @@ def setup_env():
 
 
 setup_env()
-tbz2s = [x for x in sys.argv[1:] if x.endswith(".tbz2")]
+tbz2s = [x for x in sys.argv[1:] if (x.endswith(package_file_ext) or \
+    x.endswith(web_install_ext))]
 if tbz2s:
     os.environ['SULFUR_PACKAGES'] = ';'.join(tbz2s)
 rc = 99
