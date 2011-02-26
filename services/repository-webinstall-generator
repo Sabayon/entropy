@@ -204,11 +204,9 @@ PAYLOAD:
                     deps_pkg_ids.add(package_id)
                     for dep_package_id in deps_pkg_ids:
                         data = self._repo.getPackageData(dep_package_id,
-                            get_content = True, get_changelog = False,
-                            content_insert_formatted = True)
+                            get_content = False, get_changelog = False)
 
                         dest_package_id, xxx, yyy = dest_repo.addPackage(data,
-                            formatted_content = True,
                             revision = data['revision'],
                             do_commit = False)
                         del yyy
