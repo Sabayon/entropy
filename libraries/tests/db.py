@@ -703,6 +703,9 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_settings(self):
         self.assertRaises(KeyError, self.test_db.getSetting, "fuck")
+        self.test_db._setSetting("something_cool", "abcdef\nabcdef")
+        self.assertEqual(self.test_db.getSetting("something_cool"),
+            "abcdef\nabcdef")
 
     def test_new_entropyrepository_schema(self):
         test_pkg = _misc.get_test_package2()
