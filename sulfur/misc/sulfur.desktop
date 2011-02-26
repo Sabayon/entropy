@@ -7,5 +7,5 @@ Icon=/usr/share/pixmaps/sulfur/sulfur-icon.png
 Exec=sulfur %U
 Type=Application
 Terminal=false
-MimeType=application/x-tbz2;application/entropy-webinstall
+MimeType=application/entropy-package;application/entropy-webinstall
 InitialPreference=100

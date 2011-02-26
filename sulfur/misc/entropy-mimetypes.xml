@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <mime-info xmlns='http://www.freedesktop.org/standards/shared-mime-info'>
-	<mime-type type="application/x-bzip-compressed-tar">
+	<mime-type type="application/entropy-package">
 		<comment>Entropy package</comment>
     		<glob pattern="*.tbz2"/>
 		<generic-icon name="system-installer"/>
