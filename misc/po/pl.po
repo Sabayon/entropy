@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-15 12:11+0100\n"
+"POT-Creation-Date: 2011-02-27 22:38+0100\n"
 "PO-Revision-Date: 2011-02-04 22:31+0100\n"
 "Last-Translator: Sławomir Nizio <poczta-sn@gazeta.pl>\n"
 "Language-Team: Sławomir Nizio <poczta-sn@gazeta.pl>\n"
@@ -18,38 +18,38 @@ msgstr ""
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: POLAND\n"
 
-#: ../../libraries/entropy/db/__init__.py:4830
+#: ../../libraries/entropy/db/__init__.py:4884
 msgid "Syncing current database"
 msgstr "Synchronizowanie bieżącej bazy"
 
-#: ../../libraries/entropy/db/__init__.py:4831
+#: ../../libraries/entropy/db/__init__.py:4885
 #: ../../libraries/entropy/client/interfaces/db.py:251
 msgid "please wait"
 msgstr "proszę czekać"
 
-#: ../../libraries/entropy/db/__init__.py:4846
+#: ../../libraries/entropy/db/__init__.py:4900
 msgid "Removing entry"
 msgstr "Usuwanie pozycji"
 
-#: ../../libraries/entropy/db/__init__.py:4865
+#: ../../libraries/entropy/db/__init__.py:4919
 msgid "Adding entry"
 msgstr "Dodawanie pozycji"
 
-#: ../../libraries/entropy/db/__init__.py:4942
+#: ../../libraries/entropy/db/__init__.py:4996
 msgid "Exporting database table"
 msgstr "Eksportowanie bazy danych"
 
-#: ../../libraries/entropy/db/__init__.py:4982
+#: ../../libraries/entropy/db/__init__.py:5036
 msgid "Database Export complete."
 msgstr "Eksport bazy zakończony."
 
-#: ../../libraries/entropy/db/__init__.py:5561
-#: ../../libraries/entropy/db/__init__.py:5574
-#: ../../libraries/entropy/db/__init__.py:5730
-#: ../../libraries/entropy/db/__init__.py:5837
-#: ../../libraries/entropy/db/__init__.py:5850
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2548
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2687
+#: ../../libraries/entropy/db/__init__.py:5615
+#: ../../libraries/entropy/db/__init__.py:5628
+#: ../../libraries/entropy/db/__init__.py:5784
+#: ../../libraries/entropy/db/__init__.py:5891
+#: ../../libraries/entropy/db/__init__.py:5904
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2546
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2685
 #: ../../libraries/entropy/client/interfaces/client.py:803
 #: ../../client/text_rescue.py:220 ../../client/text_rescue.py:225
 #: ../../client/text_rescue.py:602 ../../client/text_rescue.py:793
@@ -59,19 +59,19 @@ msgstr "Eksport bazy zakończony."
 msgid "ATTENTION"
 msgstr "UWAGA"
 
-#: ../../libraries/entropy/db/__init__.py:5562
+#: ../../libraries/entropy/db/__init__.py:5616
 msgid "Spm error occured"
 msgstr "Błąd związany z SPM"
 
-#: ../../libraries/entropy/db/__init__.py:5575
+#: ../../libraries/entropy/db/__init__.py:5629
 msgid "Spm Unique Identifier not found for"
 msgstr "Unikatowy identyfikator SPM nie znaleziony dla"
 
-#: ../../libraries/entropy/db/__init__.py:5732
+#: ../../libraries/entropy/db/__init__.py:5786
 msgid "updating repository metadata layout, please wait!"
 msgstr "aktualizowanie układu metadanych dla repozytorium, proszę czekać!"
 
-#: ../../libraries/entropy/db/__init__.py:5838
+#: ../../libraries/entropy/db/__init__.py:5892
 msgid "generating provided_libs metadata, please wait!"
 msgstr "generowanie metadanych provided_libs, proszę czekać!"
 
@@ -103,8 +103,8 @@ msgid "package move actions complete"
 msgstr "czynność przenoszenie pakietów zakończona"
 
 #: ../../libraries/entropy/db/skel.py:1582
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2528
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2724
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2526
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2722
 msgid "WARNING"
 msgstr "UWAGA"
 
@@ -244,7 +244,7 @@ msgstr "Programy i biblioteki dla X11"
 msgid "Reloading Portage modules"
 msgstr "Przeładowywanie modułów Portage"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:831
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:829
 #: ../../libraries/entropy/server/transceivers.py:281
 #: ../../libraries/entropy/server/interfaces/db.py:923
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1782
@@ -252,44 +252,44 @@ msgstr "Przeładowywanie modułów Portage"
 msgid "error"
 msgstr "błąd"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:833
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:831
 #: ../../libraries/entropy/client/interfaces/package.py:369
 #: ../../libraries/entropy/client/interfaces/package.py:987
 #: ../../server/server_reagent.py:86 ../../server/server_reagent.py:103
 msgid "not found"
 msgstr "nie znaleziono"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2305
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2383
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2450
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2849
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3038
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4577
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2303
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2381
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2448
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2847
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3036
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4575
 #: ../../libraries/entropy/client/interfaces/trigger.py:204
 msgid "QA"
 msgstr "QA"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2306
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2384
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2304
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2382
 msgid "Cannot run Source Package Manager trigger for"
 msgstr "Nie można wykonać wyzwalacza menadżera pakietów źródłowych dla"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2315
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2393
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2313
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2391
 #: ../../libraries/entropy/client/interfaces/trigger.py:207
 msgid "Please report it"
 msgstr "Proszę to zgłosić"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2316
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2394
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2314
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2392
 msgid "Attach this"
 msgstr "Załącz to"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2451
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2449
 msgid "Cannot run SPM configure phase for"
 msgstr "Nie można wykonać etapu konfiguracji SPM dla"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2455
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2453
 #: ../../libraries/entropy/client/interfaces/package.py:2850
 #: ../../libraries/entropy/client/interfaces/package.py:2887
 #: ../../libraries/entropy/client/interfaces/package.py:2968
@@ -300,162 +300,162 @@ msgstr "Nie można wykonać etapu konfiguracji SPM dla"
 #: ../../libraries/entropy/client/interfaces/package.py:3283
 #: ../../libraries/entropy/client/interfaces/trigger.py:48
 #: ../../libraries/entropy/security.py:651 ../../client/text_rescue.py:741
-#: ../../server/server_reagent.py:779 ../../sulfur/src/sulfur/events.py:926
-#: ../../sulfur/src/sulfur/events.py:932 ../../sulfur/src/sulfur/events.py:971
+#: ../../server/server_reagent.py:779 ../../sulfur/src/sulfur/events.py:941
+#: ../../sulfur/src/sulfur/events.py:947 ../../sulfur/src/sulfur/events.py:986
 #: ../../sulfur/src/sulfur/sulfur.glade.h:83
 msgid "Error"
 msgstr "Błąd"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2502
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2500
 msgid "package not available on system"
 msgstr "pakiet niedostępny w systemie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2511
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2509
 msgid "repackaging"
 msgstr "ponowne paczkowanie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2529
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2527
 msgid "Cannot complete quickpkg for atom"
 msgstr "Nie można ukończyć quickpkg dla atomu"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2531
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2727
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2529
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2725
 msgid "do it manually"
 msgstr "zrób to ręcznie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2549
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2547
 msgid "package files rebuild did not run properly"
 msgstr "przebudowanie plików pakietu nie zostało wykonane pomyślnie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2550
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2548
 msgid "Please update packages manually"
 msgstr "Proszę uaktualnić pakiety ręcznie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2688
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2686
 msgid "forcing package updates"
 msgstr "wymuszanie aktualizacji pakietów"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2689
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2687
 msgid "Syncing with"
 msgstr "Synchronizowanie z"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2725
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2723
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Nie można ukończyć quickpkg dla atomów"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2850
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2848
 msgid "Cannot stat path"
 msgstr "Nie można wykonać stat() dla ścieżki"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3039
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3037
 msgid "Cannot update Portage database to destination"
 msgstr "Nie można zaktualizować bazy Portage dla położenia docelowego"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3062
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3060
 msgid "SPM uid update error"
 msgstr "Błąd przy aktualizacji SPM UID"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3130
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3128
 #, fuzzy
 msgid "Cannot update SPM installed pkgs file"
 msgstr "Nie można zaktualizować zainstalowanych przez SPM pliku danych"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3338
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3490
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3336
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3488
 #: ../../libraries/entropy/server/interfaces/mirrors.py:521
 #: ../../client/text_security.py:117 ../../client/text_smart.py:113
 msgid "does not exist"
 msgstr "nie istnieje"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3338
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3336
 msgid "Overwriting"
 msgstr "Nadpisywanie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3386
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3384
 msgid "variable differs"
 msgstr "zmienna różni się"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3386
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3475
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3384
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3473
 msgid "Updating"
 msgstr "Aktualizowanie"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3401
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3399
 msgid "updating critical variables"
 msgstr "aktualizowanie ważnych zmiennych"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3475
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3473
 msgid "differs"
 msgstr "różni się"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3490
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3488
 msgid "Reverting"
 msgstr "Cofanie zmiany"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3505
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3503
 msgid "Skipping configuration files update, you are not root."
 msgstr "Pomijanie aktualizację plików konfiguracyjnych, nie jesteś rootem."
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3941
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:3939
 msgid "Error calculating dependencies"
 msgstr "Błąd przy obliczaniu zależności"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4343
-#: ../../libraries/entropy/server/interfaces/main.py:2686
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4341
+#: ../../libraries/entropy/server/interfaces/main.py:2685
 msgid "not supported"
 msgstr "nieobsługiwana"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4344
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4342
 msgid "Probably Portage API has changed"
 msgstr "Możliwe, że API Portage się zmieniło"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4431
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4429
 msgid "IOError while reading"
 msgstr "Błąd IOERrror podczas odczytywania"
 
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4578
+#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:4576
 msgid "illegal Entropy package tag in ebuild"
 msgstr "niedozwolony tag pakietu Entropy w pliku ebuild"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:1752
-#: ../../libraries/entropy/services/ugc/interfaces.py:1755
+#: ../../libraries/entropy/services/ugc/interfaces.py:1775
+#: ../../libraries/entropy/services/ugc/interfaces.py:1778
 msgid "OutputInterface does not have an output method"
 msgstr "OutputInterface nie ma metody wyjścia"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:1760
+#: ../../libraries/entropy/services/ugc/interfaces.py:1783
 msgid "A valid entropy.client.services.ugc.commands.Base interface is needed"
 msgstr ""
 "Wymagany jest odpowiedni interfejs entropy.client.services.ugc.commands.Base"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2043
+#: ../../libraries/entropy/services/ugc/interfaces.py:2066
 msgid "connection error while receiving data"
 msgstr "błąd połączenia podczas odbierania danych"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2084
+#: ../../libraries/entropy/services/ugc/interfaces.py:2107
 msgid "command not supported. receive aborted"
 msgstr "polecenie nieobsługiwane, przerwano odbieranie danych"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2098
+#: ../../libraries/entropy/services/ugc/interfaces.py:2121
 msgid "malformed EOS. receive aborted"
 msgstr "uszkodzony EOS. odbieranie przerwane"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2139
+#: ../../libraries/entropy/services/ugc/interfaces.py:2162
 msgid "malformed data. receive aborted"
 msgstr "uszkodzone dane; przerwano odbieranie danych"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2154
+#: ../../libraries/entropy/services/ugc/interfaces.py:2177
 msgid "connection timed out while receiving data"
 msgstr "przekroczony czas oczekiwania podczas odbierania danych"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2203
+#: ../../libraries/entropy/services/ugc/interfaces.py:2226
 msgid "syscall error while receiving data"
 msgstr "błąd wywołania systemowego podczas odbierania danych"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2226
+#: ../../libraries/entropy/services/ugc/interfaces.py:2249
 msgid "Reconnecting to socket"
 msgstr "Ponowne łączenie z gniazdem"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2271
+#: ../../libraries/entropy/services/ugc/interfaces.py:2294
 msgid ""
 "Warning: you are using an emergency SSL interface, SSL certificate can't be "
 "verified. Please install dev-python/pyopenssl"
@@ -463,15 +463,15 @@ msgstr ""
 "Uwaga: używasz awaryjnego interfejsu SSL, certyfikat SSL nie może zostać "
 "sprawdzony. Proszę zainstalować dev-python/pyopenssl"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2282
+#: ../../libraries/entropy/services/ugc/interfaces.py:2305
 msgid "Service issuer"
 msgstr "Wystawca usługi"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2312
+#: ../../libraries/entropy/services/ugc/interfaces.py:2335
 msgid "Successfully connected to host"
 msgstr "Pomyślnie połączono z hostem"
 
-#: ../../libraries/entropy/services/ugc/interfaces.py:2352
+#: ../../libraries/entropy/services/ugc/interfaces.py:2375
 msgid "Successfully disconnected from host"
 msgstr "Pomyślnie rozłączono z hostem"
 
@@ -563,13 +563,13 @@ msgid "setting directory to"
 msgstr "ustawienia katalogu na"
 
 #: ../../libraries/entropy/server/interfaces/db.py:296
-#: ../../libraries/entropy/server/interfaces/main.py:2992
+#: ../../libraries/entropy/server/interfaces/main.py:2991
 msgid "Keys for repository are expired"
 msgstr "Klucze dla repozytorium utraciły ważność"
 
 #: ../../libraries/entropy/server/interfaces/db.py:676
-#: ../../libraries/entropy/server/interfaces/main.py:3158
-#: ../../libraries/entropy/server/interfaces/main.py:3993
+#: ../../libraries/entropy/server/interfaces/main.py:3157
+#: ../../libraries/entropy/server/interfaces/main.py:3992
 #: ../../libraries/entropy/server/interfaces/mirrors.py:940
 msgid "download"
 msgstr ""
@@ -746,8 +746,8 @@ msgid "mirrors have not been unlocked. Sync them."
 msgstr "serwery lustrzane nie zostały odblokowane. Zsynchronizuj je."
 
 #: ../../libraries/entropy/server/interfaces/main.py:208
-#: ../../libraries/entropy/server/interfaces/main.py:3991
-#: ../../libraries/entropy/server/interfaces/main.py:4224
+#: ../../libraries/entropy/server/interfaces/main.py:3990
+#: ../../libraries/entropy/server/interfaces/main.py:4223
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:179
 #: ../../server/server_reagent.py:73 ../../server/server_reagent.py:78
 #: ../../server/server_reagent.py:91 ../../server/server_reagent.py:95
@@ -792,7 +792,7 @@ msgstr ""
 "Interfejs serwera Entropy musi zostać uruchomiony przez użytkownika root"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1072
-#: ../../libraries/entropy/server/interfaces/main.py:3757
+#: ../../libraries/entropy/server/interfaces/main.py:3756
 msgid "repository not configured"
 msgstr "repozytorium nieskonfigurowane"
 
@@ -817,7 +817,7 @@ msgstr "ustawianie domyślnej wartości na 0"
 #: ../../client/text_rescue.py:295 ../../client/text_ui.py:1479
 #: ../../client/text_ui.py:1480 ../../client/text_ui.py:1482
 #: ../../client/text_ui.py:1483 ../../sulfur/src/sulfur/dialogs.py:2748
-#: ../../sulfur/src/sulfur/__init__.py:1283
+#: ../../sulfur/src/sulfur/__init__.py:1288
 #: ../../sulfur/src/sulfur/packages.py:100
 #: ../../sulfur/src/sulfur/packages.py:414
 #: ../../sulfur/src/sulfur/packages.py:434 ../../services/kernel-switcher:85
@@ -841,10 +841,10 @@ msgstr "Czy chcesz zainicjować swoje domyślne repozytorium?"
 #. masked ?
 #: ../../libraries/entropy/server/interfaces/main.py:1647
 #: ../../libraries/entropy/server/interfaces/main.py:1817
-#: ../../libraries/entropy/server/interfaces/main.py:2228
-#: ../../libraries/entropy/server/interfaces/main.py:2629
-#: ../../libraries/entropy/server/interfaces/main.py:3170
-#: ../../libraries/entropy/server/interfaces/main.py:3797
+#: ../../libraries/entropy/server/interfaces/main.py:2227
+#: ../../libraries/entropy/server/interfaces/main.py:2628
+#: ../../libraries/entropy/server/interfaces/main.py:3169
+#: ../../libraries/entropy/server/interfaces/main.py:3796
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1713
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2057
 #: ../../libraries/entropy/output.py:733 ../../libraries/entropy/qa.py:395
@@ -886,9 +886,9 @@ msgstr ""
 
 #. ask to continue
 #: ../../libraries/entropy/server/interfaces/main.py:1816
-#: ../../libraries/entropy/server/interfaces/main.py:2227
-#: ../../libraries/entropy/server/interfaces/main.py:2628
-#: ../../libraries/entropy/server/interfaces/main.py:3169
+#: ../../libraries/entropy/server/interfaces/main.py:2226
+#: ../../libraries/entropy/server/interfaces/main.py:2627
+#: ../../libraries/entropy/server/interfaces/main.py:3168
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2056
 #: ../../client/text_ui.py:924 ../../server/server_reagent.py:458
 #: ../../server/server_reagent.py:506 ../../server/server_reagent.py:544
@@ -971,99 +971,99 @@ msgstr "nowy tag"
 msgid "remove"
 msgstr "usuń"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2202
+#: ../../libraries/entropy/server/interfaces/main.py:2201
 msgid "reverse dependency"
 msgstr "zależność wsteczna"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2213
+#: ../../libraries/entropy/server/interfaces/main.py:2212
 msgid "dependency"
 msgstr "zależność"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2245
+#: ../../libraries/entropy/server/interfaces/main.py:2244
 msgid "switching"
 msgstr "przełączanie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2265
+#: ../../libraries/entropy/server/interfaces/main.py:2264
 msgid "cannot switch, package not found, skipping"
 msgstr "nie można przełączyć, pakiet nieznaleziony, pomijanie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2338
+#: ../../libraries/entropy/server/interfaces/main.py:2337
 msgid "moving file"
 msgstr "przenoszenie pliku"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2354
+#: ../../libraries/entropy/server/interfaces/main.py:2353
 msgid "loading data from source repository"
 msgstr "ładowanie danych ze źródłowego repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2382
+#: ../../libraries/entropy/server/interfaces/main.py:2381
 msgid "GPG key was available in"
 msgstr "klucz GPG był dostępny w"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2401
+#: ../../libraries/entropy/server/interfaces/main.py:2400
 msgid "injecting data to destination repository"
 msgstr "wstrzykiwanie danych do docelowego repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2422
+#: ../../libraries/entropy/server/interfaces/main.py:2421
 msgid "removing entry from source repository"
 msgstr "usuwanie wpisu ze źródłowego repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2440
+#: ../../libraries/entropy/server/interfaces/main.py:2439
 msgid "successfully handled atom"
 msgstr "pomyślnie obsłużono atom"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2467
+#: ../../libraries/entropy/server/interfaces/main.py:2466
 msgid "Injecting entropy metadata into built packages"
 msgstr "Wstrzykiwanie metadanych Entropy do zbudowanych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2483
+#: ../../libraries/entropy/server/interfaces/main.py:2482
 msgid "JFYI, GPG infrastructure failed to load"
 msgstr "Dla informacji: infrastruktura GPG nie mogła się załadować"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2497
+#: ../../libraries/entropy/server/interfaces/main.py:2496
 msgid "injecting entropy metadata"
 msgstr "wstrzykiwanie metadanych Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2536
+#: ../../libraries/entropy/server/interfaces/main.py:2535
 msgid "injection complete"
 msgstr "wstrzykiwanie zakończone"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2561
+#: ../../libraries/entropy/server/interfaces/main.py:2560
 msgid "removing package"
 msgstr "usuwanie pakietu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2574
+#: ../../libraries/entropy/server/interfaces/main.py:2573
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1331
 msgid "removal complete"
 msgstr "usuwanie zakończone"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2586
-#: ../../libraries/entropy/server/interfaces/main.py:2789
+#: ../../libraries/entropy/server/interfaces/main.py:2585
+#: ../../libraries/entropy/server/interfaces/main.py:2788
 msgid "Integrity verification of the selected packages"
 msgstr "Sprawdzanie spójności wybranych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2601
-#: ../../libraries/entropy/server/interfaces/main.py:2800
+#: ../../libraries/entropy/server/interfaces/main.py:2600
+#: ../../libraries/entropy/server/interfaces/main.py:2799
 msgid "All the packages in repository will be checked."
 msgstr "Wszystkie pakiety w repozytorium zostaną sprawdzone."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2608
+#: ../../libraries/entropy/server/interfaces/main.py:2607
 msgid "This is the list of the packages that would be checked"
 msgstr "To jest lista pakietów, które zostaną sprawdzone"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2642
+#: ../../libraries/entropy/server/interfaces/main.py:2641
 msgid "Working on mirror"
 msgstr "Praca na serwerze lustrzanym"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2669
+#: ../../libraries/entropy/server/interfaces/main.py:2668
 msgid "checking hash"
 msgstr "sprawdzanie sumy kontrolnej"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2684
+#: ../../libraries/entropy/server/interfaces/main.py:2683
 msgid "digest verification of"
 msgstr "weryfikacja sumy kontrolnej"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2702
-#: ../../libraries/entropy/server/interfaces/main.py:2845
+#: ../../libraries/entropy/server/interfaces/main.py:2701
+#: ../../libraries/entropy/server/interfaces/main.py:2844
 #: ../../libraries/entropy/server/interfaces/mirrors.py:519
 #: ../../libraries/entropy/server/interfaces/mirrors.py:538
 #: ../../libraries/entropy/server/interfaces/mirrors.py:570
@@ -1072,410 +1072,410 @@ msgstr "weryfikacja sumy kontrolnej"
 msgid "package"
 msgstr "pakiet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2704
+#: ../../libraries/entropy/server/interfaces/main.py:2703
 msgid "NOT healthy"
 msgstr "NIEzdrowa"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2717
-#: ../../libraries/entropy/server/interfaces/main.py:2857
+#: ../../libraries/entropy/server/interfaces/main.py:2716
+#: ../../libraries/entropy/server/interfaces/main.py:2856
 msgid "This is the list of broken packages"
 msgstr "Oto lista uszkodzonych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2726
+#: ../../libraries/entropy/server/interfaces/main.py:2725
 #: ../../libraries/entropy/client/interfaces/package.py:286
 #: ../../libraries/entropy/client/interfaces/package.py:894
 msgid "Mirror"
 msgstr "Serwer lustrzany"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2745
+#: ../../libraries/entropy/server/interfaces/main.py:2744
 #: ../../server/server_reagent.py:1066
 msgid "Statistics"
 msgstr "Statystyki"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2754
+#: ../../libraries/entropy/server/interfaces/main.py:2753
 msgid "Number of checked packages"
 msgstr "Liczba sprawdzonych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2764
+#: ../../libraries/entropy/server/interfaces/main.py:2763
 msgid "Number of healthy packages"
 msgstr "Liczba zdrowych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2774
+#: ../../libraries/entropy/server/interfaces/main.py:2773
 msgid "Number of broken packages"
 msgstr "Liczba uszkodzonych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2788
-#: ../../libraries/entropy/server/interfaces/main.py:2945
+#: ../../libraries/entropy/server/interfaces/main.py:2787
+#: ../../libraries/entropy/server/interfaces/main.py:2944
 #: ../../libraries/entropy/client/interfaces/db.py:1670
 msgid "local"
 msgstr "lokalne"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2825
+#: ../../libraries/entropy/server/interfaces/main.py:2824
 msgid "checking status of"
 msgstr "sprawdzanie statusu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2847
+#: ../../libraries/entropy/server/interfaces/main.py:2846
 msgid "is corrupted, stored checksum"
 msgstr "jest uszkodzony, zapisana suma kontrolna"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2884
+#: ../../libraries/entropy/server/interfaces/main.py:2883
 msgid "checked packages"
 msgstr "sprawdzone pakiety"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2894
+#: ../../libraries/entropy/server/interfaces/main.py:2893
 msgid "healthy packages"
 msgstr "zdrowe pakiety"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2904
-#: ../../libraries/entropy/server/interfaces/main.py:3086
+#: ../../libraries/entropy/server/interfaces/main.py:2903
+#: ../../libraries/entropy/server/interfaces/main.py:3085
 msgid "broken packages"
 msgstr "uszkodzone pakiety"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2914
-#: ../../libraries/entropy/server/interfaces/main.py:3096
+#: ../../libraries/entropy/server/interfaces/main.py:2913
+#: ../../libraries/entropy/server/interfaces/main.py:3095
 msgid "downloaded packages"
 msgstr "pobrane pakiety"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2924
-#: ../../libraries/entropy/server/interfaces/main.py:3106
+#: ../../libraries/entropy/server/interfaces/main.py:2923
+#: ../../libraries/entropy/server/interfaces/main.py:3105
 msgid "failed downloads"
 msgstr "pakiety, których się nie dało pobrać"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2946
+#: ../../libraries/entropy/server/interfaces/main.py:2945
 msgid "GPG signing packages for repository"
 msgstr "podpisywanie pakietów dla repozytorium używając GPG"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2958
+#: ../../libraries/entropy/server/interfaces/main.py:2957
 msgid "All the missing packages in repository will be downloaded."
 msgstr "Wszystkie brakujące pakiety w repozytorium zostaną pobrane."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2974
+#: ../../libraries/entropy/server/interfaces/main.py:2973
 #: ../../server/server_key.py:69
 msgid "GnuPG not available"
 msgstr "GnuPG niedostępne"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3000
+#: ../../libraries/entropy/server/interfaces/main.py:2999
 msgid "Keys not available for"
 msgstr "Klucze niedostępne dla"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3031
+#: ../../libraries/entropy/server/interfaces/main.py:3030
 msgid "signing package"
 msgstr "podpisywanie pakietu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3046
+#: ../../libraries/entropy/server/interfaces/main.py:3045
 msgid "Unknown error signing package"
 msgstr "Nieznany błąd podczas podpisywania pakietu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3076
+#: ../../libraries/entropy/server/interfaces/main.py:3075
 msgid "signed packages"
 msgstr "podpisane pakiety"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3135
+#: ../../libraries/entropy/server/interfaces/main.py:3134
 msgid "available"
 msgstr "dostępne"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3147
+#: ../../libraries/entropy/server/interfaces/main.py:3146
 msgid "upload/ignored"
 msgstr "wysłane/zignorowane"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3182
+#: ../../libraries/entropy/server/interfaces/main.py:3181
 msgid "Starting to download missing files"
 msgstr "Rozpoczynam pobieranie brakujących plików"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3193
+#: ../../libraries/entropy/server/interfaces/main.py:3192
 msgid "Searching missing/broken files on another mirror"
 msgstr "Szukanie brakujących/uszkodzonych plików na innym serwerze lustrzanym"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3214
+#: ../../libraries/entropy/server/interfaces/main.py:3213
 msgid "Binary packages downloaded successfully."
 msgstr "Binarne pakiety pomyślnie pobrane."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3223
+#: ../../libraries/entropy/server/interfaces/main.py:3222
 msgid "These are the packages that cannot be found online"
 msgstr "To są pakiety, które nie mogły być znalezione online"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3239
+#: ../../libraries/entropy/server/interfaces/main.py:3238
 msgid "They won't be checked"
 msgstr "Nie zostaną sprawdzone"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3253
+#: ../../libraries/entropy/server/interfaces/main.py:3252
 msgid "Please setup your branch to"
 msgstr "Proszę ustawić swoją gałąź na"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3255
+#: ../../libraries/entropy/server/interfaces/main.py:3254
 msgid "and retry"
 msgstr "i ponowić"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3265
+#: ../../libraries/entropy/server/interfaces/main.py:3264
 msgid "Copying repository (if not exists)"
 msgstr "Kopiowanie repozytorium (jeśli nie istnieje)"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3298
+#: ../../libraries/entropy/server/interfaces/main.py:3297
 msgid "Switching packages"
 msgstr "Przełączanie pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3333
+#: ../../libraries/entropy/server/interfaces/main.py:3332
 msgid "Ignoring"
 msgstr "Pomijanie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3335
+#: ../../libraries/entropy/server/interfaces/main.py:3334
 msgid "already in branch"
 msgstr "już w gałęzi"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3369
+#: ../../libraries/entropy/server/interfaces/main.py:3368
 msgid "migration loop completed"
 msgstr "pętla migracji zakończona"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3387
+#: ../../libraries/entropy/server/interfaces/main.py:3386
 msgid "Running orphaned SPM packages test"
 msgstr "Wykonywanie sprawdzenia osieroconych pakietów SPM"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3403
+#: ../../libraries/entropy/server/interfaces/main.py:3402
 msgid "Scanning package"
 msgstr "Skanowanie pakietu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3425
+#: ../../libraries/entropy/server/interfaces/main.py:3424
 msgid "not found anymore"
 msgstr "nie znaleziono"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3437
-#: ../../libraries/entropy/server/interfaces/main.py:3680
+#: ../../libraries/entropy/server/interfaces/main.py:3436
+#: ../../libraries/entropy/server/interfaces/main.py:3679
 msgid "Packages string"
 msgstr "Łańcuch pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3467
+#: ../../libraries/entropy/server/interfaces/main.py:3466
 msgid "Checking"
 msgstr "Sprawdzanie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3504
+#: ../../libraries/entropy/server/interfaces/main.py:3503
 msgid "Running dependencies test"
 msgstr "Wykonywanie testu zależności"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3533
+#: ../../libraries/entropy/server/interfaces/main.py:3532
 #: ../../client/text_ui.py:2211
 msgid "These are the dependencies not found"
 msgstr "Oto nieznalezione zależności:"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3540
+#: ../../libraries/entropy/server/interfaces/main.py:3539
 #: ../../client/text_ui.py:2215
 msgid "Needed by"
 msgstr "Potrzebne dla"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3558
+#: ../../libraries/entropy/server/interfaces/main.py:3557
 msgid "by repo"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:3568
+#: ../../libraries/entropy/server/interfaces/main.py:3567
 msgid "Every dependency is satisfied. It's all fine."
 msgstr "Wszystkie zależności są spełnione. Wszystko gra."
 
-#: ../../libraries/entropy/server/interfaces/main.py:3594
+#: ../../libraries/entropy/server/interfaces/main.py:3593
 msgid "Broken and matched packages list"
 msgstr "Lista uszkodzonych i dopasowanych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3596
+#: ../../libraries/entropy/server/interfaces/main.py:3595
 #: ../../libraries/entropy/qa.py:517
 msgid "Dumping results into these files"
 msgstr "Zapisywanie wyników do tych plików"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3622
+#: ../../libraries/entropy/server/interfaces/main.py:3621
 #: ../../client/text_ui.py:2267
 msgid "System is healthy"
 msgstr "System jest zdrowy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3631
+#: ../../libraries/entropy/server/interfaces/main.py:3630
 msgid "Matching libraries with Spm, please wait"
 msgstr "Dopasowywanie bibliotek z SPM, proszę czekać"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3645
+#: ../../libraries/entropy/server/interfaces/main.py:3644
 msgid "These are the matched packages"
 msgstr "To są dopasowane pakiety"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3689
+#: ../../libraries/entropy/server/interfaces/main.py:3688
 msgid "No matched packages"
 msgstr "Brak dopasowanych pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3784
+#: ../../libraries/entropy/server/interfaces/main.py:3783
 msgid "Your default repository is not initialized"
 msgstr "Twoje domyślne repozytorium nie jest zainicjowane"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3796
+#: ../../libraries/entropy/server/interfaces/main.py:3795
 msgid "Do you want to initialize your default repository ?"
 msgstr "Czy chcesz zainicjować swoje domyślne repozytorium?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3799
+#: ../../libraries/entropy/server/interfaces/main.py:3798
 msgid "Continuing with an uninitialized repository"
 msgstr "Kontynuacja z niezainicjowanym repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3950
+#: ../../libraries/entropy/server/interfaces/main.py:3949
 msgid "Entropy repository is already locked by you :-)"
 msgstr "Repozytorium Entropy jest już przez ciebie zablokowane :-)"
 
 #. check if the database is locked REMOTELY
-#: ../../libraries/entropy/server/interfaces/main.py:3957
+#: ../../libraries/entropy/server/interfaces/main.py:3956
 msgid "Locking and Syncing Entropy repository"
 msgstr "Blokowanie i synchronizowanie repozytorium Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3971
+#: ../../libraries/entropy/server/interfaces/main.py:3970
 #: ../../server/server_activator.py:476
 msgid "Mirrors status table"
 msgstr "Tabela statusu serwerów lustrzanych"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3980
-#: ../../libraries/entropy/server/interfaces/main.py:3983
+#: ../../libraries/entropy/server/interfaces/main.py:3979
+#: ../../libraries/entropy/server/interfaces/main.py:3982
 #: ../../server/server_activator.py:482 ../../server/server_activator.py:486
 msgid "Unlocked"
 msgstr "Odblokowany"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3982
-#: ../../libraries/entropy/server/interfaces/main.py:3985
+#: ../../libraries/entropy/server/interfaces/main.py:3981
+#: ../../libraries/entropy/server/interfaces/main.py:3984
 #: ../../server/server_activator.py:480 ../../server/server_activator.py:484
 msgid "Locked"
 msgstr "Zablokowany"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4002
+#: ../../libraries/entropy/server/interfaces/main.py:4001
 msgid "cannot lock mirror"
 msgstr "nie można zablokować serwera lustrzanego"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4211
+#: ../../libraries/entropy/server/interfaces/main.py:4210
 #, fuzzy
 msgid "Repository is corrupted!"
 msgstr "Repozytorium jest teraz aktualizowane"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4225
+#: ../../libraries/entropy/server/interfaces/main.py:4224
 msgid "indexing repository"
 msgstr "indeksowanie repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4261
+#: ../../libraries/entropy/server/interfaces/main.py:4260
 msgid "Initializing an empty repository"
 msgstr "inicjowanie pustego repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4274
+#: ../../libraries/entropy/server/interfaces/main.py:4273
 msgid "Entropy repository file"
 msgstr "Plik repozytorium Entropy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4276
+#: ../../libraries/entropy/server/interfaces/main.py:4275
 msgid "successfully initialized"
 msgstr "pomyślnie zainicjowano"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4357
-#: ../../libraries/entropy/server/interfaces/main.py:4618
+#: ../../libraries/entropy/server/interfaces/main.py:4356
+#: ../../libraries/entropy/server/interfaces/main.py:4617
 msgid "adding package"
 msgstr "dodawanie pakietu"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4436
+#: ../../libraries/entropy/server/interfaces/main.py:4435
 msgid "added package"
 msgstr "dodano pakiet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4438
+#: ../../libraries/entropy/server/interfaces/main.py:4437
 msgid "rev"
 msgstr "wer."
 
-#: ../../libraries/entropy/server/interfaces/main.py:4452
+#: ../../libraries/entropy/server/interfaces/main.py:4451
 msgid "manual dependencies for"
 msgstr "ręczne zależności dla"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4639
+#: ../../libraries/entropy/server/interfaces/main.py:4638
 msgid "Exception caught, closing tasks"
 msgstr "Złapano wyjątek, zamykanie zadań"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4731
+#: ../../libraries/entropy/server/interfaces/main.py:4730
 msgid "server-side repository"
 msgstr "repozytorium po stronie serwera"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4733
+#: ../../libraries/entropy/server/interfaces/main.py:4732
 msgid "community repository"
 msgstr "repozytorium społecznościowe"
 
 #. ..on repository: <repository_name>
-#: ../../libraries/entropy/server/interfaces/main.py:4735
+#: ../../libraries/entropy/server/interfaces/main.py:4734
 msgid "Entropy Server Interface Instance on repository"
 msgstr "Instancja interfejsu serwera Entropy w repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4746
+#: ../../libraries/entropy/server/interfaces/main.py:4745
 msgid "current branch"
 msgstr "bieżąca gałąź"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4748
+#: ../../libraries/entropy/server/interfaces/main.py:4747
 #: ../../server/server_reagent.py:229
 msgid "type"
 msgstr "typ"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4757
+#: ../../libraries/entropy/server/interfaces/main.py:4756
 msgid "Currently configured repositories"
 msgstr "Obecnie skonfigurowane repozytoria"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4787
+#: ../../libraries/entropy/server/interfaces/main.py:4786
 msgid "GPG key expired"
 msgstr "Klucz GPG utracił ważność"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4789
+#: ../../libraries/entropy/server/interfaces/main.py:4788
 msgid "please frigging fix"
 msgstr "proszę to koniecznie naprawić"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4800
+#: ../../libraries/entropy/server/interfaces/main.py:4799
 msgid "GPG got unexpected error"
 msgstr "GPG otrzymał nieoczekiwany błąd"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4802
+#: ../../libraries/entropy/server/interfaces/main.py:4801
 msgid "skipping"
 msgstr "pomijanie"
 
-#: ../../libraries/entropy/server/interfaces/main.py:4818
-#: ../../libraries/entropy/server/interfaces/main.py:4832
+#: ../../libraries/entropy/server/interfaces/main.py:4817
+#: ../../libraries/entropy/server/interfaces/main.py:4831
 msgid "config files"
 msgstr "pliki konfiguracyjne"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:4819
+#: ../../libraries/entropy/server/interfaces/main.py:4818
 msgid "checking system"
 msgstr "sprawdzanie systemu"
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/main.py:4833
+#: ../../libraries/entropy/server/interfaces/main.py:4832
 msgid "there are configuration files not updated yet"
 msgstr "są pliki konfiguracyjne, które nie zostały jeszcze zaktualizowane"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5122
+#: ../../libraries/entropy/server/interfaces/main.py:5121
 msgid "found available dep_rewrites for this package"
 msgstr "znaleziono dostępne dep_rewrites dla pakietu"
 
 #. this means that user is asking to add dep_pattern
 #. as a dependency to package
-#: ../../libraries/entropy/server/interfaces/main.py:5134
+#: ../../libraries/entropy/server/interfaces/main.py:5133
 msgid "added"
 msgstr "dodane"
 
 #. this means that user is asking to remove dep_pattern
-#: ../../libraries/entropy/server/interfaces/main.py:5137
-#: ../../libraries/entropy/server/interfaces/main.py:5235
+#: ../../libraries/entropy/server/interfaces/main.py:5136
+#: ../../libraries/entropy/server/interfaces/main.py:5234
 msgid "removed"
 msgstr "usunięte"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5224
+#: ../../libraries/entropy/server/interfaces/main.py:5223
 msgid "replaced"
 msgstr "zastąpione"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5246
-#: ../../libraries/entropy/server/interfaces/main.py:5260
+#: ../../libraries/entropy/server/interfaces/main.py:5245
+#: ../../libraries/entropy/server/interfaces/main.py:5259
 msgid "No dependency rewrite made for"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:5332
-#: ../../libraries/entropy/server/interfaces/main.py:5352
-#: ../../libraries/entropy/server/interfaces/main.py:5364
+#: ../../libraries/entropy/server/interfaces/main.py:5331
+#: ../../libraries/entropy/server/interfaces/main.py:5351
+#: ../../libraries/entropy/server/interfaces/main.py:5363
 msgid "sets"
 msgstr "zestawy"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5333
+#: ../../libraries/entropy/server/interfaces/main.py:5332
 msgid "updating package sets"
 msgstr "aktualizowanie zestawów pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5353
+#: ../../libraries/entropy/server/interfaces/main.py:5352
 msgid "adding package set"
 msgstr "dodawanie zestawu pakietów"
 
-#: ../../libraries/entropy/server/interfaces/main.py:5365
+#: ../../libraries/entropy/server/interfaces/main.py:5364
 msgid "removing package set"
 msgstr "usuwanie zestawu pakietów"
 
@@ -1925,7 +1925,7 @@ msgstr "Logowanie się powiodło. Czy chcesz zapisać dane logowania?"
 #: ../../sulfur/src/sulfur/dialogs.py:1353
 #: ../../sulfur/src/sulfur/dialogs.py:1814
 #: ../../sulfur/src/sulfur/entropyapi.py:393
-#: ../../sulfur/src/sulfur/events.py:732
+#: ../../sulfur/src/sulfur/events.py:747
 msgid "Yes"
 msgstr "Tak"
 
@@ -1960,7 +1960,7 @@ msgstr "Nie można dokonać autołączenia pliku"
 #: ../../libraries/entropy/client/interfaces/methods.py:88
 #: ../../libraries/entropy/client/interfaces/methods.py:113
 #: ../../client/text_ui.py:484 ../../server/server_reagent.py:81
-#: ../../server/server_reagent.py:98 ../../sulfur/src/sulfur/__init__.py:1051
+#: ../../server/server_reagent.py:98 ../../sulfur/src/sulfur/__init__.py:1056
 #: ../../sulfur/src/sulfur/views.py:2798
 msgid "Repository"
 msgstr "Repozytorium"
@@ -2322,87 +2322,87 @@ msgstr "nie jest dostępne"
 msgid "Cannot validate"
 msgstr "Nie można sprawdzić"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:233
+#: ../../libraries/entropy/client/interfaces/methods.py:234
 msgid "bad repository id specified"
 msgstr "podano nieprawidłowe ID repozytorium"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:250
+#: ../../libraries/entropy/client/interfaces/methods.py:251
 #, python-format
 msgid "Repository %s hasn't been downloaded yet."
 msgstr "Repozytorium %s nie zostało jeszcze pobrane."
 
-#: ../../libraries/entropy/client/interfaces/methods.py:676
+#: ../../libraries/entropy/client/interfaces/methods.py:711
 msgid "System database not found or corrupted"
 msgstr "Systemowa baza danych nie została znaleziona albo jest uszkodzona."
 
-#: ../../libraries/entropy/client/interfaces/methods.py:677
+#: ../../libraries/entropy/client/interfaces/methods.py:712
 msgid "running in safe mode using temporary, empty repository"
 msgstr ""
 "uruchamianie w bezpiecznym trybie, używając tymczasowego, pustego "
 "repozytorium"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:793
+#: ../../libraries/entropy/client/interfaces/methods.py:828
 msgid "Backing up repository to"
 msgstr "Tworzenie kopii repozytorium do"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:811
+#: ../../libraries/entropy/client/interfaces/methods.py:846
 msgid "Repository backed up successfully"
 msgstr "Pomyślnie utworzono kopię zapasową repozytorium"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:820
-#: ../../libraries/entropy/client/interfaces/methods.py:867
+#: ../../libraries/entropy/client/interfaces/methods.py:855
+#: ../../libraries/entropy/client/interfaces/methods.py:902
 #: ../../libraries/entropy/client/interfaces/sets.py:188
 #: ../../libraries/entropy/client/interfaces/sets.py:215
-#: ../../libraries/entropy/const.py:593
+#: ../../libraries/entropy/const.py:594
 msgid "All fine"
 msgstr "Wszystko dobrze"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:828
+#: ../../libraries/entropy/client/interfaces/methods.py:863
 msgid "Restoring backed up repository"
 msgstr "Przywracanie repozytorium z kopii zapasowej"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:846
+#: ../../libraries/entropy/client/interfaces/methods.py:881
 msgid "Unable to unpack"
 msgstr "Nie można rozpakować"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:856
+#: ../../libraries/entropy/client/interfaces/methods.py:891
 msgid "Repository restored successfully"
 msgstr "Repozytorium przywrócone pomyślnie"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:951
+#: ../../libraries/entropy/client/interfaces/methods.py:986
 #: ../../libraries/entropy/client/interfaces/package.py:3386
 #: ../../client/text_rescue.py:508 ../../sulfur/src/sulfur/entropyapi.py:242
 msgid "Removing"
 msgstr "Usuwanie"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1357
+#: ../../libraries/entropy/client/interfaces/methods.py:1392
 msgid "Resources unlocked, let's go!"
 msgstr "Zasoby odblokowane, idziemy dalej!"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1376
+#: ../../libraries/entropy/client/interfaces/methods.py:1411
 #, python-format
 msgid "Resources still locked after %s minutes, giving up!"
 msgstr "Zasoby wciąż zablokowane po upływie %s minut, poddaję się!"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1385
+#: ../../libraries/entropy/client/interfaces/methods.py:1420
 #, python-format
 msgid "Resources locked, sleeping %s seconds, check #%s/%s"
 msgstr "Zasoby zablokowane, oczekiwanie przez okres %s sekund, próba #%s/%s"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1409
+#: ../../libraries/entropy/client/interfaces/methods.py:1444
 #, python-format
 msgid "Nothing to backup in etpConst with %s key"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1529
+#: ../../libraries/entropy/client/interfaces/methods.py:1564
 msgid "Checking response time of"
 msgstr "Sprawdzanie czasu odpowiedzi dla"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1551
+#: ../../libraries/entropy/client/interfaces/methods.py:1586
 msgid "Mirror response time"
 msgstr "Czas odpowiedzi dla serwera lustrzanego"
 
-#: ../../libraries/entropy/client/interfaces/methods.py:1877
+#: ../../libraries/entropy/client/interfaces/methods.py:1909
 msgid "not a valid method"
 msgstr "nieprawidłowa metoda"
 
@@ -2843,7 +2843,7 @@ msgid "An error occured. Action aborted."
 msgstr "Wystąpił błąd. Czynność przerwana."
 
 #: ../../libraries/entropy/client/interfaces/qa.py:81
-#: ../../libraries/entropy/qa.py:1472
+#: ../../libraries/entropy/qa.py:1491
 msgid "Not prepared yet"
 msgstr "Jeszcze niegotowe"
 
@@ -2942,142 +2942,142 @@ msgstr "etap pre-remove"
 msgid "post-remove phase"
 msgstr "etap post-remove"
 
-#: ../../libraries/entropy/const.py:571
+#: ../../libraries/entropy/const.py:572
 msgid "Runtime dependency"
 msgstr "Zależność do uruchomienia programu"
 
-#: ../../libraries/entropy/const.py:572
+#: ../../libraries/entropy/const.py:573
 msgid "Post dependency"
 msgstr "Zależność typu post"
 
-#: ../../libraries/entropy/const.py:573
+#: ../../libraries/entropy/const.py:574
 msgid "Manually added (by staff) dependency"
 msgstr "Zależność dodana ręcznie (przez twórców)"
 
-#: ../../libraries/entropy/const.py:574
+#: ../../libraries/entropy/const.py:575
 msgid "Build dependency"
 msgstr "Zależność do zbudowania pakietu"
 
-#: ../../libraries/entropy/const.py:594
+#: ../../libraries/entropy/const.py:595
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr "Uszkodzone repozytorium klienta. Proszę przywrócić z kopii zapasowej."
 
-#: ../../libraries/entropy/const.py:663
+#: ../../libraries/entropy/const.py:664
 msgid "reason not available"
 msgstr "powód niedostępny"
 
-#: ../../libraries/entropy/const.py:664
+#: ../../libraries/entropy/const.py:665
 msgid "user package.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:665
+#: ../../libraries/entropy/const.py:666
 msgid "system keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:666
+#: ../../libraries/entropy/const.py:667
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:667
+#: ../../libraries/entropy/const.py:668
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:668
+#: ../../libraries/entropy/const.py:669
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:669
+#: ../../libraries/entropy/const.py:670
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:670
+#: ../../libraries/entropy/const.py:671
 msgid "completely masked (by keyword?)"
 msgstr "całkowicie zamaskowane (przez słowo kluczowe?)"
 
-#: ../../libraries/entropy/const.py:671
+#: ../../libraries/entropy/const.py:672
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:672
+#: ../../libraries/entropy/const.py:673
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:673
+#: ../../libraries/entropy/const.py:674
 msgid "user license.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:674
+#: ../../libraries/entropy/const.py:675
 msgid "user live unmask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:675
+#: ../../libraries/entropy/const.py:676
 msgid "user live mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:701
+#: ../../libraries/entropy/const.py:702
 msgid "Comments"
 msgstr "Komentarze"
 
-#: ../../libraries/entropy/const.py:702
+#: ../../libraries/entropy/const.py:703
 msgid "BBcode Documents"
 msgstr "Dokumenty BBcode"
 
-#: ../../libraries/entropy/const.py:703
+#: ../../libraries/entropy/const.py:704
 msgid "Images/Screenshots"
 msgstr "Obrazki/zrzuty ekranu"
 
-#: ../../libraries/entropy/const.py:704
+#: ../../libraries/entropy/const.py:705
 msgid "Generic Files"
 msgstr "Ogólne pliki"
 
-#: ../../libraries/entropy/const.py:705
+#: ../../libraries/entropy/const.py:706
 msgid "YouTube(tm) Videos"
 msgstr "Pliki wideo YouTube(tm)"
 
-#: ../../libraries/entropy/const.py:708
+#: ../../libraries/entropy/const.py:709
 msgid "Comment"
 msgstr "Komentarz"
 
-#: ../../libraries/entropy/const.py:709
+#: ../../libraries/entropy/const.py:710
 msgid "BBcode Document"
 msgstr "Dokument BBcode"
 
-#: ../../libraries/entropy/const.py:710
+#: ../../libraries/entropy/const.py:711
 msgid "Image/Screenshot"
 msgstr "Obrazek/zrzut ekranu"
 
-#: ../../libraries/entropy/const.py:711
+#: ../../libraries/entropy/const.py:712
 msgid "Generic File"
 msgstr "Ogólny plik"
 
-#: ../../libraries/entropy/const.py:712
+#: ../../libraries/entropy/const.py:713
 msgid "YouTube(tm) Video"
 msgstr "Plik wideo YouTube(tm)"
 
-#: ../../libraries/entropy/fetchers.py:735
+#: ../../libraries/entropy/fetchers.py:749
 msgid "infinite"
 msgstr "nieskończoność"
 
-#: ../../libraries/entropy/fetchers.py:807
+#: ../../libraries/entropy/fetchers.py:821
 msgid "[F]"
 msgstr "[F]"
 
-#: ../../libraries/entropy/fetchers.py:808
-#: ../../libraries/entropy/fetchers.py:1156
+#: ../../libraries/entropy/fetchers.py:822
+#: ../../libraries/entropy/fetchers.py:1170
 msgid "ETA"
 msgstr "ETA"
 
-#: ../../libraries/entropy/fetchers.py:809
-#: ../../libraries/entropy/fetchers.py:1157
+#: ../../libraries/entropy/fetchers.py:823
+#: ../../libraries/entropy/fetchers.py:1171
 msgid "sec"
 msgstr "sek."
 
-#: ../../libraries/entropy/fetchers.py:1038
+#: ../../libraries/entropy/fetchers.py:1052
 msgid "Aggregated download"
 msgstr "Skumulowane pobieranie"
 
-#: ../../libraries/entropy/fetchers.py:1040
-#: ../../sulfur/src/sulfur/__init__.py:1863
+#: ../../libraries/entropy/fetchers.py:1054
+#: ../../sulfur/src/sulfur/__init__.py:1868
 msgid "items"
 msgstr "elementy/ów"
 
@@ -4990,7 +4990,7 @@ msgstr "gałąź"
 msgid "Category"
 msgstr "Kategoria"
 
-#: ../../client/text_query.py:1578 ../../sulfur/src/sulfur/__init__.py:2007
+#: ../../client/text_query.py:1578 ../../sulfur/src/sulfur/__init__.py:2012
 msgid "Name"
 msgstr "Nazwa"
 
@@ -5261,12 +5261,12 @@ msgid "Have a nice day"
 msgstr "Miłego dnia"
 
 #: ../../client/text_repositories.py:427 ../../client/text_ui.py:560
-#: ../../sulfur/src/sulfur/__init__.py:1492
+#: ../../sulfur/src/sulfur/__init__.py:1497
 msgid "No repositories specified in"
 msgstr "Nie określono repozytoriów w"
 
 #: ../../client/text_repositories.py:431 ../../client/text_ui.py:565
-#: ../../sulfur/src/sulfur/__init__.py:1499
+#: ../../sulfur/src/sulfur/__init__.py:1504
 msgid "Unhandled exception"
 msgstr "Nieobsłużony wyjątek"
 
@@ -5782,7 +5782,7 @@ msgid "directory does not exist"
 msgstr "katalog nie istnieje"
 
 #: ../../client/text_smart.py:194 ../../client/text_ui.py:768
-#: ../../sulfur/src/sulfur/events.py:470
+#: ../../sulfur/src/sulfur/events.py:476
 msgid "is not a valid Entropy package"
 msgstr "nie jest prawidłowym pakietem Entropy"
 
@@ -5909,7 +5909,7 @@ msgstr ""
 msgid "Login error. Not logged in."
 msgstr "Błąd logowania. Logowanie nie nastąpiło."
 
-#: ../../client/text_ugc.py:120 ../../sulfur/src/sulfur/__init__.py:1024
+#: ../../client/text_ugc.py:120 ../../sulfur/src/sulfur/__init__.py:1029
 msgid "Not logged in"
 msgstr "Niezalogowany"
 
@@ -6230,7 +6230,7 @@ msgstr "Nie znaleziono"
 msgid "Probably needed by"
 msgstr "Prawdopodobnie wymagane przez"
 
-#: ../../client/text_ui.py:770 ../../sulfur/src/sulfur/events.py:472
+#: ../../client/text_ui.py:770 ../../sulfur/src/sulfur/events.py:478
 msgid "is not compiled with the same architecture of the system"
 msgstr "nie jest skompilowane na taką samą architekturę co system"
 
@@ -6265,7 +6265,7 @@ msgstr "Przełącz repozytorium"
 msgid "Reinstall"
 msgstr "Reinstalacja"
 
-#: ../../client/text_ui.py:902 ../../sulfur/src/sulfur/__init__.py:449
+#: ../../client/text_ui.py:902 ../../sulfur/src/sulfur/__init__.py:450
 #: ../../sulfur/src/sulfur/sulfur.glade.h:106
 msgid "Install"
 msgstr "Instalacja"
@@ -6335,11 +6335,11 @@ msgstr "pobieranie"
 msgid "All done"
 msgstr "Ukończone"
 
-#: ../../client/text_ui.py:1228 ../../sulfur/src/sulfur/__init__.py:2068
+#: ../../client/text_ui.py:1228 ../../sulfur/src/sulfur/__init__.py:2073
 msgid "Please update the following critical packages"
 msgstr "Proszę zaktualizować wymienione ważne pakiety"
 
-#: ../../client/text_ui.py:1234 ../../sulfur/src/sulfur/__init__.py:2069
+#: ../../client/text_ui.py:1234 ../../sulfur/src/sulfur/__init__.py:2074
 msgid "You should install them as soon as possible"
 msgstr "Powinieneś zainstalować je tak szybko, jak to możliwe"
 
@@ -7494,9 +7494,9 @@ msgid "Please confirm the actions above"
 msgstr "Proszę potwierdzić operacje wymienione powyżej"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2355
-#: ../../sulfur/src/sulfur/__init__.py:976
-#: ../../sulfur/src/sulfur/__init__.py:986
-#: ../../sulfur/src/sulfur/__init__.py:996
+#: ../../sulfur/src/sulfur/__init__.py:981
+#: ../../sulfur/src/sulfur/__init__.py:991
+#: ../../sulfur/src/sulfur/__init__.py:1001
 msgid "Item"
 msgstr "Element"
 
@@ -7569,7 +7569,7 @@ msgid "Accepted"
 msgstr "Zaakceptowane"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3210
-#: ../../sulfur/src/sulfur/events.py:720
+#: ../../sulfur/src/sulfur/events.py:735
 msgid "license text"
 msgstr "tekst licencji"
 
@@ -7660,13 +7660,13 @@ msgid "Error saving parameter"
 msgstr "Niepowodzenie podczas zapisywania parametru"
 
 #: ../../sulfur/src/sulfur/events.py:361
-#: ../../sulfur/src/sulfur/__init__.py:1127
+#: ../../sulfur/src/sulfur/__init__.py:1132
 msgid "An issue occured while saving a preference"
 msgstr "Podczas próby zapisania preferencji pojawił się błąd"
 
 #: ../../sulfur/src/sulfur/events.py:362
-#: ../../sulfur/src/sulfur/__init__.py:1092
-#: ../../sulfur/src/sulfur/__init__.py:1128
+#: ../../sulfur/src/sulfur/__init__.py:1097
+#: ../../sulfur/src/sulfur/__init__.py:1133
 msgid "Parameter"
 msgstr "Parametr"
 
@@ -7690,80 +7690,80 @@ msgstr "Proszę wpisać nową ścieżkę"
 msgid "Please edit the selected path"
 msgstr "Proszę zmodyfikować wybraną ścieżkę"
 
-#: ../../sulfur/src/sulfur/events.py:454
+#: ../../sulfur/src/sulfur/events.py:458
 msgid "You have chosen to install this package"
 msgstr "Wybrano do instalacji ten pakiet"
 
-#: ../../sulfur/src/sulfur/events.py:456
+#: ../../sulfur/src/sulfur/events.py:460
 msgid "Are you supa sure?"
 msgstr "Jesteś pewien, że na pewno?"
 
-#: ../../sulfur/src/sulfur/events.py:476
+#: ../../sulfur/src/sulfur/events.py:482
 msgid "Cannot install"
 msgstr "Nie można zainstalować"
 
-#: ../../sulfur/src/sulfur/events.py:605
+#: ../../sulfur/src/sulfur/events.py:620
 msgid "Please select at least one repository"
 msgstr "Proszę wybrać przynajmniej jedno repozytorium"
 
 #. Check there are any packages in the queue
-#: ../../sulfur/src/sulfur/events.py:628
+#: ../../sulfur/src/sulfur/events.py:643
 msgid "No packages in queue"
 msgstr "Brak pakietów w kolejce"
 
-#: ../../sulfur/src/sulfur/events.py:666
+#: ../../sulfur/src/sulfur/events.py:681
 msgid "Queue is too old. Cannot load."
 msgstr "Kolejka jest za stara - nie można załadować."
 
-#: ../../sulfur/src/sulfur/events.py:731
+#: ../../sulfur/src/sulfur/events.py:746
 msgid "Update your system now ?"
 msgstr "Czy zaktualizować teraz twój system?"
 
-#: ../../sulfur/src/sulfur/events.py:746
+#: ../../sulfur/src/sulfur/events.py:761
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr ""
 "Zdecydowałeś się przerwać bieżący proces. Czy na pewno chcesz to zrobić?"
 
-#: ../../sulfur/src/sulfur/events.py:834
+#: ../../sulfur/src/sulfur/events.py:849
 msgid "Cleaning UGC cache of"
 msgstr "Czyszczenie cache treści użytkowników dla"
 
-#: ../../sulfur/src/sulfur/events.py:835
+#: ../../sulfur/src/sulfur/events.py:850
 msgid "UGC cache cleared"
 msgstr "Cache treści użytkowników wyczyszczone"
 
-#: ../../sulfur/src/sulfur/events.py:848
+#: ../../sulfur/src/sulfur/events.py:863
 msgid "UGC credentials cleared"
 msgstr ""
 "Dane uwierzytelniające (dla treści tworzonych przez użytkowników) "
 "wyczyszczone"
 
-#: ../../sulfur/src/sulfur/events.py:888
+#: ../../sulfur/src/sulfur/events.py:903
 msgid "Choose what Package Set you want to add"
 msgstr "Wybierz zbiór pakietów do dodania"
 
-#: ../../sulfur/src/sulfur/events.py:890
+#: ../../sulfur/src/sulfur/events.py:905
 msgid "Choose what Package Set you want to edit"
 msgstr "Wybierz zbiór pakietów do edycji"
 
-#: ../../sulfur/src/sulfur/events.py:906 ../../sulfur/src/sulfur/events.py:911
+#: ../../sulfur/src/sulfur/events.py:921 ../../sulfur/src/sulfur/events.py:926
 msgid "Package Set name"
 msgstr "Nazwa zbioru pakietów"
 
-#: ../../sulfur/src/sulfur/events.py:907 ../../sulfur/src/sulfur/events.py:912
+#: ../../sulfur/src/sulfur/events.py:922 ../../sulfur/src/sulfur/events.py:927
 msgid "Package atoms"
 msgstr "Pakiety"
 
-#: ../../sulfur/src/sulfur/events.py:950
+#: ../../sulfur/src/sulfur/events.py:965
 msgid "No package sets available for removal."
 msgstr "Żaden zbiór pakietów nie jest dostępny do usunięcia."
 
-#: ../../sulfur/src/sulfur/events.py:956
+#: ../../sulfur/src/sulfur/events.py:971
 msgid "Removable Package Set"
 msgstr "Usuwalny zestaw pakietów"
 
-#: ../../sulfur/src/sulfur/events.py:961
+#: ../../sulfur/src/sulfur/events.py:976
 msgid "Choose what Package Set you want to remove"
 msgstr "Wybierz zestaw pakietów do usunięcia"
 
@@ -7799,62 +7799,62 @@ msgstr "Miłość, miłość, miłość... <3"
 msgid "Oh oh ooooh... Merry Xmas!"
 msgstr "Ho ho ho! Wesołych Świąt!"
 
-#: ../../sulfur/src/sulfur/__init__.py:445
+#: ../../sulfur/src/sulfur/__init__.py:446
 #: ../../sulfur/src/sulfur/views.py:2430
 #: ../../sulfur/src/sulfur/sulfur.glade.h:14
 msgid "Applications"
 msgstr "Programy"
 
-#: ../../sulfur/src/sulfur/__init__.py:447
+#: ../../sulfur/src/sulfur/__init__.py:448
 msgid "Sync"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/__init__.py:451
+#: ../../sulfur/src/sulfur/__init__.py:452
 #: ../../sulfur/src/sulfur/sulfur.glade.h:215
 msgid "Search"
 msgstr "Wyszukiwanie"
 
-#: ../../sulfur/src/sulfur/__init__.py:621
+#: ../../sulfur/src/sulfur/__init__.py:622
 msgid "Default packages sorting"
 msgstr "Domyślne sortowanie pakietów"
 
-#: ../../sulfur/src/sulfur/__init__.py:622
+#: ../../sulfur/src/sulfur/__init__.py:623
 msgid "Sort by name [A-Z]"
 msgstr "Sortowanie według nazwy [A-Z]"
 
-#: ../../sulfur/src/sulfur/__init__.py:623
+#: ../../sulfur/src/sulfur/__init__.py:624
 msgid "Sort by name [Z-A]"
 msgstr "Sortowanie według nazwy [Z-A]"
 
-#: ../../sulfur/src/sulfur/__init__.py:624
+#: ../../sulfur/src/sulfur/__init__.py:625
 msgid "Sort by downloads"
 msgstr "Sortowanie według liczby pobrań"
 
-#: ../../sulfur/src/sulfur/__init__.py:625
+#: ../../sulfur/src/sulfur/__init__.py:626
 msgid "Sort by votes"
 msgstr "Sortowanie według głosów"
 
-#: ../../sulfur/src/sulfur/__init__.py:626
+#: ../../sulfur/src/sulfur/__init__.py:627
 msgid "Sort by repository"
 msgstr "Sortowanie według repozytorium"
 
-#: ../../sulfur/src/sulfur/__init__.py:627
+#: ../../sulfur/src/sulfur/__init__.py:628
 msgid "Sort by date (simple)"
 msgstr "Sortowanie według daty (proste)"
 
-#: ../../sulfur/src/sulfur/__init__.py:628
+#: ../../sulfur/src/sulfur/__init__.py:629
 msgid "Sort by date (grouped)"
 msgstr "Sortowanie według daty (zgrupowane)"
 
-#: ../../sulfur/src/sulfur/__init__.py:629
+#: ../../sulfur/src/sulfur/__init__.py:630
 msgid "Sort by license (grouped)"
 msgstr "Sortowanie według licencji (zgrupowane)"
 
-#: ../../sulfur/src/sulfur/__init__.py:630
+#: ../../sulfur/src/sulfur/__init__.py:631
 msgid "Sort by Groups"
 msgstr "Sortowanie według grup"
 
-#: ../../sulfur/src/sulfur/__init__.py:691
+#: ../../sulfur/src/sulfur/__init__.py:692
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
@@ -7862,59 +7862,59 @@ msgstr ""
 "Repozytoria wypisane poniżej są skonfigurowane, ale niedostępne. Powinny one "
 "zostać pobrane."
 
-#: ../../sulfur/src/sulfur/__init__.py:692
+#: ../../sulfur/src/sulfur/__init__.py:693
 msgid "If you don't do this now, you won't be able to use them."
 msgstr "Jeśli nie zrobisz tego teraz, nie będziesz mógł z nich korzystać."
 
-#: ../../sulfur/src/sulfur/__init__.py:694
+#: ../../sulfur/src/sulfur/__init__.py:695
 msgid "Download now"
 msgstr "Pobierz teraz"
 
-#: ../../sulfur/src/sulfur/__init__.py:695
+#: ../../sulfur/src/sulfur/__init__.py:696
 msgid "Skip"
 msgstr "Pomiń"
 
-#: ../../sulfur/src/sulfur/__init__.py:1005
+#: ../../sulfur/src/sulfur/__init__.py:1010
 msgid "Database"
 msgstr "Baza danych"
 
-#: ../../sulfur/src/sulfur/__init__.py:1008
+#: ../../sulfur/src/sulfur/__init__.py:1013
 #: ../../sulfur/src/sulfur/sulfur.glade.h:56
 msgid "Date"
 msgstr "Data"
 
-#: ../../sulfur/src/sulfur/__init__.py:1059
+#: ../../sulfur/src/sulfur/__init__.py:1064
 msgid "Logged in as"
 msgstr "Zalogowany jako"
 
-#: ../../sulfur/src/sulfur/__init__.py:1066
+#: ../../sulfur/src/sulfur/__init__.py:1071
 msgid "UGC Status"
 msgstr "Status UGC (treści użytkowników)"
 
-#: ../../sulfur/src/sulfur/__init__.py:1089
-#: ../../sulfur/src/sulfur/__init__.py:1125
+#: ../../sulfur/src/sulfur/__init__.py:1094
+#: ../../sulfur/src/sulfur/__init__.py:1130
 msgid "Error setting parameter"
 msgstr "Błąd podczas ustawianie parametru"
 
-#: ../../sulfur/src/sulfur/__init__.py:1091
+#: ../../sulfur/src/sulfur/__init__.py:1096
 msgid "An issue occured while loading a preference"
 msgstr "Podczas ładowania preferencji pojawił się błąd"
 
-#: ../../sulfur/src/sulfur/__init__.py:1093
-#: ../../sulfur/src/sulfur/__init__.py:1129
+#: ../../sulfur/src/sulfur/__init__.py:1098
+#: ../../sulfur/src/sulfur/__init__.py:1134
 msgid "must be of type"
 msgstr "musi mieć typ"
 
-#: ../../sulfur/src/sulfur/__init__.py:1093
-#: ../../sulfur/src/sulfur/__init__.py:1129
+#: ../../sulfur/src/sulfur/__init__.py:1098
+#: ../../sulfur/src/sulfur/__init__.py:1134
 msgid "got"
 msgstr "otrzymano"
 
-#: ../../sulfur/src/sulfur/__init__.py:1278
+#: ../../sulfur/src/sulfur/__init__.py:1283
 msgid "Error saving preferences"
 msgstr "Błąd podczas zapisywania ustawień"
 
-#: ../../sulfur/src/sulfur/__init__.py:1284
+#: ../../sulfur/src/sulfur/__init__.py:1289
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
@@ -7922,46 +7922,46 @@ msgstr ""
 "Te pakiety są zamaskowane albo domyślnie, albo z twojego wyboru. Proszę być "
 "ostrożnym."
 
-#: ../../sulfur/src/sulfur/__init__.py:1340
+#: ../../sulfur/src/sulfur/__init__.py:1345
 msgid "Generating metadata. Please wait."
 msgstr "Generowanie metadanych. Proszę czekać."
 
-#: ../../sulfur/src/sulfur/__init__.py:1348
+#: ../../sulfur/src/sulfur/__init__.py:1353
 msgid "Error during list population"
 msgstr "Błąd podczas wypełniania listy"
 
-#: ../../sulfur/src/sulfur/__init__.py:1350
+#: ../../sulfur/src/sulfur/__init__.py:1355
 msgid "Retrying in 1 second."
 msgstr "Ponawianie za 1 sekundę."
 
-#: ../../sulfur/src/sulfur/__init__.py:1380
+#: ../../sulfur/src/sulfur/__init__.py:1385
 msgid "Error loading advisories"
 msgstr "Błąd podczas ładowania rekomendacji bezpieczeństwa"
 
-#: ../../sulfur/src/sulfur/__init__.py:1441
+#: ../../sulfur/src/sulfur/__init__.py:1446
 msgid "Errors updating repositories."
 msgstr "Błąd podczas aktualizowania repozytoriów."
 
-#: ../../sulfur/src/sulfur/__init__.py:1443
+#: ../../sulfur/src/sulfur/__init__.py:1448
 msgid "Please check logs below for more info"
 msgstr "Po więcej informacji proszę sprawdzić logi poniżej."
 
-#: ../../sulfur/src/sulfur/__init__.py:1446
+#: ../../sulfur/src/sulfur/__init__.py:1451
 msgid "Repositories updated successfully"
 msgstr "Repozytoria pomyślnie zaktualizowane"
 
-#: ../../sulfur/src/sulfur/__init__.py:1449
+#: ../../sulfur/src/sulfur/__init__.py:1454
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "sys-apps/entropy musi być zaktualizowane tak szybko, jak to możliwe."
 
-#: ../../sulfur/src/sulfur/__init__.py:1474
-#: ../../sulfur/src/sulfur/__init__.py:2105
-#: ../../sulfur/src/sulfur/__init__.py:2284
+#: ../../sulfur/src/sulfur/__init__.py:1479
+#: ../../sulfur/src/sulfur/__init__.py:2110
+#: ../../sulfur/src/sulfur/__init__.py:2289
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr "Inna instancja Entropy już działa. Nie można przetworzyć kolejki."
 
-#: ../../sulfur/src/sulfur/__init__.py:1484
-#: ../../sulfur/src/sulfur/__init__.py:2294
+#: ../../sulfur/src/sulfur/__init__.py:1489
+#: ../../sulfur/src/sulfur/__init__.py:2299
 msgid ""
 "Another Entropy instance is locking this task at the moment. Try in a few "
 "minutes."
@@ -7969,32 +7969,32 @@ msgstr ""
 "Inna instancja Entropy blokuje to zadanie w tej chwili. Spróbuj za parę "
 "minut."
 
-#: ../../sulfur/src/sulfur/__init__.py:1508
+#: ../../sulfur/src/sulfur/__init__.py:1513
 msgid "Updating repositories..."
 msgstr "Aktualizowanie repozytoriów..."
 
-#: ../../sulfur/src/sulfur/__init__.py:1511
-#: ../../sulfur/src/sulfur/__init__.py:1536
-#: ../../sulfur/src/sulfur/__init__.py:1623
-#: ../../sulfur/src/sulfur/__init__.py:2300
+#: ../../sulfur/src/sulfur/__init__.py:1516
+#: ../../sulfur/src/sulfur/__init__.py:1541
+#: ../../sulfur/src/sulfur/__init__.py:1628
+#: ../../sulfur/src/sulfur/__init__.py:2305
 msgid "Running tasks"
 msgstr "Wykonywanie zadań"
 
-#: ../../sulfur/src/sulfur/__init__.py:1533
+#: ../../sulfur/src/sulfur/__init__.py:1538
 msgid "Testing dependencies..."
 msgstr "Sprawdzanie zależności..."
 
-#: ../../sulfur/src/sulfur/__init__.py:1553
+#: ../../sulfur/src/sulfur/__init__.py:1558
 msgid "No missing dependencies found."
 msgstr "Nie znaleziono brakujących zależności."
 
-#: ../../sulfur/src/sulfur/__init__.py:1590
+#: ../../sulfur/src/sulfur/__init__.py:1595
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 "Znaleziono brakujące zależności, ale żadne z nich nie są dostępne w "
 "repozytoriach."
 
-#: ../../sulfur/src/sulfur/__init__.py:1597
+#: ../../sulfur/src/sulfur/__init__.py:1602
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
@@ -8002,19 +8002,19 @@ msgstr ""
 "Nie dopasowano niektórych brakujących zależności; pozostałe zostaną dodane "
 "do kolejki."
 
-#: ../../sulfur/src/sulfur/__init__.py:1600
+#: ../../sulfur/src/sulfur/__init__.py:1605
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr "Wszystkie brakujące zależności będą dodane do kolejki"
 
-#: ../../sulfur/src/sulfur/__init__.py:1620
+#: ../../sulfur/src/sulfur/__init__.py:1625
 msgid "Testing libraries..."
 msgstr "Sprawdzanie bibliotek..."
 
-#: ../../sulfur/src/sulfur/__init__.py:1654
+#: ../../sulfur/src/sulfur/__init__.py:1659
 msgid "Libraries test aborted"
 msgstr "Test bibliotek przerwany"
 
-#: ../../sulfur/src/sulfur/__init__.py:1664
+#: ../../sulfur/src/sulfur/__init__.py:1669
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
@@ -8022,15 +8022,15 @@ msgstr ""
 "Nie dopasowano niektórych uszkodzonych pakietów; pozostałe zostaną dodane do "
 "kolejki."
 
-#: ../../sulfur/src/sulfur/__init__.py:1667
+#: ../../sulfur/src/sulfur/__init__.py:1672
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Wszystkie uszkodzone pakiety zostaną dodane do kolejki"
 
-#: ../../sulfur/src/sulfur/__init__.py:1773
+#: ../../sulfur/src/sulfur/__init__.py:1778
 msgid "These packages are no longer available"
 msgstr "Te pakiety nie są już dostępne"
 
-#: ../../sulfur/src/sulfur/__init__.py:1774
+#: ../../sulfur/src/sulfur/__init__.py:1779
 msgid ""
 "These packages should be removed (if you agree) because support has been "
 "dropped. Do you want to remove them?"
@@ -8038,83 +8038,83 @@ msgstr ""
 "Te pakiety powinny zostać usunięte (jeśli wyrażasz zgodę), ponieważ wsparcie "
 "dla nich zostało porzucone. Czy chcesz je usunąć?"
 
-#: ../../sulfur/src/sulfur/__init__.py:1789
+#: ../../sulfur/src/sulfur/__init__.py:1794
 msgid "These are orphaned vital packages"
 msgstr "To są osierocone bardzo ważne pakiety"
 
-#: ../../sulfur/src/sulfur/__init__.py:1790
+#: ../../sulfur/src/sulfur/__init__.py:1795
 msgid ""
 "You should make sure that they are no longer needed and remove manually."
 msgstr "Powinieneś się upewnić, że nie są już potrzebne i usunąć je ręcznie."
 
-#: ../../sulfur/src/sulfur/__init__.py:1798
+#: ../../sulfur/src/sulfur/__init__.py:1803
 msgid "These are packages from unavailable repositories"
 msgstr "To są pakiety z niedostępnych repozytoriów"
 
-#: ../../sulfur/src/sulfur/__init__.py:1799
+#: ../../sulfur/src/sulfur/__init__.py:1804
 msgid "You are not going to receive updates for the following packages."
 msgstr "Nie będziesz otrzymywał aktualizacji dla wymienionych pakietów."
 
-#: ../../sulfur/src/sulfur/__init__.py:1811
+#: ../../sulfur/src/sulfur/__init__.py:1816
 msgid "updates"
 msgstr "aktualizacje"
 
-#: ../../sulfur/src/sulfur/__init__.py:1863
+#: ../../sulfur/src/sulfur/__init__.py:1868
 msgid "Showing"
 msgstr "Pokazywanie"
 
-#: ../../sulfur/src/sulfur/__init__.py:1905
+#: ../../sulfur/src/sulfur/__init__.py:1910
 msgid "No packages need or can be queued at the moment."
 msgstr "Żaden pakiet nie potrzebuje/nie może być w tej chwili zakolejkowany."
 
-#: ../../sulfur/src/sulfur/__init__.py:2007
+#: ../../sulfur/src/sulfur/__init__.py:2012
 msgid "Name and description"
 msgstr "Nazwa i opis"
 
-#: ../../sulfur/src/sulfur/__init__.py:2009
+#: ../../sulfur/src/sulfur/__init__.py:2014
 msgid "Search string"
 msgstr "Łańcuch znaków do znalezienia"
 
-#: ../../sulfur/src/sulfur/__init__.py:2010
+#: ../../sulfur/src/sulfur/__init__.py:2015
 msgid "Search type"
 msgstr "Typ wyszukiwania"
 
-#: ../../sulfur/src/sulfur/__init__.py:2013
+#: ../../sulfur/src/sulfur/__init__.py:2018
 msgid "Entropy Search"
 msgstr "Przeszukiwanie Entropy"
 
-#: ../../sulfur/src/sulfur/__init__.py:2072
+#: ../../sulfur/src/sulfur/__init__.py:2077
 msgid "Abort action"
 msgstr "Przerwij operację"
 
-#: ../../sulfur/src/sulfur/__init__.py:2073
+#: ../../sulfur/src/sulfur/__init__.py:2078
 msgid "Ignore"
 msgstr "Zignoruj"
 
-#: ../../sulfur/src/sulfur/__init__.py:2138
+#: ../../sulfur/src/sulfur/__init__.py:2143
 msgid "Tasks completed successfully."
 msgstr "Pomyślnie ukończono zadania."
 
-#: ../../sulfur/src/sulfur/__init__.py:2139
+#: ../../sulfur/src/sulfur/__init__.py:2144
 msgid "Please make sure to read all the messages in the terminal below."
 msgstr ""
 "Proszę się upewnić, że zostały przeczytanie wszystkie wiadomości w terminalu "
 "poniżej."
 
-#: ../../sulfur/src/sulfur/__init__.py:2142
+#: ../../sulfur/src/sulfur/__init__.py:2147
 msgid "Oh, a fairytale gone bad!"
 msgstr "Oh, a taka ładna bajka to była!"
 
-#: ../../sulfur/src/sulfur/__init__.py:2143
+#: ../../sulfur/src/sulfur/__init__.py:2148
 msgid ""
 "Something bad happened, have a look at the messages in the terminal below."
 msgstr "Coś złego się wydarzyło - spójrz na wiadomości w terminalu poniżej."
 
-#: ../../sulfur/src/sulfur/__init__.py:2144
+#: ../../sulfur/src/sulfur/__init__.py:2149
 msgid "Don't feel guilty, it's all my fault!"
 msgstr "Nie czuj się winny, to wszystko moja wina!"
 
-#: ../../sulfur/src/sulfur/__init__.py:2200
+#: ../../sulfur/src/sulfur/__init__.py:2205
 msgid ""
 "Attention. An error occured while processing the queue.\n"
 "Please have a look at the terminal."
@@ -8122,7 +8122,7 @@ msgstr ""
 "Uwaga. Wystąpił błąd podczas przetwarzania kolejki.\n"
 "Proszę spojrzeć na terminal."
 
-#: ../../sulfur/src/sulfur/__init__.py:2216
+#: ../../sulfur/src/sulfur/__init__.py:2221
 msgid ""
 "Attention. Something really bad happened.\n"
 "Please have a look at the terminal."
@@ -8130,7 +8130,7 @@ msgstr ""
 "Uwaga. Wydarzyło się coś złego.\n"
 "Proszę spojrzeć na terminal."
 
-#: ../../sulfur/src/sulfur/__init__.py:2225
+#: ../../sulfur/src/sulfur/__init__.py:2230
 msgid ""
 "Attention. You have updated Entropy.\n"
 "Sulfur will be reloaded."
@@ -8138,15 +8138,15 @@ msgstr ""
 "Uwaga. Zaktualizowałeś Entropy.\n"
 "Sulfur zostanie przeładowany."
 
-#: ../../sulfur/src/sulfur/__init__.py:2313
+#: ../../sulfur/src/sulfur/__init__.py:2318
 msgid "Processing Packages in queue"
 msgstr "Przetwarzanie pakietów w kolejce"
 
-#: ../../sulfur/src/sulfur/__init__.py:2365
+#: ../../sulfur/src/sulfur/__init__.py:2370
 msgid "No packages selected"
 msgstr "Nie wybrano pakietów"
 
-#: ../../sulfur/src/sulfur/__init__.py:2430
+#: ../../sulfur/src/sulfur/__init__.py:2435
 msgid "Skipping current mirror."
 msgstr "Pomijanie bieżącego serwera lustrzanego."
 
