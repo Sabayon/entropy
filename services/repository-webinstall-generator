@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0, '/usr/lib/entropy/libraries')
 sys.path.insert(0, '../libraries')
 
+import time
 import os
 import tempfile
 import errno
@@ -237,10 +238,10 @@ PAYLOAD:
         # handle caching
         cache_map_len_threshold = 800
         cache_map_len = len(cache_map)
-        # perhaps use LRU logic?
         if cache_map_len > cache_map_len_threshold:
             to_remove = cache_map_len_threshold - cache_map_len
-            for key in list(cache_map.keys()):
+            # LRU logic ! yay!
+            for key in sorted(cache_map.keys(), key = lambda x: cache_map[x][0]):
                 if to_remove < 1:
                     break
                 to_remove -= 1
@@ -275,11 +276,13 @@ PAYLOAD:
             deps_pkg_ids = set([pkg_id for pkg_id, _repo in matches])
             deps_pkg_ids.add(package_id)
             for dep_package_id in deps_pkg_ids:
-                data = cache_map.get(dep_package_id)
-                if data is None:
+                cached = cache_map.get(dep_package_id)
+                if cached is None:
                     data = self._repo.getPackageData(dep_package_id,
                         get_content = False, get_changelog = False)
-                    cache_map[dep_package_id] = data
+                    cache_map[dep_package_id] = (time.time(), data)
+                else:
+                    cache_t, data = cached
 
                 dest_package_id, xxx, yyy = dest_repo.addPackage(data,
                     revision = data['revision'],
