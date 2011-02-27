@@ -15,6 +15,7 @@ from entropy.exceptions import SystemDatabaseError
 from entropy.client.interfaces.db import GenericRepository
 from entropy.qa import QAInterface
 from entropy.core.settings.base import SystemSettings
+from entropy.exceptions import EntropyException
 
 from entropy.const import const_convert_to_rawstring, etpConst
 import entropy.dep
@@ -44,6 +45,9 @@ exit ${?}
 PAYLOAD:
 """+ etpConst['databasestarttag'])
 
+    class CalculationError(EntropyException):
+        """Raised when an error occured while calculating the work queue"""
+
     def __init__(self, repository_id, entropy_repository, package_dirs,
         mirror_urls):
         self._repo_id = repository_id
@@ -61,12 +65,11 @@ PAYLOAD:
             f_obj_dest.write(chunk)
         f_obj_dest.flush()
 
-    def sync(self):
-
-        self.output(purple("Scanning..."),
-            header = teal(" @@ "),
-            importance = 1, back = True)
-
+    def _calculate_required_actions(self):
+        """
+        Compute the list of package identifiers requiring a webinstall package
+        generation and collect the expired ones (that would be removed).
+        """
         package_ids = self._repo.listAllPackageIds()
         download_map = dict((x, self._repo.retrieveDownloadURL(x)) for x in
             package_ids)
@@ -76,6 +79,7 @@ PAYLOAD:
         work_queue = []
         max_count = len(package_ids)
         count = 0
+
         for package_id in sorted(package_ids, reverse = True):
             count += 1
             # locating package in self._package_dirs
@@ -97,7 +101,8 @@ PAYLOAD:
                     importance = 1, back = True,
                     level = "error"
                 )
-                return False
+                raise WebinstallGenerator.CalculationError(
+                    "cannot find local package dir for: %s" % (download_path,))
 
             if (count % 150 == 0) or (count == 0) or (count == max_count):
                 self.output("%s: %s" % (purple("scanning"), download_path),
@@ -130,21 +135,33 @@ PAYLOAD:
 
             work_queue.append((package_id, local_package_path, local_etp_path))
 
-        if not work_queue:
-            # nothing to do
-            self.output(purple("Nothing to do."),
-                header = teal(" @@ "),
-                importance = 1)
-            return True
+        return work_queue, expired_webinstall_files
 
-        max_count = len(work_queue)
-        count = 0
+    def _cleanup_expired_files(self, expired_webinstall_files):
+        """
+        Cleanup routine that removes expired webinstall package files.
+        """
+        for expired_file in sorted(expired_webinstall_files):
+            for path in (expired_file,
+                expired_file + etpConst['packagesmd5fileext']):
+                try:
+                    os.remove(path)
+                except OSError as err:
+                    self.output("%s %s: %s" % (
+                            teal("cannot remove"),
+                            path,
+                            repr(err),
+                        ),
+                        header = brown(" @@ "),
+                        level = "warning",
+                        importance = 1
+                    )
 
-        self.output(purple("Generating web-install packages..."),
-            header = teal(" @@ "),
-            count = (count, max_count),
-            importance = 1)
-
+    def _prepare_base_package_repository(self):
+        """
+        Prepare an empty Entropy Repository that will be used as base
+        for embedding package metadata.
+        """
         treeupdates_actions = self._repo.listAllTreeUpdatesActions()
 
         # generate empty repository file and re-use it every time
@@ -163,27 +180,171 @@ PAYLOAD:
             empty_repo.bumpTreeUpdatesActions(treeupdates_actions)
             empty_repo.commit()
             empty_repo.close()
+            return tmp_repo_orig_path
         except Exception:
-            os.close(orig_fd)
             os.remove(tmp_repo_orig_path)
             raise
+        finally:
+            os.close(orig_fd)
 
+    def _generate_webinstall_package(self, base_repository_path,
+        package_id, package_path, etp_path, cache_map):
+        """
+        Generate a webinstall package for given package_id matched inside
+        the working Entropy Repository instance passed at constructor time.
+        If no exceptions are raised, the generation went successful.
+        The webinstall file generation is atomic.
+        """
+
+        # handle caching
+        cache_map_len_threshold = 500
+        cache_map_len = len(cache_map)
+        # perhaps use LRU logic?
+        if cache_map_len > cache_map_len_threshold:
+            to_remove = cache_map_len_threshold - cache_map_len
+            for key in list(cache_map.keys()):
+                if to_remove < 1:
+                    break
+                to_remove -= 1
+                cache_map.pop(key)
+
+        # WARNING: usage of undocumented feature of
+        # get_deep_dependency_list
+        # NOTE: how about build deps?
+        pkg_match = (package_id, self._repo)
+        matches = self._qa.get_deep_dependency_list(None, pkg_match)
+
+        tmp_fd, tmp_repo_path = tempfile.mkstemp(
+            suffix="repo-webinst-gen")
+        with os.fdopen(tmp_fd, "wb") as tmp_repo_f:
+            with open(base_repository_path, "rb") as tmp_repo_source_f:
+                self.__copy_data(tmp_repo_source_f, tmp_repo_f)
+
+        dest_repo = None
+        compressed_tmp_path = None
+        compressed_fd = None
         try:
-            pkg_data_cache = {}
-            pkg_data_cache_len_threshold = 500
+
+            atom = self._repo.retrieveAtom(package_id)
+            dest_repo = GenericRepository(
+                readOnly = False,
+                dbFile = tmp_repo_path,
+                name = atom,
+                xcache = False,
+                indexing = False,
+                skipChecks = True)
+
+            deps_pkg_ids = set([pkg_id for pkg_id, _repo in matches])
+            deps_pkg_ids.add(package_id)
+            for dep_package_id in deps_pkg_ids:
+                data = cache_map.get(dep_package_id)
+                if data is None:
+                    data = self._repo.getPackageData(dep_package_id,
+                        get_content = False, get_changelog = False)
+                    cache_map[dep_package_id] = data
+
+                dest_package_id, xxx, yyy = dest_repo.addPackage(data,
+                    revision = data['revision'],
+                    do_commit = False,
+                    formatted_content = True)
+
+                source = etpConst['install_sources']['unknown']
+                if dep_package_id == package_id:
+                    source = etpConst['install_sources']['user']
+                # required in order to make mirror URL to be
+                # resolved correctly, and, to make only the main
+                # package to be pulled in for install.
+                dest_repo.storeInstalledPackage(dest_package_id,
+                    self._repo_id, source = source)
+
+            dest_repo._setSetting("plain_packages",
+                self._mirror_urls_str)
+            dest_repo.commit()
+            dest_repo.close()
+            dest_repo = None
+
+            # ready to bzip2
+            compressed_fd = None
+            compressed_tmp_path = None
+            try:
+                compressed_fd, compressed_tmp_path = tempfile.mkstemp(
+                        suffix="repo-webinst-gen")
+                entropy.tools.compress_file(tmp_repo_path,
+                    compressed_tmp_path, bz2.BZ2File)
+                try:
+                    os.rename(compressed_tmp_path, tmp_repo_path)
+                except OSError as err:
+                    if err.errno != errno.EXDEV:
+                        raise
+                    shutil.move(compressed_tmp_path, tmp_repo_path)
+            finally:
+                if compressed_fd is not None:
+                    os.close(compressed_fd)
+
+            tmp_etp_path = etp_path + "._etp_work"
+            with open(tmp_etp_path, "wb") as etp_f:
+                etp_f.write(WebinstallGenerator.SHELL_PREAMBLE)
+                with open(tmp_repo_path, "rb") as bin_f:
+                    while True:
+                        chunk = bin_f.read(16384)
+                        if not chunk:
+                            break
+                        etp_f.write(chunk)
+                    bin_f.flush()
+                etp_f.flush()
+            os.rename(tmp_etp_path, etp_path)
+            entropy.tools.create_md5_file(etp_path)
+
+        finally:
+            if compressed_fd is not None:
+                try:
+                    os.close(compressed_fd)
+                except OSError:
+                    pass
+            if compressed_tmp_path is not None:
+                try:
+                    os.remove(compressed_tmp_path)
+                except (IOError, OSError):
+                    pass
+            if dest_repo is not None:
+                dest_repo.close()
+            try:
+                os.close(tmp_fd)
+            except (OSError, IOError):
+                pass
+            try:
+                os.remove(tmp_repo_path)
+            except (OSError, IOError):
+                pass
+
+
+    def sync(self):
+
+        self.output(purple("Scanning..."),
+            header = teal(" @@ "),
+            importance = 1, back = True)
+
+        work_queue, expired_webinstall_files = \
+            self._calculate_required_actions()
+
+        if not work_queue:
+            # nothing to do
+            self.output(purple("Nothing to do."),
+                header = teal(" @@ "),
+                importance = 1)
+            return True
+
+        self.output(purple("Generating web-install packages..."),
+            header = teal(" @@ "),
+            importance = 1)
+
+        tmp_repo_orig_path = self._prepare_base_package_repository()
+        pkg_data_cache = {}
+        max_count = len(work_queue)
+        count = 0
+        try:
 
             for package_id, package_path, etp_path in work_queue:
-
-                pkg_data_cache_len = len(pkg_data_cache)
-                # perhaps use LRU logic?
-                if pkg_data_cache_len > pkg_data_cache_len_threshold:
-                    to_remove = pkg_data_cache_len_threshold - \
-                        pkg_data_cache_len
-                    for key in list(pkg_data_cache.keys()):
-                        if to_remove < 1:
-                            break
-                        to_remove -= 1
-                        pkg_data_cache.pop(key)
 
                 count += 1
                 atom = self._repo.retrieveAtom(package_id)
@@ -192,118 +353,12 @@ PAYLOAD:
                     count = (count, max_count),
                     importance = 0,
                     back = True)
-                # WARNING: usage of undocumented feature of
-                # get_deep_dependency_list
-                # NOTE: how about build deps?
-                pkg_match = (package_id, self._repo)
-                matches = self._qa.get_deep_dependency_list(None, pkg_match) 
-
-                tmp_fd, tmp_repo_path = tempfile.mkstemp(
-                    suffix="repo-webinst-gen")
-                with os.fdopen(tmp_fd, "wb") as tmp_repo_f:
-                    with open(tmp_repo_orig_path, "rb") as tmp_repo_source_f:
-                        self.__copy_data(tmp_repo_source_f, tmp_repo_f)
-
-                dest_repo = None
-                compressed_tmp_path = None
-                compressed_fd = None
-                try:
-
-                    dest_repo = GenericRepository(
-                        readOnly = False,
-                        dbFile = tmp_repo_path,
-                        name = atom,
-                        xcache = False,
-                        indexing = False,
-                        skipChecks = True)
-
-                    deps_pkg_ids = set([pkg_id for pkg_id, _repo in matches])
-                    deps_pkg_ids.add(package_id)
-                    for dep_package_id in deps_pkg_ids:
-                        data = pkg_data_cache.get(dep_package_id)
-                        if data is None:
-                            data = self._repo.getPackageData(dep_package_id,
-                                get_content = False, get_changelog = False)
-                            pkg_data_cache[dep_package_id] = data
-
-                        dest_package_id, xxx, yyy = dest_repo.addPackage(data,
-                            revision = data['revision'],
-                            do_commit = False,
-                            formatted_content = True)
-
-                        source = etpConst['install_sources']['unknown']
-                        if dep_package_id == package_id:
-                            source = etpConst['install_sources']['user']
-                        # required in order to make mirror URL to be
-                        # resolved correctly, and, to make only the main
-                        # package to be pulled in for install.
-                        dest_repo.storeInstalledPackage(dest_package_id,
-                            self._repo_id, source = source)
-
-                    dest_repo._setSetting("plain_packages",
-                        self._mirror_urls_str)
-                    dest_repo.commit()
-                    dest_repo.close()
-                    dest_repo = None
-
-                    # ready to bzip2
-                    compressed_fd = None
-                    compressed_tmp_path = None
-                    try:
-                        compressed_fd, compressed_tmp_path = tempfile.mkstemp(
-                             suffix="repo-webinst-gen")
-                        entropy.tools.compress_file(tmp_repo_path,
-                            compressed_tmp_path, bz2.BZ2File)
-                        try:
-                            os.rename(compressed_tmp_path, tmp_repo_path)
-                        except OSError as err:
-                            if err.errno != errno.EXDEV:
-                                raise
-                            shutil.move(compressed_tmp_path, tmp_repo_path)
-                    finally:
-                        if compressed_fd is not None:
-                            os.close(compressed_fd)
-
-                    tmp_etp_path = etp_path + "._etp_work"
-                    with open(tmp_etp_path, "wb") as etp_f:
-                        etp_f.write(WebinstallGenerator.SHELL_PREAMBLE)
-                        with open(tmp_repo_path, "rb") as bin_f:
-                            while True:
-                                chunk = bin_f.read(16384)
-                                if not chunk:
-                                    break
-                                etp_f.write(chunk)
-                            bin_f.flush()
-                        etp_f.flush()
-                    os.rename(tmp_etp_path, etp_path)
-                    entropy.tools.create_md5_file(etp_path)
-
-                    self.output("%s: %s" % (purple("generated"), etp_path),
-                        header = teal(" @@ "),
-                        count = (count, max_count),
-                        importance = 0)
-
-                finally:
-                    if compressed_fd is not None:
-                        try:
-                            os.close(compressed_fd)
-                        except OSError:
-                            pass
-                    if compressed_tmp_path is not None:
-                        try:
-                            os.remove(compressed_tmp_path)
-                        except (IOError, OSError):
-                            pass
-                    if dest_repo is not None:
-                        dest_repo.close()
-                    try:
-                        os.close(tmp_fd)
-                    except (OSError, IOError):
-                        pass
-                    try:
-                        os.remove(tmp_repo_path)
-                    except (OSError, IOError):
-                        pass
+                self._generate_webinstall_package(tmp_repo_orig_path,
+                    package_id, package_path, etp_path, pkg_data_cache)
+                self.output("%s: %s" % (purple("generated"), etp_path),
+                    header = teal(" @@ "),
+                    count = (count, max_count),
+                    importance = 0)
 
         finally:
             try:
@@ -311,28 +366,13 @@ PAYLOAD:
             except (OSError, IOError):
                 pass
 
-        # help the garbage collector
-        for key in list(pkg_data_cache.keys()):
-            del pkg_data_cache[key]
-        pkg_data_cache.clear()
-        del pkg_data_cache
+            # help the garbage collector
+            for key in list(pkg_data_cache.keys()):
+                del pkg_data_cache[key]
+            pkg_data_cache.clear()
+            del pkg_data_cache
 
-        # now remove expired packages
-        for expired_file in sorted(expired_webinstall_files):
-            for path in (expired_file,
-                expired_file + etpConst['packagesmd5fileext']):
-                try:
-                    os.remove(path)
-                except OSError as err:
-                    self.output("%s %s: %s" % (
-                            teal("cannot remove"),
-                            path,
-                            repr(err),
-                        ),
-                        header = brown(" @@ "),
-                        level = "warning",
-                        importance = 1
-                    )
+        self._cleanup_expired_files(expired_webinstall_files)
 
         return True
 
