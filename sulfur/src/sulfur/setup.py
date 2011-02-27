@@ -204,9 +204,9 @@ class SulfurConf:
     color_reinstall = '#A71B1B'
     color_downgrade = '#A71B1B'
     color_title = '#A71B1B' # red
-    color_title2 = '#2A6AFF' # light blue
+    color_title2 = '#5A0059' # light blue
     # description below package atoms
-    color_pkgdesc = '#FF1D1D' # red
+    color_pkgdesc = '#004959' # red
     # description for masked packages and for pkg description in dialogs, notice board desc items
     color_pkgsubtitle = '#418C0F' # dark green
     color_subdesc = '#837350' # brown
