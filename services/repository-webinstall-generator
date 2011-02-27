@@ -281,7 +281,6 @@ PAYLOAD:
                         get_content = False, get_changelog = False)
                     cache_map[dep_package_id] = data
 
-                import pdb; pdb.set_trace()
                 dest_package_id, xxx, yyy = dest_repo.addPackage(data,
                     revision = data['revision'],
                     do_commit = False,
