@@ -738,7 +738,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if packages_install:
             fn = packages_install[0]
-            st = self.on_installPackageItem_activate(None, fn, get_st = True)
+            with self._privileges:
+                st = self.on_installPackageItem_activate(None, fn,
+                    get_st = True)
             if not st:
                 self._startup_packages_install = None
             return st
