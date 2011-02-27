@@ -469,6 +469,7 @@ class MtimePingus(object):
 
     def __init__(self):
         object.__init__(self)
+        self.__dump_lock = threading.Lock()
         try:
             if not os.path.isdir(MtimePingus.PINGUS_DIR):
                 os.makedirs(MtimePingus.PINGUS_DIR, 0o775)
@@ -490,8 +491,9 @@ class MtimePingus(object):
         @type action_string: string
         """
         _hash = self._hash_key(action_string)
-        entropy.dump.dumpobj(_hash, time.time(),
-            dump_dir = MtimePingus.PINGUS_DIR)
+        with self.__dump_lock:
+            entropy.dump.dumpobj(_hash, time.time(),
+                dump_dir = MtimePingus.PINGUS_DIR)
 
     def pong(self, action_string):
         """
@@ -503,7 +505,9 @@ class MtimePingus(object):
         @rtype: float or None
         """
         _hash = self._hash_key(action_string)
-        return entropy.dump.loadobj(_hash, dump_dir = MtimePingus.PINGUS_DIR)
+        with self.__dump_lock:
+            return entropy.dump.loadobj(_hash,
+                dump_dir = MtimePingus.PINGUS_DIR)
 
     def seconds_passed(self, action_string, seconds):
         """
