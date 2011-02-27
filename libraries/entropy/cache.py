@@ -105,6 +105,7 @@ class EntropyCacher(Singleton):
         self.__inside_with_stmt = 0
         self.__proc_pids = set()
         self.__proc_pids_lock = threading.Lock()
+        self.__dump_data_lock = threading.Lock()
 
     def __enter__(self):
         """
@@ -320,8 +321,9 @@ class EntropyCacher(Singleton):
         if cache_dir is None:
             cache_dir = entropy.dump.D_DIR
         try:
-            entropy.dump.dumpobj(key, data, dump_dir = cache_dir,
-                ignore_exceptions = False)
+            with self.__dump_data_lock:
+                entropy.dump.dumpobj(key, data, dump_dir = cache_dir,
+                    ignore_exceptions = False)
         except (EOFError, IOError, OSError) as err:
             raise IOError("cannot store %s to %s. err: %s" % (
                 key, cache_dir, repr(err)))
@@ -367,7 +369,8 @@ class EntropyCacher(Singleton):
             #    const_debug_write(__name__,
             #        "EntropyCacher.push, sync push %s, into %s" % (
             #            key, cache_dir,))
-            entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
+            with self.__dump_data_lock:
+                entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
 
     def pop(self, key, cache_dir = None):
         """
