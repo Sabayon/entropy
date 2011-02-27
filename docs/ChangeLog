@@ -1,3 +1,51 @@
+commit 664e760f35456e4f1de936b7a4942c319ed194c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 19:02:10 2011 +0100
+
+    Release Entropy 1.0_alpha22
+
+commit 2e62b3f2cc3d9e10c8f8b2153d8b38d0e83aa65c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 19:01:51 2011 +0100
+
+    [sulfur] fix execution with newer kdesu (4.6)
+
+commit 99d5cca0ee31e4e269baab9a0f2080c39e9ee713
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 18:01:32 2011 +0100
+
+    [services] repository-webinstall-generator: divide et impera, split code into sub-functions
+
+commit 504a1d683abe8992378f06206a39630c907e062e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 17:26:37 2011 +0100
+
+    [sulfur] fix permissions issue while trying to install package file, gain privileges before executing os.access() (in on_installPackageItem_activate)
+
+commit 714e1030c3bd33279a7601f7be770e2fa0ef9429
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 17:12:15 2011 +0100
+
+    [sulfur] slightly tweak UI default colours
+
+commit 903fb39d6025d42c1b24e6da35786e363fca111f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 10:53:48 2011 +0100
+
+    [entropy.cache] MtimePingus: avoid race conditions on ping() and pong() when using entropy.dump.dumpobj()
+
+commit 71bd1646d04bb46019b2537dc491d98a0e775757
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 10:52:10 2011 +0100
+
+    [entropy.cache] EntropyCacher: race conditions on save() and push() can cause OSError exceptions (errno=2) on entropy.dump.dumpobj()
+
+commit 7658ef3d12bb11f219c68ee5274cb50b12f7fd78
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 01:13:28 2011 +0100
+
+    Tagging Entropy version 1.0_alpha21
+
 commit c14dd0161d9838bc7e15d9acbf3600783b5a6241
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 27 01:13:25 2011 +0100
