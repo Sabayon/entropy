@@ -5118,10 +5118,13 @@ class EntropyRepository(EntropyRepositoryBase):
             del cached
             return obj
 
-        cur = self._cursor().execute('PRAGMA table_info( %s )' % (table,))
-        rslt = (x[1] for x in cur.fetchall())
-
-        exists = column in rslt
+        try:
+            self._cursor().execute("""
+            SELECT `%s` FROM `%s` LIMIT 1
+            """ % (column, table))
+            exists = True
+        except OperationalError:
+            exists = False
         cached[d_tup] = exists
         self._setLiveCache("_doesColumnInTableExist", cached)
         # avoid python3.x memleak
