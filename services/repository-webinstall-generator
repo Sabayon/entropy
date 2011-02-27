@@ -80,9 +80,7 @@ PAYLOAD:
         max_count = len(package_ids)
         count = 0
 
-        for package_id in sorted(package_ids, reverse = True):
-            count += 1
-            # locating package in self._package_dirs
+        def _determine_local_package_path(package_id):
             download_path = download_map[package_id]
             download_path_dir, download_file_name = os.path.split(download_path)
             local_package_dir = package_dirs_cache.get(download_path_dir)
@@ -104,6 +102,39 @@ PAYLOAD:
                 raise WebinstallGenerator.CalculationError(
                     "cannot find local package dir for: %s" % (download_path,))
 
+            local_package_path = os.path.join(local_package_dir,
+                download_file_name)
+            return local_package_path
+
+        def _determine_local_etp_path(local_package_dir, package_id):
+            atom, category, name, version, slot, tag, revision, branch, \
+                etpapi = self._repo.getScopeData(package_id)
+            version += "%s%s" % (etpConst['entropyrevisionprefix'], revision,)
+            local_etp_fn = entropy.dep.create_package_filename(category,
+                name, version, tag, ext = etpConst['packagesext_webinstall'])
+            local_etp_path = os.path.join(local_package_dir, local_etp_fn)
+            return local_etp_path
+
+        def _validate_etp_creation(local_package_path, local_etp_path, overwrite):
+            if not os.path.isfile(local_package_path) and \
+                os.path.isfile(local_etp_path):
+                expired_webinstall_files.add(local_etp_path)
+                return False
+            if not os.path.isfile(local_package_path):
+                # local_etp_path does not exist and package file is not
+                # available, skip!
+                return False
+            if not overwrite:
+                if os.path.isfile(local_etp_path):
+                    # already available
+                    return False
+            return True
+
+        work_queue_cache = set()
+
+        for package_id in sorted(package_ids, reverse = True):
+            count += 1
+            download_path = download_map[package_id]
             if (count % 150 == 0) or (count == 0) or (count == max_count):
                 self.output("%s: %s" % (purple("scanning"), download_path),
                     header = teal(" @@ "),
@@ -111,29 +142,36 @@ PAYLOAD:
                     importance = 0,
                     back = True)
 
-            local_package_path = os.path.join(local_package_dir,
-                download_file_name)
+            local_package_path = _determine_local_package_path(package_id)
+            local_package_dir = os.path.dirname(local_package_path)
+            local_etp_path = _determine_local_etp_path(local_package_dir,
+                package_id)
 
-            atom, category, name, version, slot, tag, revision, branch, \
-                etpapi = self._repo.getScopeData(package_id)
-            version += "%s%s" % (etpConst['entropyrevisionprefix'], revision,)
-            local_etp_fn = entropy.dep.create_package_filename(category,
-                name, version, tag, ext = etpConst['packagesext_webinstall'])
-            local_etp_path = os.path.join(local_package_dir, local_etp_fn)
-
-            if not os.path.isfile(local_package_path) and \
-                os.path.isfile(local_etp_path):
-                expired_webinstall_files.add(local_etp_path)
-                continue
-            if not os.path.isfile(local_package_path):
-                # local_etp_path does not exist and package file is not
-                # available, skip!
-                continue
-            if os.path.isfile(local_etp_path):
-                # already available
+            valid = _validate_etp_creation(local_package_path,
+                local_etp_path, False)
+            if not valid:
                 continue
 
             work_queue.append((package_id, local_package_path, local_etp_path))
+            work_queue_cache.add(package_id)
+
+            # also pull in its reverse dependencies
+            # this to ensure that packages referencing this packages will
+            # have updated metadata.
+            # in this case, etp files are going to be overwritten
+            revdeps = self._repo.retrieveReverseDependencies(package_id)
+            revdeps = [x for x in revdeps if x not in work_queue_cache]
+            for rev_pkg_id in revdeps:
+                local_package_path = _determine_local_package_path(rev_pkg_id)
+                local_package_dir = os.path.dirname(local_package_path)
+                local_etp_path = _determine_local_etp_path(local_package_dir,
+                    rev_pkg_id)
+                valid = _validate_etp_creation(local_package_path,
+                    local_etp_path, True)
+                if valid:
+                    work_queue.append((rev_pkg_id, local_package_path,
+                        local_etp_path))
+                    work_queue_cache.add(rev_pkg_id)
 
         return work_queue, expired_webinstall_files
 
@@ -243,6 +281,7 @@ PAYLOAD:
                         get_content = False, get_changelog = False)
                     cache_map[dep_package_id] = data
 
+                import pdb; pdb.set_trace()
                 dest_package_id, xxx, yyy = dest_repo.addPackage(data,
                     revision = data['revision'],
                     do_commit = False,
@@ -293,6 +332,8 @@ PAYLOAD:
                     bin_f.flush()
                 etp_f.flush()
             os.rename(tmp_etp_path, etp_path)
+            # not really atomic (the whole transaction) but for now
+            # md5 generation is not so important for us
             entropy.tools.create_md5_file(etp_path)
 
         finally:
@@ -316,7 +357,6 @@ PAYLOAD:
                 os.remove(tmp_repo_path)
             except (OSError, IOError):
                 pass
-
 
     def sync(self):
 
