@@ -1728,14 +1728,21 @@ class EntropyRepository(EntropyRepositoryBase):
         @keyword gpg: GPG signature file content
         @type gpg: string
         """
-        if not self._doesColumnInTableExist("packagesignatures", "gpg"):
-            self._cursor().execute("""
-            INSERT INTO packagesignatures VALUES (?,?,?,?)
-            """, (package_id, sha1, sha256, sha512))
-        else:
+        try:
+            # be optimistic and delay if condition, _doesColumnInTableExist
+            # is really slow
             self._cursor().execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?,?)
             """, (package_id, sha1, sha256, sha512, gpg))
+        except OperationalError:
+            # perhaps, gpg column does not exist, check now
+            if self._doesColumnInTableExist("packagesignatures", "gpg"):
+                # something is really wrong, and it's not about our cols
+                raise
+            # fallback to old instert (without gpg table)
+            self._cursor().execute("""
+            INSERT INTO packagesignatures VALUES (?,?,?,?)
+            """, (package_id, sha1, sha256, sha512))
 
     def _insertDesktopMime(self, package_id, metadata):
         """
@@ -3018,17 +3025,21 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        is_default_str = ',0'
-        if self._doesColumnInTableExist("provide", "is_default"):
-            is_default_str = ',is_default '
+        try:
+            # be optimistic, _doesColumnInTableExist is very slow.
+            cur = self._cursor().execute("""
+            SELECT atom,is_default FROM provide WHERE idpackage = (?)
+            """, (package_id,))
+        except OperationalError:
+            # TODO: remove this before 31-12-2011
+            if self._doesColumnInTableExist("provide", "is_default"):
+                # something is really wrong
+                raise
+            cur = self._cursor().execute("""
+            SELECT atom,0 FROM provide WHERE idpackage = (?)
+            """, (package_id,))
 
-        cur = self._cursor().execute("""
-        SELECT atom%s FROM provide WHERE idpackage = (?)
-        """ % (is_default_str,), (package_id,))
-        if is_default_str:
-            return frozenset(cur)
-        return self._cur2frozenset(cur)
+        return frozenset(cur)
 
     def retrieveDependenciesList(self, package_id, exclude_deptypes = None,
         resolve_conditional_deps = True):
@@ -4265,17 +4276,21 @@ class EntropyRepository(EntropyRepositoryBase):
         @return: found PROVIDE metadata
         @rtype: list
         """
-        # TODO: remove this before 31-12-2011
-        if self._doesColumnInTableExist("provide", "is_default"):
-            get_def_string = ",provide.is_default"
-        else:
-            get_def_string = ",0"
-
-        cur = self._cursor().execute("""
-        SELECT baseinfo.idpackage%s FROM baseinfo,provide
-        WHERE provide.atom = (?) AND
-        provide.idpackage = baseinfo.idpackage""" % (get_def_string,),
-            (keyword,))
+        try:
+            # be optimistic, cope with _doesColumnInTableExist slowness
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage,provide.is_default FROM baseinfo,provide
+            WHERE provide.atom = (?) AND
+            provide.idpackage = baseinfo.idpackage""", (keyword,))
+        except OperationalError:
+            # TODO: remove this before 31-12-2011
+            if self._doesColumnInTableExist("provide", "is_default"):
+                # something is really wrong
+                raise
+            cur = self._cursor().execute("""
+            SELECT baseinfo.idpackage,0 FROM baseinfo,provide
+            WHERE provide.atom = (?) AND
+            provide.idpackage = baseinfo.idpackage""", (keyword,))
 
         return tuple(cur)
 
@@ -5207,12 +5222,19 @@ class EntropyRepository(EntropyRepositoryBase):
 
         if include_signatures:
             # TODO: remove this before 31-12-2011
-            gpg_str = ", gpg"
-            if not self._doesColumnInTableExist("packagesignatures", "gpg"):
-                gpg_str = ""
-            cur = self._cursor().execute("""
-            SELECT idpackage, sha1%s FROM
-            packagesignatures %s""" % (gpg_str, package_id_order,))
+            try:
+                # be optimistic and delay if condition, _doesColumnInTableExist
+                # is really slow
+                cur = self._cursor().execute("""
+                SELECT idpackage, sha1,gpg FROM
+                packagesignatures %s""" % (package_id_order,))
+            except OperationalError:
+                if self._doesColumnInTableExist("packagesignatures", "gpg"):
+                    # something is really wrong
+                    raise
+                cur = self._cursor().execute("""
+                SELECT idpackage, sha1 FROM
+                packagesignatures %s""" % (package_id_order,))
             if strings:
                 do_update_hash(m, cur)
             else:
@@ -5257,13 +5279,19 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cached = self._getLiveCache("getInstalledPackageSource")
         if cached is None:
-            cached = {}
             # TODO: drop this check in future, backward compatibility
-            if self._doesColumnInTableExist("installedtable", "source"):
+            try:
+                # be optimistic, delay _doesColumnInTableExist as much as
+                # possible
                 cur = self._cursor().execute("""
                 SELECT idpackage, source FROM installedtable
                 """)
                 cached = dict(cur)
+            except OperationalError:
+                if self._doesColumnInTableExist("installedtable", "source"):
+                    # something is really wrong
+                    raise
+                cached = {}
             self._setLiveCache("getInstalledPackageSource", cached)
         # avoid python3.x memleak
         obj = cached.get(package_id)
