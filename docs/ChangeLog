@@ -1,3 +1,21 @@
+commit c14dd0161d9838bc7e15d9acbf3600783b5a6241
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 01:13:25 2011 +0100
+
+    Release Entropy 1.0_alpha21
+
+commit 1333e81e0ed12161173292bedccb0aca66612dfd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 01:13:00 2011 +0100
+
+    [sulfur] fix regression with lock checks
+
+commit fb69f295f9988e49f4dea8e4c72da15f2a502240
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 00:11:28 2011 +0100
+
+    Tagging Entropy version 1.0_alpha20
+
 commit fbcca7384636628dfae154c7ece8867c3cfa78c3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 27 00:11:09 2011 +0100
