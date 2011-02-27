@@ -235,7 +235,7 @@ PAYLOAD:
         """
 
         # handle caching
-        cache_map_len_threshold = 500
+        cache_map_len_threshold = 800
         cache_map_len = len(cache_map)
         # perhaps use LRU logic?
         if cache_map_len > cache_map_len_threshold:
