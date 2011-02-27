@@ -44,7 +44,7 @@ def setup_env():
         for item in path:
             itempath = os.path.join(item, 'kdesu')
             if os.access(itempath,os.X_OK):
-                su_cmd = itempath+' "' + sulfur_path + '"'
+                su_cmd = itempath + ' -- ' + sulfur_path
                 break
     else:
         if os.access('/usr/bin/gksu', os.X_OK):
