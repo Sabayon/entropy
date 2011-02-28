@@ -389,7 +389,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 blue(str(new_atom)),
                 red(_("has been injected")),
                 red(_("quickpkg manually to update embedded db")),
-                red(_("Repository repository updated anyway")),
+                red(_("Repository updated anyway")),
             )
             self._server.output(
                 mytxt,
