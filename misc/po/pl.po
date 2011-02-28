@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2011-02-27 22:38+0100\n"
+"POT-Creation-Date: 2011-02-28 09:44+0100\n"
 "PO-Revision-Date: 2011-02-04 22:31+0100\n"
 "Last-Translator: Sławomir Nizio <poczta-sn@gazeta.pl>\n"
 "Language-Team: Sławomir Nizio <poczta-sn@gazeta.pl>\n"
@@ -18,36 +18,36 @@ msgstr ""
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: POLAND\n"
 
-#: ../../libraries/entropy/db/__init__.py:4884
+#: ../../libraries/entropy/db/__init__.py:4899
 msgid "Syncing current database"
 msgstr "Synchronizowanie bieżącej bazy"
 
-#: ../../libraries/entropy/db/__init__.py:4885
+#: ../../libraries/entropy/db/__init__.py:4900
 #: ../../libraries/entropy/client/interfaces/db.py:251
 msgid "please wait"
 msgstr "proszę czekać"
 
-#: ../../libraries/entropy/db/__init__.py:4900
+#: ../../libraries/entropy/db/__init__.py:4915
 msgid "Removing entry"
 msgstr "Usuwanie pozycji"
 
-#: ../../libraries/entropy/db/__init__.py:4919
+#: ../../libraries/entropy/db/__init__.py:4934
 msgid "Adding entry"
 msgstr "Dodawanie pozycji"
 
-#: ../../libraries/entropy/db/__init__.py:4996
+#: ../../libraries/entropy/db/__init__.py:5011
 msgid "Exporting database table"
 msgstr "Eksportowanie bazy danych"
 
-#: ../../libraries/entropy/db/__init__.py:5036
+#: ../../libraries/entropy/db/__init__.py:5051
 msgid "Database Export complete."
 msgstr "Eksport bazy zakończony."
 
-#: ../../libraries/entropy/db/__init__.py:5615
-#: ../../libraries/entropy/db/__init__.py:5628
-#: ../../libraries/entropy/db/__init__.py:5784
-#: ../../libraries/entropy/db/__init__.py:5891
-#: ../../libraries/entropy/db/__init__.py:5904
+#: ../../libraries/entropy/db/__init__.py:5646
+#: ../../libraries/entropy/db/__init__.py:5659
+#: ../../libraries/entropy/db/__init__.py:5815
+#: ../../libraries/entropy/db/__init__.py:5922
+#: ../../libraries/entropy/db/__init__.py:5935
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2546
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:2685
 #: ../../libraries/entropy/client/interfaces/client.py:803
@@ -59,19 +59,19 @@ msgstr "Eksport bazy zakończony."
 msgid "ATTENTION"
 msgstr "UWAGA"
 
-#: ../../libraries/entropy/db/__init__.py:5616
+#: ../../libraries/entropy/db/__init__.py:5647
 msgid "Spm error occured"
 msgstr "Błąd związany z SPM"
 
-#: ../../libraries/entropy/db/__init__.py:5629
+#: ../../libraries/entropy/db/__init__.py:5660
 msgid "Spm Unique Identifier not found for"
 msgstr "Unikatowy identyfikator SPM nie znaleziony dla"
 
-#: ../../libraries/entropy/db/__init__.py:5786
+#: ../../libraries/entropy/db/__init__.py:5817
 msgid "updating repository metadata layout, please wait!"
 msgstr "aktualizowanie układu metadanych dla repozytorium, proszę czekać!"
 
-#: ../../libraries/entropy/db/__init__.py:5892
+#: ../../libraries/entropy/db/__init__.py:5923
 msgid "generating provided_libs metadata, please wait!"
 msgstr "generowanie metadanych provided_libs, proszę czekać!"
 
@@ -246,7 +246,7 @@ msgstr "Przeładowywanie modułów Portage"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin/__init__.py:829
 #: ../../libraries/entropy/server/transceivers.py:281
-#: ../../libraries/entropy/server/interfaces/db.py:923
+#: ../../libraries/entropy/server/interfaces/db.py:932
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1782
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1804
 msgid "error"
@@ -567,32 +567,32 @@ msgstr "ustawienia katalogu na"
 msgid "Keys for repository are expired"
 msgstr "Klucze dla repozytorium utraciły ważność"
 
-#: ../../libraries/entropy/server/interfaces/db.py:676
+#: ../../libraries/entropy/server/interfaces/db.py:685
 #: ../../libraries/entropy/server/interfaces/main.py:3157
 #: ../../libraries/entropy/server/interfaces/main.py:3992
 #: ../../libraries/entropy/server/interfaces/mirrors.py:940
 msgid "download"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/db.py:677
+#: ../../libraries/entropy/server/interfaces/db.py:686
 msgid "preparing to download repository from mirror"
 msgstr "przygotowanie do pobrania repozytorium z serwera lustrzanego"
 
-#: ../../libraries/entropy/server/interfaces/db.py:686
+#: ../../libraries/entropy/server/interfaces/db.py:695
 msgid "download path"
 msgstr "ścieżka pobierania"
 
-#: ../../libraries/entropy/server/interfaces/db.py:711
-#: ../../libraries/entropy/server/interfaces/db.py:1360
+#: ../../libraries/entropy/server/interfaces/db.py:720
+#: ../../libraries/entropy/server/interfaces/db.py:1369
 msgid "errors"
 msgstr "błędy"
 
-#: ../../libraries/entropy/server/interfaces/db.py:712
+#: ../../libraries/entropy/server/interfaces/db.py:721
 msgid "failed to download from mirror"
 msgstr "nie udało się pobrać z serwera lustrzanego"
 
-#: ../../libraries/entropy/server/interfaces/db.py:719
-#: ../../libraries/entropy/server/interfaces/db.py:1373
+#: ../../libraries/entropy/server/interfaces/db.py:728
+#: ../../libraries/entropy/server/interfaces/db.py:1382
 #: ../../libraries/entropy/server/interfaces/main.py:1908
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1419
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1493
@@ -600,91 +600,91 @@ msgstr "nie udało się pobrać z serwera lustrzanego"
 msgid "reason"
 msgstr "powód"
 
-#: ../../libraries/entropy/server/interfaces/db.py:922
+#: ../../libraries/entropy/server/interfaces/db.py:931
 msgid "Troubles with treeupdates"
 msgstr "Problemy z \"treeupdates\""
 
-#: ../../libraries/entropy/server/interfaces/db.py:925
+#: ../../libraries/entropy/server/interfaces/db.py:934
 msgid "Bumping old data back"
 msgstr "Przywracanie starych danych"
 
-#: ../../libraries/entropy/server/interfaces/db.py:939
+#: ../../libraries/entropy/server/interfaces/db.py:948
 msgid "configured package sets"
 msgstr "skonfigurowane zestawy pakietów"
 
-#: ../../libraries/entropy/server/interfaces/db.py:949
+#: ../../libraries/entropy/server/interfaces/db.py:958
 msgid "None configured"
 msgstr "Brak skonfigurowanych"
 
-#: ../../libraries/entropy/server/interfaces/db.py:985
+#: ../../libraries/entropy/server/interfaces/db.py:994
 msgid "creating compressed repository dump + checksum"
 msgstr "tworzenie skompresowanego zrzutu bazy + sumy kontrolnej"
 
-#: ../../libraries/entropy/server/interfaces/db.py:992
-#: ../../libraries/entropy/server/interfaces/db.py:1040
-#: ../../libraries/entropy/server/interfaces/db.py:1094
+#: ../../libraries/entropy/server/interfaces/db.py:1001
+#: ../../libraries/entropy/server/interfaces/db.py:1049
+#: ../../libraries/entropy/server/interfaces/db.py:1103
 msgid "repository path"
 msgstr "ścieżka repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/db.py:999
+#: ../../libraries/entropy/server/interfaces/db.py:1008
 msgid "dump light"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/db.py:1008
+#: ../../libraries/entropy/server/interfaces/db.py:1017
 msgid "dump light checksum"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/db.py:1017
-#: ../../libraries/entropy/server/interfaces/db.py:1073
+#: ../../libraries/entropy/server/interfaces/db.py:1026
+#: ../../libraries/entropy/server/interfaces/db.py:1082
 msgid "opener"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/db.py:1032
+#: ../../libraries/entropy/server/interfaces/db.py:1041
 msgid "compressing repository + checksum"
 msgstr "kompresowanie repozytorium + suma kontrolna"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1047
+#: ../../libraries/entropy/server/interfaces/db.py:1056
 msgid "compressed repository path"
 msgstr "ścieżka skompresowanego repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1056
+#: ../../libraries/entropy/server/interfaces/db.py:1065
 msgid "repository checksum"
 msgstr "suma kontrolna repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1065
+#: ../../libraries/entropy/server/interfaces/db.py:1074
 #, fuzzy
 msgid "compressed checksum"
 msgstr "suma kontrolna skompresowanego"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1087
+#: ../../libraries/entropy/server/interfaces/db.py:1096
 msgid "preparing uncompressed repository for the upload"
 msgstr "przygotowywanie zdekompresowanego repozytorium do wysłania"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1208
-#: ../../libraries/entropy/server/interfaces/db.py:1228
+#: ../../libraries/entropy/server/interfaces/db.py:1217
+#: ../../libraries/entropy/server/interfaces/db.py:1237
 #: ../../libraries/entropy/server/interfaces/mirrors.py:924
 msgid "upload"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/db.py:1209
+#: ../../libraries/entropy/server/interfaces/db.py:1218
 msgid "disabled EAPI"
 msgstr "wyłączone EAPI"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1229
+#: ../../libraries/entropy/server/interfaces/db.py:1238
 msgid "preparing to upload repository to mirror"
 msgstr "przygotowywanie do wysłania repozytorium na serwer lustrzany"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1361
+#: ../../libraries/entropy/server/interfaces/db.py:1370
 msgid "upload failed, locking and continuing"
 msgstr "wysyłanie się nie udało, blokowanie i kontynuacja"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1433
-#: ../../libraries/entropy/server/interfaces/db.py:1451
-#: ../../libraries/entropy/server/interfaces/db.py:1486
-#: ../../libraries/entropy/server/interfaces/db.py:1516
-#: ../../libraries/entropy/server/interfaces/db.py:1535
-#: ../../libraries/entropy/server/interfaces/db.py:1561
-#: ../../libraries/entropy/server/interfaces/db.py:1575
+#: ../../libraries/entropy/server/interfaces/db.py:1442
+#: ../../libraries/entropy/server/interfaces/db.py:1460
+#: ../../libraries/entropy/server/interfaces/db.py:1495
+#: ../../libraries/entropy/server/interfaces/db.py:1525
+#: ../../libraries/entropy/server/interfaces/db.py:1544
+#: ../../libraries/entropy/server/interfaces/db.py:1570
+#: ../../libraries/entropy/server/interfaces/db.py:1584
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1329
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1489
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1505
@@ -701,43 +701,43 @@ msgid "sync"
 msgstr ""
 
 #. something short please
-#: ../../libraries/entropy/server/interfaces/db.py:1434
+#: ../../libraries/entropy/server/interfaces/db.py:1443
 msgid "repository already in sync"
 msgstr "repozytorium już zsynchronizowane"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1452
-#: ../../libraries/entropy/server/interfaces/db.py:1562
+#: ../../libraries/entropy/server/interfaces/db.py:1461
+#: ../../libraries/entropy/server/interfaces/db.py:1571
 msgid "repository sync failed"
 msgstr "synchronizowanie repozytorium się nie udało"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1453
+#: ../../libraries/entropy/server/interfaces/db.py:1462
 msgid "download issues"
 msgstr "problemy przy pobieraniu"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1487
-#: ../../libraries/entropy/server/interfaces/db.py:1517
+#: ../../libraries/entropy/server/interfaces/db.py:1496
+#: ../../libraries/entropy/server/interfaces/db.py:1526
 msgid "repository sync forbidden"
 msgstr "zabronione synchronizowanie z repozytorium"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1488
+#: ../../libraries/entropy/server/interfaces/db.py:1497
 msgid "missing package sets"
 msgstr "brakujące zestawy pakietów"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1518
+#: ../../libraries/entropy/server/interfaces/db.py:1527
 #, fuzzy
 msgid "dependencies test reported errors"
 msgstr "dependencies_test() zgłosił błędy"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1536
+#: ../../libraries/entropy/server/interfaces/db.py:1545
 #, fuzzy
 msgid "these packages haven't been removed yet"
 msgstr "Te są pakiety, które mają być usunięte"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1563
+#: ../../libraries/entropy/server/interfaces/db.py:1572
 msgid "upload issues"
 msgstr "problemy przy wysyłaniu"
 
-#: ../../libraries/entropy/server/interfaces/db.py:1576
+#: ../../libraries/entropy/server/interfaces/db.py:1585
 msgid "repository sync completed successfully"
 msgstr "sync repozytorium zakończył się pomyślnie"
 
@@ -779,7 +779,7 @@ msgstr "uruchom quickpkg ręcznie, żeby zaktualizować wbudowaną bazę danych"
 
 #: ../../libraries/entropy/server/interfaces/main.py:392
 #, fuzzy
-msgid "Repository repository updated anyway"
+msgid "Repository updated anyway"
 msgstr "Repozytorium zaktualizowane mimo to"
 
 #: ../../libraries/entropy/server/interfaces/main.py:977
@@ -2353,7 +2353,7 @@ msgstr "Pomyślnie utworzono kopię zapasową repozytorium"
 #: ../../libraries/entropy/client/interfaces/methods.py:902
 #: ../../libraries/entropy/client/interfaces/sets.py:188
 #: ../../libraries/entropy/client/interfaces/sets.py:215
-#: ../../libraries/entropy/const.py:594
+#: ../../libraries/entropy/const.py:597
 msgid "All fine"
 msgstr "Wszystko dobrze"
 
@@ -2942,115 +2942,115 @@ msgstr "etap pre-remove"
 msgid "post-remove phase"
 msgstr "etap post-remove"
 
-#: ../../libraries/entropy/const.py:572
+#: ../../libraries/entropy/const.py:575
 msgid "Runtime dependency"
 msgstr "Zależność do uruchomienia programu"
 
-#: ../../libraries/entropy/const.py:573
+#: ../../libraries/entropy/const.py:576
 msgid "Post dependency"
 msgstr "Zależność typu post"
 
-#: ../../libraries/entropy/const.py:574
+#: ../../libraries/entropy/const.py:577
 msgid "Manually added (by staff) dependency"
 msgstr "Zależność dodana ręcznie (przez twórców)"
 
-#: ../../libraries/entropy/const.py:575
+#: ../../libraries/entropy/const.py:578
 msgid "Build dependency"
 msgstr "Zależność do zbudowania pakietu"
 
-#: ../../libraries/entropy/const.py:595
+#: ../../libraries/entropy/const.py:598
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr "Uszkodzone repozytorium klienta. Proszę przywrócić z kopii zapasowej."
 
-#: ../../libraries/entropy/const.py:664
+#: ../../libraries/entropy/const.py:667
 msgid "reason not available"
 msgstr "powód niedostępny"
 
-#: ../../libraries/entropy/const.py:665
+#: ../../libraries/entropy/const.py:668
 msgid "user package.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:666
+#: ../../libraries/entropy/const.py:669
 msgid "system keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:667
+#: ../../libraries/entropy/const.py:670
 msgid "user package.unmask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:668
+#: ../../libraries/entropy/const.py:671
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:669
+#: ../../libraries/entropy/const.py:672
 msgid "user repo package.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:670
+#: ../../libraries/entropy/const.py:673
 msgid "user package.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:671
+#: ../../libraries/entropy/const.py:674
 msgid "completely masked (by keyword?)"
 msgstr "całkowicie zamaskowane (przez słowo kluczowe?)"
 
-#: ../../libraries/entropy/const.py:672
+#: ../../libraries/entropy/const.py:675
 msgid "repository general packages.db.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:673
+#: ../../libraries/entropy/const.py:676
 msgid "repository general packages.db.keywords"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:674
+#: ../../libraries/entropy/const.py:677
 msgid "user license.mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:675
+#: ../../libraries/entropy/const.py:678
 msgid "user live unmask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:676
+#: ../../libraries/entropy/const.py:679
 msgid "user live mask"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:702
+#: ../../libraries/entropy/const.py:705
 msgid "Comments"
 msgstr "Komentarze"
 
-#: ../../libraries/entropy/const.py:703
+#: ../../libraries/entropy/const.py:706
 msgid "BBcode Documents"
 msgstr "Dokumenty BBcode"
 
-#: ../../libraries/entropy/const.py:704
+#: ../../libraries/entropy/const.py:707
 msgid "Images/Screenshots"
 msgstr "Obrazki/zrzuty ekranu"
 
-#: ../../libraries/entropy/const.py:705
+#: ../../libraries/entropy/const.py:708
 msgid "Generic Files"
 msgstr "Ogólne pliki"
 
-#: ../../libraries/entropy/const.py:706
+#: ../../libraries/entropy/const.py:709
 msgid "YouTube(tm) Videos"
 msgstr "Pliki wideo YouTube(tm)"
 
-#: ../../libraries/entropy/const.py:709
+#: ../../libraries/entropy/const.py:712
 msgid "Comment"
 msgstr "Komentarz"
 
-#: ../../libraries/entropy/const.py:710
+#: ../../libraries/entropy/const.py:713
 msgid "BBcode Document"
 msgstr "Dokument BBcode"
 
-#: ../../libraries/entropy/const.py:711
+#: ../../libraries/entropy/const.py:714
 msgid "Image/Screenshot"
 msgstr "Obrazek/zrzut ekranu"
 
-#: ../../libraries/entropy/const.py:712
+#: ../../libraries/entropy/const.py:715
 msgid "Generic File"
 msgstr "Ogólny plik"
 
-#: ../../libraries/entropy/const.py:713
+#: ../../libraries/entropy/const.py:716
 msgid "YouTube(tm) Video"
 msgstr "Plik wideo YouTube(tm)"
 
