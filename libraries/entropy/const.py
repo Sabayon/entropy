@@ -321,6 +321,9 @@ def const_default_settings(rootdir):
         # eapi3 "there are updates" signal file
         # used to let EAPI3 remote service daemon know about repository updates
         'etpdatabaseeapi3updates': default_etp_dbfile+".eapi3_updates",
+        # "there are updates" signal file for webinstall packages
+        # can be used to trigger the generation of new webinstall files
+        'etpdatabasewebinstallupdates': default_etp_dbfile+".webinst_updates",
         'etpdatabasecacertfile': "ca.cert",
         'etpdatabaseservercertfile': "server.cert",
         # repository GPG public key file

@@ -531,6 +531,15 @@ class ServerPackagesRepositoryUpdater(object):
             data['~~something_new'] = something_new
             critical.append(data['~~something_new'])
 
+            # upload webinstall signal file
+            something_new_webinstall = os.path.join(
+                self._entropy._get_local_repository_dir(self._repository_id),
+                etpConst['etpdatabasewebinstallupdates'])
+            with open(something_new_webinstall, "w") as sn_f:
+                sn_f.flush()
+            data['~~something_new_web'] = something_new_webinstall
+            critical.append(data['~~something_new_web'])
+
             # always push metafiles file, it's cheap
             data['metafiles_path'] = \
                 self._entropy._get_local_repository_compressed_metafiles_file(
