@@ -1,3 +1,69 @@
+commit 5f5e6ed93612b244be1e23be449ee2f166240c22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 28 09:23:31 2011 +0100
+
+    Release Entropy 1.0_alpha23
+
+commit a853525ca68452f2aa9c9c50df3e3302fd6bf99f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 28 09:22:33 2011 +0100
+
+    [entropy.server] when pushing a new repo, also upload a signal file suitable for webinstall daemons
+
+commit 43298ac0d8b00cce637aea9d6356f6aebc21db44
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 23:29:39 2011 +0100
+
+    [services] repository-webinstall-generator: implement LRU cache strategy
+
+commit 334665006f34e6751e86dfa8261991d10c4c370f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 23:21:17 2011 +0100
+
+    [services] repository-webinstall-generator: increase ram cache size
+
+commit c0f47cc8feb0cdfceb6868d41747520d7e1fdeed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 23:18:52 2011 +0100
+
+    [entropy.db] EntropyRepository: rewrite _doesColumnInTableExist() to be more efficient
+
+commit 26409127205b16f251bb0c30fa278191dc537f23
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 23:14:32 2011 +0100
+
+    [entropy.db] EntropyRepository: rewrite _doesColumnInTableExist usage (optimistic guessing), since it is damn slow
+
+commit 5adf368da3e2bb3704c2644cafed73246febfe43
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 22:41:03 2011 +0100
+
+    [services] repository-webinstall-generator: remove pdb hook
+
+commit c2dd3696e8189afbd4dc2bd8ab3b4e0699be68c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 22:39:00 2011 +0100
+
+    [po] sync translations
+
+commit 9dc54ff7a34ad865c3ea9850a4d341d2d9452dae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 22:38:13 2011 +0100
+
+    [po] update Catalan translation, thanks to Roger Calvò
+
+commit e06c0bde52ebccd9204642a09266f64d62a25f1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 22:36:39 2011 +0100
+
+    [services] repository-webinstall-generator: also consider reverse dependencies when bumping or generating new .etp files
+
+commit 117281f5a1ae21e4ef168b17e7ac93ba2f01394e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Feb 27 19:02:21 2011 +0100
+
+    Tagging Entropy version 1.0_alpha22
+
 commit 664e760f35456e4f1de936b7a4942c319ed194c7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Feb 27 19:02:10 2011 +0100
