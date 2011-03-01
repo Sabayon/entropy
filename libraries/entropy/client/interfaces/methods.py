@@ -652,16 +652,37 @@ class RepositoryMixin:
         if len(package_ids) > 1:
             repodata['smartpackage'] = True
         is_webinstall_pkg = repodata['webinstall_package']
-        for package_id in package_ids:
-            compiled_arch = repo.retrieveDownloadURL(package_id)
-            if compiled_arch.find("/"+etpConst['currentarch']+"/") == -1:
+
+        try:
+            compiled_arch = repo.getSetting("arch")
+        except KeyError:
+            compiled_arch = None
+
+        if compiled_arch is not None:
+            # new way of checking repo architecture
+            if compiled_arch != etpConst['currentarch']:
                 return -3, atoms_contained
             if is_webinstall_pkg:
-                source = repo.getInstalledPackageSource(package_id)
-                if source != etpConst['install_sources']['user']:
-                    continue
-                # otherwise, add to atoms_contained
-            atoms_contained.append((int(package_id), basefile))
+                for package_id in package_ids:
+                    source = repo.getInstalledPackageSource(package_id)
+                    if source != etpConst['install_sources']['user']:
+                        continue
+                    atoms_contained.append((package_id, basefile))
+            else:
+                atoms_contained.extend([(package_id, basefile) for package_id in
+                    package_ids])
+        else:
+            # old, legacy (broken) way
+            for package_id in package_ids:
+                compiled_arch = repo.retrieveDownloadURL(package_id)
+                if compiled_arch.find("/"+etpConst['currentarch']+"/") == -1:
+                    return -3, atoms_contained
+                if is_webinstall_pkg:
+                    source = repo.getInstalledPackageSource(package_id)
+                    if source != etpConst['install_sources']['user']:
+                        continue
+                    # otherwise, add to atoms_contained
+                atoms_contained.append((package_id, basefile))
 
         self.add_repository(repodata)
         self._validate_repositories()
