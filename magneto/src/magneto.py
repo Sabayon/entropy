@@ -14,7 +14,8 @@ import os
 import errno
 import sys
 import time
-import entropy.tools
+# never load entropy package here, --no-pid-handling is added below after this
+# point and will cause lock stealing.
 
 def _startup():
     sys.path.insert(0, '/usr/lib/entropy/client')
@@ -25,7 +26,6 @@ def _startup():
     sys.path.insert(0, '../../sulfur/src')
     sys.path.insert(0, '../')
 
-    sys.argv.append('--no-pid-handling')
     startup_delay = None
     for arg in sys.argv[1:]:
         if arg.startswith("--startup-delay="):
@@ -79,6 +79,8 @@ if __name__ == "__main__":
         if os.path.isdir(user_home):
             magneto_lock_dir = user_home
 
+    sys.argv.append('--no-pid-handling')
+    import entropy.tools
     lock_map = {}
     magneto_lock = os.path.join(magneto_lock_dir, magneto_lock_file)
     acquired = entropy.tools.acquire_lock(magneto_lock, lock_map)
