@@ -28,22 +28,13 @@ class WebinstallGenerator(TextInterface):
 #!/bin/sh
 
 function execute_app() {
-    match=$(grep --text --line-number '^PAYLOAD:$' $0 | cut -d ':' -f 1)
-    payload_start=$((match + 1))
-    tmp_file="$(mktemp).etp"
-    # add magic, very important, don't remove
-    echo -n 'etp:web:magic_____________' >> "${tmp_file}"
-    tail -n +$payload_start $0 >> "${tmp_file}"
-    equo install "${tmp_file}"
-    rc=${?}
-    rm -f "${tmp_file}"
-    return ${rc}
+    equo install "$0" $@
+    return ${?}
 }
 
-execute_app
+execute_app $@
 exit ${?}
 
-PAYLOAD:
 """+ etpConst['databasestarttag'])
 
     class CalculationError(EntropyException):
