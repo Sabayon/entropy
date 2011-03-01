@@ -511,6 +511,8 @@ def get_file_size(file_path):
 def sum_file_sizes(file_list):
     """
     Return file size sum of given list of paths.
+    NOTE: This function does NOT consider hardlinks, roughly summing up
+    file_list elements.
 
     @param file_list: list of file paths
     @type file_list: list
@@ -520,9 +522,36 @@ def sum_file_sizes(file_list):
     size = 0
     for myfile in file_list:
         try:
-            size += get_file_size(myfile)
+            mystat = os.lstat(myfile)
         except (OSError, IOError,):
             continue
+        size += mystat.st_size
+    return size
+
+def sum_file_sizes_hardlinks(file_list):
+    """
+    Return file size sum of given list of paths.
+    NOTE: This function does consider hardlinks, not counting the same files
+    more than once.
+
+    @param file_list: list of file paths
+    @type file_list: list
+    @return: summed size in bytes
+    @rtype: int
+    """
+    size = 0
+    inode_cache = set()
+    for myfile in file_list:
+        try:
+            mystat = os.lstat(myfile)
+        except (OSError, IOError,):
+            continue
+        inode = (mystat.st_ino, mystat.st_dev)
+        if inode in inode_cache:
+            continue
+        inode_cache.add(inode)
+        size += mystat.st_size
+    inode_cache.clear()
     return size
 
 def check_required_space(mountpoint, bytes_required):
