@@ -1,3 +1,33 @@
+commit dd5cea12d0f4aeec579cd7c65afdcdc421eb6639
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 1 13:13:39 2011 +0100
+
+    Release Entropy 1.0_alpha24
+
+commit 59e5fd737e9360329d1a627ce49322f89274ca9d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 1 13:13:18 2011 +0100
+
+    [magneto] fix lock file handling
+
+commit 3074de37f3e06cb07da6a2604bb784e2a89d97d4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 28 09:44:57 2011 +0100
+
+    [po] update translations
+
+commit 9c6e73e68a2d7936f03d36809958f9746f9a9f77
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 28 09:43:59 2011 +0100
+
+    [entropy.server] fix typo in message, thanks to Rover Calvò
+
+commit 6d653a4832d64f5f5ad92ec3f26266373aa35c44
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Feb 28 09:23:45 2011 +0100
+
+    Tagging Entropy version 1.0_alpha23
+
 commit 5f5e6ed93612b244be1e23be449ee2f166240c22
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Feb 28 09:23:31 2011 +0100
