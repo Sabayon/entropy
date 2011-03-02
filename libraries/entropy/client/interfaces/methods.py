@@ -1335,7 +1335,8 @@ class MiscMixin:
             os.remove(lock_file)
         except OSError as err:
             # cope with possible race conditions
-            if err.errno != errno.ENOENT:
+            # and read-only filesystem
+            if err.errno not in (errno.ENOENT, errno.EROFS):
                 raise
 
     def resources_locked(self):
