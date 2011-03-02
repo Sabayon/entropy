@@ -64,6 +64,10 @@ class Repository:
         avail_data = my_repos['available']
         repo_data = avail_data[repository_id]
         post_update_script = repo_data['post_repo_update_script']
+        if post_update_script is None:
+            const_debug_write(__name__,
+                "_run_post_update_repository_hook: not available")
+            return 0
 
         if not (os.path.isfile(post_update_script) and \
             os.access(post_update_script, os.R_OK)):

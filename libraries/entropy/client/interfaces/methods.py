@@ -313,6 +313,12 @@ class RepositoryMixin:
             if smart_package != None:
                 avail_data[repoid]['smartpackage'] = smart_package
 
+            avail_data[repoid]['post_branch_upgrade_script'] = repodata.get(
+                'post_branch_upgrade_script')
+            avail_data[repoid]['post_repo_update_script'] = repodata.get(
+                'post_repo_update_script')
+            avail_data[repoid]['post_branch_hop_script'] = repodata.get(
+                'post_branch_hop_script')
             avail_data[repoid]['dbpath'] = repodata.get('dbpath')
             avail_data[repoid]['pkgpath'] = repodata.get('pkgpath')
             avail_data[repoid]['__temporary__'] = repodata.get('__temporary__')
@@ -618,16 +624,10 @@ class RepositoryMixin:
         dump_rc = entropy.tools.dump_entropy_metadata(pkg_file, dbfile)
         if not dump_rc:
             return -1, atoms_contained
-        # add dbfile
-        repodata = {}
-        repodata['repoid'] = basefile
-        repodata['description'] = "Dynamic Entropy Repository " + basefile
-        repodata['dbpath'] = os.path.dirname(dbfile)
-        repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
-        repodata['smartpackage'] = False # extra info added
-        repodata['webinstall_package'] = False
+
+        webinstall_package = False
         if pkg_file.endswith(etpConst['packagesext_webinstall']):
-            repodata['webinstall_package'] = True
+            webinstall_package = True
             # unbzip2
             tmp_fd, tmp_path = tempfile.mkstemp(dir = db_dir)
             try:
@@ -635,7 +635,6 @@ class RepositoryMixin:
             finally:
                 os.close(tmp_fd)
             os.rename(tmp_path, dbfile)
-
 
         repo = self.open_generic_repository(dbfile)
         # read all idpackages
@@ -647,8 +646,18 @@ class RepositoryMixin:
             return -2, atoms_contained
 
         product = self._settings['repositories']['product']
+        repodata = {}
+        repodata['repoid'] = basefile
+        repodata['description'] = "Dynamic Entropy Repository " + basefile
+        repodata['dbpath'] = os.path.dirname(dbfile)
+        repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
+        repodata['smartpackage'] = False # extra info added
+        repodata['webinstall_package'] = webinstall_package
         repodata['packages'] = []
         repodata['plain_packages'] = []
+        repodata['post_branch_upgrade_script'] = None
+        repodata['post_repo_update_script'] = None
+        repodata['post_branch_hop_script'] = None
         if repodata['webinstall_package']:
             try:
                 plain_packages = repo.getSetting("plain_packages")
@@ -1096,10 +1105,11 @@ class RepositoryMixin:
                 continue
 
             branch_mig_script = mydata['post_branch_hop_script']
-            branch_mig_md5sum = '0'
-            if os.access(branch_mig_script, os.R_OK) and \
-                os.path.isfile(branch_mig_script):
-                branch_mig_md5sum = entropy.tools.md5sum(branch_mig_script)
+            if branch_mig_script is not None:
+                branch_mig_md5sum = '0'
+                if os.access(branch_mig_script, os.R_OK) and \
+                    os.path.isfile(branch_mig_script):
+                    branch_mig_md5sum = entropy.tools.md5sum(branch_mig_script)
 
             const_debug_write(__name__,
                 "run_repositories_post_branch_switch_hooks: script md5: %s" % (
@@ -1208,9 +1218,10 @@ class RepositoryMixin:
             # check if branch upgrade script exists
             branch_upg_script = mydata['post_branch_upgrade_script']
             branch_upg_md5sum = '0'
-            if os.access(branch_upg_script, os.R_OK) and \
-                os.path.isfile(branch_upg_script):
-                branch_upg_md5sum = entropy.tools.md5sum(branch_upg_script)
+            if branch_upg_script is not None:
+                if os.access(branch_upg_script, os.R_OK) and \
+                    os.path.isfile(branch_upg_script):
+                    branch_upg_md5sum = entropy.tools.md5sum(branch_upg_script)
 
             if branch_upg_md5sum == '0':
                 # script not found, skip completely
