@@ -319,6 +319,8 @@ class RepositoryMixin:
             avail_data[repoid]['webinstall_package'] = is_webinstall_pkg
             # put at top priority, shift others
             self._settings['repositories']['order'].insert(0, repoid)
+            # NOTE: never call SystemSettings.clear() here, or
+            # ClientSystemSettingsPlugin.repositories_parser() will explode
 
         else:
 
@@ -354,6 +356,12 @@ class RepositoryMixin:
         self.close_repositories()
 
         if done:
+
+            # drop from SystemSettings Client plugin, if there
+            try:
+                self.sys_settings_client_plugin._drop_package_repository(repoid)
+            except KeyError:
+                pass
 
             if repoid in self._settings['repositories']['order']:
                 self._settings['repositories']['order'].remove(repoid)
@@ -689,6 +697,10 @@ class RepositoryMixin:
         if basefile not in self._enabled_repos:
             self.remove_repository(basefile)
             return -4, atoms_contained
+
+        # add to SystemSettings
+        self.sys_settings_client_plugin._add_package_repository(
+            repodata['repoid'], repodata)
         repo.close()
         return 0, atoms_contained
 

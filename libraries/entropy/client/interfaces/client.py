@@ -39,6 +39,42 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self.__repos_files = {}
         self.__repos_mtime = {}
+        # Package repositories must be able to live across
+        # SystemSettings.clear() calls, because they are very
+        # special and 3rd-party (but even Sulfur) tools expect to always
+        # have them there after having called Client.add_package_to_repositories
+        self.__package_repositories = []
+        self.__package_repositories_meta = {}
+
+    def _add_package_repository(self, repository_id, repository_metadata):
+        """
+        Internal method, used by Entropy Client. Add a package repository
+        to this SystemSettings plugins to make  it able to live across
+        SystemSettings.clear() calls.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param repository_metadata: a dict object that will be merged
+            into SystemSettings['repositories'] when clear() will be called
+        @type repository_metadata: dict
+        @raise KeyError: if repository_id is already stored.
+        """
+        if repository_id in self.__package_repositories:
+            raise KeyError("%s already added" % (repository_id,))
+        self.__package_repositories.append(repository_id)
+        self.__package_repositories_meta[repository_id] = repository_metadata
+
+    def _drop_package_repository(self, repository_id):
+        """
+        Drop package repository previously added by calling
+        _add_package_repository()
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @raise KeyError: if repository_id is not available
+        """
+        del self.__package_repositories[repository_id]
+        self.__package_repositories.remove(repository_id)
 
     def __setup_repos_files(self, system_settings):
         """
@@ -309,7 +345,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
-
     def __repositories_system_mask(self, sys_settings_instance):
         """
         Parser returning system packages mask metadata read from
@@ -339,6 +374,15 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         @return: parsed metadata
         @rtype: dict
         """
+
+        # add back repository metadata to SystemSettings['repositories']
+        avail_data = sys_settings_instance['repositories']['available']
+        for repository_id in self.__package_repositories:
+            if repository_id not in avail_data:
+                repodata = self.__package_repositories_meta[repository_id]
+                # if correct, this won't trigger a stack overflow
+                # add_repository calling SystemSettings.clear() I mean
+                self._helper.add_repository(repodata)
 
         # fill repositories metadata dictionaries
         self.__setup_repos_files(sys_settings_instance)
