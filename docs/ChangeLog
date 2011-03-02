@@ -1,3 +1,80 @@
+commit e36896a5adf31197222f6c2303c1247b260c9fb4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 22:54:29 2011 +0100
+
+    Release Entropy 1.0_alpha25
+
+commit ea7eab8bf63b763502041c88f9368b51b2da31cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 22:53:07 2011 +0100
+
+    [sulfur] tweak application startup behaviour
+
+commit 9dc9d5138fdf57f79dc000888c988522090526c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 22:22:25 2011 +0100
+
+    [entropy.client.interfaces.client] fix typo in  ClientSystemSettingsPlugin._drop_package_repository
+
+commit 7c18fc2522296a784467e148e6f534f1f9092636
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 20:34:03 2011 +0100
+
+    [entropy.client] make package repository metadata representation more robust
+
+commit 78c74c72c26e456cf4241d4465482d69030e3e11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 20:17:36 2011 +0100
+
+    [entropy.client] make package repositories (.tbz2 and .etp) able to live across SystemSettings.clear()
+    
+    The issue was that, if Sulfur asked for unmasking packages,
+    SystemSettings.clear() was called and package repository lost.
+    With this patch, package repositories can live across any clear()
+    call, like it should be.
+
+commit 90a99682cddb407d3c54416fa4f873f102c35ea9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 15:30:18 2011 +0100
+
+    [entropy.client.interfaces.package] check if avail_data contains repository as key before referencing
+
+commit ad78d4e2d5a59e906582edf55dc7da92a94564a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 15:00:12 2011 +0100
+
+    [services] add repository-webinstall-generator-executor example file
+
+commit 56f588366955549f3b8261012f8c8e61a0eb7a5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 09:45:44 2011 +0100
+
+    [entropy.client.interfaces] catch EROFS in unlock_resources()
+
+commit aaf9e5840bf2a3e548adddc4caac1baf1555dd7b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 1 18:45:14 2011 +0100
+
+    [entropy.client.interfaces] add_package_to_repositories: validate package file architecture using the new way (getSettings("arch")). Keep backward compatibility.
+
+commit 3a6be1ec9727c0e24e15cb1b7afc60df94a71902
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 1 18:32:42 2011 +0100
+
+    [entropy.tools,entropy.spm] provide hardlinks aware file size counting function and use it in entropy.spm
+
+commit 79c2bac529f0808397e5e637528d03cecb97548f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 1 15:12:45 2011 +0100
+
+    [services] repository-webinstall-generator: simplify execute_app(), payload detection and mktemp not required
+
+commit 71335948699455c3a78ed39e4655a55b53758d73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 1 13:13:51 2011 +0100
+
+    Tagging Entropy version 1.0_alpha24
+
 commit dd5cea12d0f4aeec579cd7c65afdcdc421eb6639
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 1 13:13:39 2011 +0100
