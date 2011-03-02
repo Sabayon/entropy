@@ -195,10 +195,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def init(self):
 
         self.setup_gui()
-        # show UI
-        if "--maximize" in sys.argv:
-            self.ui.main.maximize()
-        self.ui.main.show()
 
         if entropy.tools.is_april_first():
             okDialog( self.ui.main,
@@ -208,16 +204,25 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         elif entropy.tools.is_xmas():
             okDialog( self.ui.main, _("Oh oh ooooh... Merry Xmas!"))
 
-        self.warn_repositories()
         self.start_working()
         self.ui_lock(True)
         self.gtk_loop()
+
+        # show UI
+        if "--maximize" in sys.argv:
+            self.ui.main.maximize()
+
         def _pkg_install():
-            pkg_installing = self.__packages_install()
-            self.ui_lock(False)
-            self.end_working()
+            self.ui.main.hide()
+            try:
+                pkg_installing = self.__packages_install()
+                self.ui_lock(False)
+                self.end_working()
+            finally:
+                self.ui.main.show()
 
             if not pkg_installing:
+                self.warn_repositories()
                 if "--nonoticeboard" not in sys.argv:
                     if not self._entropy.are_noticeboards_marked_as_read():
                         self.show_notice_board(force = False)
@@ -361,7 +366,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             const.__sulfur_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
 
-        self.ui.main.present()
+        self.ui.main.realize()
         self.setup_page_buttons()        # Setup left side toolbar
         self.switch_notebook_page(self.activePage)
 

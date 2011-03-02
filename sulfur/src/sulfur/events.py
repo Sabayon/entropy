@@ -457,7 +457,7 @@ class SulfurApplicationEventsMixin:
         msg = "%s: %s. %s" % (
             _("You have chosen to install this package"),
             os.path.basename(fn),
-            _("Are you supa sure?"),
+            _("Are you sure?"),
         )
         rc = questionDialog(self.ui.main, msg)
         if not rc:
