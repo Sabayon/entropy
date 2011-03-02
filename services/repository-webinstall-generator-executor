@@ -1,0 +1,39 @@
+#!/bin/sh
+
+export ETP_REPOSITORIES_CONF="/path/to/alternative/repositories.conf"
+exit_rc="0"
+
+for path in /path/to/repository/directory/sabayonlinux.org/database/*/*/packages.db.bz2; do
+
+        dir_path=$(dirname "${path}")
+        signal_file="${dir_path}/packages.db.webinst_updates"
+        # atomic
+        rm "${signal_file}" 2> /dev/null
+        if [ "${?}" != "0" ]; then
+                echo "nothing to do on ${dir_path}"
+                continue
+        fi
+
+        echo "Doing ${path}..."
+        tmp_file=$(mktemp --suffix="repo-webinst-gen")
+        tmp_bz_file="${tmp_file}.bz2"
+        cp "${path}" "${tmp_bz_file}" || exit 1
+        bunzip2 -f "${tmp_bz_file}" || exit 1
+
+        branch=$(basename "${dir_path}")
+        dir_path=$(dirname "${dir_path}")
+        arch=$(basename "${dir_path}")
+        dir_path=$(dirname "${dir_path}")
+        dir_path=$(dirname "${dir_path}")
+        packages_dirs="${dir_path}"/packages*/${arch}/${branch}
+
+        /entropy/services/repository-webinstall-generator generate sabayonlinux.org \
+                "${tmp_file}" ${packages_dirs} --
+        rc="${?}"
+        rm -f "${tmp_file}"
+        if [ "${rc}" != "0" ]; then
+                exit_rc="${rc}"
+                break
+        fi
+done
+exit ${exit_rc}
