@@ -73,7 +73,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         @type repository_id: string
         @raise KeyError: if repository_id is not available
         """
-        del self.__package_repositories[repository_id]
+        del self.__package_repositories_meta[repository_id]
         self.__package_repositories.remove(repository_id)
 
     def __setup_repos_files(self, system_settings):
