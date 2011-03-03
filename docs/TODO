@@ -15,6 +15,7 @@ Backlog (raw)
     - use entropy.tools.validate_repository_id() where required
 
     - entropy.client: refactoring
+    - rewrite sulfur
     - entropy.services: refactoring
         rewrite UGC using HTTP protocol
 
