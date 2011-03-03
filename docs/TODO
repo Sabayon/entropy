@@ -2,6 +2,7 @@ Backlog (raw)
 
   1.0:
 
+    - improve addPackage, remove extra params, just return package_id
     - if repo is opened using open_repository() cannot use close(), avoid by design
 
     - downgrade-repo, if enabled, puts the to-be-upgraded
@@ -10,13 +11,15 @@ Backlog (raw)
         => no packages mirror
         => "equo downgrade" (installs all the packages from the downgrade-repo)
 
+    - drop deprecated stuff in entropy.tools
+    - use entropy.tools.validate_repository_id() where required
+
     - entropy.client: refactoring
     - entropy.services: refactoring
         rewrite UGC using HTTP protocol
 
     - python3.x tests
         entropy ugc fixes
-        xorg-server install problem? /etc/init.d/xdm was not found
 
     - evaluate or-dependencies after complete dependency graph calculation.
         definitely fixes or dependencies
