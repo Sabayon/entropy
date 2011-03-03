@@ -255,6 +255,7 @@ exit ${?}
         compressed_fd = None
         try:
 
+            repo_arch = self._repo.getSetting("arch")
             atom = self._repo.retrieveAtom(package_id)
             dest_repo = GenericRepository(
                 readOnly = False,
@@ -291,6 +292,7 @@ exit ${?}
 
             dest_repo._setSetting("plain_packages",
                 self._mirror_urls_str)
+            dest_repo._setSetting("arch", repo_arch)
             dest_repo.commit()
             dest_repo.close()
             dest_repo = None
