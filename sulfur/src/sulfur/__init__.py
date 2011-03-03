@@ -2155,6 +2155,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         def _show_orphans_message(state):
 
+            if not self._entropy.repositories():
+                # ignore orphan message
+                return
+
             if not state:
                 return
             if self._orphans_message_shown:
