@@ -11,9 +11,10 @@
 """
 import os
 import copy
+import hashlib
 
 from entropy.const import etpConst, const_debug_write, const_isstring, \
-    const_isnumber
+    const_isnumber, const_convert_to_rawstring
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     DependenciesNotFound, DependenciesNotRemovable, DependenciesCollision
 from entropy.graph import Graph
@@ -342,7 +343,7 @@ class CalculatorsMixin:
         return dbpkginfo
 
     def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
-        relaxed_deps = False, depcache = None):
+        relaxed_deps = False, depcache = None, match_repo = None):
 
         cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
@@ -351,12 +352,16 @@ class CalculatorsMixin:
         if self.xcache:
             c_data = sorted(dependencies)
             client_checksum = self._installed_repository.checksum()
-            c_hash = hash("%s|%s|%s|%s|%s" % (c_data, deep_deps,
-                client_checksum, relaxed_deps, ignore_spm_downgrades,))
-            c_hash = "%s%s" % (
-                EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash,)
+            c_hash = "%s|%s|%s|%s|%s|%s" % (c_data, deep_deps,
+                client_checksum, relaxed_deps, ignore_spm_downgrades,
+                match_repo)
+            c_hash = "%s_%s" % (
+                EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash)
+            sha = hashlib.sha1()
+            sha.update(const_convert_to_rawstring(repr(c_hash)))
+            c_hex = sha.hexdigest()
 
-            cached = self._cacher.pop(c_hash)
+            cached = self._cacher.pop(c_hex)
             if cached is not None:
                 return cached
 
@@ -373,7 +378,8 @@ class CalculatorsMixin:
             tmp_satisfied_data = set()
             for atom in satisfied_list:
                 matches, m_res = self.atom_match(atom, multi_match = True,
-                    mask_filter = False, multi_repo = True)
+                    mask_filter = False, multi_repo = True,
+                    match_repo = match_repo)
                 if m_res == 0:
                     tmp_satisfied_data |= matches
             satisfied_data = tmp_satisfied_data
@@ -392,7 +398,7 @@ class CalculatorsMixin:
         def _my_get_available_tags(dependency, installed_tags):
             available_tags = set()
             matches, t_rc = self.atom_match(dependency, multi_match = True,
-                multi_repo = True)
+                multi_repo = True, match_repo = match_repo)
             for pkg_id, repo_id in matches:
                 dbconn = self.open_repository(repo_id)
                 t_ver_tag = dbconn.retrieveTag(pkg_id)
@@ -406,7 +412,8 @@ class CalculatorsMixin:
             for c_id in c_ids:
                 c_slot = self._installed_repository.retrieveSlot(c_id)
                 # pkg_dep already contains the tag part
-                a_id, a_repo_id = self.atom_match(pkg_dep, match_slot = c_slot)
+                a_id, a_repo_id = self.atom_match(pkg_dep,
+                    match_slot = c_slot, match_repo = match_repo)
                 if a_repo_id == 1:
                     continue
                 return True
@@ -428,7 +435,8 @@ class CalculatorsMixin:
 
             ### conflict
             if dependency.startswith("!"):
-                idpackage, rc = self._installed_repository.atomMatch(dependency[1:])
+                idpackage, rc = self._installed_repository.atomMatch(
+                    dependency[1:])
                 if idpackage != -1:
                     const_debug_write(__name__,
                         "_get_unsatisfied_dependencies conflict not found on system for => %s" % (
@@ -519,7 +527,7 @@ class CalculatorsMixin:
                 if provide_stop:
                     continue
 
-            r_id, r_repo = self.atom_match(dependency)
+            r_id, r_repo = self.atom_match(dependency, match_repo = match_repo)
             if r_id == -1:
                 const_debug_write(__name__,
                     "_get_unsatisfied_dependencies repository match "
@@ -589,7 +597,8 @@ class CalculatorsMixin:
                     # stricter set of possible matches.
                     dependency = dependency + \
                         etpConst['entropytagprefix'] + best_tag
-                    r_id, r_repo = self.atom_match(dependency)
+                    r_id, r_repo = self.atom_match(dependency,
+                        match_repo = match_repo)
                     dbconn = self.open_repository(r_repo)
                     repo_pkgver, repo_pkgtag, repo_pkgrev = \
                         dbconn.getVersioningData(r_id)
@@ -666,7 +675,7 @@ class CalculatorsMixin:
             push_to_cache(dependency, True)
 
         if self.xcache:
-            self._cacher.push(c_hash, unsatisfied)
+            self._cacher.push(c_hex, unsatisfied)
 
         return unsatisfied
 
@@ -1016,12 +1025,15 @@ class CalculatorsMixin:
             cached_items.add(mymatch)
         return mydata
 
-    def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
+    def _lookup_conflict_replacement(self, conflict_atom, client_idpackage,
+        deep_deps):
+
         if entropy.dep.isjustname(conflict_atom):
             return
 
         conflict_match = self.atom_match(conflict_atom)
-        mykey, myslot = self._installed_repository.retrieveKeySlot(client_idpackage)
+        mykey, myslot = self._installed_repository.retrieveKeySlot(
+            client_idpackage)
         new_match = self.atom_match(mykey, match_slot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
             return
@@ -1100,12 +1112,14 @@ class CalculatorsMixin:
 
         idpackages = set()
         for lib, path, elf in removed_libs:
-            idpackages |= self._installed_repository.searchNeeded(lib, elfclass = elf)
+            idpackages |= self._installed_repository.searchNeeded(lib,
+                elfclass = elf)
 
         broken_matches = set()
         for c_idpackage in idpackages:
 
-            keyslot = self._installed_repository.retrieveKeySlotAggregated(c_idpackage)
+            keyslot = self._installed_repository.retrieveKeySlotAggregated(
+                c_idpackage)
             if keyslot is None:
                 continue
             idpackage, repo = self.atom_match(keyslot)
@@ -1258,10 +1272,9 @@ class CalculatorsMixin:
         deep_deps = False, relaxed_deps = False, build_deps = False,
         quiet = False, recursive = True):
 
-        c_hash = "%s%s" % (
-            EntropyCacher.CACHE_IDS['dep_tree'],
-            hash("%s|%s|%s|%s|%s|%s|%s|%s|v2" % (
-                hash(frozenset(sorted(package_matches))),
+        sha = hashlib.sha1()
+        c_hex = "%s|%s|%s|%s|%s|%s|%s|%s|v2" % (
+                repr(sorted(package_matches)),
                 empty_deps,
                 deep_deps,
                 relaxed_deps,
@@ -1271,7 +1284,11 @@ class CalculatorsMixin:
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
                 self._settings['repositories']['branch'],
-        )),)
+        )
+        sha.update(const_convert_to_rawstring(repr(c_hex)))
+        c_hash = "%s_%s" % (EntropyCacher.CACHE_IDS['dep_tree'],
+            sha.hexdigest())
+
         if self.xcache:
             cached = self._cacher.pop(c_hash)
             if cached is not None:
@@ -1743,7 +1760,7 @@ class CalculatorsMixin:
             os.path.isfile(in_branch_upgrade):
             return set(), []
 
-        db_digest = self._all_repositories_checksum()
+        db_digest = self._repositories_checksum()
         if use_cache and self.xcache:
             cached = self._get_critical_updates_cache(db_digest = db_digest)
             if cached is not None:
@@ -1752,17 +1769,25 @@ class CalculatorsMixin:
         client_settings = self._settings[self.sys_settings_client_plugin_id]
         critical_data = client_settings['repositories']['critical_updates']
 
+        # do not match package repositories, never consider them in updates!
+        # that would be a nonsense, since package repos are temporary.
+        enabled_repos = self._filter_available_repositories()
+        match_repos = tuple([x for x in \
+            self._settings['repositories']['order'] if x in enabled_repos])
+
         atoms = set()
         atom_matches = {}
         for repoid in critical_data:
             for atom in critical_data[repoid]:
-                match_id, match_repo = self.atom_match(atom)
+                match_id, match_repo = self.atom_match(atom,
+                    match_repo = match_repos)
                 if match_repo == 1:
                     continue
                 atom_matches[atom] = (match_id, match_repo,)
                 atoms.add(atom)
 
-        atoms = self._get_unsatisfied_dependencies(atoms, relaxed_deps = True)
+        atoms = self._get_unsatisfied_dependencies(atoms, relaxed_deps = True,
+            match_repo = match_repos)
         matches = [atom_matches.get(atom) for atom in atoms]
         data = (atoms, matches)
 
@@ -1790,6 +1815,12 @@ class CalculatorsMixin:
         if not update:
             return []
 
+        # do not match package repositories, never consider them in updates!
+        # that would be a nonsense, since package repos are temporary.
+        enabled_repos = self._filter_available_repositories()
+        match_repos = tuple([x for x in \
+            self._settings['repositories']['order'] if x in enabled_repos])
+
         security = self.Security()
         security_meta = security.get_advisories_metadata(use_cache = use_cache)
         vul_deps = set()
@@ -1812,7 +1843,7 @@ class CalculatorsMixin:
             if pkg_id == -1:
                 continue
             matches, rc = self.atom_match(vul_dep, multi_repo = True,
-                multi_match = True)
+                multi_match = True, match_repo = match_repos)
             # filter dups, keeping order
             matches = [x for x in matches if x not in sec_updates]
             sec_updates += [x for x in matches if x in update]
@@ -1842,7 +1873,6 @@ class CalculatorsMixin:
             already up-to-date when user enabled "ignore-spm-downgrades")
         @rtype: tuple
         """
-
         cl_settings = self._settings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
         update = []
@@ -1858,13 +1888,18 @@ class CalculatorsMixin:
             if upd_atoms:
                 return upd_matches, remove, fine, spm_fine
 
-        db_digest = self._all_repositories_checksum()
+        db_digest = self._repositories_checksum()
         if use_cache and self.xcache:
             cached = self._get_updates_cache(empty_deps = empty,
                 db_digest = db_digest)
             if cached is not None:
                 return cached
 
+        # do not match package repositories, never consider them in updates!
+        # that would be a nonsense, since package repos are temporary.
+        enabled_repos = self._filter_available_repositories()
+        match_repos = tuple([x for x in \
+            self._settings['repositories']['order'] if x in enabled_repos])
 
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
@@ -1922,7 +1957,8 @@ class CalculatorsMixin:
                             cl_pkgkey_tag,
                             match_slot = cl_slot,
                             extended_results = True,
-                            use_cache = use_match_cache
+                            use_cache = use_match_cache,
+                            match_repo = match_repos
                         )
                         try:
                             if const_isnumber(match[1]):
@@ -1938,7 +1974,8 @@ class CalculatorsMixin:
                             cl_pkgkey,
                             match_slot = cl_slot,
                             extended_results = True,
-                            use_cache = use_match_cache
+                            use_cache = use_match_cache,
+                            match_repo = match_repos
                         )
                 except OperationalError:
                     # ouch, but don't crash here
@@ -1997,7 +2034,8 @@ class CalculatorsMixin:
                     if idpackage is not None:
 
                         c_repodb = self.open_repository(repoid)
-                        c_digest = self._installed_repository.retrieveDigest(idpackage)
+                        c_digest = self._installed_repository.retrieveDigest(
+                            idpackage)
                         r_digest = c_repodb.retrieveDigest(m_idpackage)
 
                         if (r_digest != c_digest) and (r_digest is not None) \
@@ -2012,7 +2050,7 @@ class CalculatorsMixin:
 
             # don't take action if it's just masked
             maskedresults = self.atom_match(cl_pkgkey, match_slot = cl_slot,
-                mask_filter = False)
+                mask_filter = False, match_repo = match_repos)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
                 # look for packages that would match key
@@ -2026,7 +2064,7 @@ class CalculatorsMixin:
         if self.xcache:
             c_hash = self._get_updates_cache_hash(db_digest, empty,
                 ignore_spm_downgrades)
-            data = (update, remove, fine, spm_fine,)
+            data = (update, remove, fine, spm_fine)
             self._cacher.push(c_hash, data, async = False)
             self._cacher.sync()
 

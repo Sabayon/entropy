@@ -526,7 +526,7 @@ class System:
         """
         inst_pkgs_cksum = self._entropy.installed_repository().checksum(
             do_order = True, strict = False, strings = True)
-        repo_cksum = self._entropy._all_repositories_checksum()
+        repo_cksum = self._entropy._repositories_checksum()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
         cached = self.__cacher.pop(sys_hash, cache_dir = System._CACHE_DIR)
@@ -682,6 +682,12 @@ class System:
         @return: filtered security advisories metadata
         @rtype: dict
         """
+        # do not match package repositories, never consider them in updates!
+        # that would be a nonsense, since package repos are temporary.
+        enabled_repos = self._entropy._filter_available_repositories()
+        match_repos = tuple([x for x in \
+            self._settings['repositories']['order'] if x in enabled_repos])
+
         keys = list(adv_metadata.keys())
         for key in keys:
             valid = True
@@ -691,7 +697,8 @@ class System:
                 valid = False
                 skipping_keys = set()
                 for a_key in affected_keys:
-                    match = self._entropy.atom_match(a_key)
+                    match = self._entropy.atom_match(a_key,
+                        match_repo = match_repos)
                     if match[0] != -1:
                         # it's in the repos, it's valid
                         valid = True
