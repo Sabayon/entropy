@@ -1,3 +1,39 @@
+commit d11ef3e70bb95f48c3dfcbe0ac8e915183fe252d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 09:13:56 2011 +0100
+
+    Release Entropy 1.0_alpha26
+
+commit 2d4d67626b1be415ec59027176da8e4156ef2673
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 09:13:35 2011 +0100
+
+    [sulfur] do not show orphaned packages dialog if no repositories are available
+
+commit 4a241f46c65bb5de65737adc2fe074e7d1a6ada5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 09:00:44 2011 +0100
+
+    [services] repository-webinstall-generator: fix typo
+
+commit b5416d0a9008f4a8cbe1eb712c9ea0c54c331d1a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 08:55:30 2011 +0100
+
+    [services] repository-webinstall-generator: make possible to regenerate all the .etp package files through --regen
+
+commit a1229a2eb55ead4f1aec622657dba7865b240c63
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 08:47:13 2011 +0100
+
+    [services] repository-webinstall-generator: properly set .etp file repository architecture
+
+commit 7662b232d9f8df1d20b87a86386dd7b1783ee8b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 2 22:54:40 2011 +0100
+
+    Tagging Entropy version 1.0_alpha25
+
 commit e36896a5adf31197222f6c2303c1247b260c9fb4
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Mar 2 22:54:29 2011 +0100
