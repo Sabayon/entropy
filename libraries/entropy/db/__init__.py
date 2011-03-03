@@ -537,9 +537,13 @@ class EntropyRepository(EntropyRepositoryBase):
             if entropy.tools.islive() and not etpConst['systemroot']:
                 self.__indexing = False
 
+            def _is_avail():
+                if self._db_path == ":memory:":
+                    return True
+                return os.access(self._db_path, os.W_OK)
+
             try:
-                if os.access(self._db_path, os.W_OK) and \
-                    self._doesTableExist('baseinfo') and \
+                if _is_avail() and self._doesTableExist('baseinfo') and \
                     self._doesTableExist('extrainfo'):
 
                     if entropy.tools.islive(): # this works
@@ -742,7 +746,8 @@ class EntropyRepository(EntropyRepositoryBase):
         super(EntropyRepository, self).close()
 
         self._cleanup_stale_cur_conn(kill_all = True)
-        if self._temporary and os.path.isfile(self._db_path):
+        if self._temporary and (self._db_path != ":memory:") and \
+            os.path.isfile(self._db_path):
             try:
                 os.remove(self._db_path)
             except (OSError, IOError,):
@@ -4815,7 +4820,7 @@ class EntropyRepository(EntropyRepositoryBase):
             # check if mtime is changed !
             sha = hashlib.sha1()
             try: # temporary db can cause this
-                mtime = repr(os.path.getmtime(self._db_path))
+                mtime = repr(self.mtime())
             except OSError:
                 mtime = "0.0"
             hash_str = "%s|%s|%s|%s" % (
@@ -5131,6 +5136,16 @@ class EntropyRepository(EntropyRepositoryBase):
         del cached
 
         return exists
+
+    def mtime(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        if self._db_path is None:
+            return 0.0
+        if self._db_path == ":memory:":
+            return 0.0
+        return os.path.getmtime(self._db_path)
 
     def checksum(self, do_order = False, strict = True,
         strings = True, include_signatures = False):
@@ -6157,7 +6172,7 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         checksum = self.checksum()
         try:
-            mtime = repr(os.path.getmtime(self._db_path))
+            mtime = repr(self.mtime())
         except OSError:
             mtime = "0.0"
         hash_str = "%s|%s|%s|%s|%s" % (

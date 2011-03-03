@@ -3459,6 +3459,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def mtime(self):
+        """
+        Return last modification time of given repository.
+
+        @return: mtime
+        @rtype: float
+        @raise IOError: if mtime cannot be retrieved
+        @raise OSError: if mtime cannot be retrieved (Operating System error)
+        """
+        raise NotImplementedError()
+
     def storeInstalledPackage(self, package_id, repoid, source = 0):
         """
         Note: this is used by installed packages repository (also known as
