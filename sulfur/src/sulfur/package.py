@@ -51,7 +51,6 @@ class DummyEntropyPackage:
         self.set_remove_incomplete = False
         self.is_downgrade = False
         self.is_group = False
-        self.security_update = False
 
 class EntropyPackage:
 
@@ -79,7 +78,6 @@ class EntropyPackage:
         self.set_remove_incomplete = False
         self.is_downgrade = False
         self.is_group = False
-        self.security_update = False
         # might lead to memleaks
         self.__cache = {}
 

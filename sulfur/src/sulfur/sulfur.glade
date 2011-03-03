@@ -6,6 +6,7 @@
     <property name="title" translatable="yes">Sulfur</property>
     <property name="window_position">center</property>
     <property name="default_width">640</property>
+    <property name="default_height">400</property>
     <property name="icon_name">sulfur-icon</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
