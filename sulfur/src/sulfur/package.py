@@ -159,9 +159,9 @@ class EntropyPackage:
         repo_id = self.repoid_clean
         if repo_id is None:
             repo_id = ''
-        return str(self.dbconn.retrieveAtom(self.matched_id) + \
+        return str(self.dbconn.retrieveAtom(self.matched_id)) + \
             etpConst['entropyrevisionprefix'] + \
-                str(self.dbconn.retrieveRevision(self.matched_id))) + \
+                str(self.dbconn.retrieveRevision(self.matched_id)) + \
                     etpConst['entropyrepoprefix'] + repo_id
 
     def __repr__(self):
