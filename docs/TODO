@@ -4,13 +4,6 @@ Backlog (raw)
 
     - improve addPackage, remove extra params, just return package_id
     - if repo is opened using open_repository() cannot use close(), avoid by design
-
-    - downgrade-repo, if enabled, puts the to-be-upgraded
-        package to a separate repo before overwriting
-        => higher priority than all other repos
-        => no packages mirror
-        => "equo downgrade" (installs all the packages from the downgrade-repo)
-
     - drop deprecated stuff in entropy.tools
     - use entropy.tools.validate_repository_id() where required
 
