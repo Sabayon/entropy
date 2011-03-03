@@ -41,7 +41,8 @@ exit ${?}
         """Raised when an error occured while calculating the work queue"""
 
     def __init__(self, repository_id, entropy_repository, package_dirs,
-        mirror_urls):
+        mirror_urls, regenerate = False):
+        self._regenerate = regenerate
         self._repo_id = repository_id
         self._repo = entropy_repository
         self._package_dirs = package_dirs
@@ -108,6 +109,9 @@ exit ${?}
             return local_etp_path
 
         def _validate_etp_creation(local_package_path, local_etp_path, overwrite):
+            if self._regenerate:
+                # always generate the file in this case
+                return True
             if not os.path.isfile(local_package_path) and \
                 os.path.isfile(local_etp_path):
                 expired_webinstall_files.add(local_etp_path)
@@ -133,6 +137,10 @@ exit ${?}
                     count = (count, max_count),
                     importance = 0,
                     back = True)
+
+            # don't enqueue the same package id twice
+            if package_id in work_queue_cache:
+                continue
 
             local_package_path = _determine_local_package_path(package_id)
             local_package_dir = os.path.dirname(local_package_path)
@@ -418,7 +426,7 @@ def _print_help(args):
     print_info("  %s:\t%s %s" % (
         purple(_("generate packages")),
         brown(app_name),
-        darkgreen("generate <repository id> <repository file path> <packages dirs [list]> -- [<mirror urls [list]>]"))
+        darkgreen("generate [--regen] <repository id> <repository file path> <packages dirs [list]> -- [<mirror urls [list]>]"))
     )
     print_info("    %s = %s" % (
         teal("<packages dirs [list]>"),
@@ -428,6 +436,10 @@ def _print_help(args):
         teal("<mirror urls [list]>"),
         _("list of package mirror urls (not mandatory)"),)
     )
+    print_info("    %s = %s" % (
+        teal("--regen"),
+        _("regenerate all the package files"),)
+    )
     print_info("  %s:\t\t%s %s" % (purple(_("this help")), brown(app_name),
         darkgreen("help")))
     if not args:
@@ -435,6 +447,12 @@ def _print_help(args):
     return 0
 
 def _generate(args):
+
+    regenerate = False
+    if "--regen" in args:
+        regenerate = True
+        regenerate.remove("--regen")
+
     if not args:
         print_error(brown(_("Invalid arguments")))
         return 1
@@ -518,7 +536,7 @@ def _generate(args):
         repo.createAllIndexes()
 
         generator = WebinstallGenerator(repository_id, repo, packages_dirs,
-            mirror_urls)
+            mirror_urls, regenerate = regenerate)
         sts = generator.sync()
         repo.close()
         if sts:
