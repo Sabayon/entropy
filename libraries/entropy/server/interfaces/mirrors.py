@@ -13,6 +13,7 @@ import os
 import tempfile
 import shutil
 import time
+import errno
 
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
@@ -2067,6 +2068,7 @@ class Server(object):
             base_pkg = os.path.basename(package_rel)
             obj.append(base_pkg)
             obj.append(base_pkg+etpConst['packagesmd5fileext'])
+            obj.append(base_pkg+etpConst['etpgpgextension'])
 
         for uri in self._entropy.remote_packages_mirrors(repository_id):
 
@@ -2163,7 +2165,12 @@ class Server(object):
                             level = "info",
                             header = brown(" @@ ")
                         )
-                        os.remove(myfile)
+                        try:
+                            os.remove(myfile)
+                        except OSError as err:
+                            # handle race conditions
+                            if err.errno != errno.ENOENT:
+                                raise
 
         return done
 
