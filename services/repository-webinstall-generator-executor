@@ -28,7 +28,7 @@ for path in /path/to/repository/directory/sabayonlinux.org/database/*/*/packages
         packages_dirs="${dir_path}"/packages*/${arch}/${branch}
 
         /entropy/services/repository-webinstall-generator generate sabayonlinux.org \
-                "${tmp_file}" ${packages_dirs} --
+                $@ "${tmp_file}" ${packages_dirs} --
         rc="${?}"
         rm -f "${tmp_file}"
         if [ "${rc}" != "0" ]; then

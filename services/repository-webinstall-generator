@@ -451,7 +451,7 @@ def _generate(args):
     regenerate = False
     if "--regen" in args:
         regenerate = True
-        regenerate.remove("--regen")
+        args.remove("--regen")
 
     if not args:
         print_error(brown(_("Invalid arguments")))
