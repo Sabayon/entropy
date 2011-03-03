@@ -2,7 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - stale files in /var/lib/entropy/server/<repo>/packages/<arch>/<branch>/*.asc
     - if repo is opened using open_repository() cannot use close(), avoid by design
 
     - downgrade-repo, if enabled, puts the to-be-upgraded
