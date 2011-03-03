@@ -2245,6 +2245,14 @@ class EntropyPackageView:
                     if pixbuf is not None:
                         cell.set_property('pixbuf', pixbuf)
                         icon_theme_loaded = True
+                        try:
+                            repoid = pkg.repoid_clean
+                            key = pkg.key
+                            cache_key = (key, repoid,)
+                        except (ProgrammingError, OperationalError):
+                            cache_key = None
+                        if cache_key is not None:
+                            self.__pkg_ugc_icon_cache[cache_key] = pixbuf
 
                 if not icon_theme_loaded:
                     self.set_pixbuf_to_cell(cell, self.ugc_generic_icon,
