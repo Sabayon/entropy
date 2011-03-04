@@ -304,7 +304,10 @@ class RepositoryMixin:
         is_temp = repodata.get('__temporary__')
 
         if is_package_file or is_webinstall_pkg or is_temp:
-            # dynamic repository
+            # package repository
+
+            # remove cache, if any
+            self._settings._clear_repository_cache(repoid = repoid)
 
             # no need # avail_data[repoid]['plain_packages'] = \
             # repodata['plain_packages'][:]
@@ -341,12 +344,15 @@ class RepositoryMixin:
     def remove_repository(self, repoid, disable = False):
 
         done = False
+        removed_data = None
         if repoid in self._settings['repositories']['available']:
-            del self._settings['repositories']['available'][repoid]
+            removed_data = self._settings['repositories']['available'].pop(
+                repoid)
             done = True
 
         if repoid in self._settings['repositories']['excluded']:
-            del self._settings['repositories']['excluded'][repoid]
+            removed_data = self._settings['repositories']['excluded'].pop(
+                repoid)
             done = True
 
         # also early remove from validRepositories to avoid
@@ -372,7 +378,11 @@ class RepositoryMixin:
             if repoid in self._settings['repositories']['order']:
                 self._settings['repositories']['order'].remove(repoid)
 
-            self._settings._clear_repository_cache(repoid = repoid)
+            # if it's a package repository, don't remove cache here
+            is_webinstall_pkg = removed_data.get('webinstall_package', False)
+            is_package_file = repoid.endswith(etpConst['packagesext'])
+            if not (is_webinstall_pkg or is_package_file):
+                self._settings._clear_repository_cache(repoid = repoid)
             # save new self._settings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
