@@ -33,6 +33,7 @@ from entropy.misc import RSS
 from entropy.cache import EntropyCacher
 from entropy.exceptions import OnlineMirrorError
 from entropy.security import Repository as RepositorySecurity
+from entropy.client.interfaces.db import CachedRepository
 from entropy.i18n import _
 
 from entropy.server.interfaces.rss import ServerRssMetadata
@@ -165,7 +166,7 @@ class ServerRepositoryStatus(Singleton):
         return self.__updates_log[db]
 
 
-class ServerPackagesRepository(EntropyRepository):
+class ServerPackagesRepository(CachedRepository):
     """
     This class represents the installed packages repository and is a direct
     subclass of EntropyRepository.

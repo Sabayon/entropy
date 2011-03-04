@@ -37,8 +37,9 @@ from entropy.core.settings.base import SystemSettings
 
 import entropy.tools
 
-__all__ = ["ClientEntropyRepositoryPlugin", "InstalledPackagesRepository",
-    "AvailablePackagesRepository", "GenericRepository"]
+__all__ = ["CachedRepository", "ClientEntropyRepositoryPlugin",
+    "InstalledPackagesRepository", "AvailablePackagesRepository",
+    "GenericRepository"]
 
 class ClientEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
