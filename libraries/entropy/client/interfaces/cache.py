@@ -103,7 +103,7 @@ class CacheMixin:
     def _get_available_packages_chash(self):
         # client digest not needed, cache is kept updated
         c_hash = "%s|%s|%s" % (
-            self._all_repositories_checksum(),
+            self._repositories_checksum(),
             self._filter_available_repositories(),
             # needed when users do bogus things like editing config files
             # manually (branch setting)
@@ -147,11 +147,29 @@ class CacheMixin:
         """
         return self.__repositories_checksum(self._enabled_repos)
 
-    def _get_available_packages_cache(self, myhash = None):
-        if myhash is None:
-            myhash = self._get_available_packages_chash()
+    def _get_masked_packages_cache(self, chash):
+        """
+        Return the on-disk cached object for all the masked packages.
+
+        @param chash: cache hash
+        @type chash: string
+        @return: list of masked packages (if cache hit) otherwise None
+        @rtype: list or None
+        """
         return self._cacher.pop("%s%s" % (
-            EntropyCacher.CACHE_IDS['world_available'], myhash))
+            EntropyCacher.CACHE_IDS['world_masked'], chash))
+
+    def _get_available_packages_cache(self, chash):
+        """
+        Return the on-disk cached object for all the available packages.
+
+        @param chash: cache hash
+        @type chash: string
+        @return: list of available packages (if cache hit) otherwise None
+        @rtype: list or None
+        """
+        return self._cacher.pop("%s%s" % (
+            EntropyCacher.CACHE_IDS['world_available'], chash))
 
     def _get_updates_cache(self, empty_deps, db_digest = None):
 

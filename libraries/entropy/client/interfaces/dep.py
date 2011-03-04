@@ -1688,61 +1688,98 @@ class CalculatorsMixin:
             self._cacher.push(c_hash, deptree)
         return deptree
 
-    def calculate_available_packages(self, use_cache = True):
+    def calculate_masked_packages(self, use_cache = True):
+        """
+        Compute a list of masked packages. For masked packages it is meant
+        a list of packages that cannot be installed without explicit user
+        confirmation.
 
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
+        @return: list of masked package matches + mask reason id
+            [((package_id, repository_id), reason_id), ...]
+        @rtype: list
+        """
         c_hash = self._get_available_packages_chash()
         if use_cache and self.xcache:
-            cached = self._get_available_packages_cache(myhash = c_hash)
+            cached = self._get_masked_packages_cache(c_hash)
+            if cached is not None:
+                return cached
+
+        masked = []
+        for repository_id in self._filter_available_repositories():
+            repo = self.open_repository(repository_id)
+            try:
+                # db may be corrupted, we cannot deal with it here
+                package_ids = repo.listAllPackageIds()
+            except OperationalError:
+                continue
+
+            def fm(pkg_id):
+                pkg_id_filtered, reason_id = repo.maskFilter(pkg_id)
+                if pkg_id_filtered == -1:
+                    return ((pkg_id, repository_id,), reason_id)
+                return None
+            masked += [x for x in map(fm, package_ids) if x is not None]
+
+        # add live unmasked elements too
+        unmasks = self._settings['live_packagemasking']['unmask_matches']
+        live_reason_id = etpConst['pkg_masking_reference']['user_live_unmask']
+        for package_id, repository_id in unmasks:
+            match_data = ((package_id, repository_id), live_reason_id,)
+            if match_data in masked:
+                continue
+            masked.append(match_data)
+
+        if self.xcache:
+            self._cacher.push("%s%s" % (
+                EntropyCacher.CACHE_IDS['world_masked'], c_hash), masked)
+
+        return masked
+
+    def calculate_available_packages(self, use_cache = True):
+        """
+        Compute a list of available packages in repositories. For available
+        packages it is meant a list of non-installed packages.
+
+        @keyword use_cache: use on-disk cache
+        @type use_cache: bool
+        @return: list of available package matches
+        @rtype: list
+        """
+        c_hash = self._get_available_packages_chash()
+        if use_cache and self.xcache:
+            cached = self._get_available_packages_cache(c_hash)
             if cached is not None:
                 return cached
 
         available = []
-        avail_dep_text = _("Calculating available packages for")
-        for repo in self._enabled_repos:
-            try:
-                dbconn = self.open_repository(repo)
-                dbconn.validate()
-            except (RepositoryError, SystemDatabaseError):
-                continue
+        for repository_id in self._filter_available_repositories():
+            repo = self.open_repository(repository_id)
             try:
                 # db may be corrupted, we cannot deal with it here
-                idpackages = [x for x in dbconn.listAllPackageIds(
-                    order_by = 'atom') if dbconn.maskFilter(x)[0] != -1]
+                package_ids = [x for x in repo.listAllPackageIds(
+                    order_by = 'atom') if repo.maskFilter(x)[0] != -1]
             except OperationalError:
                 continue
-            count = 0
-            maxlen = len(idpackages)
             myavailable = []
             do_break = False
-            for idpackage in idpackages:
+            for package_id in package_ids:
                 if do_break:
                     break
-                count += 1
-                if (count % 10 == 0) or (count == 1) or (count == maxlen):
-                    self.output(
-                        avail_dep_text + " %s" % (repo,),
-                        importance = 0,
-                        level = "info",
-                        back = True,
-                        header = "::",
-                        count = (count, maxlen),
-                        percent = True,
-                        footer = " ::"
-                    )
                 # get key + slot
                 try:
-                    key_slot = dbconn.retrieveKeySlot(idpackage)
+                    key_slot = repo.retrieveKeySlot(package_id)
                     if key_slot is None:
                         # mmh... invalid entry, ignore
                         continue
                     key, slot = key_slot
                     matches = self._installed_repository.searchKeySlot(key, slot)
                 except (DatabaseError, IntegrityError, OperationalError,):
-
                     do_break = True
                     continue
                 if not matches:
-                    myavailable.append((idpackage, repo))
+                    myavailable.append((package_id, repository_id))
 
             available += myavailable[:]
 
