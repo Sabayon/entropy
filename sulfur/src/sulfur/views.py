@@ -28,7 +28,8 @@ from entropy.const import etpConst, etpSys, initconfig_entropy_constants, \
     const_debug_write
 from entropy.misc import ParallelTask, TimeScheduled
 from entropy.i18n import _, _LOCALE
-from entropy.tools import dep_getkey, print_traceback
+from entropy.tools import print_traceback
+from entropy.dep import dep_getkey
 from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
