@@ -2,7 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - improve addPackage, remove extra params, just return package_id
     - if repo is opened using open_repository() cannot use close(), avoid by design
     - drop deprecated stuff in entropy.tools
     - use entropy.tools.validate_repository_id() where required
