@@ -4380,7 +4380,7 @@ class PortagePlugin(SpmPlugin):
             lines = [const_convert_to_unicode(x) for x in lines]
             f.close()
         except IOError:
-            return lines
+            return tuple()
 
         for line in lines:
             needed = line.split()
