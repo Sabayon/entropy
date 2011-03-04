@@ -79,8 +79,38 @@ class ClientEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         return 0
 
+class CachedRepository(EntropyRepository):
+    """
+    This kind of repository cannot have close() called directly, without
+    a valid token passed. This is because the class object is cached somewhere
+    and calling close() would turn into a software bug.
+    """
+    def setCloseToken(self, token):
+        """
+        Set a token that can be used to validate close() calls. Calling
+        close() on these repos is prohibited and considered a software bug.
+        Only Entropy Client should be able to close them.
+        """
+        self._close_token = token
 
-class InstalledPackagesRepository(EntropyRepository):
+    def close(self, _token = None):
+        """
+        Reimplemented from EntropyRepository
+        """
+        close_token = getattr(self, "_close_token", None)
+        if close_token is not None:
+            if (_token is None) or (_token != close_token):
+                raise PermissionDenied(
+                    "cannot close this repository directly. Software bug!")
+        return EntropyRepository.close(self)
+
+    def __del__(self):
+        """
+        Cannot honor the constraint in this case, sorry!
+        """
+        return EntropyRepository.close(self)
+
+class InstalledPackagesRepository(CachedRepository):
     """
     This class represents the installed packages repository and is a direct
     subclass of EntropyRepository.
@@ -2387,7 +2417,7 @@ class MaskableRepository(EntropyRepositoryBase):
         return -1, myr
 
 
-class AvailablePackagesRepository(EntropyRepository, MaskableRepository):
+class AvailablePackagesRepository(CachedRepository, MaskableRepository):
     """
     This class represents the available packages repository and is a direct
     subclass of EntropyRepository. It implements the update() method in order
@@ -2467,10 +2497,14 @@ class AvailablePackagesRepository(EntropyRepository, MaskableRepository):
         EntropyRepository.clearCache(self)
 
 
-class GenericRepository(EntropyRepository, MaskableRepository):
+class GenericRepository(CachedRepository, MaskableRepository):
     """
     This class represents a generic packages repository and is a direct
     subclass of EntropyRepository.
+    Even GenericRepository is a CachedRepository because its object could
+    get cached by 3rd party. Actually, we require this because our installed
+    packages repository could end up being a GenericRepository, when running
+    in fail-safe mode.
     """
 
     def handlePackage(self, pkg_data, forcedRevision = -1,

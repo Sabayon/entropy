@@ -757,8 +757,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         """
         self.__instance_destroyed = True
         if hasattr(self, '_installed_repository'):
-            if self._installed_repository != None:
-                self._installed_repository.close()
+            if self._installed_repository is not None:
+                self._installed_repository.close(
+                    _token = etpConst['clientdbid'])
         if hasattr(self, 'logger'):
             self.logger.close()
         if hasattr(self, '_settings') and \

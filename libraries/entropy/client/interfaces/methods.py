@@ -62,9 +62,12 @@ class RepositoryMixin:
         def ensure_closed_repo(repoid):
             key = self.__get_repository_cache_key(repoid)
             for cache_obj in (self._repodb_cache, self._memory_db_instances):
+                obj = cache_obj.pop(key, None)
+                if obj is None:
+                    continue
                 try:
-                    cache_obj.pop(key).close()
-                except (KeyError, AttributeError, OperationalError):
+                    obj.close(_token = repoid)
+                except OperationalError:
                     pass
 
         t2 = _("Please update your repositories now in order to remove this message!")
@@ -149,6 +152,7 @@ class RepositoryMixin:
 
     def close_repositories(self, mask_clear = True):
         for item in sorted(self._repodb_cache.keys()):
+            repository_id, root = item
             # in-memory repositories cannot be closed
             # otherwise everything will be lost, to
             # effectively close these repos you
@@ -156,7 +160,7 @@ class RepositoryMixin:
             if item in self._memory_db_instances:
                 continue
             try:
-                self._repodb_cache.pop(item).close()
+                self._repodb_cache.pop(item).close(_token = repository_id)
             except OperationalError as err: # wtf!
                 sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
                     err,))
@@ -265,6 +269,7 @@ class RepositoryMixin:
                 xcache = xcache,
                 indexing = indexing
             )
+            conn.setCloseToken(repoid)
             self._add_plugin_to_client_repository(conn)
 
         if (repoid not in self._treeupdates_repos) and \
@@ -788,6 +793,7 @@ class RepositoryMixin:
                     name = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing
                 )
+                conn.setCloseToken(etpConst['clientdbid'])
                 self._add_plugin_to_client_repository(conn)
                 # TODO: remove this in future, drop useless data from clientdb
             except (DatabaseError,):
@@ -800,7 +806,7 @@ class RepositoryMixin:
                         conn.validate()
                     except SystemDatabaseError:
                         try:
-                            conn.close()
+                            conn.close(_token = etpConst['clientdbid'])
                         except (RepositoryPluginError, OSError, IOError):
                             pass
                         entropy.tools.print_traceback(f = self.logger)
@@ -810,7 +816,7 @@ class RepositoryMixin:
         return conn
 
     def reopen_installed_repository(self):
-        self._installed_repository.close()
+        self._installed_repository.close(_token = etpConst['clientdbid'])
         self._open_installed_repository()
         # make sure settings are in sync
         self._settings.clear()
