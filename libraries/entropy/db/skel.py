@@ -658,11 +658,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @keyword formattedContent: tells whether content metadata is already
             formatted for insertion
         @type formattedContent: bool
-        @return: tuple composed by
-            - package_id: unique Entropy Repository package identifier
-            - revision: final package revision selected
-            - pkg_data: new Entropy package metadata dict
-        @rtype: tuple
+        @return: package identifier
+        @rtype: int
         """
         raise NotImplementedError()
 
@@ -756,11 +753,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             metadata (usually the biggest part) in pkg_data is already
             prepared for insertion
         @type formatted_content: bool
-        @return: tuple composed by
-            - package_id: unique Entropy Repository package identifier
-            - revision: final package revision selected
-            - pkg_data: new Entropy package metadata dict
-        @rtype: tuple
+        @return: new package identifier
+        @rtype: int
         """
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):

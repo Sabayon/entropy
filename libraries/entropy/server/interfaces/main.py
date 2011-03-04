@@ -2405,7 +2405,7 @@ class Server(Client):
                 header = red(" @@ "),
                 back = True
             )
-            new_idpackage, new_revision, new_data = todbconn.handlePackage(data)
+            new_idpackage = todbconn.handlePackage(data)
             del data
             todbconn.commit()
             todbconn.storeInstalledPackage(new_idpackage, to_repository_id)
@@ -4367,7 +4367,8 @@ class Server(Client):
             restricted_callback = _package_injector_check_restricted)
         self._pump_extracted_package_metadata(mydata, repository_id,
             {'injected': inject,})
-        idpackage, revision, mydata = dbconn.handlePackage(mydata)
+        idpackage = dbconn.handlePackage(mydata)
+        revision = dbconn.retrieveRevision(idpackage)
         # make sure that info have been written to disk
         dbconn.commit()
 
@@ -4567,7 +4568,7 @@ class Server(Client):
                     # also bump injected packages properly
                     original_injected = pkg_data['injected']
                     pkg_data['injected'] = False
-                    pkg_id, revision, pkg_data = dbconn.handlePackage(pkg_data)
+                    pkg_id = dbconn.handlePackage(pkg_data)
                     if original_injected:
                         dbconn.setInjected(pkg_id)
                     # make sure that info have been written to disk
@@ -5099,9 +5100,7 @@ class Server(Client):
         # to a temp repo
         tmp_repo = self._open_temp_repository("dep_rewrite_temp",
             temp_file = ":memory:")
-        new_idpackage, new_revision, new_data = tmp_repo.handlePackage(pkg_meta)
-        del new_revision
-        del new_data
+        new_idpackage = tmp_repo.handlePackage(pkg_meta)
         pkg_atom = tmp_repo.retrieveAtom(new_idpackage)
 
         rewrites_enabled = []

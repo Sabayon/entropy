@@ -249,8 +249,7 @@ def inflate_handler(entropy_client, mytbz2s, savedir):
         # create
         mydbconn = entropy_client.open_generic_repository(dbpath)
         mydbconn.initializeRepository()
-        idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
-        del yyy, xxx
+        idpackage = mydbconn.addPackage(mydata, revision = mydata['revision'])
         mydbconn.close()
         entropy.tools.aggregate_entropy_metadata(etptbz2path, dbpath)
         os.remove(dbpath)
@@ -391,8 +390,7 @@ def smartpackagegenerator(entropy_client, matched_pkgs):
             else:
                 xpakdata = mydbconn.retrieveSpmMetadata(myidpackage) # already a smart package
             # add
-            idpk, rev, y = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
-            del y
+            idpk = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
             if xpakdata is not None:
                 mergeDbconn.storeSpmMetadata(idpk, xpakdata)
         mydbconn.close()

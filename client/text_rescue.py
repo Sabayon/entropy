@@ -580,7 +580,7 @@ def _database_spmsync(entropy_client):
                 mydata['revision'] = \
                     entropy_client.installed_repository().retrieveRevision(oldidpackage)
 
-            idpk, rev, xx = entropy_client.installed_repository().handlePackage(mydata,
+            idpk = entropy_client.installed_repository().handlePackage(mydata,
                 forcedRevision = mydata['revision'])
             entropy_client.installed_repository().dropInstalledPackageFromStore(idpk)
             entropy_client.installed_repository().storeInstalledPackage(idpk, "spm-db")
@@ -703,7 +703,7 @@ def _database_generate(entropy_client):
             saved_rev = saved_rev
             mydata['revision'] = saved_rev
 
-        idpk, rev, xx = entropy_client.installed_repository().addPackage(mydata,
+        idpk = entropy_client.installed_repository().addPackage(mydata,
             revision = mydata['revision'], do_commit = False)
         entropy_client.installed_repository().storeInstalledPackage(idpk, "spm-db")
         os.remove(temp_pkg_path)

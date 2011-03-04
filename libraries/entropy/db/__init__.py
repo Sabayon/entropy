@@ -1058,7 +1058,7 @@ class EntropyRepository(EntropyRepositoryBase):
             package_id = package_id, do_commit = do_commit,
             formatted_content = formatted_content)
 
-        return package_id, revision, pkg_data
+        return package_id
 
     def removePackage(self, package_id, do_cleanup = True, do_commit = True,
         from_add_package = False):

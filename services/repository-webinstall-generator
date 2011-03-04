@@ -284,7 +284,7 @@ exit ${?}
                 else:
                     cache_t, data = cached
 
-                dest_package_id, xxx, yyy = dest_repo.addPackage(data,
+                dest_package_id = dest_repo.addPackage(data,
                     revision = data['revision'],
                     do_commit = False,
                     formatted_content = True)

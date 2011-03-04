@@ -1958,7 +1958,7 @@ class Package:
 
         inst_repo = self._entropy.installed_repository()
 
-        idpackage, rev, x = inst_repo.handlePackage(data,
+        idpackage = inst_repo.handlePackage(data,
             forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation

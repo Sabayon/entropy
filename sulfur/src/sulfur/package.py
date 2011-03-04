@@ -111,7 +111,7 @@ class EntropyPackage:
         elif self.remote:
 
             self.dbconn = ENTROPY.open_temp_repository()
-            idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
+            idpackage = self.dbconn.addPackage(self.remote)
             matched_atom = (idpackage, matched_atom[1])
             self.from_installed = False
 
