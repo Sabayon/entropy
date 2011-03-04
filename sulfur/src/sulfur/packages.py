@@ -787,23 +787,22 @@ class EntropyPackages:
     def _pkg_get_all(self):
 
         keys = ['installed', 'available', 'masked', 'updates']
-        allpkgs = []
+        allpkgs_dict = {}
         for key in keys:
-            allpkgs += self.get_raw_groups(key)
+            allpkgs_dict.update(dict((x.matched_atom, x) for x in \
+                self.get_raw_groups(key)))
+        allpkgs_set = set(allpkgs_dict)
 
         # filter duplicates, drop installed pkgs if they are already
         # provided as updates or available
-        inst_group = [x.matched_atom for x in \
-            self.get_raw_groups('installed')]
-        other_groups = [x.installed_match for x in \
+        allpkgs_set -= set(x.matched_atom for x in \
+            self.get_raw_groups('installed'))
+        allpkgs_set -= set(x.installed_match for x in \
             self.get_raw_groups('updates') + \
             self.get_raw_groups('available') + \
-            self.get_raw_groups('masked')]
+            self.get_raw_groups('masked'))
 
-        allpkgs = [x for x in allpkgs if not (x.matched_atom in inst_group \
-            and x.matched_atom in other_groups)]
-
-        return allpkgs
+        return [allpkgs_dict[x] for x in allpkgs_set]
 
     def _pkg_get_available(self):
         gp_call = self.get_package_item
@@ -966,10 +965,6 @@ class EntropyPackages:
                 # Entropy.get_package_action will raise TypeError at
                 # retrieveKeySlot
                 pkg_db = self.Entropy.open_repository(pkg_repo)
-                if not pkg_db.isPackageIdAvailable(pkg_id):
-                    const_debug_write(__name__,
-                        "_pkg_get_masked: wtf, pkg not avail: %s" % (yp,))
-                    return None
                 yp.action = gmp_action(match)
                 if yp.action == 'rr': # setup reinstallables
                     idpackage = gi_match(match)
@@ -983,7 +978,7 @@ class EntropyPackages:
 
             return yp
 
-        return [x for x in map(fm, self.get_masked_packages()) \
+        return [x for x in map(fm, self.Entropy.calculate_masked_packages()) \
             if x is not None]
 
     def _pkg_get_user_masked(self):
@@ -1219,34 +1214,6 @@ class EntropyPackages:
     def get_package_sets(self):
         sets = self.Entropy.Sets()
         return sets.available()
-
-    def get_masked_packages(self):
-        maskdata = []
-
-        for repoid in self.Entropy.repositories():
-            dbconn = self.Entropy.open_repository(repoid)
-            try:
-                pkg_ids = dbconn.listAllPackageIds(order_by = 'atom')
-            except OperationalError:
-                continue # wtf? empty repo?
-            def fm(idpackage):
-                idpackage_filtered, idreason = dbconn.maskFilter(
-                    idpackage)
-                if idpackage_filtered == -1:
-                    return ((idpackage, repoid,), idreason)
-                return None
-            maskdata += [x for x in map(fm, pkg_ids) if x is not None]
-
-        # add live unmasked elements too
-        unmasks = self.Entropy.Settings()['live_packagemasking']['unmask_matches']
-        live_idreason = etpConst['pkg_masking_reference']['user_live_unmask']
-        for idpackage, repoid in unmasks:
-            match_data = ((idpackage, repoid), live_idreason,)
-            if match_data in maskdata:
-                continue
-            maskdata.append(match_data)
-
-        return maskdata
 
     def get_masked_package_action(self, match):
         action = self.Entropy.get_package_action(match)

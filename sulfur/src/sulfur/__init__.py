@@ -1849,7 +1849,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if action == "updates":
             # speed up first queue taint iteration
             self.etpbase.get_groups("available")
-            gobject.idle_add(self._show_packages_group_caching)
+            def _do_cached_timeout():
+                gobject.idle_add(self._show_packages_group_caching,
+                    priority = gobject.PRIORITY_LOW)
+            gobject.timeout_add(2000, _do_cached_timeout)
 
             # set updates label
             raw_updates = len(self.etpbase.get_raw_groups('updates'))

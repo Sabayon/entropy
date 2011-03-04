@@ -674,58 +674,222 @@ class EntropyPackage:
             return self.set_name
         return self.dbconn.retrieveAtom(self.matched_id)
 
-    pkg =  property(fget=get_pkg)
-    name =  property(fget=get_name)
-    namedesc = property(fget=get_nameDesc)
-    onlyname = property(fget=get_only_name)
-    cat = property(fget=get_category)
-    repoid =  property(fget=get_repository)
-    repoid_clean =  property(fget=get_repository_clean)
-    ver =  property(fget=get_version)
-    binurl = property(fget=get_download_url)
-    onlyver = property(fget=get_only_version)
-    tag = property(fget=get_tag)
-    revision = property(fget=get_revision)
-    digest = property(fget=get_digest)
-    version = property(fget=get_version)
-    release = property(fget=get_release)
-    slot = property(fget=get_slot)
-    maskstat = property(fget=is_masked)
-    keywords = property(fget=get_keywords)
-    useflags = property(fget=get_useflags)
-    homepage = property(fget=get_homepage)
-    protect = property(fget=get_config_protect)
-    protect_mask = property(fget=get_config_protect_mask)
-    trigger = property(fget=get_trigger)
-    compileflags = property(fget=get_compile_flags)
-    dependencies = property(fget=get_dependencies)
-    needed = property(fget=get_needed)
-    conflicts = property(fget=get_conflicts)
-    dependsFmt = property(fget=get_inverse_dependencies)
-    api = property(fget=get_api)
-    content = property(fget=get_filelist)
-    contentExt = property(fget=get_filelist_ext)
-    lic = property(fget=get_license)
-    sources = property(fget=get_sources)
-    keyslot = property(fget=get_key_slot)
-    key = property(fget=get_key)
-    description =  property(fget=get_description)
-    description_nomarkup = property(fget=get_description_no_markup)
-    size =  property(fget=get_download_size)
-    intelligentsizeFmt = property(fget=get_proper_size)
-    sizeFmt =  property(fget=get_download_sizeFmt)
-    disksize =  property(fget=get_disk_size)
-    disksizeFmt =  property(fget=get_disk_sizeFmt)
-    arch = property(fget=get_arch)
-    epoch = property(fget=get_creation_date)
-    epochFmt = property(fget=get_creation_date_formatted)
-    syspkg = property(fget=is_sys_pkg)
-    install_status = property(fget=get_install_status)
-    vote = property(fget=get_ugc_package_vote)
-    voteint = property(fget=get_ugc_package_vote_int)
-    votefloat = property(fget=get_ugc_package_vote_float)
-    voted = property(fget=get_ugc_package_voted)
-    downloads = property(fget=get_ugc_package_downloads)
-    user_unmasked = property(fget=is_user_unmasked)
-    user_masked = property(fget=is_user_masked)
-    changelog = property(fget=get_changelog)
+    @property
+    def pkg(self):
+        return self.get_pkg()
+
+    @property
+    def name(self):
+        return self.get_name()
+
+    @property
+    def namedesc(self):
+        return self.get_nameDesc()
+
+    @property
+    def onlyname(self):
+        return self.get_only_name()
+
+    @property
+    def cat(self):
+        return self.get_category()
+
+    @property
+    def repoid(self):
+        return self.get_repository()
+
+    @property
+    def repoid_clean(self):
+        return self.get_repository_clean()
+
+    @property
+    def ver(self):
+        return self.get_version()
+
+    @property
+    def binurl(self):
+        return self.get_download_url()
+
+    @property
+    def onlyver(self):
+        return self.get_only_version()
+
+    @property
+    def tag(self):
+        return self.get_tag()
+
+    @property
+    def revision(self):
+        return self.get_revision()
+
+    @property
+    def digest(self):
+        return self.get_digest()
+
+    @property
+    def version(self):
+        return self.get_version()
+
+    @property
+    def release(self):
+        return self.get_release()
+
+    @property
+    def slot(self):
+        return self.get_slot()
+
+    @property
+    def maskstat(self):
+        return self.is_masked()
+
+    @property
+    def keywords(self):
+        return self.get_keywords()
+
+    @property
+    def useflags(self):
+        return self.get_useflags()
+
+    @property
+    def homepage(self):
+        return self.get_homepage()
+
+    @property
+    def protect(self):
+        return self.get_config_protect()
+
+    @property
+    def protect_mask(self):
+        return self.get_config_protect_mask()
+
+    @property
+    def trigger(self):
+        return self.get_trigger()
+
+    @property
+    def compileflags(self):
+        return self.get_compile_flags()
+
+    @property
+    def dependencies(self):
+        return self.get_dependencies()
+
+    @property
+    def needed(self):
+        return self.get_needed()
+
+    @property
+    def conflicts(self):
+        return self.get_conflicts()
+
+    @property
+    def dependsFmt(self):
+        return self.get_inverse_dependencies()
+
+    @property
+    def api(self):
+        return self.get_api()
+
+    @property
+    def content(self):
+        return self.get_filelist()
+
+    @property
+    def contentExt(self):
+        return self.get_filelist_ext()
+
+    @property
+    def lic(self):
+        return self.get_license()
+
+    @property
+    def sources(self):
+        return self.get_sources()
+
+    @property
+    def keyslot(self):
+        return self.get_key_slot()
+
+    @property
+    def key(self):
+        return self.get_key()
+
+    @property
+    def description(self):
+        return self.get_description()
+
+    @property
+    def description_nomarkup(self):
+        return self.get_description_no_markup()
+
+    @property
+    def size(self):
+        return self.get_download_size()
+
+    @property
+    def intelligentsizeFmt(self):
+        return self.get_proper_size()
+
+    @property
+    def sizeFmt(self):
+        return self.get_download_sizeFmt()
+
+    @property
+    def disksize(self):
+        return self.get_disk_size()
+
+    @property
+    def disksizeFmt(self):
+        return self.get_disk_sizeFmt()
+
+    @property
+    def arch(self):
+        return self.get_arch()
+
+    @property
+    def epoch(self):
+        return self.get_creation_date()
+
+    @property
+    def epochFmt(self):
+        return self.get_creation_date_formatted()
+
+    @property
+    def syspkg(self):
+        return self.is_sys_pkg()
+
+    @property
+    def install_status(self):
+        return self.get_install_status()
+
+    @property
+    def vote(self):
+        return self.get_ugc_package_vote()
+
+    @property
+    def voteint(self):
+        return self.get_ugc_package_vote_int()
+
+    @property
+    def votefloat(self):
+        return self.get_ugc_package_vote_float()
+
+    @property
+    def voted(self):
+        return self.get_ugc_package_voted()
+
+    @property
+    def downloads(self):
+        return self.get_ugc_package_downloads()
+
+    @property
+    def user_unmasked(self):
+        return self.is_user_unmasked()
+
+    @property
+    def user_masked(self):
+        return self.is_user_masked()
+
+    @property
+    def changelog(self):
+        return self.get_changelog()
