@@ -1942,20 +1942,19 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return self.add_to_queue(found_objs, "u", always_ask)
         return True
 
-    def reset_cache_status(self):
+    def reset_cache_status(self, quick = False):
         self.pkgView.clear()
         self.etpbase.clear_groups()
         self.etpbase.clear_cache()
         self.queue.clear()
+        if quick:
+            return
         # re-scan system settings, useful
         # if there are packages that have been
         # live masked, and anyway, better wasting
         # 2-3 more cycles than having unattended
         # behaviours
         self._settings.clear()
-        self._entropy.close_repositories()
-        # re-validate repositories, in this way broken apples will be
-        # disabled.
         self._entropy._validate_repositories()
         self._entropy.close_repositories()
 

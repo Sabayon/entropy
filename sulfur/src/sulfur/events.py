@@ -488,8 +488,7 @@ class SulfurApplicationEventsMixin:
 
         def clean_n_quit(newrepo):
             self._entropy.remove_repository(newrepo)
-            self.reset_cache_status()
-            self._entropy.reopen_installed_repository()
+            self.reset_cache_status(quick=True)
             # regenerate packages information
             self.setup_application()
 

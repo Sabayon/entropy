@@ -1776,7 +1776,7 @@ class EntropyPackageView:
 
         if text_data.startswith("file://"):
             # what is it all about
-            file_path = text_data[len("file://"):]
+            file_path = text_data[len("file://"):].strip()
             if not (os.path.isfile(file_path) and \
                 os.access(file_path, os.R_OK)):
                 return # nothing relevant

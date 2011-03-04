@@ -886,11 +886,7 @@ class EntropyPackages:
 
         matches = set()
         for repo in self.Entropy.repositories():
-            try:
-                dbconn = self.Entropy.open_repository(repo)
-                dbconn.validate()
-            except (RepositoryError, SystemDatabaseError):
-                continue
+            dbconn = self.Entropy.open_repository(repo)
             try:
                 idpackages = dbconn.listAllPackageIds()
             except OperationalError:
@@ -942,8 +938,7 @@ class EntropyPackages:
             yp.color = SulfurConf.color_install
             return yp
         filtered = self.filter_reinstallable(
-            self.Entropy.installed_repository().listAllPackages(get_scope = True,
-            order_by = 'atom'))
+            self.Entropy.installed_repository().listAllPackages(get_scope = True))
         return [x for x in map(fm, filtered) if x is not None]
 
     def _pkg_get_masked(self):
