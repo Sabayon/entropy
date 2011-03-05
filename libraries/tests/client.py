@@ -165,6 +165,14 @@ class EntropyRepositoryTest(unittest.TestCase):
         finally:
             shutil.rmtree(tmp_dir, True)
 
+    def test_clear_cache(self):
+        current_dir = self.Client._cacher.current_directory()
+        test_file = os.path.join(current_dir, "asdasd")
+        with open(test_file, "w") as f:
+            f.flush()
+        self.Client.clear_cache()
+        self.assertEqual(os.listdir(current_dir), [])
+
     def test_contentsafety(self):
         dbconn = self.Client._init_generic_temp_repository(
             self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")

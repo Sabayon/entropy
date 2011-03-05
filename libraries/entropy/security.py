@@ -526,7 +526,7 @@ class System:
         """
         inst_pkgs_cksum = self._entropy.installed_repository().checksum(
             do_order = True, strict = False, strings = True)
-        repo_cksum = self._entropy._repositories_checksum()
+        repo_cksum = self._entropy._repositories_hash()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
         cached = self.__cacher.pop(sys_hash, cache_dir = System._CACHE_DIR)

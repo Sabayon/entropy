@@ -368,7 +368,7 @@ class RepositoryMixin:
         # also early remove from validRepositories to avoid
         # issues when reloading SystemSettings which is bound to Entropy Client
         # SystemSettings plugin, which triggers calculate_world_updates, which
-        # triggers _all_repositories_checksum, which triggers open_repository,
+        # triggers _all_repositories_hash, which triggers open_repository,
         # which triggers _load_repository_database, which triggers an unwanted
         # output message => "bad repository id specified"
         if repoid in self._enabled_repos:

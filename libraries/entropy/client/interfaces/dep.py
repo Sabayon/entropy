@@ -209,7 +209,7 @@ class CalculatorsMixin:
             u_hash = hash(tuple(match_repo))
         if const_isstring(match_slot):
             k_ms = match_slot
-        repos_ck = self._all_repositories_checksum()
+        repos_ck = self._all_repositories_hash()
 
         c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
@@ -1700,7 +1700,7 @@ class CalculatorsMixin:
             [((package_id, repository_id), reason_id), ...]
         @rtype: list
         """
-        c_hash = self._get_available_packages_chash()
+        c_hash = self._get_available_packages_hash()
         if use_cache and self.xcache:
             cached = self._get_masked_packages_cache(c_hash)
             if cached is not None:
@@ -1747,7 +1747,7 @@ class CalculatorsMixin:
         @return: list of available package matches
         @rtype: list
         """
-        c_hash = self._get_available_packages_chash()
+        c_hash = self._get_available_packages_hash()
         if use_cache and self.xcache:
             cached = self._get_available_packages_cache(c_hash)
             if cached is not None:
@@ -1797,9 +1797,9 @@ class CalculatorsMixin:
             os.path.isfile(in_branch_upgrade):
             return set(), []
 
-        db_digest = self._repositories_checksum()
+        repo_hash = self._repositories_hash()
         if use_cache and self.xcache:
-            cached = self._get_critical_updates_cache(db_digest = db_digest)
+            cached = self._get_critical_updates_cache(repo_hash = repo_hash)
             if cached is not None:
                 return cached
 
@@ -1829,7 +1829,7 @@ class CalculatorsMixin:
         data = (atoms, matches)
 
         if self.xcache:
-            c_hash = self._get_critical_update_cache_hash(db_digest)
+            c_hash = self._get_critical_update_cache_hash(repo_hash)
             self._cacher.push(
                 "%s%s" % (EntropyCacher.CACHE_IDS['critical_update'], c_hash,),
                     data, async = False)
@@ -1925,10 +1925,10 @@ class CalculatorsMixin:
             if upd_atoms:
                 return upd_matches, remove, fine, spm_fine
 
-        db_digest = self._repositories_checksum()
+        repo_hash = self._repositories_hash()
         if use_cache and self.xcache:
             cached = self._get_updates_cache(empty_deps = empty,
-                db_digest = db_digest)
+                repo_hash = repo_hash)
             if cached is not None:
                 return cached
 
@@ -2099,7 +2099,7 @@ class CalculatorsMixin:
                         update.append(matchresults)
 
         if self.xcache:
-            c_hash = self._get_updates_cache_hash(db_digest, empty,
+            c_hash = self._get_updates_cache_hash(repo_hash, empty,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine)
             self._cacher.push(c_hash, data, async = False)
