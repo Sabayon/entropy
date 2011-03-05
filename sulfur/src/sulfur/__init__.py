@@ -37,7 +37,7 @@ if "/usr/lib/entropy/client" not in sys.path:
 if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
-from entropy.exceptions import OnlineMirrorError
+from entropy.exceptions import OnlineMirrorError, PermissionDenied
 from entropy.services.exceptions import EntropyServicesError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
@@ -131,20 +131,22 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         packages_install, atoms_install, do_fetch = \
             self.__scan_packages_install()
 
-        self._RESOURCES_LOCKED = "--locked" in sys.argv
-        if self._RESOURCES_LOCKED:
+        resources_locked = "--locked" in sys.argv
+        if resources_locked:
             locked = True
         else:
-            locked = self._entropy.another_entropy_running()
+            locked = not entropy.tools.acquire_entropy_locks(self._entropy)
         self._effective_root = os.getuid() == 0
         if self._effective_root:
             self._privileges.drop()
 
         if locked or (not self._effective_root):
-            self._RESOURCES_LOCKED = True
             if locked:
-                okDialog( None,
-                    _("Another Entropy instance is running. You won't be able to install/remove/sync applications.") )
+                self._entropy.shutdown()
+                okDialog(None,
+                    _("Another Entropy application is running. Sorry.") )
+                raise PermissionDenied("another entropy running")
+
         self.safe_mode_txt = ''
         # check if we'are running in safe mode
         if self._entropy.safe_mode:
@@ -156,7 +158,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.safe_mode_txt = _("Safe Mode")
 
         self._startup_packages_install = None
-        if (not self._RESOURCES_LOCKED) and not (self._entropy.safe_mode):
+        if not self._entropy.safe_mode:
             if packages_install or atoms_install:
                 self._startup_packages_install = (packages_install,
                     atoms_install, do_fetch)
@@ -249,6 +251,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             do_kill(pid)
 
         if hasattr(self, '_entropy'):
+            entropy.tools.release_entropy_locks(self._entropy)
             self._entropy.shutdown()
 
         if sysexit != -1:
@@ -414,10 +417,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.pkgProperties_selected = None
         self.setup_pkg_sorter()
         self.setup_user_generated_content()
-        if not self._RESOURCES_LOCKED:
-            self.ui.systemVbox.show()
-        else:
-            self.ui.systemVbox.hide()
+        self.ui.systemVbox.show()
 
         simple_mode = 1
         if "--advanced" in sys.argv:
@@ -434,15 +434,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_labels()
         self.setup_preferences()
         self.setup_events_handling()
-
-    def setup_resources_locked(self):
-        self.ui.repoRefreshButton.set_sensitive(not self._RESOURCES_LOCKED)
-        self.ui.queueTabBox.set_sensitive(not self._RESOURCES_LOCKED)
-        self.ui.reposVbox.set_sensitive(not self._RESOURCES_LOCKED)
-        self.ui.installPackageItem.set_sensitive(not self._RESOURCES_LOCKED)
-        self.ui.systemVbox.set_sensitive(not self._RESOURCES_LOCKED)
-        self.ui.prefSystemRepoBox.set_sensitive(not self._RESOURCES_LOCKED)
-        self.ui.pkgSelect.set_sensitive(not self._RESOURCES_LOCKED)
 
     def setup_labels(self):
 
@@ -493,7 +484,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.advancedMode.set_active(1)
         SulfurConf.simple_mode = do_simple
         SulfurConf.save()
-        self.setup_resources_locked()
 
     def switch_simple_mode(self):
         self.ui.servicesMenuItem.hide()
@@ -506,12 +496,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbPkgSets.hide()
         self.ui.rbAll.show()
 
-        # completely hide config files update menu if resources are locked
-        if not self._RESOURCES_LOCKED:
-            if self.filesView.is_filled():
-                self.ui.systemVbox.show()
-            else:
-                self.ui.systemVbox.hide()
+        if self.filesView.is_filled():
+            self.ui.systemVbox.show()
         else:
             self.ui.systemVbox.hide()
 
@@ -565,11 +551,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbPkgSets.show()
         self.ui.rbAll.hide()
 
-        # completely hide config files update menu if resources are locked
-        if not self._RESOURCES_LOCKED:
-            self.ui.systemVbox.show()
-        else:
-            self.ui.systemVbox.hide()
+        self.ui.systemVbox.show()
         self.ui.securityVbox.show()
         self.ui.prefsVbox.show()
         self.ui.reposVbox.show()
@@ -1434,9 +1416,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def update_repositories(self, repos, complete_cb = None):
 
-        if self._RESOURCES_LOCKED:
-            return False
-
         def _update_repos_done(rc, repoConn):
 
             for repo in repos:
@@ -1536,9 +1515,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def dependencies_test(self):
 
-        if self._RESOURCES_LOCKED:
-            return False
-
         self.show_progress_bars()
         self.progress.set_mainLabel(_('Testing dependencies...'))
 
@@ -1622,9 +1598,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         t.start()
 
     def libraries_test(self):
-
-        if self._RESOURCES_LOCKED:
-            return False
 
         self.show_progress_bars()
         self.progress.set_mainLabel(_('Testing libraries...'))
@@ -1967,10 +1940,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.progressVBox.show()
 
     def show_notebook_tabs_after_install(self):
-        if not self._RESOURCES_LOCKED:
-            self.ui.systemVbox.show()
-        else:
-            self.ui.systemVbox.hide()
+        self.ui.systemVbox.show()
         self.ui.packagesVbox.show()
         self.switch_application_mode(SulfurConf.simple_mode)
 
@@ -2111,11 +2081,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def _process_queue(self, pkgs, remove_repos = None, fetch_only = False,
             download_sources = False, direct_remove_matches = None,
             direct_install_matches = None, status_cb = None):
-
-        if self._RESOURCES_LOCKED:
-            okDialog(self.ui.main,
-                _("Another Entropy instance is running. Cannot process queue."))
-            return
 
         if remove_repos is None:
             remove_repos = []

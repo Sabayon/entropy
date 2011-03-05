@@ -24,6 +24,7 @@ sys.path.insert(3, "/usr/lib/entropy/libraries")
 sys.path.insert(4, "/usr/lib/entropy/client")
 sys.path.insert(5, "/usr/lib/entropy/sulfur")
 import entropy.tools
+from entropy.exceptions import PermissionDenied
 from sulfur import SulfurApplication
 from sulfur.dialogs import ExceptionDialog
 from sulfur.setup import const
@@ -109,7 +110,11 @@ except gobject.GError:
 
 def startup():
     global MAIN_APP
-    MAIN_APP = SulfurApplication()
+    try:
+        MAIN_APP = SulfurApplication()
+    except PermissionDenied:
+        # another entropy is running
+        raise SystemExit(1)
     MAIN_APP.init()
     #import cProfile
     #MAIN_APP._entropy.clear_cache()
