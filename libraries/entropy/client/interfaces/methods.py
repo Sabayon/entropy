@@ -1867,8 +1867,12 @@ class MatchMixin:
 
         installed_idpackage = sorted(results)[-1]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(pkg_id)
-        installed_ver, installed_tag, installed_rev = \
+        ver_data = \
             self._installed_repository.getVersioningData(installed_idpackage)
+        if ver_data is None:
+            # installed idpackage is not available, race condition, probably
+            return 1
+        installed_ver, installed_tag, installed_rev = ver_data
         pkgcmp = entropy.dep.entropy_compare_versions(
             (pkgver, pkgtag, pkgrev),
             (installed_ver, installed_tag, installed_rev))
