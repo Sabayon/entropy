@@ -648,7 +648,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
     def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,
             load_ugc = True, url_fetcher = None,
-            multiple_url_fetcher = None):
+            multiple_url_fetcher = None, **kwargs):
         """
         Entropy Client Singleton interface. Your hitchhikers' guide to the
         Galaxy.
@@ -717,15 +717,28 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         self._cacher = EntropyCacher()
 
-        self._do_open_installed_repo = True
-        self._installed_repo_enable = True
-        if installed_repo in (True, None, 1):
+        # backward compatibility, will be removed after 2011
+        if "noclientdb" in kwargs:
+            noclientdb = kwargs.get("noclientdb")
+            self._do_open_installed_repo = True
             self._installed_repo_enable = True
-        elif installed_repo in (False, 0):
-            self._installed_repo_enable = False
-        elif installed_repo == -1:
-            self._installed_repo_enable = False
-            self._do_open_installed_repo = False
+            if noclientdb in (True, 1):
+                self._installed_repo_enable = False
+            elif noclientdb in (False, 0):
+                self._installed_repo_enable = True
+            elif noclientdb == 2:
+                self._installed_repo_enable = False
+                self._do_open_installed_repo = False
+        else:
+            self._do_open_installed_repo = True
+            self._installed_repo_enable = True
+            if installed_repo in (True, None, 1):
+                self._installed_repo_enable = True
+            elif installed_repo in (False, 0):
+                self._installed_repo_enable = False
+            elif installed_repo == -1:
+                self._installed_repo_enable = False
+                self._do_open_installed_repo = False
 
         self.xcache = xcache
         shell_xcache = os.getenv("ETP_NOCACHE")
