@@ -317,6 +317,7 @@ class EntropyCacher(Singleton):
         @return: None
         """
         self.__cache_buffer.clear()
+        self.__stashing_cache.clear()
 
     def save(self, key, data, cache_dir = None):
         """
