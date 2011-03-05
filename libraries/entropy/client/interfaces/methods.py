@@ -226,10 +226,6 @@ class RepositoryMixin:
         Effective repository interface loader. Stay away from here.
         """
 
-        if const_isstring(repoid):
-            if repoid.endswith(etpConst['packagesext']) or \
-                repoid.endswith(etpConst['packagesext_webinstall']):
-                xcache = False
         if _enabled_repos is None:
             _enabled_repos = self._enabled_repos
 
