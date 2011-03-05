@@ -2,12 +2,7 @@ Backlog (raw)
 
   1.0:
 
-    - if repo is opened using open_repository() cannot use close(), avoid by design
-    - drop deprecated stuff in entropy.tools
-    - use entropy.tools.validate_repository_id() where required
-
     - entropy.client: refactoring
-    - rewrite sulfur
     - entropy.services: refactoring
         rewrite UGC using HTTP protocol
 
