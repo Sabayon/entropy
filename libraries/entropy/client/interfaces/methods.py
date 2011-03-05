@@ -185,7 +185,7 @@ class RepositoryMixin:
         if cached is not None:
             return cached
 
-        self._repodb_cache[key] = self._load_repository_database(repository_id,
+        self._repodb_cache[key] = self._load_repository(repository_id,
             xcache = self.xcache, indexing = self._indexing,
             _enabled_repos = _enabled_repos)
         return self._repodb_cache[key]
@@ -220,8 +220,11 @@ class RepositoryMixin:
             return InstalledPackagesRepository
         return AvailablePackagesRepository
 
-    def _load_repository_database(self, repoid, xcache = True, indexing = True,
+    def _load_repository(self, repoid, xcache = True, indexing = True,
         _enabled_repos = None):
+        """
+        Effective repository interface loader. Stay away from here.
+        """
 
         if const_isstring(repoid):
             if repoid.endswith(etpConst['packagesext']) or \
@@ -369,7 +372,7 @@ class RepositoryMixin:
         # issues when reloading SystemSettings which is bound to Entropy Client
         # SystemSettings plugin, which triggers calculate_world_updates, which
         # triggers _all_repositories_hash, which triggers open_repository,
-        # which triggers _load_repository_database, which triggers an unwanted
+        # which triggers _load_repository, which triggers an unwanted
         # output message => "bad repository id specified"
         if repoid in self._enabled_repos:
             self._enabled_repos.remove(repoid)
