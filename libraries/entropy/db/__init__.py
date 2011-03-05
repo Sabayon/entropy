@@ -636,11 +636,6 @@ class EntropyRepository(EntropyRepositoryBase):
             # to in-memory value
             # http://www.sqlite.org/pragma.html#pragma_temp_store
             cursor.execute("pragma temp_store = 2").fetchall()
-            # lock database file in EXCLUSIVE MODE
-            # http://www.sqlite.org/pragma.html#pragma_locking_mode
-            # avoid write race conditions between processes while this
-            # one is up
-            cursor.execute("pragma locking_mode = EXCLUSIVE").fetchall()
             self.__cursor_cache[c_key] = cursor
             # memory databases are critical because every new cursor brings
             # up a totally empty repository. So, enforce initialization.
