@@ -655,7 +655,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if conn is None:
             # check_same_thread still required for conn.close() called from
             # arbitrary thread
-            conn = dbapi2.connect(self._db_path, timeout=10.0,
+            conn = dbapi2.connect(self._db_path, timeout=300.0,
                 check_same_thread = False)
             self.__connection_cache[c_key] = conn
         return conn
