@@ -66,6 +66,9 @@ class DependenciesNotRemovable(EntropyException):
 class RepositoryError(EntropyException):
     """Cannot open repository database"""
 
+class RepositoryLocked(RepositoryError):
+    """ Repository is locked by an exclusive lock """
+
 class RepositoryPluginError(EntropyException):
     """Error during EntropyRepositoryPlugin hook execution"""
 
