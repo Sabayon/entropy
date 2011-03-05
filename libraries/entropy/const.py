@@ -784,7 +784,8 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
 
     """
     Setup Entropy pid file, if possible and if UID = 0 (root).
-    If the application is run with --no-pid-handling argument,
+    If the application is run with --no-pid-handling argument
+    (or ETP_NO_PID_HANDLING env var is set),
     this function will have no effect. If just_read is specified,
     this function will only try to read the current pid string in
     the Entropy pid file (etpConst['pidfile']). If any other entropy
@@ -800,9 +801,10 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     @return: tuple composed by two bools, (if pid lock file has been acquired,
         locked resources)
     """
+    no_pid_handling = ("--no-pid-handling" in sys.argv) or \
+        os.getenv("ETP_NO_PID_HANDLING")
 
-    if (("--no-pid-handling" in sys.argv) and not force_handling) \
-        and not just_read:
+    if (no_pid_handling and not force_handling) and not just_read:
         return False, False
 
     setup_done = False
