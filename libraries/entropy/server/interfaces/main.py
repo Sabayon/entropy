@@ -667,6 +667,12 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 # error parsing string
                 return
 
+            # validate repository id string
+            if not entropy.tools.validate_repository_id(repoid):
+                sys.stderr.write("!!! invalid repository id '%s' in '%s'\n" % (
+                    reponame, etpConst['serverconf']))
+                return
+
             if repoid in data['repositories']:
                 # just update mirrors
                 data['repositories'][repoid]['pkg_mirrors'].extend(
@@ -909,9 +915,12 @@ class ServerFakeClientSystemSettingsPlugin(SystemSettingsPlugin):
         cli_repodata['available'].clear()
 
         for repoid, repo_data in srv_repodata.items():
-            xxx, my_data = sys_set._analyze_client_repo_string(
-                "repository = %s|%s|http://--fake--|http://--fake--" % (
-                    repoid, repo_data['description'],))
+            try:
+                xxx, my_data = sys_set._analyze_client_repo_string(
+                    "repository = %s|%s|http://--fake--|http://--fake--" % (
+                        repoid, repo_data['description'],))
+            except AttributeError:
+                continue # sorry!
             my_data['repoid'] = repoid
             my_data['dbpath'] = self._helper._get_local_repository_dir(repoid)
             my_data['dbrevision'] = self._helper.local_repository_revision(

@@ -1010,6 +1010,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
             raise AttributeError("invalid repostring passed (2)")
 
         reponame = repo_split[0].strip()
+        # validate repository id string
+        if not entropy.tools.validate_repository_id(reponame):
+            raise AttributeError("invalid repository identifier")
+
         repodesc = repo_split[1].strip()
         repopackages = repo_split[2].strip()
         repodatabase = repo_split[3].strip()
@@ -1189,6 +1193,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 return
             if reponame == etpConst['clientdbid']:
                 # not allowed!!!
+                return
+
+            # validate repository id string
+            if not entropy.tools.validate_repository_id(reponame):
+                sys.stderr.write("!!! invalid repository id '%s' in '%s'\n" % (
+                    reponame, repo_conf))
                 return
 
             repoids.add(reponame)

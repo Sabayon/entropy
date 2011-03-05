@@ -28,7 +28,7 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_isstring, const_convert_to_unicode, const_isnumber, \
     const_convert_to_rawstring
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
-    RepositoryPluginError
+    RepositoryPluginError, SecurityError
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
@@ -337,6 +337,11 @@ class RepositoryMixin:
             # ClientSystemSettingsPlugin.repositories_parser() will explode
 
         else:
+
+            # validate only in this case, because .etp ~ :, in other words,
+            # package repos, won't pass the check anyway.
+            if not entropy.tools.validate_repository_id(repoid):
+                raise SecurityError("invalid repository identifier")
 
             self.__save_repository_settings(repodata)
             self._settings._clear_repository_cache(repoid = repoid)
