@@ -107,11 +107,14 @@ class EntropyCacher(Singleton):
         self.__proc_pids = set()
         self.__proc_pids_lock = threading.Lock()
         self.__dump_data_lock = threading.Lock()
+        # this lock ensures that all the writes are hold while it's acquired
+        self.__enter_context_lock = threading.RLock()
 
     def __enter__(self):
         """
         When used with the with statement, pause cacher on-disk writes.
         """
+        self.__enter_context_lock.acquire()
         self.__inside_with_stmt += 1
 
     def __exit__(self, exc_type, exc_value, traceback):
@@ -119,6 +122,7 @@ class EntropyCacher(Singleton):
         When used with the with statement, pause cacher on-disk writes.
         """
         self.__inside_with_stmt -= 1
+        self.__enter_context_lock.release()
 
     def __copy_obj(self, obj):
         """
@@ -189,59 +193,67 @@ class EntropyCacher(Singleton):
                     "EntropyCacher.__cacher: loop, alive: %s, empty: %s" % (
                         self.__alive, run_until_empty,))
 
-            massive_data = []
-            try:
-                massive_data_count = EntropyCacher._OBJS_WRITTEN_AT_ONCE
-            except AttributeError: # interpreter shutdown
-                break
-            while massive_data_count > 0:
-                massive_data_count -= 1
+            with self.__enter_context_lock:
+                massive_data = []
                 try:
-                    data = self.__cache_buffer.pop()
-                except (ValueError, TypeError,):
-                    # TypeError is when objects are being destroyed
-                    break # stack empty
-                massive_data.append(data)
-
-            # this must stay before massive_data to make sure to clean
-            # every defunct process
-            self.__wait_cacher_semaphore()
-
-            if not massive_data:
-                break
-
-            pid = os.fork()
-            if pid == 0:
-                # make sure there's nothing weird bound to exception hook
-                sys.excepthook = sys.__excepthook__
-                for (key, cache_dir), data in massive_data:
-                    d_o = entropy.dump.dumpobj
-                    if d_o is not None:
-                        d_o(key, data, dump_dir = cache_dir)
-                os._exit(0)
-            else:
-                if etpUi['debug']:
-                    const_debug_write(__name__,
-                        "EntropyCacher.__cacher [%s], writing %s objs" % (
-                            pid, len(massive_data),))
-                with self.__proc_pids_lock:
-                    self.__proc_pids.add(pid)
-                if sync:
+                    massive_data_count = EntropyCacher._OBJS_WRITTEN_AT_ONCE
+                except AttributeError: # interpreter shutdown
+                    break
+                while massive_data_count > 0:
+                    massive_data_count -= 1
                     try:
-                        os.waitpid(pid, 0)
-                    except OSError as err:
-                        if err.errno != errno.ECHILD:
-                            raise
-                for (key, cache_dir), data in massive_data:
-                    try:
-                        del self.__stashing_cache[(key, cache_dir)]
-                    except (AttributeError, KeyError,):
-                        continue
-                del massive_data[:]
-                del massive_data
+                        data = self.__cache_buffer.pop()
+                    except (ValueError, TypeError,):
+                        # TypeError is when objects are being destroyed
+                        break # stack empty
+                    massive_data.append(data)
+
+                # this must stay before massive_data to make sure to clean
+                # every defunct process
+                self.__wait_cacher_semaphore()
+
+                if not massive_data:
+                    break
+
+                pid = os.fork()
+                if pid == 0:
+                    # make sure there's nothing weird bound to exception hook
+                    sys.excepthook = sys.__excepthook__
+                    for (key, cache_dir), data in massive_data:
+                        d_o = entropy.dump.dumpobj
+                        if d_o is not None:
+                            d_o(key, data, dump_dir = cache_dir)
+                    os._exit(0)
+                else:
+                    if etpUi['debug']:
+                        const_debug_write(__name__,
+                            "EntropyCacher.__cacher [%s], writing %s objs" % (
+                                pid, len(massive_data),))
+                    with self.__proc_pids_lock:
+                        self.__proc_pids.add(pid)
+                    if sync:
+                        try:
+                            os.waitpid(pid, 0)
+                        except OSError as err:
+                            if err.errno != errno.ECHILD:
+                                raise
+                    for (key, cache_dir), data in massive_data:
+                        try:
+                            del self.__stashing_cache[(key, cache_dir)]
+                        except (AttributeError, KeyError,):
+                            continue
+                    del massive_data[:]
+                    del massive_data
 
     def __del__(self):
         self.stop()
+
+    @staticmethod
+    def current_directory():
+        """
+        Return the path to current EntropyCacher cache storage directory.
+        """
+        return entropy.dump.D_DIR
 
     def start(self):
         """
@@ -320,7 +332,7 @@ class EntropyCacher(Singleton):
         @type cache_dir: string
         """
         if cache_dir is None:
-            cache_dir = entropy.dump.D_DIR
+            cache_dir = EntropyCacher.current_directory()
         try:
             with self.__dump_data_lock:
                 entropy.dump.dumpobj(key, data, dump_dir = cache_dir,
@@ -348,7 +360,7 @@ class EntropyCacher(Singleton):
             return
 
         if cache_dir is None:
-            cache_dir = entropy.dump.D_DIR
+            cache_dir = EntropyCacher.current_directory()
 
         if async:
             try:
@@ -387,7 +399,7 @@ class EntropyCacher(Singleton):
         @return: object stored into the stack or None (if stack is empty)
         """
         if cache_dir is None:
-            cache_dir = entropy.dump.D_DIR
+            cache_dir = EntropyCacher.current_directory()
 
         # object is being saved on disk, it's in RAM atm
         ram_obj = self.__stashing_cache.get((key, cache_dir))
@@ -410,7 +422,7 @@ class EntropyCacher(Singleton):
         @type cache_dir: string
         """
         if cache_dir is None:
-            cache_dir = entropy.dump.D_DIR
+            cache_dir = EntropyCacher.current_directory()
         dump_path = os.path.join(cache_dir, cache_item)
 
         dump_dir = os.path.dirname(dump_path)
