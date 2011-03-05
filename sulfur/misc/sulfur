@@ -1,7 +1,7 @@
 #!/usr/bin/python2 -O
 import sys, os
 # this avoids causing pid issues while checking for locks
-sys.argv.append("--no-pid-handling")
+os.environ['ETP_NO_PID_HANDLING'] = "1"
 try:
     from entropy.const import etpConst
     package_file_ext = etpConst['packagesext']
