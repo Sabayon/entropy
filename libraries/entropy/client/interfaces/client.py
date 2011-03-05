@@ -692,7 +692,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             etpConst['system_settings_plugins_ids']['client_plugin']
 
         self._enabled_repos = []
-        self.UGC = None
+        self._do_load_ugc = load_ugc
         self.safe_mode = 0
         self._indexing = indexing
         self._repo_validation = repo_validation
@@ -726,11 +726,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         elif installed_repo == -1:
             self._installed_repo_enable = False
             self._do_open_installed_repo = False
-
-        # load User Generated Content Interface
-        if load_ugc:
-            from entropy.client.services.ugc.interfaces import Client as ugc_cl
-            self.UGC = ugc_cl(self)
 
         self.xcache = xcache
         shell_xcache = os.getenv("ETP_NOCACHE")
@@ -777,6 +772,20 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
+
+    @property
+    def UGC(self):
+        """
+        User Generated Content Interface delayed loader.
+        """
+        if not self._do_load_ugc:
+            return
+        try:
+            return self._ugc_intf
+        except AttributeError:
+            from entropy.client.services.ugc.interfaces import Client as ugc_cl
+            self._ugc_intf = ugc_cl(self)
+            return self._ugc_intf
 
     def destroy(self, _from_shutdown = False):
         """
