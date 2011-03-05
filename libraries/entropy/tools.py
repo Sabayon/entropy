@@ -1376,19 +1376,17 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
     @return: True, if extraction went successful
     @rtype: bool
     """
-    old = open(entropy_package_file, "rb")
-    start_position = _locate_edb(old)
-    if not start_position:
-        old.close()
-        return False
+    with open(entropy_package_file, "rb") as old:
+        start_position = _locate_edb(old)
+        if not start_position:
+            return False
 
-    db = open(entropy_metadata_file, "wb")
-    data = old.read(16384)
-    while data:
-        db.write(data)
-        data = old.read(16384)
-    db.flush()
-    db.close()
+        with open(entropy_metadata_file, "wb") as db:
+            data = old.read(16384)
+            while data:
+                db.write(data)
+                data = old.read(16384)
+            db.flush()
 
     return True
 
