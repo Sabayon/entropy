@@ -115,6 +115,56 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(False, key1 in self._settings)
         self.assertEqual(False, key2 in self._settings)
 
+    def test_entropy_cacher(self):
+        self.Client._cacher.start()
+        self.assert_(self.Client._cacher.is_started())
+        self.Client._cacher.stop()
+        self.assert_(not self.Client._cacher.is_started())
+
+    def test_cacher_lock_usage(self):
+        cacher = self.Client._cacher
+        tmp_dir = tempfile.mkdtemp()
+        cacher.start()
+        try:
+            with cacher:
+                self.assert_(cacher._EntropyCacher__enter_context_lock._is_owned())
+                cacher.discard()
+                # even if cacher is paused, this must be saved
+                cacher.save("foo", "bar", cache_dir = tmp_dir)
+                self.assertEqual(cacher.pop("foo", cache_dir = tmp_dir), "bar")
+        finally:
+            cacher.stop()
+            shutil.rmtree(tmp_dir, True)
+
+    def test_cacher_general_usage(self):
+        cacher = self.Client._cacher
+        tmp_dir = tempfile.mkdtemp()
+        cacher.start()
+        try:
+            with cacher:
+                self.assert_(cacher._EntropyCacher__enter_context_lock._is_owned())
+                cacher.discard()
+                cacher.push("bar", "foo", cache_dir = tmp_dir)
+                self.assert_(cacher._EntropyCacher__cache_buffer)
+                self.assert_(cacher._EntropyCacher__stashing_cache)
+            cacher.sync()
+            self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), "foo")
+        finally:
+            cacher.stop()
+            shutil.rmtree(tmp_dir, True)
+
+    def test_cacher_push_pop_sync(self):
+        cacher = self.Client._cacher
+        tmp_dir = tempfile.mkdtemp()
+        cacher.stop()
+        try:
+            cacher.push("bar", "foo", async = False, cache_dir = tmp_dir)
+            # must return None
+            cacher.sync()
+            self.assertEqual(cacher.pop("bar", cache_dir = tmp_dir), None)
+        finally:
+            shutil.rmtree(tmp_dir, True)
+
     def test_contentsafety(self):
         dbconn = self.Client._init_generic_temp_repository(
             self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
