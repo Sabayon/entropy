@@ -40,7 +40,8 @@ from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
     const_convert_to_rawstring, const_cmp, const_pid_exists
 from entropy.exceptions import SystemDatabaseError, \
-    OperationNotPermitted, RepositoryPluginError, SPMError
+    OperationNotPermitted, RepositoryPluginError, SPMError, \
+    RepositoryLocked
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.spm.plugins.factory import get_default_instance as get_spm
@@ -655,7 +656,7 @@ class EntropyRepository(EntropyRepositoryBase):
         if conn is None:
             # check_same_thread still required for conn.close() called from
             # arbitrary thread
-            conn = dbapi2.connect(self._db_path, timeout=10.0,
+            conn = dbapi2.connect(self._db_path, timeout=5.0,
                 check_same_thread = False)
             self.__connection_cache[c_key] = conn
         return conn
@@ -4851,10 +4852,18 @@ class EntropyRepository(EntropyRepositoryBase):
             pingus.ping(action_str)
 
         mytxt = "Repository is corrupted, missing SQL tables!"
-        cur = self._cursor().execute("""
-        SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND (
-            name = "extrainfo" OR name = "baseinfo" OR name = "keywords")
-        """)
+        try:
+            cur = self._cursor().execute("""
+            SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND (
+                name = "extrainfo" OR name = "baseinfo" OR name = "keywords")
+            """)
+        except OperationalError as err:
+            if str(err) == "database is locked":
+                # usually, this should never happen because applications
+                # should have acquired the read lock of the Entropy resources
+                # lock.
+                raise RepositoryLocked(str(err))
+            raise
         rslt = cur.fetchone()
         if rslt is None:
             raise SystemDatabaseError(mytxt)
