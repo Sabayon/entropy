@@ -23,7 +23,7 @@ def cache(options):
     from entropy.client.interfaces import Client
     entropy_client = None
     try:
-        entropy_client = Client(noclientdb = True)
+        entropy_client = Client(installed_repo = False)
         if cmd == "clean":
             entropy_client.output(
                 blue(_("Cleaning Entropy cache, please wait ...")),

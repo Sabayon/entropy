@@ -161,7 +161,7 @@ class DepTest(unittest.TestCase):
 
     def __open_test_db(self):
         from entropy.client.interfaces import Client
-        client = Client(noclientdb = 2, indexing = False, xcache = False,
+        client = Client(installed_repo = -1, indexing = False, xcache = False,
             repo_validation = False)
         db = client.open_temp_repository(name = "parser_test",
             temp_file = ":memory:")

@@ -186,7 +186,7 @@ class RepositoryMixin:
             return cached
 
         self._repodb_cache[key] = self._load_repository_database(repository_id,
-            xcache = self.xcache, indexing = self.indexing,
+            xcache = self.xcache, indexing = self._indexing,
             _enabled_repos = _enabled_repos)
         return self._repodb_cache[key]
 
@@ -787,7 +787,7 @@ class RepositoryMixin:
             os.makedirs(db_dir)
 
         db_path = etpConst['etpdatabaseclientfilepath']
-        if (not self.noclientdb) and (not os.path.isfile(db_path)):
+        if (self._installed_repo_enable) and (not os.path.isfile(db_path)):
             conn = load_db_from_ram()
             entropy.tools.print_traceback(f = self.logger)
         else:
@@ -796,7 +796,7 @@ class RepositoryMixin:
                 conn = repo_class(readOnly = False,
                     dbFile = db_path,
                     name = etpConst['clientdbid'],
-                    xcache = self.xcache, indexing = self.indexing
+                    xcache = self.xcache, indexing = self._indexing
                 )
                 conn.setCloseToken(etpConst['clientdbid'])
                 self._add_plugin_to_client_repository(conn)
@@ -806,7 +806,7 @@ class RepositoryMixin:
                 conn = load_db_from_ram()
             else:
                 # validate database
-                if not self.noclientdb:
+                if self._installed_repo_enable:
                     try:
                         conn.validate()
                     except SystemDatabaseError:
@@ -834,7 +834,7 @@ class RepositoryMixin:
         if indexing_override != None:
             indexing = indexing_override
         else:
-            indexing = self.indexing
+            indexing = self._indexing
         if dbname is not None:
             # backward compatibility
             name = dbname

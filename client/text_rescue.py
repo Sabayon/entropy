@@ -77,7 +77,7 @@ def database(options):
     etp_client = None
     acquired = False
     try:
-        etp_client = Client(noclientdb = True)
+        etp_client = Client(installed_repo = False)
         acquired = entropy.tools.acquire_entropy_locks(etp_client)
         if not acquired:
             print_error(darkgreen(
@@ -385,7 +385,7 @@ def _database_spmsync(entropy_client):
         _("Scanning Source Package Manager and Entropy databases for differences"),)))
 
     # make it crash
-    entropy_client.noclientdb = False
+    entropy_client._installed_repo_enable = True
     entropy_client.reopen_installed_repository()
     entropy_client.close_repositories()
 

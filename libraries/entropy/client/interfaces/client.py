@@ -645,11 +645,41 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
         RepositoryMixin, MiscMixin, MatchMixin, NoticeBoardMixin):
 
-    def init_singleton(self, indexing = True, noclientdb = 0,
+    def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,
             load_ugc = True, url_fetcher = None,
             multiple_url_fetcher = None):
+        """
+        Entropy Client Singleton interface. Your hitchhikers' guide to the
+        Galaxy.
 
+        @keyword indexing: enable metadata indexing (default is True)
+        @type indexing: bool
+        @keyword installed_repo: open installed packages repository? (default
+            is True). Accepted values: True = open, False = open but consider
+            it not available, -1 = do not even try to open
+        @type installed_repo: bool or int
+        @keyword xcache: enable on-disk cache (default is True)
+        @type xcache: bool
+        @keyword user_xcache: enable on-disk cache even for users not in the
+            entropy group (default is False). Dangerous, could lead to cache
+            inconsistencies.
+        @type user_xcache: bool
+        @keyword repo_validation: validate all the available repositories
+            and automatically exclude the faulty ones
+        @type repo_validation: bool
+        @keyword load_ugc: load the User Generated Content interface. UGC
+            interface will be available through the "UGC" property. If None,
+            UGC must be considered disabled.
+        @type load_ugc: bool
+        @keyword url_fetcher: override default entropy.fetchers.UrlFetcher
+            class usage. Provide your own implementation of UrlFetcher using
+            this argument.
+        @type url_fetcher: class or None
+        @keyword multiple_url_fetcher: override default
+            entropy.fetchers.MultipleUrlFetcher class usage. Provide your own
+            implementation of MultipleUrlFetcher using this argument.
+        """
         self.__instance_destroyed = False
         self._repo_error_messages_cache = set()
         self._repodb_cache = {}
@@ -664,10 +694,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self._enabled_repos = []
         self.UGC = None
         self.safe_mode = 0
-        self.indexing = indexing
-        self.repo_validation = repo_validation
-        self.noclientdb = False
-        self.openclientdb = True
+        self._indexing = indexing
+        self._repo_validation = repo_validation
 
         # setup package settings (masking and other stuff)
         self._settings = SystemSettings()
@@ -689,13 +717,15 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         self._cacher = EntropyCacher()
 
-        if noclientdb in (False, 0):
-            self.noclientdb = False
-        elif noclientdb in (True, 1):
-            self.noclientdb = True
-        elif noclientdb == 2:
-            self.noclientdb = True
-            self.openclientdb = False
+        self._do_open_installed_repo = True
+        self._installed_repo_enable = True
+        if installed_repo in (True, None, 1):
+            self._installed_repo_enable = True
+        elif installed_repo in (False, 0):
+            self._installed_repo_enable = False
+        elif installed_repo == -1:
+            self._installed_repo_enable = False
+            self._do_open_installed_repo = False
 
         # load User Generated Content Interface
         if load_ugc:
@@ -720,7 +750,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if not self.xcache and (entropy.tools.is_user_in_entropy_group()):
             self.clear_cache()
 
-        if self.openclientdb:
+        if self._do_open_installed_repo:
             self._open_installed_repository()
 
         # create our SystemSettings plugin
@@ -735,7 +765,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if do_validate_repo_cache:
             self._validate_repositories_cache()
 
-        if self.repo_validation:
+        if self._repo_validation:
             self._validate_repositories()
         else:
             self._enabled_repos.extend(self._settings['repositories']['order'])
@@ -747,7 +777,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
-
 
     def destroy(self, _from_shutdown = False):
         """
@@ -827,20 +856,23 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # check stored value in client database
         client_digest = "0"
         if not do_rescan:
-            client_digest = self._installed_repository.retrieveRepositoryUpdatesDigest(
-                repository_identifier)
+            client_digest = \
+                self._installed_repository.retrieveRepositoryUpdatesDigest(
+                    repository_identifier)
 
         if do_rescan or (str(stored_digest) != str(client_digest)) or force:
 
             # reset database tables
-            self._installed_repository.clearTreeupdatesEntries(repository_identifier)
+            self._installed_repository.clearTreeupdatesEntries(
+                repository_identifier)
 
             # load updates
             update_actions = repo_db.retrieveTreeUpdatesActions(
                 repository_identifier)
             # now filter the required actions
-            update_actions = self._installed_repository.filterTreeUpdatesActions(
-                update_actions)
+            update_actions = \
+                self._installed_repository.filterTreeUpdatesActions(
+                    update_actions)
 
             if update_actions:
 
@@ -865,14 +897,16 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
                     header = darkred(" * ")
                 )
                 # run stuff
-                self._installed_repository.runTreeUpdatesActions(update_actions)
+                self._installed_repository.runTreeUpdatesActions(
+                    update_actions)
 
             # store new digest into database
-            self._installed_repository.setRepositoryUpdatesDigest(repository_identifier,
-                stored_digest)
+            self._installed_repository.setRepositoryUpdatesDigest(
+                repository_identifier, stored_digest)
             # store new actions
-            self._installed_repository.addRepositoryUpdatesActions(etpConst['clientdbid'],
-                update_actions, self._settings['repositories']['branch'])
+            self._installed_repository.addRepositoryUpdatesActions(
+                etpConst['clientdbid'], update_actions,
+                    self._settings['repositories']['branch'])
             self._installed_repository.commit()
             # clear client cache
             self._installed_repository.clearCache()

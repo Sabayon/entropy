@@ -1981,7 +1981,7 @@ class AvailablePackagesRepositoryUpdater(object):
             return EntropyRepositoryBase.REPOSITORY_GENERIC_ERROR
 
         self.__update_repository_revision()
-        if self._entropy.indexing:
+        if self._entropy._indexing:
             self.__database_indexing()
 
         try:

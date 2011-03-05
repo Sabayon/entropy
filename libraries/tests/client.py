@@ -25,8 +25,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.flush()
         self.mem_repoid = "mem_repo"
         self.mem_repo_desc = "This is a testing repository"
-        self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
-            repo_validation = False)
+        self.Client = Client(installed_repo = -1, indexing = False,
+            xcache = False, repo_validation = False)
         # fake clientDbconn
         self.Client._installed_repository = self.Client.open_temp_repository(
             name = etpConst['clientdbid'], temp_file = ":memory:")
@@ -62,13 +62,13 @@ class EntropyRepositoryTest(unittest.TestCase):
             self.assertNotEqual(rc, 0)
 
     def test_singleton(self):
-        myclient = Client(noclientdb = 2)
+        myclient = Client(installed_repo = -1)
         self.assert_(myclient is self.Client)
         myclient.shutdown()
         self.assert_(myclient.is_destroyed())
         self.assert_(self.Client.is_destroyed())
-        myclient2 = Client(noclientdb = 2, indexing = False, xcache = False,
-            repo_validation = False)
+        myclient2 = Client(installed_repo = -1, indexing = False,
+            xcache = False, repo_validation = False)
         self.assert_(myclient is not myclient2)
         myclient2.shutdown()
         self.assert_(myclient2.is_destroyed())

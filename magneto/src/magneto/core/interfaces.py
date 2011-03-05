@@ -416,7 +416,7 @@ class Entropy(Client):
     """
 
     def init_singleton(self, magneto):
-        Client.init_singleton(self, noclientdb = True)
+        Client.init_singleton(self,  installed_repo = False)
         self.__magneto = magneto
         self.progress_tooltip = self.__magneto.update_tooltip
         self.progress_tooltip_message_title = _("Updates Notification")

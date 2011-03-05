@@ -1031,7 +1031,7 @@ class Server(Client):
         etpSys['serverside'] = True
         self.fake_default_repo = fake_default_repo
         self.fake_default_repo_id = fake_default_repo_id
-        self.indexing = False
+        self._indexing = False
         self.xcache = False
         self.Mirrors = None
         self._settings_to_backup = []
@@ -1091,10 +1091,10 @@ class Server(Client):
         self.switch_default_repository(self._repository)
         # initialize Entropy Client superclass
         Client.init_singleton(self,
-            indexing = self.indexing,
+            indexing = self._indexing,
             xcache = self.xcache,
             repo_validation = False,
-            noclientdb = 1
+            installed_repo = False
         )
 
     def destroy(self, _from_shutdown = False):

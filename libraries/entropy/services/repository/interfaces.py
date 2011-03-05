@@ -43,7 +43,7 @@ class Server(SocketHost):
         etpConst['socket_service']['max_connections'] = 5000
 
         self.__repository_commands_class = Repository
-        self._entropy = Client(noclientdb = 2)
+        self._entropy = Client(installed_repo = -1)
         self.__cacher = EntropyCacher()
         self.__lock_scanner = None
         self.__dbcache = {}
@@ -61,7 +61,7 @@ class Server(SocketHost):
         SocketHost.__init__(
             self,
             Server.ServiceInterface,
-            noclientdb = 2,
+            installed_repo = -1,
             sock_output = self._entropy,
             ssl = do_ssl,
             **kwargs

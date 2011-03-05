@@ -52,7 +52,7 @@ def repositories(options):
     from entropy.client.interfaces import Client
     entropy_client = None
     try:
-        entropy_client = Client(noclientdb = True)
+        entropy_client = Client(installed_repo = False)
         if cmd == "update":
             # check if I am root
             er_txt = darkred(_("You must be either root or in this group:")) + \

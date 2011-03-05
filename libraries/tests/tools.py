@@ -34,7 +34,7 @@ class ToolsTest(unittest.TestCase):
 
     def test_dump_entropy_metadata(self):
 
-        client = Client(noclientdb = 2, indexing = False, xcache = False,
+        client = Client(installed_repo = -1, indexing = False, xcache = False,
             repo_validation = False)
         fd, tmp_path = tempfile.mkstemp()
 

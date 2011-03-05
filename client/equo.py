@@ -600,7 +600,7 @@ def _do_text_cleanup(main_cmd, options):
         import text_tools
         from entropy.client.interfaces import Client
         client = Client(repo_validation = False, load_ugc = False,
-            indexing = False, noclientdb = True)
+            indexing = False, installed_repo = False)
         acquired = entropy.tools.acquire_entropy_locks(client)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
@@ -697,7 +697,7 @@ def _match_bashcomp(cmdline):
     # speed up loading, preload singleton with faster settings
     from entropy.client.interfaces import Client
     client = Client(repo_validation = False, load_ugc = False,
-        indexing = False, noclientdb = True)
+        indexing = False, installed_repo = False)
     try:
         if client.installed_repository() is None:
             return []
@@ -712,7 +712,7 @@ def _search_bashcomp(cmdline, from_installed = False, ignore_installed = False):
     # speed up loading, preload singleton with faster settings
     from entropy.client.interfaces import Client
     client = Client(repo_validation = False, load_ugc = False,
-        indexing = False, noclientdb = True)
+        indexing = False, installed_repo = False)
     try:
         if client.installed_repository() is None:
             return []

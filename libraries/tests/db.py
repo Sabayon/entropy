@@ -22,8 +22,8 @@ class EntropyRepositoryTest(unittest.TestCase):
     def setUp(self):
         sys.stdout.write("%s called\n" % (self,))
         sys.stdout.flush()
-        self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
-            repo_validation = False)
+        self.Client = Client(installed_repo = -1, indexing = False,
+            xcache = False, repo_validation = False)
         self.Spm = self.Client.Spm()
         self.test_db_name = "test_suite"
         self.client_sysset_plugin_id = \
