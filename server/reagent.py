@@ -23,7 +23,7 @@ from entropy.output import red, print_error, print_generic, \
     is_stdout_a_tty, nocolor, etpUi, darkgreen
 from entropy.const import etpConst, const_kill_threads
 from entropy.server.interfaces import Server
-from text_tools import print_menu, acquire_entropy_locks, release_entropy_locks
+from text_tools import print_menu
 
 # Check if we need to disable colors
 if not is_stdout_a_tty():
@@ -228,7 +228,7 @@ elif main_cmd == "deptest":
     rc = 1
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
@@ -237,7 +237,7 @@ elif main_cmd == "deptest":
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 elif main_cmd == "pkgtest":
@@ -246,7 +246,7 @@ elif main_cmd == "pkgtest":
     rc = 1
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
@@ -256,7 +256,7 @@ elif main_cmd == "pkgtest":
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 elif main_cmd == "libtest":
@@ -266,7 +266,7 @@ elif main_cmd == "libtest":
     rc = 1
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
@@ -275,7 +275,7 @@ elif main_cmd == "libtest":
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 # cleanup
@@ -286,7 +286,7 @@ elif main_cmd == "cleanup":
     rc = 1
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
@@ -295,7 +295,7 @@ elif main_cmd == "cleanup":
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 # deptest tool

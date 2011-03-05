@@ -24,8 +24,6 @@ from entropy.i18n import _
 import entropy.dep
 import entropy.tools
 
-from text_tools import acquire_entropy_locks, release_entropy_locks
-
 def smart(options):
 
     # check if I am root
@@ -64,7 +62,7 @@ def smart(options):
     acquired = False
     try:
         entropy_client = Client()
-        acquired = acquire_entropy_locks(entropy_client)
+        acquired = entropy.tools.acquire_entropy_locks(entropy_client)
         if not acquired:
             print_error(darkgreen(
                 _("Another Entropy is currently running.")))
@@ -88,7 +86,7 @@ def smart(options):
             rc = -10
     finally:
         if acquired and (entropy_client is not None):
-            release_entropy_locks(entropy_client)
+            entropy.tools.release_entropy_locks(entropy_client)
         if entropy_client is not None:
             entropy_client.shutdown()
 

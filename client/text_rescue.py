@@ -27,8 +27,6 @@ from entropy.i18n import _
 # strictly depending on Portage atm
 from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
 
-from text_tools import acquire_entropy_locks, release_entropy_locks
-
 def _backup_client_repository(entropy_client):
     """
     docstring_title
@@ -80,7 +78,7 @@ def database(options):
     acquired = False
     try:
         etp_client = Client(noclientdb = True)
-        acquired = acquire_entropy_locks(etp_client)
+        acquired = entropy.tools.acquire_entropy_locks(etp_client)
         if not acquired:
             print_error(darkgreen(
                 _("Another Entropy is currently running.")))
@@ -134,7 +132,7 @@ def database(options):
 
     finally:
         if acquired and (etp_client is not None):
-            release_entropy_locks(etp_client)
+            entropy.tools.release_entropy_locks(etp_client)
         if etp_client is not None:
             etp_client.shutdown()
 

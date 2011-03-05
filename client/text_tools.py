@@ -22,34 +22,18 @@ from entropy.i18n import _
 import entropy.dep
 
 def acquire_entropy_locks(entropy_client):
-    """
-    Acquire Entropy Client/Server file locks.
-    """
-    locked = entropy_client.another_entropy_running()
-    if locked:
-        return False
-
-    gave_up = entropy_client.wait_resources()
-    if gave_up:
-        return False
-
-    # entropy resources locked?
-    locked = entropy_client.resources_locked()
-    if locked:
-        return False
-
-    # acquire resources lock
-    acquired = entropy_client.lock_resources()
-    if not acquired:
-        return False
-
-    return True
+    """@deprecated"""
+    import warnings
+    import entropy.tools
+    warnings.warn("deprecated, please use entropy.tools module")
+    return entropy.tools.acquire_entropy_locks(entropy_client)
 
 def release_entropy_locks(entropy_client):
-    """
-    Release Entropy Client/Server file locks.
-    """
-    entropy_client.unlock_resources()
+    """@deprecated"""
+    import warnings
+    import entropy.tools
+    warnings.warn("deprecated, please use entropy.tools module")
+    return entropy.tools.release_entropy_locks(entropy_client)
 
 def cleanup(directories):
     """

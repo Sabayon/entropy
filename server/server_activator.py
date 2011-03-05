@@ -21,7 +21,7 @@ from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
 from entropy.i18n import _
 
-from text_tools import acquire_entropy_locks, release_entropy_locks
+import entropy.tools
 
 def get_entropy_server():
     """
@@ -40,7 +40,7 @@ def sync(options, just_tidy = False):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -48,7 +48,7 @@ def sync(options, just_tidy = False):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _sync(entropy_server, options, just_tidy):
@@ -160,7 +160,7 @@ def packages(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -168,7 +168,7 @@ def packages(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _packages(entropy_server, options):
@@ -219,7 +219,7 @@ def notice(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -227,7 +227,7 @@ def notice(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _notice(entropy_server, options):
@@ -392,7 +392,7 @@ def repo(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -400,7 +400,7 @@ def repo(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _repo(entropy_server, options):
@@ -547,7 +547,7 @@ def sync_remote_databases():
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -555,7 +555,7 @@ def sync_remote_databases():
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _sync_remote_databases(entropy_server, repository_id):

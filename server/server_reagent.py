@@ -14,7 +14,7 @@ import subprocess
 from entropy.const import etpConst, etpUi
 from entropy.output import red, bold, brown, purple, darkgreen, darkred, blue, \
     green, print_info, print_warning, print_error, print_generic, teal
-from text_tools import print_table, acquire_entropy_locks, release_entropy_locks
+from text_tools import print_table
 from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
 from entropy.core.settings.base import SystemSettings
@@ -37,7 +37,7 @@ def inject(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -65,7 +65,7 @@ def inject(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _enable_repo(entropy_server, repoid):
@@ -612,7 +612,7 @@ def repositories(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -620,7 +620,7 @@ def repositories(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _repositories(entropy_server, options):
@@ -790,7 +790,7 @@ def update(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -798,7 +798,7 @@ def update(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _update(entropy_server, options):
@@ -1071,7 +1071,7 @@ def status():
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -1079,7 +1079,7 @@ def status():
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _status(entropy_server):
@@ -1130,7 +1130,7 @@ def spm(options):
     server = None
     try:
         server = get_entropy_server()
-        acquired = acquire_entropy_locks(server)
+        acquired = entropy.tools.acquire_entropy_locks(server)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -1138,7 +1138,7 @@ def spm(options):
     finally:
         if server is not None:
             if acquired:
-                release_entropy_locks(server)
+                entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
 def _spm(entropy_server, options):

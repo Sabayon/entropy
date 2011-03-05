@@ -21,7 +21,6 @@ import entropy.tools
 
 # equo modules
 from text_query import print_package_info
-from text_tools import acquire_entropy_locks, release_entropy_locks
 from text_ui import install_packages
 
 APP_NAME = os.path.basename(sys.argv[0])
@@ -99,7 +98,7 @@ def _switch_kernel(args):
     acquired = False
     try:
         etp_client = Client()
-        acquired = acquire_entropy_locks(etp_client)
+        acquired = entropy.tools.acquire_entropy_locks(etp_client)
         if not acquired:
             print_error(brown(_("Another Entropy is currently running.")))
             return 1
@@ -159,7 +158,7 @@ def _switch_kernel(args):
 
     finally:
         if acquired and (etp_client is not None):
-            release_entropy_locks(etp_client)
+            entropy.tools.release_entropy_locks(etp_client)
         if etp_client is not None:
             etp_client.shutdown()
 
@@ -168,7 +167,7 @@ def _list_kernels(args):
     acquired = False
     try:
         etp_client = Client()
-        acquired = acquire_entropy_locks(etp_client)
+        acquired = entropy.tools.acquire_entropy_locks(etp_client)
         if not acquired:
             print_error(brown(_("Another Entropy is currently running.")))
             return 1
@@ -187,7 +186,7 @@ def _list_kernels(args):
         return 0
     finally:
         if acquired and (etp_client is not None):
-            release_entropy_locks(etp_client)
+            entropy.tools.release_entropy_locks(etp_client)
         if etp_client is not None:
             etp_client.shutdown()
 

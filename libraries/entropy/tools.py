@@ -2858,3 +2858,33 @@ def release_lock(lock_file, lock_map):
         # cope with possible race conditions
         if err.errno != errno.ENOENT:
             raise
+
+def acquire_entropy_locks(entropy_client):
+    """
+    Acquire Entropy Client/Server file locks.
+    """
+    locked = entropy_client.another_entropy_running()
+    if locked:
+        return False
+
+    gave_up = entropy_client.wait_resources()
+    if gave_up:
+        return False
+
+    # entropy resources locked?
+    locked = entropy_client.resources_locked()
+    if locked:
+        return False
+
+    # acquire resources lock
+    acquired = entropy_client.lock_resources()
+    if not acquired:
+        return False
+
+    return True
+
+def release_entropy_locks(entropy_client):
+    """
+    Release Entropy Client/Server file locks.
+    """
+    entropy_client.unlock_resources()

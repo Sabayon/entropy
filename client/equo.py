@@ -601,7 +601,7 @@ def _do_text_cleanup(main_cmd, options):
         from entropy.client.interfaces import Client
         client = Client(repo_validation = False, load_ugc = False,
             indexing = False, noclientdb = True)
-        acquired = text_tools.acquire_entropy_locks(client)
+        acquired = entropy.tools.acquire_entropy_locks(client)
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
@@ -619,7 +619,7 @@ def _do_text_cleanup(main_cmd, options):
 
     finally:
         if acquired:
-            text_tools.release_entropy_locks(client)
+            entropy.tools.release_entropy_locks(client)
         if client is not None:
             client.shutdown()
 
