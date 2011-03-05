@@ -1,3 +1,250 @@
+commit 460feed400e55d9324fa15686b9dc4e0b892d005
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 13:19:04 2011 +0100
+
+    Release Entropy 1.0_alpha27
+
+commit 80d794ef9d50d754b72c0de6bc7924cddd9eba99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 13:09:30 2011 +0100
+
+    [sulfur] acquire entropy write lock when loading in ANY case, avoid race condition with in-RAM data structures
+
+commit fb1e3d253c6fac9935e2d1f02594a92277b87d69
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 13:04:07 2011 +0100
+
+    [entropy.client.interfaces.methods] handle possible race conditions in get_package_action()
+
+commit 58324c99ebc526c4c4273a1a91ad4d59453cc9a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:58:00 2011 +0100
+
+    [entropy.tools] move acquire_entropy_locks, release_entropy_locks from text_tools to entropy.tools
+
+commit 809f3f46fa87d18a10b3f3af305c2cf83686e3df
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:38:38 2011 +0100
+
+    Revert "[entropy.db] enforce inter-process concurrency, use SQLite3 db files with EXCLUSIVE locking mode."
+    
+    This reverts commit 4b689cc61962d8ba5c0300039afe1d2e8e663a22.
+
+commit 7d49974fcf3ccc6c980181395425c2d77d614487
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:38:37 2011 +0100
+
+    Revert "[entropy.db] EntropyRepository: reduce lock acquisition timeout to 10 seconds"
+    
+    This reverts commit 668f64a4eee70c77355f1ab7221eae06b2cc0889.
+
+commit aba51202ffd351fc950b91b0cf0c6bbc917bae14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:38:35 2011 +0100
+
+    Revert "[entropy.exceptions] introduce RepositoryLocked exception, raised (and never caught) if EntropyRepository repository data structures are exclusively locked"
+    
+    This reverts commit c3d5bbef4d0e11bab1d85058dbbb18f0d1949947.
+
+commit a89d9b3a095be2bea071a6b1afd053cd24e5fdb8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:38:30 2011 +0100
+
+    Revert "[entropy.db] raise RepositoryLocked if repository is locked, on validate()"
+    
+    This reverts commit f4648760ba291a58219985da28bbb0cb61cb5700.
+
+commit f4648760ba291a58219985da28bbb0cb61cb5700
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:25:48 2011 +0100
+
+    [entropy.db] raise RepositoryLocked if repository is locked, on validate()
+
+commit c3d5bbef4d0e11bab1d85058dbbb18f0d1949947
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 12:15:16 2011 +0100
+
+    [entropy.exceptions] introduce RepositoryLocked exception, raised (and never caught) if EntropyRepository repository data structures are exclusively locked
+
+commit cbbd8392ecadc7919e45ee72cb1dcb138e0be18b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 11:50:09 2011 +0100
+
+    [sulfur] drop ETP_NO_PID_HANDLING once entropy.const has been consumed
+
+commit 668f64a4eee70c77355f1ab7221eae06b2cc0889
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 11:47:07 2011 +0100
+
+    [entropy.db] EntropyRepository: reduce lock acquisition timeout to 10 seconds
+
+commit 4b689cc61962d8ba5c0300039afe1d2e8e663a22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 11:45:37 2011 +0100
+
+    [entropy.db] enforce inter-process concurrency, use SQLite3 db files with EXCLUSIVE locking mode.
+
+commit 36be4419a3720a57d5311c82da5e92aa52d1ebdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 11:28:19 2011 +0100
+
+    [sulfur] prefer ETP_NO_PID_HANDLING to --no-pid-handling to avoid having argv propagated to child process
+
+commit 828879dd9bc1a6e4db8dcdd5473b6146cd03ef99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 11:27:48 2011 +0100
+
+    [entropy.const] add support to ETP_NO_PID_HANDLING (which is the same of --no-pid-handling argv)
+
+commit ae32d736fcaddde2a062f04b8bc2ae9d64fd8026
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 00:22:04 2011 +0100
+
+    [entropy.server] make use of CachedRepository too, required in order to be 100% compliant with Entropy Client methods
+
+commit 96d8deb0d2478ec4fca46fb7ffaee37155f5f5d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 00:04:59 2011 +0100
+
+    [entropy.client] avoid calling close() on cached repositories and make the cache explode, improve constraints on repository objects
+
+commit cdb8ee7e8b433ecaaa6fd00fedfdb3fb880b33a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 00:03:45 2011 +0100
+
+    [sulfur] fix imports, do not use dep_getkey from entropy.tools
+
+commit 53d58728c70e34e7a8413d70e97f9d8ac1c88310
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 22:16:09 2011 +0100
+
+    [entropy.tools] drop deprecated functions that have been moved to entropy.dep several months ago
+
+commit dd6946a9bf865a452a9010133440fa35ed7967aa
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 21:18:05 2011 +0100
+
+    [todo] update TODO
+
+commit 53a871ef0d9c16fd2daa63c811ea53998c696542
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 21:14:12 2011 +0100
+
+    [entropy.db] EntropyRepository, EntropyRepositoryBase: only return package_id from addPackage() and handlePackage()
+
+commit a4168060473fa2938a8320d1d10cab5faf4a08f3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 21:12:22 2011 +0100
+
+    [entropy.spm] ensure that 'needed' metadatum is always tuple
+
+commit 96d3513d9d3db893a2678cb6cadf8b1e06464a84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 18:38:34 2011 +0100
+
+    [sulfur] improve speed of package file install
+
+commit 78851c478ef3fbf32d1c306aa6a53b15bc5b257c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 18:37:25 2011 +0100
+
+    [entropy.client] optimize Client.add_repository() and Client.remove_repository()
+
+commit e1da60c5f94b71cff650c206da95098981aa4438
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 14:11:36 2011 +0100
+
+    [sulfur] add several performance improvements, boot takes 3 seconds less average
+
+commit 12351fd33e3d934db52026aaf233f7190a789620
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 13:13:50 2011 +0100
+
+    [entropy.client.interfaces.dep] introduce calculate_masked_packages(), fixup calculate_available_packages() code
+
+commit 4755f8210a17b82b3964a76c44c62beb62c0e1a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:38:40 2011 +0100
+
+    [po] update translations
+
+commit 8cb140e02c19d57ea728df42ad2cc26109e50b86
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:38:24 2011 +0100
+
+    [todo] update TODO
+
+commit 038b601df4496b30bb68d1498840cf68b5bf2341
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:36:14 2011 +0100
+
+    [todo] update TODO
+
+commit 3664a79bca572b713072eafbb8e693a5fb3ed1af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:36:04 2011 +0100
+
+    [sulfur] set default height to 600px
+
+commit 94bcf8000d1f451e5d4b4c2e237dfd31ddfbf7d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:29:25 2011 +0100
+
+    [sulfur] cache package theme icon too, this avoids resize glitches
+
+commit 82c9859f654fc07cdfeab86d641663ae670b4be7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:29:04 2011 +0100
+
+    [sulfur] EntropyPackage: fix __str__ function
+
+commit 521dcb9eba3a4381e25dd5d0ef81060692b54c1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:09:53 2011 +0100
+
+    [todo] update TODO
+
+commit 5f0ba31657fcd876a4ba548b5592014a3c1dd79f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:34:51 2011 +0100
+
+    [todo] update TODO
+
+commit d844f493dc0095b5d32630e58e72fb73c5a7f4c2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:33:49 2011 +0100
+
+    [sulfur] remove security package updates highlighting, takes a lot to compute
+
+commit 5149e88027cc1ee47b7c00f1f0a6865184aa3465
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:29:57 2011 +0100
+
+    [entropy.client] improve cache hash generation, general cache handling and updates calculation
+    
+    This commit avoids package file repositories to be pulled in as
+    updates. These kind of repositories can't be used outside single or
+    multiple package installations (which metadata is provided by package
+    files).
+
+commit e5800553bd789cf566c6def5c66cc6c3dd5f01e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 4 00:29:01 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase: add mtime() method (and implement it)
+
+commit 6cc360457c4a733f6f1c25062cbeb86500759019
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 17:50:34 2011 +0100
+
+    [entropy.server.interfaces.mirrors] when tidying mirrors, also remove .asc files
+
+commit af7750801bc58a8d00c74b821799274b3737d06f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 3 09:14:08 2011 +0100
+
+    Tagging Entropy version 1.0_alpha26
+
 commit d11ef3e70bb95f48c3dfcbe0ac8e915183fe252d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Mar 3 09:13:56 2011 +0100
