@@ -216,7 +216,12 @@ def _disable_repositories(entropy_client, repos):
             print_warning("[%s] %s" % (
                 purple(repo), blue(_("cannot disable default repository")),))
             continue
-        entropy_client.disable_repository(repo)
+        try:
+            entropy_client.disable_repository(repo)
+        except ValueError:
+            print_warning("[%s] %s" % (
+                purple(repo), blue(_("cannot disable repository")),))
+            continue
         print_info("[%s] %s" % (
             teal(repo), blue(_("repository disabled")),))
     return 0

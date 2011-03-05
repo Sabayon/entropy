@@ -561,7 +561,7 @@ def _restore_repository(entropy_server):
         entropy_server.repository())
     db_dir = os.path.dirname(db_file)
     dblist = entropy_server.installed_repository_backups(
-        client_dbdir = db_dir)
+        repository_directory = db_dir)
     if not dblist:
         print_info(brown(" @@ ")+blue("%s." % (
             _("No backed up databases found"),)))

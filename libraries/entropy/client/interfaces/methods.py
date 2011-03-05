@@ -28,7 +28,7 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_isstring, const_convert_to_unicode, const_isnumber, \
     const_convert_to_rawstring
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
-    RepositoryPluginError, SecurityError
+    RepositoryPluginError, SecurityError, EntropyPackageException
 from entropy.db import EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
@@ -151,6 +151,14 @@ class RepositoryMixin:
         return dbc
 
     def close_repositories(self, mask_clear = True):
+        """
+        Close all the previously opened (through open_repository()) repository
+        instances. If mask_clear is True, package masking information will
+        be cleared as well (by calling SystemSettings.clear()).
+
+        @keyword mask_clear: clear package masking information if True
+        @type mask_clear: bool
+        """
         for item in sorted(self._repodb_cache.keys()):
             repository_id, root = item
             # in-memory repositories cannot be closed
@@ -220,6 +228,20 @@ class RepositoryMixin:
             return InstalledPackagesRepository
         return AvailablePackagesRepository
 
+    def _is_package_repository(self, repository_id):
+        """
+        Determine whether given repository id is a package repository.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True, if package repository
+        @rtype: bool
+        """
+        if not repository_id:
+            return False
+        return repository_id.endswith(etpConst['packagesext']) or \
+            repository_id.endswith(etpConst['packagesext_webinstall'])
+
     def _load_repository(self, repoid, xcache = True, indexing = True,
         _enabled_repos = None):
         """
@@ -272,9 +294,8 @@ class RepositoryMixin:
             self._add_plugin_to_client_repository(conn)
 
         if (repoid not in self._treeupdates_repos) and \
-            (entropy.tools.is_root()) and \
-            (not (repoid.endswith(etpConst['packagesext']) or \
-                repoid.endswith(etpConst['packagesext_webinstall']))):
+            entropy.tools.is_root() and \
+            not self._is_package_repository(repoid):
 
             # only as root due to Portage
             try:
@@ -296,40 +317,50 @@ class RepositoryMixin:
         except (ValueError, TypeError,):
             return -1
 
-    def add_repository(self, repodata):
+    def add_repository(self, repository_metadata):
+        """
+        Add repository to Entropy Client configuration and data structures.
+        NOTE: this method is NOT thread-safe.
+        TODO: document metadata structure
 
+        @param repository_metadata: repository metadata dict. See
+            SystemSettings()['repositories']['available'][repository_id]
+            for example metadata.
+        @type repository_metadata: dict
+        """
         avail_data = self._settings['repositories']['available']
-        repoid = repodata['repoid']
+        repoid = repository_metadata['repoid']
 
         avail_data[repoid] = {}
-        avail_data[repoid]['description'] = repodata['description']
-        is_webinstall_pkg = repodata.get('webinstall_package', False)
-        is_package_file = repoid.endswith(etpConst['packagesext'])
-        is_temp = repodata.get('__temporary__')
+        avail_data[repoid]['description'] = repository_metadata['description']
+        is_temp = repository_metadata.get('__temporary__')
 
-        if is_package_file or is_webinstall_pkg or is_temp:
+        if self._is_package_repository(repoid) or is_temp:
             # package repository
 
             # remove cache, if any
             self._settings._clear_repository_cache(repoid = repoid)
 
             # no need # avail_data[repoid]['plain_packages'] = \
-            # repodata['plain_packages'][:]
-            avail_data[repoid]['packages'] = repodata['packages'][:]
-            smart_package = repodata.get('smartpackage')
+            # repository_metadata['plain_packages'][:]
+            avail_data[repoid]['packages'] = \
+                repository_metadata['packages'][:]
+            smart_package = repository_metadata.get('smartpackage')
             if smart_package != None:
                 avail_data[repoid]['smartpackage'] = smart_package
 
-            avail_data[repoid]['post_branch_upgrade_script'] = repodata.get(
-                'post_branch_upgrade_script')
-            avail_data[repoid]['post_repo_update_script'] = repodata.get(
-                'post_repo_update_script')
-            avail_data[repoid]['post_branch_hop_script'] = repodata.get(
-                'post_branch_hop_script')
-            avail_data[repoid]['dbpath'] = repodata.get('dbpath')
-            avail_data[repoid]['pkgpath'] = repodata.get('pkgpath')
-            avail_data[repoid]['__temporary__'] = repodata.get('__temporary__')
-            avail_data[repoid]['webinstall_package'] = is_webinstall_pkg
+            avail_data[repoid]['post_branch_upgrade_script'] = \
+                repository_metadata.get('post_branch_upgrade_script')
+            avail_data[repoid]['post_repo_update_script'] = \
+                repository_metadata.get('post_repo_update_script')
+            avail_data[repoid]['post_branch_hop_script'] = \
+                repository_metadata.get('post_branch_hop_script')
+            avail_data[repoid]['dbpath'] = repository_metadata.get('dbpath')
+            avail_data[repoid]['pkgpath'] = repository_metadata.get('pkgpath')
+            avail_data[repoid]['__temporary__'] = repository_metadata.get(
+                '__temporary__')
+            avail_data[repoid]['webinstall_package'] = repository_metadata.get(
+                'webinstall_package', False)
             # put at top priority, shift others
             self._settings['repositories']['order'].insert(0, repoid)
             # NOTE: never call SystemSettings.clear() here, or
@@ -342,7 +373,7 @@ class RepositoryMixin:
             if not entropy.tools.validate_repository_id(repoid):
                 raise SecurityError("invalid repository identifier")
 
-            self.__save_repository_settings(repodata)
+            self.__save_repository_settings(repository_metadata)
             self._settings._clear_repository_cache(repoid = repoid)
             self.close_repositories()
             self.clear_cache()
@@ -350,18 +381,28 @@ class RepositoryMixin:
 
         self._validate_repositories()
 
-    def remove_repository(self, repoid, disable = False):
+    def remove_repository(self, repository_id, disable = False):
+        """
+        Remove repository from Entropy Client configuration and data structures,
+        if available.
+        NOTE: this method is NOT thread-safe.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword disable: instead of removing the repository from entropy
+            configuration, just disable it. (default is remove)
+        @type disable: bool
+        """
         done = False
         removed_data = None
-        if repoid in self._settings['repositories']['available']:
+        if repository_id in self._settings['repositories']['available']:
             removed_data = self._settings['repositories']['available'].pop(
-                repoid)
+                repository_id)
             done = True
 
-        if repoid in self._settings['repositories']['excluded']:
+        if repository_id in self._settings['repositories']['excluded']:
             removed_data = self._settings['repositories']['excluded'].pop(
-                repoid)
+                repository_id)
             done = True
 
         # also early remove from validRepositories to avoid
@@ -370,8 +411,8 @@ class RepositoryMixin:
         # triggers _all_repositories_hash, which triggers open_repository,
         # which triggers _load_repository, which triggers an unwanted
         # output message => "bad repository id specified"
-        if repoid in self._enabled_repos:
-            self._enabled_repos.remove(repoid)
+        if repository_id in self._enabled_repos:
+            self._enabled_repos.remove(repository_id)
 
         # ensure that all dbs are closed
         self.close_repositories()
@@ -380,28 +421,29 @@ class RepositoryMixin:
 
             # drop from SystemSettings Client plugin, if there
             try:
-                self.sys_settings_client_plugin._drop_package_repository(repoid)
+                self.sys_settings_client_plugin._drop_package_repository(
+                    repository_id)
             except KeyError:
                 pass
 
-            if repoid in self._settings['repositories']['order']:
-                self._settings['repositories']['order'].remove(repoid)
+            if repository_id in self._settings['repositories']['order']:
+                self._settings['repositories']['order'].remove(repository_id)
 
             # if it's a package repository, don't remove cache here
-            is_webinstall_pkg = removed_data.get('webinstall_package', False)
-            is_package_file = repoid.endswith(etpConst['packagesext'])
-            if not (is_webinstall_pkg or is_package_file):
-                self._settings._clear_repository_cache(repoid = repoid)
+            if not self._is_package_repository(repository_id):
+                self._settings._clear_repository_cache(repoid = repository_id)
             # save new self._settings['repositories']['available'] to file
-            repodata = {}
-            repodata['repoid'] = repoid
+            repository_metadata = {}
+            repository_metadata['repoid'] = repository_id
             if disable:
-                self.__save_repository_settings(repodata, disable = True)
+                self.__save_repository_settings(repository_metadata,
+                    disable = True)
             else:
-                self.__save_repository_settings(repodata, remove = True)
+                self.__save_repository_settings(repository_metadata,
+                    remove = True)
             self._settings.clear()
 
-        repo_mem_key = self.__get_repository_cache_key(repoid)
+        repo_mem_key = self.__get_repository_cache_key(repository_id)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
         if isinstance(mem_inst, EntropyRepository):
             mem_inst.close()
@@ -413,11 +455,8 @@ class RepositoryMixin:
     def __save_repository_settings(self, repodata, remove = False,
         disable = False, enable = False):
 
-        # package files as repository are ignored. there are usually two cases
-        # a webinstall package and a simple plain package file.
-        is_webinstall_pkg = repodata.get('webinstall_package', False)
-        is_package_file = repodata['repoid'].endswith(etpConst['packagesext'])
-        if is_package_file or is_webinstall_pkg:
+        # package repositories are ignored.
+        if self._is_package_repository(repodata['repoid']):
             return
 
         content = []
@@ -585,67 +624,115 @@ class RepositoryMixin:
             tmp_f.flush()
         os.rename(tmp_repo_conf, repo_conf)
 
-    def shift_repository(self, repoid, toidx):
+    def shift_repository(self, repository_id, new_position_idx):
+        """
+        Change repository priority, move to given index "new_position_idx".
+        The reference ordered list is at
+        SystemSettings()['repositories']['order']
+        NOTE: this method is NOT thread-safe.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param new_position_idx: new ordered list index
+        @type new_position_idx: int
+        @raise ValueError: if repository_id is invalid
+        """
         # update self._settings['repositories']['order']
-        self._settings['repositories']['order'].remove(repoid)
-        self._settings['repositories']['order'].insert(toidx, repoid)
+        self._settings['repositories']['order'].remove(repository_id)
+        self._settings['repositories']['order'].insert(new_position_idx,
+            repository_id)
         self.__write_ordered_repositories_entries(
             self._settings['repositories']['order'])
         self._settings.clear()
         self.close_repositories()
-        self._settings._clear_repository_cache(repoid = repoid)
+        self._settings._clear_repository_cache(repoid = repository_id)
         self._validate_repositories()
 
-    def enable_repository(self, repoid):
-        self._settings._clear_repository_cache(repoid = repoid)
+    def enable_repository(self, repository_id):
+        """
+        Enable given repository in Entropy Client configuration. If
+        repository_id doesn't exist, nothing will change. But please, make
+        sure this won't happen.
+        NOTE: this method is NOT thread-safe.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        """
+        self._settings._clear_repository_cache(repoid = repository_id)
         # save new self._settings['repositories']['available'] to file
         repodata = {}
-        repodata['repoid'] = repoid
+        repodata['repoid'] = repository_id
         self.__save_repository_settings(repodata, enable = True)
         self._settings.clear()
         self.close_repositories()
         self._validate_repositories()
 
-    def disable_repository(self, repoid):
+    def disable_repository(self, repository_id):
+        """
+        Disable given repository in Entropy Client configuration. If
+        repository_id doesn't exist, nothing will change. But please, make
+        sure this won't happen.
+        NOTE: this method is NOT thread-safe.
+
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @raise ValueError: if repository is not available
+        """
         # update self._settings['repositories']['available']
-        done = False
         try:
-            del self._settings['repositories']['available'][repoid]
-            done = True
-        except:
-            pass
+            del self._settings['repositories']['available'][repository_id]
+        except KeyError:
+            raise ValueError("repository identifier is not available")
 
-        if done:
-            try:
-                self._settings['repositories']['order'].remove(repoid)
-            except (IndexError,):
-                pass
-            # it's not vital to reset
-            # self._settings['repositories']['order'] counters
+        try:
+            self._settings['repositories']['order'].remove(repository_id)
+        except ValueError:
+            raise ValueError("repository identifier is not available (2)")
+        # it's not vital to reset
+        # self._settings['repositories']['order'] counters
 
-            self._settings._clear_repository_cache(repoid = repoid)
-            # save new self._settings['repositories']['available'] to file
-            repodata = {}
-            repodata['repoid'] = repoid
-            self.__save_repository_settings(repodata, disable = True)
-            self._settings.clear()
+        self._settings._clear_repository_cache(repoid = repository_id)
+        # save new self._settings['repositories']['available'] to file
+        repository_metadata = {}
+        repository_metadata['repoid'] = repository_id
+        self.__save_repository_settings(repository_metadata, disable = True)
+        self._settings.clear()
 
         self.close_repositories()
         self._validate_repositories()
 
-    # every tbz2 file that would be installed must pass from here
     def add_package_to_repositories(self, pkg_file):
+        """@deprecated please use add_package_repository"""
+        try:
+            package_matches = self.add_package_repository(pkg_file)
+            return 0, package_matches
+        except EntropyPackageException:
+            return -1, []
 
-        atoms_contained = []
-        basefile = os.path.basename(pkg_file)
+    def add_package_repository(self, package_file_path):
+        """
+        Add a package repository (through its package file) to Entropy Client.
+        This is temporary and the lifecycle of it being available within
+        Entropy Client is limited to this process lifetime.
+        Any package file, either smart package or simple or webinstall must
+        pass from here in order to get inserted, properly validated and
+        made available.
+
+        @param package_file_path: path to entropy package repository file
+        @type package_file_path: string
+        @return: list of package matches found in package repository.
+        @raise entropy.exceptions.EntropyPackageException: if package file
+            doesn't contain a valid package repository.
+        """
+        basefile = os.path.basename(package_file_path)
         db_dir = tempfile.mkdtemp()
         dbfile = os.path.join(db_dir, etpConst['etpdatabasefile'])
-        dump_rc = entropy.tools.dump_entropy_metadata(pkg_file, dbfile)
+        dump_rc = entropy.tools.dump_entropy_metadata(package_file_path, dbfile)
         if not dump_rc:
-            return -1, atoms_contained
+            raise EntropyPackageException("repository metadata not found")
 
         webinstall_package = False
-        if pkg_file.endswith(etpConst['packagesext_webinstall']):
+        if package_file_path.endswith(etpConst['packagesext_webinstall']):
             webinstall_package = True
             # unbzip2
             tmp_fd, tmp_path = tempfile.mkstemp(dir = db_dir)
@@ -662,14 +749,15 @@ class RepositoryMixin:
             package_ids = repo.listAllPackageIds()
         except (AttributeError, DatabaseError, IntegrityError,
             OperationalError,):
-            return -2, atoms_contained
+            raise EntropyPackageException("corrupted repository")
 
         product = self._settings['repositories']['product']
         repodata = {}
         repodata['repoid'] = basefile
         repodata['description'] = "Dynamic Entropy Repository " + basefile
         repodata['dbpath'] = os.path.dirname(dbfile)
-        repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
+        # extra info added
+        repodata['pkgpath'] = os.path.realpath(package_file_path)
         repodata['smartpackage'] = False # extra info added
         repodata['webinstall_package'] = webinstall_package
         repodata['packages'] = []
@@ -694,43 +782,45 @@ class RepositoryMixin:
         except KeyError:
             compiled_arch = None
 
+        package_matches = []
         if compiled_arch is not None:
             # new way of checking repo architecture
             if compiled_arch != etpConst['currentarch']:
-                return -3, atoms_contained
+                raise EntropyPackageException("invalid architecture")
+
             if is_webinstall_pkg:
                 for package_id in package_ids:
                     source = repo.getInstalledPackageSource(package_id)
                     if source != etpConst['install_sources']['user']:
                         continue
-                    atoms_contained.append((package_id, basefile))
+                    package_matches.append((package_id, basefile))
             else:
-                atoms_contained.extend([(package_id, basefile) for package_id in
+                package_matches.extend([(package_id, basefile) for package_id in
                     package_ids])
         else:
             # old, legacy (broken) way
             for package_id in package_ids:
                 compiled_arch = repo.retrieveDownloadURL(package_id)
                 if compiled_arch.find("/"+etpConst['currentarch']+"/") == -1:
-                    return -3, atoms_contained
+                    raise EntropyPackageException("invalid architecture")
                 if is_webinstall_pkg:
                     source = repo.getInstalledPackageSource(package_id)
                     if source != etpConst['install_sources']['user']:
                         continue
-                    # otherwise, add to atoms_contained
-                atoms_contained.append((package_id, basefile))
+                    # otherwise, add to package_matches
+                package_matches.append((package_id, basefile))
 
         self.add_repository(repodata)
         self._validate_repositories()
         if basefile not in self._enabled_repos:
             self.remove_repository(basefile)
-            return -4, atoms_contained
+            raise EntropyPackageException("error while adding repository")
 
         # add to SystemSettings
         self.sys_settings_client_plugin._add_package_repository(
             repodata['repoid'], repodata)
         repo.close()
-        return 0, atoms_contained
+        return package_matches
 
     def _add_plugin_to_client_repository(self, entropy_client_repository):
         etp_db_meta = {
@@ -820,14 +910,42 @@ class RepositoryMixin:
         return conn
 
     def reopen_installed_repository(self):
+        """
+        If for whatever reason (usually there is NO reason!) the installed
+        packages repository needs to be reloaded, call this method.
+        """
         self._installed_repository.close(_token = etpConst['clientdbid'])
         self._open_installed_repository()
         # make sure settings are in sync
         self._settings.clear()
 
-    def open_generic_repository(self, dbfile, dbname = None, name = None,
-            xcache = None, read_only = False, indexing_override = None,
-            skip_checks = False):
+    def open_generic_repository(self, repository_path, dbname = None,
+        name = None, xcache = None, read_only = False, indexing_override = None,
+        skip_checks = False):
+        """
+        Open a Generic Entropy Repository interface, using
+        entropy.client.interfaces.db.GenericRepository class.
+
+        @param repository_path: path to valid Entropy Repository file
+        @type repository_path: string
+        @keyword dbname: backward compatibility, don't use this
+        @type dbname: string
+        @keyword name: repository identifier hold by the repository object and
+            returned by repository_id()
+        @type name: string
+        @keyword xcache: enable on-disk cache for repository?
+        @type xcache: bool
+        @keyword read_only: True, will keep the repository read-only, rolling
+            back any transaction
+        @type read_only: bool
+        @keyword indexing_override: override default indexing settings (default
+            is disabled for this kind of, usually small, repositories)
+        @type indexing_override: bool
+        @keyword skip_checks: skip integrity checks on repository
+        @type skip_checks: bool
+        @return: a GenericRepository object
+        @rtype: entropy.client.interfaces.db.GenericRepository
+        """
         if xcache is None:
             xcache = self.xcache
         if indexing_override != None:
@@ -839,7 +957,7 @@ class RepositoryMixin:
             name = dbname
         conn = GenericRepository(
             readOnly = read_only,
-            dbFile = dbfile,
+            dbFile = repository_path,
             name = name,
             xcache = xcache,
             indexing = indexing,
@@ -848,7 +966,23 @@ class RepositoryMixin:
         self._add_plugin_to_client_repository(conn)
         return conn
 
-    def open_temp_repository(self, dbname = None, name = None, temp_file = None):
+    def open_temp_repository(self, dbname = None, name = None,
+        temp_file = None):
+        """
+        Open a temporary (using mkstemp()) Entropy Repository.
+        Indexing and Caching are disabled by default.
+
+        @keyword dbname: backward compatibility, don't use this
+        @type dbname: string
+        @keyword name: repository identifier hold by the repository object and
+            returned by repository_id()
+        @type name: string
+        @keyword temp_file: override random temporary file and open given
+            temp_file. No path validity check will be run.
+        @type temp_file: string
+        @return: a GenericRepository object
+        @rtype: entropy.client.interfaces.db.GenericRepository
+        """
         if temp_file is None:
             tmp_fd, temp_file = tempfile.mkstemp()
             os.close(tmp_fd)
@@ -870,7 +1004,18 @@ class RepositoryMixin:
 
     def backup_repository(self, repository_id, backup_dir, silent = False,
         compress_level = 9):
+        """
+        Backup given repository into given backup directory.
 
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @param backup_dir: backup directory
+        @type backup_dir: string
+        @keyword silent: execute in silent mode if True
+        @type silent: bool
+        @keyword compress_level: compression level, range from 1 to 9
+        @type compress_level: int
+        """
         if compress_level not in range(1, 10):
             compress_level = 9
 
@@ -918,7 +1063,18 @@ class RepositoryMixin:
 
     def restore_repository(self, backup_path, repository_path,
         repository_id, silent = False):
+        """
+        Restore given repository.
 
+        @param backup_path: path to backed up repository file
+        @type backup_path: string
+        @param repository_path: repository destination path
+        @type repository_path: string
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @keyword silent: execute in silent mode if True
+        @type silent: bool
+        """
         # uncompress the backup
         if not silent:
             mytxt = "%s: %s => %s ..." % (
@@ -963,13 +1119,30 @@ class RepositoryMixin:
         self.clear_cache()
         return True, _("All fine")
 
-    def installed_repository_backups(self, client_dbdir = None):
-        if not client_dbdir:
-            client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
-        return [os.path.join(client_dbdir, x) for x in os.listdir(client_dbdir) \
-                    if x.startswith(etpConst['dbbackupprefix']) and \
-                    os.access(os.path.join(client_dbdir, x), os.R_OK)
-        ]
+    def installed_repository_backups(self, repository_directory = None):
+        """
+        List available backups for the installed packages repository.
+
+        @keyword repository_directory: alternative backup directory
+        @type repository_directory: string
+        @return: list of paths
+        @rtype: list
+        """
+        if repository_directory is None:
+            repository_directory = os.path.dirname(
+                etpConst['etpdatabaseclientfilepath'])
+
+        valid_backups = []
+        for fname in os.listdir(repository_directory):
+            if not fname.startswith(etpConst['dbbackupprefix']):
+                continue
+            path = os.path.join(repository_directory, fname)
+            if not os.path.isfile(path):
+                continue
+            if not os.access(path, os.R_OK):
+                continue
+            valid_backups.append(path)
+        return valid_backups
 
     def clean_downloaded_packages(self, dry_run = False, days_override = None):
         """

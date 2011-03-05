@@ -26,7 +26,7 @@ try:
 except ImportError:
     from commands import getoutput
 
-from entropy.exceptions import QueueError
+from entropy.exceptions import QueueError, EntropyPackageException
 import entropy.tools
 from entropy.const import etpConst, initconfig_entropy_constants, \
     const_isunicode, const_convert_to_unicode
@@ -471,17 +471,10 @@ class SulfurApplicationEventsMixin:
 
         newrepo = os.path.basename(fn)
         # we have it !
-        status, atomsfound = self._entropy.add_package_to_repositories(fn)
-        if status != 0:
-            errtxt = _("is not a valid Entropy package")
-            if status == -3:
-                errtxt = _("is not compiled with the same architecture of the system")
-            mytxt = "%s %s. %s." % (
-                os.path.basename(fn),
-                errtxt,
-                _("Cannot install"),
-            )
-            okDialog(self.ui.main, mytxt)
+        try:
+            atomsfound = self._entropy.add_package_repository(fn)
+        except EntropyPackageException as err:
+            okDialog(self.ui.main, str(err))
             if get_st:
                 return False
             return

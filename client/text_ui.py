@@ -18,7 +18,8 @@ import os
 import shutil
 import tempfile
 
-from entropy.exceptions import SystemDatabaseError, DependenciesNotRemovable
+from entropy.exceptions import SystemDatabaseError, DependenciesNotRemovable, \
+    EntropyPackageException
 from entropy.db.exceptions import OperationalError
 from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
@@ -759,24 +760,18 @@ def _scan_packages(entropy_client, packages, etp_pkg_files):
 
     if etp_pkg_files:
         for pkg in etp_pkg_files:
-            status, atomsfound = entropy_client.add_package_to_repositories(pkg)
-            if status == 0:
-                found_pkg_atoms += atomsfound[:]
-                del atomsfound
-            elif status in (-1, -2, -3, -4,):
-                errtxt = _("is not a valid Entropy package")
-                if status == -3:
-                    errtxt = _("is not compiled with the same architecture of the system")
+            try:
+                atomsfound = entropy_client.add_package_repository(pkg)
+            except EntropyPackageException as err:
                 mytxt = "## %s: %s %s. %s ..." % (
                     red(_("ATTENTION")),
                     bold(os.path.basename(pkg)),
-                    red(errtxt),
+                    err,
                     red(_("Skipped")),
                 )
                 print_warning(mytxt)
                 continue
-            else:
-                raise AttributeError("invalid package %s" % (pkg,))
+            found_pkg_atoms += atomsfound[:]
 
     return found_pkg_atoms
 

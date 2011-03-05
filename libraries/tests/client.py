@@ -14,7 +14,7 @@ from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi, const_setup_entropy_pid
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
-from entropy.exceptions import RepositoryError
+from entropy.exceptions import RepositoryError, EntropyPackageException
 import entropy.tools
 import tests._misc as _misc
 
@@ -209,16 +209,19 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_package_repository(self):
         test_pkg = _misc.get_test_entropy_package()
         # this might fail on 32bit arches
-        rc, atoms_contained = self.Client.add_package_to_repositories(test_pkg)
-        if etpConst['currentarch'] == "amd64":
-            self.assertEqual(0, rc)
+        atoms_contained = []
+        try:
+            atoms_contained = self.Client.add_package_repository(test_pkg)
+        except EntropyPackageException as err:
+            if etpConst['currentarch'] == "amd64":
+                raise
+            self.assertEqual(str(err), "invalid architecture")
         else:
-            self.assertEqual(-3, rc)
-        self.assertNotEqual([], atoms_contained)
-        for idpackage, repoid in atoms_contained:
-            dbconn = self.Client.open_repository(repoid)
-            self.assertNotEqual(None, dbconn.getPackageData(idpackage))
-            self.assertNotEqual(None, dbconn.retrieveAtom(idpackage))
+            self.assertNotEqual([], atoms_contained)
+            for idpackage, repoid in atoms_contained:
+                dbconn = self.Client.open_repository(repoid)
+                self.assertNotEqual(None, dbconn.getPackageData(idpackage))
+                self.assertNotEqual(None, dbconn.retrieveAtom(idpackage))
 
     def test_package_installation(self):
         for pkg_path, pkg_atom in self.test_pkgs:
@@ -247,16 +250,22 @@ class EntropyRepositoryTest(unittest.TestCase):
         etp_pkg = os.path.join(pkg_dir, os.listdir(pkg_dir)[0])
         self.assert_(os.path.isfile(etp_pkg))
 
-        status, matches = self.Client.add_package_to_repositories(etp_pkg)
-        self.assert_(status == 0)
-        self.assert_(matches)
-        for match in matches:
-            my_p = self.Client.Package()
-            my_p.prepare(match, "install", {})
-            # unit testing metadata setting, of course, undocumented
-            my_p.pkgmeta['unittest_root'] = fake_root
-            rc = my_p.run()
-            self.assert_(rc == 0)
+        matches = []
+        try:
+            matches = self.Client.add_package_repository(etp_pkg)
+        except EntropyPackageException as err:
+            if etpConst['currentarch'] == "amd64":
+                raise
+            self.assertEqual(str(err), "invalid architecture")
+        else:
+            self.assertNotEqual(matches, [])
+            for match in matches:
+                my_p = self.Client.Package()
+                my_p.prepare(match, "install", {})
+                # unit testing metadata setting, of course, undocumented
+                my_p.pkgmeta['unittest_root'] = fake_root
+                rc = my_p.run()
+                self.assert_(rc == 0)
 
         # remove pkg
         idpackages = self.Client.installed_repository().listAllPackageIds()

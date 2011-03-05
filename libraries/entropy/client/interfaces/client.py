@@ -42,7 +42,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # Package repositories must be able to live across
         # SystemSettings.clear() calls, because they are very
         # special and 3rd-party (but even Sulfur) tools expect to always
-        # have them there after having called Client.add_package_to_repositories
+        # have them there after having called Client.add_package_repository
         self.__package_repositories = []
         self.__package_repositories_meta = {}
 
