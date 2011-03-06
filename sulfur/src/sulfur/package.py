@@ -404,6 +404,11 @@ class EntropyPackage:
         return self.dbconn.retrieveDependencies(self.matched_id,
             exclude_deptypes = [etpConst['dependency_type_ids']['bdepend_id']])
 
+    def get_package_metadata(self):
+        if self.pkgset:
+            return {}
+        return self.dbconn.getPackageData(self.matched_id)
+
     def get_inverse_dependencies(self):
         if self.pkgset:
             return []
@@ -893,3 +898,15 @@ class EntropyPackage:
     @property
     def changelog(self):
         return self.get_changelog()
+
+    @property
+    def pkgmeta(self):
+        return self.get_package_metadata()
+
+    @property
+    def package_id(self):
+        return self.matched_atom[0]
+
+    @property
+    def repository_id(self):
+        return self.matched_atom[1]

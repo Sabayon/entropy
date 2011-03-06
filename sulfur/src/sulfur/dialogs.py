@@ -539,6 +539,7 @@ class PkgInfoMenu(MenuSkel):
 
     def __init__(self, Entropy, pkg, window):
 
+        self._pkg_meta = None
         self.pkg_pixmap = const.pkg_pixmap
         self.ugc_small_pixmap = const.ugc_small_pixmap
         self.ugc_pixmap = const.ugc_pixmap
@@ -558,8 +559,36 @@ class PkgInfoMenu(MenuSkel):
         self.Entropy = Entropy
         self.repository = None
         self.pkgkey = None
-        self.ugc_page_idx = 5
-        self.switched_to_ugc_page = False
+
+        self._page_tabs_map = {
+            1: "details",
+            2: "references",
+            3: "dependencies",
+            4: "other",
+            5: "ugc"
+        }
+        self._page_tabs_data = {
+            "details": {
+                'loaded': False,
+                'loader': self._details_page_loader,
+            },
+            "references": {
+                'loaded': False,
+                'loader': self._references_page_loader,
+            },
+            "dependencies": {
+                'loaded': False,
+                'loader': self._dependencies_page_loader,
+            },
+            "other": {
+                'loaded': False,
+                'loader': self._other_page_loader,
+            },
+            "ugc": {
+                'loaded': False,
+                'loader': self._ugc_page_loader,
+            }
+        }
         self.pkginfo_ui = UI( const.GLADE_FILE, 'pkgInfo', 'entropy' )
         self.pkginfo_ui.signal_autoconnect(self._getAllMethods())
         if self.window:
@@ -666,11 +695,6 @@ class PkgInfoMenu(MenuSkel):
                         int(event.y_root),
                         event.time)
 
-    def on_showContentButton_clicked( self, widget ):
-        content = self.pkg.contentExt
-        for x in content:
-            self.contentModel.append(None, [x[0], x[1]])
-
     def disconnect_event_signals(self):
         # disconnect signals
         if self.ugc_update_event_handler_id is not None:
@@ -687,6 +711,8 @@ class PkgInfoMenu(MenuSkel):
         self.disconnect_event_signals()
         self.reset_ugc_data()
         self.pkginfo_ui.pkgInfo.hide()
+        if isinstance(self._pkg_meta, dict):
+            self._pkg_meta.clear()
         return True
 
     def on_loadUgcButton_clicked(self, widget, force = True):
@@ -1001,18 +1027,160 @@ class PkgInfoMenu(MenuSkel):
         self.ugcView.show_all()
 
     def on_infoBook_switch_page(self, widget, page, page_num):
-        if (page_num == self.ugc_page_idx) and (not self.switched_to_ugc_page):
-            SulfurSignals.emit('pkg_properties__ugc_tab_clicked')
+        page_name = self._page_tabs_map.get(page_num)
+        if page_num is None:
+            return
+
+        page_data = self._page_tabs_data.get(page_name)
+        if page_data is None:
+            return # main page?
+
+        if (not page_data['loaded']) and (page_data['loader'] is not None):
+            def loader_func():
+                page_data['loaded'] = page_data['loader']()
+            gobject.idle_add(loader_func)
+
+    def _ugc_page_loader(self):
+        SulfurSignals.emit('pkg_properties__ugc_tab_clicked')
+        return True
+
+    def _other_page_loader(self):
+
+        # content view
+        self.contentModel.clear()
+        self.contentView.set_model(self.contentModel)
+        self.contentModel.append(None, [_("Please wait..."), ""])
+        def _load_cont():
+            self.contentModel.clear()
+            for path, typ in self._pkg_meta['content'].items():
+                self.contentModel.append(None, [path, typ])
+        gobject.idle_add(_load_cont)
+
+        # trigger
+        mtrigger = gtk.TextBuffer()
+        mtrigger.set_text(self._pkg_meta['trigger'])
+        self.pkginfo_ui.triggerTextView.set_buffer(mtrigger)
+
+        # CONFIG_PROTECT Stuff
+        for item in self._pkg_meta['config_protect'].split():
+            self.configProtectModel.append(None, [item, 'protect'])
+        for item in self._pkg_meta['config_protect_mask'].split():
+            self.configProtectModel.append(None, [item, 'mask'])
+
+        return True
+
+    def _dependencies_page_loader(self):
+        # dependencies view
+        self.dependenciesModel.clear()
+        self.dependenciesView.set_model(self.dependenciesModel)
+        deps = sorted(self._pkg_meta['dependencies'],
+            key = lambda x: entropy.dep.dep_getkey(x))
+        conflicts = sorted(self._pkg_meta['conflicts'],
+            key = lambda x: entropy.dep.dep_getkey(x))
+        for x in conflicts:
+            self.dependenciesModel.append(None, [cleanMarkupString("!"+x)])
+        for x in deps:
+            self.dependenciesModel.append(None, [cleanMarkupString(x)])
+
+        # needed view
+        self.neededModel.clear()
+        self.neededView.set_model(self.neededModel)
+        for x in sorted(self._pkg_meta['needed']):
+            self.neededModel.append(None, [cleanMarkupString(x)])
+
+        # depends view
+        self.dependsModel.clear()
+        self.dependsView.set_model(self.dependsModel)
+        self.dependsModel.append(None, [_("Please wait...")])
+        def _load_depends():
+            depends = self.pkg.dependsFmt
+            self.dependsModel.clear()
+            for x in depends:
+                self.dependsModel.append(None, [cleanMarkupString(x)])
+        gobject.idle_add(_load_depends)
+
+        return True
+
+    def _references_page_loader(self):
+        # sources view
+        self.sourcesModel.clear()
+        self.sourcesView.set_model(self.sourcesModel)
+        mirrors = set()
+        sources = self._pkg_meta['sources']
+        for x in sources:
+            if x.startswith("mirror://"):
+                mirrors.add(x.split("/")[2])
+            self.sourcesModel.append(None, [x])
+
+        # mirrors view
+        self.mirrorsReferenceModel.clear()
+        self.mirrorsReferenceView.set_model(self.mirrorsReferenceModel)
+        for mirror in mirrors:
+            mirrorinfo = self.pkg.dbconn.retrieveMirrorData(mirror)
+            if mirrorinfo:
+                # add parent
+                parent = self.mirrorsReferenceModel.append(None, [mirror])
+                for info in mirrorinfo:
+                    self.mirrorsReferenceModel.append(parent, [info])
+
+        return True
+
+    def _details_page_loader(self):
+        if self._pkg_meta is None:
+            return True
+        # compile flags
+        chost, cflags, cxxflags = self._pkg_meta['chost'], \
+            self._pkg_meta['cflags'], self._pkg_meta['cxxflags']
+        self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
+        self.pkginfo_ui.cxxflags.set_markup( "%s" % (cxxflags,) )
+        self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
+        # masked ?
+        masked = _("No")
+        idpackage_masked, idmasking_reason = \
+            self.pkg.dbconn.maskFilter(self.pkg.package_id)
+        if idpackage_masked == -1:
+            masked = '%s, %s' % (_("Yes"),
+                self.Entropy.Settings()['pkg_masking_reasons'][idmasking_reason],)
+        self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
+
+        # license view
+        self.licenseModel.clear()
+        self.licenseView.set_model(self.licenseModel)
+        licenses = self._pkg_meta['license']
+        licenses = licenses.split()
+        for x in sorted(licenses):
+            self.licenseModel.append(None, [x])
+
+        # package changelog
+        changelog = self._pkg_meta.get('changelog')
+        if not changelog:
+            self.pkginfo_ui.showChangeLogButtonAlign.hide()
+            self.pkginfo_ui.changeLogLabel.hide()
+
+        # keywords view
+        self.keywordsModel.clear()
+        self.keywordsView.set_model(self.keywordsModel)
+        for x in sorted(self._pkg_meta['keywords'],
+            key = lambda x: x.lstrip("~")):
+            self.keywordsModel.append(None, [x])
+
+        # useflags view
+        self.useflagsModel.clear()
+        self.useflagsView.set_model(self.useflagsModel)
+        for x in sorted(self._pkg_meta['useflags']):
+            self.useflagsModel.append([cleanMarkupString(x)])
+
+        return True
 
     def _ugc_tab_clicked(self, event):
-        self.switched_to_ugc_page = True
         self.on_loadUgcButton_clicked(None, force = False)
 
     def on_showChangeLogButton_clicked(self, widget):
-        if not self.changelog:
+        changelog = self._pkg_meta.get('changelog')
+        if not changelog:
             return
         mybuffer = gtk.TextBuffer()
-        mybuffer.set_text(self.changelog)
+        mybuffer.set_text(changelog)
         xml_clread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow', domain="entropy" )
         read_dialog = xml_clread.get_widget( "textReadWindow" )
         okReadButton = xml_clread.get_widget( "okReadButton" )
@@ -1249,19 +1417,25 @@ class PkgInfoMenu(MenuSkel):
     def load(self, remote = False):
 
         pkg = self.pkg
-        dbconn = self.pkg.dbconn
+        dbconn = pkg.dbconn
         avail = False
         if dbconn:
-            avail = dbconn.isPackageIdAvailable(pkg.matched_atom[0])
+            avail = dbconn.isPackageIdAvailable(pkg.package_id)
         if not avail:
             return
+
         from_repo = True
-        if isinstance(pkg.matched_atom[1], int): from_repo = False
-        if from_repo and (pkg.matched_atom[1] not in self.Entropy.repositories()) and (not remote):
+        repo = pkg.repository_id
+        if isinstance(repo, int):
+            from_repo = False
+        if from_repo and (repo not in self.Entropy.repositories()) \
+            and (not remote):
             return
 
+        self._pkg_meta = pkg.pkgmeta
+
         # set package image
-        pkgatom = pkg.name
+        pkgatom = self._pkg_meta['atom']
         self.vote = int(pkg.vote)
         self.repository = pkg.repoid
         self.pkgkey = entropy.dep.dep_getkey(pkgatom)
@@ -1271,8 +1445,10 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.ugcIcon.set_from_file(self.ugc_pixmap)
         self.pkginfo_ui.refreshImage.set_from_file(self.refresh_pixmap)
 
-        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (cleanMarkupString(pkgatom),))
-        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (pkg.description,))
+        self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (
+            cleanMarkupString(pkgatom),))
+        self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (
+            cleanMarkupString(self._pkg_meta['description']),))
         self.pkginfo_ui.ugcDescriptionLabel.set_markup("<small>%s\n%s</small>" % (
                 _("Share your opinion, your documents, your screenshots!"),
                 _("Be part of our Community!")
@@ -1306,134 +1482,42 @@ class PkgInfoMenu(MenuSkel):
             t = item.get_text()
             item.set_markup("<b>%s</b>" % (t,))
 
-        repo = pkg.matched_atom[1]
         avail_repos = self.Entropy.Settings()['repositories']['available']
         if repo == 0:
             repo = pkg.repoid
 
         if remote:
-            self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"), pkg.repoid,))
+            self.pkginfo_ui.location.set_markup(
+                "%s: %s" % (_("Remotely"), repo,))
         elif repo in avail_repos:
-            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(avail_repos[repo]['description']),))
+            self.pkginfo_ui.location.set_markup(
+                "%s" % (cleanMarkupString(avail_repos[repo]['description']),))
         else:
-            self.pkginfo_ui.location.set_markup("%s: %s" % (_("Removed repository"), repo,))
+            self.pkginfo_ui.location.set_markup(
+                "%s: %s" % (_("Removed repository"), repo,))
 
-        self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
-        tag = pkg.tag
-        if not tag: tag = "None"
+        self.pkginfo_ui.version.set_markup( "%s" % (
+            cleanMarkupString(self._pkg_meta['version']),))
+        tag = self._pkg_meta['versiontag']
+        if not tag:
+            tag = "None"
         self.pkginfo_ui.tag.set_markup( "%s" % (tag,) )
-        self.pkginfo_ui.slot.set_markup( "%s" % (pkg.slot,) )
-        self.pkginfo_ui.revision.set_markup( "%s" % (pkg.revision,) )
-        self.pkginfo_ui.branch.set_markup( "%s" % (pkg.release,) )
+        self.pkginfo_ui.slot.set_markup( "%s" % (self._pkg_meta['slot'],) )
+        self.pkginfo_ui.revision.set_markup( "%s" % (self._pkg_meta['revision'],) )
+        self.pkginfo_ui.branch.set_markup( "%s" % (self._pkg_meta['branch'],) )
         self.pkginfo_ui.eapi.set_markup( "%s" % (pkg.api,) )
-        self.pkginfo_ui.homepage.set_markup( "%s" % (cleanMarkupString(pkg.homepage),) )
+        self.pkginfo_ui.homepage.set_markup( "%s" % (
+            cleanMarkupString(self._pkg_meta['homepage']),) )
 
-        # license view
-        self.licenseModel.clear()
-        self.licenseView.set_model( self.licenseModel )
-        licenses = pkg.lic
-        licenses = licenses.split()
-        for x in licenses:
-            self.licenseModel.append(None, [x])
-
-        self.pkginfo_ui.download.set_markup( "%s" % (pkg.binurl,) )
-        self.pkginfo_ui.checksum.set_markup( "%s" % (pkg.digest,) )
-        self.pkginfo_ui.pkgsize.set_markup( "%s" % (pkg.sizeFmt,) )
-        self.pkginfo_ui.instsize.set_markup( "%s" % (pkg.disksizeFmt,) )
-        self.pkginfo_ui.creationdate.set_markup( "%s" % (pkg.epochFmt,) )
-        # compile flags
-        chost, cflags, cxxflags = pkg.compileflags
-        self.pkginfo_ui.cflags.set_markup( "%s" % (cflags,) )
-        self.pkginfo_ui.cxxflags.set_markup( "%s" % (cxxflags,) )
-        self.pkginfo_ui.chost.set_markup( "%s" % (chost,) )
-        # masked ?
-        masked = _("No")
-        idpackage_masked, idmasking_reason = dbconn.maskFilter(pkg.matched_atom[0])
-        if idpackage_masked == -1:
-            masked = '%s, %s' % (_("Yes"), self.Entropy.Settings()['pkg_masking_reasons'][idmasking_reason],)
-        self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
-
-        # package changelog
-        self.changelog = pkg.changelog
-        if not self.changelog:
-            self.pkginfo_ui.showChangeLogButtonAlign.hide()
-            self.pkginfo_ui.changeLogLabel.hide()
-            self.changelog = None
-
-        # sources view
-        self.sourcesModel.clear()
-        self.sourcesView.set_model( self.sourcesModel )
-        mirrors = set()
-        sources = pkg.sources
-        for x in sources:
-            if x.startswith("mirror://"):
-                mirrors.add(x.split("/")[2])
-            self.sourcesModel.append(None, [x])
-
-        # mirrors view
-        self.mirrorsReferenceModel.clear()
-        self.mirrorsReferenceView.set_model(self.mirrorsReferenceModel)
-        for mirror in mirrors:
-            mirrorinfo = dbconn.retrieveMirrorData(mirror)
-            if mirrorinfo:
-                # add parent
-                parent = self.mirrorsReferenceModel.append(None, [mirror])
-                for info in mirrorinfo:
-                    self.mirrorsReferenceModel.append(parent, [info])
-
-        # keywords view
-        self.keywordsModel.clear()
-        self.keywordsView.set_model( self.keywordsModel )
-        for x in pkg.keywords:
-            self.keywordsModel.append(None, [x])
-
-        # useflags view
-        self.useflagsModel.clear()
-        self.useflagsView.set_model( self.useflagsModel )
-        for x in pkg.useflags:
-            self.useflagsModel.append([cleanMarkupString(x)])
-
-        # dependencies view
-        self.dependenciesModel.clear()
-        self.dependenciesView.set_model( self.dependenciesModel )
-        deps = pkg.dependencies
-        conflicts = pkg.conflicts
-        for x in deps:
-            self.dependenciesModel.append(None, [cleanMarkupString(x)])
-        for x in conflicts:
-            self.dependenciesModel.append(None, [cleanMarkupString("!"+x)])
-
-        # depends view
-        self.dependsModel.clear()
-        self.dependsView.set_model( self.dependsModel )
-        depends = pkg.dependsFmt
-        for x in depends:
-            self.dependsModel.append(None, [cleanMarkupString(x)])
-
-        # needed view
-        self.neededModel.clear()
-        self.neededView.set_model( self.neededModel )
-        neededs = pkg.needed
-        for x in neededs:
-            self.neededModel.append(None, [cleanMarkupString(x)])
-
-        # content view
-        self.contentModel.clear()
-        self.contentView.set_model( self.contentModel )
-
-        # trigger
-        trigger = pkg.trigger
-        mtrigger = gtk.TextBuffer()
-        mtrigger.set_text(trigger)
-        self.pkginfo_ui.triggerTextView.set_buffer(mtrigger)
-
-        # CONFIG_PROTECT Stuff
-        protect = pkg.protect
-        protect_mask = pkg.protect_mask
-        for item in protect.split():
-            self.configProtectModel.append(None, [item, 'protect'])
-        for item in protect_mask.split():
-            self.configProtectModel.append(None, [item, 'mask'])
+        self.pkginfo_ui.download.set_markup( "%s" % (self._pkg_meta['download'],))
+        self.pkginfo_ui.checksum.set_markup( "%s" % (self._pkg_meta['digest'],))
+        size = entropy.tools.bytes_into_human(self._pkg_meta['size'])
+        self.pkginfo_ui.pkgsize.set_markup( "%s" % (size,))
+        disk_size = entropy.tools.bytes_into_human(self._pkg_meta['disksize'])
+        self.pkginfo_ui.instsize.set_markup( "%s" % (disk_size,))
+        cr_date = entropy.tools.convert_unix_time_to_human_time(
+            float(self._pkg_meta['datecreation']))
+        self.pkginfo_ui.creationdate.set_markup( "%s" % (cr_date,))
 
         # connect events
         self.ugc_update_event_handler_id = \
