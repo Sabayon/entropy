@@ -67,9 +67,9 @@ class Trigger:
                 header = bold(" !!! ")
             )
 
-        self.phase = phase
+        self._phase = phase
         # validate phase
-        if self.phase not in Trigger.VALID_PHASES:
+        if self._phase not in Trigger.VALID_PHASES:
             mytxt = "Valid phases: %s" % (Trigger.VALID_PHASES,)
             raise AttributeError(mytxt)
 
@@ -82,7 +82,7 @@ class Trigger:
         @rtype: int
         """
         if not self._prepared:
-            func = getattr(self, "_" + self.phase)
+            func = getattr(self, "_" + self._phase)
             self._triggers = func()
             self._prepared = True
         return len(self._triggers) > 0
@@ -434,7 +434,7 @@ class Trigger:
             my = self._EntropyShSandbox(self._entropy)
         else:
             my = self._EntropyPySandbox(self._entropy)
-        return my.run(self.phase, self._pkgdata, triggerfile)
+        return my.run(self._phase, self._pkgdata, triggerfile)
 
     def _trigger_env_update(self):
         if self._spm is not None:
