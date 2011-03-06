@@ -760,12 +760,11 @@ def md5sum(filepath):
     @rtype: string
     """
     m = hashlib.md5()
-    readfile = open(filepath, "rb")
-    block = readfile.read(16384)
-    while block:
-        m.update(block)
+    with open(filepath, "rb") as readfile:
         block = readfile.read(16384)
-    readfile.close()
+        while block:
+            m.update(block)
+            block = readfile.read(16384)
     return m.hexdigest()
 
 def sha512(filepath):
@@ -778,12 +777,11 @@ def sha512(filepath):
     @rtype: string
     """
     m = hashlib.sha512()
-    readfile = open(filepath, "rb")
-    block = readfile.read(16384)
-    while block:
-        m.update(block)
+    with open(filepath, "rb") as readfile:
         block = readfile.read(16384)
-    readfile.close()
+        while block:
+            m.update(block)
+            block = readfile.read(16384)
     return m.hexdigest()
 
 def sha256(filepath):
@@ -796,12 +794,11 @@ def sha256(filepath):
     @rtype: string
     """
     m = hashlib.sha256()
-    readfile = open(filepath, "rb")
-    block = readfile.read(16384)
-    while block:
-        m.update(block)
+    with open(filepath, "rb") as readfile:
         block = readfile.read(16384)
-    readfile.close()
+        while block:
+            m.update(block)
+            block = readfile.read(16384)
     return m.hexdigest()
 
 def sha1(filepath):
@@ -814,12 +811,11 @@ def sha1(filepath):
     @rtype: string
     """
     m = hashlib.sha1()
-    readfile = open(filepath, "rb")
-    block = readfile.read(16384)
-    while block:
-        m.update(block)
+    with open(filepath, "rb") as readfile:
         block = readfile.read(16384)
-    readfile.close()
+        while block:
+            m.update(block)
+            block = readfile.read(16384)
     return m.hexdigest()
 
 def md5sum_directory(directory):
@@ -841,12 +837,11 @@ def md5sum_directory(directory):
     for currentdir, subdirs, files in os.walk(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
-            readfile = open(myfile, "rb")
-            block = readfile.read(16384)
-            while block:
-                m.update(block)
+            with open(myfile, "rb") as readfile:
                 block = readfile.read(16384)
-            readfile.close()
+                while block:
+                    m.update(block)
+                    block = readfile.read(16384)
     return m.hexdigest()
 
 def md5obj_directory(directory):
@@ -868,12 +863,11 @@ def md5obj_directory(directory):
     for currentdir, subdirs, files in os.walk(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
-            readfile = open(myfile, "rb")
-            block = readfile.read(16384)
-            while block:
-                m.update(block)
+            with open(myfile, "rb") as readfile:
                 block = readfile.read(16384)
-            readfile.close()
+                while block:
+                    m.update(block)
+                    block = readfile.read(16384)
     return m
 
 def uncompress_file(file_path, destination_path, opener):
@@ -888,15 +882,14 @@ def uncompress_file(file_path, destination_path, opener):
     @param opener: file_path opener function
     @type opener: function
     """
-    f_out = open(destination_path, "wb")
-    f_in = opener(file_path, "rb")
-    data = f_in.read(16384)
-    while data:
-        f_out.write(data)
+    with open(destination_path, "wb") as f_out:
+        f_in = opener(file_path, "rb")
         data = f_in.read(16384)
-    f_out.flush()
-    f_out.close()
-    f_in.close()
+        while data:
+            f_out.write(data)
+            data = f_in.read(16384)
+        f_in.close()
+        f_out.flush()
 
 def compress_file(file_path, destination_path, opener, compress_level = None):
     """
@@ -913,19 +906,19 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
     @keyword compress_level: compression level, from 0 to 9
     @type compress_level: int
     """
-    f_in = open(file_path, "rb")
-    if compress_level is not None:
-        f_out = opener(destination_path, "wb", compresslevel = compress_level)
-    else:
-        f_out = opener(destination_path, "wb")
-    data = f_in.read(16384)
-    while data:
-        f_out.write(data)
+    with open(file_path, "rb") as f_in:
+        if compress_level is not None:
+            f_out = opener(destination_path, "wb",
+                compresslevel = compress_level)
+        else:
+            f_out = opener(destination_path, "wb")
         data = f_in.read(16384)
-    if hasattr(f_out, 'flush'):
-        f_out.flush()
-    f_out.close()
-    f_in.close()
+        while data:
+            f_out.write(data)
+            data = f_in.read(16384)
+        if hasattr(f_out, 'flush'):
+            f_out.flush()
+        f_out.close()
 
 def compress_files(dest_file, files_to_compress, compressor = "bz2"):
     """
@@ -1065,16 +1058,14 @@ def unpack_gzip(gzipfilepath):
     """
     filepath = gzipfilepath[:-3] # remove .gz
     fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
-
-    item = os.fdopen(fd, "wb")
-    filegz = gzip.GzipFile(gzipfilepath, "rb")
-    chunk = filegz.read(8192)
-    while chunk:
-        item.write(chunk)
+    with os.fdopen(fd, "wb") as item:
+        filegz = gzip.GzipFile(gzipfilepath, "rb")
         chunk = filegz.read(8192)
-    filegz.close()
-    item.flush()
-    item.close()
+        while chunk:
+            item.write(chunk)
+            chunk = filegz.read(8192)
+        filegz.close()
+        item.flush()
     os.rename(tmp_path, filepath)
     return filepath
 
@@ -1089,15 +1080,14 @@ def unpack_bzip2(bzip2filepath):
     """
     filepath = bzip2filepath[:-4] # remove .bz2
     fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(filepath))
-    item = os.fdopen(fd, "wb")
-    filebz2 = bz2.BZ2File(bzip2filepath, "rb")
-    chunk = filebz2.read(16384)
-    while chunk:
-        item.write(chunk)
+    with os.fdopen(fd, "wb") as item:
+        filebz2 = bz2.BZ2File(bzip2filepath, "rb")
         chunk = filebz2.read(16384)
-    filebz2.close()
-    item.flush()
-    item.close()
+        while chunk:
+            item.write(chunk)
+            chunk = filebz2.read(16384)
+        filebz2.close()
+        item.flush()
     os.rename(tmp_path, filepath)
     return filepath
 
@@ -1543,14 +1533,13 @@ def create_sha512_file(filepath):
     """
     sha512hash = sha512(filepath)
     hashfile = filepath+etpConst['packagessha512fileext']
-    f = open(hashfile, "w")
-    fname = os.path.basename(filepath)
-    if sys.hexversion >= 0x3000000:
-        f.write(sha512hash+"  "+fname+"\n")
-    else:
-        f.write(sha512hash+"  "+fname.encode('utf-8')+"\n")
-    f.flush()
-    f.close()
+    with open(hashfile, "w") as f:
+        fname = os.path.basename(filepath)
+        if sys.hexversion >= 0x3000000:
+            f.write(sha512hash+"  "+fname+"\n")
+        else:
+            f.write(sha512hash+"  "+fname.encode('utf-8')+"\n")
+        f.flush()
     return hashfile
 
 def create_sha256_file(filepath):
@@ -1564,14 +1553,13 @@ def create_sha256_file(filepath):
     """
     sha256hash = sha256(filepath)
     hashfile = filepath+etpConst['packagessha256fileext']
-    f = open(hashfile, "w")
-    fname = os.path.basename(filepath)
-    if sys.hexversion >= 0x3000000:
-        f.write(sha256hash+"  "+fname+"\n")
-    else:
-        f.write(sha256hash+"  "+fname.encode('utf-8')+"\n")
-    f.flush()
-    f.close()
+    with open(hashfile, "w") as f:
+        fname = os.path.basename(filepath)
+        if sys.hexversion >= 0x3000000:
+            f.write(sha256hash+"  "+fname+"\n")
+        else:
+            f.write(sha256hash+"  "+fname.encode('utf-8')+"\n")
+        f.flush()
     return hashfile
 
 def create_sha1_file(filepath):
@@ -1585,14 +1573,13 @@ def create_sha1_file(filepath):
     """
     sha1hash = sha1(filepath)
     hashfile = filepath+etpConst['packagessha1fileext']
-    f = open(hashfile, "w")
-    fname = os.path.basename(filepath)
-    if sys.hexversion >= 0x3000000:
-        f.write(sha1hash+"  "+fname+"\n")
-    else:
-        f.write(sha1hash+"  "+fname.encode('utf-8')+"\n")
-    f.flush()
-    f.close()
+    with open(hashfile, "w") as f:
+        fname = os.path.basename(filepath)
+        if sys.hexversion >= 0x3000000:
+            f.write(sha1hash+"  "+fname+"\n")
+        else:
+            f.write(sha1hash+"  "+fname.encode('utf-8')+"\n")
+        f.flush()
     return hashfile
 
 def compare_md5(filepath, checksum):
@@ -1721,9 +1708,8 @@ def generic_file_content_parser(filepath, comment_tag = "#",
     """
     data = []
     if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
-        gen_f = open(filepath, "r")
-        content = gen_f.readlines()
-        gen_f.close()
+        with open(filepath, "r") as gen_f:
+            content = gen_f.readlines()
         # filter comments and white lines
         content = [x.strip().rsplit(comment_tag, 1)[0].strip() for x \
             in content if x.strip()]
@@ -2158,38 +2144,36 @@ def write_parameter_to_file(config_file, name, data):
 
     content = []
     if os.path.isfile(config_file):
-        f = open(config_file, "r")
-        content = [x.strip() for x in f.readlines()]
-        f.close()
+        with open(config_file, "r") as f:
+            content = [x.strip() for x in f.readlines()]
 
     # write new
     config_file_tmp = config_file+".tmp"
-    f = open(config_file_tmp, "w")
-    param_found = False
-    if data:
-        proposed_line = "%s = %s" % (name, data,)
-    else:
-        proposed_line = "# %s =" % (name,)
+    with open(config_file_tmp, "w") as f:
+        param_found = False
+        if data:
+            proposed_line = "%s = %s" % (name, data,)
+        else:
+            proposed_line = "# %s =" % (name,)
 
-        new_content = []
-        # remove older setting
+            new_content = []
+            # remove older setting
+            for line in content:
+                key, value = extract_setting(line)
+                if key == name:
+                    continue
+                new_content.append(line)
+            content = new_content
+
         for line in content:
             key, value = extract_setting(line)
             if key == name:
-                continue
-            new_content.append(line)
-        content = new_content
-
-    for line in content:
-        key, value = extract_setting(line)
-        if key == name:
-            param_found = True
-            line = proposed_line
-        f.write(line+"\n")
-    if (not param_found) and data:
-        f.write(proposed_line+"\n")
-    f.flush()
-    f.close()
+                param_found = True
+                line = proposed_line
+            f.write(line+"\n")
+        if (not param_found) and data:
+            f.write(proposed_line+"\n")
+        f.flush()
 
     try:
         os.rename(config_file_tmp, config_file)
@@ -2404,10 +2388,9 @@ def read_elf_class(elf_file):
     @rtype: int
     """
     import struct
-    f = open(elf_file, "rb")
-    f.seek(4)
-    elf_class = f.read(1)
-    f.close()
+    with open(elf_file, "rb") as f:
+        f.seek(4)
+        elf_class = f.read(1)
     elf_class = struct.unpack('B', elf_class)[0]
     return elf_class
 
@@ -2421,9 +2404,8 @@ def is_elf_file(elf_file):
     @rtype: bool
     """
     import struct
-    f = open(elf_file, "rb")
-    data = f.read(4)
-    f.close()
+    with open(elf_file, "rb") as f:
+        data = f.read(4)
     try:
         data = struct.unpack('BBBB', data)
     except struct.error:
@@ -2759,10 +2741,9 @@ def collect_linker_paths():
     if not (os.path.isfile(ld_conf) and os.access(ld_conf, os.R_OK)):
         return builtin_paths
 
-    ld_f = open(ld_conf, "r")
-    paths = [os.path.normpath(x.strip()) for x in ld_f.readlines() \
-        if x.startswith("/")]
-    ld_f.close()
+    with open(ld_conf, "r") as ld_f:
+        paths = [os.path.normpath(x.strip()) for x in ld_f.readlines() \
+            if x.startswith("/")]
 
     for b_path in builtin_paths:
         if b_path not in paths:
