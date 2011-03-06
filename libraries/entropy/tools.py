@@ -30,6 +30,7 @@ import random
 import traceback
 import gzip
 import bz2
+import mmap
 from entropy.output import print_generic
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
@@ -1353,16 +1354,33 @@ def aggregate_entropy_metadata(entropy_package_file, entropy_metadata_file):
     @param entropy_metadata_file: path to Entropy metadata file
     @type entropy_metadata_file: string
     """
-    f = open(entropy_package_file, "ab")
-    f.write(const_convert_to_rawstring(etpConst['databasestarttag']))
-    g = open(entropy_metadata_file, "rb")
-    chunk = g.read(16384)
-    while chunk:
-        f.write(chunk)
-        chunk = g.read(16384)
-    g.close()
-    f.flush()
-    f.close()
+    mmap_size_th = 4096000 # 4mb threshold
+    with open(entropy_package_file, "ab") as f:
+        f.write(const_convert_to_rawstring(etpConst['databasestarttag']))
+        with open(entropy_metadata_file, "rb") as g:
+            f_size = os.lstat(entropy_metadata_file).st_size
+            mmap_f = None
+            try:
+                if f_size > mmap_size_th:
+                    try:
+                        mmap_f = mmap.mmap(g.fileno(), f_size,
+                            flags = mmap.MAP_PRIVATE,
+                            prot = mmap.PROT_READ)
+                    except MemoryError:
+                        mmap_f = None
+
+                while True:
+                    if mmap_f is not None:
+                        chunk = mmap_f.read(1024000)
+                    else:
+                        chunk = g.read(16384)
+                    if not chunk:
+                        break
+                    f.write(chunk)
+                f.flush()
+            finally:
+                if mmap_f is not None:
+                    mmap_f.close()
 
 def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
     """
@@ -1376,17 +1394,42 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
     @return: True, if extraction went successful
     @rtype: bool
     """
-    with open(entropy_package_file, "rb") as old:
-        start_position = _locate_edb(old)
-        if not start_position:
-            return False
+    mmap_size_th = 4096000 # 4mb threshold
+    with open(entropy_package_file, "r+b") as old:
+        old_mmap = None
+        try:
+            f_size = os.lstat(entropy_package_file).st_size
+            # avoid security flaw caused by file size growing race condition
+            # we conside the file size static
+            if f_size < mmap_size_th:
+                # use mmap
+                try:
+                    old_mmap = mmap.mmap(old.fileno(), f_size,
+                        flags = mmap.MAP_PRIVATE,
+                        prot = mmap.PROT_READ)
+                except MemoryError:
+                    old_mmap = None
+                if old_mmap is not None:
+                    start_position = _locate_edb(old_mmap)
 
-        with open(entropy_metadata_file, "wb") as db:
-            data = old.read(16384)
-            while data:
-                db.write(data)
-                data = old.read(16384)
-            db.flush()
+            if old_mmap is None:
+                start_position = _locate_edb(old)
+            if not start_position:
+                return False
+
+            with open(entropy_metadata_file, "wb") as db:
+                while True:
+                    if old_mmap is None:
+                        data = old.read(16384)
+                    else:
+                        data = old_mmap.read(1024000)
+                    if not data:
+                        break
+                    db.write(data)
+                db.flush()
+        finally:
+            if old_mmap is not None:
+                old_mmap.close()
 
     return True
 
