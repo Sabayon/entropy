@@ -1421,6 +1421,14 @@ class CalculatorsMixin:
         depends -= remove_depends
         return depends
 
+    def _is_installed_package_id_in_system_mask(self, package_id):
+        cl_id = self.sys_settings_client_plugin_id
+        cl_set = self._settings[cl_id]
+        mask_installed = cl_set['system_mask']['repos_installed']
+        if package_id in mask_installed:
+            return True
+        return False
+
     def _generate_reverse_dependency_tree(self, matched_atoms, deep = False,
         recursive = True, empty = False, system_packages = True,
         elf_needed_scanning = True):
@@ -1500,7 +1508,7 @@ class CalculatorsMixin:
                                 % ((mydep, m_repo_id),))
                         continue
                     if m_repo_db is self._installed_repository:
-                        if self._is_installed_idpackage_in_system_mask(
+                        if self._is_installed_package_id_in_system_mask(
                             mydep):
                             const_debug_write(__name__,
                                 "_generate_reverse_dependency_tree [md:%s] "
@@ -2275,7 +2283,7 @@ class CalculatorsMixin:
 
         # cannot check this for pkgs not coming from installed pkgs repo
         if dbconn is self._installed_repository:
-            if self._is_installed_idpackage_in_system_mask(package_id):
+            if self._is_installed_package_id_in_system_mask(package_id):
                 idpackages = mask_installed_keys.get(pkgkey)
                 if not idpackages:
                     return False

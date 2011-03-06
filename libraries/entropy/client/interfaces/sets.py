@@ -15,7 +15,8 @@
 import os
 
 from entropy.i18n import _
-from entropy.const import etpConst, const_setup_perms, const_convert_to_unicode
+from entropy.const import etpConst, const_setup_perms, \
+    const_convert_to_unicode, const_isunicode
 from entropy.exceptions import InvalidPackageSet
 from entropy.core.settings.base import SystemSettings
 
@@ -24,15 +25,34 @@ import entropy.dep
 
 class Sets:
 
+    """
+    Entropy Client Package Sets interface.
+    Package sets are (..) sets of package strings that can be referenced
+    using a mnemonic name. For exmaple: the @entropy set is composed by
+    all the packages that are part of the Entropy project (equo, reagent, etc).
+    """
+
     SET_PREFIX = etpConst['packagesetprefix']
 
     def __init__(self, entropy_client):
         self._entropy = entropy_client
         self._settings = SystemSettings()
 
-
     def expand(self, package_set, raise_exceptions = True):
+        """
+        Expand given package set into a set of package matches, recursively.
 
+        @param package_set: the package set name (including its "@" prefix)
+        @type package_set: string
+        @keyword raise_exceptions: if True, the function is allowed to turn
+            possible warnings (max recursion reached, invalid package set) into
+            errors (raising entropy.exceptions.InvalidPackageSet)
+        @type raise_exceptions: bool
+
+        @raise entropy.exceptions.InvalidPackageSet: if raise_exceptions is
+            True and a maximum recursion level has been reached or a package set
+            is not found.
+        """
         max_recursion_level = 50
         recursion_level = 0
         set_prefix = Sets.SET_PREFIX
@@ -43,8 +63,8 @@ class Sets:
                 raise InvalidPackageSet(
                     'corrupted, too many recursions: %s' % (myset,))
 
-            set_data, set_rc = self.match(myset[len(set_prefix):])
-            if not set_rc:
+            set_data = self.match(myset)
+            if not set_data:
                 raise InvalidPackageSet('not found: %s' % (myset,))
             set_from, package_set, mydata = set_data
 
@@ -72,17 +92,54 @@ class Sets:
         return mylist
 
     def available(self, match_repo = None):
-        return self.match('', match_repo = match_repo, search = True)[0]
+        """
+        Return a list of available package sets data (list of tuples composed by
+           (repository id [__user__ for use defined set], set name, set content)
+
+        @keyword match_repo: match given repository identifiers list (if passed)
+        @type match_repo: tuple
+        @return: list of available package sets data
+        @rtype: list
+        """
+        return self.match('', match_repo = match_repo, search = True)
 
     def search(self, package_set, match_repo = None):
-        # search support
+        """
+        Search a package set among available repositories.
+        Return a list of package sets data (list of tuples composed by
+           (repository id [__user__ for use defined set], set name, set content)
+
+        @param package_set: package set search term
+        @type package_set: string
+        @keyword match_repo: match given repository identifiers list (if passed)
+        @type match_repo: tuple
+        @return: list of package sets data
+        @rtype: list
+        """
         if package_set == '*':
             package_set = ''
-        return self.match(package_set, match_repo = match_repo, search = True)[0]
+        return self.match(package_set, match_repo = match_repo, search = True)
 
     def match(self, package_set, multi_match = False, match_repo = None,
         search = False):
+        """
+        Match a package set, returning its data.
+        If multi_match is False (default), data returned will be in tuple form,
+        composed by 3 elements: (repository [__user__ if user defined],
+        set name, list (frozenset) of package names in set).
+        If multi_match is True, a list of tuples (like the one above) will be
+        returned.
 
+        @keyword multi_match: match across all the repositories and return
+            all the results (not just the best one)
+        @type multi_match: bool
+        @keyword match_repo: match given repository identifiers list (if passed)
+        @type match_repo: tuple
+        @keyword search: use search instead of matching (default is False)
+        @type search: bool
+        """
+        # strip out "@" from "@packageset", so that both ways are supported
+        package_set = package_set.lstrip(Sets.SET_PREFIX)
         # support match in repository from shell
         # set@repo1,repo2,repo3
         package_set, repos = entropy.dep.dep_get_match_in_repos(
@@ -90,7 +147,7 @@ class Sets:
         if (match_repo is None) and (repos is not None):
             match_repo = repos
 
-        valid_repos = self._entropy.repositories()
+        valid_repos = self._entropy._filter_available_repositories()
 
         if match_repo and (type(match_repo) in (list, tuple, set)):
             valid_repos = list(match_repo)
@@ -138,15 +195,27 @@ class Sets:
             break
 
         if not set_data:
-            return (), False
+            if multi_match:
+                return []
+            return tuple()
 
         if multi_match:
-            return set_data, True
+            return set_data
 
-        return set_data.pop(0), True
+        return set_data.pop(0)
 
     def add(self, set_name, set_atoms):
+        """
+        Add a user-defined package set to Entropy Client (changes are permanent)
 
+        @param set_name: package set name
+        @type set_name: string
+        @param set_atoms: list of package names in given set
+        @type set_atoms: list (set)
+        @raise entropy.exceptions.InvalidPackageSet: if package set data
+            passed is invalid (non ASCII chars, invalid set_name).
+            The encapsulated error string will contain a mnemonic reason.
+        """
         def _ensure_package_sets_dir():
             sets_dir = etpConst['confsetsdir']
             if not os.path.isdir(sets_dir):
@@ -156,18 +225,16 @@ class Sets:
                 const_setup_perms(sets_dir, etpConst['entropygid'],
                     recursion = False)
 
-        try:
-            set_name = str(set_name)
-        except (UnicodeEncodeError, UnicodeDecodeError,):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (
-                set_name, _("must be an ASCII string"),))
+        if not const_isunicode(set_name):
+            raise InvalidPackageSet("%s %s" % (
+                set_name, "must be unicode",))
 
         if set_name.startswith(etpConst['packagesetprefix']):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (
-                set_name, _("cannot start with"), etpConst['packagesetprefix'],))
-        set_match, rc = self.match(set_name)
-        if rc:
-            return -1, _("Name already taken")
+            raise InvalidPackageSet("%s %s '%s'" % (
+                set_name, "cannot start with", etpConst['packagesetprefix'],))
+        set_match = self.match(set_name)
+        if set_match:
+            raise InvalidPackageSet(_("Name already taken"))
 
         _ensure_package_sets_dir()
         set_file = os.path.join(etpConst['confsetsdir'], set_name)
@@ -175,42 +242,47 @@ class Sets:
             try:
                 os.remove(set_file)
             except OSError:
-                return -2, _("Cannot remove the old element")
+                raise InvalidPackageSet(_("Cannot remove the old element"))
         if not os.access(os.path.dirname(set_file), os.W_OK):
-            return -3, _("Cannot create the element")
+            raise InvalidPackageSet(_("Cannot create the element"))
 
-        f = open(set_file, "w")
-        for x in set_atoms:
-            f.write("%s\n" % (x,))
-        f.flush()
-        f.close()
+        with open(set_file, "w") as f:
+            for x in set_atoms:
+                f.write("%s\n" % (x,))
+            f.flush()
         self._settings['system_package_sets'][set_name] = set(set_atoms)
-        return 0, _("All fine")
 
     def remove(self, set_name):
+        """
+        Remove a user-defined package set from Entropy Client
+        (changes are permanent)
 
-        try:
-            set_name = str(set_name)
-        except (UnicodeEncodeError, UnicodeDecodeError,):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (
-                set_name, _("must be an ASCII string"),))
+        @param set_name: package set name
+        @type set_name: string
+        @raise entropy.exceptions.InvalidPackageSet: if package set data
+            passed is invalid (non ASCII chars, invalid set_name).
+            The encapsulated error string will contain a mnemonic reason.
+        """
+        if not const_isunicode(set_name):
+            raise InvalidPackageSet("%s %s" % (
+                set_name, "must be unicode",))
 
         if set_name.startswith(etpConst['packagesetprefix']):
             raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (
                 set_name, _("cannot start with"),
                     etpConst['packagesetprefix'],))
 
-        set_match, rc = self.match(set_name)
-        if not rc:
-            return -1, _("Already removed")
+        set_match = self.match(set_name)
+        if not set_match:
+            raise InvalidPackageSet(_("Already removed"))
         set_id, set_x, set_y = set_match
 
         if set_id != etpConst['userpackagesetsid']:
-            return -2, _("Not defined by user")
+            raise InvalidPackageSet(_("Not defined by user"))
         set_file = os.path.join(etpConst['confsetsdir'], set_name)
         if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
             os.remove(set_file)
             if set_name in self._settings['system_package_sets']:
                 del self._settings['system_package_sets'][set_name]
-            return 0, _("All fine")
-        return -3, _("Set not found or unable to remove")
+            return
+        raise InvalidPackageSet(_("Set not found or unable to remove"))

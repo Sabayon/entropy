@@ -1607,7 +1607,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         1) move package key to the new name: category + name + atom
         2) update all the dependencies in dependenciesreference to the new key
         3) run fixpackages which will update /var/db/pkg files
-        4) automatically run quickpkg() to build the new binary and
+        4) automatically run generate_package() to build the new binary and
            tainted binaries owning tainted iddependency and taint database
 
         @param move_command: raw treeupdates move action, for example:
@@ -1697,7 +1697,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         2) update all the dependencies in dependenciesreference owning
            same matched atom + slot
         3) run fixpackages which will update /var/db/pkg files
-        4) automatically run quickpkg() to build the new
+        4) automatically run generate_package() to build the new
            binary and tainted binaries owning tainted iddependency
            and taint database
 

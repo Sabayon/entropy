@@ -84,8 +84,8 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_match, rc = ENTROPY.Sets().match(matched_atom[1:])
-            if not rc:
+            set_match = ENTROPY.Sets().match(matched_atom[1:])
+            if not set_match:
                 # package set broken
                 self.broken = True
                 self.set_name = matched_atom

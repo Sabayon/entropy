@@ -13257,9 +13257,9 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
   <widget class="GtkMenu" id="packageSet">
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetInstall">
-        <property name="label" translatable="yes">Install Set</property>
+        <property name="label" translatable="yes">Install Packages in Set</property>
         <property name="visible">True</property>
-        <property name="tooltip" translatable="yes">Install the selected Package Set</property>
+        <property name="tooltip" translatable="yes">Install packages in Set</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
         <signal name="activate" handler="on_pkgsetInstall_activate"/>
@@ -13267,7 +13267,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetUndoinstall">
-        <property name="label" translatable="yes">Undo Install Set</property>
+        <property name="label" translatable="yes">Undo Install Packages in Set</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Install Set action</property>
         <property name="use_underline">True</property>
@@ -13277,9 +13277,9 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetRemove">
-        <property name="label" translatable="yes">Remove Set</property>
+        <property name="label" translatable="yes">Remove Packages in Set</property>
         <property name="visible">True</property>
-        <property name="tooltip" translatable="yes">Remove the selected Package Set</property>
+        <property name="tooltip" translatable="yes">Remove packages in Set</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
         <signal name="activate" handler="on_pkgsetRemove_activate"/>
@@ -13287,7 +13287,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetUndoremove">
-        <property name="label" translatable="yes">Undo Remove Set</property>
+        <property name="label" translatable="yes">Undo Remove Packages in Set</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Remove Set action</property>
         <property name="use_underline">True</property>

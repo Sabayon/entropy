@@ -212,12 +212,18 @@ class CacheMixin:
             if isinstance(disk_cache, tuple):
                 return disk_cache
 
-    def _filter_available_repositories(self):
+    def _filter_available_repositories(self, _enabled_repos = None):
         """
         Filter out package repositories from the list of available,
         enabled ones
+
+        @keyword _enabled_repos: an alternative list of enabled repository
+            identifiers
+        @type _enabled_repos: list
         """
-        enabled_repos = [x for x in self._enabled_repos if not \
+        if _enabled_repos is None:
+            _enabled_repos = self._enabled_repos
+        enabled_repos = [x for x in _enabled_repos if not \
             x.endswith(etpConst['packagesext_webinstall'])]
         enabled_repos = [x for x in enabled_repos if not \
             x.endswith(etpConst['packagesext'])]

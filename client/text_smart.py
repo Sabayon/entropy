@@ -148,7 +148,7 @@ def quickpkg_handler(entropy_client, mypackages, savedir = None):
         if not etpUi['quiet']:
             print_info(brown(" * ")+red("%s: " % (_("Compressing"),))+darkgreen(pkgInfo[pkg]['atom']))
         pkgdata = entropy_client.installed_repository().getPackageData(pkgInfo[pkg]['idpackage'])
-        resultfile = entropy_client.quickpkg(pkgdata, dirpath = savedir)
+        resultfile = entropy_client.generate_package(pkgdata, dirpath = savedir)
         if resultfile == None:
             if not etpUi['quiet']:
                 print_error(darkred(" * ") + red("%s: " % (_("Error while creating package for"),)) + \

@@ -37,16 +37,15 @@ class Trigger:
         self.triggers = []
         self._trigger_data = {}
         self.package_action = package_action
-
         self._spm = None
         try:
             self._spm = self._entropy.Spm()
-        except Exception as e:
+        except Exception as err:
             entropy.tools.print_traceback()
             mytxt = darkred("%s, %s: %s, %s !") % (
                 _("Source Package Manager interface can't be loaded"),
                 _("Error"),
-                e,
+                repr(err),
                 _("please fix"),
             )
             self._entropy.output(
@@ -79,7 +78,6 @@ class Trigger:
     def postinstall(self):
 
         functions = []
-
         if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
@@ -98,13 +96,11 @@ class Trigger:
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postinstall)
-
         return functions
 
     def preinstall(self):
 
         functions = []
-
         if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
@@ -118,13 +114,11 @@ class Trigger:
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_preinstall)
-
         return functions
 
     def postremove(self):
 
         functions = []
-
         if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
@@ -148,14 +142,11 @@ class Trigger:
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postremove)
-
         return functions
-
 
     def preremove(self):
 
         functions = []
-
         if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()

@@ -4778,6 +4778,12 @@ class Server(Client):
                 header = brown("   # ")
             )
 
+    def _backup_constant(self, constant_name):
+        if constant_name not in etpConst:
+            raise KeyError("%s not available" % (constant_name,))
+        etpConst['backed_up'].update(
+            {constant_name: copy.copy(etpConst[constant_name])})
+
     def _backup_entropy_settings(self):
         for setting in self._settings_to_backup:
             if isinstance(setting, const_get_stringtype()):

@@ -28,16 +28,31 @@ import entropy.tools
 
 class Repository:
 
-    def __init__(self, entropy_client_instance, repo_identifiers = None,
+    """
+    Entropy Client Repositories management interface.
+    """
+
+    def __init__(self, entropy_client, repo_identifiers = None,
         force = False, entropy_updates_alert = True, fetch_security = True,
         gpg = True):
+        """
+        Entropy Client Repositories management interface constructor.
+
+        @param entropy_client: a valid entropy.client.interfaces.client.Client
+            instance
+        @type entropy_client: entropy.client.interfaces.client.Client
+        @keyword repo_identifiers: list of repository identifiers you want to
+            take into consideration
+        @type repo_identifiers: list
+        @
+        """
 
         if repo_identifiers is None:
             repo_identifiers = []
-        self._entropy = entropy_client_instance
+        self._entropy = entropy_client
         self._settings = SystemSettings()
         self._pkg_size_warning_th = 512*1024000 # 500mb
-        self.repo_ids = repo_identifiers
+        repo_ids = repo_identifiers
         self.force = force
         self.sync_errors = False
         self.updated = False
@@ -53,9 +68,12 @@ class Repository:
         if env_gpg is not None:
             self._gpg_feature = False
 
-        avail_data = self._settings['repositories']['available']
-        if not self.repo_ids:
-            self.repo_ids.extend(list(avail_data.keys()))
+        if not repo_ids:
+            avail_repos = self._settings['repositories']['available'].keys()
+            repo_ids.extend(list(avail_repos))
+        # filter out package repositories
+        self.repo_ids = self._entropy._filter_available_repositories(
+                _enabled_repos = repo_ids)
 
     def _run_post_update_repository_hook(self, repository_id):
 
@@ -240,10 +258,13 @@ class Repository:
             )
 
     def sync(self):
+        """
+        Start repository synchronization.
 
-        # close them
+        @return: sync status (0 means all good; != 0 means error).
+        @rtype: int
+        """
         self._entropy.close_repositories()
-
         # let's dance!
         mytxt = darkgreen("%s ...") % (_("Repositories synchronization"),)
         self._entropy.output(
@@ -278,9 +299,8 @@ class Repository:
         finally:
             self._entropy.unlock_resources()
 
-        if (self.not_available >= len(self.repo_ids)):
+        if self.not_available >= len(self.repo_ids):
             return 2
-        elif (self.not_available > 0):
+        elif self.not_available > 0:
             return 1
-
         return 0

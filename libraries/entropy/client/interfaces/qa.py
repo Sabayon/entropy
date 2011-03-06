@@ -14,7 +14,6 @@ from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
 from entropy.exceptions import PermissionDenied
-from entropy.i18n import _
 
 class UGCErrorReportInterface(ErrorReportInterface):
 
@@ -78,5 +77,4 @@ class UGCErrorReportInterface(ErrorReportInterface):
                 return True
             return False
         else:
-            mytxt = _("Not prepared yet")
-            raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
+            raise PermissionDenied("Not prepared yet")

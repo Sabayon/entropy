@@ -26,7 +26,8 @@ try:
 except ImportError:
     from commands import getoutput
 
-from entropy.exceptions import QueueError, EntropyPackageException
+from entropy.exceptions import QueueError, EntropyPackageException, \
+    InvalidPackageSet
 import entropy.tools
 from entropy.const import etpConst, initconfig_entropy_constants, \
     const_isunicode, const_convert_to_unicode
@@ -873,8 +874,8 @@ class SulfurApplicationEventsMixin:
             # does it exist?
             if not const_isunicode(s):
                 s = s.decode('utf-8')
-            set_match, rc = sets.match(s)
-            if rc:
+            set_match = sets.match(s)
+            if set_match:
                 return False
 
             # is the name valid after all?
@@ -905,8 +906,8 @@ class SulfurApplicationEventsMixin:
             if obj is None:
                 return # sorry
             set_name = obj.onlyname
-            set_match, rc = sets.match(set_name)
-            if not rc: # set does not exist
+            set_match = sets.match(set_name)
+            if not set_match: # set does not exist
                 return
             repoid, set_name, set_pkgs_list = set_match
             input_params = [
@@ -933,11 +934,14 @@ class SulfurApplicationEventsMixin:
                 okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
                 return
 
-        rc, msg = sets.add(const_convert_to_unicode(data.get("name")),
-            data.get("atoms"))
-        if rc != 0:
-            okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
-            return
+        with self._privileges:
+            try:
+                sets.add(
+                    const_convert_to_unicode(data.get("name"), enctype="utf-8"),
+                        data.get("atoms"))
+            except InvalidPackageSet as err:
+                okDialog(self.ui.main, "%s: %s" % (_("Error"), err.value,))
+                return
 
         self.etpbase.clear_single_group("pkgsets")
         self.show_packages()
@@ -973,10 +977,12 @@ class SulfurApplicationEventsMixin:
             return
         x_id, set_name = data.get("pkgset")
 
-        rc, msg = sets.remove(set_name)
-        if rc != 0:
-            okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
-            return
+        with self._privileges:
+            try:
+                sets.remove(const_convert_to_unicode(set_name, enctype="utf-8"))
+            except InvalidPackageSet as err:
+                okDialog(self.ui.main, "%s: %s" % (_("Error"), err.value,))
+                return
 
         self.etpbase.clear_single_group("pkgsets")
         self.show_packages()

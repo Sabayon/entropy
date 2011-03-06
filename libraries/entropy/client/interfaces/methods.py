@@ -19,6 +19,7 @@ import shutil
 import time
 import subprocess
 import tempfile
+import warnings
 from datetime import datetime
 
 from entropy.i18n import _
@@ -29,7 +30,8 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
     const_convert_to_rawstring
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     RepositoryPluginError, SecurityError, EntropyPackageException
-from entropy.db import EntropyRepository
+from entropy.db.skel import EntropyRepositoryBase
+from entropy.db.exceptions import Error as EntropyRepositoryError
 from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin, \
     InstalledPackagesRepository, AvailablePackagesRepository, GenericRepository
@@ -445,7 +447,7 @@ class RepositoryMixin:
 
         repo_mem_key = self.__get_repository_cache_key(repository_id)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
-        if isinstance(mem_inst, EntropyRepository):
+        if isinstance(mem_inst, EntropyRepositoryBase):
             mem_inst.close()
 
         # reset db cache
@@ -1513,22 +1515,30 @@ class MiscMixin:
     RESOURCES_LOCK_F_REF = None
     RESOURCES_LOCK_F_COUNT = 0
 
-    def _reload_constants(self):
-        initconfig_entropy_constants(etpSys['rootdir'])
-        self._settings.clear()
-
     def setup_file_permissions(self, file_path):
         """ @deprecated """
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
     def lock_resources(self):
+        """
+        Try to lock Entropy Resources (WRITE EXCLUSIVE lock file).
+        Once this lock is acquired, it is possible to modify permanent
+        data structures like repository data and metadata.
+        Please make sure to always acquire this lock if you intend to
+        make changes to installed packages or available repositories.
+
+        @return: True, if lock has been acquired. False otherwise.
+        @rtype: bool
+        """
         acquired = self._create_pid_file_lock()
         if acquired:
             MiscMixin.RESOURCES_LOCK_F_COUNT += 1
         return acquired
 
     def unlock_resources(self):
-
+        """
+        Release previously locked Entropy Resources, see lock_resources().
+        """
         # decrement lock counter
         if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
             MiscMixin.RESOURCES_LOCK_F_COUNT -= 1
@@ -1613,14 +1623,33 @@ class MiscMixin:
         return True
 
     def another_entropy_running(self):
-        # check if another instance is running
+        """
+        Check if another Entropy instance is running.
+
+        @return: True if another Entropy instance is running, False otherwise.
+        @rtype: bool
+        """
         acquired, locked = const_setup_entropy_pid(just_read = True)
         return locked
 
     def wait_resources(self, sleep_seconds = 1.0, max_lock_count = 300):
+        """
+        Wait until resources are unlocked. Please note that this method doesn't
+        try to acquire the resources lock but just checks if the lock gets
+        released. It is a user-centric function not meant for strict
+        race condition handling.
+        If you're familiar with locks, this works like a "spin lock" where
+        checks are interleaved by sleep_seconds seconds with a maximum number
+        of checks (max_lock_count).
 
+        @keyword sleep_seconds: time between checks
+        type sleep_seconds: float
+        @keyword max_lock_count: maximum number of times the lock is checked
+        @type max_lock_count: int
+        @return: True, if lock hasn't been released, False otherwise.
+        @rtype: bool
+        """
         lock_count = 0
-
         # check lock file
         while True:
             locked = self.resources_locked()
@@ -1644,10 +1673,8 @@ class MiscMixin:
                     self._cacher.sync()
                 break
             if lock_count >= max_lock_count:
-                mycalc = max_lock_count*sleep_seconds/60
                 self.output(
-                    blue(_("Resources still locked after %s minutes, giving up!")) % (
-                        mycalc,),
+                    blue(_("Resources still locked, giving up!")),
                     importance = 1,
                     level = "warning",
                     header = darkred(" @@ ")
@@ -1655,41 +1682,35 @@ class MiscMixin:
                 return True # gave up
             lock_count += 1
             self.output(
-                blue(_("Resources locked, sleeping %s seconds, check #%s/%s")) % (
-                        sleep_seconds,
-                        lock_count,
-                        max_lock_count,
-                ),
+                blue(_("Resources locked, throttling...")),
                 importance = 1,
                 level = "warning",
                 header = darkred(" @@ "),
-                back = True
+                back = True,
+                count = (lock_count, max_lock_count)
             )
             time.sleep(sleep_seconds)
         return False # yay!
 
-    def _backup_constant(self, constant_name):
-        if constant_name in etpConst:
-            myinst = etpConst[constant_name]
-            if type(etpConst[constant_name]) in (list, tuple):
-                myinst = etpConst[constant_name][:]
-            elif type(etpConst[constant_name]) in (dict, set):
-                myinst = etpConst[constant_name].copy()
-            else:
-                myinst = etpConst[constant_name]
-            etpConst['backed_up'].update({constant_name: myinst})
-        else:
-            t = _("Nothing to backup in etpConst with %s key") % (constant_name,)
-            raise AttributeError(t)
+    def switch_chroot(self, chroot):
+        """
+        Switch Entropy Client to work on given chroot.
+        Please consider this method EXPERIMENTAL. No verification will
+        be made against given "chroot" path.
+        By default, chroot equals to "". So, to switch back to default chroot,
+        please pass chroot="".
 
-    def switch_chroot(self, chroot = ""):
-
+        @param chroot: path to new valid chroot
+        @type chroot: string
+        """
         self.clear_cache()
         self.close_repositories()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
         etpSys['rootdir'] = chroot
-        self._reload_constants()
+        # reload constants
+        initconfig_entropy_constants(etpSys['rootdir'])
+        self._settings.clear()
         self._validate_repositories()
         self.reopen_installed_repository()
         # keep them closed, since SystemSettings.clear() is called
@@ -1698,45 +1719,53 @@ class MiscMixin:
         if chroot:
             try:
                 self._installed_repository.resetTreeupdatesDigests()
-            except:
+            except EntropyRepositoryError:
                 pass
 
-    def _is_installed_idpackage_in_system_mask(self, idpackage):
-        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        cl_set = self._settings[client_plugin_id]
-        mask_installed = cl_set['system_mask']['repos_installed']
-        if idpackage in mask_installed:
-            return True
-        return False
-
-    def is_entropy_package_free(self, pkg_id, repo_id):
+    def is_entropy_package_free(self, package_id, repository_id):
         """
         Return whether given Entropy package match tuple points to a free
         (as in freedom) package.
+
+        @param package_id: package identifier
+        @type package_id: int
+        @param repository_id: repository identifier
+        @type repository_id: string
+        @return: True, if given entropy package is free (as in freedom)
+        @rtype: bool
         """
         cl_id = self.sys_settings_client_plugin_id
         repo_sys_data = self._settings[cl_id]['repositories']
 
-        dbconn = self.open_repository(repo_id)
+        dbconn = self.open_repository(repository_id)
 
-        wl = repo_sys_data['license_whitelist'].get(repo_id)
+        wl = repo_sys_data['license_whitelist'].get(repository_id)
         if not wl: # no whitelist available
             return True
 
-        keys = dbconn.retrieveLicenseDataKeys(pkg_id)
+        keys = dbconn.retrieveLicenseDataKeys(package_id)
         keys = [x for x in keys if x not in wl]
         if keys:
             return False
         return True
 
-    def get_licenses_to_accept(self, install_queue):
+    def get_licenses_to_accept(self, package_matches):
+        """
+        Return, for given package matches, what licenses have to be accepted.
 
+        @param package_matches: list of entropy package matches
+            [(package_id, repository_id), ...]
+        @type package_matches: list
+        @return: dictionary composed by license id as key and list of package
+            matches as value.
+        @rtype: dict
+        """
         cl_id = self.sys_settings_client_plugin_id
         repo_sys_data = self._settings[cl_id]['repositories']
         lic_accepted = self._settings['license_accept']
 
         licenses = {}
-        for pkg_id, repo_id in install_queue:
+        for pkg_id, repo_id in package_matches:
             dbconn = self.open_repository(repo_id)
             wl = repo_sys_data['license_whitelist'].get(repo_id)
             if not wl:
@@ -1882,7 +1911,22 @@ class MiscMixin:
 
     def get_meant_packages(self, search_term, from_installed = False,
         valid_repos = None):
+        """
+        Return a list of package matches that are phonetically similar to
+        search_term string.
 
+        @param search_string: the search string
+        @type search_string: string
+        @keyword from_installed: if packages should be searched inside the
+            installed packages repository only (instead of available
+            package repositories, the default)
+        @type from_installed: bool
+        @keyword valid_repos: list of repository identifiers that should
+            be used instead of default ones.
+        @type valid_repos: list
+        @return: list of package matches
+        @rtype: list
+        """
         if valid_repos is None:
             valid_repos = []
 
@@ -1897,12 +1941,12 @@ class MiscMixin:
                     valid_repos.append(self._installed_repository)
 
         elif not valid_repos:
-            valid_repos.extend(self._enabled_repos[:])
+            valid_repos.extend(self._filter_available_repositories())
 
         for repo in valid_repos:
             if const_isstring(repo):
                 dbconn = self.open_repository(repo)
-            elif isinstance(repo, EntropyRepository):
+            elif isinstance(repo, EntropyRepositoryBase):
                 dbconn = repo
             else:
                 continue
@@ -1957,20 +2001,54 @@ class MiscMixin:
             os.close(tmp_fd)
             os.remove(tmp_path)
 
-    def quickpkg(self, pkgdata, dirpath, edb = True, fake = False,
-        compression = "bz2", shiftpath = ""):
+    def quickpkg(self, *args, **kwargs):
+        warnings.warn("Client.quickpkg() is now deprecated. " + \
+            "Please use generate_package()")
+        """@deprecated"""
+        return self.generate_package(*args, **kwargs)
 
+    def generate_package(self, entropy_package_metadata, save_directory,
+        edb = True, fake = False, compression = "bz2", shiftpath = None):
+        """
+        Generate a valid Entropy package file from a full package metadata
+        object (see entropy.db.skel.EntropyRepositoryBase.getPackageData()) and
+        save it into save_directory directory, package content is read from
+        disk, so this method works fine ONLY for installed packages.
+
+        @param entropy_package_metadata: entropy package metadata
+        @type entropy_package_metadata: dict
+        @param save_directory: directory where to store the package file
+        @type save_directory: string
+        @keyword edb: add Entropy database metadata at the end of the file
+        @type edb: bool
+        @keyword fake: create a fake package (empty)
+        @type fake: bool
+        @keyword compression: supported compressions: "gz", "bz2" or "" (no
+            compression)
+        @type compression: string
+        @keyword shiftpath: if package files are stored into an alternative
+            root directory.
+        @type shiftpath: string
+        @return: path to generated package file or None (if error)
+        @rtype: string or None
+        """
         import tarfile
-
         if compression not in ("bz2", "", "gz"):
             compression = "bz2"
+        if shiftpath is None:
+            shiftpath = os.path.sep
+        elif not shiftpath:
+            shiftpath = os.path.sep
 
-        version = pkgdata['version']
+        version = entropy_package_metadata['version']
         version += "%s%s" % (etpConst['entropyrevisionprefix'],
-            pkgdata['revision'],)
-        pkgname = entropy.dep.create_package_filename(pkgdata['category'],
-            pkgdata['name'], version, pkgdata['versiontag'])
-        pkg_path = os.path.join(dirpath, pkgname)
+            entropy_package_metadata['revision'],)
+        pkgname = entropy.dep.create_package_filename(
+            entropy_package_metadata['category'],
+            entropy_package_metadata['name'], version,
+            entropy_package_metadata['versiontag'])
+
+        pkg_path = os.path.join(save_directory, pkgname)
         if os.path.isfile(pkg_path):
             os.remove(pkg_path)
 
@@ -1978,22 +2056,20 @@ class MiscMixin:
 
         if not fake:
 
-            contents = sorted(pkgdata['content'])
+            contents = sorted(entropy_package_metadata['content'])
 
             # collect files
-            for path in contents:
+            for orig_path in contents:
                 # convert back to filesystem str
-                encoded_path = path
-                path = const_convert_to_rawstring(path)
-                path = shiftpath+path
+                encoded_path = orig_path
+                orig_path = const_convert_to_rawstring(orig_path)
+                strip_orig_path = orig_path.lstrip(os.path.sep)
+                path = os.path.join(shiftpath, strip_orig_path)
                 try:
                     exist = os.lstat(path)
                 except OSError:
                     continue # skip file
-                arcname = path[len(shiftpath):] # remove shiftpath
-                if arcname.startswith("/"):
-                    arcname = arcname[1:] # remove trailing /
-                ftype = pkgdata['content'][encoded_path]
+                ftype = entropy_package_metadata['content'][encoded_path]
                 if str(ftype) == '0':
                     # force match below, '0' means databases without ftype
                     ftype = 'dir'
@@ -2003,7 +2079,7 @@ class MiscMixin:
                     # workaround for directory symlink issues
                     path = os.path.realpath(path)
 
-                tarinfo = tar.gettarinfo(path, arcname)
+                tarinfo = tar.gettarinfo(path, strip_orig_path)
 
                 if stat.S_ISREG(exist.st_mode):
                     with open(path, "rb") as f:
@@ -2015,11 +2091,15 @@ class MiscMixin:
 
         # append SPM metadata
         spm = self.Spm()
-        pkgatom = entropy.dep.create_package_atom_string(pkgdata['category'],
-            pkgdata['name'], pkgdata['version'], pkgdata['versiontag'])
+        pkgatom = entropy.dep.create_package_atom_string(
+            entropy_package_metadata['category'],
+            entropy_package_metadata['name'],
+            entropy_package_metadata['version'],
+            entropy_package_metadata['versiontag'])
         spm.append_metadata_to_package(pkgatom, pkg_path)
         if edb:
-            self._inject_entropy_database_into_package(pkg_path, pkgdata)
+            self._inject_entropy_database_into_package(pkg_path,
+                entropy_package_metadata)
 
         if os.path.isfile(pkg_path):
             return pkg_path
@@ -2030,10 +2110,15 @@ class MatchMixin:
 
     def get_package_action(self, package_match):
         """
-        upgrade: int(2)
-        install: int(1)
-        reinstall: int(0)
-        downgrade: int(-1)
+        For given package match, return an action value representing the
+        current status of the package: either "upgradable" (return status: 2),
+        "installable" (return status: 1), "reinstallable" (return status: 0),
+        "downgradable" (return status -1).
+
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @return: package status
+        @rtype: int
         """
         pkg_id, pkg_repo = package_match
         dbconn = self.open_repository(pkg_repo)
@@ -2068,6 +2153,18 @@ class MatchMixin:
         return -1
 
     def is_package_masked(self, package_match, live_check = True):
+        """
+        Determine whether given package match belongs to a masked package.
+        If live_check is True, even temporary masks (called live masking because
+        they belong to this running Entropy instance only) will be considered.
+
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @keyword live_check: check for live masks (default is True)
+        @type live_check: bool
+        @return: True, if package is masked, False otherwise
+        @rtype: bool
+        """
         m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         idpackage, idreason = dbconn.maskFilter(m_id, live = live_check)
@@ -2076,7 +2173,19 @@ class MatchMixin:
         return True
 
     def is_package_masked_by_user(self, package_match, live_check = True):
+        """
+        Determine whether given package match belongs to a masked package,
+        requested by user (user explicitly masked the package).
+        If live_check is True, even temporary masks (called live masking because
+        they belong to this running Entropy instance only) will be considered.
 
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @keyword live_check: check for live masks (default is True)
+        @type live_check: bool
+        @return: True, if package is masked by user, False otherwise
+        @rtype: bool
+        """
         m_id, m_repo = package_match
         if m_repo not in self._enabled_repos:
             return False
@@ -2093,7 +2202,19 @@ class MatchMixin:
         return False
 
     def is_package_unmasked_by_user(self, package_match, live_check = True):
+        """
+        Determine whether given package match belongs to an unmasked package,
+        requested by user (user explicitly unmasked the package).
+        If live_check is True, even temporary masks (called live masking because
+        they belong to this running Entropy instance only) will be considered.
 
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @keyword live_check: check for live masks (default is True)
+        @type live_check: bool
+        @return: True, if package is unmasked by user, False otherwise
+        @rtype: bool
+        """
         m_id, m_repo = package_match
         if m_repo not in self._enabled_repos:
             return False
@@ -2113,6 +2234,20 @@ class MatchMixin:
         return False
 
     def mask_package(self, package_match, method = 'atom', dry_run = False):
+        """
+        Mask given package match. Two masking methods are available: either by
+        "atom" (exact package string will be used) or by "keyslot" (package
+        key + slot combo will be used).
+
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @keyword method: masking method (either "atom" or "keyslot").
+        @type method: string
+        @keyword dry_run: execute a "dry" run
+        @type dry_run: bool
+        @return: True, if package has been masked successfully
+        @rtype: bool
+        """
         if self.is_package_masked(package_match, live_check = False):
             return True
         methods = {
@@ -2128,6 +2263,20 @@ class MatchMixin:
         return rc
 
     def unmask_package(self, package_match, method = 'atom', dry_run = False):
+        """
+        Unmask given package match. Two unmasking methods are available: either
+        by "atom" (exact package string will be used) or by "keyslot" (package
+        key + slot combo will be used).
+
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @keyword method: masking method (either "atom" or "keyslot").
+        @type method: string
+        @keyword dry_run: execute a "dry" run
+        @type dry_run: bool
+        @return: True, if package has been unmasked successfully
+        @rtype: bool
+        """
         if not self.is_package_masked(package_match, live_check = False):
             return True
         methods = {
@@ -2164,7 +2313,8 @@ class MatchMixin:
         m_id, m_repo = package_match
         dbconn = self.open_repository(m_repo)
         atom = dbconn.retrieveAtom(m_id)
-        return self.unmask_package_generic(package_match, atom, dry_run = dry_run)
+        return self.unmask_package_generic(package_match, atom,
+            dry_run = dry_run)
 
     def _unmask_package_by_keyslot(self, package_match, dry_run = False):
         m_id, m_repo = package_match
@@ -2189,12 +2339,38 @@ class MatchMixin:
             dry_run = dry_run)
 
     def unmask_package_generic(self, package_match, keyword, dry_run = False):
+        """
+        Unmask package using string passed in "keyword". A package match is
+        still required because previous masks have to be cleared.
+
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @param keyword: the package string to unmask
+        @type keyword: string
+        @keyword dry_run: execute a "dry" run
+        @type dry_run: bool
+        @return: True, if unmask went fine, False otherwise
+        @rtype: bool
+        """
         self._clear_package_mask(package_match, dry_run)
         m_file = self._settings.get_setting_files_data()['unmask']
         return self._mask_unmask_package_generic(keyword, m_file,
             dry_run = dry_run)
 
     def mask_package_generic(self, package_match, keyword, dry_run = False):
+        """
+        Mask package using string passed in "keyword". A package match is
+        still required because previous unmasks have to be cleared.
+
+        @param package_match: entropy package match (package_id, repository_id)
+        @type package_match: tuple
+        @param keyword: the package string to mask
+        @type keyword: string
+        @keyword dry_run: execute a "dry" run
+        @type dry_run: bool
+        @return: True, if mask went fine, False otherwise
+        @rtype: bool
+        """
         self._clear_package_mask(package_match, dry_run)
         m_file = self._settings.get_setting_files_data()['mask']
         return self._mask_unmask_package_generic(keyword, m_file,
