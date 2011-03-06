@@ -2,7 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.client: refactoring
     - entropy.services: refactoring
         rewrite UGC using HTTP protocol
 
