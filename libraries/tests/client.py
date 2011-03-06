@@ -73,20 +73,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         myclient2.shutdown()
         self.assert_(myclient2.is_destroyed())
 
-    def test_constant_backup(self):
-        const_key = 'foo_foo_foo'
-        const_val = set([1, 2, 3])
-        etpConst[const_key] = const_val
-        self.Client._backup_constant(const_key)
-        self.Client._reload_constants()
-        self.assertEqual(True, const_key in etpConst)
-        self.assertEqual(const_val, etpConst.get(const_key))
-        # now remove
-        etpConst['backed_up'].pop(const_key)
-        self.Client._reload_constants()
-        self.assertEqual(False, const_key in etpConst)
-        self.assertEqual(None, etpConst.get(const_key))
-
     def test_syssetting_backup(self):
         key1 = 'foo_foo_foo2'
         key2 = 'asdasdadsadas'

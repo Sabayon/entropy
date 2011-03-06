@@ -6,7 +6,7 @@ import unittest
 import os
 import shutil
 from entropy.server.interfaces import Server
-from entropy.const import etpConst
+from entropy.const import etpConst, initconfig_entropy_constants, etpSys
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository, EntropyRepositoryCacher
 from entropy.exceptions import RepositoryError
@@ -137,6 +137,24 @@ class EntropyRepositoryTest(unittest.TestCase):
         dbconn = self.Server.open_server_repository(
             self.Server.repository())
         self.assertNotEqual(None, dbconn.retrieveAtom(1))
+
+    def test_constant_backup(self):
+        const_key = 'foo_foo_foo'
+        const_val = set([1, 2, 3])
+        etpConst[const_key] = const_val
+        self.Server._backup_constant(const_key)
+        # reload constants
+        initconfig_entropy_constants(etpSys['rootdir'])
+        self.Server._settings.clear()
+        self.assertEqual(True, const_key in etpConst)
+        self.assertEqual(const_val, etpConst.get(const_key))
+        # now remove
+        etpConst['backed_up'].pop(const_key)
+        # reload constants
+        initconfig_entropy_constants(etpSys['rootdir'])
+        self.Server._settings.clear()
+        self.assertEqual(False, const_key in etpConst)
+        self.assertEqual(None, etpConst.get(const_key))
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:
