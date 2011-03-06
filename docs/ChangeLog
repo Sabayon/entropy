@@ -1,3 +1,147 @@
+commit eced32bc9fd9aca1f96a64803866024c9286cc73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 20:07:50 2011 +0100
+
+    Release Entropy 1.0_alpha28
+
+commit 4581481071983d95d26e7d9e0462fce4b8077c7a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 20:06:39 2011 +0100
+
+    [todo] update TODO
+
+commit 23707d9f6463ccf645c9ab414e6b2c9851b38eff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 19:46:54 2011 +0100
+
+    [sulfur] several speed improvements to the package info window
+
+commit eb6bc30bdde789907c9ac0158035e07d1de65c23
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 18:27:48 2011 +0100
+
+    [entropy.client.interfaces.trigger] make phase property protected
+
+commit 878c6c61fdc072e4bd50c58998e26aad236257e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 18:26:01 2011 +0100
+
+    [tests] fix tests, move constants test to server module
+
+commit 0c1f477bebe5bb2bf6a37a3b37ca71ab35f802d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 18:25:31 2011 +0100
+
+    [entropy.client.interfaces.trigger] cleanup Trigger interface class, drop dead code
+
+commit 47ea1f4bd6c8c7ab97338ad9fed600a1abd24dd7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 18:23:15 2011 +0100
+
+    [entropy.client.interfaces.package] remove dead trigger code logic (those condition will be never met nowadays)
+
+commit d36554888fa7c3321d1db16ab82c88153bdf2e30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 17:56:27 2011 +0100
+
+    [entropy.client.interfaces.{methods,sets}] complete code cleanup, review and refactoring (and fix some minor bugs)
+
+commit 1164896a996a86394ecf465890985b8e7ec452b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 09:15:55 2011 +0100
+
+    [entropy.tools] use with statement for opening files, avoids resource leakage
+
+commit 5904459fbb49c8da8f623b79ad346c62a4b4b8e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 09:07:26 2011 +0100
+
+    [entropy.tools] dump_entropy_metadata, dump_entropy_metadata: improve for speed using mmap for files < 4mb
+
+commit 73f60e68a0fd7a5298b825a13cb25e0717610d52
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 19:49:46 2011 +0100
+
+    [entropy.tools] fix dump_entropy_metadata, contained a resourse leakage on file object
+
+commit c08cb6164547e8b51d42e94d22c963fccd5e0d8a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 19:08:23 2011 +0100
+
+    [entropy.client.interfaces.methods] partially complete API documentation and cleanup
+
+commit 1741941f816102a836581f0732bc613d6020a270
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 18:24:53 2011 +0100
+
+    [entropy.client] Client: add backward compatibility to Client arguments, re-add support for "noclientdb" argument
+
+commit e899c60e8ef77a9e75d6468d00a16b0533025b25
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 17:49:08 2011 +0100
+
+    [entropy.client.interfaces.methods] _load_repository: do not alter on-disk caching setting (xcache) for package repositories
+
+commit 580a33738c21609a3f7570d9506094f8f0c35f1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 17:48:40 2011 +0100
+
+    [entropy.client.interfaces.methods] rename _load_repository_database into _load_repository
+
+commit db26e2fe4d112bccd34f8cec8d9193833864514f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 16:48:36 2011 +0100
+
+    [todo] update TODO
+
+commit 3e015532704f2ecb3444b79dc8834dad7cdc5f16
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 16:46:24 2011 +0100
+
+    [entropy.client] delay UGC interface loading as much as possible
+
+commit 4f7e968e78257614219f159e0f1623ad0bd0668c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 16:39:03 2011 +0100
+
+    [entropy.client] Client: drop "noclientdb" argument (yay API break), replace with installed_repo, same (reversed) logic.
+
+commit 1c25615f246aa97efacd22bec259582853b38c50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 16:07:34 2011 +0100
+
+    [entropy.client.interfaces.cache] complete module cleanup and polishing
+
+commit 2df18abc5a46810b0477ed7f4578aecbfc455e97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 15:44:39 2011 +0100
+
+    [entropy.cache] EntropyCacher: also clear live cache when calling discard()
+
+commit 87fb1264ced00a25d1216159ef26af84f61b92d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 15:43:40 2011 +0100
+
+    [tests] add 3 EntropyCacher tests
+
+commit 4b66cf14ebc21e357e08359062e8daf696c88aa7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 15:35:52 2011 +0100
+
+    [entropy.cache] EntropyCacher: make sure that once entered the with context, all the writes from different threads are hold until the reentrant lock is released.
+
+commit 4636ab9469cd97836a4c62358146c975df0d91b5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 14:59:30 2011 +0100
+
+    [entropy] validate repository identifier string against entropy.tools.validate_repository_id()
+
+commit 0ad09c767b4e0bd2ec0668285e21f8120280b1ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 5 13:19:11 2011 +0100
+
+    Tagging Entropy version 1.0_alpha27
+
 commit 460feed400e55d9324fa15686b9dc4e0b892d005
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Mar 5 13:19:04 2011 +0100
