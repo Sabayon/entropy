@@ -3075,7 +3075,7 @@ class Package:
     def _post_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
-            trigger = self._entropy.Triggers('postinstall', pkgdata, self._action)
+            trigger = self._entropy.Triggers('postinstall', pkgdata)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -3086,32 +3086,18 @@ class Package:
     def _pre_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
-
-            trigger = self._entropy.Triggers('preinstall', pkgdata, self._action)
+            trigger = self._entropy.Triggers('preinstall', pkgdata)
             do = trigger.prepare()
-            if self.pkgmeta.get("diffremoval") and do:
-                # diffremoval is true only when the
-                # removal is triggered by a package install
-                remdata = self.pkgmeta['triggers'].get('remove')
-                if remdata:
-                    r_trigger = self._entropy.Triggers('preremove', remdata,
-                        self._action)
-                    r_trigger.prepare()
-                    r_trigger.triggers = [x for x in trigger.triggers if x \
-                        not in r_trigger.triggers]
-                    r_trigger.kill()
-                del remdata
             if do:
                 trigger.run()
             trigger.kill()
-
         del pkgdata
         return 0
 
     def _pre_remove_step(self):
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
-            trigger = self._entropy.Triggers('preremove', remdata, self._action)
+            trigger = self._entropy.Triggers('preremove', remdata)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -3182,29 +3168,13 @@ class Package:
         return spm_rc
 
     def _post_remove_step(self):
-
         remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
-
-            trigger = self._entropy.Triggers('postremove', remdata, self._action)
+            trigger = self._entropy.Triggers('postremove', remdata)
             do = trigger.prepare()
-            if self.pkgmeta['diffremoval'] and \
-                (self.pkgmeta.get("atom") is not None) and do:
-                # diffremoval is true only when the remove
-                # action is triggered by pkgs install
-                pkgdata = self.pkgmeta['triggers'].get('install')
-                if pkgdata:
-                    i_trigger = self._entropy.Triggers('postinstall', pkgdata,
-                        self._action)
-                    i_trigger.prepare()
-                    i_trigger.triggers = [x for x in trigger.triggers if x \
-                        not in i_trigger.triggers]
-                    i_trigger.kill()
-                del pkgdata
             if do:
                 trigger.run()
             trigger.kill()
-
         del remdata
         return 0
 
