@@ -53,7 +53,7 @@ class DependenciesNotFound(EntropyException):
 class DependenciesCollision(EntropyException):
     """
     During dependencies calculation, dependencies were pulled in in the same
-    "scpe" (package key + package slot),
+    "scope" (package key + package slot),
     list of lists (set) of colliding dependencies are in the .value attribute
     """
 
