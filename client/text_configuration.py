@@ -340,19 +340,25 @@ def showdiff(fromfile, tofile):
         coloured.append(line + "\n")
 
     fd, tmp_path = tempfile.mkstemp()
-    f = os.fdopen(fd, "w")
-    f.writelines(coloured)
-    f.flush()
-    f.close()
+    with os.fdopen(fd, "w") as f:
+        f.writelines(coloured)
+        f.flush()
 
     print("")
-    args = ["less", "--no-init", "--QUIT-AT-EOF", tmp_path]
+    pager = os.getenv("PAGER", "/usr/bin/less")
+    if os.access(pager, os.X_OK):
+        if pager == "/usr/bin/less":
+            args = [pager, "-R", "--no-init", "--QUIT-AT-EOF", tmp_path]
+        else:
+            args = [pager, tmp_path]
+    else:
+        args = ["/bin/cat", tmp_path]
     try:
         subprocess.call(args)
     except OSError as err:
         if err.errno != errno.ENOENT:
             raise
-        args = ["cat", tmp_path]
+        args = ["/bin/cat", tmp_path]
         subprocess.call(args)
 
     os.remove(tmp_path)
