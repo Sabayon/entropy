@@ -339,6 +339,9 @@ class AvailablePackagesRepositoryUpdater(object):
             # enforce EAPI=1
             repo_eapi = 1
 
+        const_debug_write(__name__,
+            "__get_repo_eapi: final eapi set to %s" % (repo_eapi,))
+
         return repo_eapi
 
     def __is_repository_updatable(self):
