@@ -1034,7 +1034,7 @@ def _update(entropy_server, options):
         store_dir = entropy_server._get_local_store_directory(
             entropy_server.repository())
         for x in to_be_added:
-            print_info(brown("    # ")+red(x[0]+"..."))
+            print_info(brown("    # ")+teal(x[0]))
             try:
                 entropy_server.Spm().generate_package(x[0], store_dir)
             except OSError:
