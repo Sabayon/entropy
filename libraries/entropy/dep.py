@@ -183,6 +183,14 @@ def dep_getcat(mydep):
     """
     return dep_getkey(mydep).split("/")[0]
 
+def remove_cat(mydep):
+    """
+    Drop category part from dependency, if any.
+    """
+    if "/" in mydep:
+        return mydep.split("/", 1)[1]
+    return mydep
+
 def dep_getcpv(mydep):
     """
     Return the category-package-version with any operators/slot specifications stripped off
