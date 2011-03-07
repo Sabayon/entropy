@@ -4360,12 +4360,11 @@ class Server(Client):
         dbconn = self.open_server_repository(repository_id, read_only = False,
             no_upload = True)
         self.output(
-            red("[%s] %s: %s" % (
+            "[%s] %s: %s" % (
                     darkgreen(repository_id),
                     _("adding package"),
                     bold(os.path.basename(package_file)),
-                )
-            ),
+                ),
             importance = 1,
             level = "info",
             header = brown(" * "),
