@@ -1,3 +1,57 @@
+commit c0bfbb977588dfdcf6250d891613c43d8e877490
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 19:52:37 2011 +0100
+
+    Release Entropy 1.0_alpha29
+
+commit 7ff82e776f80f119885ae585f85ceebaa1329edc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 19:42:40 2011 +0100
+
+    [entropy.client.interfaces.dep] filter out list of removable packages by excluding those with reverse dependencies
+
+commit c9993797ed9814f9657b8decba84a553f181039a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 19:42:04 2011 +0100
+
+    [entropy.client.interfaces.db] add minor debug output
+
+commit 1bb28abd1299ecd6df39ed653f6a31358882a683
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 19:41:44 2011 +0100
+
+    [entropy.exceptions] fix typo in text
+
+commit ae0c3670f7b20966e8d3268a276caa2bf340dab8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 18:45:00 2011 +0100
+
+    [sulfur] catch DependenciesNotRemovable when calling get_removal_queue in .remove()
+
+commit b4ecd5181be1d775ec9d3fa7579f7109d6212590
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 18:40:05 2011 +0100
+
+    [po] update translations
+
+commit 302bbd4203c01379e12125f1e34d46d47cb018ba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 18:39:16 2011 +0100
+
+    [sulfur] deny application load without proper superuser authorization
+
+commit 31161836b0dd25981478e2667ce0e2a0442bb073
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 11:53:26 2011 +0100
+
+    [entropy.server] fix small rendering glitch
+
+commit e0fc11dbf4608dab43f7fd2c886926c0407a5ef9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 6 20:07:55 2011 +0100
+
+    Tagging Entropy version 1.0_alpha28
+
 commit eced32bc9fd9aca1f96a64803866024c9286cc73
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Mar 6 20:07:50 2011 +0100
