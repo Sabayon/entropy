@@ -2106,6 +2106,13 @@ class CalculatorsMixin:
                     if m_action > 0 and (matchresults not in update):
                         update.append(matchresults)
 
+        # validate remove, do not return installed packages that are
+        # still referenced by others as "removable"
+        # check inverse dependencies at the cost of growing complexity
+        if remove:
+            remove = [x for x in remove if not \
+                self._installed_repository.retrieveReverseDependencies(x)]
+
         if self.xcache:
             c_hash = self._get_updates_cache_hash(repo_hash, empty,
                 ignore_spm_downgrades)
