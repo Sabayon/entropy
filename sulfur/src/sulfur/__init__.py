@@ -24,6 +24,7 @@ import random
 import signal
 import time
 import threading
+import errno
 
 # Entropy Imports
 if "../../libraries" not in sys.path:
@@ -139,6 +140,21 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._effective_root = os.getuid() == 0
         if self._effective_root:
             self._privileges.drop()
+
+        try:
+            with self._privileges:
+                permissions_ok = True
+        except OSError as err:
+            if err.errno != errno.EPERM:
+                raise
+            # user doesn't have privileges to run the application
+            permissions_ok = False
+
+        if not permissions_ok:
+            self._entropy.shutdown()
+            okDialog(None,
+                _("Access denied. You don't have enough privileges to run Sulfur.") )
+            raise PermissionDenied("not enough privileges")
 
         if locked or (not self._effective_root):
             if locked:
