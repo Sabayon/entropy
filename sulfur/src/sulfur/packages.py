@@ -245,7 +245,8 @@ class Queue:
                 xlist = [x for x in myq if x not in pkgs_matches]
 
                 xlist, abort = self.elaborate_undo_remove(pkgs_matches, xlist)
-                if abort: return -10, 0
+                if abort:
+                    return -10, 0
 
                 self.before = self.packages['u'][:] + self.packages['i'][:] + \
                     self.packages['rr'][:] + self.packages['d'][:]
@@ -272,8 +273,12 @@ class Queue:
                 xlist = [x.matched_atom[0] for x in \
                     self.packages[action[0]] if x not in q_pkgs]
                 #toberemoved_idpackages = [x.matched_atom[0] for x in q_pkgs]
-                mydepends = set(self.Entropy.get_removal_queue(
-                    [x.matched_atom[0] for x in q_pkgs]))
+                try:
+                    mydepends = set(self.Entropy.get_removal_queue(
+                        [x.matched_atom[0] for x in q_pkgs]))
+                except DependenciesNotRemovable as err:
+                    self._show_dependencies_not_removable_err(err)
+                    return -10, 0
                 mydependencies = set()
                 myQA = self.Entropy.QA()
                 for pkg in q_pkgs:
@@ -541,6 +546,21 @@ class Queue:
 
         return status
 
+    def _show_dependencies_not_removable_err(self, err):
+        c_repo = self.Entropy.installed_repository()
+        non_rm_pkg = sorted([c_repo.retrieveAtom(x[0]) for x in err.value],
+            key = lambda x: c_repo.retrieveAtom(x))
+        confirmDialog = self.dialogs.ConfirmationDialog(self.ui.main,
+            non_rm_pkg,
+            top_text = _("Cannot remove packages"),
+            sub_text = _("Some dependencies couldn't be removed because they are vital."),
+            bottom_text = "",
+            cancel = False,
+            simpleList = True
+        )
+        confirmDialog.run()
+        confirmDialog.destroy()
+
     def elaborate_removal(self, mylist, nodeps, accept, always_ask = False):
         if nodeps:
             return 0
@@ -552,19 +572,7 @@ class Queue:
         try:
             removalQueue = self.Entropy.get_removal_queue(mylist)
         except DependenciesNotRemovable as err:
-            c_repo = self.Entropy.installed_repository()
-            non_rm_pkg = sorted([c_repo.retrieveAtom(x[0]) for x in err.value],
-                key = lambda x: c_repo.retrieveAtom(x))
-            confirmDialog = self.dialogs.ConfirmationDialog(self.ui.main,
-                non_rm_pkg,
-                top_text = _("Cannot remove packages"),
-                sub_text = _("Some dependencies couldn't be removed because they are vital."),
-                bottom_text = "",
-                cancel = False,
-                simpleList = True
-            )
-            confirmDialog.run()
-            confirmDialog.destroy()
+            self._show_dependencies_not_removable_err(err)
             return -10
 
         a_cache = []
