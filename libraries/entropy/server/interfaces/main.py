@@ -3416,9 +3416,13 @@ class Server(Client):
                 count = (count, length),
                 header = darkred(" @@ ")
             )
-            key, slot = (entropy.dep.dep_getkey(installed_package),
-                self.Spm().get_installed_package_metadata(installed_package,
-                    "SLOT"),)
+            key = entropy.dep.dep_getkey(installed_package)
+            try:
+                slot = self.Spm().get_installed_package_metadata(
+                    installed_package, "SLOT")
+            except KeyError:
+                # ignore, race condition, pkg got removed in the meantime
+                continue
             pkg_atom = "%s%s%s" % (key, ":", slot,)
             try:
                 tree_atoms = self.Spm().match_package(pkg_atom,
@@ -4918,8 +4922,12 @@ class Server(Client):
         spm_packages = spm.get_installed_packages()
         installed_packages = []
         for spm_package in spm_packages:
-            pkg_counter = spm.get_installed_package_metadata(spm_package,
-                "COUNTER")
+            try:
+                pkg_counter = spm.get_installed_package_metadata(spm_package,
+                    "COUNTER")
+            except KeyError:
+                # not found
+                continue
             try:
                 pkg_counter = int(pkg_counter)
             except ValueError:
@@ -4985,8 +4993,13 @@ class Server(Client):
 
                 add = True
                 for spm_atom, spm_counter in to_be_added:
-                    addslot = self.Spm().get_installed_package_metadata(
-                        spm_atom, "SLOT")
+                    try:
+                        addslot = self.Spm().get_installed_package_metadata(
+                            spm_atom, "SLOT")
+                    except KeyError:
+                        # wtf, not found, race condition? ignore
+                        add = False
+                        break
                     addkey = entropy.dep.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
                     if addslot is None:
