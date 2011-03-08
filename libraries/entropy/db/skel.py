@@ -1620,7 +1620,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         dep_from = move_command[0]
         key_from = entropy.dep.dep_getkey(dep_from)
-        key_to = move_command[1]
+        key_to = entropy.dep.dep_getkey(move_command[1])
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
         matches = self.atomMatch(dep_from, multiMatch = True)
