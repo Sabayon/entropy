@@ -1,3 +1,73 @@
+commit 8ae1290b9d77e7534a23aa7fed7931a454942469
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 8 10:17:14 2011 +0100
+
+    Release Entropy 1.0_alpha30
+
+commit 12897bc14327a26e9aadd9119f7cb3bf3aefa1ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 8 09:47:53 2011 +0100
+
+    [entropy.spm] from SpmPlugin, drop Portage-centric unused methods
+
+commit 5261e3715cae907bbc3c19c3c57f59eaf029e460
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 8 09:45:37 2011 +0100
+
+    [entropy.server] when using Spm.server/interfaces/main.py() always handle KeyError exception
+
+commit d3ba6f68861e93fae0bf996af8c9efab2829a9a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 8 07:38:56 2011 +0100
+
+    [entropy.db.skel] _runTreeUpdatesMoveAction: enforce destination package name to key
+    
+    Even if Gentoo specs only allow package keys to be used in
+    move statements inside profiles/updates. We can easily support
+    full versioned dependencies (like: app-foo/foo:0 or app-foo/foo-1.2.3).
+    In this case however, key_to has to be filtered out using dep_getkey()
+
+commit 148ac35a258469717496daaa77127cae7b25fbe9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 21:34:48 2011 +0100
+
+    [reagent] beautify "compressing packages" output
+
+commit c46cc1a54f86093bb30d09d6cb69b098455a90a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 21:27:49 2011 +0100
+
+    [services] kernel-switcher: when kernel_tag is not available, try to guess it
+    
+    When no reverse dependencies are available, it's impossible to guess
+    the correct kernel tag. So, kernel_tag is None, which causes issue
+    when used in execve() (of course). So, handle the case trying to read
+    package configuration file containing the proper "uname -r" output required
+    to switch /usr/src/linux to the newly installed kernel using
+    "eselect kernel set".
+    Please note that this file (RELEASE_LEVEL) is quite new, and older
+    packages might have been shipped without it.
+    
+    Also see bug #2227
+
+commit db39f49bcd1b158129c1b9217cf3b7b201ad1f22
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 21:27:28 2011 +0100
+
+    [entropy.dep] add handy function that strips out category part from dependency string
+
+commit 0475a123f6a1f1ac3f950e4c7b41b1dd131c22e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 20:08:00 2011 +0100
+
+    [equo] fix long standing bug regarding coloured output printed by "equo conf update", thanks to chickpea, close bug #2197
+
+commit 1f74c247c58c32f90417b4e73c90e48b603e4350
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 7 19:52:38 2011 +0100
+
+    Tagging Entropy version 1.0_alpha29
+
 commit c0bfbb977588dfdcf6250d891613c43d8e877490
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 7 19:52:37 2011 +0100
