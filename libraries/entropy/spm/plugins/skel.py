@@ -414,42 +414,6 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def get_package_compile_options(self, package):
-        """
-        WARNING: this is an Entropy Server functionality.
-        Return currently configured compile options (also known as USE flags)
-        for given package.
-        There can be different kinds of compile options so a dictionary should
-        be returned with compile options identifier as key and list of options
-        as value.
-        This method looks through available packages repositories.
-
-        @param package: package name
-        @type package: string
-        @return: compile options
-        @rtype: dict
-        """
-        raise NotImplementedError()
-
-    def get_installed_package_compile_options(self, package, root = None):
-        """
-
-        Return currently configured compile options (also known as USE flags)
-        for given package.
-        There can be different kinds of compile options so a dictionary should
-        be returned with compile options identifier as key and list of options
-        as value.
-        This method looks into installed packages repository.
-
-        @param package: package name
-        @type package: string
-        @keyword root: specify an alternative root directory "/"
-        @type root: string
-        @return: compile options
-        @rtype: dict
-        """
-        raise NotImplementedError()
-
     def get_installed_package_content(self, package, root = None):
         """
         Return list of files/directories owned by package.
