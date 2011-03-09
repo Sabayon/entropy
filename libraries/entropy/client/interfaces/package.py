@@ -1337,40 +1337,39 @@ class Package:
 
             unpack_tries = 3
             while True:
+                if unpack_tries <= 0:
+                    return 1
                 unpack_tries -= 1
                 try:
-                    rc = entropy.tools.spawn_function(
-                        entropy.tools.uncompress_tarball,
-                        self.pkgmeta['pkgpath'],
-                        extract_path = self.pkgmeta['imagedir'],
-                        catch_empty = True
-                    )
-                except EOFError:
-                    self._entropy.logger.log(
-                        "[Package]", etpConst['logging']['normal_loglevel_id'], 
-                        "EOFError on " + self.pkgmeta['pkgpath']
-                    )
-                    rc = 1
-                except:
-                    # this will make devs to actually catch the
-                    # right exception and prepare a fix
-                    self._entropy.logger.log(
-                        "[Package]",
-                        etpConst['logging']['normal_loglevel_id'],
-                        "Raising Unicode/Pickling Error for " + \
-                            self.pkgmeta['pkgpath']
-                    )
                     rc = entropy.tools.uncompress_tarball(
                         self.pkgmeta['pkgpath'],
                         extract_path = self.pkgmeta['imagedir'],
                         catch_empty = True
                     )
+                except EOFError as err:
+                    self._entropy.logger.log(
+                        "[Package]", etpConst['logging']['normal_loglevel_id'], 
+                        "EOFError on " + self.pkgmeta['pkgpath'] + " " + \
+                        repr(err)
+                    )
+                    entropy.tools.print_traceback()
+                    # try again until unpack_tries goes to 0
+                    rc = 1
+                except Exception as err:
+                    self._entropy.logger.log(
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
+                        "Ouch! error while unpacking " + \
+                            self.pkgmeta['pkgpath'] + " " + repr(err)
+                    )
+                    entropy.tools.print_traceback()
+                    # try again until unpack_tries goes to 0
+                    rc = 1
+
                 if rc == 0:
                     break
 
-                if unpack_tries <= 0:
-                    return rc
-                # otherwise, try to download it again
+                # try to download it again
                 self.pkgmeta['verified'] = False
                 f_rc = self._fetch_step()
                 if f_rc != 0:
@@ -2041,6 +2040,8 @@ class Package:
                 group = os.stat(path)[stat.ST_GID]
                 os.chown(topath, user, group)
                 shutil.copystat(path, topath)
+
+        def package_content, contents
 
     def __get_package_match_config_protect(self, mask = False):
 
