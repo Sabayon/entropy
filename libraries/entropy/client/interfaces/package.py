@@ -2041,7 +2041,7 @@ class Package:
                 os.chown(topath, user, group)
                 shutil.copystat(path, topath)
 
-        def package_content, contents
+        del package_content, contents
 
     def __get_package_match_config_protect(self, mask = False):
 
