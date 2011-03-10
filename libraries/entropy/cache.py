@@ -19,6 +19,8 @@ import os
 import errno
 import sys
 import tempfile
+import atexit
+
 from entropy.const import etpConst, etpUi, const_debug_write, \
     const_pid_exists, const_setup_perms
 from entropy.core import Singleton
@@ -98,6 +100,7 @@ class EntropyCacher(Singleton):
         This is the place where all the properties initialization
         takes place.
         """
+        self.__exit_registered = False
         self.__copy = copy
         self.__alive = False
         self.__cache_writer = None
@@ -264,6 +267,14 @@ class EntropyCacher(Singleton):
 
         @return: None
         """
+        # If EntropyCacher is started, its thread could hang a the process
+        # termination phase. So, register an exit handler against Python
+        if not self.__exit_registered:
+            def _stop_cacher():
+                EntropyCacher().stop()
+            atexit.register(_stop_cacher)
+            self.__exit_registered = True
+
         self.__cache_buffer.clear()
         self.__cache_writer = TimeScheduled(EntropyCacher.WRITEBACK_TIMEOUT,
             self.__cacher)
