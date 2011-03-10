@@ -19,6 +19,7 @@
 import sys
 import time
 import shutil
+import subprocess
 
 import gtk
 import gobject
@@ -35,7 +36,7 @@ import entropy.tools
 
 from sulfur.event import SulfurSignals
 from sulfur.core import UI, busy_cursor, normal_cursor, fork_function, \
-    resize_image
+    resize_image, load_url
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 
 class MenuSkel:
@@ -485,10 +486,7 @@ class RmNoticeBoardMenu(MenuSkel):
         gtk.link_button_set_uri_hook(self.load_url, data=self.url)
 
     def load_url(self, widget, url, extra):
-        import subprocess
-        f = open("/dev/null", "w")
-        subprocess.call(['xdg-open', url], stdout = f, stderr = f)
-        f.close()
+        load_url(url)
 
     def on_rmNoticeBoardCloseButton_clicked(self, widget):
         self.rm_ui.rmNoticeBoardInfo.hide()
@@ -1737,7 +1735,7 @@ class UGCInfoMenu(MenuSkel):
 
     def on_getButton_clicked(self, widget):
         if self.ugc_data['store_url'] != None:
-            self.subprocess.call(['xdg-open', self.ugc_data['store_url']])
+            load_url(self.ugc_data['store_url'])
 
     def load(self):
 

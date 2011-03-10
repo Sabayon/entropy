@@ -163,3 +163,12 @@ def resize_image(max_width, image_path, new_image_path):
             img_buf.save(new_image_path, "jpeg")
         del img_buf
     del img
+
+def load_url(url):
+    xdg_open = '/usr/bin/xdg-open'
+    if os.access(xdg_open, os.X_OK):
+        pid = os.fork()
+        if pid == 0:
+            # child
+            os.execv(xdg_open, [xdg_open, url])
+            os._exit(0)

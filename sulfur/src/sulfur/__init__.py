@@ -383,7 +383,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.ui.main.set_title( "%s %s %s" % (SulfurConf.branding_title,
             const.__sulfur_version__, self.safe_mode_txt) )
-        self.ui.main.connect( "delete_event", self.quit )
+        self.ui.main.connect("delete-event", self.quit)
 
         self.ui.main.realize()
         self.setup_page_buttons()        # Setup left side toolbar
