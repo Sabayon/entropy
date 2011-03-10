@@ -1058,7 +1058,7 @@ class PkgInfoMenu(MenuSkel):
 
         # trigger
         mtrigger = gtk.TextBuffer()
-        mtrigger.set_text(self._pkg_meta['trigger'])
+        mtrigger.set_text(self._pkg_meta.get('trigger', ""))
         self.pkginfo_ui.triggerTextView.set_buffer(mtrigger)
 
         # CONFIG_PROTECT Stuff
