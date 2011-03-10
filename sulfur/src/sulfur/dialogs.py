@@ -486,7 +486,8 @@ class RmNoticeBoardMenu(MenuSkel):
         gtk.link_button_set_uri_hook(self.load_url, data=self.url)
 
     def load_url(self, widget, url, extra):
-        load_url(url)
+        if url:
+            load_url(url)
 
     def on_rmNoticeBoardCloseButton_clicked(self, widget):
         self.rm_ui.rmNoticeBoardInfo.hide()
@@ -505,9 +506,10 @@ class RmNoticeBoardMenu(MenuSkel):
         self.rm_ui.rmNoticeBoardIdLabel.set_text(str(item['id']))
         self.rm_ui.rmNoticeBoardDateLabel.set_text(cleanMarkupString(item['pubDate']))
         self.rm_ui.rmNoticeBoardTitleLabel.set_text(cleanMarkupString(item['title']))
-        self.rm_ui.rmNoticeBoardLinkLabel.set_label(item['link'])
-        self.rm_ui.rmNoticeBoardLinkLabel.set_uri(item['link'])
-        self.url = item['link']
+        if item['link']:
+            self.rm_ui.rmNoticeBoardLinkLabel.set_label(entropy.tools.spliturl(item['link']).netloc)
+            self.rm_ui.rmNoticeBoardLinkLabel.set_uri(item['link'])
+            self.url = item['link']
         self.rm_ui.rmNoticeBoardTextLabel.set_text(cleanMarkupString(item['description']))
 
         bold_items = [
