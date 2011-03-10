@@ -13,6 +13,7 @@
 import os
 import sys
 import signal
+import atexit
 
 import gtk
 import gobject
@@ -108,14 +109,27 @@ try:
 except gobject.GError:
     pass
 
+OLD_TERM_SIGNAL_HANDLER = None
+def term_signal_thread_killer(*args, **kwargs):
+    kill_threads()
+    if OLD_TERM_SIGNAL_HANDLER is not None:
+        return OLD_TERM_SIGNAL_HANDLER(*args, **kwargs)
+
+def install_term_signal_handler():
+    global OLD_TERM_SIGNAL_HANDLER
+    old_handler = signal.signal(signal.SIGTERM, term_signal_thread_killer)
+    OLD_TERM_SIGNAL_HANDLER = old_handler
+
 def startup():
     global MAIN_APP
+    install_term_signal_handler()
     try:
         MAIN_APP = SulfurApplication()
     except PermissionDenied:
         # another entropy is running
         raise SystemExit(1)
     MAIN_APP.init()
+    atexit.register(kill_threads)
     #import cProfile
     #MAIN_APP._entropy.clear_cache()
     #MAIN_APP.etpbase.clear_groups()
