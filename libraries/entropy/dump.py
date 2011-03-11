@@ -48,7 +48,7 @@ if E_GID == None:
 
 
 def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
-    dump_dir = None):
+    dump_dir = None, custom_permissions = None):
     """
     Dump pickable object to file
 
@@ -65,6 +65,8 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
     @type ignore_exceptions: bool
     @keyword dump_dir: alternative dump directory
     @type dump_dir: string
+    @keyword custom_permissions: give custom permission bits
+    @type custom_permissions: octal
     @return: None
     @rtype: None
     @raise EOFError: could be caused by pickle.dump, ignored if
@@ -76,6 +78,8 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
     """
     if dump_dir is None:
         dump_dir = D_DIR
+    if custom_permissions is None:
+        custom_permissions = 0o664
 
     while True: # trap ctrl+C
         try:
@@ -106,7 +110,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
                 else:
                     pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
-            const_setup_file(tmp_dmpfile, E_GID, 0o664)
+            const_setup_file(tmp_dmpfile, E_GID, custom_permissions)
             os.rename(tmp_dmpfile, dmpfile)
 
         except RuntimeError:
