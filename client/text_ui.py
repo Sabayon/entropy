@@ -2262,23 +2262,42 @@ def _libraries_test(entropy_client, listfiles = False, dump = False):
         restore_qstats()
         return 0, 0
 
+    if pkgs_matched:
+
+        # filter out reinstalls
+        def _reinstall_filter(_match):
+            _action = entropy_client.get_package_action(_match)
+            if _action == 0:
+                # maybe notify this to user in future?
+                return False
+            return True
+
+        for mylib in list(pkgs_matched.keys()):
+            pkgs_matched[mylib] = list(filter(_reinstall_filter,
+                pkgs_matched[mylib]))
+            if not pkgs_matched[mylib]:
+                pkgs_matched.pop(mylib)
+
     atomsdata = set()
-    if (not etpUi['quiet']):
-        print_info(red(" @@ ")+blue("%s:" % (_("Libraries/Executables statistics"),) ))
+    if not etpUi['quiet']:
+        print_info(darkgreen(" @@ ")+purple("%s:" % (_("Libraries/Executables statistics"),) ))
         if brokenlibs:
-            print_info(brown(" ## ")+red("%s:" % (_("Not matched"),) ))
+            print_info(brown(" ## ")+teal("%s:" % (_("Not matched"),) ))
             brokenlibs = sorted(brokenlibs)
             for lib in brokenlibs:
-                print_info(darkred("    => ")+red(lib))
+                print_info(purple("    => ")+brown(lib))
+
         if pkgs_matched:
-            print_info(darkgreen(" ## ")+red("%s:" % (_("Matched"),) ))
+
+            print_info(brown(" ## ")+teal("%s:" % (_("Matched"),) ))
             for mylib in pkgs_matched:
                 for idpackage, repoid in pkgs_matched[mylib]:
                     dbconn = entropy_client.open_repository(repoid)
                     myatom = dbconn.retrieveAtom(idpackage)
                     atomsdata.add((idpackage, repoid))
-                    print_info("   "+red(mylib)+" => "+brown(myatom)+" ["+red(repoid)+"]")
+                    print_info("   "+darkgreen(mylib)+" => "+teal(myatom)+" ["+purple(repoid)+"]")
     else:
+
         for mylib in pkgs_matched:
             for idpackage, repoid in pkgs_matched[mylib]:
                 dbconn = entropy_client.open_repository(repoid)
