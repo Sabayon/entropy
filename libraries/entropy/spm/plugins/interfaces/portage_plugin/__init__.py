@@ -698,6 +698,11 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         root = etpConst['systemroot'] + os.path.sep
+        # if root != "/", metadata update cannot run due to Portage
+        # limitations
+        if root != os.path.sep:
+            return
+
         mydb = {}
         mydb[root] = {}
         mydb[root]['vartree'] = self._get_portage_vartree(root)
