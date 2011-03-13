@@ -1150,6 +1150,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'order': [],
             'product': etpConst['product'],
             'branch': etpConst['branch'],
+            'arch': etpConst['currentarch'],
             'default_repository': etpConst['officialrepositoryid'],
             'transfer_limit': etpConst['downloadspeedlimit'],
             'timeout': etpConst['default_download_timeout'],
@@ -1202,31 +1203,22 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 return
 
             repoids.add(reponame)
-            if reponame in my_repodata:
+            obj = my_repodata.get(reponame)
+            if obj is not None:
 
-                my_repodata[reponame]['plain_packages'].extend(
-                    repodata['plain_packages'])
-                my_repodata[reponame]['packages'].extend(
-                    repodata['packages'])
+                obj['plain_packages'].extend(repodata['plain_packages'])
+                obj['packages'].extend(repodata['packages'])
 
-                if (not my_repodata[reponame]['plain_database']) and \
+                if (not obj['plain_database']) and \
                     repodata['plain_database']:
 
-                    my_repodata[reponame]['plain_database'] = \
-                        repodata['plain_database']
-                    my_repodata[reponame]['database'] = \
-                        repodata['database']
-                    my_repodata[reponame]['dbrevision'] = \
-                        repodata['dbrevision']
-                    my_repodata[reponame]['dbcformat'] = \
-                        repodata['dbcformat']
-
-                    my_repodata[reponame]['service_uri'] = \
-                        repodata['service_uri']
-                    my_repodata[reponame]['service_port'] = \
-                        repodata['service_port']
-                    my_repodata[reponame]['ssl_service_port'] = \
-                        repodata['ssl_service_port']
+                    obj['plain_database'] = repodata['plain_database']
+                    obj['database'] = repodata['database']
+                    obj['dbrevision'] = repodata['dbrevision']
+                    obj['dbcformat'] = repodata['dbcformat']
+                    obj['service_uri'] = repodata['service_uri']
+                    obj['service_port'] = repodata['service_port']
+                    obj['ssl_service_port'] = repodata['ssl_service_port']
 
             else:
                 my_repodata[reponame] = repodata.copy()
