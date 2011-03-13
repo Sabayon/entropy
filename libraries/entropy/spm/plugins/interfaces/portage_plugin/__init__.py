@@ -686,54 +686,33 @@ class PortagePlugin(SpmPlugin):
             mirrors.extend(self._portage.thirdpartymirrors[mirror_name])
         return mirrors
 
-    def _get_global_updates(self):
-        try:
-            from portage._global_updates import _global_updates
-        except ImportError:
-            _global_updates = self._portage._global_updates
-        return _global_updates
-
     def packages_repositories_metadata_update(self):
         """
         Reimplemented from SpmPlugin class.
         """
         root = etpConst['systemroot'] + os.path.sep
-        # if root != "/", metadata update cannot run due to Portage
-        # limitations
-        if root != os.path.sep:
-            return
-
-        mydb = {}
-        mydb[root] = {}
-        mydb[root]['vartree'] = self._get_portage_vartree(root)
-        mydb[root]['porttree'] = self._get_portage_portagetree(root)
-        mydb[root]['bintree'] = self._get_portage_binarytree(root)
-        mydb[root]['virtuals'] = self._portage.settings.getvirtuals()
-
+        env = os.environ.copy()
+        env['ROOT'] = root
+        emaint_exec = "/usr/sbin/emaint"
+        args = (emaint_exec, "--fix", "moveinst")
         if etpUi['mute']:
-            pid = os.fork()
-            if pid > 0:
-                os.waitpid(pid, 0)
-            else:
+            log = None
+            try:
                 log = LogFile(
                     level = SystemSettings()['system']['log_level'],
                     filename = etpConst['entropylogfile'],
                     header = "[spm]"
                 )
-                old_stdout = sys.stdout
-                old_stderr = sys.stderr
-                sys.stdout = log
-                sys.stderr = log
-
-                self._get_global_updates()(mydb, {})
-
-                sys.stdout = old_stdout
-                sys.stderr = old_stderr
-                log.flush()
-                log.close()
-                os._exit(0)
+                subprocess.call(args, env = env, stdout = log,
+                    stderr = log)
+            finally:
+                if log is not None:
+                    log.flush()
+                    log.close()
         else:
-            self._get_global_updates()(mydb, {}) # always force
+            if os.access(emaint_exec, os.X_OK):
+                subprocess.call(args, env = env)
+            # else meh!
 
     def match_package(self, package, match_type = None):
         """
