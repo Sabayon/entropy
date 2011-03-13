@@ -1482,33 +1482,48 @@ class ServerPackagesRepositoryUpdater(object):
             # check against missing package sets
             pkg_sets_required = qa_sets.get(self._repository_id)
             if pkg_sets_required is not None:
-                sets_data = self._entropy.sets_available(
-                    match_repo = (self._repository_id,))
-                if sets_data:
-                    current_sets = set([s_name for s_repo, s_name, s_sets in \
-                        sets_data])
+                sets_resynced = False
+                while True:
+                    sets_data = self._entropy.sets_available(
+                        match_repo = (self._repository_id,))
+                    if not sets_data:
+                        break
+
+                    current_sets = set([s_name for \
+                        s_repo, s_name, s_sets in sets_data])
                     missing_sets = pkg_sets_required - current_sets
-                    if missing_sets:
-                        missing_sets = sorted(missing_sets)
+                    if not missing_sets:
+                        break
+
+                    if not sets_resynced:
+                        # try to re-sync and check agains
+                        sets_resynced = True
+                        self._entropy._sync_package_sets(
+                            self._entropy.open_server_repository(
+                                self._repository_id, indexing = False,
+                                do_treeupdates = False))
+                        continue
+
+                    missing_sets = sorted(missing_sets)
+                    self._entropy.output(
+                        "[repo:%s|%s] %s, %s:" % (
+                            brown(self._repository_id),
+                            red(_("sync")),
+                            blue(_("repository sync forbidden")),
+                            red(_("missing package sets")),
+                        ),
+                        importance = 1,
+                        level = "error",
+                        header = darkred(" !! ")
+                    )
+                    for missing_set in missing_sets:
                         self._entropy.output(
-                            "[repo:%s|%s] %s, %s:" % (
-                                brown(self._repository_id),
-                                red(_("sync")),
-                                blue(_("repository sync forbidden")),
-                                red(_("missing package sets")),
-                            ),
-                            importance = 1,
+                            teal(missing_set),
+                            importance = 0,
                             level = "error",
-                            header = darkred(" !! ")
+                            header = brown("  # ")
                         )
-                        for missing_set in missing_sets:
-                            self._entropy.output(
-                                teal(missing_set),
-                                importance = 0,
-                                level = "error",
-                                header = brown("  # ")
-                            )
-                        return 5, set(), set()
+                    return 5, set(), set()
 
             base_deps_not_found = set()
             if base_repo != self._repository_id:

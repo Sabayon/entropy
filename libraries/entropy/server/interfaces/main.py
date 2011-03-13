@@ -202,22 +202,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             os.rename(tmp_revision_file, revision_file)
 
             # auto-update package sets
-            self._server.output(
-                "[%s|%s] %s" % (
-                        blue(repo),
-                        red(_("repository")),
-                        blue(_("syncing package sets")),
-                    ),
-                importance = 1,
-                level = "info",
-                header = brown(" @@ ")
-            )
-            cur_sets = entropy_repository_instance.retrievePackageSets()
-            sys_sets = self._server._get_configured_package_sets(repo)
-            if cur_sets != sys_sets:
-                self._server._update_package_sets(repo,
-                    entropy_repository_instance)
-            entropy_repository_instance.commit(no_plugins = True)
+            self._server._sync_package_sets(entropy_repository_instance)
 
         return 0
 
@@ -1506,6 +1491,30 @@ class Server(Client):
         txc.set_output_interface(self)
         return txc
 
+    def _sync_package_sets(self, entropy_repository):
+        """
+        Synchronize repository package sets.
+
+        @param entropy_repository: EntropyRepositoryBase object
+        @type entropy_repository: entropy.db.skel.EntropyRepositoryBase
+        """
+        repository_id = entropy_repository.repository_id()
+        self.output(
+            "[%s|%s] %s" % (
+                    blue(repository_id),
+                    red(_("repository")),
+                    blue(_("syncing package sets")),
+                ),
+            importance = 1,
+            level = "info",
+            header = brown(" @@ ")
+        )
+        cur_sets = entropy_repository.retrievePackageSets()
+        sys_sets = self._get_configured_package_sets(repository_id)
+        if cur_sets != sys_sets:
+            self._update_package_sets(repository_id, entropy_repository)
+        # NOTE: this is called by the commit hook plugin, keep no_plugins=True!
+        entropy_repository.commit(no_plugins = True)
 
     def sets_available(self, *args, **kwargs):
         sets = Client.Sets(self)
