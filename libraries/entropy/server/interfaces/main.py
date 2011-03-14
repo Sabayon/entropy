@@ -201,8 +201,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # atomic !
             os.rename(tmp_revision_file, revision_file)
 
+        if not dbs.are_sets_synced(dbfile):
             # auto-update package sets
             self._server._sync_package_sets(entropy_repository_instance)
+            dbs.set_synced_sets(dbfile)
 
         return 0
 
