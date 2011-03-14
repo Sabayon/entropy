@@ -1982,7 +1982,11 @@ class MiscMixin:
         categories = set()
         for repo in self._enabled_repos:
             dbconn = self.open_repository(repo)
-            categories.update(dbconn.listAllCategories())
+            try:
+                categories.update(dbconn.listAllCategories())
+            except EntropyRepositoryError:
+                # on broken repos this might cause issues
+                continue
         return sorted(categories)
 
     def _inject_entropy_database_into_package(self, package_filename, data,
