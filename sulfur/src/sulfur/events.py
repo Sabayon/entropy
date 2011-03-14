@@ -929,9 +929,10 @@ class SulfurApplicationEventsMixin:
             return
 
         if edit:
-            rc, msg = sets.remove(const_convert_to_unicode(data.get("name")))
-            if rc != 0:
-                okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
+            try:
+                sets.remove(const_convert_to_unicode(data.get("name")))
+            except InvalidPackageSet as err:
+                okDialog(self.ui.main, "%s: %s" % (_("Error"), err.value,))
                 return
 
         with self._privileges:
