@@ -58,6 +58,7 @@ class ServerRepositoryStatus(Singleton):
             self.__data[db]['tainted'] = False
             self.__data[db]['bumped'] = False
             self.__data[db]['unlock_msg'] = False
+            self.__data[db]['sets_synced'] = False
 
     def set_unlock_msg(self, db):
         """
@@ -125,6 +126,17 @@ class ServerRepositoryStatus(Singleton):
         self.__create_if_necessary(db)
         self.__data[db]['bumped'] = False
 
+    def set_synced_sets(self, db):
+        """
+        Set bit which determines that package sets have been synchronized with
+        Source Package Manager.
+
+        @param db: database identifier
+        @type db: string
+        """
+        self.__create_if_necessary(db)
+        self.__data[db]['sets_synced'] = True
+
     def is_tainted(self, db):
         """
         Return whether repository which db points to has been modified.
@@ -155,6 +167,14 @@ class ServerRepositoryStatus(Singleton):
         """
         self.__create_if_necessary(db)
         return self.__data[db]['unlock_msg']
+
+    def are_sets_synced(self, db):
+        """
+        Return whether package sets in repository have been already synchronized
+        with Source Package Manager.
+        """
+        self.__create_if_necessary(db)
+        return self.__data[db]['sets_synced']
 
     def get_updates_log(self, db):
         """
