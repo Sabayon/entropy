@@ -1,3 +1,140 @@
+commit b1e75b7e0d18b00fb3153211b935e276b4f66251
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 18 07:20:53 2011 +0100
+
+    Release Entropy 1.0_alpha31
+
+commit f98e02c4555695b5a79ee111d7de0d2a3761be26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 17 10:30:38 2011 +0100
+
+    [sulfur] fixup default colors, make them look good on dark background
+
+commit 02713f8dd9139bcf31ebaf38b65b2af019b97378
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 14 18:32:35 2011 +0100
+
+    [entropy.server] ServerEntropyRepositoryPlugin: always sync package sets at least once per run
+
+commit 4e4c290b0e8f111ef69e746d6e87d06bb0bf8763
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 14 18:32:22 2011 +0100
+
+    [entropy.server] ServerRepositoryStatus: add package sets sync status handling
+
+commit c749d22379fe19e4f7040d330b65d9b12668889e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 14 15:37:39 2011 +0100
+
+    [entropy.client.interfaces.client] catch entropy.db.exceptions.Error in _get_package_categories
+
+commit abebca4451cde131c0ee8fa9ec7a46710e9cfccc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 14 15:34:48 2011 +0100
+
+    [sulfur] fix Sets API usage, regression.
+
+commit a8b85641d927684bd8919e439d64746186fb3600
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 13 19:33:45 2011 +0100
+
+    [entropy.core] SystemSettings: simplify repositories.conf parsing code
+
+commit 1b80a2d13e76697b960239781aba3664911bf11e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 13 19:20:40 2011 +0100
+
+    [entropy.spm] PortagePlugin: do not use internal Portage _global_updates() function but rather emaint frontend
+
+commit 4066e41781734a2ca97f29b85230de997b1e9a45
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 13 17:49:09 2011 +0100
+
+    [entropy.server] before giving up with repository sync due to missing sets, try to resync them and check again
+
+commit 9f5588740f70d93d127c00513d7cd84d2631e972
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 12 14:44:39 2011 +0100
+
+    [entropy.spm] PortagePlugin: do not run _global_updates() for ROOT != "/", Portage limitation.
+
+commit 9062368b50728ce36264ccc79b95c2bd98f3cb11
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 12 13:29:29 2011 +0100
+
+    [equo] libtest: filter out reinstall packages from those printed to user, close bug #2242
+
+commit b763c0f7c84767fea907f4a1871709076e089154
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 12 08:28:24 2011 +0100
+
+    [conf] add open/libreoffice libs to broken libs list
+
+commit 067b31315d96d4d5d9c73ac743edea38ab99c950
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 11 20:16:37 2011 +0100
+
+    [entropy.dump] make possible to enforce custom permission bits to dumpobj()
+
+commit bb753b0d2af779438849c49eb577f33ec322f26d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 19:02:36 2011 +0100
+
+    [sulfur] improve reliability of load_url() usage in notice board item window
+
+commit 791806cf062174d2944224298cc0ebe2edc2a542
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 18:35:54 2011 +0100
+
+    [sulfur] improve url loading function
+
+commit f786b069ef322283567583efee80d31ae69b4d70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 18:35:39 2011 +0100
+
+    [sulfur] add custom SIGTERM signal
+
+commit dd47926ceb14dcb335bbe55e9b53a47f64edb5a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 18:35:15 2011 +0100
+
+    [sulfur] fix --debug when running on kdesu
+
+commit 0f5df2aadb98309c1533b414241b084fdf5c7fe2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 18:34:20 2011 +0100
+
+    [entropy.cache] EntropyCacher: use atexit to register the stop() function when start() is called
+
+commit 5ca976849451934e6f0d5c200e53a994868433ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 17:24:29 2011 +0100
+
+    [entropy.client.interfaces.package] fix typo
+
+commit b378c1e67441d3c47cd5f0feb25bfa8575a3117d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Mar 10 17:09:05 2011 +0100
+
+    [sulfur] fixup package properties loader when trigger metadatum is not available
+
+commit c90b5b1655885fd40d1863934d012073b4719d8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 9 11:37:01 2011 +0100
+
+    [entropy.client.interfaces.package] improve speed of package unpacking
+    
+    Originally, a fork was needed (through spawn_function()) because
+    there was a memory leak inside tarfile python module.
+    As of today, the issue doesn't seem to exist anymore and so,
+    the cost of fork() should be avoided completely.
+
+commit a65c52b2f6f512677ec0a5b64e494113b47a0303
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 8 10:17:30 2011 +0100
+
+    Tagging Entropy version 1.0_alpha30
+
 commit 8ae1290b9d77e7534a23aa7fed7931a454942469
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 8 10:17:14 2011 +0100
