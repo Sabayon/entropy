@@ -77,11 +77,6 @@
 ../libraries/entropy/qa.py
 ../libraries/entropy/security.py
 ../libraries/entropy/tools.py
-../libraries/test_db_search.py
-../libraries/test_qa.py
-../libraries/test_qa_sets.py
-../libraries/test_rsync.py
-../libraries/test_speed.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
