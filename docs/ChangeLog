@@ -1,3 +1,33 @@
+commit 0bcd6e0f86df8e4b176643576aee52c81e485820
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 12:34:26 2011 +0100
+
+    Release Entropy 1.0_alpha32
+
+commit d00750f79ba09ecd1d840d84b67b6f8938c1c104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 12:18:16 2011 +0100
+
+    [entropy.spm] PortagePlugin: drop old portage bug workaround
+
+commit c44b9023dc052ced8d4694e794522bfee100cebb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 06:40:57 2011 +0100
+
+    [po] update translations
+
+commit eb5f1effae59346f25e6db754c82cf8e59ec7aa0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 06:32:27 2011 +0100
+
+    [activator] fix small typo in string "unavaiable"
+
+commit 567b0596bcc5d84444b633cdd2d76eaaa28964dd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 18 07:21:26 2011 +0100
+
+    Tagging Entropy version 1.0_alpha31
+
 commit b1e75b7e0d18b00fb3153211b935e276b4f66251
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 18 07:20:53 2011 +0100
