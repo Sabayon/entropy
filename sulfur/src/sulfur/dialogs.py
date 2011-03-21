@@ -1106,7 +1106,7 @@ class PkgInfoMenu(MenuSkel):
         self.sourcesModel.clear()
         self.sourcesView.set_model(self.sourcesModel)
         mirrors = set()
-        sources = self._pkg_meta['sources']
+        sources = self._pkg_meta.get("sources", [])
         for x in sources:
             if x.startswith("mirror://"):
                 mirrors.add(x.split("/")[2])
