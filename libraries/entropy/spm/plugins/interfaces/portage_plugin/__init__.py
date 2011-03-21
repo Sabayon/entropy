@@ -1566,7 +1566,7 @@ class PortagePlugin(SpmPlugin):
         except ValueError:
             raise SPMError("invalid Unique Identifier found")
         except Exception as e:
-            raise SPMError("General SPM Error: %s" % (e,))
+            raise SPMError("General SPM Error: %s" % (repr(e),))
 
         return counter
 
@@ -2259,7 +2259,7 @@ class PortagePlugin(SpmPlugin):
             mytxt2 = "%s: %s, %s" % (
                 bold(_("Error")),
                 type(Exception),
-                err,
+                repr(err),
             )
             for txt in (mytxt, mytxt2,):
                 self.__output.output(
@@ -3450,7 +3450,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mytree = self._portage.vartree(root=root)
         except Exception as e:
-            raise SPMError("SPMError: %s" % (e,))
+            raise SPMError("SPMError: %s" % (repr(e),))
         PortagePlugin.CACHE['vartree'][root] = mytree
         return mytree
 
@@ -3465,7 +3465,7 @@ class PortagePlugin(SpmPlugin):
             mytree = self._portage.portagetree(root=None,
                 settings=self._portage.settings)
         except Exception as e:
-            raise SPMError("SPMError: %s" % (e,))
+            raise SPMError("SPMError: %s" % (repr(e),))
         PortagePlugin.CACHE['portagetree'][root] = mytree
         return mytree
 
@@ -3479,7 +3479,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mytree = self._portage.binarytree(root, pkgdir)
         except Exception as e:
-            raise SPMError("SPMError: %s" % (e,))
+            raise SPMError("SPMError: %s" % (repr(e),))
         PortagePlugin.CACHE['binarytree'][root] = mytree
         return mytree
 
@@ -3495,7 +3495,7 @@ class PortagePlugin(SpmPlugin):
                 target_root = root,
                 config_incrementals = self._portage.const.INCREMENTALS)
         except Exception as e:
-            raise SPMError("SPMError: %s" % (e,))
+            raise SPMError("SPMError: %s" % (repr(e),))
         if use_cache:
             PortagePlugin.CACHE['config'][(config_root, root)] = mysettings
 
@@ -3745,7 +3745,7 @@ class PortagePlugin(SpmPlugin):
                     darkred("%s: %s :: %s") % (
                         _("Error calculating dependencies"),
                         k,
-                        e,
+                        repr(e),
                     ),
                     importance = 1,
                     level = "error",
