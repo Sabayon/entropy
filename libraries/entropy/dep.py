@@ -453,8 +453,13 @@ def dep_get_match_in_repos(mydep):
     @rtype: 
     """
     colon = mydep.rfind(etpConst['entropyrepoprefix'])
+    colon_offset = 1
+    if colon == -1:
+        # try with the alternate prefix
+        colon = mydep.rfind(etpConst['entropyrepoprefix_alt'])
+        colon_offset = 2
     if colon != -1:
-        mydata = mydep[colon+1:]
+        mydata = mydep[colon+colon_offset:]
         mydata = mydata.split(",")
         if not mydata:
             mydata = None
