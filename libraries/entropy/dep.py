@@ -452,7 +452,7 @@ def dep_get_match_in_repos(mydep):
     @return: 
     @rtype: 
     """
-    colon = mydep.rfind("@")
+    colon = mydep.rfind(etpConst['entropyrepoprefix'])
     if colon != -1:
         mydata = mydep[colon+1:]
         mydata = mydata.split(",")
