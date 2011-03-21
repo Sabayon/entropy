@@ -1,3 +1,21 @@
+commit c8f35f1843295ad43d94462b77dc5ac5ca26cc5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 16:17:23 2011 +0100
+
+    Release Entropy 1.0_alpha33
+
+commit 5421de7b744c1846effa6b95de2a56e1f4a33f36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 16:12:51 2011 +0100
+
+    [entropy.spm,entropy.db] add default use dependencies support
+
+commit 5aa93175a57ebfdb332a8c168546b46001ad9522
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 20 12:34:26 2011 +0100
+
+    Tagging Entropy version 1.0_alpha32
+
 commit 0bcd6e0f86df8e4b176643576aee52c81e485820
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Mar 20 12:34:26 2011 +0100
