@@ -3806,6 +3806,14 @@ class PortagePlugin(SpmPlugin):
                         if s_use in enabled_useflags:
                             new_use_deps.append(s_use)
                         continue
+                elif use.endswith("(-)"):
+                    # EAPI=4 USE defaults
+                    # in entropy cases, this can be always ignored.
+                    # :: -foo(-), i don't want foo, and if foo doesn't
+                    # exist on target, consider it disabled.
+                    # :: foo(-), i want foo, and if foo doesn't exist
+                    # on target, consider it disabled.
+                    use = use[:-3]
                 new_use_deps.append(use)
             return new_use_deps
 

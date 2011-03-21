@@ -4313,19 +4313,56 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         if compare == 0:
             return package_id
 
-    def __filterUse(self, package_id, use):
-        if not use:
+    def __filterUse(self, package_id, uses):
+        if not uses:
             return package_id
-        pkguse = self.retrieveUseflags(package_id)
-        disabled = set([x[1:] for x in use if x.startswith("-")])
-        enabled = set([x for x in use if not x.startswith("-")])
-        enabled_not_satisfied = enabled - pkguse
+        pkguse = set(self.retrieveUseflags(package_id))
+        enabled = set([x for x in uses if not x.startswith("-")])
+        disabled = set(uses) - enabled
+
+        # USE defaults support
+        enabled_use = set()
+        for use in enabled:
+            if use.endswith("(+)"):
+                use = use[:-3]
+                pkguse.add(use)
+            elif use.endswith("(-)"):
+                # NOTE: this case should be filtered out by SPM
+                use = use[:-3]
+                # consider this use not available
+                # in our case, don't touch pkguse
+            enabled_use.add(use)
+
+        disabled_use = set()
+        for use in disabled:
+            use = use[1:]
+            if use.endswith("(+)"):
+                use = use[:-3]
+                # 3 cases here:
+                # 1 - use flag is not enabled (but available)
+                #     do nothing. we want it not enabled anyway
+                # 2 - use flag is enabled (and available)
+                #     do nothing, this will be caught later in the function
+                # 3 - use flag is not enabled (and also NOT available)
+                #     since we cannot detect if a use flag is not available
+                #     let's suppose that it won't be available and won't be
+                #     added
+                # TODO: for case 3, we would need a new metadatum called
+                #       "disabled_useflags"
+            elif use.endswith("(-)"):
+                # NOTE: this case should be filtered out by SPM
+                use = use[:-3]
+                # by default, uses not listed in pkguse
+                # are always considered unavailable.
+            disabled_use.add(use)
+
+        enabled_not_satisfied = enabled_use - pkguse
         # check enabled
         if enabled_not_satisfied:
             return None
         # check disabled
-        disabled_not_satisfied = disabled - pkguse
-        if len(disabled_not_satisfied) != len(disabled):
+        disabled_not_satisfied = disabled_use - pkguse
+        if len(disabled_not_satisfied) != len(disabled_use):
             return None
         return package_id
 

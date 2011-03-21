@@ -676,6 +676,28 @@ class EntropyRepositoryTest(unittest.TestCase):
         os.remove(buf_file)
         os.remove(new_db_path)
 
+    def test_use_defaults(self):
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage = self.test_db.addPackage(data)
+        key, slot = self.test_db.retrieveKeySlot(idpackage)
+        valid_test_deps = [
+            "%s[%s(+)]" % (key, "doesntexistforsure"),
+            "%s[-%s(-)]" % (key, "doesntexistforsure"),
+            "%s[-%s(+)]" % (key, "doesntexistforsure"), # this will fail
+            "%s[%s(+)]" % (key, "kernel_linux"),
+            "%s[%s(-)]" % (key, "kernel_linux"),
+            "%s[%s(-)]" % (key, "kernel_linux"),
+        ]
+        invalid_test_deps = [
+            "%s[%s(-)]" % (key, "doesntexistforsure"),
+            "%s[-%s(+)]" % (key, "kernel_linux"),
+            "%s[-%s(-)]" % (key, "kernel_linux"),
+        ]
+        for dep in valid_test_deps:
+            self.assertEqual((1, 0), self.test_db.atomMatch(dep))
+        for dep in invalid_test_deps:
+            self.assertEqual((-1, 1), self.test_db.atomMatch(dep))
 
     def test_db_package_sets(self):
 

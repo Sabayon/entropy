@@ -5,6 +5,7 @@ Backlog (raw)
     - entropy.services: refactoring
         rewrite UGC using HTTP protocol
 
+    - add disabled_useflags metadatum and fixup __filterUse()
     - python3.x tests
         entropy ugc fixes
 
