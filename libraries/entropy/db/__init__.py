@@ -4842,7 +4842,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 except (IndexError, ValueError, TypeError,):
                     mytxt = "sqlite3 reports database being corrupted"
                     raise SystemDatabaseError(mytxt)
-                self._cacher.save(cache_key, True)
+                try:
+                    self._cacher.save(cache_key, True)
+                except IOError:
+                    # race condition, ignore
+                    pass
             pingus.ping(action_str)
 
         mytxt = "Repository is corrupted, missing SQL tables!"
@@ -6208,7 +6212,11 @@ class EntropyRepository(EntropyRepositoryBase):
 
         self._setLiveCache("reverseDependenciesMetadata",
                 dep_data)
-        self._cacher.save(cache_key, dep_data)
+        try:
+            self._cacher.save(cache_key, dep_data)
+        except IOError:
+            # race condition, ignore
+            pass
         return dep_data
 
     def moveSpmUidsToBranch(self, to_branch):
