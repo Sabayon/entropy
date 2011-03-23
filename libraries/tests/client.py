@@ -180,7 +180,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         dbconn = self.Client._init_generic_temp_repository(
             self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
         test_pkg = _misc.get_test_package()
-        data = self.Spm.extract_package_metadata(test_pkg) 
+        data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
         self.assertEqual(data, dbconn.getPackageData(idpackage))
         self.Client.remove_repository(self.mem_repoid)
@@ -212,6 +212,24 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_package_installation(self):
         for pkg_path, pkg_atom in self.test_pkgs:
             self._do_pkg_test(pkg_path, pkg_atom)
+
+    def test_shell_trigger(self):
+        dbconn = self.Client._init_generic_temp_repository(
+            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage = dbconn.addPackage(data)
+        pkgdata = dbconn.getTriggerData(idpackage)
+        pkgdata['trigger'] = """\
+#!%s
+echo $@
+exit 42
+""" % (etpConst['trigger_sh_interpreter'],)
+        trigger = self.Client.Triggers('postinstall', pkgdata)
+        trigger.prepare()
+        exit_st = trigger._do_trigger_call_ext_generic()
+        trigger.kill()
+        self.assertEqual(exit_st, 42)
 
     def _do_pkg_test(self, pkg_path, pkg_atom):
 
