@@ -231,6 +231,24 @@ exit 42
         trigger.kill()
         self.assertEqual(exit_st, 42)
 
+    def test_python_trigger(self):
+        dbconn = self.Client._init_generic_temp_repository(
+            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage = dbconn.addPackage(data)
+        pkgdata = dbconn.getTriggerData(idpackage)
+        pkgdata['trigger'] = """\
+import os
+os.system("echo hello")
+my_ext_status = 42
+"""
+        trigger = self.Client.Triggers('postinstall', pkgdata)
+        trigger.prepare()
+        exit_st = trigger._do_trigger_call_ext_generic()
+        trigger.kill()
+        self.assertEqual(exit_st, 42)
+
     def _do_pkg_test(self, pkg_path, pkg_atom):
 
         # this test might be considered controversial, for now, let's keep it
