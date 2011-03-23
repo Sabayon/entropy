@@ -249,6 +249,45 @@ my_ext_status = 42
         trigger.kill()
         self.assertEqual(exit_st, 42)
 
+    def test_python_trigger2(self):
+        dbconn = self.Client._init_generic_temp_repository(
+            self.mem_repoid, self.mem_repo_desc, temp_file = ":memory:")
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage = dbconn.addPackage(data)
+        pkgdata = dbconn.getTriggerData(idpackage)
+        pkgdata['trigger'] = """\
+import os
+import subprocess
+from entropy.const import etpConst
+
+def configure_correct_gcc():
+    gcc_target = "4.5"
+    uname_arch = os.uname()[4]
+    gcc_dir = etpConst['systemroot'] + "/etc/env.d/gcc"
+    gcc_profile_file_pfx = uname_arch + "-pc-linux-gnu-" + gcc_target
+    gcc_profile_file = None
+    for curdir, subs, files in os.walk(gcc_dir):
+        for fname in files:
+            if fname.startswith(gcc_profile_file_pfx):
+                gcc_profile_file = fname
+                break
+        break
+    if gcc_profile_file is not None:
+        subprocess.call(("echo", gcc_profile_file))
+    return 42
+
+if stage == "postinstall":
+    my_ext_status = configure_correct_gcc()
+else:
+    my_ext_status = 0
+"""
+        trigger = self.Client.Triggers('postinstall', pkgdata)
+        trigger.prepare()
+        exit_st = trigger._do_trigger_call_ext_generic()
+        trigger.kill()
+        self.assertEqual(exit_st, 42)
+
     def _do_pkg_test(self, pkg_path, pkg_atom):
 
         # this test might be considered controversial, for now, let's keep it
