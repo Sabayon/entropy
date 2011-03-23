@@ -12,9 +12,11 @@
 import sys
 import os
 import subprocess
+import tempfile
 
 from entropy.client.interfaces.client import Client
-from entropy.const import etpConst, const_isunicode, etpSys, etpUi
+from entropy.const import etpConst, const_isunicode, etpSys, etpUi, \
+    const_convert_to_rawstring
 from entropy.output import brown, bold, darkred, red
 from entropy.i18n import _
 
@@ -216,16 +218,16 @@ class Trigger:
     def _trigger_call_ext_generic(self):
         try:
             return self._do_trigger_call_ext_generic()
-        except Exception as e:
+        except Exception as err:
             mykey = self._pkgdata['category']+"/"+self._pkgdata['name']
-            tb = entropy.tools.get_traceback()
-            self._entropy.output(tb, importance = 0, level = "error")
-            self._entropy.logger.write(tb)
+            tback = entropy.tools.get_traceback()
+            self._entropy.output(tback, importance = 0, level = "error")
+            self._entropy.logger.write(tback)
             self._entropy.logger.log(
                 "[Trigger]",
                 etpConst['logging']['normal_loglevel_id'],
                 "[POST] ATTENTION Cannot run External trigger for " + \
-                    mykey + "!! " + str(Exception) + ": " + str(e)
+                    mykey + "!! " + str(Exception) + ": " + repr(err)
             )
             mytxt = "%s: %s %s. %s." % (
                 bold(_("QA")),
@@ -242,92 +244,109 @@ class Trigger:
 
     class _EntropyShSandbox:
 
-        def __init__(self, Entropy):
-            self._entropy = Entropy
+        def __init__(self, entropy_client):
+            self._entropy = entropy_client
 
         def __env_setup(self, stage, pkgdata):
 
             # mandatory variables
             category = pkgdata.get('category')
-            if const_isunicode(category):
-                category = category.encode('utf-8')
+            category = const_convert_to_rawstring(category,
+                from_enctype = "utf-8")
 
             pn = pkgdata.get('name')
-            if const_isunicode(pn):
-                pn = pn.encode('utf-8')
+            pn = const_convert_to_rawstring(pn,
+                from_enctype = "utf-8")
 
             pv = pkgdata.get('version')
-            if const_isunicode(pv):
-                pv = pv.encode('utf-8')
+            pv = const_convert_to_rawstring(pv,
+                from_enctype = "utf-8")
 
             pr = entropy.dep.dep_get_spm_revision(pv)
             pvr = pv
             if pr == "r0":
                 pvr += "-%s" % (pr,)
+            pvr = const_convert_to_rawstring(pvr,
+                from_enctype = "utf-8")
+            pr = const_convert_to_rawstring(pr,
+                from_enctype = "utf-8")
 
             pet = pkgdata.get('versiontag')
-            if const_isunicode(pet):
-                pet = pet.encode('utf-8')
+            pet = const_convert_to_rawstring(pet,
+                from_enctype = "utf-8")
 
             per = pkgdata.get('revision')
-            if const_isunicode(per):
-                per = per.encode('utf-8')
+            per = const_convert_to_rawstring(per,
+                from_enctype = "utf-8")
 
             etp_branch = pkgdata.get('branch')
-            if const_isunicode(etp_branch):
-                etp_branch = etp_branch.encode('utf-8')
+            etp_branch = const_convert_to_rawstring(etp_branch,
+                from_enctype = "utf-8")
 
             slot = pkgdata.get('slot')
-            if const_isunicode(slot):
-                slot = slot.encode('utf-8')
+            slot = const_convert_to_rawstring(slot,
+                from_enctype = "utf-8")
 
             pkgatom = pkgdata.get('atom')
             pkgkey = entropy.dep.dep_getkey(pkgatom)
             pvrte = pkgatom[len(pkgkey)+1:]
-            if const_isunicode(pvrte):
-                pvrte = pvrte.encode('utf-8')
+            pvrte = const_convert_to_rawstring(pvrte,
+                from_enctype = "utf-8")
 
             etpapi = pkgdata.get('etpapi')
-            if const_isunicode(etpapi):
-                etpapi = etpapi.encode('utf-8')
+            etpapi = const_convert_to_rawstring(etpapi,
+                from_enctype = "utf-8")
 
             p = pkgatom
-            if const_isunicode(p):
-                p = p.encode('utf-8')
+            p = const_convert_to_rawstring(p,
+                from_enctype = "utf-8")
 
             chost, cflags, cxxflags = pkgdata.get('chost'), \
                 pkgdata.get('cflags'), pkgdata.get('cxxflags')
 
-            chost = pkgdata.get('etpapi')
-            if const_isunicode(chost):
-                chost = chost.encode('utf-8')
-
-            cflags = pkgdata.get('etpapi')
-            if const_isunicode(cflags):
-                cflags = cflags.encode('utf-8')
-
-            cxxflags = pkgdata.get('etpapi')
-            if const_isunicode(cxxflags):
-                cxxflags = cxxflags.encode('utf-8')
+            if chost is None:
+                chost = ""
+            if cflags is None:
+                cflags = ""
+            if cxxflags is None:
+                cxxflags = ""
+            chost = const_convert_to_rawstring(chost,
+                from_enctype = "utf-8")
+            cflags = const_convert_to_rawstring(cflags,
+                from_enctype = "utf-8")
+            cxxflags = const_convert_to_rawstring(cxxflags,
+                from_enctype = "utf-8")
 
             # Not mandatory variables
 
             unpackdir = pkgdata.get('unpackdir', '')
-            if const_isunicode(unpackdir):
-                unpackdir = unpackdir.encode('utf-8')
+            unpackdir = const_convert_to_rawstring(unpackdir,
+                from_enctype = "utf-8")
 
             imagedir = pkgdata.get('imagedir', '')
-            if const_isunicode(imagedir):
-                imagedir = imagedir.encode('utf-8')
+            imagedir = const_convert_to_rawstring(imagedir,
+                from_enctype = "utf-8")
 
             sb_dirs = [unpackdir, imagedir]
             sb_write = ':'.join(sb_dirs)
+            etp_mute = "0"
+            if etpUi['mute']:
+                etp_mute = "1"
+            etp_mute = const_convert_to_rawstring(etp_mute,
+                from_enctype = "utf-8")
+            etp_quiet = "0"
+            if etpUi['quiet']:
+                etp_quiet = "1"
+            etp_quiet = const_convert_to_rawstring(etp_quiet,
+                from_enctype = "utf-8")
 
             myenv = {
                 "ETP_API": etpSys['api'],
                 "ETP_STAGE": stage, # entropy trigger stage
                 "ETP_PHASE": self.__get_sh_stage(stage), # entropy trigger phase
                 "ETP_BRANCH": etp_branch,
+                "ETP_MUTE": etp_mute,
+                "ETP_QUIET": etp_quiet,
                 "CATEGORY": category, # package category
                 "PN": pn, # package name
                 "PV": pv, # package version
@@ -364,13 +383,11 @@ class Trigger:
 
         def run(self, stage, pkgdata, trigger_file):
             env = self.__env_setup(stage, pkgdata)
-            p = subprocess.Popen([trigger_file, stage],
-                stdout = sys.stdout, stderr = sys.stderr,
-                env = env
-            )
+            args = [etpConst['trigger_sh_interpreter'], trigger_file, stage]
+            p = subprocess.Popen(
+                args, stdout = sys.stdout, stderr = sys.stderr,
+                env = env)
             rc = p.wait()
-            if os.path.isfile(trigger_file):
-                os.remove(trigger_file)
             return rc
 
     class _EntropyPySandbox:
@@ -389,52 +406,31 @@ class Trigger:
 
     def _do_trigger_call_ext_generic(self):
 
-        # if mute, supress portage output
-        if etpUi['mute']:
-            oldsystderr = sys.stderr
-            oldsysstdout = sys.stdout
-            stdfile = open("/dev/null", "w")
-            sys.stdout = stdfile
-            sys.stderr = stdfile
+        entropy_sh = "#!%s" % (etpConst['trigger_sh_interpreter'],)
+        entropy_sh = const_convert_to_rawstring(entropy_sh)
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        with os.fdopen(tmp_fd, "ab+") as tr_f:
+            tr_f.write(self._pkgdata['trigger'])
+            tr_f.flush()
+            tr_f.seek(0)
+            interpreter = tr_f.read(128)
+            tr_f.seek(0)
+            shell_intr = False
+            if interpreter.startswith(entropy_sh):
+                shell_intr = True
 
-        tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
-        while True:
-            triggerfile = "%s%s" % (tg_pfx, entropy.tools.get_random_number(),)
-            if not os.path.isfile(triggerfile):
-                break
-
-        triggerdir = os.path.dirname(triggerfile)
-        if not os.path.isdir(triggerdir):
-            os.makedirs(triggerdir)
-
-        f = open(triggerfile, "w")
-        chunk = 1024
-        start = 0
-        while True:
-            buf = self._pkgdata['trigger'][start:]
-            if not buf:
-                break
-            f.write(buf)
-            start += chunk
-        f.flush()
-        f.close()
-
-        # if mute, restore old stdout/stderr
-        if etpUi['mute']:
-            sys.stderr = oldsystderr
-            sys.stdout = oldsysstdout
-            stdfile.close()
-
-        f = open(triggerfile, "r")
-        interpreter = f.readline().strip()
-        f.close()
-        entropy_sh = etpConst['trigger_sh_interpreter']
-        if interpreter == "#!%s" % (entropy_sh,):
-            os.chmod(triggerfile, 0o775)
-            my = self._EntropyShSandbox(self._entropy)
-        else:
-            my = self._EntropyPySandbox(self._entropy)
-        return my.run(self._phase, self._pkgdata, triggerfile)
+        try:
+            if shell_intr:
+                exc = self._EntropyShSandbox(self._entropy)
+            else:
+                exc = self._EntropyPySandbox(self._entropy)
+            return exc.run(self._phase, self._pkgdata, tmp_path)
+        finally:
+            if shell_intr:
+                try:
+                    os.remove(tmp_path)
+                except OSError:
+                    pass
 
     def _trigger_env_update(self):
         if self._spm is not None:
