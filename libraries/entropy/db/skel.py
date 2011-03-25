@@ -1521,7 +1521,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         mytxt = "%s: %s, %s." % (
             bold(_("SPM")),
-            blue(_("Running fixpackages")),
+            blue(_("Running packages metadata update")),
             red(_("it could take a while")),
         )
         self.output(
