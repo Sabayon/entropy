@@ -5380,8 +5380,17 @@ class EntropyRepository(EntropyRepositoryBase):
         Reimplemented from EntropyRepositoryBase.
         """
         self._cursor().execute('DELETE FROM content')
-        if self._doesTableExist("contentsafety"):
+        self.dropContentSafety()
+
+    def dropContentSafety(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        try:
             self._cursor().execute('DELETE FROM contentsafety')
+        except OperationalError:
+            # table doesn't exist, ignore
+            pass
 
     def dropChangelog(self):
         """

@@ -3570,6 +3570,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def dropContentSafety(self):
+        """
+        Drop all "contentsafety" metadata from repository, usually a memory hog.
+        ContentSafety metadata contains mtime and sha256 hashes of files owned
+        by package.
+        """
+        raise NotImplementedError()
+
     def dropChangelog(self):
         """
         Drop all packages' ChangeLogs metadata from repository, a memory hog.
