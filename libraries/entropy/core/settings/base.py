@@ -573,8 +573,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(self.__setting_files['unmask'],
+        valid = self.validate_entropy_cache(self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
+        if not valid:
+            # all the cache must be cleared (including upgrade and
+            # repository match cache
+            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['unmask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -588,8 +592,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(self.__setting_files['mask'],
+        valid = self.validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
+        if not valid:
+            # all the cache must be cleared (including upgrade and
+            # repository match cache
+            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['mask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -603,8 +611,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(self.__setting_files['satisfied'],
+        valid = self.validate_entropy_cache(self.__setting_files['satisfied'],
             self.__mtime_files['satisfied_mtime'])
+        if not valid:
+            # all the cache must be cleared (including upgrade and
+            # repository match cache
+            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['satisfied'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -619,8 +631,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(self.__setting_files['system_mask'],
+        valid = self.validate_entropy_cache(self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
+        if not valid:
+            # all the cache must be cleared (including upgrade and
+            # repository match cache
+            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['system_mask'],
             comment_tag = self.__pkg_comment_tag)
 
@@ -633,8 +649,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(self.__setting_files['license_mask'],
-            self.__mtime_files['license_mask_mtime'])
+        valid = self.validate_entropy_cache(
+            self.__setting_files['license_mask'],
+                self.__mtime_files['license_mask_mtime'])
+        if not valid:
+            # all the cache must be cleared (including upgrade and
+            # repository match cache
+            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['license_mask'])
 
     def _license_accept_parser(self):
@@ -646,8 +667,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: parsed metadata
         @rtype: dict
         """
-        self.validate_entropy_cache(self.__setting_files['license_accept'],
+        valid = self.validate_entropy_cache(
+            self.__setting_files['license_accept'],
             self.__mtime_files['license_accept_mtime'])
+        if not valid:
+            # all the cache must be cleared (including upgrade and
+            # repository match cache
+            EntropyCacher.clear_cache()
         return self.__generic_parser(self.__setting_files['license_accept'])
 
     def _extract_packages_from_set_file(self, filepath):
@@ -659,18 +685,22 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: 
         @rtype: 
         """
-        if sys.hexversion >= 0x3000000:
-            f = open(filepath, "r", encoding = 'raw_unicode_escape')
-        else:
-            f = open(filepath, "r")
-        items = set()
-        line = f.readline()
-        while line:
-            x = line.strip().rsplit("#", 1)[0]
-            if x and (not x.startswith('#')):
-                items.add(x)
+        f = None
+        try:
+            if sys.hexversion >= 0x3000000:
+                f = open(filepath, "r", encoding = 'raw_unicode_escape')
+            else:
+                f = open(filepath, "r")
+            items = set()
             line = f.readline()
-        f.close()
+            while line:
+                x = line.strip().rsplit("#", 1)[0]
+                if x and (not x.startswith('#')):
+                    items.add(x)
+                line = f.readline()
+        finally:
+            if f is not None:
+                f.close()
         return items
 
     def _system_package_sets_parser(self):
@@ -1116,6 +1146,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         mydata['post_repo_update_script'] = mydata['dbpath'] + os.path.sep + \
             etpConst['etp_post_repo_update_script']
 
+        mydata['webservices_config'] = mydata['dbpath'] + os.path.sep + \
+            etpConst['etpdatabasewebservicesfile']
+
         # initialize CONFIG_PROTECT
         # will be filled the first time the db will be opened
         mydata['configprotect'] = None
@@ -1338,8 +1371,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
             repo_db_path_mtime = os.path.join(dmp_path, repo_mtime_fn)
             if os.path.isfile(repo_db_path) and \
                 os.access(repo_db_path, os.R_OK):
-                self.validate_entropy_cache(repo_db_path, repo_db_path_mtime,
-                    repoid = repoid)
+                valid = self.validate_entropy_cache(repo_db_path,
+                    repo_db_path_mtime, repoid = repoid)
+                if not valid:
+                    EntropyCacher.clear_cache(excluded_items = ["db_match"])
 
         # insert extra packages mirrors directly from repository dirs
         # if they actually exist. use data['order'] because it reflects
@@ -1588,3 +1623,5 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         if mtime != currmtime:
             revalidate()
+            return False
+        return True
