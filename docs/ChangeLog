@@ -1,3 +1,33 @@
+commit c68596c9ecca9addec6069fb8b4902f5a57705d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 17:30:29 2011 +0100
+
+    Release Entropy 1.0_alpha36
+
+commit bff346fa06ccfb1c1f836395cadfec6eb07bc5f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 17:28:42 2011 +0100
+
+    [entropy.server] in _shrink_and_close(), also drop all content_safety metadata from repo, not needed
+
+commit 6c805b8e5e9ad274a2d6a0ccc4745de33fad4b0c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 17:16:03 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase: add new method "dropContentSafety"
+
+commit 070427f9d831d9fe1021d7af107543b9c045cea6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 16:47:01 2011 +0100
+
+    [tests] db: fix test_db_metadata_handling, trigger metadata now contains slot
+
+commit f362edf772954995d9ea1a96991aabe8381d2106
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 14:30:25 2011 +0100
+
+    Tagging Entropy version 1.0_alpha35
+
 commit e8d88d6814e98cfbe22d110b72cef27f08010456
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 25 14:30:25 2011 +0100
