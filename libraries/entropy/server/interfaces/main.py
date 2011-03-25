@@ -1292,6 +1292,10 @@ class Server(Client):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['etpdatabasekeywordsfile'])
 
+    def _get_local_repository_webserv_file(self, repository_id, branch = None):
+        return os.path.join(self._get_local_repository_dir(repository_id,
+            branch = branch), etpConst['etpdatabasewebservicesfile'])
+
     def _get_local_repository_dir(self, repository_id, branch = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if branch is None:
