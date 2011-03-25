@@ -1146,6 +1146,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         mydata['post_repo_update_script'] = mydata['dbpath'] + os.path.sep + \
             etpConst['etp_post_repo_update_script']
 
+        mydata['webservices_config'] = mydata['dbpath'] + os.path.sep + \
+            etpConst['etpdatabasewebservicesfile']
+
         # initialize CONFIG_PROTECT
         # will be filled the first time the db will be opened
         mydata['configprotect'] = None
