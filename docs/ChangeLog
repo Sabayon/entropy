@@ -1,3 +1,93 @@
+commit 5c5fb7a60489b8b5d4598f132023ae56fe2e13f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 10:18:48 2011 +0100
+
+    Release Entropy 1.0_alpha34
+
+commit f0128cee35cf966e871c700f60638f728275fd98
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 09:50:56 2011 +0100
+
+    [entropy.db.skel] minor docstring update
+
+commit 9b3400922641ab0526beac7ce0bf995612fe969e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 09:48:20 2011 +0100
+
+    [entropy.core.settings.base] fix cache validation logic after configuration files changes, see bug #2280
+
+commit ab1e5b5644deed346dacb90bcec5627c02fc8930
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 23 07:08:26 2011 +0100
+
+    [tests] add another python-based package trigger test
+
+commit c62dd54531481b05b759ffbd11b2dc8d800eebbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 23 06:44:46 2011 +0100
+
+    [tests] add python-based package trigger test
+
+commit e07dada3cca8f42d567a3cd6985a570f86b8d6eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 23 06:39:16 2011 +0100
+
+    [entropy.client.interfaces.trigger] rework shell-based trigger support
+
+commit e9e4161ae7d64f3105cd29da7bc324f63b899944
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 23 06:37:50 2011 +0100
+
+    [tests] add shell trigger test to client
+
+commit fa20010d80e76e8a24295343d64320faeaaf9ad0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 23 06:36:14 2011 +0100
+
+    [entropy.db] EntropyRepositoryBase.getTriggerData: also return slot metadatum
+
+commit 128c4f905a73897de0001fe1cd22b60096fba522
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 22 15:52:01 2011 +0100
+
+    [po] update Polish translation
+
+commit f425c505a96c9be7ee0e196e45e9b07163036a89
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 20:28:08 2011 +0100
+
+    [entropy.spm] PortagePlugin: when printing generic exception, always use repr()
+
+commit 2c7f0517cb5aaeb544506605de9ffc9a877870f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 20:12:19 2011 +0100
+
+    [sulfur] package properties loader functions: "sources" metadata of package can be unavailable
+
+commit 29eb581288f854050ed1e966adad606914e16e37
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 20:10:50 2011 +0100
+
+    [entropy.db] when calling EntropyCacher.save() handle IOError exception (race condition on fs write)
+
+commit 311d249086dacb90d50244c2e73f769af4746257
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 16:25:58 2011 +0100
+
+    [entropy.dep] add "::" repository prefix as alternative way to match dependencies in repository
+
+commit c54caa33f2bc1afd807fb28ca56252f1f58803f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 16:23:00 2011 +0100
+
+    [entropy.dep] in dep_get_match_in_repos, use repository prefix constant stored in etpConst
+
+commit d5758311ff0fd51831f149b6ea2f299310bdd0fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Mar 21 16:17:23 2011 +0100
+
+    Tagging Entropy version 1.0_alpha33
+
 commit c8f35f1843295ad43d94462b77dc5ac5ca26cc5c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Mar 21 16:17:23 2011 +0100
