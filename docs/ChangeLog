@@ -1,3 +1,21 @@
+commit e8d88d6814e98cfbe22d110b72cef27f08010456
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 14:30:25 2011 +0100
+
+    Release Entropy 1.0_alpha35
+
+commit d82a8d5ed02571a0c16c501f62f88e1853be61e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 14:30:00 2011 +0100
+
+    [entropy.core.settings.base] drop unwanted merged code
+
+commit 058186d6bb7e579e16a94de8d25845aeea593d32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 10:18:50 2011 +0100
+
+    Tagging Entropy version 1.0_alpha34
+
 commit 5c5fb7a60489b8b5d4598f132023ae56fe2e13f2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 25 10:18:48 2011 +0100
