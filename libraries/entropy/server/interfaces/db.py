@@ -998,6 +998,10 @@ class ServerPackagesRepositoryUpdater(object):
         """
         entropy_repository.clean()
         entropy_repository.dropAllIndexes()
+        # NOTE: this takes a huge amount of space and it's not needed
+        # anymore at this point, since all this data went to package files
+        # directly. It is safe to consider a complete drop at this point, then.
+        entropy_repository.dropContentSafety()
         entropy_repository.vacuum()
         entropy_repository.vacuum()
         entropy_repository.commit()
