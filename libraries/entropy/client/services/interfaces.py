@@ -466,6 +466,7 @@ class ClientWebService(WebService):
     # Package maximum and minimum vote boundaries
     MAX_VOTE = 5.0
     MIN_VOTE = 0.0
+    VALID_VOTES = (1, 2, 3, 4, 5)
 
     class DocumentError(WebService.WebServiceException):
         """
@@ -581,11 +582,7 @@ class ClientWebService(WebService):
             not available (user interface should raise a login form, validate
             the credentials and retry the function call here)
         """
-        valid = True
-        if vote > ClientWebService.MAX_VOTE:
-            valid = False
-        elif vote < ClientWebService.MIN_VOTE:
-            valid = False
+        valid = vote in ClientWebService.VALID_VOTES
         if not valid:
             raise WebService.RequestError("invalid vote")
         params = {

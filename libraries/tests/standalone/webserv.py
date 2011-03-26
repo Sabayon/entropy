@@ -54,6 +54,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         user = const_convert_to_unicode("lxnày")
         password = const_convert_to_unicode("pààààss")
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         webserv.add_credentials(user, password)
         self.assertEqual(webserv.get_credentials(), user)
         self.assertEqual(webserv.credentials_available(), True)
@@ -67,10 +68,11 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_vote(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         # try with success
         webserv.remove_credentials()
         try:
-            webserv.add_vote(self._fake_package_name, 4.0)
+            webserv.add_vote(self._fake_package_name, 4)
             # webserv.AuthenticationRequired should be raised
             self.assert_(False)
         except webserv.AuthenticationRequired:
@@ -80,7 +82,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             # credentials must be valid
             webserv.validate_credentials()
             # now it should not crash
-            webserv.add_vote(self._fake_package_name, 4.0)
+            webserv.add_vote(self._fake_package_name, 4)
         finally:
             webserv.remove_credentials()
 
@@ -91,6 +93,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_downloads(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         pk = self._fake_package_name
         pkg_list = [pk]
         cur_downloads = webserv.get_downloads(pkg_list)[pk]
@@ -105,6 +108,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_icon(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = ["keyword1", "keyword2"]
         description = const_convert_to_unicode("descrìption")
@@ -171,6 +175,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_image(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = ["keyword1", "keyword2"]
         description = const_convert_to_unicode("descrìption")
@@ -237,6 +242,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_comment(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = ["keyword1", "keyword2"]
         comment = const_convert_to_unicode("comment hellò")
@@ -294,6 +300,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_file(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = ["keyword1", "keyword2"]
         description = const_convert_to_unicode("descrìption")
@@ -360,6 +367,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_add_video(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
         keywords = ["keyword1", "keyword2"]
         description = const_convert_to_unicode("descrìption")
@@ -429,6 +437,7 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_get_documents(self):
         pk = self._real_package_name
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         docs = webserv.get_documents([pk], cache = False)
         self.assert_(pk in docs)
         self.assert_(docs[pk])
@@ -476,6 +485,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_factory_comment(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
         doc = doc_factory.comment("username", "comment", "title", ["a", "b"])
         self.assert_(doc.is_comment())
@@ -493,6 +503,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_factory_image(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
 
         tmp_fd, tmp_path = tempfile.mkstemp()
@@ -521,6 +532,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_factory_icon(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
 
         tmp_fd, tmp_path = tempfile.mkstemp()
@@ -550,6 +562,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_factory_file(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
 
         tmp_fd, tmp_path = tempfile.mkstemp()
@@ -579,6 +592,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_factory_video(self):
         webserv = self._factory.new(self._repository_id)
+        self.assert_(webserv.service_available())
         doc_factory = webserv.document_factory()
 
         tmp_fd, tmp_path = tempfile.mkstemp()
