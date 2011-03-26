@@ -21,17 +21,20 @@ class LoadersMixin:
 
     def __init__(self):
         self._spm_cache = {}
-
+        # instantiate here to avoid runtime loading, that can cause failures
+        # during complete system upgrades
         from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
         from entropy.client.interfaces.sets import Sets
         from entropy.client.misc import FileUpdates
+        from entropy.client.services.interfaces import ClientWebServiceFactory
         self.__package_loader = Package
         self.__repository_loader = Repository
         self.__trigger_loader = Trigger
         self.__sets_loader = Sets
         self.__package_files_loader = FileUpdates
+        self.__webservice_factory = ClientWebServiceFactory
 
     def Sets(self):
         """
@@ -91,6 +94,17 @@ class LoadersMixin:
         client_data = self._settings[cl_id]['misc']
         kwargs['gpg'] = client_data['gpg']
         return self.__repository_loader(self, *args, **kwargs)
+
+    def WebServices(self):
+        """
+        Load Entropy Web Services Factory interface, that can be used
+        to obtain a WebService object that is able to communicate with
+        repository remote services, if available.
+
+        @return: WebServicesFactory instance object
+        @rtype: entropy.client.services.interfaces.WebServicesFactory
+        """
+        return self.__webservice_factory(self)
 
     def Spm(self):
         """
