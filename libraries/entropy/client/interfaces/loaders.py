@@ -135,6 +135,12 @@ class LoadersMixin:
         """
         return self._settings
 
+    def ClientSettings(self):
+        """
+        Return SystemSettings Entropy Client plugin metadata dictionary
+        """
+        return self._settings[self.sys_settings_client_plugin_id]
+
     def Cacher(self):
         """
         Return EntropyCacher instance object
