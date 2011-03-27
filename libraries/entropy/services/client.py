@@ -31,7 +31,8 @@ import entropy.dump
 from entropy.core import Singleton
 from entropy.cache import EntropyCacher
 from entropy.const import const_debug_write, const_setup_file, etpConst, \
-    const_convert_to_rawstring, const_isunicode
+    const_convert_to_rawstring, const_isunicode, const_isstring, \
+    const_convert_to_unicode
 from entropy.exceptions import EntropyException
 import entropy.tools
 import entropy.dep
@@ -129,7 +130,8 @@ class WebService(object):
     # structure
     SUPPORTED_API_LEVEL = 1
 
-    # Default common Web Service responses
+    # Default common Web Service responses, please use these when
+    # implementing your web service
     WEB_SERVICE_RESPONSE_CODE_OK = 200
     WEB_SERVICE_INVALID_CREDENTIALS_CODE = 450
     WEB_SERVICE_INVALID_REQUEST_CODE = 400
@@ -140,6 +142,29 @@ class WebService(object):
         """
         Base WebService exception class.
         """
+        def __init__(self, value, method = None):
+            self.value = value
+            self.method = method
+            Exception.__init__(self)
+
+        def __get_method(self):
+            if self.method is None:
+                method = const_convert_to_unicode("")
+            else:
+                method = const_convert_to_unicode(self.method)
+            return method
+
+        def __unicode__(self):
+            method = self.__get_method()
+            if const_isstring(self.value):
+                return const_convert_to_unicode(method + " " + self.value)
+            return const_convert_to_unicode(method + " " + repr(self.value))
+
+        def __str__(self):
+            method = self.__get_method()
+            if const_isstring(self.value):
+                return method + " " + self.value
+            return method + " " + repr(self.value)
 
     class UnsupportedService(WebServiceException):
         """
@@ -386,7 +411,8 @@ class WebService(object):
                 connection = httplib.HTTPSConnection(self._request_host,
                     timeout = self._default_timeout_secs)
             else:
-                raise WebService.RequestError("invalid request protocol")
+                raise WebService.RequestError("invalid request protocol",
+                    method = function_name)
 
             headers = {
                 "Accept": "text/plain",
@@ -430,7 +456,8 @@ class WebService(object):
                         try:
                             connection.send(chunk)
                         except socket.error as err:
-                            raise WebService.RequestError(err)
+                            raise WebService.RequestError(err,
+                                method = function_name)
                         if self._transfer_callback is not None:
                             self._transfer_callback(sio.tell(),
                                 data_size, False)
@@ -458,7 +485,8 @@ class WebService(object):
                         try:
                             connection.send(chunk)
                         except socket.error as err:
-                            raise WebService.RequestError(err)
+                            raise WebService.RequestError(err,
+                                method = function_name)
                         if self._transfer_callback is not None:
                             self._transfer_callback(body_file.tell(),
                                 data_size, False)
@@ -495,7 +523,8 @@ class WebService(object):
             return outcome, response
 
         except httplib.HTTPException as err:
-            raise WebService.RequestError(err)
+            raise WebService.RequestError(err,
+                method = function_name)
         finally:
             if connection is not None:
                 connection.close()
@@ -583,7 +612,7 @@ class WebService(object):
         Return on disk cache file name as key, given a method name and its
         parameters.
         """
-        hash_str = repr(params)
+        hash_str = repr(params) + ", " + self._request_url
         if sys.hexversion >= 0x3000000:
             hash_str = hash_str.encode("utf-8")
         sha = hashlib.sha1()
@@ -682,27 +711,33 @@ class WebService(object):
 
             http_status = response.status
             if http_status not in (httplib.OK,):
-                raise WebService.MethodNotAvailable(http_status)
+                raise WebService.MethodNotAvailable(http_status,
+                    method = func_name)
 
             # try to convert the JSON response
             try:
                 data = json.loads(json_response)
             except (ValueError, TypeError) as err:
-                raise WebService.MalformedResponse(err)
+                raise WebService.MalformedResponse(err,
+                    method = func_name)
 
             # check API
             if data.get("api_rev") != WebService.SUPPORTED_API_LEVEL:
-                raise WebService.UnsupportedAPILevel(data['api_rev'])
+                raise WebService.UnsupportedAPILevel(data['api_rev'],
+                    method = func_name)
 
             code = data.get("code", -1)
             if code == WebService.WEB_SERVICE_INVALID_CREDENTIALS_CODE:
                 # invalid credentials, ask again login data
-                raise WebService.AuthenticationFailed(code)
+                raise WebService.AuthenticationFailed(code,
+                    method = func_name)
             if code != WebService.WEB_SERVICE_RESPONSE_CODE_OK:
-                raise WebService.MethodResponseError(code)
+                raise WebService.MethodResponseError(code,
+                    method = func_name)
 
             if "r" not in data:
-                raise WebService.MalformedResponse("r not found")
+                raise WebService.MalformedResponse("r not found",
+                    method = func_name)
             obj = data["r"]
             return obj
 

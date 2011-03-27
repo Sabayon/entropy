@@ -584,7 +584,7 @@ class ClientWebService(WebService):
         """
         valid = vote in ClientWebService.VALID_VOTES
         if not valid:
-            raise WebService.RequestError("invalid vote")
+            raise WebService.RequestError("invalid vote", method = "add_vote")
         params = {
             "package_name": package_name,
             "vote": vote,
