@@ -1,3 +1,111 @@
+commit 10b90efeceedef093674e1b336a199b780060228
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 22:07:51 2011 +0200
+
+    Release Entropy 1.0_alpha37
+
+commit 0e36036c872e414bd9716657f1e36ae5f942db53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 21:57:08 2011 +0200
+
+    [entropy.db.skel] fix typo in _runTreeUpdatesMoveAction
+
+commit da3af942c710330624f13c6db815de5499a6f4f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 21:26:27 2011 +0200
+
+    [entropy.db.skel] rewrite _runTreeUpdatesMoveAction to be more robust on slot changes (on dependency strings)
+
+commit a2e610b4fbdb921961eaccd647d44a11ecb3adc4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 21:12:11 2011 +0200
+
+    [entropy.db.skel] rewrite _runTreeUpdatesSlotmoveAction to be more robust on slot changes (on dependency strings)
+
+commit f1428adab250c7fdb219671d2ff1b56f2f3abf6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 21:11:02 2011 +0200
+
+    [entropy.db.skel] in treeupdates routines, always use atomMatch with maskFilter turned off
+
+commit 68d1d7a31b247a8c7e156e8729e00bff9f7ecbbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 20:26:45 2011 +0200
+
+    [sulfur] add lot of debug output to UGC icon loading code
+
+commit 0e7920d6afef930f4fc4af1793d97683a39d0c7f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 20:24:28 2011 +0200
+
+    [sulfur.views] enlarge UGC icon fetch queue, lowering the thread priority caused starvation with a too small queue size
+
+commit cffa1e600d1237f8c4a5bc102c49b7f96bc43a64
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 19:42:15 2011 +0200
+
+    [entropy.db.skel] use etpConst['entropyslotprefix'] instead of hardcoded ":"
+
+commit 4c57a839b114e25d3cfc4556e1254a1f85e71ee5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 15:48:16 2011 +0200
+
+    [entropy.services.client] automatically cast to string base types when generating multi-part encoded POST data
+
+commit d232be6afce185663096c10d0b26e4c485ef2825
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 11:10:36 2011 +0200
+
+    [entropy.services.client] pack up the service method name called in exceptions when possible
+
+commit 55d31ca75f721b887218721035ff407188662053
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Mar 27 11:09:36 2011 +0200
+
+    [entropy.services.client] add all the currently declared server-side response codes
+
+commit 377776aa63524b18b4ba66b9bcfe8c7cd6c0ad55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 26 16:54:59 2011 +0100
+
+    [entropy.client.services] minor fixes to package vote range management
+
+commit 884bf31e6dfd8ab6971076e652d155112aeb4657
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 26 16:21:27 2011 +0100
+
+    [entropy.services] introduce the new Entropy Web Services Client library.
+
+commit 7f5cc1972b124327fcb0192ea2408863d1da9d1b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Mar 26 16:20:33 2011 +0100
+
+    [entropy.client.interfaces.loaders] add ClientSettings loader
+
+commit d8c3e4529aebd77f0ea0e17c5b2b009309322bbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 22:43:22 2011 +0100
+
+    [entropy.server] add Entropy Web Services file upload/download handling
+
+commit 5430f85012454eaeea01ad3286d9af8677fd9cc0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 22:42:50 2011 +0100
+
+    [entropy.core] SystemSettings: add base Entropy Web Services repository metadata
+
+commit 16d7d375802cea7f3f2d019fa84bee9545c530d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 22:42:34 2011 +0100
+
+    [entropy.const] add Entropy Web Services constants
+
+commit f8c7d7323bf7969b4b9bdf4005e8d1e14c900d50
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Mar 25 17:30:31 2011 +0100
+
+    Tagging Entropy version 1.0_alpha36
+
 commit c68596c9ecca9addec6069fb8b4902f5a57705d9
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Mar 25 17:30:29 2011 +0100
