@@ -1717,6 +1717,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         slot_to = slotmove_command[2]
         matches = self.atomMatch(atom, multiMatch = True)
         iddependencies = set()
+        slot_pfx = etpConst['entropyslotprefix']
 
         matched_package_ids = matches[0]
         for package_id in matched_package_ids:
@@ -1728,7 +1729,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             # look for packages we need to quickpkg again
             # NOTE: quickpkg_queue is simply ignored if this is a client side
             # repository
-            quickpkg_queue.add(atom+":"+slot_to)
+            quickpkg_queue.add(atom + slot_pfx + slot_to)
 
             # only if we've found VALID matches !
             iddeps = self.searchDependency(atomkey, like = True, multi = True)
@@ -1738,12 +1739,13 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 mydep_key = entropy.dep.dep_getkey(mydep)
                 if mydep_key != atomkey:
                     continue
-                if not mydep.endswith(":"+slot_from): # probably slotted dep
+                if not mydep.endswith(slot_pfx + slot_from):
+                    # probably slotted dep
                     continue
                 mydep_match = self.atomMatch(mydep)
                 if mydep_match not in matched_package_ids:
                     continue
-                mydep = mydep.replace(":"+slot_from, ":"+slot_to)
+                mydep = mydep.replace(slot_pfx + slot_from, slot_pfx + slot_to)
                 # now update
                 # dependstable on server is always re-generated
                 self.setDependency(iddep, mydep)
