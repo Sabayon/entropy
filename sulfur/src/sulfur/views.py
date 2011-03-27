@@ -691,7 +691,9 @@ class EntropyPackageView:
 
         self.__pkg_ugc_icon_cache = {}
         self.__pkg_ugc_icon_call_cache = {}
-        self._ugc_load_queue = queue_class(10) # max 10 items at time
+        # max 64 items at time, don't lower it too much, can cause
+        # request starvation with the current very low priority
+        self._ugc_load_queue = queue_class(64)
         self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
         if self._ugc_status:
             # deferred loading, speedup UI init
