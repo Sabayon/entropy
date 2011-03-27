@@ -536,7 +536,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 atom_key = entropy.dep.dep_getkey(atom)
                 category = atom_key.split("/")[0]
                 matches, sm_rc = self.atomMatch(atom, matchSlot = from_slot,
-                    multiMatch = True)
+                    multiMatch = True, maskFilter = False)
                 if sm_rc == 1:
                     # nothing found in repo that matches atom
                     # this means that no packages can effectively
@@ -569,7 +569,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 atom = doaction[1] # usually a key
                 atom_key = entropy.dep.dep_getkey(atom)
                 category = atom_key.split("/")[0]
-                matches, m_rc = self.atomMatch(atom, multiMatch = True)
+                matches, m_rc = self.atomMatch(atom, multiMatch = True,
+                    maskFilter = False)
                 if m_rc == 1:
                     # nothing found in repo that matches atom
                     # this means that no packages can effectively
@@ -1625,7 +1626,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         key_to = entropy.dep.dep_getkey(move_command[1])
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
-        matches = self.atomMatch(dep_from, multiMatch = True)
+        matches = self.atomMatch(dep_from, multiMatch = True,
+            maskFilter = False)
         iddependencies = set()
 
         for package_id in matches[0]:
