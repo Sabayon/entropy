@@ -703,6 +703,7 @@ class EntropyPackageView:
         self.view.queue_draw()
 
     def _emit_ugc_update(self):
+        const_debug_write(__name__, "_emit_ugc_update, called")
         SulfurSignals.emit('ugc_data_update')
 
     def change_model_injector(self, injector):
@@ -2060,6 +2061,8 @@ class EntropyPackageView:
             queue.task_done()
 
         if pkgs:
+            const_debug_write(__name__,
+                "_ugc_queue_run, spawning fetch of: %s" % (pkgs,))
             self._spawn_ugc_metadata_fetch(pkgs)
 
 
@@ -2067,9 +2070,18 @@ class EntropyPackageView:
 
         def do_ugc_sync():
             for key, repoid in pkgs:
+                const_debug_write(__name__,
+                    "_spawn_ugc_metadata_fetch, checking: %s, %s" % (
+                        key, repoid,))
                 if self._entropy.UGC.UGCCache.is_alldocs_cached(key, repoid):
+                    const_debug_write(__name__,
+                        "_spawn_ugc_metadata_fetch, skipping !!: %s, %s" % (
+                            key, repoid,))
                     continue
-                self._entropy.UGC.get_docs(repoid, key)
+                outcome = self._entropy.UGC.get_docs(repoid, key)
+                const_debug_write(__name__,
+                    "_spawn_ugc_metadata_fetch, get_docs() called: %s" % (
+                        outcome,))
             self.__pkg_ugc_icon_call_cache.clear()
 
         def do_fork():
@@ -2093,13 +2105,13 @@ class EntropyPackageView:
         except (ProgrammingError, OperationalError):
             return
 
-        #const_debug_write(__name__, "_get_cached_pkg_ugc_icon called")
+        const_debug_write(__name__, "_get_cached_pkg_ugc_icon called")
 
         cache_key = (key, repoid,)
         cached = self.__pkg_ugc_icon_cache.get(cache_key)
         if cached is not None:
-            #const_debug_write(__name__, "_get_cached_pkg_ugc_icon %s in RAM" % (
-            #    cache_key,))
+            const_debug_write(__name__, "_get_cached_pkg_ugc_icon %s in RAM" % (
+                cache_key,))
             return cached
 
         # validate variables...
@@ -2110,15 +2122,15 @@ class EntropyPackageView:
 
         icon_doc = self._entropy.UGC.UGCCache.get_icon_cache(key, repoid)
         if icon_doc is None:
-            #const_debug_write(__name__,
-            #    "_get_cached_pkg_ugc_icon %s NOT on disk" % (
-            #        cache_key,))
+            const_debug_write(__name__,
+                "_get_cached_pkg_ugc_icon %s NOT on disk" % (
+                    cache_key,))
             # not cached
             return
 
-        #const_debug_write(__name__,
-        #    "_get_cached_pkg_ugc_icon %s on disk?" % (
-        #        cache_key,))
+        const_debug_write(__name__,
+            "_get_cached_pkg_ugc_icon %s on disk?" % (
+                cache_key,))
 
         store_path = self._entropy.UGC.UGCCache.get_stored_document(
             icon_doc['iddoc'], repoid, icon_doc['store_url'])
@@ -2129,16 +2141,16 @@ class EntropyPackageView:
             if not called:
                 self._spawn_ugc_icon_fetch(icon_doc, repoid)
             self.__pkg_ugc_icon_call_cache[cache_key] = True
-            #const_debug_write(__name__,
-            #    "_get_cached_pkg_ugc_icon %s not cached on disk" % (
-            #        cache_key,))
+            const_debug_write(__name__,
+                "_get_cached_pkg_ugc_icon %s not cached on disk" % (
+                    cache_key,))
             return
 
         if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
             # not cached
-            #const_debug_write(__name__,
-            #    "_get_cached_pkg_ugc_icon %s path not available" % (
-            #        cache_key,))
+            const_debug_write(__name__,
+                "_get_cached_pkg_ugc_icon %s path not available" % (
+                    cache_key,))
             return
 
         icon_path = store_path + ".sulfur_icon_small"
@@ -2146,9 +2158,9 @@ class EntropyPackageView:
 
         if pixbuf is None:
 
-            #const_debug_write(__name__,
-            #    "_get_cached_pkg_ugc_icon %s cannot get pixbuf" % (
-            #        cache_key,))
+            const_debug_write(__name__,
+                "_get_cached_pkg_ugc_icon %s cannot get pixbuf" % (
+                    cache_key,))
 
             if not (os.path.isfile(icon_path) and \
                 os.access(icon_path, os.R_OK)):
@@ -2168,36 +2180,63 @@ class EntropyPackageView:
                     pass
                 return None
             self._ugc_pixbuf_map[icon_path] = pixbuf
-        #else:
-        #    const_debug_write(__name__,
-        #        "_get_cached_pkg_ugc_icon %s got pixbuf from RAM" % (
-        #            cache_key,))
+        else:
+            const_debug_write(__name__,
+                "_get_cached_pkg_ugc_icon %s got pixbuf from RAM" % (
+                    cache_key,))
 
         self.__pkg_ugc_icon_cache[cache_key] = pixbuf
         return pixbuf
 
     def __new_ugc_pixbuf_stash_fetch(self, pkg):
         # stash to queue for loading from WWW if required
+
+        const_debug_write(__name__,
+            "__new_ugc_pixbuf_stash_fetch called: %s" % (
+                pkg,))
+
         if not self._ugc_status:
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch UGC STATUS FALSE!")
             return
+
+        const_debug_write(__name__,
+            "__new_ugc_pixbuf_stash_fetch going on for: %s" % (
+                pkg,))
 
         try:
             repoid = pkg.repoid
             sync_item = (pkg.key, repoid)
-        except (ProgrammingError, OperationalError):
+        except (ProgrammingError, OperationalError) as err:
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch, ouch: %s" % (
+                    repr(err),))
             return
         if sync_item in self._ugc_metadata_sync_exec_cache:
-            return
-
-        if not self._entropy.UGC.is_repository_eapi3_aware(repoid):
-            self._ugc_metadata_sync_exec_cache.add(sync_item)
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch: already in cache: %s" % (
+                    sync_item,))
             return
 
         self._ugc_metadata_sync_exec_cache.add(sync_item)
+        if not self._entropy.UGC.is_repository_eapi3_aware(repoid):
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch: repository not EAPI3 aware: %s" % (
+                    repoid,))
+            return
+
+        const_debug_write(__name__,
+            "__new_ugc_pixbuf_stash_fetch: enqueue %s" % (sync_item,))
+
         try:
             self._ugc_load_queue.put_nowait(sync_item)
-        except self.queue_full_exception:
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch: enqueued!! %s" % (sync_item,))
+        except self.queue_full_exception as err:
             # argh! queue full!
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch: ARGH QUEUE FULL %s" % (
+                    sync_item,))
             pass
 
     def new_ugc_pixbuf(self, column, cell, model, myiter):
