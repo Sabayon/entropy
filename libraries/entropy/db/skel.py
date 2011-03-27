@@ -1717,42 +1717,63 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         atomkey = entropy.dep.dep_getkey(atom)
         slot_from = slotmove_command[1]
         slot_to = slotmove_command[2]
-        matches = self.atomMatch(atom, multiMatch = True)
+        matches = self.atomMatch(atom, multiMatch = True, maskFilter = False)
         iddependencies = set()
         slot_pfx = etpConst['entropyslotprefix']
 
         matched_package_ids = matches[0]
         for package_id in matched_package_ids:
 
-            ### UPDATE DATABASE
-            # update slot
-            self.setSlot(package_id, slot_to)
-
-            # look for packages we need to quickpkg again
-            # NOTE: quickpkg_queue is simply ignored if this is a client side
-            # repository
-            quickpkg_queue.add(atom + slot_pfx + slot_to)
-
             # only if we've found VALID matches !
             iddeps = self.searchDependency(atomkey, like = True, multi = True)
             for iddep in iddeps:
                 # update string
                 mydep = self.getDependency(iddep)
-                mydep_key = entropy.dep.dep_getkey(mydep)
-                if mydep_key != atomkey:
+
+                if mydep.find(slot_pfx + slot_from) == -1:
+                    # doesn't contain any trace of slot string, skipping
                     continue
-                if not mydep.endswith(slot_pfx + slot_from):
-                    # probably slotted dep
+
+                pkg_ids, pkg_rc = self.atomMatch(mydep, multiMatch = True,
+                    maskFilter = False)
+
+                pointing_to_me = False
+                for pkg_id in pkg_ids:
+                    if pkg_id not in matched_package_ids:
+                        # not my business
+                        continue
+                    # is this really pointing to me?
+                    mydep_key, mydep_slot = self.retrieveKeySlot(pkg_id)
+                    if mydep_key != atomkey:
+                        # not me!
+                        continue
+                    if mydep_slot != slot_from:
+                        # not me!
+                        continue
+                    # yes, it's pointing to me
+                    pointing_to_me = True
+                    break
+
+                if not pointing_to_me:
+                    # meh !
                     continue
-                mydep_match = self.atomMatch(mydep)
-                if mydep_match not in matched_package_ids:
-                    continue
+
                 mydep = mydep.replace(slot_pfx + slot_from, slot_pfx + slot_to)
                 # now update
                 # dependstable on server is always re-generated
                 self.setDependency(iddep, mydep)
                 # we have to repackage also package owning this iddep
                 iddependencies |= self.searchPackageIdFromDependencyId(iddep)
+
+            ### UPDATE DATABASE
+            # update slot, do it here to avoid messing up with package match
+            # code up here
+            self.setSlot(package_id, slot_to)
+
+            # look for packages we need to quickpkg again
+            # NOTE: quickpkg_queue is simply ignored if this is a client side
+            # repository
+            quickpkg_queue.add(atom + slot_pfx + slot_to)
 
             plugins = self.get_plugins()
             for plugin_id in sorted(plugins):
