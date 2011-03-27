@@ -32,7 +32,7 @@ from entropy.core import Singleton
 from entropy.cache import EntropyCacher
 from entropy.const import const_debug_write, const_setup_file, etpConst, \
     const_convert_to_rawstring, const_isunicode, const_isstring, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_isstring
 from entropy.exceptions import EntropyException
 import entropy.tools
 import entropy.dep
@@ -349,6 +349,15 @@ class WebService(object):
         NOTE: this method loads the whole file in RAM, HTTP post doesn't work
         well for big files anyway.
         """
+        def _cast_to_str(value):
+            if value is None:
+                return const_convert_to_rawstring("")
+            elif isinstance(value, (int, float, long)):
+                return const_convert_to_rawstring(value)
+            elif isinstance(value, (list, tuple)):
+                return repr(value)
+            return value
+
         tmp_fd, tmp_path = tempfile.mkstemp()
         tmp_f = os.fdopen(tmp_fd, "ab+")
         tmp_f.truncate(0)
@@ -357,7 +366,7 @@ class WebService(object):
             tmp_f.write("--" + boundary + crlf)
             tmp_f.write("Content-Disposition: form-data; name=\"%s\"" % (
                 key,))
-            tmp_f.write(crlf + crlf + value + crlf)
+            tmp_f.write(crlf + crlf + _cast_to_str(value) + crlf)
         for key, (f_name, f_obj) in file_params.items():
             tmp_f.write("--" + boundary + crlf)
             tmp_f.write(
@@ -433,6 +442,24 @@ class WebService(object):
                     # convert to raw string
                     params[k] = const_convert_to_rawstring(params[k],
                         from_enctype = "utf-8")
+                elif not const_isstring(params[k]):
+                    # invalid ?
+                    if params[k] is None:
+                        # will be converted to ""
+                        continue
+                    supported_types = (float, long, int, list, tuple)
+                    if not isinstance(params[k], supported_types):
+                        raise WebService.UnsupportedParameters(
+                            "%s is unsupported type %s" % (k, type(params[k])))
+                    list_types = (list, tuple)
+                    if isinstance(params[k], list_types):
+                        # not supporting nested lists
+                        non_str = [x for x in params[k] if not \
+                            const_isstring(x)]
+                        if non_str:
+                            raise WebService.UnsupportedParameters(
+                                "%s is unsupported type %s" % (k,
+                                    type(params[k])))
 
             body = None
             if not file_params:

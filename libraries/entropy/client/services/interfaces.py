@@ -115,7 +115,7 @@ class Document(dict):
         Add base metadata to Document object.
         """
         if Document.DOCUMENT_TIMESTAMP_ID not in self:
-            self[Document.DOCUMENT_TIMESTAMP_ID] = time.time()
+            self[Document.DOCUMENT_TIMESTAMP_ID] = repr(time.time())
 
     def repository_id(self):
         """
