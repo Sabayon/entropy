@@ -1675,7 +1675,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                     continue
                 # is this really pointing to me?
                 mydep_key, _slot = self.retrieveKeySlot(pkg_id)
-                if mydep_key != key_from:
+                if mydep_key != key_to:
                     # not me!
                     continue
                 # yes, it's pointing to me
