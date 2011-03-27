@@ -1624,13 +1624,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         dep_from = move_command[0]
         key_from = entropy.dep.dep_getkey(dep_from)
         key_to = entropy.dep.dep_getkey(move_command[1])
-        cat_to = key_to.split("/")[0]
-        name_to = key_to.split("/")[1]
+        cat_to, name_to = key_to.split("/", 1)
         matches = self.atomMatch(dep_from, multiMatch = True,
             maskFilter = False)
         iddependencies = set()
+        slot_pfx = etpConst['entropyslotprefix']
 
-        for package_id in matches[0]:
+        matched_package_ids = matches[0]
+        for package_id in matched_package_ids:
 
             slot = self.retrieveSlot(package_id)
             old_atom = self.retrieveAtom(package_id)
@@ -1645,7 +1646,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             self.setAtom(package_id, new_atom)
 
             # look for packages we need to quickpkg again
-            quickpkg_queue.add(key_to+":"+slot)
+            quickpkg_queue.add(key_to + slot_pfx + slot)
 
             plugins = self.get_plugins()
             for plugin_id in sorted(plugins):
@@ -1659,14 +1660,32 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         iddeps = self.searchDependency(key_from, like = True, multi = True)
         for iddep in iddeps:
-            # update string
+
             mydep = self.getDependency(iddep)
-            mydep_key = entropy.dep.dep_getkey(mydep)
-            # avoid changing wrong atoms -> dev-python/qscintilla-python would
-            # become x11-libs/qscintilla if we don't do this check
-            if mydep_key != key_from:
-                continue
+            # replace with new key and test
             mydep = mydep.replace(key_from, key_to)
+
+            pkg_ids, pkg_rc = self.atomMatch(mydep, multiMatch = True,
+                maskFilter = False)
+
+            pointing_to_me = False
+            for pkg_id in pkg_ids:
+                if pkg_id not in matched_package_ids:
+                    # not my business
+                    continue
+                # is this really pointing to me?
+                mydep_key, _slot = self.retrieveKeySlot(pkg_id)
+                if mydep_key != key_from:
+                    # not me!
+                    continue
+                # yes, it's pointing to me
+                pointing_to_me = True
+                break
+
+            if not pointing_to_me:
+                # meh !
+                continue
+
             # now update
             # dependstable on server is always re-generated
             self.setDependency(iddep, mydep)
