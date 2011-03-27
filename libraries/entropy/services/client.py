@@ -132,6 +132,8 @@ class WebService(object):
     # Default common Web Service responses
     WEB_SERVICE_RESPONSE_CODE_OK = 200
     WEB_SERVICE_INVALID_CREDENTIALS_CODE = 450
+    WEB_SERVICE_INVALID_REQUEST_CODE = 400
+    WEB_SERVICE_RESPONSE_ERROR_CODE = 503
 
 
     class WebServiceException(EntropyException):
