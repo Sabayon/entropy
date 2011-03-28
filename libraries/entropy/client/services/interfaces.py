@@ -165,13 +165,14 @@ class Document(dict):
 
     def document_keywords(self):
         """
-        Return a list of keywords bound to this document.
-        List is always returned, even if metadatum is not available.
+        Return a string containing space separated keywords bound to this
+        document.
+        string is always returned, even if metadatum is not available.
 
         @return: document keywords
-        @rtype: list
+        @rtype: string
         """
-        return self.get(Document.DOCUMENT_KEYWORDS_ID)
+        return self.get(Document.DOCUMENT_KEYWORDS_ID, "")
 
     def document_timestamp(self):
         """
@@ -311,8 +312,8 @@ class DocumentFactory(object):
         @type comment: string
         @param title: comment title
         @type title: string
-        @param keywords: list of keywords (string)
-        @type keywords: list
+        @param keywords: space separated string containing keywords
+        @type keywords: string
         @return: a new Document object
         @rtype: Document
         """
@@ -338,8 +339,8 @@ class DocumentFactory(object):
         @type file_object: string
         @param title: comment title
         @type title: string
-        @param keywords: list of keywords (string)
-        @type keywords: list
+        @param keywords: space separated string containing keywords
+        @type keywords: string
         @return: a new Document object
         @rtype: Document
         """
@@ -369,8 +370,8 @@ class DocumentFactory(object):
         @type file_object: string
         @param title: comment title
         @type title: string
-        @param keywords: list of keywords (string)
-        @type keywords: list
+        @param keywords: space separated string containing keywords
+        @type keywords: string
         @return: a new Document object
         @rtype: Document
         """
@@ -400,8 +401,8 @@ class DocumentFactory(object):
         @type file_object: string
         @param title: comment title
         @type title: string
-        @param keywords: list of keywords (string)
-        @type keywords: list
+        @param keywords: space separated string containing keywords
+        @type keywords: string
         @return: a new Document object
         @rtype: Document
         """
@@ -431,8 +432,8 @@ class DocumentFactory(object):
         @type file_object: string
         @param title: comment title
         @type title: string
-        @param keywords: list of keywords (string)
-        @type keywords: list
+        @param keywords: space separated string containing keywords
+        @type keywords: string
         @return: a new Document object
         @rtype: Document
         """
