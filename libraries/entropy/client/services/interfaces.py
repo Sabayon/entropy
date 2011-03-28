@@ -824,6 +824,7 @@ class ClientWebService(WebService):
         Drop all on-disk cache items related to document cache.
         """
         self._drop_cached("get_documents")
+        self._drop_cached("get_documents_by_id")
         self._drop_cached("get_comments")
         self._drop_cached("get_icons")
 
