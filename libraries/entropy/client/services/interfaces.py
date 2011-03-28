@@ -86,6 +86,9 @@ class Document(dict):
     # Document hash table key pointing to document timestamp (float)
     DOCUMENT_TIMESTAMP_ID = "ts"
 
+    # Document hash table key pointing to document URL
+    DOCUMENT_URL_ID = "url"
+
     def __init__(self, repository_id, document_id, document_type_id):
         """
         Document constructor.
@@ -182,7 +185,16 @@ class Document(dict):
         @return: document timestamp
         @rtype: float
         """
-        return self.get(Document.DOCUMENT_TIMESTAMP_ID)
+        return self.get(Document.DOCUMENT_TIMESTAMP_ID, 0.0)
+
+    def document_url(self):
+        """
+        Return the document url, if any.
+
+        @return: document URL
+        @rtype: string or None
+        """
+        return self.get(Document.DOCUMENT_URL_ID)
 
     def is_icon(self):
         """
