@@ -38,6 +38,9 @@ class Document(dict):
     # This is a new ID, new documents will have this
     ICON_TYPE_ID = 6
 
+    SUPPORTED_TYPES = (COMMENT_TYPE_ID, IMAGE_TYPE_ID, FILE_TYPE_ID,
+        VIDEO_TYPE_ID, ICON_TYPE_ID)
+
     DESCRIPTION_PLURAL = {
         UNKNOWN_TYPE_ID: _("Unknown documents"),
         COMMENT_TYPE_ID: _('Comments'),
