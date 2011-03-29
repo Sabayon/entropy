@@ -1115,8 +1115,8 @@ class CalculatorsMixin:
         cdb_rks = self._installed_repository.retrieveKeySlot
         gpa = self.get_package_action
         mydepends = \
-            self._installed_repository.retrieveReverseDependencies(clientmatch[0],
-                exclude_deptypes = excluded_dep_types)
+            self._installed_repository.retrieveReverseDependencies(
+                clientmatch[0], exclude_deptypes = excluded_dep_types)
 
         for idpackage in mydepends:
             try:
@@ -1187,6 +1187,10 @@ class CalculatorsMixin:
             if cmpstat == 0:
                 continue
 
+            # not against myself
+            if (idpackage, repo) == match:
+                continue
+
             if const_debug_enabled():
                 atom = self.open_repository(repo).retrieveAtom(idpackage)
                 const_debug_write(__name__,
@@ -1196,6 +1200,11 @@ class CalculatorsMixin:
 
             broken_matches.add((idpackage, repo))
 
+        if const_debug_enabled() and broken_matches:
+            const_debug_write(__name__,
+            "_lookup_library_drops, "
+            "total removed libs for iteration: %s" % (removed_libs,))
+
         return broken_matches
 
     def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage,
@@ -1204,8 +1213,8 @@ class CalculatorsMixin:
         soname = ".so"
         repo_needed = match_db.retrieveNeeded(match_idpackage,
             extended = True, formatted = True)
-        client_needed = self._installed_repository.retrieveNeeded(client_idpackage,
-            extended = True, formatted = True)
+        client_needed = self._installed_repository.retrieveNeeded(
+            client_idpackage, extended = True, formatted = True)
 
         repo_split = [x.split(soname)[0] for x in repo_needed]
         client_split = [x.split(soname)[0] for x in client_needed]
