@@ -108,7 +108,7 @@ product = standard
 branch = 5
 
 #
-#  syntax for officialrepositoryid:
+#  syntax for official-repository-id:
 #
 #    official-repository-id: Repository identifier for the official main distribution repository
 #    official-repository-id = <repository identifier>
@@ -116,7 +116,7 @@ branch = 5
 official-repository-id = sabayonlinux.org
 
 #
-#  syntax for downloadspeedlimit:
+#  syntax for download-speed-limit:
 #
 #    download-speed-limit: If you need a way to limit download speed, this is the option you were looking for
 #    download-speed-limit = <maximum allowed speed in kb/sec>
