@@ -202,7 +202,6 @@ def _enable_repositories(entropy_client, repos):
 def _disable_repositories(entropy_client, repos):
     excluded_repos = SystemSettings['repositories']['excluded']
     available_repos = SystemSettings['repositories']['available']
-    default_repo = SystemSettings['repositories']['default_repository']
     for repo in repos:
         if repo in excluded_repos:
             print_warning("[%s] %s" % (
@@ -211,10 +210,6 @@ def _disable_repositories(entropy_client, repos):
         if repo not in available_repos:
             print_warning("[%s] %s" % (
                 purple(repo), blue(_("repository not available")),))
-            continue
-        if repo == default_repo:
-            print_warning("[%s] %s" % (
-                purple(repo), blue(_("cannot disable default repository")),))
             continue
         try:
             entropy_client.disable_repository(repo)
