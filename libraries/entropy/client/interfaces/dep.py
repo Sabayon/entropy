@@ -719,11 +719,18 @@ class CalculatorsMixin:
 
         return new_packages
 
-    ENABLE_LIBRARY_BREAKAGES = os.getenv("ETP_ENABLE_LIBRARY_BREAKAGES")
+    def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match):
 
-    def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match,
-        stack):
+        if const_debug_enabled():
+            inst_atom = self._installed_repository.retrieveAtom(
+                installed_match[0])
+            atom = self.open_repository(pkg_match[1]
+                ).retrieveAtom(pkg_match[0])
+            const_debug_write(__name__,
+                "__generate_dependency_tree_inst_hooks "
+                "input: installed %s, avail %s" % (inst_atom, atom,))
 
+        # these are inverse dependencies
         broken_children_matches = self._lookup_library_drops(pkg_match,
             installed_match)
         if const_debug_enabled():
@@ -732,23 +739,13 @@ class CalculatorsMixin:
             "_lookup_library_drops, broken_children_matches => %s" % (
                 broken_children_matches,))
 
-        broken_matches = set()
-        if self.ENABLE_LIBRARY_BREAKAGES:
-            # this method is old and stinky and the one above
-            # "_lookup_library_drops" should replace it completely.
-            # however, there could be cases where it could be useful, still.
-            # So for now, just disable it out.
-            broken_matches = self._lookup_library_breakages(pkg_match,
-                installed_match)
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                    "__generate_dependency_tree_inst_hooks "
-                    "_lookup_library_breakages, broken_matches => %s" % (
-                        broken_matches,))
-        else:
+        broken_matches = self._lookup_library_breakages(pkg_match,
+            installed_match)
+        if const_debug_enabled():
             const_debug_write(__name__,
                 "__generate_dependency_tree_inst_hooks "
-                "_lookup_library_breakages, DISABLED")
+                "_lookup_library_breakages, broken_matches => %s" % (
+                    broken_matches,))
 
         inverse_deps = self._lookup_inverse_dependencies(pkg_match,
             installed_match)
@@ -757,14 +754,8 @@ class CalculatorsMixin:
             "__generate_dependency_tree_inst_hooks "
             "_lookup_inverse_dependencies, inverse_deps => %s" % (
                 inverse_deps,))
-        for inv_match in inverse_deps:
-            stack.push(inv_match)
 
-        # broken children atoms can be added to broken atoms
-        # and pulled into dep calculation
-        broken_matches |= broken_children_matches
-        for br_match in broken_matches:
-            stack.push(br_match)
+        return broken_children_matches, broken_matches, inverse_deps
 
     def __generate_dependency_tree_analyze_conflict(self, conflict_str,
         conflicts, stack, deep_deps):
@@ -965,6 +956,7 @@ class CalculatorsMixin:
 
         stack = Lifo()
         stack.push(matched_atom)
+        inverse_dep_stack_cache = {}
 
         while stack.is_filled():
 
@@ -1007,8 +999,27 @@ class CalculatorsMixin:
                 # this method does:
                 # - broken libraries detection
                 # - inverse dependencies check
-                self.__generate_dependency_tree_inst_hooks(
-                    (cm_idpackage, cm_result), pkg_match, stack)
+                children_matches, broken_matches, inverse_deps = \
+                    self.__generate_dependency_tree_inst_hooks(
+                        (cm_idpackage, cm_result), pkg_match)
+                # this is fine this way, these are strong inverse deps
+                # and their order is already written in stone
+                for inv_match in inverse_deps:
+                    stack.push(inv_match)
+                # children_matches are always inverse dependencies, and
+                # must be stated as such, once they eventually end into
+                # the graph (see below)
+                for child_match in children_matches:
+                    obj = inverse_dep_stack_cache.setdefault(child_match, set())
+                    obj.add(pkg_match)
+                    stack.push(child_match)
+
+                # these are misc and cannot be differentiated
+                for br_match in broken_matches:
+                    if br_match in child_match:
+                        # already pushed and inverse dep
+                        continue
+                    stack.push(br_match)
 
             dep_matches, post_dep_matches = \
                 self.__generate_dependency_tree_analyze_deplist(
@@ -1019,10 +1030,24 @@ class CalculatorsMixin:
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
+            pkg_match_set = set([pkg_match])
             for post_dep_match in post_dep_matches:
-                graph.add(post_dep_match, set([pkg_match]))
+                graph.add(post_dep_match, pkg_match_set)
 
+            # add cached "inverse of inverse (==direct)" deps, if available
+            inv_deps = inverse_dep_stack_cache.pop(pkg_match, set())
+            if inv_deps:
+                graph.add(pkg_match, inv_deps)
+                if const_debug_enabled():
+                    atom = self.open_repository(pkg_match[1]).retrieveAtom(
+                        pkg_match[0])
+                    wanted_deps = [self.open_repository(y).retrieveAtom(x) \
+                        for x, y in inv_deps]
+                    const_debug_write(__name__,
+                    "_generate_dependency_tree(revdep cache) %s wants %s" % (
+                        atom, wanted_deps,))
 
+        del inverse_dep_stack_cache
         # if deps not found, we won't do dep-sorting at all
         if deps_not_found:
             del stack
