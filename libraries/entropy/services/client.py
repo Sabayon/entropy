@@ -569,6 +569,14 @@ class WebService(object):
         request_params['username'], request_params['password'] = \
             username, password
 
+    def _setup_generic_params(self, request_params):
+        """
+        This methods adds some generic parameters to the HTTP request metadata.
+        Any parameter added by this method is prefixed with __, to avoid
+        name collisions.
+        """
+        request_params["__repository_id__"] = self._repository_id
+
     def add_credentials(self, username, password):
         """
         Add credentials for this repository and store the information into
@@ -719,6 +727,9 @@ class WebService(object):
         if require_credentials:
             # this can raise AuthenticationRequired
             self._setup_credentials(params)
+
+        # setup generic request parameters
+        self._setup_generic_params(params)
 
         cache_key = None
         if cache:
