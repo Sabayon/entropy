@@ -3339,8 +3339,10 @@ class ExceptionDialog:
         if rc == -1:
 
             from entropy.client.interfaces.qa import UGCErrorReportInterface
+            from entropy.core.settings.base import SystemSettings
+            repository_id = SystemSettings()['repositories']['default_repository']
             try:
-                error = UGCErrorReportInterface()
+                error = UGCErrorReportInterface(repository_id)
             except (AttributeError, OnlineMirrorError,):
                 error = None
 

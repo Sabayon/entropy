@@ -960,7 +960,9 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     try:
         from entropy.client.interfaces.qa import UGCErrorReportInterface
-        error = UGCErrorReportInterface()
+        from entropy.core.settings.base import SystemSettings
+        repository_id = SystemSettings()['repositories']['default_repository']
+        error = UGCErrorReportInterface(repository_id)
     except (OnlineMirrorError, AttributeError, ImportError,):
         error = None
 

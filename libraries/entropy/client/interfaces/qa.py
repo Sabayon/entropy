@@ -36,19 +36,16 @@ class UGCErrorReportInterface(ErrorReportInterface):
             print("cannot report error")
     """
 
-    def __init__(self, repository_id = None):
+    def __init__(self, repository_id):
         """
         object constructor, repository_id must be a valid repository
         identifier.
 
-        @param repository_id -- valid repository identifier
-        @type basestring
+        @param repository_id: valid repository identifier
+        @type repository_id: string
         """
         ErrorReportInterface.__init__(self, '#fake#')
         self.__system_settings = SystemSettings()
-
-        if repository_id == None:
-            repository_id = etpConst['officialrepositoryid']
 
         self.entropy = Client()
         self.__repository_id = repository_id
