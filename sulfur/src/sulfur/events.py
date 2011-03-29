@@ -298,9 +298,10 @@ class SulfurApplicationEventsMixin:
         if repodata[1] != None:
             repoid = self.repoView.get_repoid(repodata)
             if repoid == self._settings['repositories']['default_repository']:
-                okDialog( self.ui.main,
-                    _("You! Why do you want to remove the main repository ?"))
-                return True
+                rc = self._entropy.ask_question(
+                    _("Are you sure you want to remove the default repository?"))
+                if rc != _("Yes"):
+                    return True
             self._entropy.remove_repository(repoid)
             self.reset_cache_status()
             self.setup_repoView()
