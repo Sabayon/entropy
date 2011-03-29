@@ -14,7 +14,7 @@ import copy
 import hashlib
 
 from entropy.const import etpConst, const_debug_write, const_isstring, \
-    const_isnumber, const_convert_to_rawstring
+    const_isnumber, const_convert_to_rawstring, const_debug_enabled
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     DependenciesNotFound, DependenciesNotRemovable, DependenciesCollision
 from entropy.graph import Graph
@@ -365,7 +365,8 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        const_debug_write(__name__,
+        if const_debug_enabled():
+            const_debug_write(__name__,
             "_get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
                 deep_deps, dependencies,))
 
@@ -427,10 +428,11 @@ class CalculatorsMixin:
                 is_unsat = depcache[dependency]
                 if is_unsat:
                     unsatisfied.add(dependency)
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_get_unsatisfied_dependencies control cached for => %s" % (
                         dependency,))
-                const_debug_write(__name__, "...")
+                    const_debug_write(__name__, "...")
                 continue
 
             ### conflict
@@ -438,15 +440,17 @@ class CalculatorsMixin:
                 idpackage, rc = self._installed_repository.atomMatch(
                     dependency[1:])
                 if idpackage != -1:
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "_get_unsatisfied_dependencies conflict not found on system for => %s" % (
                             dependency,))
-                    const_debug_write(__name__, "...")
+                        const_debug_write(__name__, "...")
                     unsatisfied.add(dependency)
                     push_to_cache(dependency, True)
                     continue
 
-                const_debug_write(__name__, "...")
+                if const_debug_enabled():
+                    const_debug_write(__name__, "...")
                 push_to_cache(dependency, False)
                 continue
 
@@ -481,10 +485,11 @@ class CalculatorsMixin:
                             dependency += etpConst['entropytagprefix'] + \
                                 best_tag
 
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_get_unsatisfied_dependencies not satisfied on system for => %s" % (
                         dependency,))
-                const_debug_write(__name__, "...")
+                    const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
                 push_to_cache(dependency, True)
                 continue
@@ -501,10 +506,11 @@ class CalculatorsMixin:
             # in this case, we are going to consider valid any dep that
             # matches something in installed packages repo.
             if (not deep_deps) and (not do_rev_deep) and (relaxed_deps):
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_get_unsatisfied_dependencies (force unsat) SATISFIED => %s" % (
                         dependency,))
-                const_debug_write(__name__, "...")
+                    const_debug_write(__name__, "...")
                 push_to_cache(dependency, False)
                 continue
 
@@ -517,10 +523,11 @@ class CalculatorsMixin:
                     # optimize speed with a trick
                     _provide = dict(self._installed_repository.retrieveProvide(c_id))
                     if dependency in _provide:
-                        const_debug_write(__name__,
+                        if const_debug_enabled():
+                            const_debug_write(__name__,
                             "_get_unsatisfied_dependencies old-style provide, satisfied => %s" % (
                                 dependency,))
-                        const_debug_write(__name__, "...")
+                            const_debug_write(__name__, "...")
                         push_to_cache(dependency, False)
                         provide_stop = True
                         break
@@ -529,10 +536,11 @@ class CalculatorsMixin:
 
             r_id, r_repo = self.atom_match(dependency, match_repo = match_repo)
             if r_id == -1:
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_get_unsatisfied_dependencies repository match "
                     "not found for => %s, CONSIDER SATISFIED !" % (dependency,))
-                const_debug_write(__name__, "...")
+                    const_debug_write(__name__, "...")
                 push_to_cache(dependency, False)
                 continue
 
@@ -550,10 +558,11 @@ class CalculatorsMixin:
                 repo_digest = dbconn.retrieveDigest(r_id)
             except (InterfaceError, TypeError,):
                 # package entry is broken
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_get_unsatisfied_dependencies repository entry broken for match => %s" % (
                         (r_id, r_repo),))
-                const_debug_write(__name__, "...")
+                    const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
                 push_to_cache(dependency, True)
                 continue
@@ -623,18 +632,20 @@ class CalculatorsMixin:
                     (installed_rev == 9999) and (installed_rev != repo_pkgrev):
                     # In this case, do not override Source Package Manager
                     # installed pkgs
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "_get_unsatisfied_dependencies => SPM downgrade! " + \
                             "(not cached, deep: %s) => %s" % (
                                 deep_deps, dependency,))
                     vcmp = 0
 
                 if vcmp == 0:
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "_get_unsatisfied_dependencies SATISFIED equals " + \
                             "(not cached, deep: %s) => %s" % (
                                 deep_deps, dependency,))
-                    const_debug_write(__name__, "...")
+                        const_debug_write(__name__, "...")
                     do_cont = True
                     push_to_cache(dependency, False)
                     break
@@ -653,11 +664,12 @@ class CalculatorsMixin:
                     continue
 
                 if (ver_tag_repo == ver_tag_inst) and rev_match:
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "_get_unsatisfied_dependencies SATISFIED " + \
                             "w/o rev (not cached, deep: %s) => %s" % (
                                 deep_deps, dependency,))
-                    const_debug_write(__name__, "...")
+                        const_debug_write(__name__, "...")
                     do_cont = True
                     push_to_cache(dependency, False)
                     break
@@ -666,11 +678,12 @@ class CalculatorsMixin:
                 continue
 
             # if we get here it means that there are no matching packages
-            const_debug_write(__name__,
+            if const_debug_enabled():
+                const_debug_write(__name__,
                 "_get_unsatisfied_dependencies NOT SATISFIED (not cached, deep: %s) => %s" % (
                     deep_deps, dependency,))
+                const_debug_write(__name__, "...")
 
-            const_debug_write(__name__, "...")
             unsatisfied.add(dependency)
             push_to_cache(dependency, True)
 
@@ -717,6 +730,11 @@ class CalculatorsMixin:
 
         inverse_deps = self._lookup_inverse_dependencies(pkg_match,
             installed_match)
+        if const_debug_enabled():
+            const_debug_write(__name__,
+            "__generate_dependency_tree_inst_hooks "
+            "_lookup_inverse_dependencies, inverse_deps => %s" % (
+                inverse_deps,))
         for inv_match in inverse_deps:
             stack.push(inv_match)
 
@@ -737,9 +755,10 @@ class CalculatorsMixin:
         confl_replacement = self._lookup_conflict_replacement(
             conflict_atom, c_idpackage, deep_deps = deep_deps)
 
-        const_debug_write(__name__,
-            "__generate_dependency_tree_analyze_conflict "
-            "replacement => %s" % (confl_replacement,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "__generate_dependency_tree_analyze_conflict "
+                "replacement => %s" % (confl_replacement,))
 
         if confl_replacement is not None:
             stack.push(confl_replacement)
@@ -769,7 +788,8 @@ class CalculatorsMixin:
                         difference = set(matches) - set(selected_matches)
                         if len(difference) != len(matches):
                             # ok, there is something in the selected data
-                            const_debug_write(__name__,
+                            if const_debug_enabled():
+                                const_debug_write(__name__,
                                 "__generate_dependency_tree_resolve_conditional"
                                 " replaced %s with %s" % (dependency, dep,))
                             return dep
@@ -795,11 +815,16 @@ class CalculatorsMixin:
         # this solves some conditional dependencies using selected_matches.
         # also expands all the conditional dependencies using
         # entropy.dep.expand_dependencies()
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "__generate_dependency_tree_analyze_deplist conditionals, "
+                "current dependency list => %s" % (myundeps,))
         myundeps = self.__generate_dependency_tree_resolve_conditional(
             myundeps, selected_matches)
-        const_debug_write(__name__,
-            "__generate_dependency_tree_analyze_deplist conditionals, "
-            "new dependency list => %s" % (myundeps,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "__generate_dependency_tree_analyze_deplist conditionals, "
+                "new dependency list => %s" % (myundeps,))
 
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
 
@@ -827,7 +852,8 @@ class CalculatorsMixin:
                     dep_confl_str = "!%s%s%s" % (dep_key,
                         etpConst['entropyslotprefix'], dep_slot)
                     my_conflicts.add(dep_confl_str)
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "__generate_dependency_tree_analyze_deplist "
                         "adding auto-conflict => %s, conflict_str was: %s" % (
                             dep_confl_str, conflict_str,))
@@ -840,9 +866,10 @@ class CalculatorsMixin:
                 self.__generate_dependency_tree_analyze_conflict(my_conflict,
                     conflicts, stack, deep_deps)
 
-        const_debug_write(__name__,
-            "__generate_dependency_tree_analyze_deplist filtered "
-            "dependency list => %s" % (myundeps,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "__generate_dependency_tree_analyze_deplist filtered "
+                "dependency list => %s" % (myundeps,))
 
         if not empty_deps:
 
@@ -850,9 +877,10 @@ class CalculatorsMixin:
                 deep_deps = deep_deps, relaxed_deps = relaxed_deps,
                 depcache = unsat_cache)
 
-            const_debug_write(__name__,
-                "__generate_dependency_tree_analyze_deplist " + \
-                    "filtered UNSATISFIED dependencies => %s" % (myundeps,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__generate_dependency_tree_analyze_deplist " + \
+                        "filtered UNSATISFIED dependencies => %s" % (myundeps,))
 
         post_deps = []
         # PDEPENDs support
@@ -860,9 +888,10 @@ class CalculatorsMixin:
             myundeps, post_deps = self._lookup_post_dependencies(repo_db,
                 pkg_id, myundeps)
 
-            const_debug_write(__name__,
-                "generate_dependency_tree POST dependencies ADDED => %s" % (
-                    post_deps,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "generate_dependency_tree POST dependencies ADDED => %s" % (
+                        post_deps,))
 
         deps = set()
         for unsat_dep in myundeps:
@@ -987,9 +1016,10 @@ class CalculatorsMixin:
             repo_db.retrievePostDependencies(repo_idpackage) if x \
             in unsatisfied_deps]
 
-        const_debug_write(__name__,
-            "_lookup_post_dependencies POST dependencies => %s" % (
-                post_deps,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "_lookup_post_dependencies POST dependencies => %s" % (
+                    post_deps,))
 
         if post_deps:
 
@@ -1096,6 +1126,12 @@ class CalculatorsMixin:
                 cmpstat = gpa(mymatch)
                 if cmpstat == 0:
                     continue
+                if const_debug_enabled():
+                    atom = self.open_repository(mymatch[1]).retrieveAtom(
+                        mymatch[0])
+                    const_debug_write(__name__,
+                    "_lookup_inverse_dependencies, "
+                    "adding inverse dep => %s" % (atom,))
                 results.add(mymatch)
 
         return results
@@ -1129,6 +1165,13 @@ class CalculatorsMixin:
             cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
+
+            if const_debug_enabled():
+                atom = self.open_repository(repo).retrieveAtom(idpackage)
+                const_debug_write(__name__,
+                "_lookup_library_drops, "
+                "adding broken library link package => %s, pulling: %s" % (
+                    keyslot, atom,))
 
             broken_matches.add((idpackage, repo))
 
@@ -1237,6 +1280,9 @@ class CalculatorsMixin:
                 found = False
                 for idpackage in solved_needed:
                     x = (idpackage, myrepo)
+                    if match == x:
+                        # myself? no!
+                        continue
                     if x in matched_deps:
                         found_matches.add(x)
                         found = True
@@ -1253,15 +1299,28 @@ class CalculatorsMixin:
             cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
+            if const_debug_enabled():
+                atom = self.open_repository(repo).retrieveAtom(idpackage)
+                const_debug_write(__name__,
+                    "_lookup_library_breakages, "
+                    "adding repo atom => %s" % (atom,))
             repo_matches.add((idpackage, repo))
 
         for key, slot in client_keyslots:
             idpackage, repo = self.atom_match(key, match_slot = slot)
             if idpackage == -1:
                 continue
+            if (idpackage, repo) == match:
+                # myself? NO!
+                continue
             cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
+            if const_debug_enabled():
+                atom = self.open_repository(repo).retrieveAtom(idpackage)
+                const_debug_write(__name__,
+                    "_lookup_library_breakages, "
+                    "adding client atom => %s" % (atom,))
             client_matches.add((idpackage, repo))
 
         client_matches |= repo_matches
@@ -1322,10 +1381,13 @@ class CalculatorsMixin:
 
             pkg_id, pkg_repo = matched_atom
             if (pkg_id == -1) or (pkg_repo == 1):
-                raise AttributeError("invalid matched_atom: %s" % (matched_atom,))
+                raise AttributeError("invalid matched_atom: %s" % (
+                    matched_atom,))
 
-            const_debug_write(__name__,
-                "_get_required_packages matched_atom => %s" % (matched_atom,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "_get_required_packages matched_atom => %s" % (
+                        matched_atom,))
 
             if not quiet:
                 count += 1
@@ -1446,10 +1508,11 @@ class CalculatorsMixin:
         if os.getenv("ETP_DISABLE_ELF_NEEDED_SCANNING"):
             elf_needed_scanning = False
 
-        const_debug_write(__name__,
-            "_generate_reverse_dependency_tree [m:%s|d:%s|r:%s|e:%s|s:%s|es:%s]" \
-                 % (matched_atoms, deep, recursive, empty,
-                     system_packages, elf_needed_scanning))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "_generate_reverse_dependency_tree [m:%s|d:%s|r:%s|e:%s|s:%s|es:%s]" \
+                    % (matched_atoms, deep, recursive, empty,
+                        system_packages, elf_needed_scanning))
 
         c_hash = "%s%s" % (
             EntropyCacher.CACHE_IDS['depends_tree'],
@@ -1462,9 +1525,10 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        const_debug_write(__name__,
-            "_generate_reverse_dependency_tree [m:%s] not cached!" % (
-                matched_atoms,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "_generate_reverse_dependency_tree [m:%s] not cached!" % (
+                    matched_atoms,))
 
         count = 0
         match_cache = set()
@@ -1505,7 +1569,8 @@ class CalculatorsMixin:
 
                 if system_packages:
                     if m_repo_db.isSystemPackage(mydep):
-                        const_debug_write(__name__,
+                        if const_debug_enabled():
+                            const_debug_write(__name__,
                             "_generate_reverse_dependency_tree [md:%s] "
                                 "cannot calculate, it's a system package" \
                                 % ((mydep, m_repo_id),))
@@ -1513,7 +1578,8 @@ class CalculatorsMixin:
                     if m_repo_db is self._installed_repository:
                         if self._is_installed_package_id_in_system_mask(
                             mydep):
-                            const_debug_write(__name__,
+                            if const_debug_enabled():
+                                const_debug_write(__name__,
                                 "_generate_reverse_dependency_tree [md:%s] "
                                     "cannot calculate, it's in sysmask" \
                                     % ((mydep, m_repo_id),))
@@ -1556,7 +1622,8 @@ class CalculatorsMixin:
                 deep_dep_map[(d_rev_dep, d_repo_id)] = \
                     set((x, d_repo_id) for x in mydepends)
 
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_generate_reverse_dependency_tree [d_dep:%s] " \
                         "reverse deps: %s" % ((d_rev_dep, d_repo_id),
                         mydepends,))
@@ -1576,7 +1643,8 @@ class CalculatorsMixin:
                 if system_pkg:
                     # this is a system package, removal forbidden
                     not_removable_deps.add((pkg_id, repo_id))
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "_generate_reverse_dependency_tree %s is sys_pkg!" % (
                         (pkg_id, repo_id),))
                     continue
@@ -1584,7 +1652,8 @@ class CalculatorsMixin:
             repo_db = self.open_repository(repo_id)
             # validate package
             if not repo_db.isPackageIdAvailable(pkg_id):
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_generate_reverse_dependency_tree %s not available!" % (
                     (pkg_id, repo_id),))
                 continue
@@ -1608,27 +1677,31 @@ class CalculatorsMixin:
                 reverse_deps_lib = get_revdeps_lib(pkg_id, repo_id, repo_db)
                 reverse_deps |= reverse_deps_lib
 
-            const_debug_write(__name__,
-                "_generate_reverse_dependency_tree [m:%s] rev_deps: %s" % (
-                (pkg_id, repo_id), reverse_deps,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "_generate_reverse_dependency_tree [m:%s] rev_deps: %s" % (
+                    (pkg_id, repo_id), reverse_deps,))
 
             if deep:
 
                 d_deps = get_direct_deps(repo_db, pkg_id)
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_generate_reverse_dependency_tree [m:%s] d_deps: %s" % (
                     (pkg_id, repo_id), d_deps,))
 
                 # now filter them
                 mydeps = filter_deps(get_deps(repo_db, d_deps))
 
-                const_debug_write(__name__,
+                if const_debug_enabled():
+                    const_debug_write(__name__,
                     "_generate_reverse_dependency_tree done filtering out" \
                         " direct dependencies: %s" % (mydeps,))
 
                 if empty:
                     reverse_deps |= mydeps
-                    const_debug_write(__name__,
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
                         "_generate_reverse_dependency_tree done empty=True," \
                             " adding: %s" % (mydeps,))
                 else:
