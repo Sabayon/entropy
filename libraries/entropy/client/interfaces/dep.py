@@ -957,6 +957,7 @@ class CalculatorsMixin:
         stack = Lifo()
         stack.push(matched_atom)
         inverse_dep_stack_cache = {}
+        graph_cache = set()
 
         while stack.is_filled():
 
@@ -1030,12 +1031,14 @@ class CalculatorsMixin:
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
+            graph_cache.add(pkg_match)
             pkg_match_set = set([pkg_match])
             for post_dep_match in post_dep_matches:
                 graph.add(post_dep_match, pkg_match_set)
 
-            # add cached "inverse of inverse (==direct)" deps, if available
-            inv_deps = inverse_dep_stack_cache.pop(pkg_match, set())
+        # add cached "inverse of inverse (==direct)" deps, if available
+        for pkg_match in graph_cache:
+            inv_deps = inverse_dep_stack_cache.get(pkg_match)
             if inv_deps:
                 graph.add(pkg_match, inv_deps)
                 if const_debug_enabled():
@@ -1045,8 +1048,9 @@ class CalculatorsMixin:
                         for x, y in inv_deps]
                     const_debug_write(__name__,
                     "_generate_dependency_tree(revdep cache) %s wants %s" % (
-                        atom, wanted_deps,))
+                        purple(atom), blue(" ".join(wanted_deps)),))
 
+        del graph_cache
         del inverse_dep_stack_cache
         # if deps not found, we won't do dep-sorting at all
         if deps_not_found:
