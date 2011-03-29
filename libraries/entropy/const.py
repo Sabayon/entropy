@@ -1613,6 +1613,15 @@ def __const_handle_exception(etype, value, t_back):
         pass
     return sys.__excepthook__(etype, value, t_back)
 
+def const_debug_enabled():
+    """
+    Return whether debug is enabled.
+
+    @return: True, if debug is enabled
+    @rtype: bool
+    """
+    return etpUi['debug']
+
 def const_debug_write(identifier, msg):
     """
     Entropy debugging output write functions.
