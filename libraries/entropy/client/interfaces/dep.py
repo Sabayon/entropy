@@ -719,14 +719,36 @@ class CalculatorsMixin:
 
         return new_packages
 
+    ENABLE_LIBRARY_BREAKAGES = os.getenv("ETP_ENABLE_LIBRARY_BREAKAGES")
+
     def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match,
         stack):
 
         broken_children_matches = self._lookup_library_drops(pkg_match,
             installed_match)
+        if const_debug_enabled():
+            const_debug_write(__name__,
+            "__generate_dependency_tree_inst_hooks "
+            "_lookup_library_drops, broken_children_matches => %s" % (
+                broken_children_matches,))
 
-        broken_matches = self._lookup_library_breakages(pkg_match,
-            installed_match)
+        broken_matches = set()
+        if self.ENABLE_LIBRARY_BREAKAGES:
+            # this method is old and stinky and the one above
+            # "_lookup_library_drops" should replace it completely.
+            # however, there could be cases where it could be useful, still.
+            # So for now, just disable it out.
+            broken_matches = self._lookup_library_breakages(pkg_match,
+                installed_match)
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__generate_dependency_tree_inst_hooks "
+                    "_lookup_library_breakages, broken_matches => %s" % (
+                        broken_matches,))
+        else:
+            const_debug_write(__name__,
+                "__generate_dependency_tree_inst_hooks "
+                "_lookup_library_breakages, DISABLED")
 
         inverse_deps = self._lookup_inverse_dependencies(pkg_match,
             installed_match)
@@ -985,7 +1007,6 @@ class CalculatorsMixin:
                 # this method does:
                 # - broken libraries detection
                 # - inverse dependencies check
-                # - broken "dropped" libraries check (see _lookup_library_drops)
                 self.__generate_dependency_tree_inst_hooks(
                     (cm_idpackage, cm_result), pkg_match, stack)
 
@@ -1144,7 +1165,7 @@ class CalculatorsMixin:
 
         client_libs = self._installed_repository.retrieveProvidedLibraries(
             client_match[0])
-        removed_libs = set([x for x in client_libs if x not in repo_libs])
+        removed_libs = [x for x in client_libs if x not in repo_libs]
 
         idpackages = set()
         for lib, path, elf in removed_libs:
