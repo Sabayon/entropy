@@ -775,13 +775,13 @@ class ClientWebService(WebService):
             require_credentials = False)
         data = {}
         for package_name in package_names:
-            obj = objs.get(package_name)
-            if obj is not None:
+            objs = objs.get(package_name, [])
+            m_objs = data.setdefault(package_name, [])
+            for obj in objs:
                 d_obj = Document(self._repository_id, obj['document_id'],
                     obj['document_type_id'])
                 d_obj.update(obj)
-                obj = d_obj
-            data[package_name] = obj
+                m_objs.append(d_obj)
         return data
 
     def get_documents_by_id(self, document_ids, cache = True):
