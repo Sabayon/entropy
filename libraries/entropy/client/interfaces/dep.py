@@ -1174,11 +1174,14 @@ class CalculatorsMixin:
         # there is no need to update this cache when "match"
         # will be installed, because at that point
         # clientmatch[0] will differ.
-        c_hash = "%s|%s" % (
+        hash_str = "%s|%s" % (
             match,
             clientmatch,
         )
-        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['library_breakage'], hash(c_hash),)
+        sha = hashlib.sha1()
+        sha.update(const_convert_to_rawstring(repr(hash_str)))
+        c_hash = sha.hexdigest()
+        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['library_breakage'], c_hash,)
         if self.xcache:
             cached = self._cacher.pop(c_hash)
             if cached is not None:
