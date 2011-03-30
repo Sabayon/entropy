@@ -763,11 +763,11 @@ def _scan_packages(entropy_client, packages, etp_pkg_files):
             try:
                 atomsfound = entropy_client.add_package_repository(pkg)
             except EntropyPackageException as err:
-                mytxt = "## %s: %s %s. %s ..." % (
-                    red(_("ATTENTION")),
-                    bold(os.path.basename(pkg)),
-                    err,
-                    red(_("Skipped")),
+                mytxt = "%s: %s %s. %s ..." % (
+                    purple(_("Warning")),
+                    teal(const_convert_to_unicode(os.path.basename(pkg))),
+                    repr(err),
+                    teal(_("Skipped")),
                 )
                 print_warning(mytxt)
                 continue
@@ -1693,14 +1693,17 @@ def _mask_unmask_packages(entropy_client, packages, action):
         idpackage, repoid = entropy_client.atom_match(package,
             mask_filter = False)
         if idpackage == -1:
-            mytxt = "## %s: %s %s." % (
-                red(_("ATTENTION")),
-                bold(const_convert_to_unicode(package)),
-                red(_("is not available")),
+            mytxt = "!!! %s: %s %s." % (
+                purple(_("Warning")),
+                teal(const_convert_to_unicode(package)),
+                purple(_("is not available")),
             )
+            print_warning("!!!")
             print_warning(mytxt)
+            print_warning("!!!")
             if len(package) > 3:
                 _show_you_meant(entropy_client, package, from_installed = False)
+                print_warning("!!!")
             continue
         found_pkg_atoms.append(package)
 
@@ -1752,12 +1755,14 @@ def _mask_unmask_packages(entropy_client, packages, action):
             else:
                 done = entropy_client.unmask_package_generic(match, package)
             if not done:
-                mytxt = "## %s: %s %s." % (
-                    red(_("ATTENTION")),
-                    bold(const_convert_to_unicode(package)),
-                    red(_("action not executed")),
+                mytxt = "!!! %s: %s %s." % (
+                    purple(_("Warning")),
+                    teal(const_convert_to_unicode(package)),
+                    purple(_("action not executed")),
                 )
+                print_warning("!!!")
                 print_warning(mytxt)
+                print_warning("!!!")
 
     print_info("Have a nice day.")
 
@@ -1778,14 +1783,18 @@ def _configure_packages(entropy_client, packages):
     for package in packages:
         idpackage, result = entropy_client.installed_repository().atomMatch(package)
         if idpackage == -1:
-            mytxt = "## %s: %s %s." % (
-                red(_("ATTENTION")),
-                bold(const_convert_to_unicode(package)),
-                red(_("is not installed")),
+            mytxt = "!!! %s: %s %s." % (
+                purple(_("Warning")),
+                teal(const_convert_to_unicode(package)),
+                purple(_("is not installed")),
             )
+            print_warning("!!!")
             print_warning(mytxt)
+            print_warning("!!!")
+            warning_shown = True
             if len(package) > 3:
                 _show_you_meant(entropy_client, package, True)
+                print_warning("!!!")
             continue
         found_pkg_atoms.append(idpackage)
 
@@ -1874,14 +1883,17 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             for package in packages:
                 idpackage, result = installed_repo.atomMatch(package)
                 if idpackage == -1:
-                    mytxt = "## %s: %s %s." % (
-                        red(_("ATTENTION")),
-                        bold(const_convert_to_unicode(package)),
-                        red(_("is not installed")),
+                    mytxt = "!!! %s: %s %s." % (
+                        purple(_("Warning")),
+                        teal(const_convert_to_unicode(package)),
+                        purple(_("is not installed")),
                     )
+                    print_warning("!!!")
                     print_warning(mytxt)
+                    print_warning("!!!")
                     if len(package) > 3:
                         _show_you_meant(entropy_client, package, True)
+                        print_warning("!!!")
                     continue
                 found_pkg_atoms.append(idpackage)
 
