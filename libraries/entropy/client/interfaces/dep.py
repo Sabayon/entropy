@@ -235,6 +235,8 @@ class CalculatorsMixin:
         if match_repo and (type(match_repo) in (list, tuple, set)):
             valid_repos = list(match_repo)
 
+        repo_results = {}
+
         # simple "or" dependency support
         # app-foo/foo-1.2.3;app-foo/bar-1.4.3?
         if atom.endswith(etpConst['entropyordepquestion']):
@@ -251,44 +253,44 @@ class CalculatorsMixin:
                         # checking against 1 works in any case here
                         # for simple, multi and extended match
                         return data, rc
+        else:
+            for repo in valid_repos:
 
-        repo_results = {}
-        for repo in valid_repos:
-
-            # search
-            try:
-                dbconn = self.open_repository(repo)
-            except (RepositoryError, SystemDatabaseError):
-                # ouch, repository not available or corrupted !
-                continue
-            xuse_cache = use_cache
-            while True:
+                # search
                 try:
-                    query_data, query_rc = dbconn.atomMatch(
-                        atom,
-                        matchSlot = match_slot,
-                        maskFilter = mask_filter,
-                        extendedResults = extended_results,
-                        useCache = xuse_cache
-                    )
-                    if query_rc == 0:
-                        # package found, add to our dictionary
-                        if extended_results:
-                            repo_results[repo] = (query_data[0], query_data[2],
-                                query_data[3], query_data[4])
-                        else:
-                            repo_results[repo] = query_data
-                except TypeError:
-                    if not xuse_cache:
-                        raise
-                    xuse_cache = False
+                    dbconn = self.open_repository(repo)
+                except (RepositoryError, SystemDatabaseError):
+                    # ouch, repository not available or corrupted !
                     continue
-                except (OperationalError, DatabaseError):
-                    # OperationalError => error in data format
-                    # DatabaseError => database disk image is malformed
-                    # repository fooked, skip!
+                xuse_cache = use_cache
+                while True:
+                    try:
+                        query_data, query_rc = dbconn.atomMatch(
+                            atom,
+                            matchSlot = match_slot,
+                            maskFilter = mask_filter,
+                            extendedResults = extended_results,
+                            useCache = xuse_cache
+                        )
+                        if query_rc == 0:
+                            # package found, add to our dictionary
+                            if extended_results:
+                                repo_results[repo] = (query_data[0],
+                                    query_data[2], query_data[3],
+                                    query_data[4])
+                            else:
+                                repo_results[repo] = query_data
+                    except TypeError:
+                        if not xuse_cache:
+                            raise
+                        xuse_cache = False
+                        continue
+                    except (OperationalError, DatabaseError):
+                        # OperationalError => error in data format
+                        # DatabaseError => database disk image is malformed
+                        # repository fooked, skip!
+                        break
                     break
-                break
 
         dbpkginfo = (-1, 1)
         if extended_results:
