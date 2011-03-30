@@ -1,3 +1,66 @@
+commit 08de3ad55f3b0a20fad055ffe55472a3be72e11f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 14:20:47 2011 +0200
+
+    Release Entropy 1.0_alpha39
+
+commit 381d95b906fe250a21fd9df0007f2b74764fc744
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 22:32:01 2011 +0200
+
+    [entropy.client.interfaces.dep] add inverse dependencies to graph only after the complete iteration
+
+commit 0098b20d891dccf8e7a3bfad7c9cb9298b582d8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 18:48:31 2011 +0200
+
+    [entropy.client.interfaces.dep] fix order for library-bump pulled in dependencies
+    
+    When _lookup_library_drops() returned inverse dependent packages
+    those were not forced as such in the dependency graph, causing
+    wrong dependency order. For example, gcc:4.4 was placed after
+    qt-* packages, even if, given its provided libraries change
+    it should have gotten more priority.
+    
+    NOTE: this commit also partially reverse the previous one, where
+    _lookup_library_breakages() was disabled.
+
+commit d11138c1d9e0b1426884f122183bba821e834d14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 18:47:22 2011 +0200
+
+    [entropy.client.interfaces.dep] some minor/trivial code cleanup
+
+commit 4db104d13a41eb8115362421e28ca7a65d305da0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 16:17:54 2011 +0200
+
+    [entropy.client.interfaces.dep] disable _lookup_library_breakages() in dep calculation by default
+
+commit 9b3ede543ba3755e0b0201e2feb133a2aca0e9a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 16:14:29 2011 +0200
+
+    [entropy.client.interfaces.dep] add more debugging output to dep calculation, also use const_debug_enabled()
+
+commit cc1a29fec2960f93c61623907e8d161e72d83f53
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 15:43:13 2011 +0200
+
+    [entropy.client.interfaces.dep] use sha1 for hashing disk cache keys rather than hash()
+
+commit b39b3feaa7358e51059ea9a1a8448776127ac39f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 15:42:08 2011 +0200
+
+    [entropy.const] add const_debug_enabled function
+
+commit 1c90f540ff0d3f8f9d402311299b801cb0bd2aa3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Mar 29 13:12:28 2011 +0200
+
+    Tagging Entropy version 1.0_alpha38
+
 commit 34e0600f13194b2ecfdd0fd6c2519e1502ff715f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Mar 29 13:12:12 2011 +0200
