@@ -1,3 +1,48 @@
+commit 9e1365f8fe04d40d4548d9d81b7c77f9442815c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 21:05:36 2011 +0200
+
+    Release Entropy 1.0_alpha40
+
+commit 01e0edf2cb9c49b8f500d56485b23a239545fda5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 21:04:27 2011 +0200
+
+    [entropy.client.interfaces.dep] actually fix the "simple or dependency" matching logic
+
+commit b51edf9487c0a9a440e2ee923c4a8f29d1a9af0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 20:56:45 2011 +0200
+
+    [entropy.client.interfaces.dep] introduce simple or-dependencies support on atom_match()
+    
+    The reason is simple, in a multi-repository environment, the matching
+    must be forced across all the available repositories for every single
+    dependency, returning the first available.
+    Running the logic only inside EntropyRepositoryBase.atomMatch() would
+    have the effect of pulling in wrong dependencies in case some
+    are not available in every configured repository.
+    
+    Example: x11-libs/libvdpau;x11-drivers/nvidia-drivers?
+
+commit e22e75e759f020604febe16baa683a7ccb5749f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 20:56:30 2011 +0200
+
+    [entropy.client.interfaces.dep] add more debugging output
+
+commit 8247d0f8f84cb571d7a91cbefad3efc5a5446aae
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Wed Mar 30 16:38:05 2011 +0100
+
+    [i18n] Fix a typo in es translation
+
+commit 5b97cba5f8aa2789ed5bccc7a455a871eb9940f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 14:21:06 2011 +0200
+
+    Tagging Entropy version 1.0_alpha39
+
 commit 08de3ad55f3b0a20fad055ffe55472a3be72e11f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Mar 30 14:20:47 2011 +0200
