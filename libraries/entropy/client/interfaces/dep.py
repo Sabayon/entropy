@@ -235,6 +235,23 @@ class CalculatorsMixin:
         if match_repo and (type(match_repo) in (list, tuple, set)):
             valid_repos = list(match_repo)
 
+        # simple "or" dependency support
+        # app-foo/foo-1.2.3;app-foo/bar-1.4.3?
+        if atom.endswith(etpConst['entropyordepquestion']):
+            # or dependency!
+            atoms = atom[:-1].split(etpConst['entropyordepsep'])
+            for s_atom in atoms:
+                for repo in valid_repos:
+                    data, rc = self.atom_match(s_atom, match_slot = match_slot,
+                        mask_filter = mask_filter, multi_match = multi_match,
+                        multi_repo = multi_repo, match_repo = match_repo,
+                        extended_results = extended_results,
+                        use_cache = use_cache)
+                    if rc != 1:
+                        # checking against 1 works in any case here
+                        # for simple, multi and extended match
+                        return data, rc
+
         repo_results = {}
         for repo in valid_repos:
 
