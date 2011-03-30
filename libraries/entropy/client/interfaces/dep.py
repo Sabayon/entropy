@@ -829,9 +829,11 @@ class CalculatorsMixin:
         # also expands all the conditional dependencies using
         # entropy.dep.expand_dependencies()
         if const_debug_enabled():
+            atom = repo_db.retrieveAtom(pkg_id)
             const_debug_write(__name__,
-                "__generate_dependency_tree_analyze_deplist conditionals, "
-                "current dependency list => %s" % (myundeps,))
+                "__generate_dependency_tree_analyze_deplist conditionals "
+                "%s, %s, current dependency list => %s" % (
+                    pkg_match, atom, myundeps,))
         myundeps = self.__generate_dependency_tree_resolve_conditional(
             myundeps, selected_matches)
         if const_debug_enabled():
