@@ -1038,7 +1038,7 @@ class CalculatorsMixin:
 
                 # these are misc and cannot be differentiated
                 for br_match in broken_matches:
-                    if br_match in child_match:
+                    if br_match in children_matches:
                         # already pushed and inverse dep
                         continue
                     stack.push(br_match)
