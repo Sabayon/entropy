@@ -1,3 +1,27 @@
+commit ecbd1ea10f68a61bb7d560d0737a5631e1336796
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 1 14:16:19 2011 +0200
+
+    Release Entropy 1.0_alpha41
+
+commit 929ca65a5e307c383f589fe9bae04ce8b9c1b75d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 1 14:15:45 2011 +0200
+
+    [entropy.client.interfaces.dep] fix typo in _generate_dependency_tree
+
+commit dc485e81b96867aff6813a2a2fa7975d703cef16
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 21:24:47 2011 +0200
+
+    [equo] beautify error output colors in case of unmatched packages
+
+commit dda5543919c5d95e5dfe0194896d0db1ccde7ce3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Mar 30 21:05:38 2011 +0200
+
+    Tagging Entropy version 1.0_alpha40
+
 commit 9e1365f8fe04d40d4548d9d81b7c77f9442815c0
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Mar 30 21:05:36 2011 +0200
