@@ -524,6 +524,9 @@ class WebService(object):
                     os.remove(body_fpath)
 
             response = connection.getresponse()
+            const_debug_write(__name__, "WebService.%s(%s), "
+                "response header: %s" % (
+                    function_name, params, response.getheaders(),))
             total_length = response.getheader("Content-Length", "-1")
             try:
                 total_length = int(total_length)
