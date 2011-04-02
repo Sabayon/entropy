@@ -10,7 +10,7 @@
 
 """
 __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
-    "DocumentFactory"]
+    "DocumentList", "DocumentFactory"]
 
 import os
 import time
@@ -78,6 +78,12 @@ class Document(dict):
     # Document hash table key pointing to document data
     # see Document.document_data()
     DOCUMENT_DATA_ID = "ddata"
+
+    # Document hash table key for the document title
+    DOCUMENT_TITLE_ID = "title"
+
+    # Document hash table key for the document description
+    DOCUMENT_DESCRIPTION_ID = "description"
 
     # Document hash table key pointing to document keywords (tags...)
     # see Document.document_keywords()
@@ -208,7 +214,7 @@ class Document(dict):
         # backward compatibility
         if not self.is_image():
             return False
-        if self.get(DocumentFactory.DOCUMENT_TITLE_ID) == \
+        if self.get(Document.DOCUMENT_TITLE_ID) == \
             Document.PACKAGE_ICON_TITLE_ID:
             return True
         return False
@@ -249,20 +255,74 @@ class Document(dict):
         """
         return self.document_type() == Document.VIDEO_TYPE_ID
 
+class DocumentList(list):
+    """
+    DocumentList is a list object providing extra methods for obtaining extra
+    document list statuses, such as the number of elements found, the current
+    elements list offset, and if there are more elements on the remote service.
+    """
+
+    def __init__(self, package_name, total, offset):
+        """
+        DocumentList constructor.
+
+        @param package_name: package name string
+        @type package_name: string
+        @param total: number of total documents available
+        @type total: int
+        @param offset: list offset used by remote service
+        @type offset: int
+        """
+        list.__init__(self)
+        self._package_name = package_name
+        self._total = total
+        self._offset = offset
+
+    def package_name(self):
+        """
+        Return the package name bound to this object.
+
+        @return: the package name
+        @rtype: string
+        """
+        return self._package_name
+
+    def total(self):
+        """
+        Return the total amount of remotely available documents.
+
+        @return: the total amount of remotely available documents.
+        @rtype: int
+        """
+        return self._total
+
+    def offset(self):
+        """
+        Return the used offset for fetching this list.
+
+        @return: the used offset
+        @rtype: int
+        """
+        return self._offset
+
+    def has_more(self):
+        """
+        Return the amount of documents available after those listed here.
+
+        @return: the amount of documents still available on the service,
+            given the current offset
+        @rtype: int
+        """
+        return (self._total - self._offset - len(self))
+
 
 class DocumentFactory(object):
     """
     Class to generate valid, new Document objects.
     """
 
-    # Document hash table key for the document title
-    DOCUMENT_TITLE_ID = "title"
-
     # Document hash table key for the document username
     DOCUMENT_USERNAME_ID = "username"
-
-    # Document hash table key for the document description
-    DOCUMENT_DESCRIPTION_ID = "description"
 
     # Payload metadatum is only available on temporary, to-be-uploaded
     # Document objects. Can contain a file object or any other pointer
@@ -333,7 +393,7 @@ class DocumentFactory(object):
         doc = Document(self._repository_id, None, Document.COMMENT_TYPE_ID)
         doc[DocumentFactory.DOCUMENT_USERNAME_ID] = username
         doc[Document.DOCUMENT_DATA_ID] = comment
-        doc[DocumentFactory.DOCUMENT_TITLE_ID] = title
+        doc[Document.DOCUMENT_TITLE_ID] = title
         doc[Document.DOCUMENT_KEYWORDS_ID] = keywords
         return doc
 
@@ -363,8 +423,8 @@ class DocumentFactory(object):
         doc[DocumentFactory.DOCUMENT_USERNAME_ID] = username
         doc[DocumentFactory.DOCUMENT_PAYLOAD_ID] = \
             (os.path.basename(file_object.name), file_object)
-        doc[DocumentFactory.DOCUMENT_TITLE_ID] = title
-        doc[DocumentFactory.DOCUMENT_DESCRIPTION_ID] = description
+        doc[Document.DOCUMENT_TITLE_ID] = title
+        doc[Document.DOCUMENT_DESCRIPTION_ID] = description
         doc[Document.DOCUMENT_KEYWORDS_ID] = keywords
         return doc
 
@@ -394,8 +454,8 @@ class DocumentFactory(object):
         doc[DocumentFactory.DOCUMENT_USERNAME_ID] = username
         doc[DocumentFactory.DOCUMENT_PAYLOAD_ID] = \
             (os.path.basename(file_object.name), file_object)
-        doc[DocumentFactory.DOCUMENT_TITLE_ID] = title
-        doc[DocumentFactory.DOCUMENT_DESCRIPTION_ID] = description
+        doc[Document.DOCUMENT_TITLE_ID] = title
+        doc[Document.DOCUMENT_DESCRIPTION_ID] = description
         doc[Document.DOCUMENT_KEYWORDS_ID] = keywords
         return doc
 
@@ -425,8 +485,8 @@ class DocumentFactory(object):
         doc[DocumentFactory.DOCUMENT_USERNAME_ID] = username
         doc[DocumentFactory.DOCUMENT_PAYLOAD_ID] = \
             (os.path.basename(file_object.name), file_object)
-        doc[DocumentFactory.DOCUMENT_TITLE_ID] = title
-        doc[DocumentFactory.DOCUMENT_DESCRIPTION_ID] = description
+        doc[Document.DOCUMENT_TITLE_ID] = title
+        doc[Document.DOCUMENT_DESCRIPTION_ID] = description
         doc[Document.DOCUMENT_KEYWORDS_ID] = keywords
         return doc
 
@@ -456,8 +516,8 @@ class DocumentFactory(object):
         doc[DocumentFactory.DOCUMENT_USERNAME_ID] = username
         doc[DocumentFactory.DOCUMENT_PAYLOAD_ID] = \
             (os.path.basename(file_object.name), file_object)
-        doc[DocumentFactory.DOCUMENT_TITLE_ID] = title
-        doc[DocumentFactory.DOCUMENT_DESCRIPTION_ID] = description
+        doc[Document.DOCUMENT_TITLE_ID] = title
+        doc[Document.DOCUMENT_DESCRIPTION_ID] = description
         doc[Document.DOCUMENT_KEYWORDS_ID] = keywords
         return doc
 
@@ -535,6 +595,35 @@ class ClientWebService(WebService):
         return self._method_getter("get_votes", params, cache = cache,
             require_credentials = False)
 
+    def get_available_votes(self, cache = True):
+        """
+        Return all the available votes for all the available packages.
+
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @return: mapping composed by package name as key and value as vote
+            (float)
+        @rtype: dict
+
+        @raise WebService.UnsupportedParameters: if input parameters are
+            invalid
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not
+            available remotely and an error occured (error code passed as
+            exception argument)
+        @raise WebService.AuthenticationRequired: if require_credentials
+            is True and credentials are required.
+        @raise WebService.AuthenticationFailed: if credentials are
+            not valid
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web
+            Service API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        """
+        return self._method_getter("get_available_votes", {}, cache = cache,
+            require_credentials = False)
+
     def get_downloads(self, package_names, cache = True):
         """
         For given package names, return the current download counter.
@@ -567,6 +656,36 @@ class ClientWebService(WebService):
             "package_names": " ".join(package_names)
         }
         return self._method_getter("get_downloads", params, cache = cache,
+            require_credentials = False)
+
+    def get_available_downloads(self, cache = True):
+        """
+        Return all the available downloads for all the available packages.
+
+        @param package_names: list of package names, either atoms or keys
+        @type package_names: list
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @return: mapping composed by package name as key and downloads as value
+        @rtype: dict
+
+        @raise WebService.UnsupportedParameters: if input parameters are
+            invalid
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not
+            available remotely and an error occured (error code passed as
+            exception argument)
+        @raise WebService.AuthenticationRequired: if require_credentials
+            is True and credentials are required.
+        @raise WebService.AuthenticationFailed: if credentials are
+            not valid
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web
+            Service API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        """
+        return self._method_getter("get_available_downloads", {}, cache = cache,
             require_credentials = False)
 
     def add_vote(self, package_name, vote):
@@ -654,17 +773,25 @@ class ClientWebService(WebService):
             self._drop_cached("get_downloads")
         return valid
 
-    def get_icons(self, package_names, cache = True):
+    def get_icons(self, package_names, offset = 0, cache = True):
         """
-        For given package names, return the current Document icon object list.
-        Packages having no icon will get empty list as value.
+        For given package names, return the current Document icon object
+        DocumentList.
+        Packages having no icon will get empty DocumentList as value.
+
+        Results are paged, if offset is 0, the first page is returned.
+        For gathering information regarding pages (total documents,
+        offset provided, etc), see DocumentList API.
 
         @param package_names: list of names of the packages to query,
             either atom or key
         @type package_names: list
+        @keyword offset: specify the offset document from where to start
+            for each package_name
+        @type offset: int
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
-        @return: mapping composed by package name as key and Document list
+        @return: mapping composed by package name as key and DocumentList
             as value
         @rtype: dict
 
@@ -684,26 +811,30 @@ class ClientWebService(WebService):
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
         """
-        document_type_filter = [Document.IMAGE_TYPE_ID]
-        data = self.get_documents(package_names,
-            document_type_filter = document_type_filter, cache = cache)
-        icons_data = {}
-        for key in list(data.keys()):
-            icons_data[key] = [x for x in data.get(key, []) if x.is_icon()]
-        return icons_data
+        document_type_filter = [Document.ICON_TYPE_ID]
+        return self.get_documents(package_names,
+            document_type_filter = document_type_filter,
+            offset = offset, cache = cache)
 
-    def get_comments(self, package_names, cache = True):
+    def get_comments(self, package_names, offset = 0, cache = True):
         """
         For given package names, return the current Document Comment object
-        list.
-        Packages having no comments will get empty list as value.
+        DocumentList.
+        Packages having no comments will get empty DocumentList as value.
+
+        Results are paged, if offset is 0, the first page is returned.
+        For gathering information regarding pages (total documents,
+        offset provided, etc), see DocumentList API.
 
         @param package_names: list of names of the packages to query,
             either atom or key
         @type package_names: list
+        @keyword offset: specify the offset document from where to start
+            for each package_name
+        @type offset: int
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
-        @return: mapping composed by package name as key and Document list
+        @return: mapping composed by package name as key and DocumentList
             as value
         @rtype: dict
 
@@ -724,18 +855,20 @@ class ClientWebService(WebService):
         @raise WebService.MethodResponseError; if method execution failed
         """
         document_type_filter = [Document.COMMENT_TYPE_ID]
-        data = self.get_documents(package_names,
-            document_type_filter = document_type_filter, cache = cache)
-        icons_data = {}
-        for key in list(data.keys()):
-            icons_data[key] = [x for x in data.get(key, []) if x.is_icon()]
-        return icons_data
+        return self.get_documents(package_names,
+            document_type_filter = document_type_filter,
+            offset = offset, cache = cache)
 
     def get_documents(self, package_names, document_type_filter = None,
-        cache = True):
+        offset = 0, cache = True):
         """
-        For given package names, return the current Document object list.
-        Packages having no documents will get empty list as value.
+        For given package names, return the current Document object
+        DocumentList.
+        Packages having no documents will get empty DocumentList as value.
+
+        Results are paged, if offset is 0, the first page is returned.
+        For gathering information regarding pages (total documents,
+        offset provided, etc), see DocumentList API.
 
         @param package_names: list of names of the packages to query,
             either atom or key
@@ -743,9 +876,12 @@ class ClientWebService(WebService):
         @keyword document_type_filter: list of document type identifiers (
             see Document class) that are required.
         @type document_type_filter: list
+        @keyword offset: specify the offset document from where to start
+            for each package_name
+        @type offset: int
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
-        @return: mapping composed by package name as key and Document list as
+        @return: mapping composed by package name as key and DocumentList as
             value
         @rtype: dict
 
@@ -770,16 +906,25 @@ class ClientWebService(WebService):
         params = {
             "package_names": " ".join(package_names),
             "filter": " ".join([str(x) for x in document_type_filter]),
+            "offset": offset,
         }
         objs = self._method_getter("get_documents", params, cache = cache,
             require_credentials = False)
         data = {}
         for package_name in package_names:
-            objs = objs.get(package_name, [])
-            m_objs = data.setdefault(package_name, [])
+            objs_map = objs.get(package_name)
+            if not objs_map:
+                data[package_name] = DocumentList(package_name, 0, offset)
+                continue
+
+            total, objs = objs_map['total'], objs_map['docs']
+
+            m_objs = data.setdefault(package_name,
+                DocumentList(package_name, total, offset))
             for obj in objs:
-                d_obj = Document(self._repository_id, obj['document_id'],
-                    obj['document_type_id'])
+                d_obj = Document(self._repository_id,
+                    obj[Document.DOCUMENT_DOCUMENT_ID],
+                        obj[Document.DOCUMENT_DOCUMENT_TYPE_ID])
                 d_obj.update(obj)
                 m_objs.append(d_obj)
         return data
@@ -824,8 +969,9 @@ class ClientWebService(WebService):
         for document_id in document_ids:
             obj = objs.get(document_id)
             if obj is not None:
-                d_obj = Document(self._repository_id, obj['document_id'],
-                    obj['document_type_id'])
+                d_obj = Document(self._repository_id,
+                    obj[Document.DOCUMENT_DOCUMENT_ID],
+                    obj[Document.DOCUMENT_DOCUMENT_TYPE_ID])
                 d_obj.update(obj)
                 obj = d_obj
             data[package_name] = obj
@@ -874,7 +1020,7 @@ class ClientWebService(WebService):
         """
         if not isinstance(document, Document):
             raise AttributeError("only accepting Document objects")
-        if document['document_id'] is not None:
+        if document[Document.DOCUMENT_DOCUMENT_ID] is not None:
             raise WebService.UnsupportedParameters("document is not new")
         # This returns None if document is not accepted
         remote_document = self._method_getter("add_document", document,
