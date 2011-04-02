@@ -2298,6 +2298,20 @@ def validate_repository_id(repository_id):
         return True
     return False
 
+_package_re = re.compile('[a-zA-Z_0-9/\-\.\+#~@]+$')
+def validate_package_name(package_name):
+    """
+    Validate Entropy package name string.
+
+    @param package_name; the actual package name (either key or version)
+    @type package_name: string
+    @return: True, if package_name is a valid package name
+    @rtype: bool
+    """
+    if _package_re.match(package_name):
+        return True
+    return False
+
 def is_entropy_package_file(entropy_package_path):
     """
     Determine whether given package path is a valid Entropy package file.
