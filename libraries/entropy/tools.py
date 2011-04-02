@@ -2312,6 +2312,20 @@ def validate_package_name(package_name):
         return True
     return False
 
+_branch_re = re.compile('[a-zA-Z_0-9\-\.+]+$')
+def validate_branch_name(branch):
+    """
+    Validate Entropy branch name string.
+
+    @param branch; the actual branch name
+    @type branch: string
+    @return: True, if branch is valid
+    @rtype: bool
+    """
+    if _branch_re.match(package_name):
+        return True
+    return False
+
 def is_entropy_package_file(entropy_package_path):
     """
     Determine whether given package path is a valid Entropy package file.
