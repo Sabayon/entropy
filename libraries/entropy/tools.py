@@ -2322,7 +2322,7 @@ def validate_branch_name(branch):
     @return: True, if branch is valid
     @rtype: bool
     """
-    if _branch_re.match(package_name):
+    if _branch_re.match(branch):
         return True
     return False
 
