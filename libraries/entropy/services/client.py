@@ -142,9 +142,10 @@ class WebService(object):
         """
         Base WebService exception class.
         """
-        def __init__(self, value, method = None):
+        def __init__(self, value, method = None, message = None):
             self.value = value
             self.method = method
+            self.message = message
             Exception.__init__(self)
 
         def __get_method(self):
@@ -154,17 +155,28 @@ class WebService(object):
                 method = const_convert_to_unicode(self.method)
             return method
 
+        def __get_message(self):
+            if self.message is None:
+                message = const_convert_to_unicode("")
+            else:
+                message = const_convert_to_unicode(self.message)
+            return message
+
         def __unicode__(self):
             method = self.__get_method()
+            message = self.__get_message()
             if const_isstring(self.value):
-                return const_convert_to_unicode(method + " " + self.value)
-            return const_convert_to_unicode(method + " " + repr(self.value))
+                return const_convert_to_unicode(method + " " + self.value) \
+                    + ", " + message
+            return const_convert_to_unicode(method + " " + repr(self.value)) \
+                 + ", " + message
 
         def __str__(self):
             method = self.__get_method()
+            message = self.__get_message()
             if const_isstring(self.value):
-                return method + " " + self.value
-            return method + " " + repr(self.value)
+                return method + " " + self.value + ", " + message
+            return method + " " + repr(self.value) + ", " + message
 
     class UnsupportedService(WebServiceException):
         """
@@ -232,7 +244,8 @@ class WebService(object):
         self.__auth_storage = None
         self.__settings = None
         self.__cacher = None
-        self._default_timeout_secs = 5.0
+        # some data requires huge timeout (videos)
+        self._default_timeout_secs = 300.0
         self.__credentials_validated = False
 
         # check availability
@@ -267,6 +280,12 @@ class WebService(object):
 
         const_debug_write(__name__, "WebService loaded, url: %s" % (
             self._request_url,))
+
+    def _set_timeout(self, secs):
+        """
+        Override default timeout setting a new one (in seconds).
+        """
+        self._default_timeout_secs = int(secs)
 
     def _set_transfer_callback(self, callback):
         """
@@ -523,7 +542,11 @@ class WebService(object):
                     body_file.close()
                     os.remove(body_fpath)
 
-            response = connection.getresponse()
+            try:
+                response = connection.getresponse()
+            except socket.error as err:
+                raise WebService.RequestError(err,
+                    method = function_name)
             const_debug_write(__name__, "WebService.%s(%s), "
                 "response header: %s" % (
                     function_name, params, response.getheaders(),))
@@ -765,20 +788,20 @@ class WebService(object):
             # check API
             if data.get("api_rev") != WebService.SUPPORTED_API_LEVEL:
                 raise WebService.UnsupportedAPILevel(data['api_rev'],
-                    method = func_name)
+                    method = func_name, message = data.get("message"))
 
             code = data.get("code", -1)
             if code == WebService.WEB_SERVICE_INVALID_CREDENTIALS_CODE:
                 # invalid credentials, ask again login data
                 raise WebService.AuthenticationFailed(code,
-                    method = func_name)
+                    method = func_name, message = data.get("message"))
             if code != WebService.WEB_SERVICE_RESPONSE_CODE_OK:
                 raise WebService.MethodResponseError(code,
-                    method = func_name)
+                    method = func_name, message = data.get("message"))
 
             if "r" not in data:
                 raise WebService.MalformedResponse("r not found",
-                    method = func_name)
+                    method = func_name, message = data.get("message"))
             obj = data["r"]
             return obj
 
