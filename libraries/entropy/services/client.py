@@ -489,10 +489,18 @@ class WebService(object):
                     self._transfer_callback(0, data_size, False)
 
                 if data_size < 65536:
-                    connection.request("POST", request_path, encoded_params,
-                        headers)
+                    try:
+                        connection.request("POST", request_path, encoded_params,
+                            headers)
+                    except socket.error as err:
+                        raise WebService.RequestError(err,
+                            method = function_name)
                 else:
-                    connection.request("POST", request_path, None, headers)
+                    try:
+                        connection.request("POST", request_path, None, headers)
+                    except socket.error as err:
+                        raise WebService.RequestError(err,
+                            method = function_name)
                     sio = StringIO(encoded_params)
                     data_size = len(encoded_params)
                     while True:
@@ -523,7 +531,11 @@ class WebService(object):
                     if self._transfer_callback is not None:
                         self._transfer_callback(0, data_size, False)
 
-                    connection.request("POST", request_path, None, headers)
+                    try:
+                        connection.request("POST", request_path, None, headers)
+                    except socket.error as err:
+                        raise WebService.RequestError(err,
+                            method = function_name)
                     while True:
                         chunk = body_file.read(65535)
                         if not chunk:
