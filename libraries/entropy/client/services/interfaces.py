@@ -14,7 +14,7 @@ __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
 
 import os
 import time
-from entropy.const import const_get_stringtype
+from entropy.const import const_get_stringtype, etpConst
 from entropy.i18n import _
 from entropy.services.client import WebServiceFactory, WebService
 
@@ -688,12 +688,19 @@ class ClientWebService(WebService):
         return self._method_getter("get_available_downloads", {}, cache = cache,
             require_credentials = False)
 
-    def add_vote(self, package_name, vote):
+    def add_vote(self, package_name, vote, clear_available_cache = False):
         """
         For given package name, add a vote.
 
         @param package_name: package name, either atom or key
         @type package_name: string
+        @keyword clear_available_cache: if True, even the
+            "get_available_votes" on-disk cache gets cleared. Usually,
+            this is not a very good thing (even if the cache contains outdated
+            information) given the nature of the whole vote info.
+            This is usually a push-only information.
+            Please note that the "get_votes" cache is always cleared.
+        @type clear_available_cache: bool
         @return: True, if vote was recorded, False otherwise
         @rtype: bool
 
@@ -731,14 +738,24 @@ class ClientWebService(WebService):
             # TODO: cannot remove all the vote cache when just one element gets
             # tained
             self._drop_cached("get_votes")
+            # do not clear get_available_downloads cache explicitly
+            if clear_available_cache:
+                self._drop_cached("get_available_votes")
         return valid
 
-    def add_downloads(self, package_names):
+    def add_downloads(self, package_names, clear_available_cache = False):
         """
         Notify that a list of packages have been downloaded successfully.
 
         @param package_names: list of package names, either atoms or keys
         @type package_names: list
+        @keyword clear_available_cache: if True, even the
+            "get_available_downloads" on-disk cache gets cleared. Usually,
+            this is not a very good thing (even if the cache contains outdated
+            information) given the nature of the whole downloads info.
+            This is usually a push-only information.
+            Please note that the "get_downloads" cache is always cleared.
+        @type clear_available_cache: bool
         @return: True, if download information was recorded, False otherwise
         @rtype: bool
 
@@ -761,16 +778,30 @@ class ClientWebService(WebService):
             not available (user interface should raise a login form, validate
             the credentials and retry the function call here)
         """
+        try:
+            with open(etpConst['systemreleasefile'], "r") as rel_f:
+                release_string = rel_f.readline().strip()
+        except (IOError, OSError):
+            release_string = '--N/A--'
+
+        hw_hash = self._settings['hw_hash']
+        if not hw_hash:
+            hw_hash = ""
+
         params = {
             "package_names": " ".join(package_names),
+            "branch": self._settings['repositories']['branch'],
+            "release_string": release_string,
+            "hw_hash": hw_hash,
         }
         valid = self._method_getter("add_downloads", params, cache = False,
-            require_credentials = True)
+            require_credentials = False)
         if valid:
             # NOTE: we can accept to be non-atomic in this case.
-            # TODO: cannot remove all the vote cache when just one element gets
-            # tained
             self._drop_cached("get_downloads")
+            # do not clear get_available_downloads cache explicitly
+            if clear_available_cache:
+                self._drop_cached("get_available_downloads")
         return valid
 
     def get_icons(self, package_names, offset = 0, cache = True):
@@ -968,13 +999,16 @@ class ClientWebService(WebService):
         data = {}
         for document_id in document_ids:
             obj = objs.get(document_id)
+            if obj is None:
+                # maybe json limitation? WTF?
+                obj = objs.get(str(document_id))
             if obj is not None:
                 d_obj = Document(self._repository_id,
                     obj[Document.DOCUMENT_DOCUMENT_ID],
                     obj[Document.DOCUMENT_DOCUMENT_TYPE_ID])
                 d_obj.update(obj)
                 obj = d_obj
-            data[package_name] = obj
+            data[document_id] = obj
         return data
 
     def _drop_document_cache(self):
@@ -986,14 +1020,14 @@ class ClientWebService(WebService):
         self._drop_cached("get_comments")
         self._drop_cached("get_icons")
 
-    def add_document(self, document):
+    def add_document(self, package_name, document):
         """
         Send a new Document object to the service.
         This method will return the newly created remote document object, or
         raise exceptions in case the operation failed.
 
-        @param package_names: list of package names, either atoms or keys
-        @type package_names: list
+        @param package_name: package name, either atom or key
+        @type package_name: string
         @return: the newly created remote Document object
         @rtype: Document
 
@@ -1023,14 +1057,22 @@ class ClientWebService(WebService):
         if document[Document.DOCUMENT_DOCUMENT_ID] is not None:
             raise WebService.UnsupportedParameters("document is not new")
         # This returns None if document is not accepted
-        remote_document = self._method_getter("add_document", document,
+        params = document.copy()
+        params['package_name'] = package_name
+        remote_document = self._method_getter("add_document", params,
             cache = False, require_credentials = True)
         if remote_document is None:
             raise ClientWebService.DocumentError("Document not accepted")
 
+        # generate Document
+        doc = Document(self._repository_id,
+            remote_document[Document.DOCUMENT_DOCUMENT_ID],
+            remote_document[Document.DOCUMENT_DOCUMENT_TYPE_ID])
+        doc.update(remote_document)
+
         # NOTE: we can accept to be non-atomic in this case.
         self._drop_document_cache()
-        return remote_document
+        return doc
 
     def remove_document(self, document_id):
         """
