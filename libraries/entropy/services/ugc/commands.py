@@ -358,6 +358,7 @@ class UGC(SocketCommands):
             rslt = ugc.insert_file(pkgkey, userid, username, stream_path, file_name, title, description, keywords)
         elif doc_type == self.DOC_TYPES['youtube_video']:
             rslt = ugc.insert_youtube_video(pkgkey, userid, username, stream_path, real_filename, title, description, keywords)
+        ugc.commit()
         return rslt
 
     def docmd_add_comment(self, authenticator, myargs):
@@ -390,6 +391,7 @@ class UGC(SocketCommands):
             if isinstance(iddoc, const_get_stringtype()):
                 t = iddoc
             return False, t
+        ugc.commit()
         return iddoc, 'ok'
 
     def docmd_remove_comment(self, authenticator, myargs):
@@ -420,6 +422,7 @@ class UGC(SocketCommands):
         status, iddoc = ugc.remove_comment(iddoc)
         if not status:
             return False, 'document not removed or not available'
+        ugc.commit()
 
         return iddoc, 'ok'
 
@@ -461,6 +464,7 @@ class UGC(SocketCommands):
         status, iddoc = ugc.edit_comment(iddoc, new_comment, new_title, new_keywords)
         if not status:
             return False, 'document not removed or not available'
+        ugc.commit()
 
         return iddoc, 'ok'
 
@@ -492,6 +496,7 @@ class UGC(SocketCommands):
         status, iddoc = ugc.delete_image(iddoc)
         if not status:
             return False, 'document not removed or not available'
+        ugc.commit()
 
         return iddoc, 'ok'
 
@@ -523,6 +528,7 @@ class UGC(SocketCommands):
         status, iddoc = ugc.delete_file(iddoc)
         if not status:
             return False, 'document not removed or not available'
+        ugc.commit()
 
         return iddoc, 'ok'
 
@@ -554,6 +560,7 @@ class UGC(SocketCommands):
         status, iddoc = ugc.remove_youtube_video(iddoc)
         if not status:
             return False, 'document not removed or not available'
+        ugc.commit()
 
         return iddoc, 'ok'
 
@@ -574,6 +581,7 @@ class UGC(SocketCommands):
         voted = ugc.do_vote(pkgkey, userid, vote)
         if not voted:
             return voted, 'already voted'
+        ugc.commit()
         return voted, 'ok'
 
     def docmd_do_download_stats(self, authenticator, myargs):
@@ -602,6 +610,7 @@ class UGC(SocketCommands):
             ip_addr)
         if not done:
             return done, 'stats not stored'
+        ugc.commit()
         return done, 'ok'
 
     def _get_generic_doctypes(self, pkgkey, doctypes):
