@@ -1956,19 +1956,20 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
             print_error(red("%s." % (_("Nothing to do"),) ))
             return 126, -1
 
-        if deps:
-            question = "     %s" % (
-                _("Would you like to calculate dependencies ?"),
-            )
-        else:
-            question = "     %s" % (_("Would you like to remove them now ?"),)
-            look_for_orphaned_packages = False
-
         if etpUi['ask'] and not etpUi['pretend']:
-            rc = entropy_client.ask_question(question)
-            if rc == _("No"):
+            if deps:
+                question = "     %s" % (
+                    _("Would you like to calculate dependencies ?"),
+                )
+                rc = entropy_client.ask_question(question)
+                if rc == _("No"):
+                    return 0, 0
+            else:
+                question = "     %s" % (
+                    _("Would you like to remove them now ?"),)
                 look_for_orphaned_packages = False
-                if not deps:
+                rc = entropy_client.ask_question(question)
+                if rc == _("No"):
                     return 0, 0
 
         removal_queue = []
