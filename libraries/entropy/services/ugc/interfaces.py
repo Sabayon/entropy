@@ -69,6 +69,15 @@ class Server(RemoteDatabase):
             FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
             );
         """,
+        'entropy_total_downloads': """
+            CREATE TABLE `entropy_total_downloads` (
+            `idtotaldownload` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `idkey` INT UNSIGNED NOT NULL,
+            `count` INT UNSIGNED NULL DEFAULT '0',
+            KEY `idkey` (`idkey`),
+            FOREIGN KEY  (`idkey`) REFERENCES `entropy_base` (`idkey`)
+            );
+        """,
         'entropy_downloads_data': """
             CREATE TABLE `entropy_downloads_data` (
             `iddownload` INT UNSIGNED NOT NULL,
@@ -337,8 +346,12 @@ class Server(RemoteDatabase):
     def insert_download(self, key, ddate, count = 0, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(key)
-        self.execute_query('INSERT INTO entropy_downloads VALUES (%s,%s,%s,%s)', (None, idkey, ddate, count))
+        self.execute_query('INSERT INTO entropy_downloads VALUES (%s,%s,%s,%s)',
+            (None, idkey, ddate, count))
         myid = self.lastrowid()
+        self.execute_query("""
+        INSERT INTO entropy_total_downloads VALUES (%s,%s,%s)
+        """, (None, idkey, count))
         if do_commit:
             self.commit()
         return myid
@@ -381,9 +394,14 @@ class Server(RemoteDatabase):
                     entropy_ip_locations_id = self.insert_entropy_ip_locations_id(ip_lat, ip_long)
         return entropy_ip_locations_id
 
-    def update_download(self, iddownload, do_commit = False):
+    def update_download(self, pkgkey, iddownload, do_commit = False):
         self.check_connection()
         self.execute_query('UPDATE entropy_downloads SET `count` = `count`+1 WHERE `iddownload` = %s', (iddownload,))
+        # this doesn't check if a record is already available, but should be
+        # fine
+        self.execute_query("""
+        UPDATE entropy_total_downloads SET `count` = `count`+1 WHERE `idkey` = %s
+        """, (self.handle_pkgkey(pkgkey),))
         if do_commit:
             self.commit()
         return iddownload
@@ -1344,7 +1362,7 @@ class Server(RemoteDatabase):
             if iddownload == -1:
                 iddownload = self.insert_download(pkgkey, mydate, count = 1)
             else:
-                self.update_download(iddownload)
+                self.update_download(pkgkey, iddownload)
             if (iddownload > 0) and isinstance(ip_addr, const_get_stringtype()):
                 iddownloads.add(iddownload)
 
