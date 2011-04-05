@@ -1,3 +1,4 @@
+
 =head1 NAME
 
 B<equo> - Official Sabayon Linux Package Manager Client
@@ -34,17 +35,22 @@ Content produced by other users.
 
 =over
 
-=item B<--help (-h)>
+=item [1] B<--help>
 
 this output
 
-=item B<--version>
+=item [1] B<--version>
 
 print version
 
-=item B<--nocolor>
+=item [1] B<--nocolor>
 
 disable colorized output
+
+=item [1] B<--bashcomp>
+
+print a bash completion script to stdout
+
 
 =back
 
@@ -52,671 +58,728 @@ disable colorized output
 
 =over
 
-=item B<update>
+=item [1] B<update>
 
 update configured repositories
 
+
 =over
 
-=item B<--force>
+=item [2] B<--force>
 
 force sync regardless repositories status
 
+
 =back
 
-=item B<repo>
+=item [1] B<repo>
 
 manage your repositories
 
+
 =over
 
-=item B<enable>
+=item [2] B<enable>
 
 enable given repository
 
-=item B<disable>
+=item [2] B<disable>
 
 disable given repository
 
-=item B<add <string>>
+=item [2] B<add E<lt>stringE<gt>>
 
 add repository (pass repository string)
 
-=item B<remove <id>>
+=item [2] B<remove E<lt>idE<gt>>
 
 remove repository
 
-=item B<mirrorsort <id>>
+=item [2] B<mirrorsort E<lt>idE<gt>>
 
 reorder mirrors basing on response time
 
-=item B<merge [sources] <dest>>
+=item [2] B<merge [sources] E<lt>destE<gt>>
 
 merge content of source repos to dest [for developers]
 
+
 =over
 
-=item B<--conflicts>
+=item [3] B<--conflicts>
 
 also remove dependency conflicts during merge
 
-=back
 
 =back
 
-=item B<notice [repos]>
+
+=back
+
+=item [1] B<notice [repos]>
 
 repository notice board reader
 
-=item B<status>
+=item [1] B<status>
 
 show respositories status
 
-=item B<search [atoms]>
+=item [1] B<search>
 
 search packages in repositories
 
-=item B<match [atoms]>
+=item [1] B<match>
 
 match a package in repositories
 
+
 =over
 
-=item B<--multimatch>
+=item [2] B<--multimatch>
 
 return all the possible matches
 
-=item B<--installed>
+=item [2] B<--installed>
 
 match inside installed packages repository
 
-=item B<--multirepo>
+=item [2] B<--multirepo>
 
 return matches from every repository
 
-=item B<--showrepo>
+=item [2] B<--showrepo>
 
 print repository information (w/--quiet)
 
-=item B<--showdesc>
+=item [2] B<--showdesc>
 
 print description too (w/--quiet)
 
+
 =back
 
-=item B<hop <branch>>
+=item [1] B<hop E<lt>branchE<gt>>
 
 upgrade your distribution to a new release (branch)
 
-=item B<upgrade>
+=item [1] B<upgrade>
 
 update system with the latest available packages
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--fetch>
+=item [2] B<--fetch>
 
 just download packages
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 only show what would be done
 
-=item B<--verbose (-v)>
+=item [2] B<--verbose>
 
 show more details about what is going on
 
-=item B<--replay>
+=item [2] B<--replay>
 
 reinstall all the packages and their dependencies
 
-=item B<--empty>
+=item [2] B<--empty>
 
 same as --replay
 
-=item B<--resume>
+=item [2] B<--resume>
 
 resume previously interrupted operations
 
-=item B<--skipfirst>
+=item [2] B<--skipfirst>
 
 used with --resume, makes the first package to be skipped
 
-=item B<--multifetch>
+=item [2] B<--multifetch>
 
 download multiple packages in parallel (default 3)
 
-=item B<--multifetch=N>
+=item [2] B<--multifetch=N>
 
 download N packages in parallel (max 10)
 
+
 =back
 
-=item B<security>
+=item [1] B<security>
 
 security infrastructure functions
 
+
 =over
 
-=item B<oscheck>
+=item [2] B<oscheck>
 
 verify installed files using stored checksums
 
+
 =over
 
-=item B<--mtime>
+=item [3] B<--mtime>
 
 consider mtime instead of SHA256 (false positives ahead)
 
-=back
-
-=item B<--assimilate>
+=item [3] B<--assimilate>
 
 update hashes and mtime (useful after editing config files)
 
-=back
-
-=item B<--quiet>
-
-show less details (useful for scripting)
-
-=back
-
-=item B<--verbose>
-
-also list removed files
-
-=back
-
-=over
-
-=item B<--reinstall>
+=item [3] B<--reinstall>
 
 reinstall faulty packages
 
+=item [3] B<--quiet>
+
+show less details (useful for scripting)
+
+=item [3] B<--verbose>
+
+also list removed files
+
+
 =back
 
-=item B<update>
+=item [2] B<update>
 
 download the latest Security Advisories
 
+
 =over
 
-=item B<--force>
+=item [3] B<--force>
 
 force download even if already up-to-date
 
+
 =back
 
-=item B<list>
+=item [2] B<list>
 
 list all the available Security Advisories
 
-=item B<--affected>
+
+=over
+
+=item [3] B<--affected>
 
 list only affected
 
-=item B<--unaffected>
+=item [3] B<--unaffected>
 
 list only unaffected
 
-=item B<info>
+
+=back
+
+=item [2] B<info>
 
 show information about provided advisories identifiers
 
-=item B<install>
+=item [2] B<install>
 
 automatically install all the available security updates
 
-=item B<--ask (-a)>
+
+=over
+
+=item [3] B<--ask>
 
 ask before making any changes
 
-=item B<--fetch>
+=item [3] B<--fetch>
 
 just download packages
 
-=item B<--pretend (-p)>
+=item [3] B<--pretend>
 
 just show what would be done
 
-=item B<--quiet (-q)>
+=item [3] B<--quiet>
 
 show less details (useful for scripting)
 
+
 =back
 
-=item B<install>
+
+=back
+
+=item [1] B<install>
 
 install atoms or binary packages
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
-=item B<--fetch>
+=item [2] B<--fetch>
 
 just download packages without doing the install
 
-=item B<--nodeps>
+=item [2] B<--nodeps>
 
 do not pull in any dependency
 
-=item B<--bdeps>
+=item [2] B<--bdeps>
 
 also pull in build-time dependencies
 
-=item B<--resume>
+=item [2] B<--resume>
 
 resume previously interrupted operations
 
-=item B<--skipfirst>
+=item [2] B<--skipfirst>
 
 used with --resume, makes the first package in queue to be skipped
 
-=item B<--clean>
+=item [2] B<--clean>
 
 remove downloaded packages after being used
 
-=item B<--empty>
+=item [2] B<--empty>
 
 pull all the dependencies in, regardless their state
 
-=item B<--relaxed>
+=item [2] B<--relaxed>
 
 calm down dependencies resolution algorithm (might be risky)
 
-=item B<--deep>
+=item [2] B<--deep>
 
 makes dependency rules stricter
 
-=item B<--verbose (-v)>
+=item [2] B<--verbose>
 
 show more details about what is going on
 
-=item B<--configfiles>
+=item [2] B<--configfiles>
 
 makes old configuration files to be removed
 
-=item B<--multifetch>
+=item [2] B<--multifetch>
 
 download multiple packages in parallel (default 3)
 
-=item B<--multifetch=N>
+=item [2] B<--multifetch=N>
 
 download N packages in parallel (max 10)
 
+
 =back
 
-=item B<source>
+=item [1] B<source>
 
 download atoms source code
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
-=item B<--nodeps>
+=item [2] B<--nodeps>
 
 do not pull in any dependency
 
-=item B<--relaxed>
+=item [2] B<--relaxed>
 
 calm down dependencies resolution algorithm (might be risky)
 
-=item B<--savehere>
+=item [2] B<--savehere>
 
 save sources in current working directory
 
+
 =back
 
-=item B<fetch>
+=item [1] B<fetch>
 
 just download packages without doing the install
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
-=item B<--nodeps>
+=item [2] B<--nodeps>
 
 do not pull in any dependency
 
-=item B<--relaxed>
+=item [2] B<--relaxed>
 
 calm down dependencies resolution algorithm (might be risky)
 
-=item B<--multifetch>
+=item [2] B<--multifetch>
 
 download multiple packages in parallel (default 3)
 
-=item B<--multifetch=N>
+=item [2] B<--multifetch=N>
 
 download N packages in parallel (max 10)
 
+
 =back
 
-=item B<remove>
+=item [1] B<remove>
 
 remove one or more packages
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
-=item B<--nodeps>
+=item [2] B<--nodeps>
 
 do not pull in any dependency
 
-=item B<--deep>
+=item [2] B<--deep>
 
 also pull unused dependencies where reverse deps list is empty
 
-=item B<--empty>
+=item [2] B<--empty>
 
 when used with --deep, helps the removal of virtual packages
 
-=item B<--configfiles>
+=item [2] B<--configfiles>
 
 makes configuration files to be removed
 
-=item B<--force-system>
+=item [2] B<--force-system>
 
-dangerous: forces system packages removal, do not use this
+dangerous: forces system packages removal, do not use this!
 
-=item B<--resume>
+=item [2] B<--resume>
 
 resume previously interrupted operations
 
+
 =back
 
-=item B<mask>
+=item [1] B<mask>
 
 mask one or more packages
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
+
 =back
 
-=item B<unmask>
+=item [1] B<unmask>
 
 unmask one or more packages
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
+
 =back
 
-=item B<config>
+=item [1] B<config>
 
 configure one or more installed packages
 
+
 =over
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
-=item B<deptest>
+
+=back
+
+=item [1] B<deptest>
 
 look for unsatisfied dependencies
 
-=item B<--quiet (-q)>
+
+=over
+
+=item [2] B<--quiet>
 
 show less details (useful for scripting)
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
+
 =back
 
-=item B<unusedpackages>
+=item [1] B<unusedpackages>
 
 look for unused packages (pay attention)
 
+
 =over
 
-=item B<--quiet (-q)>
+=item [2] B<--quiet>
 
 show less details (useful for scripting)
 
-=item B<--sortbysize>
+=item [2] B<--sortbysize>
 
 sort packages by disk size
 
+
 =back
 
-=item B<libtest>
+=item [1] B<libtest>
 
 look for missing libraries
 
+
 =over
 
-=item B<--dump>
+=item [2] B<--dump>
 
 dump results to files
 
-=item B<--listfiles>
+=item [2] B<--listfiles>
 
 print broken files to stdout
 
-=item B<--quiet (-q)>
+=item [2] B<--quiet>
 
 show less details (useful for scripting)
 
-=item B<--ask (-a)>
+=item [2] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend (-p)>
+=item [2] B<--pretend>
 
 just show what would be done
 
+
 =back
 
-=item B<conf>
+=item [1] B<conf>
 
 configuration files update tool
 
+
 =over
 
-=item B<info>
+=item [2] B<info>
 
 show configuration files to be updated
 
-=item B<update>
+=item [2] B<update>
 
 run the configuration files update function
 
+
 =back
 
-=item B<query>
+=item [1] B<query>
 
 do misc queries on repository and local databases
 
+
 =over
 
-=item B<belongs>
+=item [2] B<belongs>
 
 search from what package a file belongs
 
-=item B<changelog>
+=item [2] B<changelog>
 
 show packages changelog
 
-=item B<revdeps>
+=item [2] B<revdeps>
 
 search what packages depend on the provided atoms
 
-=item B<description>
+=item [2] B<description>
 
 search packages by description
 
-=item B<files>
+=item [2] B<files>
 
 show files owned by the provided atoms
 
-=item B<installed>
+=item [2] B<installed>
 
 search a package into the local database
 
-=item B<license>
+=item [2] B<license>
 
 show packages owning the provided licenses
 
-=item B<list>
+=item [2] B<list>
 
 list packages based on the chosen parameter below
 
+
 =over
 
-=item B<installed>
+=item [3] B<installed>
 
 list installed packages
 
+=item [3] B<available [repos]>
+
+list available packages
+
+
 =back
 
-=item B<mimetype>
+=item [2] B<mimetype>
 
 search packages able to handle given mimetypes
 
+
 =over
 
-=item B<--installed>
+=item [3] B<--installed>
 
-search inside installed packages
+search among installed packages
+
 
 =back
 
-=item B<associate>
+=item [2] B<associate>
 
 associate given file paths to applications able to read them
 
+
 =over
 
-=item B<--installed>
+=item [3] B<--installed>
 
-search inside installed packages
+search among installed packages
+
 
 =back
 
-=item B<needed>
+=item [2] B<needed>
 
 show runtime libraries needed by the provided atoms
 
-=item B<orphans>
+=item [2] B<orphans>
 
 search files that do not belong to any package
 
-=item B<removal>
+=item [2] B<removal>
 
 show the removal tree for the specified atoms
 
-=item B<required>
+=item [2] B<required>
 
 show atoms needing the provided libraries
 
-=item B<sets>
+=item [2] B<sets>
 
 search available package sets
 
-=item B<slot>
+=item [2] B<slot>
 
 show packages owning the provided slot
 
-=item B<tags>
+=item [2] B<tags>
 
-show packages owning the specified tags
+show packages owning the provided tags
 
-=item B<revisions>
-
-show installed packages owning the specified revisions
-
-=item B<graph>
+=item [2] B<graph>
 
 show direct depdendencies tree for provided installable atoms
 
+
 =over
 
-=item B<--complete>
+=item [3] B<--complete>
 
 include system packages, build deps and circularity information
 
+
 =back
 
-=item B<revgraph>
+=item [2] B<revgraph>
 
 show reverse depdendencies tree for provided installed atoms
 
+
 =over
 
-=item B<--complete>
+=item [3] B<--complete>
 
 include system packages, build deps and circularity information
 
+
 =back
 
-=item B<--verbose (-v)>
+=item [2] B<--verbose>
 
 show more details
 
-=item B<--quiet (-q)>
+=item [2] B<--quiet>
 
 print results in a scriptable way
 
+
 =back
+
 
 =back
 
@@ -724,681 +787,712 @@ print results in a scriptable way
 
 =over
 
-
-=item B<smart>
+=item [1] B<smart>
 
 handles extended functionalities
 
+
 =over
 
-
-=item B<application>
+=item [2] B<application>
 
 make a smart application for the provided atoms (experimental)
 
-
-=item B<package>
+=item [2] B<package>
 
 make a smart package for the provided atoms (multiple packages into one file)
 
-=item B<quickpkg>
+=item [2] B<quickpkg>
 
 recreate an Entropy package from your System
 
+
 =over
 
-
-=item B<--savedir>
+=item [3] B<--savedir>
 
 save new packages into the specified directory
 
+
 =back
 
-
-=item B<inflate>
+=item [2] B<inflate>
 
 convert provided Source Package Manager package files into Entropy packages
 
+
 =over
 
-
-=item B<--savedir>
+=item [3] B<--savedir>
 
 save new packages into the specified directory
 
+
 =back
 
-
-=item B<deflate>
+=item [2] B<deflate>
 
 convert provided Entropy packages into Source Package Manager ones
 
+
 =over
 
-
-=item B<--savedir>
+=item [3] B<--savedir>
 
 save new packages into the specified directory
 
+
 =back
 
-
-=item B<extract>
+=item [2] B<extract>
 
 extract Entropy metadata from provided Entropy package files
 
+
 =over
 
-
-=item B<--savedir>
+=item [3] B<--savedir>
 
 save new metadata into the specified directory
 
-=back
 
 =back
 
 
-=item B<rescue>
+=back
+
+=item [1] B<rescue>
 
 contains System rescue tools
 
+
 =over
 
-
-=item B<check>
+=item [2] B<check>
 
 check installed packages repository for errors
 
-=item B<vacuum>
+=item [2] B<vacuum>
 
 remove installed packages repository internal indexes to save disk space
 
-=item B<generate>
+=item [2] B<generate>
 
 generate installed packages database using Source Package Manager repositories
 
-=item B<resurrect>
+=item [2] B<resurrect>
 
 generate installed packages database using files on the system [last hope]
 
-=item B<spmuids>
+=item [2] B<spmuids>
 
-regenerate SPM UIDs map (SPM <-> Entropy packages)
+regenerate SPM UIDs map (SPM E<lt>-E<gt> Entropy packages)
 
-=item B<spmsync>
+=item [2] B<spmsync>
 
 makes Entropy aware of your Source Package Manager updated packages
 
-=item B<backup>
+=item [2] B<backup>
 
 backup the current Entropy installed packages database
 
-=item B<restore>
+=item [2] B<restore>
 
 restore a previously backed up Entropy installed packages database
 
+
 =back
 
-
-=item B<community>
+=item [1] B<community>
 
 handles community-side features
 
+
 =over
 
-
-=item B<repos>
+=item [2] B<repos>
 
 community repositories management functions
 
+
 =over
 
-
-=item B<update>
+=item [3] B<update>
 
 scan the System looking for newly compiled packages
 
+
 =over
 
-
-=item B<--seekstore>
+=item [4] B<--seekstore>
 
 analyze the Entropy Store directory directly
 
-=item B<--repackage <atoms>>
+=item [4] B<--repackage E<lt>atomsE<gt>>
 
 repackage the specified atoms
 
-=item B<--noask>
+=item [4] B<--noask>
 
 do not ask anything except critical things
 
-=item B<--atoms <atoms>>
+=item [4] B<--atoms E<lt>atomsE<gt>>
 
 manage only the specified atoms
 
-=item B<--interactive>
+=item [4] B<--interactive>
 
 run in interactive mode (asking things one by one)
 
+
 =back
 
-
-=item B<inject <packages>>
+=item [3] B<inject E<lt>packagesE<gt>>
 
 add binary packages to repository w/o affecting scopes (multipackages)
 
+
 =back
 
-
-=item B<mirrors>
+=item [2] B<mirrors>
 
 community repositories mirrors management functions
 
+
 =over
 
-
-=item B<sync>
+=item [3] B<sync>
 
 sync packages, database and also do some tidy
 
+
 =over
 
-
-=item B<--noask>
+=item [4] B<--noask>
 
 do not ask anything except critical things
 
-=item B<--syncall>
+=item [4] B<--syncall>
 
 sync all the configured repositories
 
+
 =back
 
-
-=item B<packages-sync>
+=item [3] B<packages-sync>
 
 sync packages across primary mirrors
 
+
 =over
 
-
-=item B<--ask>
+=item [4] B<--ask>
 
 ask before making any changes
 
-=item B<--pretend>
+=item [4] B<--pretend>
 
 only show what would be done
 
-=item B<--syncall>
+=item [4] B<--syncall>
 
 sync all the configured repositories
 
-=item B<--do-packages-check>
+=item [4] B<--do-packages-check>
 
 also verify packages integrity
 
+
 =back
 
-
-=item B<repo-sync>
+=item [3] B<repo-sync>
 
 sync the current repository database across primary mirrors
 
+
 =over
 
-
-=item B<--syncall>
+=item [4] B<--syncall>
 
 sync all the configured repositories
 
+
 =back
 
-
-=item B<repo-lock>
+=item [3] B<repo-lock>
 
 lock the current repository database (server-side)
 
-=item B<repo-unlock>
+=item [3] B<repo-unlock>
 
 unlock the current repository database (server-side)
 
-=item B<repo-download-lock>
+=item [3] B<repo-download-lock>
 
 lock the current repository database (client-side)
 
-=item B<repo-download-unlock>
+=item [3] B<repo-download-unlock>
 
 unlock the current repository database (client-side)
 
-=item B<repo-lock-status>
+=item [3] B<repo-lock-status>
 
 show current lock status
 
-=item B<tidy>
+=item [3] B<tidy>
 
 remove binary packages not in repositories and expired
 
-=item B<vacuum>
+=item [3] B<vacuum>
 
 clean unavaiable packages from mirrors (similar to tidy, but more nazi)
 
+
 =over
 
-
-=item B<--days=<days>>
+=item [4] B<--days=E<lt>daysE<gt>>
 
 expiration days [default is: 0, dangerous!]
 
-=back
-
 
 =back
 
 
-=item B<repo>
+=back
+
+=item [2] B<repo>
 
 manage a repository
 
+
 =over
 
-
-=item B<--initialize>
+=item [3] B<--initialize>
 
 (re)initialize the current repository database
 
+
 =over
 
-
-=item B<--empty>
+=item [4] B<--empty>
 
 do not refill database using packages on mirrors
 
+=item [4] B<--repo=E<lt>repoE<gt>>
 
-=item B<bump>
+(re)create the database for the specified repository
+
+
+=back
+
+=item [3] B<bump>
 
 manually force a revision bump for the current repository database
 
+
 =over
 
-
-=item B<--sync>
+=item [4] B<--sync>
 
 synchronize the database
 
+
 =back
 
+=item [3] B<flushback [branches]>
 
-=item B<remove>
+flush back old branches packages to current branch
+
+=item [3] B<remove>
 
 remove the provided atoms from the current repository database
 
-
-=item B<multiremove>
+=item [3] B<multiremove>
 
 remove the provided injected atoms (all if no atom specified)
 
-=over
-
-
-=item B<--branch=<branch>>
-
-choose on what branch operating
-
-=back
-
-
-=item B<create-empty-database>
+=item [3] B<create-empty-database>
 
 create an empty repository database in the provided path
 
-=item B<switchbranch <from branch> <to branch>>
+=item [3] B<switchbranch E<lt>from branchE<gt> E<lt>to branchE<gt>>
 
 switch to the specified branch the provided atoms (or world)
 
-=item B<md5remote>
+=item [3] B<md5remote>
 
 verify remote integrity of the provided atoms (or world)
 
-=item B<backup>
+=item [3] B<backup>
 
 backup current repository database
 
-=item B<restore>
+=item [3] B<restore>
 
 restore a previously backed-up repository database
 
-=back
+=item [3] B<spmuids>
 
-=item B<spmuids>
+regenerate SPM UIDs map (SPM E<lt>-E<gt> Entropy packages)
 
-regenerate SPM UIDs map (SPM <-> Entropy packages)
-
-=item B<enable <repo>>
+=item [3] B<enable E<lt>repoE<gt>>
 
 enable the specified repository
 
-=item B<disable <repo>>
+=item [3] B<disable E<lt>repoE<gt>>
 
 disable the specified repository
 
-=item B<status <repo>>
+=item [3] B<status E<lt>repoE<gt>>
 
 show the current Server Interface status
 
-=item B<package-dep <repo> [atoms]>
+=item [3] B<package-dep-check E<lt>repoE<gt> [atoms]>
+
+check packages in repository for missing dependencies
+
+=item [3] B<package-dep E<lt>repoE<gt> [atoms]>
 
 handle packages dependencies
 
-=item B<package-tag <repo> <tag-string> [atoms]>
+=item [3] B<package-tag E<lt>repoE<gt> E<lt>tag-stringE<gt> [atoms]>
 
 clone a package inside a repository assigning it an arbitrary tag
 
-=item B<move <from> <to> [atoms]>
+=item [3] B<move E<lt>fromE<gt> E<lt>toE<gt> [atoms]>
 
 move packages from a repository to another
 
-=item B<copy <from> <to> [atoms]>
+
+=over
+
+=item [4] B<--deps>
+
+pulls dependencies in
+
+
+=back
+
+=item [3] B<copy E<lt>fromE<gt> E<lt>toE<gt> [atoms]>
 
 copy packages from a repository to another
 
-=item B<default <repo_id>>
+
+=over
+
+=item [4] B<--deps>
+
+pulls dependencies in
+
+
+=back
+
+=item [3] B<default E<lt>repo_idE<gt>>
 
 set the default repository
 
+
 =back
 
-
-=item B<key>
+=item [2] B<key>
 
 manage repository digital signatures (OpenGPG)
 
+
 =over
 
-
-=item B<create [repos]>
+=item [3] B<create [repos]>
 
 create keypair for repositories and sign packages
 
-=item B<delete [repos]>
+=item [3] B<delete [repos]>
 
 delete keypair (and digital signatures) of repository
 
-=item B<status [repos]>
+=item [3] B<status [repos]>
 
 show currently configured keys information for given repositories
 
-=item B<sign [repos]>
+=item [3] B<sign [repos]>
 
 sign (or re-sign) packages in repository using currently set keypair
 
-=item B<import <repo_id> <privkey_path> <pubkey_path>>
+=item [3] B<import E<lt>repo_idE<gt> E<lt>privkey_pathE<gt> E<lt>pubkey_pathE<gt>>
 
 import keypair, bind to given repository
 
-=item B<export-public <repo_id> <key_path>>
+=item [3] B<export-public E<lt>repo_idE<gt> E<lt>key_pathE<gt>>
 
 export public key of given repository
 
-=back
-
-=item B<export-private <repo_id> <key_path>>
+=item [3] B<export-private E<lt>repo_idE<gt> E<lt>key_pathE<gt>>
 
 export private key of given repository
 
+
 =back
 
-
-=item B<query>
+=item [2] B<query>
 
 do some searches into community repository databases
 
+
 =over
 
-
-=item B<belongs>
+=item [3] B<belongs>
 
 show from what package the provided files belong
 
-=item B<changelog>
+=item [3] B<changelog>
 
 show packages changelog
 
-=item B<revdeps>
+=item [3] B<revdeps>
 
 show what packages depend on the provided atoms
 
-=item B<description>
+=item [3] B<description>
 
 search packages by description
 
-=item B<files>
+=item [3] B<files>
 
 show files owned by the provided atoms
 
-=item B<list>
+=item [3] B<list>
 
 list all the packages in the default repository
 
-=item B<needed>
+=item [3] B<needed>
 
 show runtime libraries needed by the provided atoms
 
-=item B<search>
+=item [3] B<search>
 
 search packages inside the default repository database
 
-=item B<sets>
+=item [3] B<sets>
 
 search available package sets
 
-=item B<tags>
+=item [3] B<tags>
 
 show packages owning the specified tags
 
-=item B<--verbose>
+=item [3] B<revisions>
+
+show installed packages owning the specified revisions
+
+=item [3] B<--verbose>
 
 show more details
 
-=item B<--quiet>
+=item [3] B<--quiet>
 
 print results in a scriptable way
 
+
 =back
 
-
-=item B<spm>
+=item [2] B<spm>
 
 source package manager functions
 
+
 =over
 
-
-=item B<compile>
+=item [3] B<compile>
 
 compilation function
 
+
 =over
 
-
-=item B<categories>
+=item [4] B<categories>
 
 compile packages belonging to the provided categories
 
+
 =over
 
-
-=item B<--list>
+=item [5] B<--list>
 
 just list packages
 
+=item [5] B<--nooldslots>
+
+do not pull old package slots
+
+
 =back
 
-
-=item B<pkgset>
+=item [4] B<pkgset>
 
 compile packages in provided package set names
 
+
 =over
 
-
-=item B<--list>
+=item [5] B<--list>
 
 just list packages
 
-=item B<--rebuild>
+=item [5] B<--rebuild>
 
 rebuild everything
 
-=item B<--dbupdate>
+=item [5] B<--dbupdate>
 
 run database update if all went fine
 
-=item B<--dbsync>
+=item [5] B<--dbsync>
 
 run mirror sync if all went fine
 
-=back
 
 =back
 
 
-=item B<orphans>
+=back
+
+=item [3] B<orphans>
 
 scan orphaned packages on SPM
 
+
 =back
 
-
-=item B<notice>
+=item [2] B<notice>
 
 notice board handling functions
 
+
 =over
 
-
-=item B<add>
+=item [3] B<add>
 
 add a news item to the notice board
 
-=item B<remove>
+=item [3] B<remove>
 
 remove a news item from the notice board
 
-=item B<read>
+=item [3] B<read>
 
 read the current notice board
 
+
 =back
 
-
-=item B<deptest>
+=item [2] B<deptest>
 
 look for unsatisfied dependencies across community repositories
 
-=item B<pkgtest>
+=item [2] B<pkgtest>
 
 verify the integrity of local package files
 
 
-=item B<ugc>
+=back
+
+=item [1] B<ugc>
 
 handles User Generated Content features
 
+
 =over
 
-
-=item B<login <repository>>
+=item [2] B<login E<lt>repositoryE<gt>>
 
 login against a specified repository
 
-=item B<logout <repository>>
+=item [2] B<logout E<lt>repositoryE<gt>>
 
 logout from a specified repository
 
+
 =over
 
-
-=item B<--force>
+=item [3] B<--force>
 
 force action
 
+
 =back
 
-
-=item B<documents <repository>>
+=item [2] B<documents E<lt>repositoryE<gt>>
 
 manage package documents for the selected repository (comments, files, videos)
 
+
 =over
 
-
-=item B<get <pkgkey>>
+=item [3] B<get E<lt>pkgkeyE<gt>>
 
 get available documents for the specified package key (example: x11-libs/qt)
 
-=item B<add <pkgkey>>
+=item [3] B<add E<lt>pkgkeyE<gt>>
 
 add a new document to the specified package key (example: x11-libs/qt)
 
-=item B<remove <docs ids>>
+=item [3] B<remove E<lt>docs idsE<gt>>
 
 remove documents from database using their identifiers
 
+
 =back
 
-
-=item B<vote <repository>>
+=item [2] B<vote E<lt>repositoryE<gt>>
 
 manage package votes for the selected repository
 
+
 =over
 
-
-=item B<get <pkgkey>>
+=item [3] B<get E<lt>pkgkeyE<gt>>
 
 get vote for the specified package key (example: x11-libs/qt)
 
-=item B<add <pkgkey>>
+=item [3] B<add E<lt>pkgkeyE<gt>>
 
 add vote for the specified package key (example: x11-libs/qt)
 
-=back
 
 =back
 
 
-=item B<cache>
+=back
+
+=item [1] B<cache>
 
 handles Entropy cache
 
+
 =over
 
-
-=item B<clean>
+=item [2] B<clean>
 
 clean Entropy cache
 
-=item B<--verbose>
+=item [2] B<--verbose>
 
 show more details
 
-=item B<--quiet>
+=item [2] B<--quiet>
 
 print results in a scriptable way
 
+
 =back
 
-
-=item B<cleanup>
+=item [1] B<cleanup>
 
 remove downloaded packages and clean temp. directories
 
-=item B<--info>
+=item [1] B<--info>
 
 show system information
+
 
 =back
 

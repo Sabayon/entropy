@@ -123,8 +123,8 @@
 .rm #[ #] #H #V #F C
 .\" ========================================================================
 .\"
-.IX Title "EQUO 1"
-.TH EQUO 1 "2011-02-07" "perl v5.12.2" "Entropy"
+.IX Title "A 1"
+.TH A 1 "2011-04-05" "perl v5.12.2" "User Contributed Perl Documentation"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -159,52 +159,55 @@ source code, sanity check your system, see and be part of the User Generated
 Content produced by other users.
 .SH "BASIC_OPTIONS"
 .IX Header "BASIC_OPTIONS"
-.IP "\fB\-\-help (\-h)\fR" 4
-.IX Item "--help (-h)"
+.IP "[1] \fB\-\-help\fR" 4
+.IX Item "[1] --help"
 this output
-.IP "\fB\-\-version\fR" 4
-.IX Item "--version"
+.IP "[1] \fB\-\-version\fR" 4
+.IX Item "[1] --version"
 print version
-.IP "\fB\-\-nocolor\fR" 4
-.IX Item "--nocolor"
+.IP "[1] \fB\-\-nocolor\fR" 4
+.IX Item "[1] --nocolor"
 disable colorized output
+.IP "[1] \fB\-\-bashcomp\fR" 4
+.IX Item "[1] --bashcomp"
+print a bash completion script to stdout
 .SH "OPTIONS"
 .IX Header "OPTIONS"
-.IP "\fBupdate\fR" 4
-.IX Item "update"
+.IP "[1] \fBupdate\fR" 4
+.IX Item "[1] update"
 update configured repositories
 .RS 4
-.IP "\fB\-\-force\fR" 4
-.IX Item "--force"
+.IP "[2] \fB\-\-force\fR" 4
+.IX Item "[2] --force"
 force sync regardless repositories status
 .RE
 .RS 4
 .RE
-.IP "\fBrepo\fR" 4
-.IX Item "repo"
+.IP "[1] \fBrepo\fR" 4
+.IX Item "[1] repo"
 manage your repositories
 .RS 4
-.IP "\fBenable\fR" 4
-.IX Item "enable"
+.IP "[2] \fBenable\fR" 4
+.IX Item "[2] enable"
 enable given repository
-.IP "\fBdisable\fR" 4
-.IX Item "disable"
+.IP "[2] \fBdisable\fR" 4
+.IX Item "[2] disable"
 disable given repository
-.IP "\fBadd <string\fR>" 4
-.IX Item "add <string>"
+.IP "[2] \fBadd <string>\fR" 4
+.IX Item "[2] add <string>"
 add repository (pass repository string)
-.IP "\fBremove <id\fR>" 4
-.IX Item "remove <id>"
+.IP "[2] \fBremove <id>\fR" 4
+.IX Item "[2] remove <id>"
 remove repository
-.IP "\fBmirrorsort <id\fR>" 4
-.IX Item "mirrorsort <id>"
+.IP "[2] \fBmirrorsort <id>\fR" 4
+.IX Item "[2] mirrorsort <id>"
 reorder mirrors basing on response time
-.IP "\fBmerge [sources] <dest\fR>" 4
-.IX Item "merge [sources] <dest>"
+.IP "[2] \fBmerge [sources] <dest>\fR" 4
+.IX Item "[2] merge [sources] <dest>"
 merge content of source repos to dest [for developers]
 .RS 4
-.IP "\fB\-\-conflicts\fR" 4
-.IX Item "--conflicts"
+.IP "[3] \fB\-\-conflicts\fR" 4
+.IX Item "[3] --conflicts"
 also remove dependency conflicts during merge
 .RE
 .RS 4
@@ -212,528 +215,540 @@ also remove dependency conflicts during merge
 .RE
 .RS 4
 .RE
-.IP "\fBnotice [repos]\fR" 4
-.IX Item "notice [repos]"
+.IP "[1] \fBnotice [repos]\fR" 4
+.IX Item "[1] notice [repos]"
 repository notice board reader
-.IP "\fBstatus\fR" 4
-.IX Item "status"
+.IP "[1] \fBstatus\fR" 4
+.IX Item "[1] status"
 show respositories status
-.IP "\fBsearch [atoms]\fR" 4
-.IX Item "search [atoms]"
+.IP "[1] \fBsearch\fR" 4
+.IX Item "[1] search"
 search packages in repositories
-.IP "\fBmatch [atoms]\fR" 4
-.IX Item "match [atoms]"
+.IP "[1] \fBmatch\fR" 4
+.IX Item "[1] match"
 match a package in repositories
 .RS 4
-.IP "\fB\-\-multimatch\fR" 4
-.IX Item "--multimatch"
+.IP "[2] \fB\-\-multimatch\fR" 4
+.IX Item "[2] --multimatch"
 return all the possible matches
-.IP "\fB\-\-installed\fR" 4
-.IX Item "--installed"
+.IP "[2] \fB\-\-installed\fR" 4
+.IX Item "[2] --installed"
 match inside installed packages repository
-.IP "\fB\-\-multirepo\fR" 4
-.IX Item "--multirepo"
+.IP "[2] \fB\-\-multirepo\fR" 4
+.IX Item "[2] --multirepo"
 return matches from every repository
-.IP "\fB\-\-showrepo\fR" 4
-.IX Item "--showrepo"
+.IP "[2] \fB\-\-showrepo\fR" 4
+.IX Item "[2] --showrepo"
 print repository information (w/\-\-quiet)
-.IP "\fB\-\-showdesc\fR" 4
-.IX Item "--showdesc"
+.IP "[2] \fB\-\-showdesc\fR" 4
+.IX Item "[2] --showdesc"
 print description too (w/\-\-quiet)
 .RE
 .RS 4
 .RE
-.IP "\fBhop <branch\fR>" 4
-.IX Item "hop <branch>"
+.IP "[1] \fBhop <branch>\fR" 4
+.IX Item "[1] hop <branch>"
 upgrade your distribution to a new release (branch)
-.IP "\fBupgrade\fR" 4
-.IX Item "upgrade"
+.IP "[1] \fBupgrade\fR" 4
+.IX Item "[1] upgrade"
 update system with the latest available packages
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-fetch\fR" 4
-.IX Item "--fetch"
+.IP "[2] \fB\-\-fetch\fR" 4
+.IX Item "[2] --fetch"
 just download packages
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 only show what would be done
-.IP "\fB\-\-verbose (\-v)\fR" 4
-.IX Item "--verbose (-v)"
+.IP "[2] \fB\-\-verbose\fR" 4
+.IX Item "[2] --verbose"
 show more details about what is going on
-.IP "\fB\-\-replay\fR" 4
-.IX Item "--replay"
+.IP "[2] \fB\-\-replay\fR" 4
+.IX Item "[2] --replay"
 reinstall all the packages and their dependencies
-.IP "\fB\-\-empty\fR" 4
-.IX Item "--empty"
+.IP "[2] \fB\-\-empty\fR" 4
+.IX Item "[2] --empty"
 same as \-\-replay
-.IP "\fB\-\-resume\fR" 4
-.IX Item "--resume"
+.IP "[2] \fB\-\-resume\fR" 4
+.IX Item "[2] --resume"
 resume previously interrupted operations
-.IP "\fB\-\-skipfirst\fR" 4
-.IX Item "--skipfirst"
+.IP "[2] \fB\-\-skipfirst\fR" 4
+.IX Item "[2] --skipfirst"
 used with \-\-resume, makes the first package to be skipped
-.IP "\fB\-\-multifetch\fR" 4
-.IX Item "--multifetch"
+.IP "[2] \fB\-\-multifetch\fR" 4
+.IX Item "[2] --multifetch"
 download multiple packages in parallel (default 3)
-.IP "\fB\-\-multifetch=N\fR" 4
-.IX Item "--multifetch=N"
+.IP "[2] \fB\-\-multifetch=N\fR" 4
+.IX Item "[2] --multifetch=N"
 download N packages in parallel (max 10)
 .RE
 .RS 4
 .RE
-.IP "\fBsecurity\fR" 4
-.IX Item "security"
+.IP "[1] \fBsecurity\fR" 4
+.IX Item "[1] security"
 security infrastructure functions
 .RS 4
-.IP "\fBoscheck\fR" 4
-.IX Item "oscheck"
+.IP "[2] \fBoscheck\fR" 4
+.IX Item "[2] oscheck"
 verify installed files using stored checksums
 .RS 4
-.IP "\fB\-\-mtime\fR" 4
-.IX Item "--mtime"
+.IP "[3] \fB\-\-mtime\fR" 4
+.IX Item "[3] --mtime"
 consider mtime instead of \s-1SHA256\s0 (false positives ahead)
-.RE
-.RS 4
-.RE
-.IP "\fB\-\-assimilate\fR" 4
-.IX Item "--assimilate"
+.IP "[3] \fB\-\-assimilate\fR" 4
+.IX Item "[3] --assimilate"
 update hashes and mtime (useful after editing config files)
+.IP "[3] \fB\-\-reinstall\fR" 4
+.IX Item "[3] --reinstall"
+reinstall faulty packages
+.IP "[3] \fB\-\-quiet\fR" 4
+.IX Item "[3] --quiet"
+show less details (useful for scripting)
+.IP "[3] \fB\-\-verbose\fR" 4
+.IX Item "[3] --verbose"
+also list removed files
 .RE
 .RS 4
 .RE
-.IP "\fB\-\-quiet\fR" 4
-.IX Item "--quiet"
-show less details (useful for scripting)
-.IP "\fB\-\-verbose\fR" 4
-.IX Item "--verbose"
-also list removed files
-.IP "\fB\-\-reinstall\fR" 4
-.IX Item "--reinstall"
-reinstall faulty packages
-.IP "\fBupdate\fR" 4
-.IX Item "update"
+.IP "[2] \fBupdate\fR" 4
+.IX Item "[2] update"
 download the latest Security Advisories
 .RS 4
-.IP "\fB\-\-force\fR" 4
-.IX Item "--force"
+.IP "[3] \fB\-\-force\fR" 4
+.IX Item "[3] --force"
 force download even if already up-to-date
 .RE
 .RS 4
 .RE
-.IP "\fBlist\fR" 4
-.IX Item "list"
+.IP "[2] \fBlist\fR" 4
+.IX Item "[2] list"
 list all the available Security Advisories
-.IP "\fB\-\-affected\fR" 4
-.IX Item "--affected"
+.RS 4
+.IP "[3] \fB\-\-affected\fR" 4
+.IX Item "[3] --affected"
 list only affected
-.IP "\fB\-\-unaffected\fR" 4
-.IX Item "--unaffected"
+.IP "[3] \fB\-\-unaffected\fR" 4
+.IX Item "[3] --unaffected"
 list only unaffected
-.IP "\fBinfo\fR" 4
-.IX Item "info"
+.RE
+.RS 4
+.RE
+.IP "[2] \fBinfo\fR" 4
+.IX Item "[2] info"
 show information about provided advisories identifiers
-.IP "\fBinstall\fR" 4
-.IX Item "install"
+.IP "[2] \fBinstall\fR" 4
+.IX Item "[2] install"
 automatically install all the available security updates
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.RS 4
+.IP "[3] \fB\-\-ask\fR" 4
+.IX Item "[3] --ask"
 ask before making any changes
-.IP "\fB\-\-fetch\fR" 4
-.IX Item "--fetch"
+.IP "[3] \fB\-\-fetch\fR" 4
+.IX Item "[3] --fetch"
 just download packages
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[3] \fB\-\-pretend\fR" 4
+.IX Item "[3] --pretend"
 just show what would be done
-.IP "\fB\-\-quiet (\-q)\fR" 4
-.IX Item "--quiet (-q)"
+.IP "[3] \fB\-\-quiet\fR" 4
+.IX Item "[3] --quiet"
 show less details (useful for scripting)
-.IP "\fBinstall\fR" 4
-.IX Item "install"
+.RE
+.RS 4
+.RE
+.RE
+.RS 4
+.RE
+.IP "[1] \fBinstall\fR" 4
+.IX Item "[1] install"
 install atoms or binary packages
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
-.IP "\fB\-\-fetch\fR" 4
-.IX Item "--fetch"
+.IP "[2] \fB\-\-fetch\fR" 4
+.IX Item "[2] --fetch"
 just download packages without doing the install
-.IP "\fB\-\-nodeps\fR" 4
-.IX Item "--nodeps"
+.IP "[2] \fB\-\-nodeps\fR" 4
+.IX Item "[2] --nodeps"
 do not pull in any dependency
-.IP "\fB\-\-bdeps\fR" 4
-.IX Item "--bdeps"
+.IP "[2] \fB\-\-bdeps\fR" 4
+.IX Item "[2] --bdeps"
 also pull in build-time dependencies
-.IP "\fB\-\-resume\fR" 4
-.IX Item "--resume"
+.IP "[2] \fB\-\-resume\fR" 4
+.IX Item "[2] --resume"
 resume previously interrupted operations
-.IP "\fB\-\-skipfirst\fR" 4
-.IX Item "--skipfirst"
+.IP "[2] \fB\-\-skipfirst\fR" 4
+.IX Item "[2] --skipfirst"
 used with \-\-resume, makes the first package in queue to be skipped
-.IP "\fB\-\-clean\fR" 4
-.IX Item "--clean"
+.IP "[2] \fB\-\-clean\fR" 4
+.IX Item "[2] --clean"
 remove downloaded packages after being used
-.IP "\fB\-\-empty\fR" 4
-.IX Item "--empty"
+.IP "[2] \fB\-\-empty\fR" 4
+.IX Item "[2] --empty"
 pull all the dependencies in, regardless their state
-.IP "\fB\-\-relaxed\fR" 4
-.IX Item "--relaxed"
+.IP "[2] \fB\-\-relaxed\fR" 4
+.IX Item "[2] --relaxed"
 calm down dependencies resolution algorithm (might be risky)
-.IP "\fB\-\-deep\fR" 4
-.IX Item "--deep"
+.IP "[2] \fB\-\-deep\fR" 4
+.IX Item "[2] --deep"
 makes dependency rules stricter
-.IP "\fB\-\-verbose (\-v)\fR" 4
-.IX Item "--verbose (-v)"
+.IP "[2] \fB\-\-verbose\fR" 4
+.IX Item "[2] --verbose"
 show more details about what is going on
-.IP "\fB\-\-configfiles\fR" 4
-.IX Item "--configfiles"
+.IP "[2] \fB\-\-configfiles\fR" 4
+.IX Item "[2] --configfiles"
 makes old configuration files to be removed
-.IP "\fB\-\-multifetch\fR" 4
-.IX Item "--multifetch"
+.IP "[2] \fB\-\-multifetch\fR" 4
+.IX Item "[2] --multifetch"
 download multiple packages in parallel (default 3)
-.IP "\fB\-\-multifetch=N\fR" 4
-.IX Item "--multifetch=N"
+.IP "[2] \fB\-\-multifetch=N\fR" 4
+.IX Item "[2] --multifetch=N"
 download N packages in parallel (max 10)
 .RE
 .RS 4
 .RE
-.IP "\fBsource\fR" 4
-.IX Item "source"
+.IP "[1] \fBsource\fR" 4
+.IX Item "[1] source"
 download atoms source code
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
-.IP "\fB\-\-nodeps\fR" 4
-.IX Item "--nodeps"
+.IP "[2] \fB\-\-nodeps\fR" 4
+.IX Item "[2] --nodeps"
 do not pull in any dependency
-.IP "\fB\-\-relaxed\fR" 4
-.IX Item "--relaxed"
+.IP "[2] \fB\-\-relaxed\fR" 4
+.IX Item "[2] --relaxed"
 calm down dependencies resolution algorithm (might be risky)
-.IP "\fB\-\-savehere\fR" 4
-.IX Item "--savehere"
+.IP "[2] \fB\-\-savehere\fR" 4
+.IX Item "[2] --savehere"
 save sources in current working directory
 .RE
 .RS 4
 .RE
-.IP "\fBfetch\fR" 4
-.IX Item "fetch"
+.IP "[1] \fBfetch\fR" 4
+.IX Item "[1] fetch"
 just download packages without doing the install
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
-.IP "\fB\-\-nodeps\fR" 4
-.IX Item "--nodeps"
+.IP "[2] \fB\-\-nodeps\fR" 4
+.IX Item "[2] --nodeps"
 do not pull in any dependency
-.IP "\fB\-\-relaxed\fR" 4
-.IX Item "--relaxed"
+.IP "[2] \fB\-\-relaxed\fR" 4
+.IX Item "[2] --relaxed"
 calm down dependencies resolution algorithm (might be risky)
-.IP "\fB\-\-multifetch\fR" 4
-.IX Item "--multifetch"
+.IP "[2] \fB\-\-multifetch\fR" 4
+.IX Item "[2] --multifetch"
 download multiple packages in parallel (default 3)
-.IP "\fB\-\-multifetch=N\fR" 4
-.IX Item "--multifetch=N"
+.IP "[2] \fB\-\-multifetch=N\fR" 4
+.IX Item "[2] --multifetch=N"
 download N packages in parallel (max 10)
 .RE
 .RS 4
 .RE
-.IP "\fBremove\fR" 4
-.IX Item "remove"
+.IP "[1] \fBremove\fR" 4
+.IX Item "[1] remove"
 remove one or more packages
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
-.IP "\fB\-\-nodeps\fR" 4
-.IX Item "--nodeps"
+.IP "[2] \fB\-\-nodeps\fR" 4
+.IX Item "[2] --nodeps"
 do not pull in any dependency
-.IP "\fB\-\-deep\fR" 4
-.IX Item "--deep"
+.IP "[2] \fB\-\-deep\fR" 4
+.IX Item "[2] --deep"
 also pull unused dependencies where reverse deps list is empty
-.IP "\fB\-\-empty\fR" 4
-.IX Item "--empty"
+.IP "[2] \fB\-\-empty\fR" 4
+.IX Item "[2] --empty"
 when used with \-\-deep, helps the removal of virtual packages
-.IP "\fB\-\-configfiles\fR" 4
-.IX Item "--configfiles"
+.IP "[2] \fB\-\-configfiles\fR" 4
+.IX Item "[2] --configfiles"
 makes configuration files to be removed
-.IP "\fB\-\-force\-system\fR" 4
-.IX Item "--force-system"
-dangerous: forces system packages removal, do not use this
-.IP "\fB\-\-resume\fR" 4
-.IX Item "--resume"
+.IP "[2] \fB\-\-force\-system\fR" 4
+.IX Item "[2] --force-system"
+dangerous: forces system packages removal, do not use this!
+.IP "[2] \fB\-\-resume\fR" 4
+.IX Item "[2] --resume"
 resume previously interrupted operations
 .RE
 .RS 4
 .RE
-.IP "\fBmask\fR" 4
-.IX Item "mask"
+.IP "[1] \fBmask\fR" 4
+.IX Item "[1] mask"
 mask one or more packages
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
 .RE
 .RS 4
 .RE
-.IP "\fBunmask\fR" 4
-.IX Item "unmask"
+.IP "[1] \fBunmask\fR" 4
+.IX Item "[1] unmask"
 unmask one or more packages
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
 .RE
 .RS 4
 .RE
-.IP "\fBconfig\fR" 4
-.IX Item "config"
+.IP "[1] \fBconfig\fR" 4
+.IX Item "[1] config"
 configure one or more installed packages
 .RS 4
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
-just show what would be done
-.IP "\fBdeptest\fR" 4
-.IX Item "deptest"
-look for unsatisfied dependencies
-.IP "\fB\-\-quiet (\-q)\fR" 4
-.IX Item "--quiet (-q)"
-show less details (useful for scripting)
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
-ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
 .RE
 .RS 4
 .RE
-.IP "\fBunusedpackages\fR" 4
-.IX Item "unusedpackages"
+.IP "[1] \fBdeptest\fR" 4
+.IX Item "[1] deptest"
+look for unsatisfied dependencies
+.RS 4
+.IP "[2] \fB\-\-quiet\fR" 4
+.IX Item "[2] --quiet"
+show less details (useful for scripting)
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
+ask before making any changes
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
+just show what would be done
+.RE
+.RS 4
+.RE
+.IP "[1] \fBunusedpackages\fR" 4
+.IX Item "[1] unusedpackages"
 look for unused packages (pay attention)
 .RS 4
-.IP "\fB\-\-quiet (\-q)\fR" 4
-.IX Item "--quiet (-q)"
+.IP "[2] \fB\-\-quiet\fR" 4
+.IX Item "[2] --quiet"
 show less details (useful for scripting)
-.IP "\fB\-\-sortbysize\fR" 4
-.IX Item "--sortbysize"
+.IP "[2] \fB\-\-sortbysize\fR" 4
+.IX Item "[2] --sortbysize"
 sort packages by disk size
 .RE
 .RS 4
 .RE
-.IP "\fBlibtest\fR" 4
-.IX Item "libtest"
+.IP "[1] \fBlibtest\fR" 4
+.IX Item "[1] libtest"
 look for missing libraries
 .RS 4
-.IP "\fB\-\-dump\fR" 4
-.IX Item "--dump"
+.IP "[2] \fB\-\-dump\fR" 4
+.IX Item "[2] --dump"
 dump results to files
-.IP "\fB\-\-listfiles\fR" 4
-.IX Item "--listfiles"
+.IP "[2] \fB\-\-listfiles\fR" 4
+.IX Item "[2] --listfiles"
 print broken files to stdout
-.IP "\fB\-\-quiet (\-q)\fR" 4
-.IX Item "--quiet (-q)"
+.IP "[2] \fB\-\-quiet\fR" 4
+.IX Item "[2] --quiet"
 show less details (useful for scripting)
-.IP "\fB\-\-ask (\-a)\fR" 4
-.IX Item "--ask (-a)"
+.IP "[2] \fB\-\-ask\fR" 4
+.IX Item "[2] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend (\-p)\fR" 4
-.IX Item "--pretend (-p)"
+.IP "[2] \fB\-\-pretend\fR" 4
+.IX Item "[2] --pretend"
 just show what would be done
 .RE
 .RS 4
 .RE
-.IP "\fBconf\fR" 4
-.IX Item "conf"
+.IP "[1] \fBconf\fR" 4
+.IX Item "[1] conf"
 configuration files update tool
 .RS 4
-.IP "\fBinfo\fR" 4
-.IX Item "info"
+.IP "[2] \fBinfo\fR" 4
+.IX Item "[2] info"
 show configuration files to be updated
-.IP "\fBupdate\fR" 4
-.IX Item "update"
+.IP "[2] \fBupdate\fR" 4
+.IX Item "[2] update"
 run the configuration files update function
 .RE
 .RS 4
 .RE
-.IP "\fBquery\fR" 4
-.IX Item "query"
+.IP "[1] \fBquery\fR" 4
+.IX Item "[1] query"
 do misc queries on repository and local databases
 .RS 4
-.IP "\fBbelongs\fR" 4
-.IX Item "belongs"
+.IP "[2] \fBbelongs\fR" 4
+.IX Item "[2] belongs"
 search from what package a file belongs
-.IP "\fBchangelog\fR" 4
-.IX Item "changelog"
+.IP "[2] \fBchangelog\fR" 4
+.IX Item "[2] changelog"
 show packages changelog
-.IP "\fBrevdeps\fR" 4
-.IX Item "revdeps"
+.IP "[2] \fBrevdeps\fR" 4
+.IX Item "[2] revdeps"
 search what packages depend on the provided atoms
-.IP "\fBdescription\fR" 4
-.IX Item "description"
+.IP "[2] \fBdescription\fR" 4
+.IX Item "[2] description"
 search packages by description
-.IP "\fBfiles\fR" 4
-.IX Item "files"
+.IP "[2] \fBfiles\fR" 4
+.IX Item "[2] files"
 show files owned by the provided atoms
-.IP "\fBinstalled\fR" 4
-.IX Item "installed"
+.IP "[2] \fBinstalled\fR" 4
+.IX Item "[2] installed"
 search a package into the local database
-.IP "\fBlicense\fR" 4
-.IX Item "license"
+.IP "[2] \fBlicense\fR" 4
+.IX Item "[2] license"
 show packages owning the provided licenses
-.IP "\fBlist\fR" 4
-.IX Item "list"
+.IP "[2] \fBlist\fR" 4
+.IX Item "[2] list"
 list packages based on the chosen parameter below
 .RS 4
-.IP "\fBinstalled\fR" 4
-.IX Item "installed"
+.IP "[3] \fBinstalled\fR" 4
+.IX Item "[3] installed"
 list installed packages
+.IP "[3] \fBavailable [repos]\fR" 4
+.IX Item "[3] available [repos]"
+list available packages
 .RE
 .RS 4
 .RE
-.IP "\fBmimetype\fR" 4
-.IX Item "mimetype"
+.IP "[2] \fBmimetype\fR" 4
+.IX Item "[2] mimetype"
 search packages able to handle given mimetypes
 .RS 4
-.IP "\fB\-\-installed\fR" 4
-.IX Item "--installed"
-search inside installed packages
+.IP "[3] \fB\-\-installed\fR" 4
+.IX Item "[3] --installed"
+search among installed packages
 .RE
 .RS 4
 .RE
-.IP "\fBassociate\fR" 4
-.IX Item "associate"
+.IP "[2] \fBassociate\fR" 4
+.IX Item "[2] associate"
 associate given file paths to applications able to read them
 .RS 4
-.IP "\fB\-\-installed\fR" 4
-.IX Item "--installed"
-search inside installed packages
+.IP "[3] \fB\-\-installed\fR" 4
+.IX Item "[3] --installed"
+search among installed packages
 .RE
 .RS 4
 .RE
-.IP "\fBneeded\fR" 4
-.IX Item "needed"
+.IP "[2] \fBneeded\fR" 4
+.IX Item "[2] needed"
 show runtime libraries needed by the provided atoms
-.IP "\fBorphans\fR" 4
-.IX Item "orphans"
+.IP "[2] \fBorphans\fR" 4
+.IX Item "[2] orphans"
 search files that do not belong to any package
-.IP "\fBremoval\fR" 4
-.IX Item "removal"
+.IP "[2] \fBremoval\fR" 4
+.IX Item "[2] removal"
 show the removal tree for the specified atoms
-.IP "\fBrequired\fR" 4
-.IX Item "required"
+.IP "[2] \fBrequired\fR" 4
+.IX Item "[2] required"
 show atoms needing the provided libraries
-.IP "\fBsets\fR" 4
-.IX Item "sets"
+.IP "[2] \fBsets\fR" 4
+.IX Item "[2] sets"
 search available package sets
-.IP "\fBslot\fR" 4
-.IX Item "slot"
+.IP "[2] \fBslot\fR" 4
+.IX Item "[2] slot"
 show packages owning the provided slot
-.IP "\fBtags\fR" 4
-.IX Item "tags"
-show packages owning the specified tags
-.IP "\fBrevisions\fR" 4
-.IX Item "revisions"
-show installed packages owning the specified revisions
-.IP "\fBgraph\fR" 4
-.IX Item "graph"
+.IP "[2] \fBtags\fR" 4
+.IX Item "[2] tags"
+show packages owning the provided tags
+.IP "[2] \fBgraph\fR" 4
+.IX Item "[2] graph"
 show direct depdendencies tree for provided installable atoms
 .RS 4
-.IP "\fB\-\-complete\fR" 4
-.IX Item "--complete"
+.IP "[3] \fB\-\-complete\fR" 4
+.IX Item "[3] --complete"
 include system packages, build deps and circularity information
 .RE
 .RS 4
 .RE
-.IP "\fBrevgraph\fR" 4
-.IX Item "revgraph"
+.IP "[2] \fBrevgraph\fR" 4
+.IX Item "[2] revgraph"
 show reverse depdendencies tree for provided installed atoms
 .RS 4
-.IP "\fB\-\-complete\fR" 4
-.IX Item "--complete"
+.IP "[3] \fB\-\-complete\fR" 4
+.IX Item "[3] --complete"
 include system packages, build deps and circularity information
 .RE
 .RS 4
 .RE
-.IP "\fB\-\-verbose (\-v)\fR" 4
-.IX Item "--verbose (-v)"
+.IP "[2] \fB\-\-verbose\fR" 4
+.IX Item "[2] --verbose"
 show more details
-.IP "\fB\-\-quiet (\-q)\fR" 4
-.IX Item "--quiet (-q)"
+.IP "[2] \fB\-\-quiet\fR" 4
+.IX Item "[2] --quiet"
 print results in a scriptable way
 .RE
 .RS 4
 .RE
 .SH "EXTENDED_OPTIONS"
 .IX Header "EXTENDED_OPTIONS"
-.IP "\fBsmart\fR" 4
-.IX Item "smart"
+.IP "[1] \fBsmart\fR" 4
+.IX Item "[1] smart"
 handles extended functionalities
 .RS 4
-.IP "\fBapplication\fR" 4
-.IX Item "application"
+.IP "[2] \fBapplication\fR" 4
+.IX Item "[2] application"
 make a smart application for the provided atoms (experimental)
-.IP "\fBpackage\fR" 4
-.IX Item "package"
+.IP "[2] \fBpackage\fR" 4
+.IX Item "[2] package"
 make a smart package for the provided atoms (multiple packages into one file)
-.IP "\fBquickpkg\fR" 4
-.IX Item "quickpkg"
+.IP "[2] \fBquickpkg\fR" 4
+.IX Item "[2] quickpkg"
 recreate an Entropy package from your System
 .RS 4
-.IP "\fB\-\-savedir\fR" 4
-.IX Item "--savedir"
+.IP "[3] \fB\-\-savedir\fR" 4
+.IX Item "[3] --savedir"
 save new packages into the specified directory
 .RE
 .RS 4
 .RE
-.IP "\fBinflate\fR" 4
-.IX Item "inflate"
+.IP "[2] \fBinflate\fR" 4
+.IX Item "[2] inflate"
 convert provided Source Package Manager package files into Entropy packages
 .RS 4
-.IP "\fB\-\-savedir\fR" 4
-.IX Item "--savedir"
+.IP "[3] \fB\-\-savedir\fR" 4
+.IX Item "[3] --savedir"
 save new packages into the specified directory
 .RE
 .RS 4
 .RE
-.IP "\fBdeflate\fR" 4
-.IX Item "deflate"
+.IP "[2] \fBdeflate\fR" 4
+.IX Item "[2] deflate"
 convert provided Entropy packages into Source Package Manager ones
 .RS 4
-.IP "\fB\-\-savedir\fR" 4
-.IX Item "--savedir"
+.IP "[3] \fB\-\-savedir\fR" 4
+.IX Item "[3] --savedir"
 save new packages into the specified directory
 .RE
 .RS 4
 .RE
-.IP "\fBextract\fR" 4
-.IX Item "extract"
+.IP "[2] \fBextract\fR" 4
+.IX Item "[2] extract"
 extract Entropy metadata from provided Entropy package files
 .RS 4
-.IP "\fB\-\-savedir\fR" 4
-.IX Item "--savedir"
+.IP "[3] \fB\-\-savedir\fR" 4
+.IX Item "[3] --savedir"
 save new metadata into the specified directory
 .RE
 .RS 4
@@ -741,143 +756,143 @@ save new metadata into the specified directory
 .RE
 .RS 4
 .RE
-.IP "\fBrescue\fR" 4
-.IX Item "rescue"
+.IP "[1] \fBrescue\fR" 4
+.IX Item "[1] rescue"
 contains System rescue tools
 .RS 4
-.IP "\fBcheck\fR" 4
-.IX Item "check"
+.IP "[2] \fBcheck\fR" 4
+.IX Item "[2] check"
 check installed packages repository for errors
-.IP "\fBvacuum\fR" 4
-.IX Item "vacuum"
+.IP "[2] \fBvacuum\fR" 4
+.IX Item "[2] vacuum"
 remove installed packages repository internal indexes to save disk space
-.IP "\fBgenerate\fR" 4
-.IX Item "generate"
+.IP "[2] \fBgenerate\fR" 4
+.IX Item "[2] generate"
 generate installed packages database using Source Package Manager repositories
-.IP "\fBresurrect\fR" 4
-.IX Item "resurrect"
+.IP "[2] \fBresurrect\fR" 4
+.IX Item "[2] resurrect"
 generate installed packages database using files on the system [last hope]
-.IP "\fBspmuids\fR" 4
-.IX Item "spmuids"
+.IP "[2] \fBspmuids\fR" 4
+.IX Item "[2] spmuids"
 regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
-.IP "\fBspmsync\fR" 4
-.IX Item "spmsync"
+.IP "[2] \fBspmsync\fR" 4
+.IX Item "[2] spmsync"
 makes Entropy aware of your Source Package Manager updated packages
-.IP "\fBbackup\fR" 4
-.IX Item "backup"
+.IP "[2] \fBbackup\fR" 4
+.IX Item "[2] backup"
 backup the current Entropy installed packages database
-.IP "\fBrestore\fR" 4
-.IX Item "restore"
+.IP "[2] \fBrestore\fR" 4
+.IX Item "[2] restore"
 restore a previously backed up Entropy installed packages database
 .RE
 .RS 4
 .RE
-.IP "\fBcommunity\fR" 4
-.IX Item "community"
+.IP "[1] \fBcommunity\fR" 4
+.IX Item "[1] community"
 handles community-side features
 .RS 4
-.IP "\fBrepos\fR" 4
-.IX Item "repos"
+.IP "[2] \fBrepos\fR" 4
+.IX Item "[2] repos"
 community repositories management functions
 .RS 4
-.IP "\fBupdate\fR" 4
-.IX Item "update"
+.IP "[3] \fBupdate\fR" 4
+.IX Item "[3] update"
 scan the System looking for newly compiled packages
 .RS 4
-.IP "\fB\-\-seekstore\fR" 4
-.IX Item "--seekstore"
+.IP "[4] \fB\-\-seekstore\fR" 4
+.IX Item "[4] --seekstore"
 analyze the Entropy Store directory directly
-.IP "\fB\-\-repackage <atoms\fR>" 4
-.IX Item "--repackage <atoms>"
+.IP "[4] \fB\-\-repackage <atoms>\fR" 4
+.IX Item "[4] --repackage <atoms>"
 repackage the specified atoms
-.IP "\fB\-\-noask\fR" 4
-.IX Item "--noask"
+.IP "[4] \fB\-\-noask\fR" 4
+.IX Item "[4] --noask"
 do not ask anything except critical things
-.IP "\fB\-\-atoms <atoms\fR>" 4
-.IX Item "--atoms <atoms>"
+.IP "[4] \fB\-\-atoms <atoms>\fR" 4
+.IX Item "[4] --atoms <atoms>"
 manage only the specified atoms
-.IP "\fB\-\-interactive\fR" 4
-.IX Item "--interactive"
+.IP "[4] \fB\-\-interactive\fR" 4
+.IX Item "[4] --interactive"
 run in interactive mode (asking things one by one)
 .RE
 .RS 4
 .RE
-.IP "\fBinject <packages\fR>" 4
-.IX Item "inject <packages>"
+.IP "[3] \fBinject <packages>\fR" 4
+.IX Item "[3] inject <packages>"
 add binary packages to repository w/o affecting scopes (multipackages)
 .RE
 .RS 4
 .RE
-.IP "\fBmirrors\fR" 4
-.IX Item "mirrors"
+.IP "[2] \fBmirrors\fR" 4
+.IX Item "[2] mirrors"
 community repositories mirrors management functions
 .RS 4
-.IP "\fBsync\fR" 4
-.IX Item "sync"
+.IP "[3] \fBsync\fR" 4
+.IX Item "[3] sync"
 sync packages, database and also do some tidy
 .RS 4
-.IP "\fB\-\-noask\fR" 4
-.IX Item "--noask"
+.IP "[4] \fB\-\-noask\fR" 4
+.IX Item "[4] --noask"
 do not ask anything except critical things
-.IP "\fB\-\-syncall\fR" 4
-.IX Item "--syncall"
+.IP "[4] \fB\-\-syncall\fR" 4
+.IX Item "[4] --syncall"
 sync all the configured repositories
 .RE
 .RS 4
 .RE
-.IP "\fBpackages-sync\fR" 4
-.IX Item "packages-sync"
+.IP "[3] \fBpackages-sync\fR" 4
+.IX Item "[3] packages-sync"
 sync packages across primary mirrors
 .RS 4
-.IP "\fB\-\-ask\fR" 4
-.IX Item "--ask"
+.IP "[4] \fB\-\-ask\fR" 4
+.IX Item "[4] --ask"
 ask before making any changes
-.IP "\fB\-\-pretend\fR" 4
-.IX Item "--pretend"
+.IP "[4] \fB\-\-pretend\fR" 4
+.IX Item "[4] --pretend"
 only show what would be done
-.IP "\fB\-\-syncall\fR" 4
-.IX Item "--syncall"
+.IP "[4] \fB\-\-syncall\fR" 4
+.IX Item "[4] --syncall"
 sync all the configured repositories
-.IP "\fB\-\-do\-packages\-check\fR" 4
-.IX Item "--do-packages-check"
+.IP "[4] \fB\-\-do\-packages\-check\fR" 4
+.IX Item "[4] --do-packages-check"
 also verify packages integrity
 .RE
 .RS 4
 .RE
-.IP "\fBrepo-sync\fR" 4
-.IX Item "repo-sync"
+.IP "[3] \fBrepo-sync\fR" 4
+.IX Item "[3] repo-sync"
 sync the current repository database across primary mirrors
 .RS 4
-.IP "\fB\-\-syncall\fR" 4
-.IX Item "--syncall"
+.IP "[4] \fB\-\-syncall\fR" 4
+.IX Item "[4] --syncall"
 sync all the configured repositories
 .RE
 .RS 4
 .RE
-.IP "\fBrepo-lock\fR" 4
-.IX Item "repo-lock"
+.IP "[3] \fBrepo-lock\fR" 4
+.IX Item "[3] repo-lock"
 lock the current repository database (server-side)
-.IP "\fBrepo-unlock\fR" 4
-.IX Item "repo-unlock"
+.IP "[3] \fBrepo-unlock\fR" 4
+.IX Item "[3] repo-unlock"
 unlock the current repository database (server-side)
-.IP "\fBrepo-download-lock\fR" 4
-.IX Item "repo-download-lock"
+.IP "[3] \fBrepo-download-lock\fR" 4
+.IX Item "[3] repo-download-lock"
 lock the current repository database (client-side)
-.IP "\fBrepo-download-unlock\fR" 4
-.IX Item "repo-download-unlock"
+.IP "[3] \fBrepo-download-unlock\fR" 4
+.IX Item "[3] repo-download-unlock"
 unlock the current repository database (client-side)
-.IP "\fBrepo-lock-status\fR" 4
-.IX Item "repo-lock-status"
+.IP "[3] \fBrepo-lock-status\fR" 4
+.IX Item "[3] repo-lock-status"
 show current lock status
-.IP "\fBtidy\fR" 4
-.IX Item "tidy"
+.IP "[3] \fBtidy\fR" 4
+.IX Item "[3] tidy"
 remove binary packages not in repositories and expired
-.IP "\fBvacuum\fR" 4
-.IX Item "vacuum"
+.IP "[3] \fBvacuum\fR" 4
+.IX Item "[3] vacuum"
 clean unavaiable packages from mirrors (similar to tidy, but more nazi)
 .RS 4
-.IP "\fB\-\-days=<days\fR>" 4
-.IX Item "--days=<days>"
+.IP "[4] \fB\-\-days=<days>\fR" 4
+.IX Item "[4] --days=<days>"
 expiration days [default is: 0, dangerous!]
 .RE
 .RS 4
@@ -885,195 +900,214 @@ expiration days [default is: 0, dangerous!]
 .RE
 .RS 4
 .RE
-.IP "\fBrepo\fR" 4
-.IX Item "repo"
+.IP "[2] \fBrepo\fR" 4
+.IX Item "[2] repo"
 manage a repository
 .RS 4
-.IP "\fB\-\-initialize\fR" 4
-.IX Item "--initialize"
+.IP "[3] \fB\-\-initialize\fR" 4
+.IX Item "[3] --initialize"
 (re)initialize the current repository database
 .RS 4
-.IP "\fB\-\-empty\fR" 4
-.IX Item "--empty"
+.IP "[4] \fB\-\-empty\fR" 4
+.IX Item "[4] --empty"
 do not refill database using packages on mirrors
-.IP "\fBbump\fR" 4
-.IX Item "bump"
+.IP "[4] \fB\-\-repo=<repo>\fR" 4
+.IX Item "[4] --repo=<repo>"
+(re)create the database for the specified repository
+.RE
+.RS 4
+.RE
+.IP "[3] \fBbump\fR" 4
+.IX Item "[3] bump"
 manually force a revision bump for the current repository database
 .RS 4
-.IP "\fB\-\-sync\fR" 4
-.IX Item "--sync"
+.IP "[4] \fB\-\-sync\fR" 4
+.IX Item "[4] --sync"
 synchronize the database
 .RE
 .RS 4
 .RE
-.IP "\fBremove\fR" 4
-.IX Item "remove"
+.IP "[3] \fBflushback [branches]\fR" 4
+.IX Item "[3] flushback [branches]"
+flush back old branches packages to current branch
+.IP "[3] \fBremove\fR" 4
+.IX Item "[3] remove"
 remove the provided atoms from the current repository database
-.IP "\fBmultiremove\fR" 4
-.IX Item "multiremove"
+.IP "[3] \fBmultiremove\fR" 4
+.IX Item "[3] multiremove"
 remove the provided injected atoms (all if no atom specified)
-.RS 4
-.IP "\fB\-\-branch=<branch\fR>" 4
-.IX Item "--branch=<branch>"
-choose on what branch operating
-.RE
-.RS 4
-.RE
-.IP "\fBcreate-empty-database\fR" 4
-.IX Item "create-empty-database"
+.IP "[3] \fBcreate-empty-database\fR" 4
+.IX Item "[3] create-empty-database"
 create an empty repository database in the provided path
-.IP "\fBswitchbranch <from branch\fR <to branch>>" 4
-.IX Item "switchbranch <from branch <to branch>>"
+.IP "[3] \fBswitchbranch <from branch> <to branch>\fR" 4
+.IX Item "[3] switchbranch <from branch> <to branch>"
 switch to the specified branch the provided atoms (or world)
-.IP "\fBmd5remote\fR" 4
-.IX Item "md5remote"
+.IP "[3] \fBmd5remote\fR" 4
+.IX Item "[3] md5remote"
 verify remote integrity of the provided atoms (or world)
-.IP "\fBbackup\fR" 4
-.IX Item "backup"
+.IP "[3] \fBbackup\fR" 4
+.IX Item "[3] backup"
 backup current repository database
-.IP "\fBrestore\fR" 4
-.IX Item "restore"
+.IP "[3] \fBrestore\fR" 4
+.IX Item "[3] restore"
 restore a previously backed-up repository database
+.IP "[3] \fBspmuids\fR" 4
+.IX Item "[3] spmuids"
+regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
+.IP "[3] \fBenable <repo>\fR" 4
+.IX Item "[3] enable <repo>"
+enable the specified repository
+.IP "[3] \fBdisable <repo>\fR" 4
+.IX Item "[3] disable <repo>"
+disable the specified repository
+.IP "[3] \fBstatus <repo>\fR" 4
+.IX Item "[3] status <repo>"
+show the current Server Interface status
+.IP "[3] \fBpackage-dep-check <repo> [atoms]\fR" 4
+.IX Item "[3] package-dep-check <repo> [atoms]"
+check packages in repository for missing dependencies
+.IP "[3] \fBpackage-dep <repo> [atoms]\fR" 4
+.IX Item "[3] package-dep <repo> [atoms]"
+handle packages dependencies
+.IP "[3] \fBpackage-tag <repo> <tag\-string> [atoms]\fR" 4
+.IX Item "[3] package-tag <repo> <tag-string> [atoms]"
+clone a package inside a repository assigning it an arbitrary tag
+.IP "[3] \fBmove <from> <to> [atoms]\fR" 4
+.IX Item "[3] move <from> <to> [atoms]"
+move packages from a repository to another
+.RS 4
+.IP "[4] \fB\-\-deps\fR" 4
+.IX Item "[4] --deps"
+pulls dependencies in
 .RE
 .RS 4
 .RE
-.IP "\fBspmuids\fR" 4
-.IX Item "spmuids"
-regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
-.IP "\fBenable <repo\fR>" 4
-.IX Item "enable <repo>"
-enable the specified repository
-.IP "\fBdisable <repo\fR>" 4
-.IX Item "disable <repo>"
-disable the specified repository
-.IP "\fBstatus <repo\fR>" 4
-.IX Item "status <repo>"
-show the current Server Interface status
-.IP "\fBpackage-dep <repo\fR [atoms]>" 4
-.IX Item "package-dep <repo [atoms]>"
-handle packages dependencies
-.IP "\fBpackage-tag <repo\fR <tag\-string> [atoms]>" 4
-.IX Item "package-tag <repo <tag-string> [atoms]>"
-clone a package inside a repository assigning it an arbitrary tag
-.IP "\fBmove <from\fR <to> [atoms]>" 4
-.IX Item "move <from <to> [atoms]>"
-move packages from a repository to another
-.IP "\fBcopy <from\fR <to> [atoms]>" 4
-.IX Item "copy <from <to> [atoms]>"
+.IP "[3] \fBcopy <from> <to> [atoms]\fR" 4
+.IX Item "[3] copy <from> <to> [atoms]"
 copy packages from a repository to another
-.IP "\fBdefault <repo_id\fR>" 4
-.IX Item "default <repo_id>"
+.RS 4
+.IP "[4] \fB\-\-deps\fR" 4
+.IX Item "[4] --deps"
+pulls dependencies in
+.RE
+.RS 4
+.RE
+.IP "[3] \fBdefault <repo_id>\fR" 4
+.IX Item "[3] default <repo_id>"
 set the default repository
 .RE
 .RS 4
 .RE
-.IP "\fBkey\fR" 4
-.IX Item "key"
+.IP "[2] \fBkey\fR" 4
+.IX Item "[2] key"
 manage repository digital signatures (OpenGPG)
 .RS 4
-.IP "\fBcreate [repos]\fR" 4
-.IX Item "create [repos]"
+.IP "[3] \fBcreate [repos]\fR" 4
+.IX Item "[3] create [repos]"
 create keypair for repositories and sign packages
-.IP "\fBdelete [repos]\fR" 4
-.IX Item "delete [repos]"
+.IP "[3] \fBdelete [repos]\fR" 4
+.IX Item "[3] delete [repos]"
 delete keypair (and digital signatures) of repository
-.IP "\fBstatus [repos]\fR" 4
-.IX Item "status [repos]"
+.IP "[3] \fBstatus [repos]\fR" 4
+.IX Item "[3] status [repos]"
 show currently configured keys information for given repositories
-.IP "\fBsign [repos]\fR" 4
-.IX Item "sign [repos]"
+.IP "[3] \fBsign [repos]\fR" 4
+.IX Item "[3] sign [repos]"
 sign (or re-sign) packages in repository using currently set keypair
-.IP "\fBimport <repo_id\fR <privkey_path> <pubkey_path>>" 4
-.IX Item "import <repo_id <privkey_path> <pubkey_path>>"
+.IP "[3] \fBimport <repo_id> <privkey_path> <pubkey_path>\fR" 4
+.IX Item "[3] import <repo_id> <privkey_path> <pubkey_path>"
 import keypair, bind to given repository
-.IP "\fBexport-public <repo_id\fR <key_path>>" 4
-.IX Item "export-public <repo_id <key_path>>"
+.IP "[3] \fBexport-public <repo_id> <key_path>\fR" 4
+.IX Item "[3] export-public <repo_id> <key_path>"
 export public key of given repository
-.RE
-.RS 4
-.RE
-.IP "\fBexport-private <repo_id\fR <key_path>>" 4
-.IX Item "export-private <repo_id <key_path>>"
+.IP "[3] \fBexport-private <repo_id> <key_path>\fR" 4
+.IX Item "[3] export-private <repo_id> <key_path>"
 export private key of given repository
 .RE
 .RS 4
 .RE
-.IP "\fBquery\fR" 4
-.IX Item "query"
+.IP "[2] \fBquery\fR" 4
+.IX Item "[2] query"
 do some searches into community repository databases
 .RS 4
-.IP "\fBbelongs\fR" 4
-.IX Item "belongs"
+.IP "[3] \fBbelongs\fR" 4
+.IX Item "[3] belongs"
 show from what package the provided files belong
-.IP "\fBchangelog\fR" 4
-.IX Item "changelog"
+.IP "[3] \fBchangelog\fR" 4
+.IX Item "[3] changelog"
 show packages changelog
-.IP "\fBrevdeps\fR" 4
-.IX Item "revdeps"
+.IP "[3] \fBrevdeps\fR" 4
+.IX Item "[3] revdeps"
 show what packages depend on the provided atoms
-.IP "\fBdescription\fR" 4
-.IX Item "description"
+.IP "[3] \fBdescription\fR" 4
+.IX Item "[3] description"
 search packages by description
-.IP "\fBfiles\fR" 4
-.IX Item "files"
+.IP "[3] \fBfiles\fR" 4
+.IX Item "[3] files"
 show files owned by the provided atoms
-.IP "\fBlist\fR" 4
-.IX Item "list"
+.IP "[3] \fBlist\fR" 4
+.IX Item "[3] list"
 list all the packages in the default repository
-.IP "\fBneeded\fR" 4
-.IX Item "needed"
+.IP "[3] \fBneeded\fR" 4
+.IX Item "[3] needed"
 show runtime libraries needed by the provided atoms
-.IP "\fBsearch\fR" 4
-.IX Item "search"
+.IP "[3] \fBsearch\fR" 4
+.IX Item "[3] search"
 search packages inside the default repository database
-.IP "\fBsets\fR" 4
-.IX Item "sets"
+.IP "[3] \fBsets\fR" 4
+.IX Item "[3] sets"
 search available package sets
-.IP "\fBtags\fR" 4
-.IX Item "tags"
+.IP "[3] \fBtags\fR" 4
+.IX Item "[3] tags"
 show packages owning the specified tags
-.IP "\fB\-\-verbose\fR" 4
-.IX Item "--verbose"
+.IP "[3] \fBrevisions\fR" 4
+.IX Item "[3] revisions"
+show installed packages owning the specified revisions
+.IP "[3] \fB\-\-verbose\fR" 4
+.IX Item "[3] --verbose"
 show more details
-.IP "\fB\-\-quiet\fR" 4
-.IX Item "--quiet"
+.IP "[3] \fB\-\-quiet\fR" 4
+.IX Item "[3] --quiet"
 print results in a scriptable way
 .RE
 .RS 4
 .RE
-.IP "\fBspm\fR" 4
-.IX Item "spm"
+.IP "[2] \fBspm\fR" 4
+.IX Item "[2] spm"
 source package manager functions
 .RS 4
-.IP "\fBcompile\fR" 4
-.IX Item "compile"
+.IP "[3] \fBcompile\fR" 4
+.IX Item "[3] compile"
 compilation function
 .RS 4
-.IP "\fBcategories\fR" 4
-.IX Item "categories"
+.IP "[4] \fBcategories\fR" 4
+.IX Item "[4] categories"
 compile packages belonging to the provided categories
 .RS 4
-.IP "\fB\-\-list\fR" 4
-.IX Item "--list"
+.IP "[5] \fB\-\-list\fR" 4
+.IX Item "[5] --list"
 just list packages
+.IP "[5] \fB\-\-nooldslots\fR" 4
+.IX Item "[5] --nooldslots"
+do not pull old package slots
 .RE
 .RS 4
 .RE
-.IP "\fBpkgset\fR" 4
-.IX Item "pkgset"
+.IP "[4] \fBpkgset\fR" 4
+.IX Item "[4] pkgset"
 compile packages in provided package set names
 .RS 4
-.IP "\fB\-\-list\fR" 4
-.IX Item "--list"
+.IP "[5] \fB\-\-list\fR" 4
+.IX Item "[5] --list"
 just list packages
-.IP "\fB\-\-rebuild\fR" 4
-.IX Item "--rebuild"
+.IP "[5] \fB\-\-rebuild\fR" 4
+.IX Item "[5] --rebuild"
 rebuild everything
-.IP "\fB\-\-dbupdate\fR" 4
-.IX Item "--dbupdate"
+.IP "[5] \fB\-\-dbupdate\fR" 4
+.IX Item "[5] --dbupdate"
 run database update if all went fine
-.IP "\fB\-\-dbsync\fR" 4
-.IX Item "--dbsync"
+.IP "[5] \fB\-\-dbsync\fR" 4
+.IX Item "[5] --dbsync"
 run mirror sync if all went fine
 .RE
 .RS 4
@@ -1081,76 +1115,79 @@ run mirror sync if all went fine
 .RE
 .RS 4
 .RE
-.IP "\fBorphans\fR" 4
-.IX Item "orphans"
+.IP "[3] \fBorphans\fR" 4
+.IX Item "[3] orphans"
 scan orphaned packages on \s-1SPM\s0
 .RE
 .RS 4
 .RE
-.IP "\fBnotice\fR" 4
-.IX Item "notice"
+.IP "[2] \fBnotice\fR" 4
+.IX Item "[2] notice"
 notice board handling functions
 .RS 4
-.IP "\fBadd\fR" 4
-.IX Item "add"
+.IP "[3] \fBadd\fR" 4
+.IX Item "[3] add"
 add a news item to the notice board
-.IP "\fBremove\fR" 4
-.IX Item "remove"
+.IP "[3] \fBremove\fR" 4
+.IX Item "[3] remove"
 remove a news item from the notice board
-.IP "\fBread\fR" 4
-.IX Item "read"
+.IP "[3] \fBread\fR" 4
+.IX Item "[3] read"
 read the current notice board
 .RE
 .RS 4
 .RE
-.IP "\fBdeptest\fR" 4
-.IX Item "deptest"
+.IP "[2] \fBdeptest\fR" 4
+.IX Item "[2] deptest"
 look for unsatisfied dependencies across community repositories
-.IP "\fBpkgtest\fR" 4
-.IX Item "pkgtest"
+.IP "[2] \fBpkgtest\fR" 4
+.IX Item "[2] pkgtest"
 verify the integrity of local package files
-.IP "\fBugc\fR" 4
-.IX Item "ugc"
+.RE
+.RS 4
+.RE
+.IP "[1] \fBugc\fR" 4
+.IX Item "[1] ugc"
 handles User Generated Content features
 .RS 4
-.IP "\fBlogin <repository\fR>" 4
-.IX Item "login <repository>"
+.IP "[2] \fBlogin <repository>\fR" 4
+.IX Item "[2] login <repository>"
 login against a specified repository
-.IP "\fBlogout <repository\fR>" 4
-.IX Item "logout <repository>"
+.IP "[2] \fBlogout <repository>\fR" 4
+.IX Item "[2] logout <repository>"
 logout from a specified repository
 .RS 4
-.IP "\fB\-\-force\fR" 4
-.IX Item "--force"
+.IP "[3] \fB\-\-force\fR" 4
+.IX Item "[3] --force"
 force action
 .RE
 .RS 4
 .RE
-.IP "\fBdocuments <repository\fR>" 4
-.IX Item "documents <repository>"
+.IP "[2] \fBdocuments <repository>\fR" 4
+.IX Item "[2] documents <repository>"
 manage package documents for the selected repository (comments, files, videos)
 .RS 4
-.IP "\fBget <pkgkey\fR>" 4
-.IX Item "get <pkgkey>"
+.IP "[3] \fBget <pkgkey>\fR" 4
+.IX Item "[3] get <pkgkey>"
 get available documents for the specified package key (example: x11\-libs/qt)
-.IP "\fBadd <pkgkey\fR>" 4
-.IX Item "add <pkgkey>"
+.IP "[3] \fBadd <pkgkey>\fR" 4
+.IX Item "[3] add <pkgkey>"
 add a new document to the specified package key (example: x11\-libs/qt)
-.IP "\fBremove <docs ids\fR>" 4
-.IX Item "remove <docs ids>"
+.IP "[3] \fBremove <docs ids>\fR" 4
+.IX Item "[3] remove <docs ids>"
 remove documents from database using their identifiers
 .RE
 .RS 4
 .RE
-.IP "\fBvote <repository\fR>" 4
-.IX Item "vote <repository>"
+.IP "[2] \fBvote <repository>\fR" 4
+.IX Item "[2] vote <repository>"
 manage package votes for the selected repository
 .RS 4
-.IP "\fBget <pkgkey\fR>" 4
-.IX Item "get <pkgkey>"
+.IP "[3] \fBget <pkgkey>\fR" 4
+.IX Item "[3] get <pkgkey>"
 get vote for the specified package key (example: x11\-libs/qt)
-.IP "\fBadd <pkgkey\fR>" 4
-.IX Item "add <pkgkey>"
+.IP "[3] \fBadd <pkgkey>\fR" 4
+.IX Item "[3] add <pkgkey>"
 add vote for the specified package key (example: x11\-libs/qt)
 .RE
 .RS 4
@@ -1158,27 +1195,27 @@ add vote for the specified package key (example: x11\-libs/qt)
 .RE
 .RS 4
 .RE
-.IP "\fBcache\fR" 4
-.IX Item "cache"
+.IP "[1] \fBcache\fR" 4
+.IX Item "[1] cache"
 handles Entropy cache
 .RS 4
-.IP "\fBclean\fR" 4
-.IX Item "clean"
+.IP "[2] \fBclean\fR" 4
+.IX Item "[2] clean"
 clean Entropy cache
-.IP "\fB\-\-verbose\fR" 4
-.IX Item "--verbose"
+.IP "[2] \fB\-\-verbose\fR" 4
+.IX Item "[2] --verbose"
 show more details
-.IP "\fB\-\-quiet\fR" 4
-.IX Item "--quiet"
+.IP "[2] \fB\-\-quiet\fR" 4
+.IX Item "[2] --quiet"
 print results in a scriptable way
 .RE
 .RS 4
 .RE
-.IP "\fBcleanup\fR" 4
-.IX Item "cleanup"
+.IP "[1] \fBcleanup\fR" 4
+.IX Item "[1] cleanup"
 remove downloaded packages and clean temp. directories
-.IP "\fB\-\-info\fR" 4
-.IX Item "--info"
+.IP "[1] \fB\-\-info\fR" 4
+.IX Item "[1] --info"
 show system information
 .SH "ENVIRONMENT"
 .IX Header "ENVIRONMENT"
@@ -1216,15 +1253,3 @@ Fabio Erculiani <lxnay@sabayon.org>
 .SH "SEE ALSO"
 .IX Header "SEE ALSO"
 \&\fIreagent\fR\|(1), \fIactivator\fR\|(1)
-.SH "POD ERRORS"
-.IX Header "POD ERRORS"
-Hey! \fBThe above document had some coding errors, which are explained below:\fR
-.IP "Around line 229:" 4
-.IX Item "Around line 229:"
-\&'=item' outside of any '=over'
-.IP "Around line 243:" 4
-.IX Item "Around line 243:"
-\&'=item' outside of any '=over'
-.IP "Around line 293:" 4
-.IX Item "Around line 293:"
-\&'=item' outside of any '=over'
