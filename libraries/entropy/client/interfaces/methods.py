@@ -1047,6 +1047,8 @@ class RepositoryMixin:
         f_out = bz2.BZ2File(comp_backup_path, "wb")
         try:
             repo_db.exportRepository(f_out)
+        except DatabaseError as err:
+            return False, err
         finally:
             f_out.close()
 
