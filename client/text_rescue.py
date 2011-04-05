@@ -18,7 +18,7 @@ from entropy.const import etpConst, etpSys, etpUi
 from entropy.output import red, bold, brown, blue, darkred, darkgreen, purple, \
     print_info, print_warning, print_error
 from entropy.exceptions import SystemDatabaseError
-from entropy.db.exceptions import OperationalError
+from entropy.db.exceptions import OperationalError, DatabaseError
 import entropy.dep
 import entropy.tools
 from entropy.client.interfaces import Client
@@ -732,7 +732,7 @@ def _database_check(entropy_client):
         try:
             idpkgs = entropy_client.installed_repository().listAllPackageIds()
             length = len(idpkgs)
-        except OperationalError as err:
+        except DatabaseError as err:
             entropy.tools.print_traceback()
             errors = True
             entropy_client.output(
@@ -741,29 +741,30 @@ def _database_check(entropy_client):
                 level = "warning"
             )
 
-        for x in idpkgs:
-            count += 1
-            entropy_client.output(
-                darkgreen(scanning_txt),
-                importance = 0,
-                level = "info",
-                back = True,
-                count = (count, length),
-                percent = True
-            )
-            try:
-                entropy_client.installed_repository().getPackageData(x)
-            except Exception as err:
-                entropy.tools.print_traceback()
-                errors = True
+        if not errors:
+            for x in idpkgs:
+                count += 1
                 entropy_client.output(
-                    "%s: %s" % (
-                        darkred(_("Error checking package")),
-                        err,
-                    ),
+                    darkgreen(scanning_txt),
                     importance = 0,
-                    level = "warning"
+                    level = "info",
+                    back = True,
+                    count = (count, length),
+                    percent = True
                 )
+                try:
+                    entropy_client.installed_repository().getPackageData(x)
+                except Exception as err:
+                    entropy.tools.print_traceback()
+                    errors = True
+                    entropy_client.output(
+                        "%s: %s" % (
+                            darkred(_("Error checking package")),
+                            err,
+                        ),
+                        importance = 0,
+                        level = "warning"
+                    )
 
         if not errors:
             entropy_client.output(
