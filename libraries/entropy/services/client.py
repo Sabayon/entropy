@@ -622,6 +622,7 @@ class WebService(object):
         """
         self.__credentials_validated = False
         self._authstore.add(self._repository_id, username, password)
+        self._authstore.save()
 
     def validate_credentials(self):
         """
@@ -676,7 +677,9 @@ class WebService(object):
         @rtype: bool
         """
         self.__credentials_validated = False
-        return self._authstore.remove(self._repository_id)
+        res = self._authstore.remove(self._repository_id)
+        self._authstore.save()
+        return res
 
     CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "websrv_cache")
 
@@ -907,8 +910,8 @@ class AuthenticationStorage(Singleton):
                 auth_file = os.path.join(home,
                     AuthenticationStorage._AUTH_FILE)
                 auth_dir = os.path.dirname(auth_file)
+                self.__auth_file = auth_file
                 if not os.path.isdir(auth_dir):
-                    self.__auth_file = auth_file
                     try:
                         os.makedirs(auth_dir, 0o700)
                         const_setup_file(auth_dir, etpConst['entropygid'],
