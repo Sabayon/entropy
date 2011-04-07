@@ -36,9 +36,9 @@ class EntropyWebServicesTest(unittest.TestCase):
             enctype = "utf-8")
         self._fake_unicode_pass = const_convert_to_unicode("entropy_unittèst",
             enctype = "utf-8")
-        self._fake_package_name = "app-something/entropy-unittest"
+        self._fake_package_name = "app-misc/entropy_unittest"
         self._fake_package_name_utf8 = const_convert_to_unicode(
-            "app-something/entropy-unìttest")
+            "app-misc/entropy_unìttest")
         self._real_package_name = "media-sound/amarok"
 
     def tearDown(self):
