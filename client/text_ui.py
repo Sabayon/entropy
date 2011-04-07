@@ -20,15 +20,19 @@ import tempfile
 
 from entropy.exceptions import SystemDatabaseError, DependenciesNotRemovable, \
     EntropyPackageException
+from entropy.misc import ParallelTask
 from entropy.db.exceptions import OperationalError
-from entropy.const import etpConst, etpUi, const_convert_to_unicode
+from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
+    const_debug_write
 from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     darkblue, purple, teal, print_error, print_info, print_warning, writechar, \
     readtext, print_generic
 from entropy.client.interfaces import Client
 from entropy.client.interfaces.package import Package as ClientPkg
 from entropy.i18n import _
-from text_tools import countdown, enlightenatom
+from entropy.services.client import WebService
+
+from text_tools import countdown, enlightenatom, get_entropy_webservice
 
 import entropy.dep
 import entropy.tools
@@ -1177,14 +1181,19 @@ def _download_packages(entropy_client, packages = None, deps = True,
     return func_rc, fetch_rc
 
 def _spawn_ugc(entropy_client, mykeys):
-    if entropy_client.UGC is None:
-        return
-    for myrepo in mykeys:
-        mypkgkeys = sorted(mykeys[myrepo])
+
+    for repository, pkgkeys in mykeys.items():
         try:
-            entropy_client.UGC.add_download_stats(myrepo, mypkgkeys)
-        except:
-            pass
+            webserv = get_entropy_webservice(entropy_client,
+                repository, tx_cb = False)
+        except WebService.UnsupportedService:
+            continue
+        try:
+            webserv.add_downloads(sorted(pkgkeys),
+                clear_available_cache = True)
+        except WebService.WebServiceException as err:
+            const_debug_write(__name__, repr(err))
+            continue
 
 def install_packages(entropy_client,
     packages = None, atomsdata = None, deps = True,
@@ -1615,6 +1624,8 @@ def install_packages(entropy_client,
                     entropy_client.installed_repository().acceptLicense(key)
                     break
 
+    ugc_th = None
+
     if not etpUi['clean'] or onlyfetch:
         mykeys = {}
         # Before starting the real install, fetch packages and verify checksum.
@@ -1623,9 +1634,12 @@ def install_packages(entropy_client,
         if func_rc != 0:
             print_info(red(" @@ ")+blue("%s." % (_("Download incomplete"),) ))
             return func_rc, fetch_rc
-        _spawn_ugc(entropy_client, mykeys)
+        ugc_th = ParallelTask(_spawn_ugc, entropy_client, mykeys)
+        ugc_th.start()
 
     if onlyfetch:
+        if ugc_th is not None:
+            ugc_th.join()
         print_info(red(" @@ ")+blue("%s." % (_("Download complete"),) ))
         return 0, 0
 
@@ -1640,22 +1654,26 @@ def install_packages(entropy_client,
         else:
             metaopts['install_source'] = etpConst['install_sources']['automatic_dependency']
 
-        Package = entropy_client.Package()
-        Package.prepare(match, "install", metaopts)
+        pkg = entropy_client.Package()
+        pkg.prepare(match, "install", metaopts)
 
         xterm_header = "equo ("+_("install")+") :: "+str(currentqueue)+" of "+totalqueue+" ::"
-        print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+        print_info(red(" ++ ") + bold("(") + blue(str(currentqueue)) + \
+            "/" + red(totalqueue) + bold(") ") + ">>> " + \
+            darkgreen(pkg.pkgmeta['atom']))
 
-        rc = Package.run(xterm_header = xterm_header)
+        rc = pkg.run(xterm_header = xterm_header)
         if rc != 0:
+            if ugc_th is not None:
+                ugc_th.join()
             return 1, rc
 
         # there's a buffer inside, better remove otherwise cPickle will complain
-        del Package.pkgmeta['triggers']
+        del pkg.pkgmeta['triggers']
 
         if etpUi['clean']: # remove downloaded package
-            if os.path.isfile(Package.pkgmeta['pkgpath']):
-                os.remove(Package.pkgmeta['pkgpath'])
+            if os.path.isfile(pkg.pkgmeta['pkgpath']):
+                os.remove(pkg.pkgmeta['pkgpath'])
 
         # update resume cache
         if not pkgs: # pkgs caching not supported
@@ -1665,10 +1683,12 @@ def install_packages(entropy_client,
             except (IOError, OSError):
                 pass
 
-        Package.kill()
+        pkg.kill()
         del metaopts
-        del Package
+        del pkg
 
+    if ugc_th is not None:
+        ugc_th.join()
 
     del explicit_user_packages
     print_info(red(" @@ ")+blue("%s." % (_("Installation complete"),) ))

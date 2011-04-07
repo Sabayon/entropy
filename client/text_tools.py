@@ -355,3 +355,35 @@ def get_file_mime(file_path):
     if mime:
         mime = mime.split(";")[0]
     return mime
+
+def _transfer_callback(transfered, total, download):
+    if download:
+        action = _("Downloading")
+    else:
+        action = _("Uploading")
+
+    percent = 100
+    if (total > 0) and (transfered <= total):
+        percent = int(round((float(transfered)/total) * 100, 1))
+
+    msg = "[%s%s] %s ..." % (purple(str(percent)), "%", teal(action))
+    print_info(msg, back = True)
+
+def get_entropy_webservice(entropy_client, repository_id, tx_cb = False):
+    """
+    Get Entropy Web Services service object (ClientWebService).
+
+    @param entropy_client: Entropy Client interface
+    @type entropy_client: entropy.client.interfaces.Client
+    @param repository_id: repository identifier
+    @type repository_id: string
+    @return: the ClientWebService instance
+    @rtype: entropy.client.services.interfaces.ClientWebService
+    @raise WebService.UnsupportedService: if service is unsupported by
+        repository
+    """
+    factory = entropy_client.WebServices()
+    webserv = factory.new(repository_id)
+    if tx_cb:
+        webserv._set_transfer_callback(_transfer_callback)
+    return webserv

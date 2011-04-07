@@ -12,20 +12,26 @@
 import os
 from entropy.const import etpConst, const_isstring, const_convert_to_unicode
 from entropy.output import bold, darkgreen, red, darkred, blue, purple, brown, \
-    print_info, print_warning, print_error
+    teal, print_info, print_warning, print_error
+from entropy.services.client import WebService
+from entropy.client.services.interfaces import Document, DocumentFactory, \
+    ClientWebService
 from entropy.i18n import _
+from text_tools import get_entropy_webservice as _get_service
+
 import entropy.tools
+
 
 def ugc(options):
 
     if not options:
-        return 0
+        return -10
 
     cmd = options.pop(0)
     do_force = False
     myopts = []
 
-    for opt in options[1:]:
+    for opt in options:
         if opt == "--force":
             do_force = True
         elif opt.startswith("--"):
@@ -41,7 +47,6 @@ def ugc(options):
     entropy_client = None
     try:
         entropy_client = Client()
-        entropy_client.UGC.show_progress = True
         if cmd == "login":
             if options:
                 rc = _ugc_login(entropy_client, options[0],
@@ -66,11 +71,21 @@ def _ugc_login(entropy_client, repository, force = False):
 
     if repository not in entropy_client.repositories():
         print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
-        entropy_client.UGC.remove_login(repository)
         return 1
 
-    login_data = entropy_client.UGC.read_login(repository)
-    if (login_data != None) and not force:
+    try:
+        webserv = _get_service(entropy_client, repository, tx_cb = True)
+    except WebService.UnsupportedService:
+        print_info(
+            "[%s] %s." % (
+                darkgreen(repository),
+                blue(_("Repository does not support Entropy Services.")),
+            )
+        )
+        return 1
+
+    username = webserv.get_credentials()
+    if (username is not None) and not force:
         print_info(
             "[%s] %s %s. %s." % (
                 darkgreen(repository),
@@ -80,30 +95,59 @@ def _ugc_login(entropy_client, repository, force = False):
             )
         )
         return 0
-    elif (login_data != None) and force:
-        entropy_client.UGC.remove_login(repository)
+    elif (username is not None) and force:
+        webserv.remove_credentials(repository)
 
-    status, msg = entropy_client.UGC.login(repository)
-    if status:
-        login_data = entropy_client.UGC.read_login(repository)
-        print_info(
-            "[%s:uid:%s] %s: %s. %s." % (
+    def fake_callback(*args, **kwargs):
+        return True
+
+    # use input box to read login
+    input_params = [
+        ('username', _('Username'), fake_callback, False),
+        ('password', _('Password'), fake_callback, True)
+    ]
+    login_data = entropy_client.input_box(
+        "%s %s %s" % (
+            _('Please login against'), repository, _('repository'),),
+        input_params,
+        cancel_button = True
+    )
+    if not login_data:
+        print_warning(
+            "[%s] %s" % (
                 darkgreen(repository),
-                etpConst['uid'],
-                blue(_("Successfully logged in as")),
-                bold(login_data[0]),
-                blue(_("From now on, any UGC action will be committed as this user"))
-            )
-        )
-        return 0
-    else:
-        print_info(
-            "[%s] %s." % (
-                darkgreen(repository),
-                blue(_("Login error. Not logged in.")),
+                blue(_("Login aborted. Not logged in.")),
             )
         )
         return 1
+
+    username, password = login_data['username'], login_data['password']
+    webserv.add_credentials(username, password)
+    try:
+        webserv.validate_credentials()
+    except WebService.AuthenticationFailed:
+        print_warning(
+            "[%s] %s" % (
+                darkgreen(repository),
+                blue(_("Authentication error. Not logged in.")),
+            )
+        )
+        return 1
+
+    print_info(
+        "[%s:uid:%s] %s: %s." % (
+            darkgreen(repository),
+            etpConst['uid'],
+            blue(_("Successfully logged in as")),
+            bold(username)
+        )
+    )
+    print_info(
+        "%s." % (
+            blue(_("From now on, any UGC action will be committed as this user"))
+        )
+    )
+    return 0
 
 
 def _ugc_logout(entropy_client, repository):
@@ -112,24 +156,36 @@ def _ugc_logout(entropy_client, repository):
         print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
         return 1
 
-    login_data = entropy_client.UGC.read_login(repository)
-    if login_data == None:
+    try:
+        webserv = _get_service(entropy_client, repository)
+    except WebService.UnsupportedService:
         print_info(
-            "[%s] %s." % (
+            "[%s] %s" % (
                 darkgreen(repository),
-                blue(_("Not logged in")),
+                blue(_("Repository does not support Entropy Services.")),
             )
         )
-    else:
-        entropy_client.UGC.remove_login(repository)
+        return 1
+
+    username = webserv.get_credentials()
+    if username is None:
         print_info(
-            "[%s] %s %s %s." % (
+            "[%s] %s" % (
                 darkgreen(repository),
-                blue(_("User")),
-                bold(login_data[0]),
-                blue(_("has been logged out")),
+                blue(_("Not logged in.")),
             )
         )
+        return 0
+
+    webserv.remove_credentials()
+    print_info(
+        "[%s] %s %s %s" % (
+            darkgreen(repository),
+            blue(_("User")),
+            bold(username),
+            blue(_("has been logged out.")),
+        )
+    )
     return 0
 
 def _ugc_votes(entropy_client, options):
@@ -146,30 +202,54 @@ def _ugc_votes(entropy_client, options):
     pkgkey = options[0]
     options = options[1:]
 
+    if repository not in entropy_client.repositories():
+        print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
+        return 1
+
+    try:
+        webserv = _get_service(entropy_client, repository)
+    except WebService.UnsupportedService:
+        print_info(
+            "[%s] %s" % (
+                darkgreen(repository),
+                blue(_("Repository does not support Entropy Services.")),
+            )
+        )
+        return 1
+
+    username = webserv.get_credentials()
+    if username is None:
+        print_info(
+            "[%s] %s" % (
+                darkgreen(repository),
+                blue(_("Not logged in, please login first.")),
+            )
+        )
+        return 0
+
     rc = 0
     if cmd == "get":
 
-        data, err_string = entropy_client.UGC.get_vote(repository, pkgkey)
-        if not isinstance(data, float):
+        try:
+            vote = webserv.get_votes([pkgkey], cache = False)[pkgkey]
+        except WebService.WebServiceException as err:
             print_error(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
+                "[%s] %s: %s" % (
                     darkred(pkgkey),
                     blue(_("UGC error")),
-                    data,
-                    err_string,
+                    err,
                 )
             )
             return 1
-        _show_vote(data, repository, pkgkey)
+
+        _show_vote(vote, repository, pkgkey)
 
     elif cmd == "add":
 
-        print_info(" %s [%s|%s] %s" % (
+        print_info(" %s [%s] %s" % (
                 bold("@@"),
-                darkgreen(str(repository)),
-                purple(str(pkgkey)),
-                blue(_("Add vote")),
+                purple(pkgkey),
+                blue(_("add vote")),
             )
         )
         def mycb(s):
@@ -192,35 +272,22 @@ def _ugc_votes(entropy_client, options):
 
         try:
             vote = int(data['vote'])
+            if vote not in ClientWebService.VALID_VOTES:
+                raise ValueError()
         except ValueError:
             print_error(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
+                "[%s] %s: %s: %s" % (
                     darkred(pkgkey),
                     blue(_("UGC error")),
-                    _("Vote not valid"),
-                    data['vote'],
+                    _("invalid vote, must be in range"),
+                    " ".join([str(x) for x in ClientWebService.VALID_VOTES]),
                 )
             )
             return 1
 
-        if vote not in etpConst['ugc_voterange']:
-            print_error(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
-                    darkred(pkgkey),
-                    blue(_("UGC error")),
-                    _("Vote not in range"),
-                    etpConst['ugc_voterange'],
-                )
-            )
-            return 1
-
-        # verify
-        print_info(" %s [%s|%s] %s:" % (
+        print_info(" %s [%s] %s:" % (
                 bold("@@"),
-                darkgreen(str(repository)),
-                purple(str(pkgkey)),
+                purple(pkgkey),
                 blue(_("Please review your submission")),
             )
         )
@@ -233,66 +300,106 @@ def _ugc_votes(entropy_client, options):
         if rc != _("Yes"):
             return 1
 
-        # submit vote
-        voted, err_string = entropy_client.UGC.add_vote(
-            repository, pkgkey, vote)
-        if not voted:
+        try:
+            voted = webserv.add_vote(pkgkey, vote,
+                clear_available_cache = True)
+        except WebService.WebServiceException as err:
             print_error(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
+                "[%s] %s: %s" % (
                     darkred(pkgkey),
                     blue(_("UGC error")),
-                    voted,
-                    err_string,
+                    err,
+                )
+            )
+            return 1
+
+        if not voted:
+            print_error(
+                "[%s] %s: %s" % (
+                    darkred(pkgkey),
+                    blue(_("UGC error")),
+                    _("already voted"),
                 )
             )
             return 1
         else:
-            print_info(" %s [%s|%s] %s" % (
-                    bold("@@"),
-                    darkgreen(str(repository)),
-                    purple(str(pkgkey)),
-                    blue(_("Vote added, thank you!")),
+            print_info("[%s] %s" % (
+                    purple(pkgkey),
+                    blue(_("vote added, thank you!")),
                 )
             )
             _ugc_votes(entropy_client, [repository, "get", pkgkey])
 
 def _ugc_documents(entropy_client, options):
 
-    rc = -10
     repository = options[0]
     options = options[1:]
     if not options:
-        return rc
+        return -10
     cmd = options[0]
     options = options[1:]
     if not options:
-        return rc
-    pkgkey = options[0]
-    options = options[1:]
-    rc = 0
+        return -10
+
+    try:
+        webserv = _get_service(entropy_client, repository, tx_cb = True)
+    except WebService.UnsupportedService:
+        print_info(
+            "[%s] %s" % (
+                darkgreen(repository),
+                blue(_("Repository does not support Entropy Services.")),
+            )
+        )
+        return 1
 
     if cmd == "get":
-        data, err_string = entropy_client.UGC.get_docs(repository, pkgkey)
-        if not isinstance(data, (list, tuple)):
+
+        pkgkey = options.pop(0)
+        docs = []
+        docs_offset = 0
+        while True:
+            try:
+                docs_list = webserv.get_documents([pkgkey],
+                    cache = False, offset = docs_offset)[pkgkey]
+            except WebService.WebServiceException as err:
+                print_error(
+                    "[%s] %s: %s" % (
+                        darkred(pkgkey),
+                        blue(_("UGC error")),
+                        err,
+                    )
+                )
+                return 1
+            if docs_list is None:
+                print_error(
+                    "[%s] %s: %s, %s" % (
+                        darkred(pkgkey),
+                        blue(_("UGC error")),
+                        data,
+                        err_string,
+                    )
+                )
+                return 1
+            docs.extend(docs_list)
+            if not docs_list.has_more():
+                break
+            docs_offset += len(docs_list)
+
+        try:
+            downloads = webserv.get_downloads([pkgkey], cache = False)[pkgkey]
+        except WebService.WebServiceException as err:
             print_error(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
+                "[%s] %s: %s" % (
                     darkred(pkgkey),
                     blue(_("UGC error")),
-                    data,
-                    err_string,
+                    err,
                 )
             )
             return 1
-        downloads, err_string = entropy_client.UGC.get_downloads(
-            repository, pkgkey)
-        shown = False
-        for comment_dict in data:
-            shown = True
-            _show_document(comment_dict, repository, comment_dict['pkgkey'])
+        for doc in docs:
+            _show_document(doc, repository, pkgkey)
 
-        if shown:
+        if docs:
             print_info(" %s %s: %s" % (
                     darkred("@@"),
                     blue(_("Number of downloads")),
@@ -300,13 +407,25 @@ def _ugc_documents(entropy_client, options):
                 )
             )
         else:
-            print_info(" %s %s." % (
+            print_info(" %s %s" % (
                     darkred("@@"),
-                    blue(_("No User Generated Content available")),
+                    blue(_("No User Generated Content available.")),
                 )
             )
+        return 0
 
     elif cmd == "add":
+
+        pkgkey = options.pop(0)
+        username = webserv.get_credentials()
+        if username is None:
+            print_info(
+                "[%s] %s" % (
+                    darkgreen(repository),
+                    blue(_("Not logged in, please login first.")),
+                )
+            )
+            return 0
 
         print_info(" %s [%s|%s] %s" % (
                 bold("@@"),
@@ -316,15 +435,17 @@ def _ugc_documents(entropy_client, options):
             )
         )
         valid_types = {
-            ('c', _('text comment')): etpConst['ugc_doctypes']['comments'],
-            ('f', _('simple file')): etpConst['ugc_doctypes']['generic_file'],
-            ('i', _('simple image')): etpConst['ugc_doctypes']['image'],
-            ('y', _('youtube video')): etpConst['ugc_doctypes']['youtube_video']
+            ('c', _('text comment')): Document.COMMENT_TYPE_ID,
+            ('o', _('icon')): Document.ICON_TYPE_ID,
+            ('f', _('simple file')): Document.FILE_TYPE_ID,
+            ('i', _('simple image')): Document.IMAGE_TYPE_ID,
+            ('y', _('video')): Document.VIDEO_TYPE_ID,
         }
         upload_needed_types = [
-            etpConst['ugc_doctypes']['generic_file'],
-            etpConst['ugc_doctypes']['image'],
-            etpConst['ugc_doctypes']['youtube_video']
+            Document.FILE_TYPE_ID,
+            Document.IMAGE_TYPE_ID,
+            Document.ICON_TYPE_ID,
+            Document.VIDEO_TYPE_ID
         ]
         my_quick_types = [x[0] for x in valid_types]
         def mycb(s):
@@ -376,10 +497,9 @@ def _ugc_documents(entropy_client, options):
 
         keywords = ', '.join(data['keywords'].split())
         # verify
-        print_info(" %s [%s|%s] %s:" % (
+        print_info(" %s [%s] %s:" % (
                 bold("@@"),
-                darkgreen(str(repository)),
-                purple(str(pkgkey)),
+                purple(pkgkey),
                 blue(_("Please review your submission")),
             )
         )
@@ -414,54 +534,65 @@ def _ugc_documents(entropy_client, options):
         if rc != _("Yes"):
             return 1
 
-        # submit comment
-        rslt, data = entropy_client.UGC.send_document_autosense(
-            repository,
-            pkgkey,
-            data['type'],
-            data['path'],
-            data['title'],
-            data['description'],
-            data['keywords']
-        )
-        if not rslt:
+        doc_factory = DocumentFactory(repository)
+        doc = None
+        doc_f = None
+        doc_type = data['type']
+        if doc_type == Document.COMMENT_TYPE_ID:
+            doc = doc_factory.comment(username, data['description'],
+                data['title'], data['keywords'])
+        elif doc_type == Document.ICON_TYPE_ID:
+            doc_f = open(data['path'], "rb")
+            doc = doc_factory.icon(username, doc_f, data['title'],
+                data['description'], data['keywords'])
+        elif doc_type == Document.FILE_TYPE_ID:
+            doc_f = open(data['path'], "rb")
+            doc = doc_factory.file(username, doc_f, data['title'],
+                data['description'], data['keywords'])
+        elif doc_type == Document.IMAGE_TYPE_ID:
+            doc_f = open(data['path'], "rb")
+            doc = doc_factory.image(username, doc_f, data['title'],
+                data['description'], data['keywords'])
+        elif doc_type == Document.VIDEO_TYPE_ID:
+            doc_f = open(data['path'], "rb")
+            doc = doc_factory.video(username, doc_f, data['title'],
+                data['description'], data['keywords'])
+
+        try:
+            new_doc = webserv.add_document(pkgkey, doc)
+        except WebService.WebServiceException as err:
             print_error(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
+                "[%s] %s: %s" % (
                     darkred(pkgkey),
                     blue(_("UGC error")),
-                    rslt,
-                    data,
+                    err,
                 )
             )
             return 1
-        else:
-            if isinstance(data, tuple):
-                iddoc, r_content = data
-            else:
-                iddoc = rslt
-                r_content = data
-            print_info(" %s [%s|%s|id:%s|%s] %s" % (
-                    bold("@@"),
-                    darkgreen(str(repository)),
-                    purple(str(pkgkey)),
-                    iddoc,
-                    r_content,
-                    blue(_("Document added, thank you!")),
-                )
+        finally:
+            if doc_f is not None:
+                doc_f.close()
+
+        print_info(" %s [%s|id:%s] %s" % (
+                bold("@@"),
+                purple(pkgkey),
+                new_doc.document_id(),
+                blue(_("Document added, thank you!")),
             )
+        )
+        return 0
 
     elif cmd == "remove":
 
         print_info(" %s [%s] %s" % (
                 bold("@@"),
-                darkgreen(str(repository)),
+                darkgreen(repository),
                 blue(_("Documents removal")),
             )
         )
         print_info(" %s [%s] %s:" % (
                 bold("@@"),
-                darkgreen(str(repository)),
+                darkgreen(repository),
                 blue(_("Please review your submission")),
             )
         )
@@ -488,90 +619,96 @@ def _ugc_documents(entropy_client, options):
             return 1
         rc = entropy_client.ask_question(_("Would you like to review them?"))
         if rc == _("Yes"):
-            data, err_msg = entropy_client.UGC.get_documents_by_identifiers(
-                repository, identifiers)
-            if not isinstance(data, tuple):
+            try:
+                docs_map = webserv.get_documents_by_id(identifiers,
+                    cache = False)
+            except WebService.WebServiceException as err:
                 print_error(
-                    "[%s:%s] %s: %s, %s" % (
-                        darkgreen(repository),
+                    "[%s] %s: %s" % (
                         darkred(str(identifiers)),
                         blue(_("UGC error")),
-                        data,
-                        err_msg,
+                        err,
                     )
                 )
                 return 1
-            for comment_dict in data:
-                _show_document(comment_dict, repository, comment_dict['pkgkey'])
+
+            for pkgkey, doc in docs_map.items():
+                if doc is None:
+                    # doesn't exist
+                    continue
+                _show_document(doc, repository, pkgkey)
 
         rc = entropy_client.ask_question(
             _("Would you like to continue with the removal?"))
         if rc != _("Yes"):
             return 1
 
+        try:
+            docs_map = webserv.get_documents_by_id(identifiers,
+                cache = False)
+        except WebService.WebServiceException as err:
+            print_error(
+                "[%s] %s: %s" % (
+                    darkred(str(identifiers)),
+                    blue(_("UGC error")),
+                    err,
+                )
+            )
+            return 1
+
         for identifier in identifiers:
-            doc_data, err_msg = entropy_client.UGC.get_documents_by_identifiers(
-                repository, [identifier])
-            if not isinstance(doc_data, tuple):
+            doc = docs_map[identifier]
+            if doc is None:
                 print_error(
-                    "[%s:%s] %s: %s, %s" % (
-                        darkgreen(repository),
+                    "[%s] %s: %s" % (
                         darkred(str(identifier)),
                         blue(_("UGC error")),
-                        doc_data,
-                        err_msg,
+                        _("cannot get the requested Document"),
                     )
                 )
                 continue
-            doc_data = doc_data[0]
-            data, err_msg = entropy_client.UGC.remove_document_autosense(
-                repository, identifier, doc_data['iddoctype'])
-            if data is False:
+
+            try:
+                docs_map = webserv.remove_document(identifier)
+            except WebService.WebServiceException as err:
                 print_error(
-                    "[%s:%s] %s: %s, %s" % (
-                        darkgreen(repository),
-                        darkred(str(identifier)),
+                    "[%s] %s: %s" % (
+                        darkred(str(identifiers)),
                         blue(_("UGC error")),
-                        data,
-                        err_msg,
+                        err,
                     )
                 )
                 continue
+
             print_info(
-                "[%s:%s] %s: %s, %s" % (
-                    darkgreen(repository),
+                "[%s] %s: %s" % (
                     darkred(str(identifier)),
                     blue(_("UGC status")),
-                    data,
-                    err_msg,
+                    _("removed successfully"),
                 )
             )
 
+        return 0
 
-    return rc
+    return -10
 
-def _show_document(mydict, repository, pkgkey):
+def _show_document(doc, repository, pkgkey):
 
-    title = const_convert_to_unicode(mydict['title'])
+    title = const_convert_to_unicode(doc[Document.DOCUMENT_TITLE_ID])
     if not title:
         title = _("No title")
     title = darkgreen(title)
-    doctype = None
-    for item in etpConst['ugc_doctypes']:
-        if etpConst['ugc_doctypes'][item] == mydict['iddoctype']:
-            doctype = item
-            break
-    if doctype is None:
-        doctype = _("Unknown type")
+    ts = doc.document_timestamp()
+    ts = entropy.tools.convert_unix_time_to_human_time(ts)
 
     print_info(" %s [%s|%s|%s|%s|%s|%s]" % (
             bold("@@"),
-            bold(str(mydict['iddoc'])),
-            darkred(str(doctype)),
-            darkgreen(str(repository)),
-            purple(str(pkgkey)),
-            blue(mydict['username']),
-            darkgreen(str(mydict['ts'])),
+            bold(str(doc.document_id())),
+            darkred(str(doc.document_type())),
+            darkgreen(repository),
+            purple(pkgkey),
+            blue(doc[DocumentFactory.DOCUMENT_USERNAME_ID]),
+            darkgreen(ts),
         )
     )
     print_info("\t%s: %s" % (
@@ -579,43 +716,40 @@ def _show_document(mydict, repository, pkgkey):
             title,
         )
     )
-    if const_isstring(mydict['ddata']):
-        text = mydict['ddata']
+    if const_isstring(doc.document_data()):
+        text = doc.document_data()
     else:
-        text = mydict['ddata'].tostring()
+        text = doc.document_data().tostring()
     text = const_convert_to_unicode(text)
     _my_formatted_print(text, "\t%s: " % (blue(_("Content")),), "\t")
 
     print_info("\t%s: %s" % (
             blue(_("Keywords")),
-            ', '.join(mydict['keywords']),
+            doc.document_keywords(),
         )
     )
-    print_info("\t%s: %s" % (
-            blue(_("Size")),
-            entropy.tools.bytes_into_human(mydict['size']),
-        )
-    )
-    if 'store_url' in mydict:
-        if mydict['store_url'] != None:
-            print_info("\t%s: %s" % (
-                    blue(_("Download")),
-                    mydict['store_url'],
-                )
+    url = doc.document_url()
+    if url is not None:
+        print_info("\t%s: %s" % (
+                blue(_("Download")),
+                url,
             )
+        )
 
 def _show_vote(vote, repository, pkgkey):
-    print_info(" %s [%s|%s] %s: %s" % (
+    if vote is None:
+        vote = _("no votes")
+    else:
+        vote = str(vote)
+    print_info(" %s [%s] %s: %s" % (
             bold("@@"),
-            darkgreen(str(repository)),
-            purple(str(pkgkey)),
-            darkred(_("Current package vote")),
-            darkgreen(str(vote)),
+            purple(pkgkey),
+            darkred(_("current package vote")),
+            darkgreen(vote),
         )
     )
 
-
-def _my_formatted_print(data,header,reset_columns, min_chars = 25,
+def _my_formatted_print(data,header, reset_columns, min_chars = 25,
     color = None):
 
     if isinstance(data, set):

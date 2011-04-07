@@ -23,8 +23,12 @@ from entropy.const import etpConst, etpUi
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
     print_info, print_warning, print_error, purple, teal
 from entropy.core.settings.base import SystemSettings as SysSet
+from entropy.misc import ParallelTask
 from entropy.i18n import _
-from text_tools import print_table
+from entropy.services.client import WebService
+
+from text_tools import print_table, get_entropy_webservice
+
 import entropy.tools
 SystemSettings = SysSet()
 
@@ -431,19 +435,29 @@ def _do_sync(entropy_client, repo_identifiers = None, force = False):
             _("Unhandled exception"), err,)))
         return 2
 
+    def _spawn_ugc():
+        for repository in repo_identifiers:
+            try:
+                webserv = get_entropy_webservice(entropy_client,
+                    repository, tx_cb = False)
+            except WebService.UnsupportedService:
+                continue
+            try:
+                webserv.add_downloads([repository],
+                    clear_available_cache = True)
+            except WebService.WebServiceException as err:
+                const_debug_write(__name__, repr(err))
+                continue
+
+    ugc_th = ParallelTask(_spawn_ugc)
+    ugc_th.start()
+
     rc = repo_intf.sync()
     if not rc:
         for reponame in repo_identifiers:
-            # inform UGC that we are syncing this repo
-            if entropy_client.UGC is not None:
-                try:
-                    entropy_client.UGC.add_download_stats(reponame, [reponame])
-                except TimeoutError:
-                    continue
-
-        for reponame in repo_identifiers:
             _show_notice_board_summary(entropy_client, reponame)
 
+    ugc_th.join()
     return rc
 
 def _check_notice_board_availability(entropy_client, reponame):
