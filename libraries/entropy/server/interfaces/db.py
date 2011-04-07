@@ -535,8 +535,7 @@ class ServerPackagesRepositoryUpdater(object):
         webserv_file = self._entropy._get_local_repository_webserv_file(
             self._repository_id)
         if os.path.isfile(webserv_file) or download:
-            if download:
-                data['webserv_file'] = webserv_file
+            data['webserv_file'] = webserv_file
             extra_text_files.append(webserv_file)
 
         gpg_file = self._entropy._get_local_repository_gpg_signature_file(
