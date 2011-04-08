@@ -765,10 +765,6 @@ class WebService(object):
             API do not match
         @raise WebService.MethodResponseError; if method execution failed
         """
-        if require_credentials:
-            # this can raise AuthenticationRequired
-            self._setup_credentials(params)
-
         # setup generic request parameters
         self._setup_generic_params(params)
 
@@ -782,6 +778,10 @@ class WebService(object):
                 return obj
             const_debug_write(__name__, "WebService.%s(%s) = NOT cached" % (
                 func_name, params,))
+
+        if require_credentials:
+            # this can raise AuthenticationRequired
+            self._setup_credentials(params)
 
         obj = None
         try:
