@@ -135,6 +135,7 @@ class WebService(object):
     WEB_SERVICE_RESPONSE_CODE_OK = 200
     WEB_SERVICE_INVALID_CREDENTIALS_CODE = 450
     WEB_SERVICE_INVALID_REQUEST_CODE = 400
+    WEB_SERVICE_NOT_FOUND_CODE = 404
     WEB_SERVICE_RESPONSE_ERROR_CODE = 503
 
 
@@ -226,6 +227,11 @@ class WebService(object):
         """
         If the request has been accepted, but its computation stopped for
         some reason. The encapsulated data contains the error code.
+        """
+
+    class CacheMiss(WebServiceException):
+        """
+        If the request is not available in the on-disk cache.
         """
 
     def __init__(self, entropy_client, repository_id):
@@ -727,8 +733,20 @@ class WebService(object):
                         if err.errno != errno.ENOENT:
                             raise
 
+    def _method_cached(self, func_name, params, cache_key = None):
+        """
+        Try to fetch on-disk cached object and return it. If error or not
+        found, None is returned.
+        """
+        # setup generic request parameters
+        self._setup_generic_params(params)
+
+        if cache_key is None:
+            cache_key = self._get_cache_key(func_name, params)
+        return self._get_cached(cache_key)
+
     def _method_getter(self, func_name, params, cache = True,
-        require_credentials = False, file_params = None):
+        cached = False, require_credentials = False, file_params = None):
         """
         Given a function name and request parameters, do all the duties required
         to get a response from the Web Service. This method raises several
@@ -741,6 +759,9 @@ class WebService(object):
         @type params: dict
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @keyword require_credentials: True means that credentials will be added
             to the request, if credentials are not available in the local
             authentication storage, WebService.AuthenticationRequired is
@@ -764,20 +785,26 @@ class WebService(object):
         @raise WebService.UnsupportedAPILevel: if client API and Web Service
             API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
-        # setup generic request parameters
-        self._setup_generic_params(params)
-
         cache_key = None
-        if cache:
+        if cache or cached:
             cache_key = self._get_cache_key(func_name, params)
-            obj = self._get_cached(cache_key)
+            # this does call: _setup_generic_params()
+            obj = self._method_cached(func_name, params, cache_key = cache_key)
+            if (obj is None) and cached:
+                raise WebService.CacheMiss(
+                    WebService.WEB_SERVICE_NOT_FOUND_CODE, method = func_name)
             if obj is not None:
                 const_debug_write(__name__, "WebService.%s(%s) = cached %s" % (
                     func_name, params, obj,))
                 return obj
             const_debug_write(__name__, "WebService.%s(%s) = NOT cached" % (
                 func_name, params,))
+        else:
+            # setup generic request parameters
+            self._setup_generic_params(params)
 
         if require_credentials:
             # this can raise AuthenticationRequired
@@ -827,9 +854,15 @@ class WebService(object):
                     cache_key = self._get_cache_key(func_name, params)
                 self._set_cached(cache_key, obj)
 
-    def service_available(self, cache = True):
+    def service_available(self, cache = True, cached = False):
         """
         Return whether the Web Service is correctly able to answer our requests.
+
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
 
         @raise WebService.UnsupportedParameters: if input parameters are invalid
         @raise WebService.RequestError: if request cannot be satisfied
@@ -844,12 +877,14 @@ class WebService(object):
         @raise WebService.UnsupportedAPILevel: if client API and Web Service
             API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         params = locals().copy()
         params.pop("self")
         params.pop("cache")
         return self._method_getter("service_available", params, cache = cache,
-            require_credentials = False)
+            cached = cached, require_credentials = False)
 
     def data_send_available(self):
         """
