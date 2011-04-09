@@ -13,6 +13,7 @@ __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
     "DocumentList", "DocumentFactory"]
 
 import os
+import base64
 import time
 from entropy.const import const_get_stringtype, etpConst
 from entropy.i18n import _
@@ -254,6 +255,25 @@ class Document(dict):
         @rtype: bool
         """
         return self.document_type() == Document.VIDEO_TYPE_ID
+
+    def local_document(self):
+        """
+        Return the local document data file path. This is where the fetched
+        document data (pointed at "url" metadatum) should be placed.
+        If the file is available, it means that the document data has been
+        already fetched on disk.
+        This method can return None, in case there is no URL associated with it.
+
+        @return: the local document data file path
+        @rtype: string or None
+        """
+        url = self.document_url()
+        if url is None:
+            return None
+        return os.path.join(WebService.CACHE_DIR,
+            "documents", self.repository_id(),
+            str(self.document_id()),
+            base64.urlsafe_b64encode(url))
 
 class DocumentList(list):
     """
