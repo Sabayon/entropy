@@ -560,7 +560,7 @@ class ClientWebService(WebService):
         """
         return DocumentFactory(self._repository_id)
 
-    def get_votes(self, package_names, cache = True):
+    def get_votes(self, package_names, cache = True, cached = False):
         """
         For given package names, return the current vote. For missing votes
         or invalid package_name, None is assigned.
@@ -569,6 +569,11 @@ class ClientWebService(WebService):
         @type package_names: list
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and value as vote
             (float)
         @rtype: dict
@@ -588,19 +593,24 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         params = {
             "package_names": " ".join(package_names)
         }
         return self._method_getter("get_votes", params, cache = cache,
-            require_credentials = False)
+            cached = cached, require_credentials = False)
 
-    def get_available_votes(self, cache = True):
+    def get_available_votes(self, cache = True, cached = False):
         """
         Return all the available votes for all the available packages.
 
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and value as vote
             (float)
         @rtype: dict
@@ -620,11 +630,13 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         return self._method_getter("get_available_votes", {}, cache = cache,
-            require_credentials = False)
+            cached = cached, require_credentials = False)
 
-    def get_downloads(self, package_names, cache = True):
+    def get_downloads(self, package_names, cache = True, cached = False):
         """
         For given package names, return the current download counter.
         Packages having no download info will get None instead of int.
@@ -633,6 +645,9 @@ class ClientWebService(WebService):
         @type package_names: list
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and downloads as value
         @rtype: dict
 
@@ -651,14 +666,16 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         params = {
             "package_names": " ".join(package_names)
         }
         return self._method_getter("get_downloads", params, cache = cache,
-            require_credentials = False)
+            cached = cached, require_credentials = False)
 
-    def get_available_downloads(self, cache = True):
+    def get_available_downloads(self, cache = True, cached = False):
         """
         Return all the available downloads for all the available packages.
 
@@ -666,6 +683,9 @@ class ClientWebService(WebService):
         @type package_names: list
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and downloads as value
         @rtype: dict
 
@@ -684,6 +704,8 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         return self._method_getter("get_available_downloads", {}, cache = cache,
             require_credentials = False)
@@ -804,7 +826,8 @@ class ClientWebService(WebService):
                 self._drop_cached("get_available_downloads")
         return valid
 
-    def get_icons(self, package_names, offset = 0, cache = True):
+    def get_icons(self, package_names, offset = 0, cache = True,
+        cached = False):
         """
         For given package names, return the current Document icon object
         DocumentList.
@@ -822,6 +845,9 @@ class ClientWebService(WebService):
         @type offset: int
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and DocumentList
             as value
         @rtype: dict
@@ -841,13 +867,16 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         document_type_filter = [Document.ICON_TYPE_ID]
         return self.get_documents(package_names,
             document_type_filter = document_type_filter,
-            offset = offset, cache = cache)
+            offset = offset, cache = cache, cached = cached)
 
-    def get_comments(self, package_names, offset = 0, cache = True):
+    def get_comments(self, package_names, offset = 0, cache = True,
+        cached = False):
         """
         For given package names, return the current Document Comment object
         DocumentList.
@@ -865,6 +894,9 @@ class ClientWebService(WebService):
         @type offset: int
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and DocumentList
             as value
         @rtype: dict
@@ -884,14 +916,16 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         document_type_filter = [Document.COMMENT_TYPE_ID]
         return self.get_documents(package_names,
             document_type_filter = document_type_filter,
-            offset = offset, cache = cache)
+            offset = offset, cache = cache, cached = cached)
 
     def get_documents(self, package_names, document_type_filter = None,
-        offset = 0, cache = True):
+        offset = 0, cache = True, cached = False):
         """
         For given package names, return the current Document object
         DocumentList.
@@ -912,6 +946,9 @@ class ClientWebService(WebService):
         @type offset: int
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by package name as key and DocumentList as
             value
         @rtype: dict
@@ -931,6 +968,8 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         if document_type_filter is None:
             document_type_filter = []
@@ -940,7 +979,7 @@ class ClientWebService(WebService):
             "offset": offset,
         }
         objs = self._method_getter("get_documents", params, cache = cache,
-            require_credentials = False)
+            cached = cached, require_credentials = False)
         data = {}
         for package_name in package_names:
             objs_map = objs.get(package_name)
@@ -960,7 +999,7 @@ class ClientWebService(WebService):
                 m_objs.append(d_obj)
         return data
 
-    def get_documents_by_id(self, document_ids, cache = True):
+    def get_documents_by_id(self, document_ids, cache = True, cached = False):
         """
         For given Document object identifiers, return the respective Document
         object.
@@ -971,6 +1010,9 @@ class ClientWebService(WebService):
         @type document_ids: list
         @keyword cache: True means use on-disk cache if available?
         @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
         @return: mapping composed by Document identifier as key and
             Document as value
         @rtype: dict
@@ -990,12 +1032,14 @@ class ClientWebService(WebService):
         @raise WebService.UnsupportedAPILevel: if client API and Web
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
         """
         params = {
             "document_ids": " ".join([str(x) for x in document_ids]),
         }
         objs = self._method_getter("get_documents_by_id", params, cache = cache,
-            require_credentials = False)
+            cached = cached, require_credentials = False)
         data = {}
         for document_id in document_ids:
             obj = objs.get(document_id)
