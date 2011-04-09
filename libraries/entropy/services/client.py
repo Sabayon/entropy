@@ -943,15 +943,18 @@ class AuthenticationStorage(Singleton):
         # not loaded, load at very last moment
         self.__store = None
 
+    def _get_authfile(self):
+        """
+        Try to get the auth file. If it fails, return None.
+        """
         # setup auth file path
         home = os.getenv("HOME")
-        self.__auth_file = None
+        auth_file = None
         if home is not None:
             if os.path.isdir(home) and os.access(home, os.W_OK):
                 auth_file = os.path.join(home,
                     AuthenticationStorage._AUTH_FILE)
                 auth_dir = os.path.dirname(auth_file)
-                self.__auth_file = auth_file
                 if not os.path.isdir(auth_dir):
                     try:
                         os.makedirs(auth_dir, 0o700)
@@ -959,15 +962,8 @@ class AuthenticationStorage(Singleton):
                             0o700)
                     except (OSError, IOError):
                         # ouch, no permissions
-                        self.__auth_file = None
-
-        if self.__auth_file is None:
-            # cannot reliably store an auth file, falling back
-            # to a private temp file
-            tmp_fd, tmp_path = tempfile.mkstemp()
-            os.close(tmp_fd)
-            self.__auth_file = tmp_path
-
+                        auth_file = None
+        return auth_file
 
     @property
     def _authstore(self):
@@ -975,10 +971,12 @@ class AuthenticationStorage(Singleton):
         Authentication data object automatically loaded from disk if needed.
         """
         if self.__store is None:
-            store = entropy.dump.loadobj(self.__auth_file,
-                complete_path = True)
-            if store is None:
-                store = {}
+            auth_file = self._get_authfile()
+            store = {}
+            if auth_file is not None:
+                store = entropy.dump.loadobj(auth_file, complete_path = True)
+                if store is None:
+                    store = {}
             elif not isinstance(store, dict):
                 store = {}
             self.__store = store
@@ -992,15 +990,18 @@ class AuthenticationStorage(Singleton):
         @rtype: bool
         """
         with self.__dump_lock:
-            entropy.dump.dumpobj(self.__auth_file, self._authstore,
-                complete_path = True, custom_permissions = 0o600)
+            auth_file = self._get_authfile()
+            if auth_file is not None:
+                entropy.dump.dumpobj(auth_file, self._authstore,
+                    complete_path = True, custom_permissions = 0o600)
         # make sure
-        try:
-            const_setup_file(self.__auth_file, etpConst['entropygid'],
-                0o600)
-            return True
-        except (OSError, IOError):
-            return False
+        if auth_file is not None:
+            try:
+                const_setup_file(auth_file, etpConst['entropygid'],
+                    0o600)
+                return True
+            except (OSError, IOError):
+                return False
 
     def add(self, repository_id, username, password):
         """
