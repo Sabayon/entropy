@@ -32,7 +32,7 @@ from entropy.core import Singleton
 from entropy.cache import EntropyCacher
 from entropy.const import const_debug_write, const_setup_file, etpConst, \
     const_convert_to_rawstring, const_isunicode, const_isstring, \
-    const_convert_to_unicode, const_isstring
+    const_convert_to_unicode, const_isstring, const_debug_enabled
 from entropy.exceptions import EntropyException
 import entropy.tools
 import entropy.dep
@@ -694,7 +694,8 @@ class WebService(object):
         Return on disk cache file name as key, given a method name and its
         parameters.
         """
-        hash_str = repr(params) + ", " + self._request_url
+        sorted_data = [(x, params[x]) for x in sorted(params.keys())]
+        hash_str = repr(sorted_data) + ", " + self._request_url
         if sys.hexversion >= 0x3000000:
             hash_str = hash_str.encode("utf-8")
         sha = hashlib.sha1()
@@ -788,22 +789,23 @@ class WebService(object):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
-        cache_key = None
+        cache_key = self._get_cache_key(func_name, params)
         if cache or cached:
-            cache_key = self._get_cache_key(func_name, params)
             # this does call: _setup_generic_params()
             obj = self._method_cached(func_name, params, cache_key = cache_key)
             if (obj is None) and cached:
                 raise WebService.CacheMiss(
                     WebService.WEB_SERVICE_NOT_FOUND_CODE, method = func_name)
             if obj is not None:
-                const_debug_write(__name__, "WebService.%s(%s) = cached %s" % (
-                    func_name, params, obj,))
+                if const_debug_enabled():
+                    const_debug_write(__name__,
+                        "WebService.%s(%s) = CACHED!" % (
+                            func_name, params,))
                 return obj
-            const_debug_write(__name__, "WebService.%s(%s) = NOT cached" % (
-                func_name, params,))
+            if const_debug_enabled():
+                const_debug_write(__name__, "WebService.%s(%s) = NOT cached" % (
+                    func_name, params,))
         else:
-            # setup generic request parameters
             self._setup_generic_params(params)
 
         if require_credentials:
@@ -845,13 +847,15 @@ class WebService(object):
                 raise WebService.MalformedResponse("r not found",
                     method = func_name, message = data.get("message"))
             obj = data["r"]
+
+            if const_debug_enabled():
+                const_debug_write(__name__, "WebService.%s(%s) = fetched!" % (
+                    func_name, params,))
             return obj
 
         finally:
-            if cache and (obj is not None):
+            if obj is not None:
                 # store cache
-                if cache_key is None:
-                    cache_key = self._get_cache_key(func_name, params)
                 self._set_cached(cache_key, obj)
 
     def service_available(self, cache = True, cached = False):
@@ -863,6 +867,8 @@ class WebService(object):
         @keyword cached: if True, it will only use the on-disk cached call
             result and raise WebService.CacheMiss if not found.
         @type cached: bool
+        @return: True, if service is available
+        @rtype: bool
 
         @raise WebService.UnsupportedParameters: if input parameters are invalid
         @raise WebService.RequestError: if request cannot be satisfied
