@@ -15,7 +15,7 @@ __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
 import os
 import base64
 import time
-from entropy.const import const_get_stringtype, etpConst
+from entropy.const import const_get_stringtype, etpConst, const_setup_perms
 from entropy.i18n import _
 from entropy.services.client import WebServiceFactory, WebService
 
@@ -564,6 +564,19 @@ class ClientWebService(WebService):
     MIN_VOTE = 0.0
     VALID_VOTES = (1, 2, 3, 4, 5)
 
+    def __init__(self, entropy_client, repository_id):
+        """
+        ClientWebService constructor.
+        """
+        WebService.__init__(self, entropy_client, repository_id)
+        self._live_cache = {}
+
+    def _clear_live_cache(self, cache_key):
+        try:
+            self._live_cache.pop(cache_key)
+        except KeyError:
+            return
+
     class DocumentError(WebService.WebServiceException):
         """
         Generic Document error object. Raised when Document object is
@@ -653,8 +666,16 @@ class ClientWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
-        return self._method_getter("get_available_votes", {}, cache = cache,
+        if cache:
+            live_cached = self._live_cache.get("get_available_votes")
+            if live_cached is not None:
+                return live_cached
+        else:
+            self._clear_live_cache("get_available_votes")
+        outcome = self._method_getter("get_available_votes", {}, cache = cache,
             cached = cached, require_credentials = False)
+        self._live_cache["get_available_votes"] = outcome
+        return outcome
 
     def get_downloads(self, package_names, cache = True, cached = False):
         """
@@ -727,8 +748,16 @@ class ClientWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
-        return self._method_getter("get_available_downloads", {}, cache = cache,
-            require_credentials = False)
+        if cache:
+            live_cached = self._live_cache.get("get_available_downloads")
+            if live_cached is not None:
+                return live_cached
+        else:
+            self._clear_live_cache("get_available_downloads")
+        outcome = self._method_getter("get_available_downloads", {},
+            cache = cache, cached = cached, require_credentials = False)
+        self._live_cache["get_available_downloads"] = outcome
+        return outcome
 
     def add_vote(self, package_name, vote, clear_available_cache = False):
         """
@@ -780,9 +809,10 @@ class ClientWebService(WebService):
             # TODO: cannot remove all the vote cache when just one element gets
             # tained
             self._drop_cached("get_votes")
-            # do not clear get_available_downloads cache explicitly
+            # do not clear get_available_votes cache explicitly
             if clear_available_cache:
                 self._drop_cached("get_available_votes")
+                self._clear_live_cache("get_available_votes")
         return valid
 
     def add_downloads(self, package_names, clear_available_cache = False):
@@ -844,6 +874,7 @@ class ClientWebService(WebService):
             # do not clear get_available_downloads cache explicitly
             if clear_available_cache:
                 self._drop_cached("get_available_downloads")
+                self._clear_live_cache("get_available_downloads")
         return valid
 
     def get_icons(self, package_names, offset = 0, cache = True,
@@ -1007,11 +1038,11 @@ class ClientWebService(WebService):
                 data[package_name] = DocumentList(package_name, 0, offset)
                 continue
 
-            total, objs = objs_map['total'], objs_map['docs']
+            total, docs = objs_map['total'], objs_map['docs']
 
             m_objs = data.setdefault(package_name,
                 DocumentList(package_name, total, offset))
-            for obj in objs:
+            for obj in docs:
                 d_obj = Document(self._repository_id,
                     obj[Document.DOCUMENT_DOCUMENT_ID],
                         obj[Document.DOCUMENT_DOCUMENT_TYPE_ID])
@@ -1137,6 +1168,72 @@ class ClientWebService(WebService):
         # NOTE: we can accept to be non-atomic in this case.
         self._drop_document_cache()
         return doc
+
+    def get_document_url(self, document, cache = True):
+        """
+        Download (to Document.local_document() path, if available) the document
+        data pointed at Document.document_url(). Document data path is returned
+        in case of success, but an exception is always raised in case of
+        failure.
+
+        @param document: the Document object
+        @type document: Document
+        @keyword cache: use on-disk cache
+        @type cache: bool
+        @return: document data file path
+        @rtype: string
+
+        @raise ClientWebService.DocumentError: if document url is not available
+        """
+        document_url = document.document_url()
+        if document_url is None:
+            raise ClientWebService.DocumentError("Document url not available")
+        local_document = document.local_document()
+        if local_document is None:
+            # wtf!
+            raise ClientWebService.DocumentError(
+                "Document (local) not available")
+
+        local_dir = os.path.dirname(local_document)
+        if not os.path.isdir(local_dir):
+            # try to make one
+            try:
+                os.makedirs(local_dir, 0o775)
+                if etpConst['entropygid'] is not None:
+                    const_setup_perms(local_dir, etpConst['entropygid'])
+            except (OSError, IOError):
+                raise ClientWebService.DocumentError(
+                    "Insufficient privileges")
+        elif not os.access(local_dir, os.W_OK):
+            raise ClientWebService.DocumentError(
+                "Insufficient privileges (2)")
+
+        if cache and (os.path.isfile(local_document)):
+            # cached, just return
+            return local_document
+
+        fetcher = self._entropy._url_fetcher(document_url, local_document,
+            resume = False)
+        rc = fetcher.download()
+
+        if rc in ("-1", "-2", "-3", "-4"):
+            raise ClientWebService.DocumentError(
+                "Document download failed: %s" % (rc,))
+
+        if not os.path.isfile(local_document):
+            raise ClientWebService.DocumentError(
+                "Document download failed")
+
+        try:
+            os.chmod(local_document, 0o664)
+            if etpConst['entropygid'] is not None:
+                os.chown(local_document, -1, etpConst['entropygid'])
+        except OSError:
+            raise ClientWebService.DocumentError(
+                "Insufficient privileges (3)")
+
+        del fetcher
+        return local_document
 
     def remove_document(self, document_id):
         """
