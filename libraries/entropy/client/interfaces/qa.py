@@ -14,6 +14,7 @@ from entropy.client.interfaces import Client
 from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
 from entropy.exceptions import PermissionDenied
+from entropy.services.client import WebService
 
 class UGCErrorReportInterface(ErrorReportInterface):
 
@@ -46,18 +47,26 @@ class UGCErrorReportInterface(ErrorReportInterface):
         """
         ErrorReportInterface.__init__(self, '#fake#')
         self.__system_settings = SystemSettings()
-
-        self.entropy = Client()
-        self.__repository_id = repository_id
-        if self.entropy.UGC == None:
-            # enable UGC
-            from entropy.client.services.ugc.interfaces import Client as ugc
-            self.entropy.UGC = ugc(self.entropy)
-
+        self._entropy = Client()
         if repository_id not in self.__system_settings['repositories']['order']:
             raise AttributeError('invalid repository_id provided')
-        if not self.entropy.UGC.is_repository_eapi3_aware(repository_id):
-            raise AttributeError('UGC not supported by the provided repo')
+        self.__repository_id = repository_id
+
+        self._factory = self._entropy.WebServices()
+        try:
+            self._webserv = self._factory.new(self.__repository_id)
+        except WebService.UnsupportedService:
+            raise AttributeError('Web Services not supported by %s' % (
+                self.__repository_id,))
+
+        try:
+            available = self._webserv.service_available()
+        except WebService.WebServiceException:
+            available = False
+
+        if not available:
+            raise AttributeError('Web Services not supported by %s (2)' % (
+                self.__repository_id,))
 
     def submit(self):
         """
@@ -66,12 +75,11 @@ class UGCErrorReportInterface(ErrorReportInterface):
 
         @return submission status -- bool
         """
-
-        if self.generated:
-            done, err_msg = self.entropy.UGC.report_error(self.__repository_id,
-                self.params)
-            if done:
-                return True
-            return False
-        else:
+        if not self.generated:
             raise PermissionDenied("Not prepared yet")
+
+        try:
+            self._webserv.report_error(self.params)
+        except WebService.WebServiceException:
+            return False
+        return True
