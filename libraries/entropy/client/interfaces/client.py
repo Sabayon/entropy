@@ -647,8 +647,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
     def init_singleton(self, indexing = True, installed_repo = None,
             xcache = True, user_xcache = False, repo_validation = True,
-            load_ugc = True, url_fetcher = None,
-            multiple_url_fetcher = None, **kwargs):
+            url_fetcher = None, multiple_url_fetcher = None, **kwargs):
         """
         Entropy Client Singleton interface. Your hitchhikers' guide to the
         Galaxy.
@@ -668,10 +667,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         @keyword repo_validation: validate all the available repositories
             and automatically exclude the faulty ones
         @type repo_validation: bool
-        @keyword load_ugc: load the User Generated Content interface. UGC
-            interface will be available through the "UGC" property. If None,
-            UGC must be considered disabled.
-        @type load_ugc: bool
         @keyword url_fetcher: override default entropy.fetchers.UrlFetcher
             class usage. Provide your own implementation of UrlFetcher using
             this argument.
@@ -692,7 +687,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             etpConst['system_settings_plugins_ids']['client_plugin']
 
         self._enabled_repos = []
-        self._do_load_ugc = load_ugc
         self.safe_mode = 0
         self._indexing = indexing
         self._repo_validation = repo_validation
@@ -785,20 +779,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # enable System Settings hooks
         self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
-
-    @property
-    def UGC(self):
-        """
-        User Generated Content Interface delayed loader.
-        """
-        if not self._do_load_ugc:
-            return
-        try:
-            return self._ugc_intf
-        except AttributeError:
-            from entropy.client.services.ugc.interfaces import Client as ugc_cl
-            self._ugc_intf = ugc_cl(self)
-            return self._ugc_intf
 
     def destroy(self, _from_shutdown = False):
         """
