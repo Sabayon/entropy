@@ -538,25 +538,37 @@ def _ugc_documents(entropy_client, options):
         doc = None
         doc_f = None
         doc_type = data['type']
-        if doc_type == Document.COMMENT_TYPE_ID:
-            doc = doc_factory.comment(username, data['description'],
-                data['title'], data['keywords'])
-        elif doc_type == Document.ICON_TYPE_ID:
-            doc_f = open(data['path'], "rb")
-            doc = doc_factory.icon(username, doc_f, data['title'],
-                data['description'], data['keywords'])
-        elif doc_type == Document.FILE_TYPE_ID:
-            doc_f = open(data['path'], "rb")
-            doc = doc_factory.file(username, doc_f, data['title'],
-                data['description'], data['keywords'])
-        elif doc_type == Document.IMAGE_TYPE_ID:
-            doc_f = open(data['path'], "rb")
-            doc = doc_factory.image(username, doc_f, data['title'],
-                data['description'], data['keywords'])
-        elif doc_type == Document.VIDEO_TYPE_ID:
-            doc_f = open(data['path'], "rb")
-            doc = doc_factory.video(username, doc_f, data['title'],
-                data['description'], data['keywords'])
+        try:
+            if doc_type == Document.COMMENT_TYPE_ID:
+                doc = doc_factory.comment(username, data['description'],
+                    data['title'], data['keywords'])
+            elif doc_type == Document.ICON_TYPE_ID:
+                doc_f = open(data['path'], "rb")
+                doc = doc_factory.icon(username, doc_f, data['title'],
+                    data['description'], data['keywords'])
+            elif doc_type == Document.FILE_TYPE_ID:
+                doc_f = open(data['path'], "rb")
+                doc = doc_factory.file(username, doc_f, data['title'],
+                    data['description'], data['keywords'])
+            elif doc_type == Document.IMAGE_TYPE_ID:
+                doc_f = open(data['path'], "rb")
+                doc = doc_factory.image(username, doc_f, data['title'],
+                    data['description'], data['keywords'])
+            elif doc_type == Document.VIDEO_TYPE_ID:
+                doc_f = open(data['path'], "rb")
+                doc = doc_factory.video(username, doc_f, data['title'],
+                    data['description'], data['keywords'])
+        except AssertionError as err:
+            print_error(
+                "[%s] %s: %s" % (
+                    darkred(pkgkey),
+                    blue(_("Invalid document")),
+                    err,
+                )
+            )
+            if doc_f is not None:
+                doc_f.close()
+            return 1
 
         try:
             new_doc = webserv.add_document(pkgkey, doc)
