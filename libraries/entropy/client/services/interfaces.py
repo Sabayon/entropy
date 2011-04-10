@@ -694,6 +694,8 @@ class ClientWebService(WebService):
                 return live_cached
         else:
             self._clear_live_cache("get_available_votes")
+        # WARNING PLEASE don't change parameters that could affect the cache
+        # without changing _update_get_available_votes_cache
         outcome = self._method_getter("get_available_votes", {}, cache = cache,
             cached = cached, require_credentials = False)
         self._live_cache["get_available_votes"] = outcome
@@ -836,7 +838,33 @@ class ClientWebService(WebService):
             if clear_available_cache:
                 self._drop_cached("get_available_votes")
                 self._clear_live_cache("get_available_votes")
+            else:
+                # try to update get_available_votes cache
+                self._update_get_available_votes_cache(package_name, vote)
         return valid
+
+    def _update_get_available_votes_cache(self, package_name, vote):
+        """
+        Update get_available_votes cache adding package vote just submitted.
+        If the get_available_votes cache exists.
+        """
+        try:
+            avail_votes = self.get_available_votes(cache = True, cached = True)
+        except WebService.CacheMiss:
+            # bye!
+            return
+        cur_vote = avail_votes.get(package_name)
+        if cur_vote is None:
+            cur_vote = vote
+        else:
+            # just do the mean, even if it's untrue
+            cur_vote = (cur_vote + vote) / 2
+        avail_votes[package_name] = cur_vote
+        # hope this will remain the same !
+        cache_key = self._get_cache_key("get_available_votes", {})
+        self._set_cached(cache_key, avail_votes)
+        # clean up live cache, not really needed but just to make sure
+        self._clear_live_cache("get_available_votes")
 
     def add_downloads(self, package_names, clear_available_cache = False):
         """
