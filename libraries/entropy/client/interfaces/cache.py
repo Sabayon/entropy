@@ -69,55 +69,6 @@ class CacheMixin:
             except (IOError, OSError):
                 return
 
-    def update_ugc_cache(self, repository_id):
-        """
-        Update User Generated Content local cache if given repository_id
-        supports UGC.
-
-        @param repository_id: repository identifier
-        @type repository_id: string
-        @return: True, if cache update went ok, False if not, None if
-            repository doesn't support UGC
-        @rtype: bool or None
-        """
-        if not self.UGC.is_repository_eapi3_aware(repository_id):
-            return None
-        status = True
-
-        votes_dict, err_msg = self.UGC.get_all_votes(repository_id)
-        if isinstance(votes_dict, dict):
-            self.UGC.UGCCache.save_vote_cache(repository_id, votes_dict)
-        else:
-            status = False
-
-        downloads_dict, err_msg = self.UGC.get_all_downloads(repository_id)
-        if isinstance(downloads_dict, dict):
-            self.UGC.UGCCache.save_downloads_cache(repository_id,
-                downloads_dict)
-        else:
-            status = False
-        return status
-
-    def is_ugc_cached(self, repository):
-        """
-        Determine whether User Generated Content cache is available for
-        given repository.
-
-        @param repository: Entropy repository identifier
-        @type repository: string
-        @return: True if available
-        @rtype: bool
-        """
-        down_cache = self.UGC.UGCCache.get_downloads_cache(repository)
-        if down_cache is None:
-            return False
-
-        vote_cache = self.UGC.UGCCache.get_vote_cache(repository)
-        if vote_cache is None:
-            return False
-
-        return True
-
     def _get_available_packages_hash(self):
         """
         Get available packages cache hash.
