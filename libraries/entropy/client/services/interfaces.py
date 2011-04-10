@@ -16,7 +16,8 @@ import os
 import base64
 import hashlib
 import time
-from entropy.const import const_get_stringtype, etpConst, const_setup_perms
+from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
+    const_convert_to_rawstring
 from entropy.i18n import _
 from entropy.services.client import WebServiceFactory, WebService
 
@@ -643,7 +644,7 @@ class ClientWebService(WebService):
             "package_names": packages_str
         }
         hash_obj = hashlib.sha1()
-        hash_obj.update(packages_str)
+        hash_obj.update(const_convert_to_rawstring(packages_str))
         hash_str = hash_obj.hexdigest()
         lcache_key = "get_votes_" + hash_str
         if cache:
