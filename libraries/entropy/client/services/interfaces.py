@@ -14,6 +14,7 @@ __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
 
 import os
 import base64
+import hashlib
 import time
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms
 from entropy.i18n import _
@@ -577,6 +578,14 @@ class ClientWebService(WebService):
         except KeyError:
             return
 
+    def _clear_live_cache_startswith(self, cache_key_sw):
+        for key in list(self._live_cache.keys()):
+            if key.startswith(cache_key_sw):
+                try:
+                    self._live_cache.pop(key)
+                except KeyError:
+                    pass
+
     class DocumentError(WebService.WebServiceException):
         """
         Generic Document error object. Raised when Document object is
@@ -629,11 +638,24 @@ class ClientWebService(WebService):
         @raise WebService.CacheMiss: if cached=True and cached object is not
             available
         """
+        packages_str = " ".join(package_names)
         params = {
-            "package_names": " ".join(package_names)
+            "package_names": packages_str
         }
-        return self._method_getter("get_votes", params, cache = cache,
+        hash_obj = hashlib.sha1()
+        hash_obj.update(packages_str)
+        hash_str = hash_obj.hexdigest()
+        lcache_key = "get_votes_" + hash_str
+        if cache:
+            live_cached = self._live_cache.get(lcache_key)
+            if live_cached is not None:
+                return live_cached
+        else:
+            self._clear_live_cache(lcache_key)
+        outcome = self._method_getter("get_votes", params, cache = cache,
             cached = cached, require_credentials = False)
+        self._live_cache[lcache_key] = outcome
+        return outcome
 
     def get_available_votes(self, cache = True, cached = False):
         """
@@ -809,6 +831,7 @@ class ClientWebService(WebService):
             # TODO: cannot remove all the vote cache when just one element gets
             # tained
             self._drop_cached("get_votes")
+            self._clear_live_cache_startswith("get_votes_")
             # do not clear get_available_votes cache explicitly
             if clear_available_cache:
                 self._drop_cached("get_available_votes")
