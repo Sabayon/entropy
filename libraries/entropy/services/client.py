@@ -794,6 +794,10 @@ class WebService(object):
             # this does call: _setup_generic_params()
             obj = self._method_cached(func_name, params, cache_key = cache_key)
             if (obj is None) and cached:
+                if const_debug_enabled():
+                    const_debug_write(__name__,
+                        "WebService.%s(%s) = cache miss: %s" % (
+                            func_name, params, cache_key,))
                 raise WebService.CacheMiss(
                     WebService.WEB_SERVICE_NOT_FOUND_CODE, method = func_name)
             if obj is not None:
