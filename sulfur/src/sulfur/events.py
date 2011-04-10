@@ -35,6 +35,7 @@ from entropy.output import print_generic
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.client.mirrors import StatusInterface
+from entropy.services.client import WebService
 import entropy.dump
 
 from sulfur.filters import Filter
@@ -563,7 +564,8 @@ class SulfurApplicationEventsMixin:
 
         do_clear_filter_bar = False
         if action != self.lastPkgPB:
-            do_clear_filter_bar = True
+            # disabled for now, users are complaining
+            do_clear_filter_bar = False
 
         if action == "updates":
             self.ui.updatesButtonbox.show()
@@ -813,46 +815,72 @@ class SulfurApplicationEventsMixin:
             self.load_color_settings()
 
     def on_ugcLoginButton_clicked(self, widget):
-        if self._entropy.UGC == None: return
+        if not self._ugc_status:
+            return
         model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
-        if (myiter == None) or (model == None): return
+        if (myiter == None) or (model == None):
+            return
         obj = model.get_value( myiter, 0 )
         if obj:
-            #logged_data = self._entropy.UGC.read_login(obj['repoid'])
-            self._entropy.UGC.login(obj['repoid'], force = True)
+            webserv = self._get_webservice(obj['repoid'])
+            if webserv is None:
+                return
+
+            def fake_callback(*args, **kwargs):
+                return True
+
+            # use input box to read login
+            input_params = [
+                ('username', _('Username'), fake_callback, False),
+                ('password', _('Password'), fake_callback, True)
+            ]
+            login_data = self._entropy.input_box(
+                "%s %s %s" % (
+                    _('Please login against'), obj['repoid'], _('repository'),),
+                input_params,
+                cancel_button = True
+            )
+            if not login_data:
+                okDialog(self.ui.main, _("Login aborted. Not logged in."))
+                return
+
+            username, password = login_data['username'], login_data['password']
+            with self._privileges:
+                webserv.add_credentials(username, password)
+            try:
+                webserv.validate_credentials()
+            except WebService.AuthenticationFailed:
+                okDialog(self.ui.main,
+                    _("Authentication error. Not logged in."))
+                return
             self.load_ugc_repositories()
 
     def on_ugcClearLoginButton_clicked(self, widget):
-        if self._entropy.UGC == None: return
+        if not self._ugc_status:
+            return
         model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
-        if (myiter == None) or (model == None): return
+        if (myiter == None) or (model == None):
+            return
         obj = model.get_value( myiter, 0 )
         if obj:
-            if not self._entropy.UGC.is_repository_eapi3_aware(obj['repoid']):
+            webserv = self._get_webservice(obj['repoid'])
+            if webserv is None:
                 return
-            logged_data = self._entropy.UGC.read_login(obj['repoid'])
-            if logged_data: self._entropy.UGC.remove_login(obj['repoid'])
+            with self._privileges:
+                webserv.remove_credentials()
             self.load_ugc_repositories()
 
-    def on_ugcClearCacheButton_clicked(self, widget):
-        if self._entropy.UGC == None: return
-        repo_excluded = self._settings['repositories']['excluded']
-        avail_repos = self._settings['repositories']['available']
-        for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
-            self._entropy.UGC.UGCCache.clear_cache(repoid)
-            self.set_status_ticker("%s: %s ..." % (_("Cleaning UGC cache of"), repoid,))
-        self.set_status_ticker("%s" % (_("UGC cache cleared"),))
-
     def on_ugcClearCredentialsButton_clicked(self, widget):
-        if self._entropy.UGC == None:
+        if not self._ugc_status:
             return
         repo_excluded = self._settings['repositories']['excluded']
         avail_repos = self._settings['repositories']['available']
         for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
-            if not self._entropy.UGC.is_repository_eapi3_aware(repoid):
+            webserv = self._get_webservice(repoid)
+            if webserv is None:
                 continue
-            logged_data = self._entropy.UGC.read_login(repoid)
-            if logged_data: self._entropy.UGC.remove_login(repoid)
+            with self._privileges:
+                webserv.remove_credentials()
         self.load_ugc_repositories()
         self.set_status_ticker("%s" % (_("UGC credentials cleared"),))
 

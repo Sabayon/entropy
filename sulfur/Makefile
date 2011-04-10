@@ -38,6 +38,7 @@ install:
 	install -m755 $(MISCDIR)/sulfur-uri-handler $(DESTDIR)$(BINDIR)/.
 	install -m644 $(MISCDIR)/entropy-handler.schemas $(DESTDIR)/etc/gconf/schemas/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/.
+	install -m644 $(PIXDIR)/*.gif $(DESTDIR)/usr/share/pixmaps/sulfur/.
 	install -m644 $(PIXDIR)/packages/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/packages/.
 	install -m644 $(PIXDIR)/ugc/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/ugc/.
 	install -m644 $(MISCDIR)/kde_x-sulfur.desktop $(DESTDIR)/usr/share/mimelnk/application/.

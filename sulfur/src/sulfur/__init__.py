@@ -43,13 +43,14 @@ from entropy.services.exceptions import EntropyServicesError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants, const_convert_to_unicode, \
-    const_drop_privileges, const_regain_privileges
+    const_debug_write
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.cache import EntropyCacher, MtimePingus
 from entropy.output import print_generic
 from entropy.db.exceptions import ProgrammingError, OperationalError
 from entropy.core.settings.base import SystemSettings
+from entropy.services.client import WebService
 
 # Sulfur Imports
 import gtk, gobject
@@ -59,7 +60,7 @@ from sulfur.setup import SulfurConf, const, fakeoutfile, fakeinfile, \
     cleanMarkupString
 from sulfur.widgets import SulfurConsole
 from sulfur.core import UI, Controller, FORK_PIDS, fork_function, \
-    busy_cursor, normal_cursor
+    busy_cursor, normal_cursor, get_entropy_webservice, Privileges
 from sulfur.views import *
 from sulfur.filters import Filter
 from sulfur.dialogs import *
@@ -67,59 +68,14 @@ from sulfur.progress import Base as BaseProgress
 from sulfur.events import SulfurApplicationEventsMixin
 from sulfur.event import SulfurSignals
 
-
 class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
-    class Privileges:
-
-        def __init__(self, drop_privs = True):
-            self.__drop_privs = drop_privs
-            self.__drop_privs_lock = threading.RLock()
-            self.__with_stmt = 0
-
-        def __enter__(self):
-            """
-            Hold the lock.
-            """
-            self.__drop_privs_lock.acquire()
-            if self.__with_stmt < 1:
-                self.regain()
-            self.__with_stmt += 1
-
-        def __exit__(self, exc_type, exc_value, traceback):
-            """
-            Drop the lock.
-            """
-            if self.__with_stmt == 1:
-                self.drop()
-            self.__with_stmt -= 1
-            self.__drop_privs_lock.release()
-
-        def drop(self):
-            """
-            Drop process privileges. Setting unpriv_gid to etpConst['entropygid']
-            makes Entropy UGC/Data cache handling working.
-            """
-            if self.__drop_privs:
-                with self.__drop_privs_lock:
-                    const_drop_privileges(unpriv_gid = etpConst['entropygid'])
-                    const.setup()
-
-        def regain(self):
-            """
-            Regain previously dropped process privileges.
-            """
-            if self.__drop_privs:
-                with self.__drop_privs_lock:
-                    const_regain_privileges()
-                    const.setup()
-
-    def __init__(self, drop_privs = True):
+    def __init__(self):
 
         self.do_debug = False
         self._ugc_status = "--nougc" not in sys.argv
 
-        self._privileges = self.Privileges(drop_privs = drop_privs)
+        self._privileges = Privileges()
         # Use this lock when you want to make sure that no other asynchronous
         # executions are being run.
         self._async_event_execution_lock = threading.Lock()
@@ -127,6 +83,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self._entropy = Equo()
         self._cacher = EntropyCacher()
         self._settings = SystemSettings()
+        self._webserv_map = {}
 
         # support for packages installation on startup
         packages_install, atoms_install, do_fetch = \
@@ -186,6 +143,40 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         ui = UI( const.GLADE_FILE, 'main', 'entropy' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
+
+    def _get_webservice(self, repository_id):
+        webserv = self._webserv_map.get(repository_id)
+        if webserv == -1:
+            # not available
+            return None
+        if webserv is not None:
+            return webserv
+
+        with self._privileges:
+            # so that the correct auth store file is fetched
+            # NOTE: other areas don't do the same, be careful
+            try:
+                webserv = get_entropy_webservice(self._entropy, repository_id)
+            except WebService.UnsupportedService as err:
+                webserv = None
+
+        if webserv is None:
+            self._webserv_map[repository_id] = -1
+            # not available
+            return
+
+        try:
+            available = webserv.service_available()
+        except WebService.WebServiceException:
+            available = False
+
+        if not available:
+            self._webserv_map[repository_id] = -1
+            # not available
+            return
+
+        self._webserv_map[repository_id] = webserv
+        return webserv
 
     def __scan_packages_install(self):
         packages_install = os.environ.get("SULFUR_PACKAGES", '').split(";")
@@ -896,23 +887,38 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if self.do_debug:
             print_generic("entering UGC")
 
-        if self._entropy.UGC is None:
-            return
-
         if self._spawning_ugc or self.disable_ugc:
             return
 
         if not force:
-            eapi3_repos = []
+            webserv_repos = []
             for repoid in self._entropy.repositories():
-                aware = self._entropy.UGC.is_repository_eapi3_aware(repoid)
+                webserv = self._get_webservice(repoid)
+                if webserv is None:
+                    continue
+                try:
+                    aware = webserv.service_available()
+                except WebService.WebServiceException:
+                    continue
                 if aware:
-                    eapi3_repos.append(repoid)
+                    webserv_repos.append((webserv, repoid))
 
             cache_available = True
-            for repoid in eapi3_repos:
-                if not self._entropy.is_ugc_cached(repoid):
+            for webserv, repoid in webserv_repos:
+                cache_available = True
+                try:
+                    webserv.get_available_votes(cache = True, cached = True)
+                except WebService.CacheMiss:
                     cache_available = False
+                if cache_available:
+                    # also check downloads
+                    try:
+                        webserv.get_available_downloads(cache = True,
+                            cached = True)
+                    except WebService.CacheMiss:
+                        cache_available = False
+                if not cache_available:
+                    break
 
             pingus_id = "sulfur_ugc_content_spawn"
             # check if at least 2 hours are passed since last check
@@ -936,9 +942,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self._ugc_update()
             self._cacher.sync()
             print_generic("UGC child process done")
+            emit_ugc_update()
 
         self._spawning_ugc = True
-        fork_function(do_ugc_sync, emit_ugc_update)
+        th = ParallelTask(do_ugc_sync)
+        th.start()
 
         if self.do_debug:
             print_generic("quitting UGC")
@@ -947,15 +955,46 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def _ugc_update(self):
 
+        def _update_available_cache(repository_id):
+            webserv = self._get_webservice(repository_id)
+            if webserv is None:
+                return
+
+            # fetch vote cache first
+            try:
+                webserv.get_available_votes(cache = False)
+            except WebService.WebServiceException as err:
+                const_debug_write(__name__,
+                    "_ugc_update.get_available_votes: ouch %s" % (err,))
+                return
+            # drop get_votes cache completely
+            # this enforces EntropyPackage.vote* to use available_votes cache
+            webserv._drop_cached("get_votes")
+
+            try:
+                webserv.get_available_downloads(cache = False)
+            except WebService.WebServiceException as err:
+                const_debug_write(__name__,
+                    "_ugc_update.get_available_downloads: ouch %s" % (err,))
+                return
+            # drop get_downloads cache completely
+            # this enforces EntropyPackage.down* to use available_downloads
+            # cache
+            webserv._drop_cached("get_downloads")
+
+
         for repo in self._entropy.repositories():
-            if self.do_debug:
-                t1 = time.time()
-                print_generic("working UGC update for", repo)
-            self._entropy.update_ugc_cache(repo)
-            if self.do_debug:
-                t2 = time.time()
-                td = t2 - t1
-                print_generic("completed UGC update for", repo, "took", td)
+            t1 = time.time()
+            const_debug_write(__name__,
+                "working UGC update for %s" % (repo,))
+
+            _update_available_cache(repo)
+
+            t2 = time.time()
+            td = t2 - t1
+            const_debug_write(__name__,
+                "completed UGC update for %s, took %s" % (
+                    repo, td,))
 
     def fill_pref_db_backup_page(self):
         self.dbBackupStore.clear()
@@ -1030,22 +1069,31 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             obj = model.get_value( myiter, 0 )
             if obj:
                 t = "<i>%s</i>" % (_("Not logged in"),)
-                if self._entropy.UGC != None:
-                    logged_data = self._entropy.UGC.read_login(obj['repoid'])
-                    if logged_data != None:
-                        t = "<i>%s</i>" % (logged_data[0],)
+                webserv = self._get_webservice(obj['repoid'])
+                if webserv is None:
+                    t = "<i>%s</i>" % (_("Not available"),)
+                else:
+                    with self._privileges:
+                        username = webserv.get_credentials()
+                    if username is not None:
+                        t = "<i>%s</i>" % (username,)
                 cell.set_property('markup', t)
 
         def get_ugc_status_pix( column, cell, model, myiter ):
-            if self._entropy.UGC == None:
-                cell.set_property('icon-name', 'gtk-cancel')
-                return
             if not self._ugc_status:
                 cell.set_property('icon-name', 'gtk-cancel')
                 return
             obj = model.get_value( myiter, 0 )
             if obj:
-                if self._entropy.UGC.is_repository_eapi3_aware(obj['repoid']):
+                webserv = self._get_webservice(obj['repoid'])
+                if webserv is None:
+                    cell.set_property( 'icon-name', 'gtk-cancel' )
+                    return
+                try:
+                    available = webserv.service_available()
+                except WebService.WebServiceException:
+                    available = False
+                if available:
                     cell.set_property( 'icon-name', 'gtk-apply' )
                 else:
                     cell.set_property( 'icon-name', 'gtk-cancel' )
@@ -1436,11 +1484,20 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
             for repo in repos:
                 # inform UGC that we are syncing this repo
-                if self._entropy.UGC is not None:
-                    try:
-                        self._entropy.UGC.add_download_stats(repo, [repo])
-                    except EntropyServicesError:
-                        continue
+                webserv = self._get_webservice(repository)
+                if webserv is None:
+                    continue
+                try:
+                    available = webserv.service_available()
+                except WebService.WebServiceException:
+                    continue
+                if not available:
+                    continue
+                try:
+                    webserv.add_downloads([repo])
+                except WebService.WebServiceException as err:
+                    const_debug_write(__name__, repr(err))
+                    continue
 
             if repoConn.sync_errors or (rc != 0):
                 self.progress.set_mainLabel(_('Errors updating repositories.'))

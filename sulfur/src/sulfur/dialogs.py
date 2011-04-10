@@ -31,12 +31,17 @@ from entropy.exceptions import *
 from entropy.services.exceptions import TimeoutError
 from entropy.const import *
 from entropy.misc import ParallelTask
+from entropy.services.client import WebService
+from entropy.client.services.interfaces import Document, DocumentList, \
+    DocumentFactory, ClientWebService
+
 import entropy.dep
 import entropy.tools
 
 from sulfur.event import SulfurSignals
 from sulfur.core import UI, busy_cursor, normal_cursor, fork_function, \
-    resize_image, load_url
+    resize_image, resize_image_height, load_url, get_entropy_webservice, \
+        Privileges
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 
 class MenuSkel:
@@ -548,6 +553,7 @@ class PkgInfoMenu(MenuSkel):
         self.star_selected_pixmap = const.star_selected_pixmap
         self.star_empty_pixmap = const.star_empty_pixmap
 
+        self._ugc_row_height = 48
         self._ugc_icon_store_path = None
         self.ugc_update_event_handler_id = None
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
@@ -559,6 +565,7 @@ class PkgInfoMenu(MenuSkel):
         self.Entropy = Entropy
         self.repository = None
         self.pkgkey = None
+        self.__webserv = None
 
         self._page_tabs_map = {
             1: "details",
@@ -602,6 +609,42 @@ class PkgInfoMenu(MenuSkel):
             SulfurSignals.connect('pkg_properties__ugc_tab_clicked',
                 self._ugc_tab_clicked)
 
+    @property
+    def _webserv(self):
+        if self.repository is None:
+            # cannot load !
+            return None
+
+        if self.__webserv == -1:
+            # unsupported
+            return None
+        if self.__webserv is not None:
+            return self.__webserv
+
+        with Privileges():
+            try:
+                webserv = get_entropy_webservice(self.Entropy, self.repository)
+            except WebService.UnsupportedService as err:
+                webserv = None
+
+            if webserv is None:
+                self.__webserv = -1
+                # not available
+                return None
+
+            try:
+                available = webserv.service_available()
+            except WebService.WebServiceException:
+                available = False
+
+        if not available:
+            self.__webserv = -1
+            # not available
+            return
+
+        self.__webserv = webserv
+        return webserv
+
     def _set_pixbuf_to_cell(self, cell, path):
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(path)
@@ -614,68 +657,74 @@ class PkgInfoMenu(MenuSkel):
         if isinstance(obj, dict):
             if obj.get('preview_path') is not None:
                 self._set_pixbuf_to_cell(cell, obj['preview_path'])
-            else:
+            elif obj['image_path']:
                 self._set_pixbuf_to_cell(cell, obj['image_path'])
             self._set_colors_to_cell(cell, obj)
 
-    def ugc_content( self, column, cell, model, myiter ):
-        obj = model.get_value( myiter, 0 )
-        if isinstance(obj, dict):
-            self._set_colors_to_cell(cell, obj)
+    def ugc_content(self, column, cell, model, myiter):
+        obj = model.get_value(myiter, 0)
+        if obj is None:
+            return
 
-            if 'is_cat' in obj:
-                cell.set_property('markup', "<b>%s</b>\n<small>%s</small>" % (
-                    obj['parent_desc'], _("Expand to browse"),))
-            else:
+        self._set_colors_to_cell(cell, obj)
 
-                title = _("N/A")
-                if obj['title']:
-                    title = const_convert_to_unicode(obj['title'])
-                description = _("N/A")
+        if 'is_cat' in obj:
+            cell.set_property('markup', "<b>%s</b>\n<small>%s</small>" % (
+                obj['parent_desc'], _("Expand to browse"),))
+        else:
 
-                if obj['description']:
-                    description = obj['description']
+            document_id = obj.document_id()
+            document_type = obj.document_type()
 
-                if obj['iddoctype'] in (
-                    etpConst['ugc_doctypes']['comments'],
-                    etpConst['ugc_doctypes']['bbcode_doc'],):
+            title = _("N/A")
+            title_s = obj.get(Document.DOCUMENT_TITLE_ID)
+            if title_s:
+                title = const_convert_to_unicode(title_s).rstrip()
 
-                    myddata = obj['ddata']
-                    if not isinstance(obj['ddata'], const_get_stringtype()):
-                        myddata = myddata.tostring()
-                    description = const_convert_to_unicode(myddata)
-                    if len(description) > 100:
-                        description = description[:100].strip()+"..."
+            description = _("N/A")
+            description_s = obj.get(Document.DOCUMENT_DESCRIPTION_ID)
+            if description_s:
+                description = description_s
 
-                first_txt = "<small><b>%s</b>: %s, %s: %s\n" % (
-                    _("Identifier"),
-                    obj['iddoc'],
-                    _("Size"),
-                    entropy.tools.bytes_into_human(obj['size']),
-                )
-                second_txt = "<b>%s</b>: %s, <i>%s</i>\n" % (
-                    _("Author"),
-                    obj['username'],
-                    obj['ts'],
-                )
-                third_txt = "<b>%s</b>: %s\n<b>%s</b>: <i>%s</i>\n" % (
-                    _("Title"),
-                    title,
-                    _("Description"),
-                    description,
-                )
-                fourth_txt = "<b>%s</b>: %s</small>" % (
+            desc_t = _("Description") + ": "
+            if obj.is_comment():
+                description = obj.document_data()
+                description = cleanMarkupString(
+                    const_convert_to_unicode(description))
+                desc_t = "\n"
+
+            first_txt = "<small>"
+            username = obj.get(DocumentFactory.DOCUMENT_USERNAME_ID) or _("N/A")
+            ts = obj.document_timestamp()
+            ts = entropy.tools.convert_unix_time_to_human_time(ts)
+            second_txt = "<b>%s</b>: %s, <i>%s</i>\n" % (
+                _("Author"),
+                username,
+                ts,
+            )
+            third_txt = "<b>%s</b>: %s\n<b>%s</b><i>%s</i>" % (
+                _("Title"),
+                title,
+                desc_t,
+                description,
+            )
+            doc_keywords = obj.document_keywords().strip()
+            if doc_keywords:
+                keywords = doc_keywords.split()
+                fourth_txt = "\n<b>%s</b>: %s</small>" % (
                     _("Keywords"),
-                    ', '.join(obj['keywords']),
+                    ', '.join(keywords),
                 )
+            else:
+                fourth_txt = "</small>"
 
-                mytxt = first_txt + second_txt + third_txt + fourth_txt
-                cell.set_property('markup', mytxt)
+            mytxt = first_txt + second_txt + third_txt + fourth_txt
+            cell.set_property('markup', mytxt)
 
     def _set_colors_to_cell(self, cell, obj):
         odd = 0
         if 'counter' in obj:
-            odd = obj['counter']%2
+            odd = obj['counter'] % 2
         if 'background' in obj:
             cell.set_property('cell-background', obj['background'][odd])
         else:
@@ -704,12 +753,12 @@ class PkgInfoMenu(MenuSkel):
 
     def on_closeInfo_clicked(self, widget):
         self.disconnect_event_signals()
-        self.reset_ugc_data()
+        self.ugc_data = None
         self.pkginfo_ui.pkgInfo.hide()
 
     def on_pkgInfo_delete_event(self, widget, path):
         self.disconnect_event_signals()
-        self.reset_ugc_data()
+        self.ugc_data = None
         self.pkginfo_ui.pkgInfo.hide()
         if isinstance(self._pkg_meta, dict):
             self._pkg_meta.clear()
@@ -719,53 +768,61 @@ class PkgInfoMenu(MenuSkel):
         self.spawn_ugc_load(force = force)
 
     def on_ugcRemoveButton_released(self, widget):
-        if self.Entropy.UGC is None:
-            return
         if self.repository is None:
+            return
+        if self._webserv is None:
             return
         model, myiter = self.ugcView.get_selection().get_selected()
         if myiter is None:
             return
-        obj = model.get_value( myiter, 0 )
-        if not isinstance(obj, dict):
+        doc = model.get_value( myiter, 0 )
+        if not isinstance(doc, Document):
             return
-        if 'is_cat' in obj:
-            return
+
+        document_id = doc.document_id()
         self.show_loading()
-        self.Entropy.UGC.remove_document_autosense(
-            self.repository, int(obj['iddoc']), obj['iddoctype'])
-        self.hide_loading()
-        self.reset_ugc_data()
-        self.spawn_ugc_load(force = True)
-        SulfurSignals.emit('ugc_cache_clear')
-        self.refresh_ugc_view()
+        with Privileges():
+            try:
+                # requires authentication
+                removed = self._webserv.remove_document(document_id)
+            except WebService.AuthenticationRequired:
+                gobject.idle_add(self._ugc_login)
+                removed = False
+            except WebService.WebServiceException:
+                removed = False
+            finally:
+                self.hide_loading()
+
+        if removed:
+            self.ugc_data = None
+            self.spawn_ugc_load(force = True)
+            SulfurSignals.emit('ugc_cache_clear')
+            self.refresh_ugc_view()
 
     def on_ugc_doubleclick(self, widget, path, view):
         self.on_ugcShowButton_clicked(widget)
 
     def on_ugcShowButton_clicked(self, widget):
-        if self.Entropy.UGC is None:
-            return
         if self.repository is None:
+            return
+        if self._webserv is None:
             return
         model, myiter = self.ugcView.get_selection().get_selected()
         if myiter is None:
             return
         obj = model.get_value( myiter, 0 )
-        if not isinstance(obj, dict):
+        if not isinstance(obj, Document):
             return
-        if 'is_cat' in obj:
-            return
-        my = UGCInfoMenu(self.Entropy, obj, self.repository,
+        my = UGCInfoMenu(self.Entropy, obj, self.pkgkey, self.repository,
             self.pkginfo_ui.pkgInfo)
         my.load()
 
     def on_ugcAddButton_clicked(self, widget):
-        if self.Entropy.UGC is None:
-            return
         if self.repository is None:
             return
         if self.pkgkey is None:
+            return
+        if self._webserv is None:
             return
         my = UGCAddMenu(self.Entropy, self.pkgkey, self.repository,
             self.pkginfo_ui.pkgInfo, self.refresh_view_cb)
@@ -774,10 +831,6 @@ class PkgInfoMenu(MenuSkel):
     def refresh_view_cb(self):
         self.spawn_ugc_load(force = True)
         SulfurSignals.emit('ugc_cache_clear')
-
-    def reset_ugc_data(self):
-        del self.ugc_data
-        self.ugc_data = None
 
     def show_loading(self):
         self.pkginfo_ui.ugcButtonBox.hide()
@@ -797,132 +850,159 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.loadUgcButton.set_sensitive(True)
         self.pkginfo_ui.ugcButtonBox.show_all()
 
-    def ugc_metadata_fetch(self, force = False):
-        if self.Entropy.UGC is None:
-            return
+    def __get_docs_loop(self, force):
+        docs = []
+        docs_offset = 0
+        with Privileges():
+            while True:
+                try:
+                    docs_list = self._webserv.get_documents([self.pkgkey],
+                        cache = not force, cached = not force,
+                        offset = docs_offset)[self.pkgkey]
+                except WebService.CacheMiss:
+                    return None
+                except WebService.WebServiceException:
+                    return None
+                if docs_list is None:
+                    # wtf!
+                    return None
+                docs.extend(docs_list)
+                if not docs_list.has_more():
+                    break
+                docs_offset += len(docs_list)
+        return docs
 
-        docs_data = None
+    def ugc_metadata_fetch(self, force = False):
+        if self._webserv is None:
+            return []
+
+        docs = None
         if not force:
-            docs_data = self.Entropy.UGC.UGCCache.get_alldocs_cache(
-                self.pkgkey, self.repository)
-        if docs_data is None:
-            docs_data, err_msg = self.Entropy.UGC.get_docs(
-                self.repository, self.pkgkey)
-        return docs_data
+            docs = self.__get_docs_loop(False)
+        if docs is None:
+            docs = self.__get_docs_loop(True)
+        return docs
 
     def spawn_ugc_load(self, force = False):
 
         if (self.ugc_data != None) and (not force):
             return
-        if self.Entropy.UGC is None:
-            return
         if not (self.pkgkey and self.repository):
             return
 
         self.show_loading()
-
         try:
-            docs_data = self.ugc_metadata_fetch(force = force)
-        except TimeoutError:
-            dialog_title = _("Timeout Error")
-            err_msg = _("Connection timed out, sorry!")
-            docs_data = None
-            okDialog(self.window, err_msg, title = dialog_title)
+            docs = self.ugc_metadata_fetch(force = force)
+            if docs is None:
+                self.ugc_data = None
+            else:
+                doc_map = {}
+                for doc in docs:
+                    doc_type = doc.document_type()
+                    obj = doc_map.setdefault(doc_type, [])
+                    obj.append(doc)
+                self.ugc_data = doc_map
 
-        if not isinstance(docs_data, (list, tuple)):
-            self.ugc_data = {}
-        else:
-            self.ugc_data = self.digest_remote_docs_data(docs_data)
-
-        self.refresh_ugc_view()
-        self.setup_ugc_icon()
-        self.hide_loading()
-
-    def digest_remote_docs_data(self, data):
-        newdata = {}
-        for mydict in data:
-            if not mydict:
-                continue
-            if mydict['iddoctype'] not in newdata:
-                newdata[mydict['iddoctype']] = []
-            newdata[mydict['iddoctype']].append(mydict)
-        return newdata
+            self.refresh_ugc_view()
+            th = ParallelTask(self.setup_ugc_icon)
+            th.start()
+        finally:
+            self.hide_loading()
 
     def refresh_ugc_view(self):
         self.ugcModel.clear()
         if self.ugc_data is None:
             return
         self.populate_ugc_view()
-        #self.ugcView.expand_all()
 
     def prefetch_ugc_icon(self):
-        def update_ugc_icon():
-            self.setup_ugc_icon()
-            return False
         def do_ugc_fetch():
-            try:
-                self.ugc_metadata_fetch()
-            except TimeoutError:
-                return
-        fork_function(do_ugc_fetch, update_ugc_icon)
+            self.ugc_metadata_fetch()
+            self.setup_ugc_icon()
+        th = ParallelTask(do_ugc_fetch)
+        th.start()
 
     def setup_ugc_icon(self):
         """
         Setup UGC icon for package if UGC data has been already downloaded
         and prepared by this class.
         """
-
-        if self.Entropy.UGC is None:
+        if not (self.pkgkey and self.repository):
             return
-        const_debug_write(__name__, "setup_ugc_icon, UGC available")
 
-        icon_doc = self.Entropy.UGC.UGCCache.get_icon_cache(
-            self.pkgkey, self.repository)
-        if icon_doc is None:
+        webserv = self._webserv
+        const_debug_write(__name__,
+            "setup_ugc_icon, WebService available: %s" % (webserv,))
+
+        # sorry web service, we need data this way
+        with Privileges():
+            try:
+                icon_docs = webserv.get_icons([self.pkgkey],
+                    cache = True, cached = True)[self.pkgkey]
+            except WebService.CacheMiss:
+                icon_docs = None
+
+        if icon_docs is None:
+            # not in cache
             return
+
         const_debug_write(__name__,
             "setup_ugc_icon, UGC metadata available in cache for (%s, %s): %s" % (
-                self.pkgkey, self.repository, icon_doc,))
+                self.pkgkey, self.repository, icon_docs,))
 
-        store_path = self.Entropy.UGC.UGCCache.get_stored_document(
-            icon_doc['iddoc'], self.repository, icon_doc['store_url'])
+        # get the first available in cache
+        store_path = None
+        store_doc = None
+        for icon_doc in icon_docs:
+            local_path = icon_doc.local_document()
+            if local_path is None:
+                continue
+            store_path = local_path
+            store_doc = icon_doc
+            # found a good one
+            break
+
         const_debug_write(__name__,
             "setup_ugc_icon, UGC store path for (%s, %s): %s" % (
                 self.pkgkey, self.repository, store_path,))
 
         if store_path is None:
+            # cannot get any valid store path
+            return
 
-            # fetch from WWW if not available
-            self.Entropy.UGC.UGCCache.store_document(icon_doc['iddoc'],
-                self.repository, icon_doc['store_url'])
-            store_path = self.Entropy.UGC.UGCCache.get_stored_document(
-                icon_doc['iddoc'], self.repository, icon_doc['store_url'])
+        if not (os.path.isfile(store_path) and os.access(store_path, os.R_OK)):
+            # fetch from WWW
+            with Privileges():
+                try:
+                    store_path = webserv.get_document_url(store_doc)
+                except ClientWebService.DocumentError:
+                    store_path = None
             const_debug_write(__name__,
                 "setup_ugc_icon, UGC store path fetched for (%s, %s): %s" % (
                     self.pkgkey, self.repository, store_path,))
+        else:
+            const_debug_write(__name__,
+                "setup_ugc_icon, UGC store path "
+                    "available in cache for (%s, %s)" % (
+                        self.pkgkey, self.repository,))
 
         if store_path is None:
-            # cannot get store path
+            # meh!
+            return
+        if self._ugc_icon_store_path == store_path:
+            # meh! 2
             return
 
-        if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
-            return
-
-        const_debug_write(__name__,
-            "setup_ugc_icon, UGC store path available in cache for (%s, %s)" % (
-                self.pkgkey, self.repository,))
-
-        if self._ugc_icon_store_path != store_path:
-            self._ugc_icon_store_path = store_path
-            # if image has __icon__ as title, use as real icon
-            icon_path = store_path + ".sulfur_icon"
-            if not (os.path.isfile(icon_path) and os.access(icon_path, os.R_OK)):
-                try:
-                    resize_image(48.0, store_path, icon_path)
-                except (ValueError, OSError,):
-                    # image should be a GdkPixbuf or empty
-                    return # wtf!
-            self.pkginfo_ui.pkgImage.set_from_file(icon_path)
+        self._ugc_icon_store_path = store_path
+        # if image has __icon__ as title, use as real icon
+        icon_path = store_path + ".sulfur_icon"
+        if not (os.path.isfile(icon_path) and os.access(icon_path, os.R_OK)):
+            try:
+                resize_image(48.0, store_path, icon_path)
+            except (ValueError, OSError,):
+                # image should be a GdkPixbuf or empty
+                return # wtf!
+        gobject.idle_add(self.pkginfo_ui.pkgImage.set_from_file, icon_path)
 
     def spawn_docs_fetch(self):
 
@@ -930,36 +1010,40 @@ class PkgInfoMenu(MenuSkel):
             return
         if self.repository is None:
             return
+        if self._webserv is None:
+            return
 
-        for doc_type in self.ugc_data:
-            if int(doc_type) not in (etpConst['ugc_doctypes']['image'],):
+        try:
+            docs_map = self.ugc_data.copy()
+        except AttributeError:
+            # must be concurrency-free
+            return
+
+        for doc_type, docs in docs_map.items():
+
+            if doc_type not in (Document.IMAGE_TYPE_ID, Document.ICON_TYPE_ID):
                 continue
-            for mydoc in self.ugc_data[doc_type]:
-                if 'store_url' not in mydoc:
-                    continue
-                if not mydoc['store_url']:
-                    continue
 
-                store_path = self.Entropy.UGC.UGCCache.get_stored_document(
-                    mydoc['iddoc'], self.repository, mydoc['store_url'])
+            for mydoc in docs:
+                with Privileges():
+                    try:
+                        store_path = self._webserv.get_document_url(mydoc)
+                    except ClientWebService.DocumentError:
+                        store_path = None
 
                 if store_path is None:
-                    try:
-                        self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'],
-                            self.repository, mydoc['store_url'])
-                    except PermissionDenied:
-                        # not enough privileges
-                        continue
-                    store_path = self.Entropy.UGC.UGCCache.get_stored_document(
-                        mydoc['iddoc'], self.repository, mydoc['store_url'])
+                    continue
+                if not (os.path.isfile(store_path) and \
+                    os.access(store_path, os.R_OK)):
+                    continue
 
-                if (store_path != None) and os.access(store_path, os.R_OK):
-                    preview_path = store_path+".sulfur_preview"
-                    try:
-                        resize_image(64.0, store_path, preview_path)
-                        mydoc['preview_path'] = preview_path
-                    except (ValueError, OSError,):
-                        continue
+                preview_path = store_path+".sulfur_preview_height"
+                try:
+                    resize_image_height(self._ugc_row_height - 4, store_path,
+                        preview_path)
+                except (ValueError, OSError,):
+                    continue
+                mydoc['preview_path'] = preview_path
 
     def populate_ugc_view(self):
 
@@ -969,58 +1053,59 @@ class PkgInfoMenu(MenuSkel):
         spawn_fetch = False
         doc_types = list(self.ugc_data.keys())
         doc_type_image_map = {
-            1: const.ugc_text_pix,
-            2: const.ugc_text_pix,
-            3: const.ugc_image_pix,
-            4: const.ugc_generic_pix,
-            5: const.ugc_video_pix,
+            Document.COMMENT_TYPE_ID: const.ugc_text_pix,
+            Document.IMAGE_TYPE_ID: const.ugc_image_pix,
+            Document.FILE_TYPE_ID: const.ugc_generic_pix,
+            Document.VIDEO_TYPE_ID: const.ugc_video_pix,
+            Document.ICON_TYPE_ID: const.ugc_image_pix,
         }
         doc_type_background_map = {
-            1: ('#67AB6F', '#599360'),
-            2: ('#67AB6F', '#599360'),
-            3: ('#AB8158', '#CA9968'),
-            4: ('#BBD5B0', '#99AE90'),
-            5: ('#A5C0D5', '#8EA5B7'),
+            Document.COMMENT_TYPE_ID: ('#67AB6F', '#599360'),
+            Document.IMAGE_TYPE_ID: ('#AB8158', '#CA9968'),
+            Document.FILE_TYPE_ID: ('#BBD5B0', '#99AE90'),
+            Document.VIDEO_TYPE_ID: ('#A5C0D5', '#8EA5B7'),
+            Document.ICON_TYPE_ID: ('#AB8158', '#CA9968'),
         }
         doc_type_foreground_map = {
-            1: '#FFFFFF',
-            2: '#FFFFFF',
-            3: '#FFFFFF',
-            4: '#FFFFFF',
-            5: '#FFFFFF',
+            Document.COMMENT_TYPE_ID: '#FFFFFF',
+            Document.IMAGE_TYPE_ID: '#FFFFFF',
+            Document.FILE_TYPE_ID: '#FFFFFF',
+            Document.VIDEO_TYPE_ID: '#FFFFFF',
+            Document.ICON_TYPE_ID: '#FFFFFF',
         }
         counter = 1
         for doc_type in doc_types:
             spawn_fetch = True
-            image_path = doc_type_image_map.get(int(doc_type))
+            image_path = doc_type_image_map.get(doc_type)
             cat_dict = {
                 'is_cat': True,
                 'image_path': image_path,
                 'parent_desc': "%s (%s)" % (
-                    etpConst['ugc_doctypes_description'].get(int(doc_type)),
+                    Document.DESCRIPTION_PLURAL.get(doc_type, _("N/A")),
                     len(self.ugc_data[doc_type]),),
-                'foreground': doc_type_foreground_map.get(int(doc_type)),
-                'background': doc_type_background_map.get(int(doc_type)),
+                'foreground': doc_type_foreground_map.get(doc_type),
+                'background': doc_type_background_map.get(doc_type),
             }
             parent = self.ugcModel.append( None, (cat_dict,) )
             docs_dates = {}
             for mydoc in self.ugc_data[doc_type]:
                 ts = mydoc['ts']
-                if ts not in docs_dates:
-                    docs_dates[ts] = []
-                docs_dates[ts].append(mydoc)
+                lst = docs_dates.setdefault(ts, [])
+                lst.append(mydoc)
+
             sorted_dates = sorted(docs_dates.keys())
             for ts in sorted_dates:
                 for mydoc in docs_dates[ts]:
                     mydoc['image_path'] = const.ugc_pixmap_small
-                    mydoc['foreground'] = doc_type_foreground_map.get(int(doc_type))
-                    mydoc['background'] = doc_type_background_map.get(int(doc_type))
+                    mydoc['foreground'] = doc_type_foreground_map.get(doc_type)
+                    mydoc['background'] = doc_type_background_map.get(doc_type)
                     mydoc['counter'] = counter
                     self.ugcModel.append( parent, (mydoc,) )
                     counter += 1
 
         if spawn_fetch:
-            gobject.idle_add(self.spawn_docs_fetch)
+            th = ParallelTask(self.spawn_docs_fetch)
+            th.start()
 
         self.ugcView.set_property('headers-visible', True)
         self.ugcView.set_property('enable-search', True)
@@ -1232,21 +1317,89 @@ class PkgInfoMenu(MenuSkel):
     def on_starEvent1_button_release_event(self, widget, event):
         self.vote_click(1)
 
+    def _ugc_login(self):
+        if self.repository is None:
+            return False
+        if self._webserv is None:
+            return False
+
+        def fake_callback(*args, **kwargs):
+            return True
+
+        # use input box to read login
+        input_params = [
+            ('username', _('Username'), fake_callback, False),
+            ('password', _('Password'), fake_callback, True)
+        ]
+        login_data = self.Entropy.input_box(
+            "%s %s %s" % (
+                _('Please login against'), self.repository, _('repository'),),
+            input_params,
+            cancel_button = True
+        )
+        if not login_data:
+            return False
+
+        username, password = login_data['username'], login_data['password']
+        with Privileges():
+            self._webserv.add_credentials(username, password)
+            try:
+                self._webserv.validate_credentials()
+            except WebService.AuthenticationFailed:
+                okDialog(self.window,
+                    _("Authentication error. Not logged in."))
+                return False
+
+        okDialog(self.window,
+            _("Successfully logged in."))
+        return True
+
     def vote_click(self, vote):
-        if self.Entropy.UGC is None:
-            return
         if not (self.repository and self.pkgkey):
             return
-        if not self.Entropy.UGC.is_repository_eapi3_aware(self.repository):
-            return
-        status, err_msg = self.Entropy.UGC.add_vote(self.repository, self.pkgkey, vote)
-        if status:
-            self.set_stars_from_repository()
-            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_good, _("Vote registered successfully"), vote,)
-        else:
-            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_error, _("Error registering vote"), err_msg,)
 
-        self.pkginfo_ui.ugcMessageBox.set_markup(msg)
+        def _do_vote():
+            if self._webserv is None:
+                return
+            with Privileges():
+                try:
+                    voted = self._webserv.add_vote(self.pkgkey, vote)
+                except WebService.AuthenticationRequired:
+                    def _do_login():
+                        logged_in = self._ugc_login()
+                        if logged_in:
+                            # call myself again
+                            gobject.idle_add(self.vote_click, vote)
+                        return False
+                    gobject.idle_add(_do_login)
+                    return
+
+            if voted:
+                # inform user first
+                msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (
+                    SulfurConf.color_good,
+                        _("Vote registered successfully"), vote,)
+            else:
+                msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (
+                    SulfurConf.color_error, _("Error"), _("Already voted"),)
+            gobject.idle_add(self.pkginfo_ui.ugcMessageBox.set_markup, msg)
+            if voted:
+                with Privileges():
+                    # need to refill local cache
+                    done = True
+                    try:
+                        self._webserv.get_votes([self.pkgkey], cache = False)
+                    except WebService.WebServiceException as err:
+                        # ouch! drop everything completely
+                        self._webserv._drop_cached("get_votes")
+                        done = False
+
+                    if done:
+                        gobject.idle_add(self.set_stars_from_repository)
+
+        th = ParallelTask(_do_vote)
+        th.start()
+
 
     def star_enter(self, widget, event, number):
         self.set_stars(number, hover = True)
@@ -1347,7 +1500,7 @@ class PkgInfoMenu(MenuSkel):
 
         # Setup image column
         cell = gtk.CellRendererPixbuf()
-        cell.set_property('height', 78)
+        cell.set_property('height', self._ugc_row_height)
         column = gtk.TreeViewColumn( _("Type"), cell ) # Document Type
         column.set_cell_data_func( cell, self.ugc_pixbuf )
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
@@ -1356,15 +1509,17 @@ class PkgInfoMenu(MenuSkel):
         self.ugcView.append_column( column )
 
         cell = gtk.CellRendererText()
-        column = gtk.TreeViewColumn( _( "Content" ), cell )
-        column.set_resizable( True )
-        column.set_cell_data_func( cell, self.ugc_content )
-        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column.set_fixed_width( 350 )
+        cell.set_property('wrap-mode', gtk.WRAP_WORD)
+        cell.set_property('wrap-width', 340)
+        column = gtk.TreeViewColumn(_( "Content" ), cell)
+        column.set_resizable(True)
+        column.set_cell_data_func(cell, self.ugc_content)
+        column.set_sizing(gtk.TREE_VIEW_COLUMN_FIXED)
+        column.set_fixed_width(350)
         column.set_expand(True)
-        column.set_sort_column_id( -1 )
-        self.ugcView.append_column( column )
-        self.ugcView.set_model( self.ugcModel )
+        column.set_sort_column_id(-1)
+        self.ugcView.append_column(column)
+        self.ugcView.set_model(self.ugcModel)
 
         self.ugcView.set_property('headers-visible', True)
         self.ugcView.set_property('enable-search', True)
@@ -1436,24 +1591,17 @@ class PkgInfoMenu(MenuSkel):
 
         # set package image
         pkgatom = self._pkg_meta['atom']
-        self.vote = int(pkg.vote)
+        self.vote = int(pkg.votefloat)
         self.repository = pkg.repoid
         self.pkgkey = entropy.dep.dep_getkey(pkgatom)
         self.set_stars_from_repository()
         self.pkginfo_ui.pkgImage.set_from_file(self.pkg_pixmap)
         self.pkginfo_ui.ugcSmallIcon.set_from_file(self.ugc_small_pixmap)
-        self.pkginfo_ui.ugcIcon.set_from_file(self.ugc_pixmap)
-        self.pkginfo_ui.refreshImage.set_from_file(self.refresh_pixmap)
 
         self.pkginfo_ui.labelAtom.set_markup("<b>%s</b>" % (
             cleanMarkupString(pkgatom),))
         self.pkginfo_ui.labelDescription.set_markup("<small>%s</small>" % (
             cleanMarkupString(self._pkg_meta['description']),))
-        self.pkginfo_ui.ugcDescriptionLabel.set_markup("<small>%s\n%s</small>" % (
-                _("Share your opinion, your documents, your screenshots!"),
-                _("Be part of our Community!")
-            )
-        )
         self.set_download_numbers_from_repository()
 
         bold_items = [  self.pkginfo_ui.locationLabel,
@@ -1475,7 +1623,6 @@ class PkgInfoMenu(MenuSkel):
                         self.pkginfo_ui.maskedLabel,
                         self.pkginfo_ui.triggerLabel,
                         self.pkginfo_ui.configProtectLabel,
-                        self.pkginfo_ui.ugcTitleLabel,
                         self.pkginfo_ui.changeLogLabel
         ]
         for item in bold_items:
@@ -1718,14 +1865,13 @@ class SecurityAdvisoryMenu(MenuSkel):
 
 class UGCInfoMenu(MenuSkel):
 
-    def __init__(self, Entropy, obj, repository, window):
+    def __init__(self, Entropy, obj, package_name, repository, window):
 
-        import subprocess
-        self.subprocess = subprocess
+        self.package_name = package_name
         self.repository = repository
         self.window = window
         self.Entropy = Entropy
-        self.ugc_data = obj.copy()
+        self.ugc_doc = obj
         self.ugcinfo_ui = UI( const.GLADE_FILE, 'ugcInfo', 'entropy' )
         self.ugcinfo_ui.signal_autoconnect(self._getAllMethods())
         self.ugcinfo_ui.ugcInfo.set_transient_for(self.window)
@@ -1736,49 +1882,62 @@ class UGCInfoMenu(MenuSkel):
         return True
 
     def on_getButton_clicked(self, widget):
-        if self.ugc_data['store_url'] != None:
-            load_url(self.ugc_data['store_url'])
+        url = self.ugc_doc.document_url()
+        if url is not None:
+            load_url(url)
 
     def load(self):
 
-        pix_path = self.ugc_data['image_path']
-        if self.ugc_data.get('preview_path') is not None:
-            if os.path.isfile(self.ugc_data['preview_path']) and \
-                os.access(self.ugc_data['preview_path'], os.R_OK):
-                pix_path = self.ugc_data['preview_path']
+        pix_path = self.ugc_doc['image_path']
+        if self.ugc_doc.get('preview_path') is not None:
+            if os.path.isfile(self.ugc_doc['preview_path']) and \
+                os.access(self.ugc_doc['preview_path'], os.R_OK):
+                pix_path = self.ugc_doc['preview_path']
 
         self.ugcinfo_ui.ugcImage.set_from_file(pix_path)
         self.ugcinfo_ui.labelKey.set_markup("<b>%s</b>" % (
-            self.ugc_data['pkgkey'],))
-        doc_type_desc = etpConst['ugc_doctypes_description_singular'].get(
-            int(self.ugc_data['iddoctype']))
+            self.package_name,))
+        doc_type = self.ugc_doc.document_type()
+        doc_id = self.ugc_doc.document_id()
+
+        doc_type_desc = Document.DESCRIPTION_SINGULAR.get(doc_type, _("N/A"))
         self.ugcinfo_ui.labelTypedesc.set_markup(
             "<small>[<b>%s</b>:%d] <i>%s</i></small>" % (
                 _("Id"),
-                int(self.ugc_data['iddoc']),
+                doc_id,
                 doc_type_desc,
             )
         )
+        title = self.ugc_doc.get(Document.DOCUMENT_TITLE_ID, _("N/A"))
+        description = self.ugc_doc.get(Document.DOCUMENT_DESCRIPTION_ID,
+            _("N/A"))
+        username = self.ugc_doc.get(DocumentFactory.DOCUMENT_USERNAME_ID,
+            _("N/A"))
+        keywords = self.ugc_doc.document_keywords().strip().split()
+        ts = self.ugc_doc.document_timestamp()
+        ts = entropy.tools.convert_unix_time_to_human_time(ts)
+
         self.ugcinfo_ui.titleContent.set_markup("%s" % (
-            const_convert_to_unicode(self.ugc_data['title']),))
+            cleanMarkupString(const_convert_to_unicode(title)),))
         self.ugcinfo_ui.descriptionContent.set_markup("%s" % (
-            const_convert_to_unicode(self.ugc_data['description']),))
+            cleanMarkupString(const_convert_to_unicode(description)),))
         self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (
-            const_convert_to_unicode(self.ugc_data['username']),))
+            cleanMarkupString(const_convert_to_unicode(username)),))
         self.ugcinfo_ui.dateContent.set_markup(
-            "<u>%s</u>" % (self.ugc_data['ts'],))
-        self.ugcinfo_ui.keywordsContent.set_markup("%s" % (
-            const_convert_to_unicode(', '.join(self.ugc_data['keywords'])),))
-        self.ugcinfo_ui.sizeContent.set_markup("%s" % (
-            entropy.tools.bytes_into_human(self.ugc_data['size']),))
+            "<u>%s</u>" % (cleanMarkupString(ts),))
+        if keywords:
+            keywords_str = ", ".join(keywords)
+            self.ugcinfo_ui.keywordsContent.set_markup("%s" % (
+                cleanMarkupString(const_convert_to_unicode(keywords_str)),))
+        else:
+            self.ugcinfo_ui.keywordsContent.set_markup(_("No keywords"))
 
         bold_items = [
             self.ugcinfo_ui.titleLabel,
             self.ugcinfo_ui.descLabel,
             self.ugcinfo_ui.authorLabel,
             self.ugcinfo_ui.dateLabel,
-            self.ugcinfo_ui.keywordsLabel,
-            self.ugcinfo_ui.sizeLabel
+            self.ugcinfo_ui.keywordsLabel
         ]
         for item in bold_items:
             t = item.get_text()
@@ -1790,17 +1949,13 @@ class UGCInfoMenu(MenuSkel):
             self.ugcinfo_ui.descriptionContent,
             self.ugcinfo_ui.authorContent,
             self.ugcinfo_ui.dateContent,
-            self.ugcinfo_ui.keywordsContent,
-            self.ugcinfo_ui.sizeContent
+            self.ugcinfo_ui.keywordsContent
         ]
         for item in small_items:
             t = item.get_label()
             item.set_markup("<small>%s</small>" % (t,))
 
-        if self.ugc_data['iddoctype'] in (
-            etpConst['ugc_doctypes']['comments'],
-            etpConst['ugc_doctypes']['bbcode_doc'],):
-
+        if self.ugc_doc.is_comment():
             self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descLabel)
             self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descriptionContent)
             self.ugcinfo_ui.buttonBox.hide()
@@ -1808,13 +1963,9 @@ class UGCInfoMenu(MenuSkel):
             ###
             # we need to properly handle raw data coming from ddata dict key
             ###
-            if const_isunicode(self.ugc_data['ddata']):
-                buf_text = self.ugc_data['ddata']
-            elif const_israwstring(self.ugc_data['ddata']):
-                buf_text = const_convert_to_unicode(self.ugc_data['ddata'])
-            else: # mysql shitty type?
-                buf_text = const_convert_to_unicode(self.ugc_data['ddata'].tostring())
-            mybuf.set_text(buf_text)
+            comment = self.ugc_doc.document_data()
+            comment = const_convert_to_unicode(comment)
+            mybuf.set_text(comment)
             self.ugcinfo_ui.textContent.set_buffer(mybuf)
         else:
             self.ugcinfo_ui.textFrame.hide()
@@ -1823,8 +1974,6 @@ class UGCInfoMenu(MenuSkel):
 
 
 class UGCAddMenu(MenuSkel):
-
-    DOC_TYPES_LIST = sorted(etpConst['ugc_doctypes_description_singular'])
 
     def __init__(self, Entropy, pkgkey, repository, window, refresh_cb):
 
@@ -1842,7 +1991,7 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAdd.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.store = None
         self.refresh_cb = refresh_cb
-        self.text_types = (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],)
+        self.text_types = [Document.COMMENT_TYPE_ID]
         self.file_selected = None
         self._combo_doc_types = []
 
@@ -1854,16 +2003,50 @@ class UGCAddMenu(MenuSkel):
         myiter = widget.get_active_iter()
         idx = self.store.get_value( myiter, 0 )
         if idx in self.text_types:
-            txt = "%s %s" % (_("Write your"), etpConst['ugc_doctypes_description_singular'][idx],) # write your <document type>
-            self.setup_text_insert()
+            desc = Document.DESCRIPTION_SINGULAR[idx]
+            txt = "%s %s" % (_("Write your"), desc,)
+            self.setup_text_insert(txt)
         else:
-            txt = "%s %s" % (_("Select your"), etpConst['ugc_doctypes_description_singular'][idx],) # select your <document type>
+            desc = Document.DESCRIPTION_SINGULAR[idx]
+            txt = "%s %s" % (_("Select your"), desc,)
             self.setup_file_insert(txt)
 
     def on_ugcAddFileChooser_file_set(self, widget):
         self.file_selected = widget.get_filename()
 
+    def _ugc_login(self, webserv):
+
+        def fake_callback(*args, **kwargs):
+            return True
+
+        # use input box to read login
+        input_params = [
+            ('username', _('Username'), fake_callback, False),
+            ('password', _('Password'), fake_callback, True)
+        ]
+        login_data = self.Entropy.input_box(
+            "%s %s %s" % (
+                _('Please login against'), self.repository, _('repository'),),
+            input_params,
+            cancel_button = True
+        )
+        if not login_data:
+            return False
+
+        username, password = login_data['username'], login_data['password']
+        with Privileges():
+            webserv.add_credentials(username, password)
+            try:
+                webserv.validate_credentials()
+            except WebService.AuthenticationFailed:
+                okDialog(self.window,
+                    _("Authentication error. Not logged in."))
+                return False
+
+        return True
+
     def on_submitButton_clicked(self, widget):
+
         dialog_title = _("Submit issue")
         myiter = self.ugcadd_ui.ugcAddTypeCombo.get_active_iter()
         doc_type = self.store.get_value( myiter, 0 )
@@ -1877,20 +2060,24 @@ class UGCAddMenu(MenuSkel):
             end_iter = mybuf.get_end_iter()
             description = mybuf.get_text(start_iter, end_iter)
             if not description:
-                okDialog(self.window, _("Empty Document"), title = dialog_title)
+                okDialog(self.window, _("Empty Document"),
+                    title = dialog_title)
                 return False
         else:
             if not description:
-                okDialog(self.window, _("Invalid Description"), title = dialog_title)
+                okDialog(self.window, _("Invalid Description"),
+                    title = dialog_title)
                 return False
             doc_path = self.file_selected
 
         # checking
         if doc_type is None:
-            okDialog(self.window, _("Invalid Document Type"), title = dialog_title)
+            okDialog(self.window, _("Invalid Document Type"),
+                title = dialog_title)
             return False
         if not title:
-            okDialog(self.window, _("Invalid Title"), title = dialog_title)
+            okDialog(self.window, _("Invalid Title"),
+                title = dialog_title)
             return False
 
         # confirm ?
@@ -1900,68 +2087,125 @@ class UGCAddMenu(MenuSkel):
 
         self.show_loading()
 
-        old_show_progress = self.Entropy.UGC.show_progress
-        self.Entropy.UGC.show_progress = True
-        bck_output = self.Entropy.output
-        self.Entropy.output = self.do_label_update_progress
         try:
-            t = ParallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
-            t.start()
-            while True:
-                if not t.isAlive(): break
-                while gtk.events_pending():
-                    gtk.main_iteration()
-                time.sleep(0.06)
-            rslt, data = t.get_rc()
-        finally:
-            self.Entropy.UGC.show_progress = old_show_progress
-            self.Entropy.output = bck_output
-
-
-        self.hide_loading()
-        if not rslt:
-            txt = "<small><span foreground='%s'><b>%s</b></span>: %s | %s</small>" % (SulfurConf.color_error, _("UGC Error"), rslt, data,)
-            self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
+            webserv = get_entropy_webservice(self.Entropy, self.repository)
+        except WebService.UnsupportedService as err:
+            okDialog(self.window, _("Unsupported Service"),
+                title = dialog_title)
             return False
-        else:
-            okDialog(self.ugcadd_ui.ugcAdd, _("Document added successfully. Thank you"), title = _("Success!"))
-            self.on_closeAdd_clicked(None, None)
-            self.refresh_cb()
-            return True
 
-    def do_label_update_progress(self, *myargs, **mykwargs):
-
-        count = mykwargs.get("count")
-        percent = mykwargs.get("percent")
-        text = myargs[0].encode('utf-8')
-
-        count_str = ""
-        if count:
-            if len(count) > 1:
-                if percent:
-                    count_str = " ("+str(round((float(count[0])/count[1])*100, 1))+"%) "
-                else:
-                    count_str = " (%s/%s) " % (str(count[0]), str(count[1]),)
-
-        txt = count_str+text
-        txt = decolorize(txt)
-        self.ugcadd_ui.ugcAddStatusLabel.set_markup(cleanMarkupString(txt))
-
-    def do_send_document_autosense(self, doc_type, doc_path, title, description, keywords_text):
         try:
-            rslt, data = self.Entropy.UGC.send_document_autosense(
-                self.repository,
-                str(self.pkgkey),
-                doc_type,
-                doc_path,
-                title,
-                description,
-                keywords_text
-            )
-        except Exception as e:
-            rslt = False
-            data = e
-        return rslt, data
+            available = webserv.service_available()
+        except WebService.WebServiceException:
+            okDialog(self.window, _("Service is unavailable"),
+                title = dialog_title)
+            return False
+        if not available:
+            okDialog(self.window, _("Service is unavailable"),
+                title = dialog_title)
+            return False
+
+        with Privileges():
+            # ask user to login
+            need_login = False
+            if webserv.credentials_available():
+                try:
+                    webserv.validate_credentials()
+                except WebService.AuthenticationFailed:
+                    need_login = True
+            else:
+                need_login = True
+
+        if need_login:
+            logged_in = self._ugc_login(webserv)
+            if not logged_in:
+                return False
+
+        # can't be None
+        username = webserv.get_credentials()
+        webserv._set_transfer_callback(self.do_label_update_progress)
+
+        # Build up the Document object
+        doc_factory = DocumentFactory(self.repository)
+
+        doc_f = None
+        try:
+            if doc_type == Document.COMMENT_TYPE_ID:
+                doc = doc_factory.comment(username, description,
+                    title, keywords_text)
+            elif doc_type == Document.ICON_TYPE_ID:
+                doc_f = open(doc_path, "rb")
+                doc = doc_factory.icon(username, doc_f, title,
+                    description, keywords_text)
+            elif doc_type == Document.FILE_TYPE_ID:
+                doc_f = open(doc_path, "rb")
+                doc = doc_factory.file(username, doc_f, title,
+                    description, keywords_text)
+            elif doc_type == Document.IMAGE_TYPE_ID:
+                doc_f = open(doc_path, "rb")
+                doc = doc_factory.image(username, doc_f, title,
+                    description, keywords_text)
+            elif doc_type == Document.VIDEO_TYPE_ID:
+                doc_f = open(doc_path, "rb")
+                doc = doc_factory.video(username, doc_f, title,
+                    description, keywords_text)
+            else:
+                # WTF
+                raise AssertionError("invalid document type")
+        except AssertionError as err:
+            okDialog(self.window, "%s: %s" % (_("Invalid fields"), err),
+                title = dialog_title)
+            if doc_f is not None:
+                doc_f.close()
+                doc_f = None
+            return False
+
+        def _do_add_document(doc, doc_f):
+            err_msg = None
+            try:
+                new_doc = webserv.add_document(self.pkgkey, doc)
+            except WebService.WebServiceException as err:
+                new_doc = None
+                err_msg = str(err)
+            finally:
+                if doc_f is not None:
+                    doc_f.close()
+                gobject.idle_add(self.hide_loading)
+
+            if new_doc is not None:
+                def _happy_ending():
+                    okDialog(self.ugcadd_ui.ugcAdd,
+                        _("Document added successfully. Thank you"),
+                        title = _("Success!"))
+                    self.on_closeAdd_clicked(None, None)
+                    self.refresh_cb()
+                    return False
+                gobject.idle_add(_happy_ending)
+            else:
+                def _unhappy_ending():
+                    txt = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (
+                        SulfurConf.color_error, _("UGC Error"), err_msg,)
+                    self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
+                    return False
+                gobject.idle_add(_unhappy_ending)
+
+        th = ParallelTask(_do_add_document, doc, doc_f)
+        th.start()
+        return False
+
+    def do_label_update_progress(self, transfered, total, download):
+
+        if download:
+            action = _("Downloading")
+        else:
+            action = _("Uploading")
+
+        percent = 100
+        if (total > 0) and (transfered <= total):
+            percent = int(round((float(transfered)/total) * 100, 1))
+
+        msg = cleanMarkupString("[%s%s] %s ..." % (percent, "%", action))
+        gobject.idle_add(self.ugcadd_ui.ugcAddStatusLabel.set_markup, msg)
 
     def show_loading(self):
         self.ugcadd_ui.ugcAddButtonBox.hide()
@@ -1995,13 +2239,15 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAddInsertLabel.set_markup(txt)
 
     def prepare_image_insert(self, pkg_name, image_path, as_icon = False):
-        image_doctype = etpConst['ugc_doctypes']['image']
+        doc_type = Document.IMAGE_TYPE_ID
+        if as_icon:
+            doc_type = Document.ICON_TYPE_ID
         self.ugcadd_ui.ugcAddTypeCombo.set_active(
-            self._combo_doc_types.index(image_doctype))
+            self._combo_doc_types.index(doc_type))
         self.ugcadd_ui.ugcAddFileChooser.set_filename(image_path)
         self.file_selected = image_path
         if as_icon:
-            self.ugcadd_ui.ugcAddTitleEntry.set_text("__icon__")
+            self.ugcadd_ui.ugcAddTitleEntry.set_text(pkg_name + " icon")
             self.ugcadd_ui.ugcAddDescEntry.set_text("This is the %s icon" % (
                 pkg_name,))
         else:
@@ -2011,9 +2257,8 @@ class UGCAddMenu(MenuSkel):
                 pkg_name,))
 
     def prepare_file_insert(self, pkg_name, file_path):
-        file_doctype = etpConst['ugc_doctypes']['generic_file']
         self.ugcadd_ui.ugcAddTypeCombo.set_active(
-            self._combo_doc_types.index(file_doctype))
+            self._combo_doc_types.index(Document.FILE_TYPE_ID))
         self.ugcadd_ui.ugcAddFileChooser.set_filename(file_path)
         self.file_selected = file_path
         self.ugcadd_ui.ugcAddTitleEntry.set_text("%s document" % (
@@ -2029,19 +2274,15 @@ class UGCAddMenu(MenuSkel):
             _("On repository"), self.repository,))
 
         # add types to combo
-        doc_types_list = UGCAddMenu.DOC_TYPES_LIST
         self.store = gtk.ListStore(gobject.TYPE_INT, gobject.TYPE_STRING)
         self.ugcadd_ui.ugcAddTypeCombo.set_model(self.store)
         cell = gtk.CellRendererText()
         self.ugcadd_ui.ugcAddTypeCombo.pack_start(cell, True)
         self.ugcadd_ui.ugcAddTypeCombo.add_attribute(cell, 'text', 1)
         del self._combo_doc_types[:]
-        for idx in doc_types_list:
-            # disable bbcode for now
-            if idx == etpConst['ugc_doctypes']['bbcode_doc']:
-                continue
+        for idx in Document.SUPPORTED_TYPES:
             self._combo_doc_types.append(idx)
-            self.store.append( (idx, etpConst['ugc_doctypes_description_singular'][idx],) )
+            self.store.append((idx,  Document.DESCRIPTION_SINGULAR[idx],))
         self.ugcadd_ui.ugcAddTypeCombo.set_active(0)
 
         # hide file chooser
@@ -2063,7 +2304,7 @@ class UGCAddMenu(MenuSkel):
 class MaskedPackagesDialog(MenuSkel):
 
 
-    def __init__( self, Entropy, etpbase, parent, pkgs, top_text = None, sub_text = None ):
+    def __init__( self, Entropy, etpbase, parent, pkgs, top_text = None, sub_text = None):
 
         self.pkgs = pkgs
         self.pkgcount = 0

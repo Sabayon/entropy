@@ -25,10 +25,11 @@ except ImportError:
     import _thread as thread
 from sulfur.setup import const, SulfurConf
 from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
+from sulfur.core import get_entropy_webservice
 import gobject
 
 # Entropy Imports
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_debug_write
 from entropy.output import print_generic, nocolor, decolorize
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
@@ -37,6 +38,7 @@ from entropy.misc import ParallelTask
 from entropy.client.mirrors import StatusInterface
 from entropy.exceptions import RepositoryError
 from entropy.db.exceptions import OperationalError, IntegrityError
+from entropy.services.client import WebService
 
 import entropy.dep
 import entropy.tools
@@ -193,14 +195,22 @@ class QueueExecutor:
 
             if not download_sources:
                 def spawn_ugc():
-                    try:
-                        if self._entropy.UGC != None:
-                            for myrepo in mykeys:
-                                mypkgkeys = sorted(mykeys[myrepo])
-                                self._entropy.UGC.add_download_stats(myrepo,
-                                    mypkgkeys)
-                    except:
-                        pass
+                    for myrepo, mykeys in mykeys.items():
+                        try:
+                            webserv = get_entropy_webservice(self._entropy,
+                                myrepo)
+                        except WebService.UnsupportedService:
+                            continue
+                        try:
+                            avail = webserv.service_available()
+                        except WebService.WebServiceException:
+                            avail = False
+                        if avail:
+                            try:
+                                webserv.add_downloads(sorted(mykeys))
+                            except WebService.WebServiceException as err:
+                                const_debug_write(__name__, repr(err))
+                                continue
                 spawn_ugc()
 
             def do_skip_hide():
@@ -315,8 +325,6 @@ class Equo(Client):
         Client.init_singleton(self, *args, **kwargs)
         self._progress_divider = 1
         self.xcache = True # force xcache enabling
-        if etpUi['debug']:
-            self.UGC.quiet = False
         self._mthread_rc = {
             'ask_question': {},
             'input_box': {},

@@ -124,9 +124,9 @@
             <property name="can_focus">True</property>
             <property name="border_width">2</property>
             <property name="show_border">False</property>
+            <signal name="change_current_page" handler="on_notebook_change_current_page"/>
             <signal name="switch_page" handler="on_notebook_switch_page"/>
             <signal name="select_page" handler="on_notebook_select_page"/>
-            <signal name="change_current_page" handler="on_notebook_change_current_page"/>
             <child>
               <widget class="GtkVBox" id="packagesVbox">
                 <property name="visible">True</property>
@@ -2740,8 +2740,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectSkipNew_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectSkipNew_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image23">
                                                         <property name="visible">True</property>
@@ -2783,8 +2783,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectSkipDelete_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectSkipDelete_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image36">
                                                         <property name="visible">True</property>
@@ -2869,8 +2869,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectMaskNew_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectMaskNew_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image15">
                                                         <property name="visible">True</property>
@@ -2891,8 +2891,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectMaskEdit_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectMaskEdit_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image29">
                                                         <property name="visible">True</property>
@@ -2913,8 +2913,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectMaskDelete_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectMaskDelete_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image35">
                                                         <property name="visible">True</property>
@@ -2998,8 +2998,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectNew_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectNew_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image13">
                                                         <property name="visible">True</property>
@@ -3020,8 +3020,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectEdit_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectEdit_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image27">
                                                         <property name="visible">True</property>
@@ -3042,8 +3042,8 @@ Relaxed</property>
                                                     <property name="can_focus">True</property>
                                                     <property name="receives_default">True</property>
                                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                                    <signal name="clicked" handler="on_configProtectDelete_clicked"/>
                                                     <signal name="released" handler="on_Preferences_toggled"/>
+                                                    <signal name="clicked" handler="on_configProtectDelete_clicked"/>
                                                     <child>
                                                       <widget class="GtkImage" id="image33">
                                                         <property name="visible">True</property>
@@ -3439,34 +3439,6 @@ Relaxed</property>
                                         <property name="expand">False</property>
                                         <property name="fill">False</property>
                                         <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkButton" id="ugcClearCacheButton">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="tooltip" translatable="yes">Clear all cache</property>
-                                        <signal name="clicked" handler="on_ugcClearCacheButton_clicked"/>
-                                        <child>
-                                          <widget class="GtkHBox" id="hbox46">
-                                            <property name="visible">True</property>
-                                            <child>
-                                              <widget class="GtkImage" id="image37">
-                                                <property name="visible">True</property>
-                                                <property name="stock">gtk-harddisk</property>
-                                              </widget>
-                                              <packing>
-                                                <property name="position">0</property>
-                                              </packing>
-                                            </child>
-                                          </widget>
-                                        </child>
-                                      </widget>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="fill">False</property>
-                                        <property name="position">1</property>
                                       </packing>
                                     </child>
                                   </widget>
@@ -6998,8 +6970,8 @@ gz</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="on_closeInfo_clicked"/>
                             <signal name="delete_event" handler="on_closeInfo_delete_event"/>
+                            <signal name="clicked" handler="on_closeInfo_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image14">
                                 <property name="visible">True</property>
@@ -7989,90 +7961,6 @@ gz</property>
                             <property name="visible">True</property>
                             <property name="orientation">vertical</property>
                             <child>
-                              <widget class="GtkHBox" id="hbox32">
-                                <property name="visible">True</property>
-                                <child>
-                                  <widget class="GtkImage" id="ugcIcon">
-                                    <property name="visible">True</property>
-                                    <property name="stock">gtk-dnd</property>
-                                    <property name="pixel_size">0</property>
-                                    <property name="icon-size">6</property>
-                                  </widget>
-                                  <packing>
-                                    <property name="padding">3</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkVBox" id="vbox60">
-                                    <property name="visible">True</property>
-                                    <property name="orientation">vertical</property>
-                                    <child>
-                                      <widget class="GtkLabel" id="ugcTitleLabel">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">1</property>
-                                        <property name="label" translatable="yes">User Generated Content</property>
-                                        <property name="use_markup">True</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="expand">False</property>
-                                        <property name="padding">3</property>
-                                        <property name="position">0</property>
-                                      </packing>
-                                    </child>
-                                    <child>
-                                      <widget class="GtkLabel" id="ugcDescriptionLabel">
-                                        <property name="visible">True</property>
-                                        <property name="xalign">0</property>
-                                        <property name="yalign">0</property>
-                                        <property name="label">User Generated Content description</property>
-                                      </widget>
-                                      <packing>
-                                        <property name="position">1</property>
-                                      </packing>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkAlignment" id="alignment10">
-                                    <property name="visible">True</property>
-                                    <property name="bottom_padding">20</property>
-                                    <property name="right_padding">6</property>
-                                    <child>
-                                      <widget class="GtkButton" id="loadUgcButton">
-                                        <property name="visible">True</property>
-                                        <property name="can_focus">True</property>
-                                        <property name="receives_default">True</property>
-                                        <property name="tooltip" translatable="yes">Load User Generated Content</property>
-                                        <signal name="clicked" handler="on_loadUgcButton_clicked"/>
-                                        <child>
-                                          <widget class="GtkImage" id="refreshImage">
-                                            <property name="visible">True</property>
-                                            <property name="stock">gtk-refresh</property>
-                                            <property name="icon-size">6</property>
-                                          </widget>
-                                        </child>
-                                      </widget>
-                                    </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
-                              </widget>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="padding">6</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
                               <widget class="GtkVBox" id="vbox55">
                                 <property name="visible">True</property>
                                 <property name="orientation">vertical</property>
@@ -8195,7 +8083,6 @@ gz</property>
                                     <child>
                                       <widget class="GtkHButtonBox" id="hbuttonbox5">
                                         <property name="visible">True</property>
-                                        <property name="spacing">6</property>
                                         <property name="layout_style">end</property>
                                         <child>
                                           <widget class="GtkButton" id="ugcShowButton">
@@ -8238,6 +8125,29 @@ gz</property>
                                         <property name="position">1</property>
                                       </packing>
                                     </child>
+                                    <child>
+                                      <widget class="GtkButton" id="loadUgcButton">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="has_tooltip">True</property>
+                                        <property name="tooltip" translatable="yes">Load User Generated Content</property>
+                                        <signal name="clicked" handler="on_loadUgcButton_clicked"/>
+                                        <child>
+                                          <widget class="GtkImage" id="refreshImage">
+                                            <property name="visible">True</property>
+                                            <property name="pixel_size">22</property>
+                                            <property name="icon_name">view-refresh</property>
+                                            <property name="icon-size">3</property>
+                                          </widget>
+                                        </child>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
                                   </widget>
                                   <packing>
                                     <property name="expand">False</property>
@@ -8247,7 +8157,7 @@ gz</property>
                                 </child>
                               </widget>
                               <packing>
-                                <property name="position">1</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                           </widget>
@@ -9282,6 +9192,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
               <widget class="GtkVBox" id="vbox59">
                 <property name="visible">True</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                <property name="orientation">vertical</property>
                 <child>
                   <widget class="GtkHBox" id="hbox3">
                     <property name="visible">True</property>
@@ -9359,8 +9270,8 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <signal name="clicked" handler="on_closeInfo_clicked"/>
                             <signal name="delete_event" handler="on_closeInfo_clicked"/>
+                            <signal name="clicked" handler="on_closeInfo_clicked"/>
                             <child>
                               <widget class="GtkImage" id="image20">
                                 <property name="visible">True</property>
@@ -9385,37 +9296,13 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                 <child>
                   <widget class="GtkVBox" id="vbox64">
                     <property name="visible">True</property>
+                    <property name="orientation">vertical</property>
                     <child>
                       <widget class="GtkTable" id="ugcTable">
                         <property name="visible">True</property>
-                        <property name="n_rows">6</property>
+                        <property name="n_rows">5</property>
                         <property name="n_columns">2</property>
                         <property name="row_spacing">3</property>
-                        <child>
-                          <widget class="GtkLabel" id="sizeContent">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label">this is the size</property>
-                            <property name="wrap">True</property>
-                          </widget>
-                          <packing>
-                            <property name="left_attach">1</property>
-                            <property name="right_attach">2</property>
-                            <property name="top_attach">5</property>
-                            <property name="bottom_attach">6</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <widget class="GtkLabel" id="sizeLabel">
-                            <property name="visible">True</property>
-                            <property name="xalign">0</property>
-                            <property name="label" translatable="yes">Size</property>
-                          </widget>
-                          <packing>
-                            <property name="top_attach">5</property>
-                            <property name="bottom_attach">6</property>
-                          </packing>
-                        </child>
                         <child>
                           <widget class="GtkLabel" id="keywordsContent">
                             <property name="visible">True</property>
@@ -11393,8 +11280,8 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                     <child>
                       <widget class="GtkEventBox" id="repoManagerConsoleEvent">
                         <property name="visible">True</property>
-                        <signal name="enter_notify_event" handler="on_repoManagerConsoleEvent_enter_notify_event"/>
                         <signal name="key_release_event" handler="on_repoManagerConsoleEvent_key_release_event"/>
+                        <signal name="enter_notify_event" handler="on_repoManagerConsoleEvent_enter_notify_event"/>
                         <child>
                           <widget class="GtkHBox" id="repoManagerTermHBox">
                             <property name="visible">True</property>

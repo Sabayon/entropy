@@ -25,16 +25,16 @@ import tempfile
 
 from entropy.exceptions import RepositoryError, InvalidPackageSet
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants, \
-    const_debug_write
+    const_debug_write, const_debug_enabled, const_get_stringtype
 from entropy.misc import ParallelTask, TimeScheduled
 from entropy.i18n import _, _LOCALE
 from entropy.tools import print_traceback
 from entropy.dep import dep_getkey
-from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI, busy_cursor, normal_cursor, \
-    STATUS_BAR_CONTEXT_IDS, resize_image, fork_function
+    STATUS_BAR_CONTEXT_IDS, resize_image, fork_function, \
+    get_entropy_webservice, Privileges
 from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage, EntropyPackage
 from sulfur.entropyapi import Equo
@@ -44,6 +44,8 @@ from sulfur.event import SulfurSignals
 
 from entropy.db.exceptions import ProgrammingError, Error as DbError, \
     OperationalError, DatabaseError
+from entropy.services.client import WebService
+from entropy.client.services.interfaces import ClientWebService
 
 class EntropyPackageViewModelInjector:
 
@@ -494,6 +496,7 @@ class EntropyPackageView:
         self.selected_objs = []
         self.last_row = None
         self.loaded_reinstallables = []
+        self._webserv_map = {}
         self._pixbuf_map = {}
         self.loaded_event = None
         self.do_refresh_view = False
@@ -689,15 +692,14 @@ class EntropyPackageView:
         self.queue_full_exception = Full
         self.queue_empty_exception = Empty
 
+        self.__pkg_ugc_icon_local_path_cache = {}
         self.__pkg_ugc_icon_cache = {}
-        self.__pkg_ugc_icon_call_cache = {}
-        # max 64 items at time, don't lower it too much, can cause
-        # request starvation with the current very low priority
-        self._ugc_load_queue = queue_class(64)
-        self._ugc_load_thread = TimeScheduled(3, self._ugc_queue_run)
+        # avoid DoS, lol
+        self._ugc_icon_load_queue = queue_class(64)
+        self._ugc_icon_thread = TimeScheduled(3, self._ugc_icon_queue_run)
         if self._ugc_status:
             # deferred loading, speedup UI init
-            gobject.timeout_add_seconds(15, self._ugc_load_thread.start)
+            gobject.timeout_add_seconds(15, self._ugc_icon_thread.start)
 
     def __update_ugc_event(self, event):
         self.view.queue_draw()
@@ -864,7 +866,7 @@ class EntropyPackageView:
         self.loaded_event = event
         del self.loaded_reinstallables[:]
 
-        if objs == None:
+        if objs is None:
             objs = self.collect_selected_items(widget)
 
         event_x = event.x
@@ -909,16 +911,16 @@ class EntropyPackageView:
 
                 return True
 
-        elif len(objs) == 1:
-            obj = objs[0]
-            distance = 0
-            for col in self.view.get_columns()[0:2]:
-                distance += col.get_width()
-            if (event_x > distance) and (event_x < (distance+self.stars_col_size)):
-                vote = int((event_x - distance)/self.stars_col_size*5)+1
-                # this is required to fix idiotic GTK behaviour
+        elif column.get_title() == self.pkgcolumn_text_rating:
+            def _do_vote(x, widget):
+                rel_distance = x
+                valid_votes = ClientWebService.VALID_VOTES
+                vote = int(float(rel_distance) / self.stars_col_size * \
+                    len(valid_votes)) + 1
                 self.delayed_vote_submit(widget, vote)
-                return True
+                return False
+            gobject.idle_add(_do_vote, x, widget)
+            return True
 
         return False
 
@@ -952,6 +954,7 @@ class EntropyPackageView:
 
     def run_properties_menu(self, menu_item):
         objs = self.collect_selected_items()
+
         for obj in objs:
             if obj.is_group or obj.is_pkgset_cat:
                 continue
@@ -1141,7 +1144,8 @@ class EntropyPackageView:
         busy_cursor(self.main_window)
         objs = self.selected_objs
         oldmask = self.etpbase.unmaskingPackages.copy()
-        mydialog = MaskedPackagesDialog(self._entropy, self.etpbase, self.ui.main, objs)
+        mydialog = MaskedPackagesDialog(self._entropy, self.etpbase,
+            self.ui.main, objs)
         result = mydialog.run()
         if result != -5:
             self.etpbase.unmaskingPackages = oldmask.copy()
@@ -1734,25 +1738,116 @@ class EntropyPackageView:
 
         return store
 
+    def _get_webservice(self, repository_id):
+        webserv = self._webserv_map.get(repository_id)
+        if webserv == -1:
+            # not available
+            return None
+        if webserv is not None:
+            return webserv
+
+        with Privileges():
+            try:
+                webserv = get_entropy_webservice(self._entropy, repository_id)
+            except WebService.UnsupportedService as err:
+                webserv = None
+
+            if webserv is None:
+                self._webserv_map[repository_id] = -1
+                # not available
+                return
+
+            try:
+                available = webserv.service_available()
+            except WebService.WebServiceException:
+                available = False
+
+        if not available:
+            self._webserv_map[repository_id] = -1
+            # not available
+            return
+
+        self._webserv_map[repository_id] = webserv
+        return webserv
+
+    def _ugc_available(self, repository_id):
+        webserv = self._get_webservice(repository_id)
+        if webserv is None:
+            return False
+        return True
+
+    def _ugc_cache_icons(self, repository_id, package_names, cache):
+
+        webserv = self._get_webservice(repository_id)
+        if webserv is None:
+            return
+
+        for package_name in package_names:
+            with Privileges():
+                # sorry web service, we need data this way
+                try:
+                    icon_docs = webserv.get_icons([package_name],
+                        cache = cache)[package_name]
+                except WebService.WebServiceException as err:
+                    return
+
+            # get document urls, store to local cache
+            for icon_doc in icon_docs:
+                cache_key = package_name, icon_doc.repository_id()
+                if cache_key in self.__pkg_ugc_icon_local_path_cache:
+                    const_debug_write(__name__,
+                        "_ugc_cache_icons: already in cache: %s" % (
+                            cache_key,))
+                    continue
+                with Privileges():
+                    try:
+                        local_path = webserv.get_document_url(icon_doc)
+                    except ClientWebService.DocumentError as err:
+                        const_debug_write(__name__,
+                            "_ugc_cache_icons: document error: %s" % (
+                                err,))
+                        continue
+
+                try:
+                    self.__pkg_ugc_icon_cache.pop(cache_key)
+                except KeyError:
+                    pass
+                self.__pkg_ugc_icon_local_path_cache[cache_key] = local_path
+                const_debug_write(__name__,
+                    "_ugc_cache_icons: pushed to cache: %s, %s" % (
+                        cache_key, local_path,))
+                break
+
     def __ugc_dnd_updates_clear_cache(self, *args):
 
         const_debug_write(__name__, "EntropyPackageView, "
             "__ugc_dnd_updates_clear_cache called")
 
-        while True:
-            try:
-                key, repoid = self._ugc_dnd_cache_taint.pop()
-            except KeyError:
-                break
-            self._entropy.UGC.get_docs(repoid, key)
+        def _do_parallel():
 
-        self.__pkg_ugc_icon_cache.clear()
-        self.__pkg_ugc_icon_call_cache.clear()
-        self._ugc_pixbuf_map.clear()
-        self._ugc_metadata_sync_exec_cache.clear()
-        self._emit_ugc_update()
+            fetch_map = {}
+            while True:
+                try:
+                    key, repoid = self._ugc_dnd_cache_taint.pop()
+                except KeyError:
+                    break
+                obj = fetch_map.setdefault(repoid, set())
+                obj.add(key)
 
-    def _ugc_drag_data_received(self, view, context, x, y, selection, drop_id, etime):
+            for repository_id, keys in fetch_map.items():
+                self._ugc_cache_icons(repository_id, keys, False)
+
+            self.__pkg_ugc_icon_cache.clear()
+            self._ugc_pixbuf_map.clear()
+            self._ugc_metadata_sync_exec_cache.clear()
+            self._emit_ugc_update()
+            self.__pkg_ugc_icon_local_path_cache.clear()
+
+        th = ParallelTask(_do_parallel)
+        th.start()
+
+    def _ugc_drag_data_received(self, view, context, x, y, selection, drop_id,
+        etime):
         """
         Callback function for drag_data_received event used for UGC interaction
         on Drag and Drop.
@@ -1857,7 +1952,7 @@ class EntropyPackageView:
             obj.voted = 0.0
             return
         repository = obj.repoid
-        if not self._entropy.UGC.is_repository_eapi3_aware(repository):
+        if not self._ugc_available(repository):
             obj.voted = 0.0
             return
         atom = obj.name
@@ -1868,8 +1963,80 @@ class EntropyPackageView:
         t = ParallelTask(self.vote_submit_thread, repository, key, obj)
         t.start()
 
+    def _ugc_login(self, webserv, repository):
+
+        def fake_callback(*args, **kwargs):
+            return True
+
+        # use input box to read login
+        input_params = [
+            ('username', _('Username'), fake_callback, False),
+            ('password', _('Password'), fake_callback, True)
+        ]
+        login_data = self._entropy.input_box(
+            "%s %s %s" % (
+                _('Please login against'), repository, _('repository'),),
+            input_params,
+            cancel_button = True
+        )
+        if not login_data:
+            return False
+
+        username, password = login_data['username'], login_data['password']
+        with Privileges():
+            webserv.add_credentials(username, password)
+            try:
+                webserv.validate_credentials()
+            except WebService.AuthenticationFailed:
+                okDialog(self.ui.main,
+                    _("Authentication error. Not logged in."))
+                return False
+            okDialog(self.ui.main,
+                _("Successfully logged in."))
+            return True
+
     def vote_submit_thread(self, repository, key, obj):
-        status, err_msg = self._entropy.UGC.add_vote(repository, key, int(obj.voted))
+
+        status = True
+        err_msg = None
+
+        webserv = self._get_webservice(repository)
+        if webserv is None:
+            err_msg = _("Unsupported Service")
+            status = False
+
+        if status:
+
+            with Privileges():
+                try:
+                    status = webserv.add_vote(key, int(obj.voted))
+                except WebService.AuthenticationRequired:
+                    def _do_login():
+                        logged_in = self._ugc_login(webserv, repository)
+                        if logged_in:
+                            # call myself again
+                            gobject.idle_add(self.vote_submit_thread,
+                                repository, key, obj)
+                        else:
+                            t = ParallelTask(self.refresh_vote_info, obj)
+                            t.start()
+                        return False
+                    gobject.idle_add(_do_login)
+                    return False
+                except WebService.WebServiceException as err:
+                    err_msg = repr(err)
+                    status = False
+
+        if status:
+            with Privileges():
+                # need to refill local cache
+                done = True
+                try:
+                    webserv.get_votes([key], cache = False)
+                except WebService.WebServiceException as err:
+                    # ouch! drop everything completely
+                    webserv._drop_cached("get_votes")
+                    done = False
 
         if status:
             color = SulfurConf.color_good
@@ -1878,19 +2045,16 @@ class EntropyPackageView:
         else:
             color = SulfurConf.color_error
             txt1 = _("Error registering vote")
-            txt2 = err_msg
+            txt2 = err_msg or _("Already voted")
 
         msg = "<span foreground='%s'><b>%s</b></span>: %s" % (
                 color, txt1, txt2,)
 
         def do_refresh(msg):
-            self.ui.status.push(STATUS_BAR_CONTEXT_IDS['UGC'],
-                "%s: %s" % (txt1, txt2,))
             self.ui.UGCMessageLabel.show()
             self.ui.UGCMessageLabel.set_markup(msg)
             return False
         def remove_ugc_sts():
-            self.ui.status.pop(STATUS_BAR_CONTEXT_IDS['UGC'])
             self.ui.UGCMessageLabel.set_markup("")
             self.ui.UGCMessageLabel.hide()
             return False
@@ -1899,6 +2063,7 @@ class EntropyPackageView:
         gobject.timeout_add_seconds(20, remove_ugc_sts)
         t = ParallelTask(self.refresh_vote_info, obj)
         t.start()
+        return False
 
     def refresh_vote_info(self, obj):
         time.sleep(5)
@@ -2045,12 +2210,12 @@ class EntropyPackageView:
             else:
                 cell.set_property('foreground', None)
 
-    def _ugc_queue_run(self):
+    def _ugc_icon_queue_run(self):
 
-        const_debug_write(__name__, "_ugc_queue_run called")
+        const_debug_write(__name__, "_ugc_icon_queue_run called")
 
         pkgs = set()
-        queue = self._ugc_load_queue
+        queue = self._ugc_icon_load_queue
 
         while queue.qsize():
             try:
@@ -2062,40 +2227,24 @@ class EntropyPackageView:
 
         if pkgs:
             const_debug_write(__name__,
-                "_ugc_queue_run, spawning fetch of: %s" % (pkgs,))
-            self._spawn_ugc_metadata_fetch(pkgs)
+                "_ugc_icon_queue_run, spawning fetch of: %s" % (pkgs,))
+            self._spawn_ugc_icon_docs_fetch(pkgs)
 
 
-    def _spawn_ugc_metadata_fetch(self, pkgs):
+    def _spawn_ugc_icon_docs_fetch(self, pkgs):
 
         def do_ugc_sync():
+            pkg_map = {}
             for key, repoid in pkgs:
-                const_debug_write(__name__,
-                    "_spawn_ugc_metadata_fetch, checking: %s, %s" % (
-                        key, repoid,))
-                if self._entropy.UGC.UGCCache.is_alldocs_cached(key, repoid):
-                    const_debug_write(__name__,
-                        "_spawn_ugc_metadata_fetch, skipping !!: %s, %s" % (
-                            key, repoid,))
-                    continue
-                outcome = self._entropy.UGC.get_docs(repoid, key)
-                const_debug_write(__name__,
-                    "_spawn_ugc_metadata_fetch, get_docs() called: %s" % (
-                        outcome,))
-            self.__pkg_ugc_icon_call_cache.clear()
+                obj = pkg_map.setdefault(repoid, [])
+                obj.append(key)
 
-        def do_fork():
-            fork_function(do_ugc_sync, self._emit_ugc_update)
+            for repoid, keys in pkg_map.items():
+                self._ugc_cache_icons(repoid, keys, True)
+            self._emit_ugc_update()
 
-        gobject.idle_add(do_fork, priority = gobject.PRIORITY_LOW)
-
-    def _spawn_ugc_icon_fetch(self, icon_doc, repoid):
-
-        def do_icon_fetch():
-            self._entropy.UGC.UGCCache.store_document(icon_doc['iddoc'],
-                repoid, icon_doc['store_url'])
-
-        fork_function(do_icon_fetch, self._emit_ugc_update)
+        th = ParallelTask(do_ugc_sync)
+        th.start()
 
     def _get_cached_pkg_ugc_icon(self, pkg):
 
@@ -2109,9 +2258,12 @@ class EntropyPackageView:
 
         cache_key = (key, repoid,)
         cached = self.__pkg_ugc_icon_cache.get(cache_key)
+        if cached == -1:
+            # unavailable
+            return None
         if cached is not None:
-            const_debug_write(__name__, "_get_cached_pkg_ugc_icon %s in RAM" % (
-                cache_key,))
+            #const_debug_write(__name__, "_get_cached_pkg_ugc_icon %s in RAM" % (
+            #    cache_key,))
             return cached
 
         # validate variables...
@@ -2120,38 +2272,41 @@ class EntropyPackageView:
         if repoid is None:
             return
 
-        icon_doc = self._entropy.UGC.UGCCache.get_icon_cache(key, repoid)
-        if icon_doc is None:
-            const_debug_write(__name__,
-                "_get_cached_pkg_ugc_icon %s NOT on disk" % (
-                    cache_key,))
-            # not cached
-            return
-
-        const_debug_write(__name__,
-            "_get_cached_pkg_ugc_icon %s on disk?" % (
+        webserv = self._get_webservice(repoid)
+        if webserv is None:
+            const_debug_write(__name__, "_get_cached_pkg_ugc_icon %s unsup." % (
                 cache_key,))
+            return
 
-        store_path = self._entropy.UGC.UGCCache.get_stored_document(
-            icon_doc['iddoc'], repoid, icon_doc['store_url'])
-
+        store_path = self.__pkg_ugc_icon_local_path_cache.get(cache_key)
         if store_path is None:
-            # not cached
-            called = self.__pkg_ugc_icon_call_cache.get(cache_key)
-            if not called:
-                self._spawn_ugc_icon_fetch(icon_doc, repoid)
-            self.__pkg_ugc_icon_call_cache[cache_key] = True
-            const_debug_write(__name__,
-                "_get_cached_pkg_ugc_icon %s not cached on disk" % (
-                    cache_key,))
-            return
 
-        if not (os.access(store_path, os.R_OK) and os.path.isfile(store_path)):
-            # not cached
-            const_debug_write(__name__,
-                "_get_cached_pkg_ugc_icon %s path not available" % (
-                    cache_key,))
-            return
+            with Privileges():
+                # sorry web service, we need data this way
+                try:
+                    icon_docs = webserv.get_icons([key], cache = True,
+                        cached = True)[key]
+                except WebService.CacheMiss as err:
+                    #const_debug_write(__name__,
+                    #    "_get_cached_pkg_ugc_icon %s NOT cached yet" % (
+                    #        cache_key,))
+                    self.__pkg_ugc_icon_cache[cache_key] = -1
+                    return
+
+            # get document urls, store to local cache
+            for icon_doc in icon_docs:
+                local_path = icon_doc.local_document()
+                if local_path is None:
+                    continue
+                store_path = local_path
+                break
+
+            if store_path is None:
+                #const_debug_write(__name__,
+                #    "_get_cached_pkg_ugc_icon %s NOT cached yet (2)" % (
+                #        cache_key,))
+                self.__pkg_ugc_icon_cache[cache_key] = -1
+                return
 
         icon_path = store_path + ".sulfur_icon_small"
         pixbuf = self._ugc_pixbuf_map.get(icon_path)
@@ -2165,7 +2320,8 @@ class EntropyPackageView:
             if not (os.path.isfile(icon_path) and \
                 os.access(icon_path, os.R_OK)):
                 try:
-                    resize_image(self._get_row_height(), store_path,
+                    # keep some margin... -5
+                    resize_image(self._get_row_height() - 5, store_path,
                         icon_path)
                 except (ValueError, OSError, IOError, gobject.GError):
                     # OSError = source file moved while copying
@@ -2191,52 +2347,63 @@ class EntropyPackageView:
     def __new_ugc_pixbuf_stash_fetch(self, pkg):
         # stash to queue for loading from WWW if required
 
-        const_debug_write(__name__,
-            "__new_ugc_pixbuf_stash_fetch called: %s" % (
-                pkg,))
+        #if const_debug_enabled():
+        #    const_debug_write(__name__,
+        #        "__new_ugc_pixbuf_stash_fetch called: %s" % (
+        #            pkg,))
 
         if not self._ugc_status:
-            const_debug_write(__name__,
-                "__new_ugc_pixbuf_stash_fetch UGC STATUS FALSE!")
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__new_ugc_pixbuf_stash_fetch UGC STATUS FALSE!")
             return
 
-        const_debug_write(__name__,
-            "__new_ugc_pixbuf_stash_fetch going on for: %s" % (
-                pkg,))
+        #if const_debug_enabled():
+        #    const_debug_write(__name__,
+        #        "__new_ugc_pixbuf_stash_fetch going on for: %s" % (
+        #            pkg,))
 
         try:
             repoid = pkg.repoid
             sync_item = (pkg.key, repoid)
         except (ProgrammingError, OperationalError) as err:
-            const_debug_write(__name__,
-                "__new_ugc_pixbuf_stash_fetch, ouch: %s" % (
-                    repr(err),))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__new_ugc_pixbuf_stash_fetch, ouch: %s" % (
+                        repr(err),))
             return
         if sync_item in self._ugc_metadata_sync_exec_cache:
-            const_debug_write(__name__,
-                "__new_ugc_pixbuf_stash_fetch: already in cache: %s" % (
-                    sync_item,))
+            #if const_debug_enabled():
+            #    const_debug_write(__name__,
+            #        "__new_ugc_pixbuf_stash_fetch: already in cache: %s" % (
+            #            sync_item,))
             return
 
         self._ugc_metadata_sync_exec_cache.add(sync_item)
-        if not self._entropy.UGC.is_repository_eapi3_aware(repoid):
-            const_debug_write(__name__,
-                "__new_ugc_pixbuf_stash_fetch: repository not EAPI3 aware: %s" % (
-                    repoid,))
+        if not self._ugc_available(repoid):
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__new_ugc_pixbuf_stash_fetch: "
+                        "repository not Web Services aware: %s" % (
+                            repoid,))
             return
 
-        const_debug_write(__name__,
-            "__new_ugc_pixbuf_stash_fetch: enqueue %s" % (sync_item,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch: enqueue %s" % (sync_item,))
 
         try:
-            self._ugc_load_queue.put_nowait(sync_item)
-            const_debug_write(__name__,
-                "__new_ugc_pixbuf_stash_fetch: enqueued!! %s" % (sync_item,))
+            self._ugc_icon_load_queue.put_nowait(sync_item)
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__new_ugc_pixbuf_stash_fetch: enqueued!! %s" % (
+                        sync_item,))
         except self.queue_full_exception as err:
             # argh! queue full!
-            const_debug_write(__name__,
-                "__new_ugc_pixbuf_stash_fetch: ARGH QUEUE FULL %s" % (
-                    sync_item,))
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                    "__new_ugc_pixbuf_stash_fetch: ARGH QUEUE FULL %s" % (
+                        sync_item,))
             pass
 
     def new_ugc_pixbuf(self, column, cell, model, myiter):

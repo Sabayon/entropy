@@ -19,12 +19,16 @@
 import os
 import sys
 import shutil
+import threading
 
 import gtk
 import gtk.glade
 import gobject
-from entropy.const import const_debug_write
+from entropy.const import const_debug_write, const_drop_privileges, \
+    const_regain_privileges, etpConst
 from entropy.misc import ParallelTask
+from entropy.core import Singleton
+from sulfur.setup import const
 
 FORK_PIDS = []
 
@@ -164,6 +168,26 @@ def resize_image(max_width, image_path, new_image_path):
         del img_buf
     del img
 
+def resize_image_height(max_height, image_path, new_image_path):
+    shutil.copy2(image_path, new_image_path)
+    img = gtk.Image()
+    img.set_from_file(new_image_path)
+    img_buf = img.get_pixbuf()
+    w, h = img_buf.get_width(), img_buf.get_height()
+    if h > max_height:
+        # resize pix
+        new_h = max_height
+        new_w = new_h*w/h
+        img_buf = img_buf.scale_simple(int(new_w),
+            int(new_h), gtk.gdk.INTERP_BILINEAR)
+        try:
+            img_buf.save(new_image_path, "png")
+        except gobject.GError:
+            # libpng issue? try jpeg
+            img_buf.save(new_image_path, "jpeg")
+        del img_buf
+    del img
+
 def load_url(url):
     xdg_open = '/usr/bin/xdg-open'
     if os.access(xdg_open, os.X_OK):
@@ -172,3 +196,66 @@ def load_url(url):
             # child
             os.execv(xdg_open, [xdg_open, url])
             os._exit(0)
+
+def get_entropy_webservice(entropy_client, repository_id, tx_cb = None):
+    """
+    Get Entropy Web Services service object (ClientWebService).
+
+    @param entropy_client: Entropy Client interface
+    @type entropy_client: entropy.client.interfaces.Client
+    @param repository_id: repository identifier
+    @type repository_id: string
+    @return: the ClientWebService instance
+    @rtype: entropy.client.services.interfaces.ClientWebService
+    @raise WebService.UnsupportedService: if service is unsupported by
+        repository
+    """
+    factory = entropy_client.WebServices()
+    webserv = factory.new(repository_id)
+    if tx_cb is not None:
+        webserv._set_transfer_callback(tx_cb)
+    return webserv
+
+class Privileges(Singleton):
+
+    def init_singleton(self):
+        self.__drop_privs = True
+        self.__drop_privs_lock = threading.RLock()
+        self.__with_stmt = 0
+
+    def __enter__(self):
+        """
+        Hold the lock.
+        """
+        self.__drop_privs_lock.acquire()
+        if self.__with_stmt < 1:
+            self.regain()
+        self.__with_stmt += 1
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Drop the lock.
+        """
+        if self.__with_stmt == 1:
+            self.drop()
+        self.__with_stmt -= 1
+        self.__drop_privs_lock.release()
+
+    def drop(self):
+        """
+        Drop process privileges. Setting unpriv_gid to etpConst['entropygid']
+        makes Entropy UGC/Data cache handling working.
+        """
+        if self.__drop_privs:
+            with self.__drop_privs_lock:
+                const_drop_privileges(unpriv_gid = etpConst['entropygid'])
+                const.setup()
+
+    def regain(self):
+        """
+        Regain previously dropped process privileges.
+        """
+        if self.__drop_privs:
+            with self.__drop_privs_lock:
+                const_regain_privileges()
+                const.setup()
