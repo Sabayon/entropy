@@ -262,19 +262,14 @@ class WebService(object):
         self._repository_data = _repository_data
         web_services_conf = self._repository_data['webservices_config']
 
-        # mainly for debugging purposes, hidden and undocumented
-        override_request_url = os.getenv("ETP_OVERRIDE_REQUEST_URL")
-        if override_request_url is not None:
-            _remote_url = override_request_url
-        else:
-            try:
-                with open(web_services_conf, "r") as web_f:
-                    # currently, in this file there is only the remote base URL
-                    _remote_url = web_f.readline().strip()
-            except (OSError, IOError) as err:
-                const_debug_write(__name__, "WebService.__init__ error: %s" % (
-                    err,))
-                raise WebService.UnsupportedService(err)
+        try:
+            with open(web_services_conf, "r") as web_f:
+                # currently, in this file there is only the remote base URL
+                _remote_url = web_f.readline().strip()
+        except (OSError, IOError) as err:
+            const_debug_write(__name__, "WebService.__init__ error: %s" % (
+                err,))
+            raise WebService.UnsupportedService(err)
 
         url_obj = entropy.tools.spliturl(_remote_url)
         if url_obj.scheme not in WebService.SUPPORTED_URL_SCHEMAS:
