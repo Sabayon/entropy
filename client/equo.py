@@ -599,7 +599,7 @@ def _do_text_cleanup(main_cmd, options):
     try:
         import text_tools
         from entropy.client.interfaces import Client
-        client = Client(repo_validation = False, load_ugc = False,
+        client = Client(repo_validation = False,
             indexing = False, installed_repo = False)
         acquired = entropy.tools.acquire_entropy_locks(client)
         if not acquired:
@@ -696,7 +696,7 @@ CMDS_MAP = {
 def _match_bashcomp(cmdline):
     # speed up loading, preload singleton with faster settings
     from entropy.client.interfaces import Client
-    client = Client(repo_validation = False, load_ugc = False,
+    client = Client(repo_validation = False,
         indexing = False, installed_repo = False)
     try:
         if client.installed_repository() is None:
@@ -711,7 +711,7 @@ def _match_bashcomp(cmdline):
 def _search_bashcomp(cmdline, from_installed = False, ignore_installed = False):
     # speed up loading, preload singleton with faster settings
     from entropy.client.interfaces import Client
-    client = Client(repo_validation = False, load_ugc = False,
+    client = Client(repo_validation = False,
         indexing = False, installed_repo = False)
     try:
         if client.installed_repository() is None:
