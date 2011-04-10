@@ -1622,6 +1622,7 @@ def const_debug_enabled():
     """
     return etpUi['debug']
 
+_DEBUG_W_LOCK = threading.Lock()
 def const_debug_write(identifier, msg):
     """
     Entropy debugging output write functions.
@@ -1634,12 +1635,14 @@ def const_debug_write(identifier, msg):
     @return: None
     """
     if etpUi['debug']:
-        if sys.hexversion >= 0x3000000:
-            sys.stdout.buffer.write(const_convert_to_rawstring(identifier) + \
-                b" " + const_convert_to_rawstring(msg) + b"\n")
-        else:
-            sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
-        sys.stdout.flush()
+        with _DEBUG_W_LOCK:
+            if sys.hexversion >= 0x3000000:
+                sys.stdout.buffer.write(
+                    const_convert_to_rawstring(identifier) + \
+                        b" " + const_convert_to_rawstring(msg) + b"\n")
+            else:
+                sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
+            sys.stdout.flush()
 
 def const_get_caller():
     """
