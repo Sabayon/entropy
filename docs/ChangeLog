@@ -1,3 +1,45 @@
+commit 8481a9b847e6646dafaf27ae8e6644b2cc506f59
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 11 14:53:21 2011 +0200
+
+    Release Entropy 1.0_alpha43
+
+commit d635c89476dbda94a9dd0dfbc5cfd1ff379ce0ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 11 14:18:54 2011 +0200
+
+    [sulfur/package] remove some warnings
+
+commit 49a258c587aa67d02c20ef9adbffea6f2947590e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 11 14:11:18 2011 +0200
+
+    [sulfur] fix another undefined reference inside setup_images()
+
+commit edd1ef79d58ed9ba736620aff49a7f50f629effd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 11 14:10:36 2011 +0200
+
+    [sulfur] fix undefined reference
+
+commit 63097c3d4d8fb1ce2e744ff1820af30e93bc4426
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 10 23:50:44 2011 +0200
+
+    [entropy.client.services] convert to byte string before pushing to hashlib.sha1
+
+commit 17baf12a2e6de432915fabd65f4ebb3591190e58
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 10 23:28:32 2011 +0200
+
+    [entropy.services.client] drop ETP_OVERRIDE_REQUEST_URL
+
+commit 30b7f6c191e0119536894f958ec4a408d8714bf9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 10 23:27:18 2011 +0200
+
+    Tagging Entropy version 1.0_alpha42
+
 commit 207eaa55135732e39125a7b9e70bca852002237e
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Apr 10 23:27:03 2011 +0200
