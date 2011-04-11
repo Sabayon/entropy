@@ -158,7 +158,7 @@ class QueueExecutor:
         steps_counter = total_steps
         progress_step_count = 0
 
-        mykeys = {}
+        ugc_pkgs = {}
         # manually handle progress
         old_prog_state = GuiUrlFetcher.get_progress_bar_enable()
         GuiUrlFetcher.enable_progress_bar(False)
@@ -177,9 +177,8 @@ class QueueExecutor:
                 pkg.prepare(pkg_info, fetch_action, metaopts)
 
                 myrepo = pkg.pkgmeta['repository']
-                if myrepo not in mykeys:
-                    mykeys[myrepo] = set()
-                mykeys[myrepo].add(
+                kobj = ugc_pkgs.setdefault(myrepo, set())
+                kobj.add(
                     entropy.dep.dep_getkey(pkg.pkgmeta['atom']))
 
                 self._entropy.output(
@@ -194,24 +193,22 @@ class QueueExecutor:
                 del pkg
 
             if not download_sources:
-                def spawn_ugc():
-                    for myrepo, mykeys in mykeys.items():
+                for myrepo, mykeys in ugc_pkgs.items():
+                    try:
+                        webserv = get_entropy_webservice(self._entropy,
+                            myrepo)
+                    except WebService.UnsupportedService:
+                        continue
+                    try:
+                        avail = webserv.service_available()
+                    except WebService.WebServiceException:
+                        avail = False
+                    if avail:
                         try:
-                            webserv = get_entropy_webservice(self._entropy,
-                                myrepo)
-                        except WebService.UnsupportedService:
+                            webserv.add_downloads(sorted(mykeys))
+                        except WebService.WebServiceException as err:
+                            const_debug_write(__name__, repr(err))
                             continue
-                        try:
-                            avail = webserv.service_available()
-                        except WebService.WebServiceException:
-                            avail = False
-                        if avail:
-                            try:
-                                webserv.add_downloads(sorted(mykeys))
-                            except WebService.WebServiceException as err:
-                                const_debug_write(__name__, repr(err))
-                                continue
-                spawn_ugc()
 
             def do_skip_hide():
                 self.Sulfur.ui.skipMirror.hide()
