@@ -12,10 +12,16 @@
 __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
     "DocumentList", "DocumentFactory"]
 
+import sys
 import os
 import base64
 import hashlib
 import time
+if sys.hexversion >= 0x3000000:
+    from io import StringIO
+else:
+    from cStringIO import StringIO
+
 from entropy.const import const_get_stringtype, etpConst, const_setup_perms, \
     const_convert_to_rawstring
 from entropy.i18n import _
@@ -1351,5 +1357,16 @@ class ClientWebService(WebService):
             Service API do not match
         @raise WebService.MethodResponseError; if method execution failed
         """
-        self._method_getter("report_error", error_params,
-            require_credentials = False, cache = False)
+        params = {}
+        file_params = {}
+        for k, v in error_params.items():
+            if isinstance(v, const_get_stringtype()):
+                sio = StringIO()
+                sio.write(v)
+                sio.seek(0)
+                file_params[k] = (k + ".txt", sio)
+            else:
+                params[k] = v
+        self._method_getter("report_error", params,
+            file_params = file_params, require_credentials = False,
+            cache = False)
