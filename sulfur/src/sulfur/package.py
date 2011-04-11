@@ -35,7 +35,6 @@ class DummyEntropyPackage:
         self.repoid_clean = ''
         self.name = ''
         self.vote = -1
-        self.voted = 0.0
         self.color = None
         self.action = None
         self.dbconn = None
@@ -56,6 +55,10 @@ class DummyEntropyPackage:
         self.set_remove_incomplete = False
         self.is_downgrade = False
         self.is_group = False
+
+    @property
+    def voted(self):
+        return 0.0
 
 class EntropyPackage:
 
@@ -98,9 +101,8 @@ class EntropyPackage:
                 (set_from, self.set_name, self.set_matches,) = set_match
                 self.set_from.add(set_from)
 
-            self.cat = self.set_name
+            self._cat = self.set_name
             self.set_cat_namedesc = self.set_name
-            self.description = self.set_name
             self.matched_repo = self.set_name
 
             self.matched_id = etpConst['packagesetprefix']
@@ -109,8 +111,6 @@ class EntropyPackage:
             self.dummy_type = -2
             self.is_set_dep = True
             self.set_names = set()
-            self.onlyname = self.set_name
-            self.name = self.set_name
             self.set_category = False
 
         elif self.remote:
@@ -461,7 +461,7 @@ class EntropyPackage:
 
     def get_category(self):
         if self.pkgset:
-            return self.cat
+            return self._cat
         cached = self.__cache.get('get_category')
         if cached:
             return cached
@@ -660,9 +660,6 @@ class EntropyPackage:
         if vote is None:
             return 0.0
         return vote
-
-    def get_ugc_package_voted(self):
-        return self.voted
 
     def get_ugc_package_downloads(self):
         if self.pkgset:
@@ -937,10 +934,6 @@ class EntropyPackage:
     @property
     def votefloat(self):
         return self.get_ugc_package_vote_float()
-
-    @property
-    def voted(self):
-        return self.get_ugc_package_voted()
 
     @property
     def downloads(self):
