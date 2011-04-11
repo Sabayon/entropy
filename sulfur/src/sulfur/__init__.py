@@ -1484,7 +1484,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
             for repo in repos:
                 # inform UGC that we are syncing this repo
-                webserv = self._get_webservice(repository)
+                webserv = self._get_webservice(repo)
                 if webserv is None:
                     continue
                 try:
