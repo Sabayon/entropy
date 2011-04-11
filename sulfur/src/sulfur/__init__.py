@@ -856,7 +856,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             try:
                 p = gtk.gdk.pixbuf_new_from_file(iconpath)
                 self.ui.progressImage.set_from_pixbuf(p)
-            except gobject.GError:
+            except gobject.GError as err:
                 if self.do_debug:
                     print_generic("Error loading %s: %s" % (iconpath, err,))
 
