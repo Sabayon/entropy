@@ -363,6 +363,8 @@ class RepositoryMixin:
                 '__temporary__')
             avail_data[repoid]['webinstall_package'] = repository_metadata.get(
                 'webinstall_package', False)
+            avail_data[repoid]['webservices_config'] = repository_metadata.get(
+                'webservices_config', None)
             # put at top priority, shift others
             self._settings['repositories']['order'].insert(0, repoid)
             # NOTE: never call SystemSettings.clear() here, or
@@ -767,6 +769,7 @@ class RepositoryMixin:
         repodata['post_branch_upgrade_script'] = None
         repodata['post_repo_update_script'] = None
         repodata['post_branch_hop_script'] = None
+        repodata['webservices_config'] = None
         if repodata['webinstall_package']:
             try:
                 plain_packages = repo.getSetting("plain_packages")
