@@ -260,7 +260,12 @@ class WebService(object):
         if _repository_data is None:
             raise WebService.UnsupportedService("unsupported")
         self._repository_data = _repository_data
-        web_services_conf = self._repository_data['webservices_config']
+        web_services_conf = self._repository_data.get('webservices_config')
+        if web_services_conf is None:
+            # then it's unsupported
+            # .etp and .tbz2 repos can be in this status atm
+            raise WebService.UnsupportedService(
+                "unsupported, no config provided")
 
         try:
             with open(web_services_conf, "r") as web_f:
