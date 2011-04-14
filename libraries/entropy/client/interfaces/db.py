@@ -34,6 +34,8 @@ from entropy.db.skel import EntropyRepositoryPlugin, EntropyRepositoryBase
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
     DatabaseError
 from entropy.core.settings.base import SystemSettings
+from entropy.services.client import WebService
+from entropy.client.services.interfaces import RepositoryWebService
 
 import entropy.tools
 
@@ -145,7 +147,7 @@ class AvailablePackagesRepositoryUpdater(object):
     AvailablePackagesRepository update logic class.
     The required logic for updating a repository is stored here.
     """
-    EAPI3_CACHE_ID = 'eapi3/segment_'
+    WEBSERV_CACHE_ID = 'webserv_repo/segment_'
 
     def __init__(self, entropy_client, repository_id, force, gpg):
         self.__force = force
@@ -169,56 +171,53 @@ class AvailablePackagesRepositoryUpdater(object):
         if self._developer_repo:
             const_debug_write(__name__,
                 "__init__: developer repo mode enabled")
+        self.__webservices = None
+        self.__webservice = None
         self._repo_eapi = self.__get_repo_eapi()
 
-    def __get_eapi3_repository_metadata(self, eapi3_interface, session):
-        product = self._settings['repositories']['product']
-        data = eapi3_interface.CmdInterface.get_repository_metadata(
-            session, self._repository_id, etpConst['currentarch'], product
-        )
-        if not isinstance(data, dict):
-            return {}
+    @property
+    def _webservices(self):
+        if self.__webservices is None:
+            self.__webservices = self._entropy.RepositoryWebServices()
+        return self.__webservices
+
+    @property
+    def _webservice(self):
+        if self.__webservice is None:
+            self.__webservice = self._webservices.new(self._repository_id)
+        return self.__webservice
+
+    def __get_webserv_repository_metadata(self):
+        try:
+            data = self._webservice.get_repository_metadata()
+        except WebService.WebServiceException as err:
+            const_debug_write(__name__,
+                "__get_webserv_repository_metadata: error: %s" % (err,))
+            data = {}
         return data
 
-    def __eapi3_close(self, eapi3_interface, session = None):
+    def __get_webserv_repository_revision(self):
         try:
-            if session is not None:
-                eapi3_interface.close_session(session)
-            eapi3_interface.disconnect()
-        except (socket.error,):
-            pass
+            revision = self._webservice.get_revision()
+        except WebService.WebServiceException as err:
+            const_debug_write(__name__,
+                "__get_webserv_repository_revision: error: %s" % (err,))
+            revision = None
+        return revision
 
-    def __get_eapi3_connection(self):
-        # get database url
-        avail_data = self._settings['repositories']['available']
-        dburl = avail_data[self._repository_id].get('service_uri')
-        if dburl is None:
-            return None
-
-        port = avail_data[self._repository_id]['service_port']
+    def __check_webserv_availability(self):
         try:
-            from entropy.services.ugc.interfaces import Client
-            from entropy.client.services.ugc.commands import Client as \
-                CommandsClient
-            eapi3_socket = Client(self._entropy, CommandsClient,
-                output_header = "\t",
-                socket_timeout = self.__big_sock_timeout)
-            eapi3_socket.connect(dburl, port)
-            return eapi3_socket
-        except EntropyServicesError:
-            return None
-
-    def __check_eapi3_availability(self):
-        conn = self.__get_eapi3_connection()
-        if conn is None:
+            webserv = self._webservices.new(self._repository_id)
+        except WebService.UnsupportedService:
             return False
-        try:
-            conn.disconnect()
-        except (socket.error, AttributeError,):
-            return False
-        return True
 
-    def __get_eapi3_local_database(self):
+        try:
+            available = webserv.service_available(cache = False)
+        except WebService.WebServiceException:
+            available = False
+        return available
+
+    def __get_webserv_local_database(self):
 
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
@@ -235,24 +234,18 @@ class AvailablePackagesRepositoryUpdater(object):
             dbconn = None
         return dbconn
 
-    def __get_eapi3_database_differences(self, eapi3_interface, idpackages,
-        session):
+    def __get_webserv_database_differences(self, webserv, package_ids):
 
-        product = self._settings['repositories']['product']
-        data = eapi3_interface.CmdInterface.differential_packages_comparison(
-            session, idpackages, self._repository_id,
-            etpConst['currentarch'], product
-        )
-        if isinstance(data, bool): # then it's probably == False
-            return False, False, False
-        elif not isinstance(data, dict):
-            return None, None, None
-        elif 'added' not in data or \
-            'removed' not in data or \
-            'secure_checksum' not in data:
-            return None, None, None
+        try:
+            remote_package_ids = webserv.get_package_ids()
+        except WebService.WebServiceException as err:
+            const_debug_write(__name__,
+                "__get_webserv_database_differences: error: %s" % (err,))
+            return None, None
 
-        return data['added'], data['removed'], data['secure_checksum']
+        added = [x for x in remote_package_ids if x not in package_ids]
+        removed = [x for x in package_ids if x not in remote_package_ids]
+        return added, removed
 
     def __eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
 
@@ -308,7 +301,7 @@ class AvailablePackagesRepositoryUpdater(object):
             eapi_env_clear = None
 
         repo_eapi = 2
-        eapi_avail = self.__check_eapi3_availability()
+        eapi_avail = self.__check_webserv_availability()
         if eapi_avail:
             repo_eapi = 3
         else:
@@ -674,7 +667,7 @@ class AvailablePackagesRepositoryUpdater(object):
         # update repository revision file
         # self.remote_revision() output must be
         # written into packages.db.revision for consistency
-        # otherwise EAPI3 sync when EAPI3 service is on a separate
+        # otherwise WebService sync when WebService is on a separate
         # server (and uses rsync) doesn't work at its best
         # self._last_revs
         rev_file = os.path.join(db_data['dbpath'],
@@ -1367,60 +1360,49 @@ class AvailablePackagesRepositoryUpdater(object):
 
         return gpg_rc
 
-    def _handle_eapi3_database_sync(self, threshold = 600, chunk_size = 12):
+    def _handle_webserv_database_sync(self):
 
-        eapi3_interface = self.__get_eapi3_connection()
-        if eapi3_interface is None:
-            return False
-
-        session = eapi3_interface.open_session()
-        if session is None:
-            return False
-
+        repo_db = None
         try:
-            mydbconn = self.__get_eapi3_local_database()
-            if mydbconn is None:
+            repo_db = self.__get_webserv_local_database()
+            if repo_db is None:
                 raise AttributeError()
+            return self.__handle_webserv_database_sync(repo_db)
         except (DatabaseError, IntegrityError, OperationalError,
             AttributeError,):
-            self.__eapi3_close(eapi3_interface, session)
+            return False
+        finally:
+            if repo_db is not None:
+                repo_db.close()
+
+        return False
+
+    def __handle_webserv_database_sync(self, mydbconn):
+
+        try:
+            webserv = self._webservice
+        except WebService.UnsupportedService as err:
+            const_debug_write(__name__,
+                "__handle_webserv_database_sync: error: %s" % (err,))
             return False
 
         try:
             myidpackages = mydbconn.listAllPackageIds()
         except (DatabaseError, IntegrityError, OperationalError,):
-            mydbconn.close()
-            self.__eapi3_close(eapi3_interface, session)
             return False
 
-        added_ids, removed_ids, secure_checksum = \
-            self.__get_eapi3_database_differences(eapi3_interface,
-                myidpackages, session)
-        if (None in (added_ids, removed_ids, secure_checksum)) or \
+        added_ids, removed_ids = self.__get_webserv_database_differences(
+            webserv, myidpackages)
+        if (None in (added_ids, removed_ids)) or \
             (not added_ids and not removed_ids and self.__force):
-
-            mydbconn.close()
-            self.__eapi3_close(eapi3_interface, session)
+            # nothing to sync, it seems, if force is True, fallback to EAPI2
             return False
 
-        elif not secure_checksum:
-            # {added_ids, removed_ids, secure_checksum} == False
-            mydbconn.close()
-            self.__eapi3_close(eapi3_interface, session)
-            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
-                darkred(_("remote repository suddenly locked")),)
-            self._entropy.output(
-                mytxt,
-                importance = 0,
-                level = "info",
-                header = blue("  # "),
-            )
-            return None
-
+        threshold = 2000
         # is it worth it?
         if len(added_ids) > threshold:
             mytxt = "%s: %s (%s: %s/%s)" % (
-                blue(_("EAPI3 Service")),
+                blue(_("Web Service")),
                 darkred(_("skipping differential sync")),
                 brown(_("threshold")),
                 blue(str(len(added_ids))),
@@ -1432,23 +1414,21 @@ class AvailablePackagesRepositoryUpdater(object):
                 level = "info",
                 header = blue("  # "),
             )
-            mydbconn.close()
-            self.__eapi3_close(eapi3_interface, session)
             return False
 
         count = 0
+        chunk_size = RepositoryWebService.MAXIMUM_PACKAGE_REQUEST_SIZE
         added_segments = []
-        mytmp = set()
+        mytmp = []
 
-        for idpackage in added_ids:
+        for package_id in added_ids:
             count += 1
-            mytmp.add(idpackage)
+            mytmp.append(package_id)
             if count % chunk_size == 0:
-                added_segments.append(list(mytmp))
-                mytmp.clear()
+                added_segments.append(mytmp[:])
+                del mytmp[:]
         if mytmp:
-            added_segments.append(list(mytmp))
-        del mytmp
+            added_segments.append(mytmp[:])
 
         # fetch and store
         count = 0
@@ -1463,103 +1443,68 @@ class AvailablePackagesRepositoryUpdater(object):
                 mytxt, importance = 0, level = "info",
                 header = "\t", back = True, count = (count, maxcount,)
             )
-            fetch_count = 0
-            max_fetch_count = 5
 
-            while True:
-
-                # anti loop protection
-                if fetch_count > max_fetch_count:
-                    mydbconn.close()
-                    self.__eapi3_close(eapi3_interface, session)
-                    return False
-
-                fetch_count += 1
-                cmd_intf = eapi3_interface.CmdInterface
-                pkgdata = cmd_intf.get_strict_package_information(
-                    session, segment, self._repository_id,
-                    etpConst['currentarch'], product
+            try:
+                pkg_meta = webserv.get_packages_metadata(segment)
+            except WebService.WebServiceException as err:
+                const_debug_write(__name__,
+                    "__handle_webserv_database_sync: error: %s" % (err,))
+                mytxt = "%s: %s" % (
+                    blue(_("Web Service communication error")),
+                    err,
                 )
-                if pkgdata is None:
-                    mytxt = "%s: %s" % ( blue(_("Fetch error on segment")),
-                        darkred(str(segment)),)
-                    self._entropy.output(
-                        mytxt, importance = 1, level = "warning",
-                        header = "\t", count = (count, maxcount,)
-                    )
-                    continue
+                self._entropy.output(
+                    mytxt, importance = 1, level = "info",
+                    header = "\t", count = (count, maxcount,)
+                )
+                return None
 
-                elif not pkgdata: # pkgdata == False
-                    mytxt = "%s: %s" % (
-                        blue(_("Service status")),
-                        darkred("remote repository suddenly locked"),
-                    )
-                    self._entropy.output(
-                        mytxt, importance = 1, level = "info",
-                        header = "\t", count = (count, maxcount,)
-                    )
-                    mydbconn.close()
-                    self.__eapi3_close(eapi3_interface, session)
-                    return None
+            if not pkg_meta:
+                const_debug_write(__name__,
+                    "__handle_webserv_database_sync: empty data: %s" % (
+                        pkg_meta,))
+                self._entropy.output(
+                    _("Web Service data error"), importance = 1, level = "info",
+                    header = "\t", count = (count, maxcount,)
+                )
+                return None
 
-                elif isinstance(pkgdata, tuple):
-                    mytxt = "%s: %s, %s. %s" % (
-                        blue(_("Service status")),
-                        pkgdata[0], pkgdata[1],
-                        darkred("Error processing the command"),
+            try:
+                for package_id, pkg_data in pkg_meta.items():
+                    dumpobj(
+                        "%s%s" % (self.WEBSERV_CACHE_ID, package_id,),
+                        pkg_data,
+                        ignore_exceptions = False
                     )
-                    self._entropy.output(
-                        mytxt, importance = 1, level = "info",
-                        header = "\t", count = (count, maxcount,)
-                    )
-                    mydbconn.close()
-                    self.__eapi3_close(eapi3_interface, session)
-                    return None
-
-                try:
-                    for idpackage in pkgdata:
-                        dumpobj(
-                            "%s%s" % (self.EAPI3_CACHE_ID, idpackage,),
-                            pkgdata[idpackage],
-                            ignore_exceptions = False
-                        )
-                except (IOError, EOFError, OSError,) as e:
-                    mytxt = "%s: %s: %s." % (
-                        blue(_("Local status")),
-                        darkred("Error storing data"),
-                        e,
-                    )
-                    self._entropy.output(
-                        mytxt, importance = 1, level = "info",
-                        header = "\t", count = (count, maxcount,)
-                    )
-                    mydbconn.close()
-                    self.__eapi3_close(eapi3_interface, session)
-                    return None
-
-                break
+            except (IOError, EOFError, OSError,) as e:
+                mytxt = "%s: %s: %s." % (
+                    blue(_("Local status")),
+                    darkred("Error storing data"),
+                    e,
+                )
+                self._entropy.output(
+                    mytxt, importance = 1, level = "info",
+                    header = "\t", count = (count, maxcount,)
+                )
+                return None
 
         del added_segments
 
-        repo_metadata = self.__get_eapi3_repository_metadata(eapi3_interface,
-            session)
-        metadata_elements = ("sets", "treeupdates_actions",
-            "treeupdates_digest", "library_idpackages",)
-        for elem in metadata_elements:
-            if elem not in repo_metadata:
-                mydbconn.close()
-                self.__eapi3_close(eapi3_interface, session)
-                mytxt = "%s: %s" % (
-                    blue(_("EAPI3 Service status")),
-                    darkred(_("cannot fetch repository metadata")),
-                )
-                self._entropy.output(
-                    mytxt,
-                    importance = 0,
-                    level = "info",
-                    header = blue("  # "),
-                )
-                return None
+        # get repository metadata
+        repo_metadata = self.__get_webserv_repository_metadata()
+        # this gives us the "checksum" data too
+        if not repo_metadata:
+            mytxt = "%s: %s" % (
+                blue(_("Web Service status")),
+                darkred(_("cannot fetch repository metadata")),
+            )
+            self._entropy.output(
+                mytxt,
+                importance = 0,
+                level = "info",
+                header = blue("  # "),
+            )
+            return None
 
         # update treeupdates
         try:
@@ -1568,10 +1513,8 @@ class AvailablePackagesRepositoryUpdater(object):
             mydbconn.bumpTreeUpdatesActions(
                 repo_metadata['treeupdates_actions'])
         except (Error,):
-            mydbconn.close()
-            self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % (
-                blue(_("EAPI3 Service status")),
+                blue(_("Web Service status")),
                 darkred(_("cannot update treeupdates data")),
             )
             self._entropy.output(
@@ -1587,10 +1530,8 @@ class AvailablePackagesRepositoryUpdater(object):
             mydbconn.clearPackageSets()
             mydbconn.insertPackageSets(repo_metadata['sets'])
         except (Error,):
-            mydbconn.close()
-            self.__eapi3_close(eapi3_interface, session)
             mytxt = "%s: %s" % (
-                blue(_("EAPI3 Service status")),
+                blue(_("Web Service status")),
                 darkred(_("cannot update package sets data")),
             )
             self._entropy.output(
@@ -1601,16 +1542,12 @@ class AvailablePackagesRepositoryUpdater(object):
             )
             return None
 
-        # I don't need you anymore
-        # disconnect socket
-        self.__eapi3_close(eapi3_interface, session)
-
         # now that we have all stored, add
         count = 0
         maxcount = len(added_ids)
         for idpackage in added_ids:
             count += 1
-            mydata = self._cacher.pop("%s%s" % (self.EAPI3_CACHE_ID,
+            mydata = self._cacher.pop("%s%s" % (self.WEBSERV_CACHE_ID,
                 idpackage,))
             if mydata is None:
                 mytxt = "%s: %s" % (
@@ -1621,7 +1558,6 @@ class AvailablePackagesRepositoryUpdater(object):
                     mytxt, importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
-                mydbconn.close()
                 return False
 
             mytxt = "%s %s" % (
@@ -1647,7 +1583,6 @@ class AvailablePackagesRepositoryUpdater(object):
                     importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
-                mydbconn.close()
                 return False
 
         self._entropy.output(
@@ -1679,7 +1614,6 @@ class AvailablePackagesRepositoryUpdater(object):
                     importance = 1, level = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
-                mydbconn.close()
                 return False
 
         self._entropy.output(
@@ -1694,7 +1628,7 @@ class AvailablePackagesRepositoryUpdater(object):
         result = False
         mychecksum = mydbconn.checksum(do_order = True,
             strict = False, strings = True, include_signatures = True)
-        if secure_checksum == mychecksum:
+        if repo_metadata['checksum'] == mychecksum:
             result = True
         else:
             self._entropy.output(
@@ -1706,44 +1640,29 @@ class AvailablePackagesRepositoryUpdater(object):
                 mytxt, importance = 0,
                 level = "info", header = "\t",
             )
-            mytxt = "%s: %s" % (_('remote'), secure_checksum,)
+            mytxt = "%s: %s" % (_('remote'), repo_metadata['checksum'],)
             self._entropy.output(
                 mytxt, importance = 0,
                 level = "info", header = "\t",
             )
 
-        mydbconn.close()
         return result
 
     def remote_revision(self):
 
         if self._repo_eapi == 3:
-            # ask UGC then
-            eapi3_interface = self.__get_eapi3_connection()
-            if eapi3_interface is None:
-                # EAPI3 not available now!
-                self._repo_eapi -= 1
-            else:
-                session = eapi3_interface.open_session()
-                if session is None:
-                    self._repo_eapi -= 1
-                else:
-                    repo_metadata = self.__get_eapi3_repository_metadata(
-                        eapi3_interface, session)
-                    self.__eapi3_close(eapi3_interface, session = session)
-                    repo_rev = repo_metadata.get('revision')
-                    if repo_rev is not None:
-                        try:
-                            repo_rev = int(repo_rev)
-                        except (ValueError, TypeError):
-                            repo_rev = None
-                    if repo_rev is None:
-                        # cannot reliably detect revision in EAPI=3 world
-                        # so we need to drop EAPI3 in favour of EAPI2
-                        self._repo_eapi -= 1
-                    else:
-                        self._last_rev = repo_rev
-                        return repo_rev
+            # ask WebService then
+            revision = self.__get_webserv_repository_revision()
+            if revision is not None:
+                try:
+                    revision = int(revision)
+                except ValueError:
+                    revision = None
+            if revision is not None:
+                self._last_rev = revision
+                return revision
+            # otherwise, fallback to previous EAPI
+            self._repo_eapi -= 1
 
         avail_data = self._settings['repositories']['available']
         repo_data = avail_data[self._repository_id]
@@ -1838,10 +1757,10 @@ class AvailablePackagesRepositoryUpdater(object):
 
                 status = False
                 try:
-                    status = self._handle_eapi3_database_sync()
+                    status = self._handle_webserv_database_sync()
                 except socket.error as err:
                     mytxt = "%s: %s" % (
-                        blue(_("EAPI3 Service error")),
+                        blue(_("Web Service error")),
                         darkred(repr(err)),
                     )
                     self._entropy.output(
