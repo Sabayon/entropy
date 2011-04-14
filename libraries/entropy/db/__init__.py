@@ -1867,10 +1867,10 @@ class EntropyRepository(EntropyRepositoryBase):
         # this adds default provide information to set data if not available
         my_provides = set()
         for prov in provides:
-            if not isinstance(prov, tuple):
+            if not isinstance(prov, (tuple, list)):
                 my_provides.add((prov, 0,))
             else:
-                my_provides.add(prov)
+                my_provides.add(tuple(prov))
 
         default_provides = [x for x in my_provides if x[1]]
 
