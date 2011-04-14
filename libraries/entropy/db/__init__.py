@@ -5199,15 +5199,29 @@ class EntropyRepository(EntropyRepositoryBase):
                 self._setLiveCache(cache_key, result)
             return result
 
-        cur = self._cursor().execute("""
-        SELECT * FROM baseinfo %s""" % (package_id_order,))
+        if strict:
+            cur = self._cursor().execute("""
+            SELECT * FROM baseinfo
+            %s""" % (package_id_order,))
+        else:
+            cur = self._cursor().execute("""
+            SELECT idpackage, atom, name, version, versiontag, revision,
+            branch, slot, etpapi, trigger FROM baseinfo
+            %s""" % (package_id_order,))
         if strings:
             do_update_hash(m, cur)
         else:
             a_hash = hash(tuple(cur))
 
-        cur = self._cursor().execute("""
-        SELECT * FROM extrainfo %s""" % (package_id_order,))
+        if strict:
+            cur = self._cursor().execute("""
+            SELECT * FROM extrainfo %s
+            """ % (package_id_order,))
+        else:
+            cur = self._cursor().execute("""
+            SELECT idpackage, description, homepage, download, size,
+            digest, datecreation FROM extrainfo %s
+            """ % (package_id_order,))
         if strings:
             do_update_hash(m, cur)
         else:
