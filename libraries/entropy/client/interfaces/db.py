@@ -13,9 +13,9 @@ import os
 import sys
 import subprocess
 import tempfile
+import threading
 import shutil
 import time
-import socket
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     etpUi, const_set_nice_level, const_setup_file
@@ -27,7 +27,7 @@ from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     PermissionDenied
 from entropy.security import Repository as RepositorySecurity
-from entropy.misc import TimeScheduled
+from entropy.misc import TimeScheduled, ParallelTask
 from entropy.i18n import _
 from entropy.db.skel import EntropyRepositoryPlugin, EntropyRepositoryBase
 from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
@@ -1429,20 +1429,7 @@ class AvailablePackagesRepositoryUpdater(object):
         if mytmp:
             added_segments.append(mytmp[:])
 
-        # fetch and store
-        count = 0
-        maxcount = len(added_segments)
-        product = self._settings['repositories']['product']
-        segment = None
-        for segment in added_segments:
-
-            count += 1
-            mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
-            self._entropy.output(
-                mytxt, importance = 0, level = "info",
-                header = "\t", back = True, count = (count, maxcount,)
-            )
-
+        def _do_fetch(fetch_sts_map, segment, count, maxcount):
             try:
                 pkg_meta = webserv.get_packages_metadata(segment)
             except WebService.WebServiceException as err:
@@ -1456,7 +1443,9 @@ class AvailablePackagesRepositoryUpdater(object):
                     mytxt, importance = 1, level = "info",
                     header = "\t", count = (count, maxcount,)
                 )
-                return None
+                fetch_sts_map['error'] = True
+                fetch_sts_map['sem'].release()
+                return
 
             if not pkg_meta:
                 const_debug_write(__name__,
@@ -1466,7 +1455,9 @@ class AvailablePackagesRepositoryUpdater(object):
                     _("Web Service data error"), importance = 1, level = "info",
                     header = "\t", count = (count, maxcount,)
                 )
-                return None
+                fetch_sts_map['error'] = True
+                fetch_sts_map['sem'].release()
+                return
 
             try:
                 for package_id, pkg_data in pkg_meta.items():
@@ -1485,7 +1476,40 @@ class AvailablePackagesRepositoryUpdater(object):
                     mytxt, importance = 1, level = "info",
                     header = "\t", count = (count, maxcount,)
                 )
-                return None
+                fetch_sts_map['error'] = True
+                fetch_sts_map['sem'].release()
+                return
+
+            fetch_sts_map['sem'].release()
+            return True
+
+        max_threads = 8
+        fetch_sts_map = {
+            'sem': threading.Semaphore(max_threads),
+            'error': False,
+        }
+
+        # fetch and store
+        count = 0
+        maxcount = len(added_segments)
+        product = self._settings['repositories']['product']
+        segment = None
+        threads = []
+        for segment in added_segments:
+            count += 1
+            mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
+            self._entropy.output(
+                mytxt, importance = 0, level = "info",
+                header = "\t", back = True, count = (count, maxcount,)
+            )
+            fetch_sts_map['sem'].acquire()
+            th = ParallelTask(_do_fetch, fetch_sts_map, segment, count,
+                maxcount)
+            th.start()
+            threads.append(th)
+
+        for th in threads:
+            th.join()
 
         del added_segments
 
@@ -1757,17 +1781,6 @@ class AvailablePackagesRepositoryUpdater(object):
                 status = False
                 try:
                     status = self._handle_webserv_database_sync()
-                except socket.error as err:
-                    mytxt = "%s: %s" % (
-                        blue(_("Web Service error")),
-                        darkred(repr(err)),
-                    )
-                    self._entropy.output(
-                        mytxt,
-                        importance = 0,
-                        level = "info",
-                        header = blue("  # "),
-                    )
                 except:
                     # avoid broken entries, deal with every exception
                     self.__remove_repository_files()
