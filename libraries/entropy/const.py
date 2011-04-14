@@ -196,7 +196,6 @@ def const_default_settings(rootdir):
     default_etp_logdir = default_etp_dir+"/"+"logs"
     default_etp_confdir = os.getenv('DEV_ETP_ETC_DIR', rootdir+"/etc/entropy")
     default_etp_packagesdir = default_etp_confdir+"/packages"
-    default_etp_ugc_confdir = default_etp_confdir+"/ugc"
     default_etp_syslogdir = os.getenv('DEV_ETP_LOG_DIR',
         rootdir+"/var/log/entropy/")
     default_etp_vardir = os.getenv('DEV_ETP_TMP_DIR',
@@ -695,30 +694,6 @@ def const_default_settings(rootdir):
             'user_live_unmask': 11,
             'user_live_mask': 12,
         },
-
-        'ugc_doctypes': {
-            'comments': 1,
-            'bbcode_doc': 2,
-            'image': 3,
-            'generic_file': 4,
-            'youtube_video': 5,
-        },
-        'ugc_doctypes_description': {
-            1: _('Comments'),
-            2: _('BBcode Documents'),
-            3: _('Images/Screenshots'),
-            4: _('Generic Files'),
-            5: _('YouTube(tm) Videos'),
-        },
-        'ugc_doctypes_description_singular': {
-            1: _('Comment'),
-            2: _('BBcode Document'),
-            3: _('Image/Screenshot'),
-            4: _('Generic File'),
-            5: _('YouTube(tm) Video'),
-        },
-        'ugc_accessfile': default_etp_ugc_confdir+"/access.xml",
-        'ugc_voterange': list(range(1, 6)),
 
     }
 
