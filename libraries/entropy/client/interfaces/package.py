@@ -787,9 +787,17 @@ class Package:
         if not os.path.isdir(os.path.realpath(filepath_dir)):
             try:
                 os.remove(filepath_dir)
-            except OSError:
-                pass
-            os.makedirs(filepath_dir, 0o755)
+            except OSError as err:
+                const_debug_write(__name__,
+                    "__fetch_file.remove, %s, error: %s" % (
+                        filepath_dir, err))
+            try:
+                os.makedirs(filepath_dir, 0o755)
+            except OSError as err:
+                const_debug_write(__name__,
+                    "__fetch_file.makedirs, %s, error: %s" % (
+                        filepath_dir, err))
+                return -1, 0, False
 
         rc, data_transfer = self.__try_edelta_fetch(url, save_path, resume)
         if rc == 0:
