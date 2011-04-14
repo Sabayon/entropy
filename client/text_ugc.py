@@ -133,6 +133,14 @@ def _ugc_login(entropy_client, repository, force = False):
             )
         )
         return 1
+    except WebService.RequestError:
+        print_warning(
+            "[%s] %s" % (
+                darkgreen(repository),
+                blue(_("Communication error. Not logged in.")),
+            )
+        )
+        return 1
 
     print_info(
         "[%s:uid:%s] %s: %s." % (
