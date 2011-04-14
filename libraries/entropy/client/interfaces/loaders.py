@@ -28,13 +28,15 @@ class LoadersMixin:
         from entropy.client.interfaces.package import Package
         from entropy.client.interfaces.sets import Sets
         from entropy.client.misc import FileUpdates
-        from entropy.client.services.interfaces import ClientWebServiceFactory
+        from entropy.client.services.interfaces import \
+            ClientWebServiceFactory, RepositoryWebServiceFactory
         self.__package_loader = Package
         self.__repository_loader = Repository
         self.__trigger_loader = Trigger
         self.__sets_loader = Sets
         self.__package_files_loader = FileUpdates
         self.__webservice_factory = ClientWebServiceFactory
+        self.__repo_webservice_factory = RepositoryWebServiceFactory
 
     def Sets(self):
         """
@@ -97,7 +99,7 @@ class LoadersMixin:
 
     def WebServices(self):
         """
-        Load Entropy Web Services Factory interface, that can be used
+        Load the Entropy Web Services Factory interface, that can be used
         to obtain a WebService object that is able to communicate with
         repository remote services, if available.
 
@@ -105,6 +107,18 @@ class LoadersMixin:
         @rtype: entropy.client.services.interfaces.WebServicesFactory
         """
         return self.__webservice_factory(self)
+
+    def RepositoryWebServices(self):
+        """
+        Load the Repository Entropy Web Services Factory interface, that can
+        be used to obtain a RepositoryWebService object that is able to
+        communicate with repository remote services, querying for package
+        metadata and general repository status.
+
+        @return: RepositoryWebServiceFactory instance object
+        @rtype: entropy.client.services.interfaces.RepositoryWebServiceFactory
+        """
+        return self.__repo_webservice_factory(self)
 
     def Spm(self):
         """
