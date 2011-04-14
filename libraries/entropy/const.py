@@ -1652,7 +1652,10 @@ def const_get_caller():
     @rtype: string
     """
     import inspect
-    return inspect.stack()[3][3]
+    try:
+        return inspect.stack()[3][3]
+    except IndexError:
+        return inspect.stack()[2][3]
 
 def const_get_stack():
     """
