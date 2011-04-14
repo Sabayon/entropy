@@ -1370,3 +1370,188 @@ class ClientWebService(WebService):
         self._method_getter("report_error", params,
             file_params = file_params, require_credentials = False,
             cache = False)
+
+
+class RepositoryWebServiceFactory(WebServiceFactory):
+    """
+    Repository related Web Service Factory. Generates
+    RepositoryWebService objects that can be used to obtain package metadata
+    and general repository information.
+    """
+
+    def __init__(self, entropy_client):
+        """
+        Overridden constructor.
+        """
+        WebServiceFactory.__init__(self, RepositoryWebService, entropy_client)
+
+
+class RepositoryWebService(WebService):
+
+    # The maximum amount of packages whose metadata can be requested
+    # at once by RepositoryWebService.get_packages_metadata()
+    MAXIMUM_PACKAGE_REQUEST_SIZE = 10
+
+    def service_available(self, cache = True, cached = False):
+        """
+        Return whether the Web Service is correctly able to answer our
+        repository-based requests.
+
+        @keyword cache: True means use on-disk cache if available?
+        @type cache: bool
+        @keyword cached: if True, it will only use the on-disk cached call
+            result and raise WebService.CacheMiss if not found.
+        @type cached: bool
+        @return: True, if service is available
+        @rtype: bool
+
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not available
+            remotely and an error occured (error code passed as exception
+            argument)
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web Service
+            API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        @raise WebService.CacheMiss: if cached=True and cached object is not
+            available
+        """
+        params = {
+            'arch': etpConst['currentarch'],
+            'product': self._settings['repositories']['product'],
+            'branch': self._settings['repositories']['branch'],
+        }
+        return self._method_getter("repository_service_available", params,
+            cache = cache, cached = cached, require_credentials = False)
+
+    def get_revision(self):
+        """
+        Return the repository revision as it's advertised remotely.
+        The revision is returned in string format.
+        Please note that this method doesn't do any caching.
+
+        @return: the repository revision
+        @rtype: string
+
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not available
+            remotely and an error occured (error code passed as exception
+            argument)
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web Service
+            API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        """
+        params = {
+            'arch': etpConst['currentarch'],
+            'product': self._settings['repositories']['product'],
+            'branch': self._settings['repositories']['branch'],
+        }
+        return self._method_getter("repository_revision", params,
+            cache = False, cached = False, require_credentials = False)
+
+    def get_repository_metadata(self):
+        """
+        Return the repository metadata for the selected repository. It is
+        usually an opaque object in dict form that contains all the metadata
+        not related to single packages.
+        As for API=1, the returned metadata is the following:
+        "sets" => EntropyRepositoryBase.retrievePackageSets()
+        "treeupdates_actions" => EntropyRepositoryBase.listAllTreeUpdatesActions()
+        "treeupdates_digest" => EntropyRepositoryBase.retrieveRepositoryUpdatesDigest()
+        "revision" => <the actual repository revision, string form>
+        "checksum" => EntropyRepositoryBase.checksum(do_order = True,
+                strict = False, strings = True, include_signatures = True)
+        Please note that this method doesn't do any caching.
+
+        @return: the repository metadata
+        @rtype: dict
+
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not available
+            remotely and an error occured (error code passed as exception
+            argument)
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web Service
+            API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        """
+        params = {
+            'arch': etpConst['currentarch'],
+            'product': self._settings['repositories']['product'],
+            'branch': self._settings['repositories']['branch'],
+        }
+        return self._method_getter("get_repository_metadata", params,
+            cache = False, cached = False, require_credentials = False)
+
+    def get_package_ids(self):
+        """
+        Return a list of available package identifiers in the selected
+        repository.
+        Please note that this method doesn't do any caching.
+
+        @return: the repository metadata
+        @rtype: dict
+
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not available
+            remotely and an error occured (error code passed as exception
+            argument)
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web Service
+            API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        """
+        params = {
+            'arch': etpConst['currentarch'],
+            'product': self._settings['repositories']['product'],
+            'branch': self._settings['repositories']['branch'],
+        }
+        return self._method_getter("get_package_ids", params,
+            cache = False, cached = False, require_credentials = False)
+
+    def get_packages_metadata(self, package_ids):
+        """
+        Return a list of available package identifiers in the selected
+        repository.
+        Please note that this method doesn't do any caching.
+        Moreover, package_ids list cannot be longer than
+        RepositoryWebService.MAXIMUM_PACKAGE_REQUEST_SIZE, this is checked
+        both server-side, for your joy.
+        Data is returned in dict form, key is package_id, value is package
+        metadata, same you can get by calling:
+        EntropyRepositoryBase.getPackageData(
+            package_id, content_insert_formatted = True,
+            get_content = False, get_changelog = False)
+
+        @return: the repository metadata list
+        @rtype: dict
+
+        @raise WebService.UnsupportedParameters: if input parameters are invalid
+        @raise WebService.RequestError: if request cannot be satisfied
+        @raise WebService.MethodNotAvailable: if API method is not available
+            remotely and an error occured (error code passed as exception
+            argument)
+        @raise WebService.MalformedResponse: if JSON response cannot be
+            converted back to dict.
+        @raise WebService.UnsupportedAPILevel: if client API and Web Service
+            API do not match
+        @raise WebService.MethodResponseError; if method execution failed
+        """
+        try:
+            package_ids_str = " ".join([str(int(x)) for x in package_ids])
+        except ValueError:
+            raise WebService.UnsupportedParameters("unsupported input params")
+        params = {
+            "package_ids": package_ids_str,
+            'arch': etpConst['currentarch'],
+            'product': self._settings['repositories']['product'],
+            'branch': self._settings['repositories']['branch'],
+        }
+        pkg_meta = self._method_getter("get_packages_metadata", params,
+            cache = False, cached = False, require_credentials = False)
+        return dict((int(x), y) for x, y in pkg_meta.items())
