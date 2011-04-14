@@ -39,7 +39,6 @@ if "/usr/lib/entropy/sulfur" not in sys.path:
     sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied
-from entropy.services.exceptions import EntropyServicesError
 import entropy.tools
 from entropy.const import etpConst, const_get_stringtype, \
     initconfig_entropy_constants, const_convert_to_unicode, \

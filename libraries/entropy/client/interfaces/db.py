@@ -26,7 +26,6 @@ from entropy.cache import EntropyCacher
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     PermissionDenied
-from entropy.services.exceptions import EntropyServicesError
 from entropy.security import Repository as RepositorySecurity
 from entropy.misc import TimeScheduled
 from entropy.i18n import _

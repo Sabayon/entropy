@@ -26,11 +26,6 @@ sys.path.insert(0, '../client')
 from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
     RepositoryError, PermissionDenied, FileNotFound, SPMError
 try:
-    from entropy.services.exceptions import ServiceConnectionError
-except ImportError:
-    # backward compatibility
-    ServiceConnectionError = None
-try:
     from entropy.transceivers.exceptions import TransceiverError, \
         TransceiverConnectionError
 except ImportError:
@@ -872,7 +867,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 
     generic_exc_classes = (OnlineMirrorError, RepositoryError,
         TransceiverError, PermissionDenied, TransceiverConnectionError,
-        ServiceConnectionError, FileNotFound, SPMError, SystemError)
+        FileNotFound, SPMError, SystemError)
     if exc_class in generic_exc_classes:
         print_error("%s %s. %s." % (
             darkred(" * "), exc_instance, _("Cannot continue"),))
