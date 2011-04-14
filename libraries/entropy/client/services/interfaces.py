@@ -10,7 +10,8 @@
 
 """
 __all__ = ["ClientWebServiceFactory", "ClientWebService", "Document",
-    "DocumentList", "DocumentFactory"]
+    "DocumentList", "DocumentFactory", "RepositoryWebServiceFactory",
+    "RepositoryWebService"]
 
 import sys
 import os
@@ -1543,7 +1544,8 @@ class RepositoryWebService(WebService):
         @raise WebService.MethodResponseError; if method execution failed
         """
         try:
-            package_ids_str = " ".join([str(int(x)) for x in package_ids])
+            package_ids_str = " ".join([str(int(x)) for x in \
+                sorted(package_ids)])
         except ValueError:
             raise WebService.UnsupportedParameters("unsupported input params")
         params = {
