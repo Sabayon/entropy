@@ -1,3 +1,132 @@
+commit 55d7ef1275a44bfea99ba9f8088eddca5607343a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 00:42:13 2011 +0200
+
+    Release Entropy 1.0_alpha46
+
+commit 79f8a576b551bda2f0b284393787d43b56927dbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 00:29:47 2011 +0200
+
+    [entropy.client.interfaces.db] make sure to abort in case of fetch error from webservice
+
+commit d6de645ccbc3809847a011769eb744689c2e7f8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 00:26:59 2011 +0200
+
+    [entropy.client.interfaces.db] dramatically improve differential update sync speed by spawning parallel metadata download
+
+commit 90ccb479bb64adbd0fb1ac85fe9357c0c41f0a91
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 00:26:24 2011 +0200
+
+    [entropy.client.services] small final tweaks
+
+commit 6fd56e4f81acdb9097c340b1174484213d41ecf5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 18:24:57 2011 +0200
+
+    [equo] when calling validate_credentials() also catch RequestError exception
+
+commit 6357af21cc0313b5f0de27b2acfdc73c4b84aaf0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 18:24:37 2011 +0200
+
+    [sulfur] when calling validate_credentials() also catch RequestError exception
+
+commit 7f319382f4a154dbbe46d751215559702337eb04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 18:18:55 2011 +0200
+
+    [entropy.client.interfaces.package] __fetch_file: catch OSError exception on makedirs()
+
+commit 47109d61b74f67bf9f653eff570a9e7d721aacac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:22:07 2011 +0200
+
+    [po] update translations
+
+commit 83d974d8183b7ea36a5b5ca692fd77fc06157e56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:21:08 2011 +0200
+
+    [entropy.const] drop UGC related constants (removed)
+
+commit 80dfbcc0f2d0e2af564f030b005552d02bff18bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:17:54 2011 +0200
+
+    [entropy.services] goodbye old and ugly RPC service, R.I.P.
+
+commit e5bf7e039d66b2d216a3195ccb376e2de6d274b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:09:35 2011 +0200
+
+    [tests] add RepositoryWebServices tests
+
+commit bb0508784d9ccc6dd248b3f9dc1441fe8cf789f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:04:19 2011 +0200
+
+    [entropy.client.interfaces.db] reimplement EAPI3 sync over Repository Web Services infrastructure
+
+commit a6cd8f150a47d93e3f42dddb773ccf323a754936
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:02:54 2011 +0200
+
+    [entropy.client.interfaces.loaders] add RepositoryWebServices() loader
+
+commit 5a073519afc44dd81185a9dee5f603d048602755
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 15:02:22 2011 +0200
+
+    [entropy.client.services] implement RepositoryWebServices infrastructure
+
+commit 343fd107e7810e5f50effb869a20402464e28d41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 14:57:42 2011 +0200
+
+    [entropy.db] EntropyRepositoryBase.checksum: if strict is not specified, only pick non-dynamic data from baseinfo, extrainfo
+
+commit a14a146d19189e471a5e84da923743d92504b9a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 14:56:52 2011 +0200
+
+    [entropy.const] const_get_caller: catch IndexError exception (when stack level is < 3)
+
+commit 90f9bb0dda5721c760394db2007d8d3bbf039170
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 14:06:46 2011 +0200
+
+    [entropy.db] EntropyRepository._insertProvide: fixup runtime type check
+    
+    This is required by Repository WebServices returned metadata, which
+    always converts all iterable types to list()
+
+commit b97ec888ab3c704c941cc85eef85dceed0358308
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Apr 14 14:06:24 2011 +0200
+
+    [equo] text_repositories: add missing import (const_debug_write)
+
+commit 0c11af4e033f8e549168a658cbcb91fabe0585f8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 13 16:27:51 2011 +0200
+
+    [entropy.client.interfaces] set webservices_config metadatum for .tbz2 and .etp repositories
+
+commit f6cd220c0acf20a9d4757a619480ded727d6ed76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 13 16:26:15 2011 +0200
+
+    [entropy.services.client] raise WebService.UnsupportedService if webservices_config metadata is not available
+
+commit f75a2d8a0dd46ad215e94ccca62b1ea0407e9c62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 11 21:28:03 2011 +0200
+
+    Tagging Entropy version 1.0_alpha45
+
 commit 5b4487ecb58c72d990c9c4bbdb9b86de6eed9d32
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Apr 11 21:28:01 2011 +0200
