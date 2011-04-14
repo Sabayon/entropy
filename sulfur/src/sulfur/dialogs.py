@@ -1348,6 +1348,10 @@ class PkgInfoMenu(MenuSkel):
                 okDialog(self.window,
                     _("Authentication error. Not logged in."))
                 return False
+            except WebService.RequestError:
+                okDialog(self.window,
+                    _("Communication error. Not logged in."))
+                return False
 
         okDialog(self.window,
             _("Successfully logged in."))
@@ -2041,6 +2045,10 @@ class UGCAddMenu(MenuSkel):
                 okDialog(self.window,
                     _("Authentication error. Not logged in."))
                 return False
+            except WebService.RequestError:
+                okDialog(self.window,
+                    _("Communication error. Not logged in."))
+                return False
 
         return True
 
@@ -2111,6 +2119,9 @@ class UGCAddMenu(MenuSkel):
                 try:
                     webserv.validate_credentials()
                 except WebService.AuthenticationFailed:
+                    need_login = True
+                except WebService.RequestError:
+                    # SSL Error?
                     need_login = True
             else:
                 need_login = True

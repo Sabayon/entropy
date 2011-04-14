@@ -847,12 +847,16 @@ class SulfurApplicationEventsMixin:
             username, password = login_data['username'], login_data['password']
             with self._privileges:
                 webserv.add_credentials(username, password)
-            try:
-                webserv.validate_credentials()
-            except WebService.AuthenticationFailed:
-                okDialog(self.ui.main,
-                    _("Authentication error. Not logged in."))
-                return
+                try:
+                    webserv.validate_credentials()
+                except WebService.AuthenticationFailed:
+                    okDialog(self.ui.main,
+                        _("Authentication error. Not logged in."))
+                    return
+                except WebService.RequestError:
+                    okDialog(self.window,
+                        _("Communication error. Not logged in."))
+                    return False
             self.load_ugc_repositories()
 
     def on_ugcClearLoginButton_clicked(self, widget):
