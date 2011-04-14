@@ -1503,6 +1503,8 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "\t", back = True, count = (count, maxcount,)
             )
             fetch_sts_map['sem'].acquire()
+            if fetch_sts_map['error']:
+                return None
             th = ParallelTask(_do_fetch, fetch_sts_map, segment, count,
                 maxcount)
             th.start()
@@ -1510,6 +1512,9 @@ class AvailablePackagesRepositoryUpdater(object):
 
         for th in threads:
             th.join()
+
+        if fetch_sts_map['error']:
+            return None
 
         del added_segments
 
