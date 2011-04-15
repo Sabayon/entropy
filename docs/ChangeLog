@@ -1,3 +1,33 @@
+commit 36d184d76e4eb92c2fe2e5a171d112cd7b881c36
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 08:00:30 2011 +0200
+
+    Release Entropy 1.0_alpha47
+
+commit 5c7a045a3e84238b01f6d069a6ce3fd96f277493
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 08:00:04 2011 +0200
+
+    [Makefile] remove references to dropped files
+
+commit a92aa0600491f851d5648a4015aa470b55dae754
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 07:58:57 2011 +0200
+
+    [entropy.server] drop other two configuration constants
+
+commit aa62400790787aa37d657cd0dafe78625d3d8aba
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 07:35:51 2011 +0200
+
+    [entropy*] drop socket service related code, R.I.P.
+
+commit 10ee59f25773ce038e195fce856de81ef78455a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 00:42:30 2011 +0200
+
+    Tagging Entropy version 1.0_alpha46
+
 commit 55d7ef1275a44bfea99ba9f8088eddca5607343a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 15 00:42:13 2011 +0200
