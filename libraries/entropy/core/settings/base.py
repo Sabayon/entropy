@@ -187,7 +187,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'broken_syms': etpConst['confdir']+"/brokensyms.conf",
             'broken_libs_mask': etpConst['confdir']+"/brokenlibsmask.conf",
             'hw_hash': etpConst['confdir']+"/.hw.hash",
-            'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
             'repositories': etpConst['repositoriesconf'],
             'system_package_sets': {},
@@ -196,7 +195,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
             'license_accept', 'system_mask', 'system_package_sets',
             'system_dirs', 'system_dirs_mask', 'extra_ldpaths',
-            'socket_service', 'system', 'system_rev_symlinks', 'hw_hash',
+            'system', 'system_rev_symlinks', 'hw_hash',
             'broken_syms', 'broken_libs_mask'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
@@ -818,100 +817,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
             data[line[0]] = frozenset(line[1:])
         return data
 
-    def _socket_service_parser(self):
-        """
-        Parses socket service configuration file.
-        This file contains information about Entropy remote service ports
-        and SSL.
-
-        @return: parsed metadata
-        @rtype: dict
-        """
-
-        data = etpConst['socket_service'].copy()
-
-        sock_conf = self.__setting_files['socket_service']
-        if not (os.path.isfile(sock_conf) and \
-            os.access(sock_conf, os.R_OK)):
-            return data
-
-        socket_f = open(sock_conf, "r")
-        socketconf = [x.strip() for x in socket_f.readlines()  if \
-            x.strip() and not x.strip().startswith("#")]
-        socket_f.close()
-
-        def _listen(setting):
-            data['hostname'] = setting
-
-        def _listen_port(setting):
-            try:
-                data['port'] = int(setting)
-            except ValueError:
-                return
-
-        def _listen_timeout(setting):
-            try:
-                data['timeout'] = int(setting)
-            except ValueError:
-                return
-
-        def _listen_threads(setting):
-            try:
-                data['threads'] = int(setting)
-            except ValueError:
-                return
-
-        def _session_ttl(setting):
-            try:
-                data['session_ttl'] = int(setting)
-            except ValueError:
-                return
-
-        def _max_connections(setting):
-            try:
-                data['max_connections'] = int(setting)
-            except ValueError:
-                return
-
-        def _ssl_port(setting):
-            try:
-                data['ssl_port'] = int(setting)
-            except ValueError:
-                return
-
-        def _disabled_commands(setting):
-            for disabled_cmd in setting.split():
-                data['disabled_cmds'].add(disabled_cmd)
-
-        def _ip_blacklist(setting):
-            for ip_blacklist in setting.split():
-                data['ip_blacklist'].add(ip_blacklist)
-
-        settings_map = {
-            'listen': _listen,
-            'listen-port': _listen_port,
-            'listen-timeout': _listen_timeout,
-            'listen-threads': _listen_threads,
-            'session-ttl': _session_ttl,
-            'max-connections': _max_connections,
-            'ssl-port': _ssl_port,
-            'disabled-commands': _disabled_commands,
-            'ip-blacklist': _ip_blacklist,
-        }
-
-        for line in socketconf:
-
-            key, value = entropy.tools.extract_setting(line)
-            if key is None:
-                continue
-
-            func = settings_map.get(key)
-            if func is None:
-                continue
-            func(value)
-
-        return data
-
     def _system_parser(self):
 
         """
@@ -1048,57 +953,31 @@ class SystemSettings(Singleton, EntropyPluginStore):
         repopackages = repo_split[2].strip()
         repodatabase = repo_split[3].strip()
 
-        eapi3_uri = None
-        eapi3_port = etpConst['socket_service']['port']
-        eapi3_ssl_port = etpConst['socket_service']['ssl_port']
-        eapi3_formatcolon = repodatabase.rfind("#")
-
-        # Support for custom EAPI3 ports
-        if eapi3_formatcolon != -1:
-            try:
-                ports = repodatabase[eapi3_formatcolon+1:].split(",")
-                if ports:
-                    eapi3_port = int(ports[0])
-                if len(ports) > 1:
-                    eapi3_ssl_port = int(ports[1])
-            except (ValueError, IndexError,):
-                eapi3_port = etpConst['socket_service']['port']
-                eapi3_ssl_port = etpConst['socket_service']['ssl_port']
-            repodatabase = repodatabase[:eapi3_formatcolon]
-
         # Support for custom database file compression
-        dbformat = etpConst['etpdatabasefileformat']
-        dbformatcolon = repodatabase.rfind("#")
-        if dbformatcolon != -1:
-            if dbformat in etpConst['etpdatabasesupportedcformats']:
-                try:
-                    dbformat = repodatabase[dbformatcolon+1:]
-                except (IndexError, ValueError, TypeError,):
-                    pass
+        dbformat = None
+        for testno in range(2):
+            dbformatcolon = repodatabase.rfind("#")
+            if dbformatcolon == -1:
+                break
+
+            try:
+                dbformat = repodatabase[dbformatcolon+1:]
+            except (IndexError, ValueError, TypeError,):
+                pass
             repodatabase = repodatabase[:dbformatcolon]
 
-        # Support for custom EAPI3 service URI
-        eapi3_uricolon = repodatabase.rfind(",")
-        if eapi3_uricolon != -1:
+        if dbformat not in etpConst['etpdatabasesupportedcformats']:
+            # fallback to default
+            dbformat = etpConst['etpdatabasefileformat']
 
-            found_eapi3_uri = repodatabase[eapi3_uricolon+1:]
-            if found_eapi3_uri:
-                eapi3_uri = found_eapi3_uri
-            repodatabase = repodatabase[:eapi3_uricolon]
+        # strip off, if exists, the deprecated service_uri part (EAPI3 shit)
+        uricol = repodatabase.rfind(",")
+        if uricol != -1:
+            repodatabase = repodatabase[:uricol]
 
         mydata = {}
         mydata['repoid'] = reponame
-        mydata['service_port'] = eapi3_port
-        mydata['ssl_service_port'] = eapi3_ssl_port
 
-        if not repodatabase.endswith("file://") and (eapi3_uri is None):
-            try:
-                # try to cope with the fact that no specific EAPI3 URI has been
-                # provided
-                eapi3_uri = repodatabase.split("/")[2]
-            except IndexError:
-                eapi3_uri = None
-        mydata['service_uri'] = eapi3_uri
         mydata['description'] = repodesc
         mydata['packages'] = []
         mydata['plain_packages'] = []
@@ -1249,9 +1128,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     obj['database'] = repodata['database']
                     obj['dbrevision'] = repodata['dbrevision']
                     obj['dbcformat'] = repodata['dbcformat']
-                    obj['service_uri'] = repodata['service_uri']
-                    obj['service_port'] = repodata['service_port']
-                    obj['ssl_service_port'] = repodata['ssl_service_port']
 
             else:
                 my_repodata[reponame] = repodata.copy()

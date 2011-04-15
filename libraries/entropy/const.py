@@ -253,8 +253,6 @@ def const_default_settings(rootdir):
         'serverconf': default_etp_confdir+"/server.conf",
         # client.conf file (generic entropy client side settings)
         'clientconf': default_etp_confdir+"/client.conf",
-        # socket.conf file
-        'socketconf': default_etp_confdir+"/socket.conf",
         # used by entropy.spm to build pkgs relative URL metadata ("download",
         # returned by EntropyRepository.retrieveDownloadURL())
         'packagesrelativepath_basedir': "packages",
@@ -618,45 +616,6 @@ def const_default_settings(rootdir):
         'serverdbid': "__server__",
         'genericdbid': "__generic__",
         'systemreleasefile': "/etc/sabayon-release",
-
-        # these are constants, for real settings
-        # look ad SystemSettings class
-        'socket_service': { # here are the constants
-            'hostname': "localhost",
-            'port': 1026,
-            'ssl_port': 1027, # above + 1
-            'timeout': 200,
-            'forked_requests_timeout': 300,
-            'max_command_length': 768000, # bytes
-            'threads': 5,
-            'session_ttl': 15,
-            'default_uid': 0,
-            'max_connections': 5,
-            'max_connections_per_host': 15,
-            'max_connections_per_host_barrier': 8,
-            'disabled_cmds': set(),
-            'ip_blacklist': set(),
-            'ssl_key': default_etp_confdir+"/socket_server.key",
-            'ssl_cert': default_etp_confdir+"/socket_server.crt",
-            'ssl_ca_cert': default_etp_confdir+"/socket_server.CA.crt",
-            'ssl_ca_pkey': default_etp_confdir+"/socket_server.CA.key",
-            'answers': {
-                # command run
-                'ok': const_convert_to_rawstring(chr(0)+"OK"+chr(0)),
-                # execution error
-                'er': const_convert_to_rawstring(chr(0)+"ER"+chr(1)),
-                # not allowed
-                'no': const_convert_to_rawstring(chr(0)+"NO"+chr(2)),
-                # close connection
-                'cl': const_convert_to_rawstring(chr(0)+"CL"+chr(3)),
-                # max connections reached
-                'mcr': const_convert_to_rawstring(chr(0)+"MCR"+chr(4)),
-                # end of size
-                'eos': const_convert_to_rawstring(chr(0)),
-                # no operation
-                'noop': const_convert_to_rawstring(chr(0)+"NOOP"+chr(0)),
-            },
-        },
 
         'install_sources': {
             'unknown': 0,

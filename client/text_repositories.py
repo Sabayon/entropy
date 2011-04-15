@@ -152,8 +152,6 @@ def _add_repository(entropy_client, repo_strings):
         toc.append((purple(_("Repository id:")), teal(repoid)))
         toc.append((darkgreen(_("Description:")), teal(repodata['description'])))
         toc.append((purple(_("Repository format:")), darkgreen(repodata['dbcformat'])))
-        toc.append((brown(_("Service port:")), teal(str(repodata['service_port']))))
-        toc.append((brown(_("Service port (SSL):")), teal(str(repodata['ssl_service_port']))))
         for pkg_url in repodata['plain_packages']:
             toc.append((purple(_("Packages URL:")), pkg_url))
         db_url = repodata['plain_database']

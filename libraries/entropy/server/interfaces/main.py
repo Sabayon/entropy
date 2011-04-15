@@ -423,33 +423,12 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         repodesc = repo_split[1].strip()
         repouris = repo_split[2].strip()
 
-        service_url = None
-        eapi3_port = etpConst['socket_service']['port']
-        eapi3_ssl_port = etpConst['socket_service']['ssl_port']
-        if len(repo_split) > 3:
-            service_url = repo_split[3].strip()
-
-            eapi3_formatcolon = service_url.rfind("#")
-            if eapi3_formatcolon != -1:
-                try:
-                    ports = service_url[eapi3_formatcolon+1:].split(",")
-                    eapi3_port = int(ports[0])
-                    if len(ports) > 1:
-                        eapi3_ssl_port = int(ports[1])
-                    service_url = service_url[:eapi3_formatcolon]
-                except (ValueError, IndexError,):
-                    eapi3_port = etpConst['socket_service']['port']
-                    eapi3_ssl_port = etpConst['socket_service']['ssl_port']
-
         mydata = {}
         mydata['repoid'] = repoid
         mydata['description'] = repodesc
         mydata['pkg_mirrors'] = []
         mydata['repo_mirrors'] = []
         mydata['community'] = False
-        mydata['service_url'] = service_url
-        mydata['service_port'] = eapi3_port
-        mydata['ssl_service_port'] = eapi3_ssl_port
         uris = repouris.split()
         for uri in uris:
             do_pkg = False
@@ -4048,8 +4027,6 @@ class Server(Client):
         dbc = self._open_temp_repository(repoid, temp_file = ":memory:")
         self._memory_db_srv_instances[repoid] = dbc
 
-        eapi3_port = int(etpConst['socket_service']['port'])
-        eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
         # add to settings
         repodata = {
             'repoid': repoid,
@@ -4057,9 +4034,6 @@ class Server(Client):
             'pkg_mirrors': pkg_mirrors,
             'repo_mirrors': repo_mirrors,
             'community': community_repo,
-            'service_port': eapi3_port,
-            'ssl_service_port': eapi3_ssl_port,
-            'service_url': service_url,
             'handler': '', # not supported
             '__temporary__': True,
         }

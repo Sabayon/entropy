@@ -148,8 +148,6 @@ class AddRepositoryWindow(MenuSkel):
 
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
-        self.addrepo_ui.repodbPort.set_text(str(repodata['service_port']))
-        self.addrepo_ui.repodbPortSSL.set_text(str(repodata['ssl_service_port']))
         self.repoMirrorsView.store.clear()
         for x in repodata['plain_packages']:
             self.repoMirrorsView.add(x)
@@ -170,8 +168,6 @@ class AddRepositoryWindow(MenuSkel):
         repodata['plain_packages'] = self.repoMirrorsView.get_all()
         repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
         repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
-        repodata['service_port'] = self.addrepo_ui.repodbPort.get_text()
-        repodata['ssl_service_port'] = self.addrepo_ui.repodbPortSSL.get_text()
         return repodata
 
     def _validate_repo_submit(self, repodata, edit = False):
@@ -195,21 +191,6 @@ class AddRepositoryWindow(MenuSkel):
 
             errors.append(_("Repository URL must be a valid URL"))
 
-        if not repodata['service_port']:
-            repodata['service_port'] = int(etpConst['socket_service']['port'])
-        else:
-            try:
-                repodata['service_port'] = int(repodata['service_port'])
-            except (ValueError,):
-                errors.append(_("Repository Services Port not valid"))
-
-        if not repodata['ssl_service_port']:
-            repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
-        else:
-            try:
-                repodata['ssl_service_port'] = int(repodata['ssl_service_port'])
-            except (ValueError,):
-                errors.append(_("Secure Services Port not valid"))
         return errors
 
     def on_mirrorDown_clicked( self, widget ):

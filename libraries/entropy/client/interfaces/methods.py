@@ -532,24 +532,17 @@ class RepositoryMixin:
 
             if not disable and not enable: # so it's a add
 
-                service_uri = repodata.get('service_uri', '')
-                if service_uri:
-                    service_uri = ',%s' % (service_uri,)
                 repository_lines = []
-
                 mirror_count = 0
                 for mirror in repodata['plain_packages']:
                     if mirror_count == 0:
                         mirror_count += 1
-                        rline = "repository = %s|%s|%s|%s%s#%s#%s,%s" % (
+                        rline = "repository = %s|%s|%s|%s#%s" % (
                             repodata['repoid'],
                             repodata['description'],
                             mirror,
                             repodata['plain_database'],
-                            service_uri,
                             repodata['dbcformat'],
-                            repodata['service_port'],
-                            repodata['ssl_service_port'],
                         )
                     else:
                         rline = "repository = %s||%s|" % (
