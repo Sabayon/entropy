@@ -1163,15 +1163,6 @@ class Server(Client):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['etpdatabasetimestampfile'])
 
-    def _get_local_repository_ca_cert_file(self, repository_id, branch = None):
-        return os.path.join(self._get_local_repository_dir(repository_id,
-            branch = branch), etpConst['etpdatabasecacertfile'])
-
-    def _get_local_repository_server_cert_file(self, repository_id,
-        branch = None):
-        return os.path.join(self._get_local_repository_dir(repository_id,
-            branch = branch), etpConst['etpdatabaseservercertfile'])
-
     def _get_local_repository_mask_file(self, repository_id, branch = None):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['etpdatabasemaskfile'])

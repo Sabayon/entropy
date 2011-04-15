@@ -322,8 +322,6 @@ def const_default_settings(rootdir):
         # "there are updates" signal file for webinstall packages
         # can be used to trigger the generation of new webinstall files
         'etpdatabasewebinstallupdates': default_etp_dbfile+".webinst_updates",
-        'etpdatabasecacertfile': "ca.cert",
-        'etpdatabaseservercertfile': "server.cert",
         # repository GPG public key file
         'etpdatabasegpgfile': "signature.asc",
         'etpgpgextension': ".asc",

@@ -625,22 +625,6 @@ class ServerPackagesRepositoryUpdater(object):
             gpg_signed_files.append(
                 data['compressed_database_path_digest_light'])
 
-
-        # SSL cert file, just for reference
-        ssl_ca_cert = self._entropy._get_local_repository_ca_cert_file(
-            self._repository_id)
-        if os.path.isfile(ssl_ca_cert):
-            if download:
-                data['ssl_ca_cert_file'] = ssl_ca_cert
-            extra_text_files.append(ssl_ca_cert)
-
-        ssl_server_cert = self._entropy._get_local_repository_server_cert_file(
-            self._repository_id)
-        if os.path.isfile(ssl_server_cert):
-            if download:
-                data['ssl_server_cert_file'] = ssl_server_cert
-            extra_text_files.append(ssl_server_cert)
-
         # Some information regarding how packages are built
         spm_files_map = self._entropy.Spm_class().config_files_map()
         spm_syms = {}
