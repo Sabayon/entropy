@@ -1,3 +1,60 @@
+commit 7f5c59b7726fc5ffc783100eda567a30bcf00ed3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 14:49:13 2011 +0200
+
+    Release Entropy 1.0_beta1
+
+commit cbb76e7455ad3858607f35e2605c08c49f0ce3c8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 14:42:00 2011 +0200
+
+    [entropy.client.interfaces.package] always run configuration files protection logic
+    
+    When diffremoval is True (== package being updated), the configuration
+    files protection logic was skipped and every files removed regardless
+    user settings. This is wrong, since nowadays we store md5 of installed
+    files and we are able to know when a file is sitting on the fs unmodified,
+    thus decide to remove it automatically.
+    Also see bug #2354. Thanks Mitch Harder for reporting.
+
+commit f25488cc877b4f1651d64a9d9dd56f7786aac10d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 12:25:32 2011 +0200
+
+    [entropy.client.interfaces.dep] filter out packages in the same slot, when tagged
+    
+    In _generate_reverse_dependency_tree() -> get_revdeps_lib()
+    it could happen that tagged packages sharing the "virtual" slot
+    get pulled in in the dependency graph. This should not really
+    happen, and happens to packages whose libs need an ELF object
+    available inside their own package files.
+    
+    See also: http://forum.sabayon.org/viewtopic.php?f=5&t=23781
+
+commit 1ba880c31c8ebdd28501f4580c0238bcae409a2d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 12:23:47 2011 +0200
+
+    [entropy.client.interfaces.dep] complete tweaking of debugging ourput in _generate_reverse_dependency_tree
+
+commit c5e5078117d31190d829e8cb341517504766f7d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 11:48:36 2011 +0200
+
+    [entropy.client.interfaces.dep] add more debugging output in _generate_reverse_dependency_tree
+
+commit dded4cc602811bd2bf68c1129ed94a08d2c5e80b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 18 12:31:24 2011 +0200
+
+    [equo] fixup --help options indentation
+
+commit fa56cda09eb9f594726e2172f75d61199ba74ce6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 15 08:00:42 2011 +0200
+
+    Tagging Entropy version 1.0_alpha47
+
 commit 36d184d76e4eb92c2fe2e5a171d112cd7b881c36
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 15 08:00:30 2011 +0200
