@@ -1752,6 +1752,7 @@ class CalculatorsMixin:
             )
 
             reverse_deps = get_revdeps(pkg_id, repo_id, repo_db)
+            reverse_deps_lib = set()
             if elf_needed_scanning:
                 # use metadata collected during package generation to
                 # look for dependencies based on ELF NEEDED.
@@ -1763,10 +1764,11 @@ class CalculatorsMixin:
             if const_debug_enabled():
                 const_debug_write(__name__,
                     "\n_generate_reverse_dependency_tree [m:%s => %s] " \
-                    "rev_deps: %s => %s" % (
+                    "rev_deps: %s => %s :: reverse_deps_lib: %s" % (
                     (pkg_id, repo_id), p_atom, reverse_deps,
                     [self.open_repository(x[1]).retrieveAtom(x[0]) \
-                        for x in reverse_deps],))
+                        for x in reverse_deps],
+                        reverse_deps_lib,))
 
             if deep:
 
