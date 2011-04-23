@@ -4492,6 +4492,176 @@ class Server(Client):
 
         return downloadurl
 
+    def __user_filter_out_missing_deps(self, pkg_repo, entropy_repository,
+        missing_map, ask):
+
+        missing_deps = {}
+        if not ask:
+            # not interactive, add everything
+            for pkg_match, missing_extended in missing_map.items():
+                obj = missing_deps.setdefault(pkg_match, set())
+                obj.update(missing_extended.values())
+            return missing_deps
+
+        header_txt = """\
+# Some missing dependencies have been found.
+# Please use this text file to commit the ones you want
+# to get added to their respective packages.
+#
+# HOWTO: just remove the lines containing unwanted dependencies and
+# keep those you think are sane.
+#
+# IMPORTANT:
+# Lines starting with "#" are comments and will be ignored.
+# Lines starting with "##" are reserved to this application for
+# parsing purposes.
+"""
+
+        editor_lines = []
+        for pkg_match, missing_extended in missing_map.items():
+
+            if not missing_extended:
+                # wtf
+                continue
+
+            pkg_id, missing_pkg_repo = pkg_match
+            if pkg_repo != missing_pkg_repo:
+                raise AttributeError("this cannot happen")
+
+            atom = entropy_repository.retrieveAtom(pkg_id)
+            slot = entropy_repository.retrieveSlot(pkg_id)
+            line = "## %s %s => %s:%s" % (pkg_id, pkg_repo, atom, slot)
+            editor_lines.append(line)
+
+            for lib_match, dep_list in missing_extended.items():
+                library, elf = lib_match
+                line = "# %s, %s" % (library, elf)
+                editor_lines.append(line)
+                for dep in sorted(dep_list):
+                    editor_lines.append(dep)
+                editor_lines.append("")
+
+        if not editor_lines:
+            # wtf!?
+            return {}
+
+        while True:
+
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix = 'entropy.server')
+            with os.fdopen(tmp_fd, "w") as tmp_f:
+                tmp_f.write(header_txt)
+                for editor_line in editor_lines:
+                    tmp_f.write(line + "\n")
+                tmp_f.flush()
+
+            success = self.edit_file(tmp_path)
+            if not success:
+                # retry
+                os.remove(tmp_path)
+                continue
+
+            # parse the file back, build missing_deps
+            all_good = True
+            missing_deps = {}
+            with open(tmp_path, "r") as tmp_f:
+                pkg_match = None
+                for line in tmp_f.readlines():
+                    line = line.strip()
+
+                    if not line:
+                        # empty line
+                        continue
+
+                    elif line.startswith("##"):
+                        # new package match, hopefully
+                        line_data = line.lstrip("## ").split()
+                        if len(line_data) < 2:
+                            # something is really bad
+                            all_good = False
+                            break
+                        try:
+                            pkg_id = int(line_data[0])
+                        except ValueError:
+                            # something is really bad
+                            all_good = False
+                            break
+
+                        repo = line_data[1]
+                        if repo != pkg_repo:
+                            # bad here too
+                            all_good = False
+                            break
+
+                        pkg_match = pkg_id, repo
+                        continue
+
+                    elif line.startswith("#"):
+                        # ignore comment line
+                        continue
+
+                    elif pkg_match:
+                        # real line, should contain a valid dependency string
+                        # if pkg_match is set
+                        obj = missing_deps.setdefault(pkg_match, set())
+                        obj.add(line)
+
+            os.remove(tmp_path)
+
+            if not all_good:
+                continue
+
+            if not missing_deps:
+                self.output(
+                    "[%s] %s:" % (
+                        darkgreen(pkg_repo),
+                        teal(_("no missing dependencies !")),
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = red(" @@ ")
+                )
+            else:
+                self.output(
+                    "[%s] %s:" % (
+                        darkgreen(pkg_repo),
+                        teal(_("these are the missing dependencies")),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = purple(" @@ ")
+                )
+                for pkg_match, deps in missing_deps.items():
+                    pkg_id, repo = pkg_match
+                    atom = entropy_repository.retrieveAtom(pkg_id)
+                    slot = entropy_repository.retrieveSlot(pkg_id)
+                    self.output(
+                        "%s, %s" % (
+                            purple(atom),
+                            brown(slot),
+                        ),
+                        level = "info",
+                        header = "  :: "
+                    )
+                    for dep in sorted(deps):
+                        self.output(
+                            brown(dep),
+                            level = "info",
+                            header = red("   # ")
+                        )
+
+            # ask confirmation
+            rc_question = self.ask_question(
+                "[%s] %s" % (
+                    purple(pkg_repo),
+                    teal(_("Do you agree?"))
+                )
+            )
+            if rc_question == _("Yes"):
+                break
+            # otherwise repeat everything again
+
+        return missing_deps
+
     def missing_runtime_dependencies_test(self, package_matches, ask = True,
         bump_packages = False):
         """
@@ -4538,11 +4708,12 @@ class Server(Client):
             pkg_blacklisted_deps |= repo_blacklist
 
             # missing dependencies check
-            missing_deps = my_qa.test_missing_dependencies(
-                self, [(x, pkg_repo) for x in package_ids], ask = ask,
-                self_check = True, black_list = pkg_blacklisted_deps,
-                black_list_adder = \
-                    self._add_missing_dependencies_blacklist_items)
+            missing_map = my_qa.test_missing_dependencies(
+                self, [(x, pkg_repo) for x in package_ids],
+                self_check = True, black_list = pkg_blacklisted_deps)
+
+            missing_deps = self.__user_filter_out_missing_deps(pkg_repo,
+                dbconn, missing_map, ask)
 
             for (pkg_id, missing_pkg_repo), missing in missing_deps.items():
                 if pkg_repo != missing_pkg_repo:
@@ -4566,6 +4737,8 @@ class Server(Client):
                     # make sure that info have been written to disk
                     dbconn.commit()
 
+                # NOTE that missing is a list here, so no fancy
+                # dependency type is set.
                 dbconn.insertDependencies(pkg_id, missing)
 
             if missing_deps:
@@ -4857,19 +5030,6 @@ class Server(Client):
                 not x.strip().startswith("#")]
             f_wl.close()
         return set(wl_data)
-
-    def _add_missing_dependencies_blacklist_items(self, items, repository_id):
-        branch = self._settings['repositories']['branch']
-        wl_file = self._get_missing_dependencies_blacklist_file(repository_id,
-            branch = branch)
-        wl_dir = os.path.dirname(wl_file)
-        if not (os.path.isdir(wl_dir) and os.access(wl_dir, os.W_OK)):
-            return
-        if os.path.isfile(wl_file) and not os.access(wl_file, os.W_OK):
-            return
-        with open(wl_file, "a+") as f_wl:
-            f_wl.write('\n'.join(items)+'\n')
-            f_wl.flush()
 
     def _get_package_path(self, repo, dbconn, idpackage):
         """

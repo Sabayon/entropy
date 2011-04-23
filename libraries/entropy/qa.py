@@ -242,8 +242,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         return broken
 
     def test_missing_dependencies(self, entropy_client, package_matches,
-        ask = True, self_check = False, black_list = None,
-        black_list_adder = None):
+        self_check = False, black_list = None):
         """
         Scan given package matches looking for missing dependencies (checking
         ELF metadata).
@@ -254,34 +253,29 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @param package_matches: list of entropy package matches tuples
             (package id, repo id)
         @type package_matches: list
-        @keyword ask: request user interaction when finding missing dependencies
-        @type ask: bool
         @keyword self_check: also introspect inside the complaining package
             (to avoid reporting false positives when circular dependencies
             occur)
         @type self_check: bool
         @keyword black_list: list of dependencies already blacklisted.
         @type black_list: set
-        @keyword black_list_adder: callable function that accepts two arguments:
-            (1) list (set) of new dependencies to blacklist for the
-            given (2) repository identifier.
-        @type black_list_adder: callable
         @return: dict of missing dependencies to add, key is package match,
-            value is the dependency list
+            value is a dict, with library name + ELF class as key, and
+            potential missing deps as value
         @rtype: dict
         """
 
         if not isinstance(black_list, set):
             black_list = set()
 
-        scan_msg = blue(_("Now searching for missing RDEPENDs"))
+        scan_msg = blue(_("Searching for missing Runtime dependencies"))
         self.output(
             "%s..." % (scan_msg,),
             importance = 1,
             level = "info",
             header = red(" @@ ")
         )
-        scan_msg = blue(_("scanning for missing RDEPENDs"))
+        scan_msg = blue(_("scanning"))
         count = 0
         maxcount = len(package_matches)
         missing_map = {}
@@ -316,7 +310,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
             dbconn = entropy_client.open_repository(repo)
             atom = dbconn.retrieveAtom(package_id)
             self.output(
-                "[repo:%s] %s: %s" % (
+                "[%s] %s: %s" % (
                             darkgreen(repo),
                             scan_msg,
                             darkgreen(atom),
@@ -332,6 +326,9 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 entropy_client, (package_id, repo),
                 self_check = self_check)
 
+            if not missing:
+                continue
+
             old_missing = missing.copy()
             missing -= black_list
             for item in list(missing_extended.keys()):
@@ -344,7 +341,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 old_missing -= missing
                 if old_missing:
                     self.output(
-                        "[repo:%s] %s: %s %s:" % (
+                        "[%s] %s: %s %s:" % (
                             darkgreen(repo),
                             darkred("package"),
                             darkgreen(atom),
@@ -363,79 +360,16 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             header = blue("     # ")
                     )
 
-            if missing:
-                self.output(
-                    "[repo:%s] %s: %s %s:" % (
-                        darkgreen(repo),
-                        blue("package"),
-                        darkgreen(atom),
-                        blue(_("is missing the following dependencies")),
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = red(" @@ "),
-                    count = (count, maxcount,)
-                )
-            for missing_data in missing_extended:
-                self.output(
-                        "%s:" % (brown(repr(missing_data)),),
-                        importance = 0,
-                        level = "info",
-                        header = purple("   ## ")
-                )
-                for dependency in missing_extended[missing_data]:
-                    self.output(
-                            "%s" % (darkred(dependency),),
-                            importance = 0,
-                            level = "info",
-                            header = blue("     # ")
-                    )
-            if ask and missing:
-                rc_ask = self.ask_question(_("Do you want to add them?"))
-                if rc_ask == _("No"):
-                    continue
-                rc_ask = self.ask_question(_("Selectively?"))
-                if rc_ask == _("Yes"):
-                    newmissing = set()
-                    new_blacklist = set()
-                    for dependency in missing:
-                        self.output(
-                            "[repo:%s|%s] %s" % (
-                                    darkgreen(repo),
-                                    brown(atom),
-                                    blue(dependency),
-                            ),
-                            importance = 0,
-                            level = "info",
-                            header = blue(" @@ ")
-                        )
-                        rc_ask = self.ask_question(_("Want to add?"))
-                        if rc_ask == _("Yes"):
-                            newmissing.add(dependency)
-                        ### NOTE: disabled, devs are not able to use it properly
-                        ### needs usability fixes
-                        #else:
-                            #rc_ask = self.ask_question(
-                            #    _("Want to blacklist?"))
-                            #if rc_ask == _("Yes"):
-                            #    new_blacklist.add(dependency)
-                    if new_blacklist and (black_list_adder != None):
-                        black_list_adder(new_blacklist, repo)
-                    missing = newmissing
-            if missing:
-                obj = missing_map.setdefault((package_id, repo), [])
-                obj.extend([x for x in missing if x not in obj])
-                self.output(
-                    "[repo:%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkgreen(atom),
-                        blue(_("missing dependencies saved")),
-                    ),
-                    importance = 1,
-                    level = "info",
-                    header = red(" @@ "),
-                    count = (count, maxcount,)
-                )
+            if not missing:
+                continue
+
+            missing_map[(package_id, repo)] = missing_extended
+
+        count = 0
+        for package_id, repo in package_matches:
+            count += 1
+            dbconn = entropy_client.open_repository(repo)
+            atom = dbconn.retrieveAtom(package_id)
 
             # check for untracked missing sonames (using less reliable
             # ldd check, but just warn)
@@ -447,7 +381,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
                         darkgreen(repo),
                         blue("package"),
                         darkgreen(atom),
-                        blue(_("is probably missing these other dependencies")),
+                        blue(_("is potentially missing these dependencies")),
                     ),
                     importance = 1,
                     level = "info",
