@@ -1590,8 +1590,11 @@ class CalculatorsMixin:
 
         if const_debug_enabled():
             const_debug_write(__name__,
-                "_generate_reverse_dependency_tree [m:%s|d:%s|r:%s|e:%s|s:%s|es:%s]" \
-                    % (matched_atoms, deep, recursive, empty,
+                "\n_generate_reverse_dependency_tree " \
+                "[m:%s => %s|d:%s|r:%s|e:%s|s:%s|es:%s]" \
+                    % (matched_atoms,
+                    [self.open_repository(x[1]).retrieveAtom(x[0]) \
+                        for x in matched_atoms], deep, recursive, empty,
                         system_packages, elf_needed_scanning))
 
         c_hash = "%s%s" % (
@@ -1607,7 +1610,7 @@ class CalculatorsMixin:
 
         if const_debug_enabled():
             const_debug_write(__name__,
-                "_generate_reverse_dependency_tree [m:%s] not cached!" % (
+                "\n_generate_reverse_dependency_tree [m:%s] not cached!" % (
                     matched_atoms,))
 
         count = 0
@@ -1651,7 +1654,7 @@ class CalculatorsMixin:
                     if m_repo_db.isSystemPackage(mydep):
                         if const_debug_enabled():
                             const_debug_write(__name__,
-                            "_generate_reverse_dependency_tree [md:%s] "
+                            "\n_generate_reverse_dependency_tree [md:%s] "
                                 "cannot calculate, it's a system package" \
                                 % ((mydep, m_repo_id),))
                         continue
@@ -1660,7 +1663,7 @@ class CalculatorsMixin:
                             mydep):
                             if const_debug_enabled():
                                 const_debug_write(__name__,
-                                "_generate_reverse_dependency_tree [md:%s] "
+                                "\n_generate_reverse_dependency_tree [md:%s] "
                                     "cannot calculate, it's in sysmask" \
                                     % ((mydep, m_repo_id),))
                             continue
@@ -1704,7 +1707,7 @@ class CalculatorsMixin:
 
                 if const_debug_enabled():
                     const_debug_write(__name__,
-                    "_generate_reverse_dependency_tree [d_dep:%s] " \
+                    "\n_generate_reverse_dependency_tree [d_dep:%s] " \
                         "reverse deps: %s" % ((d_rev_dep, d_repo_id),
                         mydepends,))
 
@@ -1725,7 +1728,7 @@ class CalculatorsMixin:
                     not_removable_deps.add((pkg_id, repo_id))
                     if const_debug_enabled():
                         const_debug_write(__name__,
-                        "_generate_reverse_dependency_tree %s is sys_pkg!" % (
+                        "\n_generate_reverse_dependency_tree %s is sys_pkg!" % (
                         (pkg_id, repo_id),))
                     continue
 
@@ -1734,7 +1737,7 @@ class CalculatorsMixin:
             if not repo_db.isPackageIdAvailable(pkg_id):
                 if const_debug_enabled():
                     const_debug_write(__name__,
-                    "_generate_reverse_dependency_tree %s not available!" % (
+                    "\n_generate_reverse_dependency_tree %s not available!" % (
                     (pkg_id, repo_id),))
                 continue
 
@@ -1759,15 +1762,18 @@ class CalculatorsMixin:
 
             if const_debug_enabled():
                 const_debug_write(__name__,
-                    "_generate_reverse_dependency_tree [m:%s] rev_deps: %s" % (
-                    (pkg_id, repo_id), reverse_deps,))
+                    "\n_generate_reverse_dependency_tree [m:%s => %s] " \
+                    "rev_deps: %s => %s" % (
+                    (pkg_id, repo_id), p_atom, reverse_deps,
+                    [self.open_repository(x[1]).retrieveAtom(x[0]) \
+                        for x in reverse_deps],))
 
             if deep:
 
                 d_deps = get_direct_deps(repo_db, pkg_id)
                 if const_debug_enabled():
                     const_debug_write(__name__,
-                    "_generate_reverse_dependency_tree [m:%s] d_deps: %s" % (
+                    "\n_generate_reverse_dependency_tree [m:%s] d_deps: %s" % (
                     (pkg_id, repo_id), d_deps,))
 
                 # now filter them
@@ -1775,14 +1781,14 @@ class CalculatorsMixin:
 
                 if const_debug_enabled():
                     const_debug_write(__name__,
-                    "_generate_reverse_dependency_tree done filtering out" \
+                    "\n_generate_reverse_dependency_tree done filtering out" \
                         " direct dependencies: %s" % (mydeps,))
 
                 if empty:
                     reverse_deps |= mydeps
                     if const_debug_enabled():
                         const_debug_write(__name__,
-                        "_generate_reverse_dependency_tree done empty=True," \
+                        "\n_generate_reverse_dependency_tree done empty=True," \
                             " adding: %s" % (mydeps,))
                 else:
                     # to properly pull in every direct dependency with no
