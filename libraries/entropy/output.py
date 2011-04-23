@@ -1012,7 +1012,7 @@ class TextInterface(object):
         @rtype: bool
         """
         editor = os.getenv("EDITOR", "/bin/nano")
-        return subprocess.call((editor, file_path)) != 0
+        return subprocess.call((editor, file_path)) == 0
 
     def set_title(self, title):
         """
