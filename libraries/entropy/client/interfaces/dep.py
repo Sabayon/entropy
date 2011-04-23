@@ -1694,6 +1694,39 @@ class CalculatorsMixin:
                     pkg_id, repo_id, reverse_deps)
             # remove myself
             reverse_deps.discard((pkg_id, repo_id))
+
+            # remove packages in the same slot, this is required in a case
+            # like this:
+            #    _generate_reverse_dependency_tree [m:(17434, '__system__')
+            #    => x11-drivers/xf86-video-virtualbox-4.0.4#2.6.37-sabayon]
+            #    rev_deps: set([(17432, '__system__'),
+            #    (17435, '__system__')]) =>
+            #  ['x11-drivers/xf86-video-virtualbox-4.0.4#2.6.38-sabayon',
+            #   'app-emulation/virtualbox-guest-additions-4.0.4#2.6.37-sabayon']
+            #   :: reverse_deps_lib: set([(17432, '__system__')])
+            # where xf86-video-virtualbox erroneously pulls in its cousin :-)
+            keyslot = None
+            pkg_tag = None
+            if reverse_deps:
+                # only if we advertise a package tag
+                pkg_tag = repo_db.retrieveTag(pkg_id)
+                if pkg_tag:
+                    keyslot = repo_db.retrieveKeySlotAggregated(pkg_id)
+
+            if keyslot and pkg_tag:
+                keyslot = entropy.dep.remove_tag_from_slot(keyslot)
+                filtered_reverse_deps = set()
+                for revdep_match in reverse_deps:
+                    revdep_pkg_id, revdep_repo_id = revdep_match
+                    revdep_db = self.open_repository(revdep_repo_id)
+                    revdep_keyslot = revdep_db.retrieveKeySlotAggregated(
+                        revdep_pkg_id)
+                    revdep_keyslot = entropy.dep.remove_tag_from_slot(
+                        revdep_keyslot)
+                    if revdep_keyslot != keyslot:
+                        filtered_reverse_deps.add(revdep_match)
+                reverse_deps = filtered_reverse_deps
+
             return reverse_deps
 
         def setup_revdeps(filtered_deps):
