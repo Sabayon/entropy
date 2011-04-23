@@ -1508,8 +1508,7 @@ class Package:
             protected = False
             in_mask = False
 
-            if (not self.pkgmeta['removeconfig']) and \
-                (not self.pkgmeta['diffremoval']):
+            if not self.pkgmeta['removeconfig']:
 
                 protected_item_test = sys_root_item
                 if const_isunicode(protected_item_test):
