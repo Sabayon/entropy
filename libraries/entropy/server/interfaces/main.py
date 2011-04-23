@@ -4515,6 +4515,8 @@ class Server(Client):
 # Lines starting with "#" are comments and will be ignored.
 # Lines starting with "##" are reserved to this application for
 # parsing purposes.
+
+
 """
 
         editor_lines = []
@@ -4551,12 +4553,12 @@ class Server(Client):
             with os.fdopen(tmp_fd, "w") as tmp_f:
                 tmp_f.write(header_txt)
                 for editor_line in editor_lines:
-                    tmp_f.write(line + "\n")
+                    tmp_f.write(editor_line + "\n")
                 tmp_f.flush()
 
             success = self.edit_file(tmp_path)
             if not success:
-                # retry
+                # retry ?
                 os.remove(tmp_path)
                 continue
 
