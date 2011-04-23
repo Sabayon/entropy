@@ -229,14 +229,8 @@ def update(entropy_client, cmd = None):
                             darkgreen(etpConst['systemroot']+scandata[cmd]['source'])
                         )
 
-                        editor = os.getenv("EDITOR")
-                        if editor == None:
-                            print_error(" %s" % (_("Cannot find a suitable editor. Can't edit file directly."),) )
-                            comeback = True
-                            break
-                        else:
-                            subprocess.call((editor,
-                                etpConst['systemroot']+scandata[cmd]['source']))
+                        entropy_client.edit_file(
+                            etpConst['systemroot']+scandata[cmd]['source'])
 
                         print_info(darkred("%s " % (_("Edited file"),) ) + darkgreen(etpConst['systemroot'] + \
                             scandata[cmd]['source']) + darkred(" - %s:" % (_("showing differencies"),) )
