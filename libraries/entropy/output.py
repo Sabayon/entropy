@@ -15,6 +15,7 @@ import os
 import sys
 import errno
 import curses
+import subprocess
 
 from entropy.const import etpUi, const_convert_to_rawstring, const_isstring, \
     const_convert_to_unicode, const_isunicode
@@ -1000,6 +1001,18 @@ class TextInterface(object):
                     results[identifier] = myresult
                     break
         return results
+
+    def edit_file(self, file_path):
+        """
+        Open a file editor on given file path (file_path).
+
+        @param file_path: path to a writeable file
+        @type file_path: string
+        @return: True for successful edit, False otherwise
+        @rtype: bool
+        """
+        editor = os.getenv("EDITOR", "/bin/nano")
+        return subprocess.call((editor, file_path)) != 0
 
     def set_title(self, title):
         """
