@@ -114,9 +114,8 @@ def _sync(entropy_server, options, just_tidy):
                             tmp_f.write("#\t updated:   %s\n" % (sf_mirror,))
 
                     # spawn editor
-                    editor = os.getenv('EDITOR', '/bin/nano')
-                    cm_msg_rc = subprocess.call([editor, tmp_commit_path])
-                    if cm_msg_rc:
+                    cm_msg_rc = entropy_server.edit_file(tmp_commit_path)
+                    if not cm_msg_rc:
                         # wtf?, fallback to old way
                         ServerRssMetadata()['commitmessage'] = \
                             readtext(">> %s: " % (
