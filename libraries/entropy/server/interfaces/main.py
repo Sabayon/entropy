@@ -636,7 +636,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # validate repository id string
             if not entropy.tools.validate_repository_id(repoid):
                 sys.stderr.write("!!! invalid repository id '%s' in '%s'\n" % (
-                    reponame, etpConst['serverconf']))
+                    repoid, etpConst['serverconf']))
                 return
 
             if repoid in data['repositories']:
