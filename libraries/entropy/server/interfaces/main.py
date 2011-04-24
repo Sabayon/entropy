@@ -4541,25 +4541,30 @@ class Server(Client):
                 editor_lines.append(line)
                 for dep in sorted(dep_list):
                     editor_lines.append(dep)
-                editor_lines.append("")
+            editor_lines.append("")
+            editor_lines.append("")
 
         if not editor_lines:
             # wtf!?
             return {}
 
+        tmp_path = None
         while True:
 
-            tmp_fd, tmp_path = tempfile.mkstemp(prefix = 'entropy.server')
-            with os.fdopen(tmp_fd, "w") as tmp_f:
-                tmp_f.write(header_txt)
-                for editor_line in editor_lines:
-                    tmp_f.write(editor_line + "\n")
-                tmp_f.flush()
+            if tmp_path is None:
+                tmp_fd, tmp_path = tempfile.mkstemp(prefix = 'entropy.server',
+                    suffix = ".conf")
+                with os.fdopen(tmp_fd, "w") as tmp_f:
+                    tmp_f.write(header_txt)
+                    for editor_line in editor_lines:
+                        tmp_f.write(editor_line + "\n")
+                    tmp_f.flush()
 
             success = self.edit_file(tmp_path)
             if not success:
                 # retry ?
                 os.remove(tmp_path)
+                tmp_path = None
                 continue
 
             # parse the file back, build missing_deps
@@ -4607,9 +4612,9 @@ class Server(Client):
                         obj = missing_deps.setdefault(pkg_match, set())
                         obj.add(line)
 
-            os.remove(tmp_path)
-
             if not all_good:
+                os.remove(tmp_path)
+                tmp_path = None
                 continue
 
             if not missing_deps:
@@ -4637,18 +4642,18 @@ class Server(Client):
                     atom = entropy_repository.retrieveAtom(pkg_id)
                     slot = entropy_repository.retrieveSlot(pkg_id)
                     self.output(
-                        "%s, %s" % (
-                            purple(atom),
-                            brown(slot),
+                        "%s:%s" % (
+                            teal(atom),
+                            purple(slot),
                         ),
                         level = "info",
-                        header = "  :: "
+                        header = " :: "
                     )
                     for dep in sorted(deps):
                         self.output(
                             brown(dep),
                             level = "info",
-                            header = red("   # ")
+                            header = red("    # ")
                         )
 
             # ask confirmation
@@ -4661,7 +4666,15 @@ class Server(Client):
             if rc_question == _("Yes"):
                 break
             # otherwise repeat everything again
+            # keep tmp_path
 
+
+        if tmp_path is not None:
+            try:
+                os.remove(tmp_path)
+            except (OSError) as err:
+                if err.errno != errno.ENOENT:
+                    raise
         return missing_deps
 
     def missing_runtime_dependencies_test(self, package_matches, ask = True,
