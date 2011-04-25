@@ -2029,6 +2029,8 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
 
     if os.listdir(extract_path):
         return 0
+    if catch_empty:
+        return 0
     return -1
 
 def bytes_into_human(xbytes):
