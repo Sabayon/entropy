@@ -19,10 +19,18 @@ from entropy.services.client import WebService
 from sulfur.entropyapi import Equo
 from sulfur.setup import cleanMarkupString, SulfurConf
 from sulfur.core import get_entropy_webservice
+from sulfur.event import SulfurSignals
 
 
 ENTROPY = Equo()
 WEBSERV_MAP = {}
+UGC_CACHE = {}
+
+def _clear_ugc_cache(*args):
+    UGC_CACHE.clear()
+
+SulfurSignals.connect('ugc_data_update', _clear_ugc_cache)
+SulfurSignals.connect('ugc_cache_clear', _clear_ugc_cache)
 
 class DummyEntropyPackage:
 
@@ -601,29 +609,42 @@ class EntropyPackage:
         return self.dbconn.retrieveBranch(self.matched_id)
 
     def _get_vote_raw(self, pkg_key):
+
+        cache_key = "votes_" + pkg_key
+        cached = UGC_CACHE.get(cache_key)
+        if cached == -1:
+            return None
+        if cached is not None:
+            return cached
+
         webserv = self._get_webservice()
         if webserv is None:
+            UGC_CACHE[cache_key] = -1
             return None
 
         # try to get vote for the single package first, if it fails,
         # we'll search the info inside the available vote data.
-        got_miss = False
         try:
             vote = webserv.get_votes([pkg_key], cache = True,
                 cached = True)[pkg_key]
         except WebService.CacheMiss:
             vote = None
-            got_miss = True
 
         # found it?
         if vote is not None:
+            UGC_CACHE[cache_key] = vote
             return vote
+        else:
+            UGC_CACHE[cache_key] = -1
 
         # fallback to available cache
         try:
-            return webserv.get_available_votes(cache = True,
+            vote = webserv.get_available_votes(cache = True,
                 cached = True).get(pkg_key)
+            UGC_CACHE[cache_key] = vote
+            return vote
         except WebService.CacheMiss:
+            UGC_CACHE[cache_key] = -1
             return None
 
     def get_ugc_package_vote(self):
@@ -662,21 +683,31 @@ class EntropyPackage:
         return vote
 
     def get_ugc_package_downloads(self):
+
         if self.pkgset:
             return 0
         atom = self.get_name()
         if not atom:
             return 0
 
+        pkg_key = entropy.dep.dep_getkey(atom)
+        cache_key = "downloads_" + pkg_key
+        cached = UGC_CACHE.get(cache_key)
+        if cached is not None:
+            return cached
+
         webserv = self._get_webservice()
         if webserv is None:
+            UGC_CACHE[cache_key] = 0
             return 0
-        pkg_key = entropy.dep.dep_getkey(atom)
         try:
             downloads = webserv.get_available_downloads(cache = True,
                 cached = True).get(pkg_key, 0)
         except WebService.CacheMiss:
+            UGC_CACHE[cache_key] = 0
             return 0
+
+        UGC_CACHE[cache_key] = downloads
         return downloads
 
     def get_attribute(self, attr):
