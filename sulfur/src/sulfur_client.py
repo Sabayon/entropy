@@ -118,7 +118,8 @@ def term_signal_thread_killer(*args, **kwargs):
 def install_term_signal_handler():
     global OLD_TERM_SIGNAL_HANDLER
     old_handler = signal.signal(signal.SIGTERM, term_signal_thread_killer)
-    OLD_TERM_SIGNAL_HANDLER = old_handler
+    if callable(old_handler):
+        OLD_TERM_SIGNAL_HANDLER = old_handler
 
 def startup():
     global MAIN_APP
