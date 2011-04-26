@@ -545,6 +545,8 @@ def _upgrade_packages_respawn(entropy_client):
     # better idea.
     update, remove, fine, spm_fine = entropy_client.calculate_updates()
     if update:
+        print_info(teal(" @@ ")+purple("%s." % (
+            _("There are more updates to install, reloading Entropy"),) ))
         # then spawn a new process
         entropy_client.shutdown()
         os.execv(sys.argv[0], sys.argv)
