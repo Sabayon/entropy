@@ -695,7 +695,7 @@ class EntropyPackageView:
         self.__pkg_ugc_icon_local_path_cache = {}
         self.__pkg_ugc_icon_cache = {}
         # avoid DoS, lol
-        self._ugc_icon_load_queue = queue_class(64)
+        self._ugc_icon_load_queue = queue_class(8)
         self._ugc_icon_thread = TimeScheduled(3, self._ugc_icon_queue_run)
         if self._ugc_status:
             # deferred loading, speedup UI init
