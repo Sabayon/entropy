@@ -1326,6 +1326,7 @@ class PkgInfoMenu(MenuSkel):
             try:
                 self._webserv.validate_credentials()
             except WebService.AuthenticationFailed:
+                self._webserv.remove_credentials()
                 okDialog(self.window,
                     _("Authentication error. Not logged in."))
                 return False
@@ -2023,6 +2024,7 @@ class UGCAddMenu(MenuSkel):
             try:
                 webserv.validate_credentials()
             except WebService.AuthenticationFailed:
+                webserv.remove_credentials()
                 okDialog(self.window,
                     _("Authentication error. Not logged in."))
                 return False
@@ -2100,6 +2102,7 @@ class UGCAddMenu(MenuSkel):
                 try:
                     webserv.validate_credentials()
                 except WebService.AuthenticationFailed:
+                    webserv.remove_credentials()
                     need_login = True
                 except WebService.RequestError:
                     # SSL Error?

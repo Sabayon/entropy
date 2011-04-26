@@ -2004,6 +2004,7 @@ class EntropyPackageView:
             try:
                 webserv.validate_credentials()
             except WebService.AuthenticationFailed:
+                webserv.remove_credentials()
                 okDialog(self.ui.main,
                     _("Authentication error. Not logged in."))
                 return False
