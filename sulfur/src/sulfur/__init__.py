@@ -198,6 +198,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 arg = os.path.realpath(arg)
                 packages_install.append(arg)
 
+        if os.getenv("SULFUR_SYS_UPDATE"):
+            # sulfur has been respawned and there is a system update request
+            packages_install = []
+            atoms_install = ["@upgrade"]
+
         return packages_install, atoms_install, do_fetch
 
     def init(self):
@@ -705,13 +710,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def atoms_install(self, atoms, fetch = False):
 
-        # parse atoms
         matches = []
-        for atom in atoms:
-            pkg_id, repo_id = self._entropy.atom_match(atom)
-            if pkg_id == -1:
+        if "@upgrade" in atoms:
+            updates = self.etpbase.get_groups("updates")
+            if not updates:
                 return
-            matches.append((pkg_id, repo_id,))
+            matches += [x.matched_atom for x in updates]
+        else:
+            for atom in self._entropy.packages_expand(atoms):
+                pkg_id, repo_id = self._entropy.atom_match(atom)
+                if pkg_id == -1:
+                    return
+                matches.append((pkg_id, repo_id,))
 
         if not matches:
             return
@@ -2132,8 +2142,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     result = crit_dialog.run()
                     crit_dialog.destroy()
                     if result == -5: # ok
-                        return True
-        return False
+                        return True, True
+
+            return False, len(crit_mtchs) > 0
+        return False, False
 
     def install_queue(self, fetch = False, download_sources = False,
         remove_repos = None, direct_install_matches = None,
@@ -2229,7 +2241,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 gobject.timeout_add(2000, self._show_orphans_message, orphans,
                     syspkg_orphans, unavail_repo_pkgs)
 
-        def _install_done(err, restart_needed):
+        def _install_done(err, restart_needed, critical_updates):
             state = True
 
             if self.do_debug:
@@ -2276,14 +2288,22 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.reset_cache_status()
                 state = False
 
-            elif (err == 0) and restart_needed and \
+            elif (err == 0) and (restart_needed or critical_updates) and \
                 ((not fetch_only) and (not download_sources)):
-                okDialog(self.ui.main,
-                    _("Attention. You have updated Entropy."
-                    "\nSulfur will be reloaded.")
-                )
+                exit_st = 99
+                if critical_updates:
+                    okDialog(self.ui.main,
+                        _("Attention. Other updates that must be installed."
+                        "\nSulfur will be reloaded.")
+                    )
+                    exit_st = 98
+                elif restart_needed:
+                    okDialog(self.ui.main,
+                        _("Attention. You have updated Entropy."
+                        "\nSulfur will be reloaded.")
+                    )
                 self._entropy.unlock_resources()
-                self.quit(sysexit = 99)
+                self.quit(sysexit = exit_st)
 
             if self.do_debug:
                 print_generic("process_queue: end_working?")
@@ -2390,8 +2410,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
                 # look for critical updates
                 crit_block = False
+                crit_updates = False
                 if install_queue and ((not fetch_only) and (not download_sources)):
-                    crit_block = self.critical_updates_warning(install_queue)
+                    crit_block, crit_updates = self.critical_updates_warning(
+                        install_queue)
                 # check if we also need to restart this application
                 restart_needed = self.check_restart_needed(install_queue)
 
@@ -2414,7 +2436,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                                     entropy.tools.print_traceback()
                                     e, i = 1, None
                                 gobject.idle_add(_install_done, e,
-                                    restart_needed)
+                                    restart_needed, crit_updates)
 
                     t = ParallelTask(spawn_install)
                     t.start()

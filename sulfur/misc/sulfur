@@ -63,7 +63,13 @@ tbz2s = [x for x in sys.argv[1:] if (x.endswith(package_file_ext) or \
 if tbz2s:
     os.environ['SULFUR_PACKAGES'] = ';'.join(tbz2s)
 rc = 99
-while (rc == 99):
+while rc in (99, 98):
+
+    if rc == 98:
+        os.environ['SULFUR_SYS_UPDATE'] = "1"
+    elif os.getenv("SULFUR_SYS_UPDATE"):
+        del os.environ['SULFUR_SYS_UPDATE']
+
     if os.getuid() == 0:
         rc = os.system(sulfur_path)
     else:
