@@ -2102,7 +2102,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return True
         return False
 
-    def critical_updates_warning(self):
+    def critical_updates_warning(self, install_queue):
         sys_set_client_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         misc_set = self._settings[sys_set_client_plg_id]['misc']
@@ -2111,24 +2111,28 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if crit_atoms:
                 crit_objs = []
                 for crit_match in crit_mtchs:
+                    if crit_match in install_queue:
+                        # it's already in the install queue, skip.
+                        continue
                     crit_obj, c_new = self.etpbase.get_package_item(
                         crit_match)
                     if crit_obj:
                         crit_objs.append(crit_obj)
 
-                crit_dialog = ConfirmationDialog(
-                    self.ui.main,
-                    crit_objs,
-                    top_text = _("Please update the following critical packages"),
-                    bottom_text = _("You should install them as soon as possible"),
-                    simpleList = True
-                )
-                crit_dialog.okbutton.set_label(_("Abort action"))
-                crit_dialog.cancelbutton.set_label(_("Ignore"))
-                result = crit_dialog.run()
-                crit_dialog.destroy()
-                if result == -5: # ok
-                    return True
+                if crit_objs:
+                    crit_dialog = ConfirmationDialog(
+                        self.ui.main,
+                        crit_objs,
+                        top_text = _("Please update the following critical packages"),
+                        bottom_text = _("You should install them as soon as possible"),
+                        simpleList = True
+                    )
+                    crit_dialog.okbutton.set_label(_("Abort action"))
+                    crit_dialog.cancelbutton.set_label(_("Ignore"))
+                    result = crit_dialog.run()
+                    crit_dialog.destroy()
+                    if result == -5: # ok
+                        return True
         return False
 
     def install_queue(self, fetch = False, download_sources = False,
@@ -2225,7 +2229,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 gobject.timeout_add(2000, self._show_orphans_message, orphans,
                     syspkg_orphans, unavail_repo_pkgs)
 
-        def _install_done(err):
+        def _install_done(err, restart_needed):
             state = True
 
             if self.do_debug:
@@ -2387,7 +2391,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 # look for critical updates
                 crit_block = False
                 if install_queue and ((not fetch_only) and (not download_sources)):
-                    crit_block = self.critical_updates_warning()
+                    crit_block = self.critical_updates_warning(install_queue)
                 # check if we also need to restart this application
                 restart_needed = self.check_restart_needed(install_queue)
 
@@ -2409,7 +2413,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                                 except:
                                     entropy.tools.print_traceback()
                                     e, i = 1, None
-                                gobject.idle_add(_install_done, e)
+                                gobject.idle_add(_install_done, e,
+                                    restart_needed)
 
                     t = ParallelTask(spawn_install)
                     t.start()
