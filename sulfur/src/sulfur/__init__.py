@@ -950,7 +950,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def do_ugc_sync():
             self._ugc_update()
             self._cacher.sync()
-            print_generic("UGC child process done")
+            if self.do_debug:
+                print_generic("UGC child process done")
             emit_ugc_update()
 
         self._spawning_ugc = True
