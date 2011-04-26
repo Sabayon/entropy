@@ -1,3 +1,119 @@
+commit 612e436ca1ce80aaba792c83e4f745c9e7b47770
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 12:21:31 2011 +0200
+
+    Release Entropy 1.0_beta2
+
+commit d274cbb75ecd2769e4e5e5321fb60b610853430f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 12:20:58 2011 +0200
+
+    [sulfur] remove debug output
+
+commit b59edb97823d3d8855b96d2570df1b78aee50528
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 12:15:54 2011 +0200
+
+    [sulfur] automatically respawn Sulfur after the installation of critical updates (if there are more)
+
+commit 86c68a8a7fa26d290885cbbbd50638f18f231f88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 11:36:21 2011 +0200
+
+    [sulfur] correctly handle critical updates warning message when critical packages are already in the install queue
+
+commit e6a75a7fb8f0bc1a2a2020dbc5b7b1dee31a9e2f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 08:35:53 2011 +0200
+
+    [equo] respawn equo if, after the installation of all the updates, there are more (critical updates case)
+
+commit cc1073f033ef0e82ffe799b2b91206cf6e84600e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 25 23:38:15 2011 +0200
+
+    [entropy.tools] uncompress_tarball: if catch_empty is True, return 0 if os.listdir() is empty.
+    
+    Blame Python 2.7 devs for having changed tarfile functions contract
+
+commit 8412fa8358df719011a9445b1bd422c5a66aa1af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 25 20:01:52 2011 +0200
+
+    [sulfur] check if old signal handler returned by signal.signal() is a callable object
+
+commit 61bbda039b20cf8d3d9535a0958fb41c5bfbf306
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 25 19:43:28 2011 +0200
+
+    [sulfur] EntropyPackage: add dedicated UGC cache
+
+commit abdf77b58816db33cb8457d4fc988e20f0ca944c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 25 19:22:22 2011 +0200
+
+    [sulfur] improve speed of parallel UGC data fetch
+
+commit 8c532ae888cdacb3caf7cce9546fae631b5d6ce5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Apr 25 18:50:53 2011 +0200
+
+    [magneto] add missing path import
+
+commit d1bec49981bca40058c7edac6846cd135988f24f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Apr 24 16:10:42 2011 +0200
+
+    [entropy.server] final cleanups in __user_filter_out_missing_deps()
+
+commit 2a1b48572b0760e52e1dc15cb6ddaab9ee4241c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 23:06:58 2011 +0200
+
+    [entropy.server] fix __user_filter_out_missing_deps()
+
+commit 7dee24987972cc8b1be59982c54068ff7096522d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 23:06:40 2011 +0200
+
+    [entropy.output] TextInterface: fix edit_file() outcome
+
+commit 61d2c6139e158801fb61fc9942dcca5c538a9bd3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 20:06:32 2011 +0200
+
+    [entropy.qa/entropy.server] rework test_missing_dependencies() and missing_runtime_dependencies_test(), EXPERIMENTAL
+
+commit 9fd6cd34f5f12680cc55ffc261540eafb7079b41
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 19:53:18 2011 +0200
+
+    [entropy.server] fix undefined reference
+
+commit 595022f3722a685234c2456ab024c2ba9f17a104
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 19:51:37 2011 +0200
+
+    [activator] use Entropy.edit_file()
+
+commit 4b1034a197631332b643b8e58a3add6b514cdb75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 19:51:19 2011 +0200
+
+    [equo] use Entropy.edit_file()
+
+commit 81935fd7fc84218a359a8a45a4abc6520c3923ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 19:50:47 2011 +0200
+
+    [entropy.output] TextInterface: add edit_file() method
+
+commit 84633248b537314abd46c6869eaee45043acc684
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 23 14:49:24 2011 +0200
+
+    Tagging Entropy version 1.0_beta1
+
 commit 7f5c59b7726fc5ffc783100eda567a30bcf00ed3
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Apr 23 14:49:13 2011 +0200
