@@ -15,6 +15,7 @@
 ##   Packages user handling function
 #
 import os
+import sys
 import shutil
 import tempfile
 
@@ -530,7 +531,23 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         # Entropy Client SystemSettings plugin
         entropy_client.Settings().clear()
 
+    if update:
+        # if updates have been installed, check if there are more
+        # to come (perhaps critical updates were installed)
+        _upgrade_packages_respawn(entropy_client)
+
     return 0, 0
+
+def _upgrade_packages_respawn(entropy_client):
+    # It might be an Entropy bug and Entropy was proritized in the
+    # install queue, ignoring the rest of available packages.
+    # So, respawning myself again using execv() should be a much
+    # better idea.
+    update, remove, fine, spm_fine = entropy_client.calculate_updates()
+    if update:
+        # then spawn a new process
+        entropy_client.shutdown()
+        os.execv(sys.argv[0], sys.argv)
 
 def branch_hop(entropy_client, branch):
 
