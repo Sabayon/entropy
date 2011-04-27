@@ -1150,8 +1150,14 @@ class PortagePlugin(SpmPlugin):
                 continue
             if my_use in portage_metadata['ENABLED_USE']:
                 data['useflags'].append(my_use)
-            else:
+
+        for my_use in portage_metadata['DISABLED_USE']:
+            if my_use in portage_metadata['USE_MASK']:
+                continue
+            if my_use in portage_metadata['USE_FORCE']:
                 data['useflags'].append("-"+my_use)
+                continue
+            data['useflags'].append("-"+my_use)
 
         # useflags must be a set, as returned by entropy.db.getPackageData
         data['useflags'] = set(data['useflags'])
@@ -3689,8 +3695,9 @@ class PortagePlugin(SpmPlugin):
     def _get_useflags_mask(self):
         return self._portage.settings.usemask
 
-    def _resolve_enabled_useflags(self, iuse_list, use_list):
+    def _resolve_useflags(self, iuse_list, use_list):
         use = set()
+        disabled_use = set()
         use_mask = self._get_useflags_mask()
         use_force = self._get_useflags_force()
         plus = const_convert_to_rawstring("+")
@@ -3701,7 +3708,10 @@ class PortagePlugin(SpmPlugin):
             if ((myiuse in use_list) or (myiuse in use_force)) and \
                 (myiuse not in use_mask):
                 use.add(myiuse)
-        return use
+            elif ((myiuse not in use_list) or (myiuse in use_mask)) and \
+                (myiuse not in use_force):
+                disabled_use.add(myiuse)
+        return use, disabled_use
 
     def _calculate_dependencies(self, my_iuse, my_use, my_license, my_depend,
         my_rdepend, my_pdepend, my_provide, my_src_uri, my_eapi):
@@ -3719,10 +3729,13 @@ class PortagePlugin(SpmPlugin):
 
         # generate USE flags metadata
         raw_use = my_use.split()
-        enabled_use = sorted(self._resolve_enabled_useflags(
-            my_iuse.split(), raw_use))
+        enabled_use, disabled_use = self._resolve_useflags(
+            my_iuse.split(), raw_use)
+        enabled_use = sorted(enabled_use)
+        disabled_use = sorted(disabled_use)
 
         metadata['ENABLED_USE'] = enabled_use
+        metadata['DISABLED_USE'] = disabled_use
         use = raw_use + [x for x in metadata['USE_FORCE'] if x not in raw_use]
         metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use if \
             x not in metadata['USE_MASK']])
@@ -3754,6 +3767,7 @@ class PortagePlugin(SpmPlugin):
                 deps = ''
                 continue
             metadata[k] = deps
+
         return metadata
 
     def _usedeps_reduce(self, dependencies, enabled_useflags):

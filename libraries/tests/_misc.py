@@ -59,6 +59,10 @@ def get_test_entropy_package5():
     test_pkg = "media-gfx:pdf2svg-0.2.1~3.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_entropy_package6():
+    test_pkg = "sys-auth-polkit-0.101-r1~0.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_video_file():
     test_pkg = "test.flv"
     return get_test_generic_package(test_pkg)

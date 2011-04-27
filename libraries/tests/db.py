@@ -119,6 +119,19 @@ class EntropyRepositoryTest(unittest.TestCase):
             ('=dev-libs/apr-util-1*', 0))
         self.assertEqual(pkg_deps, orig_pkg_deps)
 
+    def test_use_dependencies(self):
+        test_pkg = _misc.get_test_entropy_package6()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage = self.test_db.addPackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(data, db_data)
+        useflags = self.test_db.retrieveUseflags(idpackage)
+        self.assert_("gtk" not in useflags)
+        self.assert_("-gtk" in useflags)
+        self.assert_("-kde" in useflags)
+        self.assert_("-debug" in useflags)
+        self.assert_("-examples" in useflags)
+
     def test_content(self):
         test_pkg = _misc.get_test_package3()
         data = self.Spm.extract_package_metadata(test_pkg)
