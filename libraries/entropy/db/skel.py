@@ -4379,17 +4379,23 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         for use in enabled:
             if use.endswith("(+)"):
                 use = use[:-3]
-                pkguse.add(use)
+                dis_use = "-" + use
+                if dis_use not in pkguse:
+                    # consider it enabled by default if it's not
+                    # disabled
+                    pkguse.add(use)
             elif use.endswith("(-)"):
                 # NOTE: this case should be filtered out by SPM
                 use = use[:-3]
-                # consider this use not available
-                # in our case, don't touch pkguse
+                if use not in pkguse:
+                    # force disabled by default if it's not
+                    # enabled
+                    pkguse.add("-" + use)
             enabled_use.add(use)
 
         disabled_use = set()
         for use in disabled:
-            use = use[1:]
+            # use starts with "-" here, example: -foo
             if use.endswith("(+)"):
                 use = use[:-3]
                 # 3 cases here:
@@ -4403,11 +4409,16 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
                 #     added
                 # TODO: for case 3, we would need a new metadatum called
                 #       "disabled_useflags"
+                en_use = use[1:]
+                if use not in pkguse:
+                    pkguse.add(en_use)
             elif use.endswith("(-)"):
                 # NOTE: this case should be filtered out by SPM
                 use = use[:-3]
-                # by default, uses not listed in pkguse
-                # are always considered unavailable.
+                en_use = use[1:]
+                # mark it as disabled if it's not available
+                if en_use not in pkguse:
+                    pkguse.add(use)
             disabled_use.add(use)
 
         enabled_not_satisfied = enabled_use - pkguse
@@ -4416,7 +4427,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             return None
         # check disabled
         disabled_not_satisfied = disabled_use - pkguse
-        if len(disabled_not_satisfied) != len(disabled_use):
+        if disabled_not_satisfied:
             return None
         return package_id
 
