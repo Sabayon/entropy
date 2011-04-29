@@ -1,3 +1,43 @@
+commit 8bcfda56f33e67a0df7afaf63d682aa1c7f40206
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 18:21:01 2011 +0200
+
+    Release Entropy 1.0_beta4
+
+commit 714473e10331b9c9c52bdf76b376fe1d1a5c13ad
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 18:19:45 2011 +0200
+
+    [entropy.client.services.interfaces] ClientWebService.get_documents: only set "cache" param if service_cache is True
+
+commit 975efb31a6919f6b82a542e0aba2e5e82cabf5b9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 18:16:38 2011 +0200
+
+    [sulfur] when a new icon is fetched, emit the UGC data update signal
+
+commit 8a718f0d3760992eff6dbb57b5d15bb4df6ac995
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 18:16:02 2011 +0200
+
+    [sulfur] when fetching icons in background, use service_cache=True
+
+commit dd1b8234037a6e13d60ced4eb5ec38886939250e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 18:02:41 2011 +0200
+
+    [entropy.client.services.interfaces] ClientWebService: add service_cache
+    
+    When there is no need to fetch fresh data from the service and we
+    can allow the same to cache our requests, service_cache should
+    be set to True
+
+commit d36a2a3b209e6089970ec027700215901a969214
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 17:26:09 2011 +0200
+
+    Tagging Entropy version 1.0_beta3
+
 commit 45622fa2fe99c09c8c78e2f4a39bd9b6da93fcff
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 29 17:25:51 2011 +0200
