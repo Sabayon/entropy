@@ -1098,8 +1098,9 @@ class ClientWebService(WebService):
             "package_names": " ".join(package_names),
             "filter": " ".join([str(x) for x in document_type_filter]),
             "offset": offset,
-            "cache": service_cache,
         }
+        if service_cache:
+            params["cache"] = "1"
         objs = self._method_getter("get_documents", params, cache = cache,
             cached = cached, require_credentials = False)
         data = {}
