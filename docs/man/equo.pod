@@ -47,6 +47,10 @@ print version
 
 disable colorized output
 
+=item B<--color>
+
+force colorized output
+
 =item [1] B<--bashcomp>
 
 print a bash completion script to stdout

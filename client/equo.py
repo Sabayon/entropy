@@ -55,10 +55,6 @@ etp_exit_messages = {
     7: _("Go to hell."),
 }
 
-# Check if we need to disable colors
-if not is_stdout_a_tty():
-    nocolor()
-
 help_opts = [
     None,
     (0, " ~ %s ~ " % ("equo",), 2,
@@ -69,6 +65,7 @@ help_opts = [
     (1, '--help', 2, _('this output')),
     (1, '--version', 1, _('print version')),
     (1, '--nocolor', 1, _('disable colorized output')),
+    (1, '--color', 2, _('force colorized output')),
     (1, '--bashcomp', 1, _('print a bash completion script to stdout')),
     None,
     (0, _('Application Options'), 0, None),
@@ -773,9 +770,12 @@ for n in range(len(options)):
         options.extend(x_found_opts)
 
 bashcomp_enabled = False
+force_color = False
 for opt in options:
     if opt in ["--nocolor", "-N"]:
         nocolor()
+    elif opt in ["--color", "-C"]:
+        force_color = True
     elif opt == "--debug":
         continue
     elif opt in ["--quiet", "-q"]:
@@ -795,6 +795,10 @@ for opt in options:
     else:
         _options.append(opt)
 options = _options
+
+# Check if we need to disable colors
+if (not force_color) and (not is_stdout_a_tty()):
+    nocolor()
 
 if bashcomp_enabled:
     print_bashcomp(help_opts + help_opts_extended, options, BASHCOMP_MAP)
