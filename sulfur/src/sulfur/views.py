@@ -1796,6 +1796,7 @@ class EntropyPackageView:
                 except WebService.WebServiceException as err:
                     continue
 
+            got_something = False
             # get document urls, store to local cache
             for icon_doc in icon_docs:
                 cache_key = package_name, icon_doc.repository_id()
@@ -1822,13 +1823,16 @@ class EntropyPackageView:
                 except KeyError:
                     pass
                 self.__pkg_ugc_icon_local_path_cache[cache_key] = local_path
+                got_something = True
                 const_debug_write(__name__,
                     "_ugc_cache_icons: pushed to cache: %s, %s" % (
                         cache_key, local_path,))
                 break
+            return got_something
 
         def _fetch_icons_parent():
-            _fetch_icons(cache, True)
+            if _fetch_icons(cache, True):
+                self._emit_ugc_update()
 
         with Privileges():
             # run as separate process, avoid blocking the UI
