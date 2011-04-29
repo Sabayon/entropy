@@ -1776,7 +1776,8 @@ class EntropyPackageView:
             return False
         return True
 
-    def _ugc_cache_icons(self, repository_id, package_names, cache):
+    def _ugc_cache_icons(self, repository_id, package_names, cache,
+        service_cache):
 
         webserv = self._get_webservice(repository_id)
         if webserv is None:
@@ -1790,7 +1791,8 @@ class EntropyPackageView:
                 # sorry web service, we need data this way
                 try:
                     icon_docs = webserv.get_icons([package_name],
-                        cached = cached, cache = mycache)[package_name]
+                        cached = cached, cache = mycache,
+                        service_cache = service_cache)[package_name]
                 except WebService.WebServiceException as err:
                     continue
 
@@ -1851,7 +1853,7 @@ class EntropyPackageView:
                 obj.add(key)
 
             for repository_id, keys in fetch_map.items():
-                self._ugc_cache_icons(repository_id, keys, False)
+                self._ugc_cache_icons(repository_id, keys, False, False)
 
             self.__pkg_ugc_icon_cache.clear()
             self._ugc_pixbuf_map.clear()
@@ -2257,7 +2259,7 @@ class EntropyPackageView:
                 obj.append(key)
 
             for repoid, keys in pkg_map.items():
-                self._ugc_cache_icons(repoid, keys, True)
+                self._ugc_cache_icons(repoid, keys, True, True)
             self._emit_ugc_update()
 
         th = ParallelTask(do_ugc_sync)
