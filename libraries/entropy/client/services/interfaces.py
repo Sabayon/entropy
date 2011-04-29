@@ -937,7 +937,7 @@ class ClientWebService(WebService):
         return valid
 
     def get_icons(self, package_names, offset = 0, cache = True,
-        cached = False):
+        cached = False, service_cache = False):
         """
         For given package names, return the current Document icon object
         DocumentList.
@@ -958,6 +958,9 @@ class ClientWebService(WebService):
         @keyword cached: if True, it will only use the on-disk cached call
             result and raise WebService.CacheMiss if not found.
         @type cached: bool
+        @keyword service_cache: explicitly allow service to use its cache to
+            satisfy the request
+        @type service_cache: bool
         @return: mapping composed by package name as key and DocumentList
             as value
         @rtype: dict
@@ -983,10 +986,11 @@ class ClientWebService(WebService):
         document_type_filter = [Document.ICON_TYPE_ID]
         return self.get_documents(package_names,
             document_type_filter = document_type_filter,
-            offset = offset, cache = cache, cached = cached)
+            offset = offset, cache = cache, cached = cached,
+            service_cache = service_cache)
 
     def get_comments(self, package_names, offset = 0, cache = True,
-        cached = False):
+        cached = False, service_cache = False):
         """
         For given package names, return the current Document Comment object
         DocumentList.
@@ -1007,6 +1011,9 @@ class ClientWebService(WebService):
         @keyword cached: if True, it will only use the on-disk cached call
             result and raise WebService.CacheMiss if not found.
         @type cached: bool
+        @keyword service_cache: explicitly allow service to use its cache to
+            satisfy the request
+        @type service_cache: bool
         @return: mapping composed by package name as key and DocumentList
             as value
         @rtype: dict
@@ -1032,10 +1039,11 @@ class ClientWebService(WebService):
         document_type_filter = [Document.COMMENT_TYPE_ID]
         return self.get_documents(package_names,
             document_type_filter = document_type_filter,
-            offset = offset, cache = cache, cached = cached)
+            offset = offset, cache = cache, cached = cached,
+            service_cache = service_cache)
 
     def get_documents(self, package_names, document_type_filter = None,
-        offset = 0, cache = True, cached = False):
+        offset = 0, cache = True, cached = False, service_cache = False):
         """
         For given package names, return the current Document object
         DocumentList.
@@ -1059,6 +1067,9 @@ class ClientWebService(WebService):
         @keyword cached: if True, it will only use the on-disk cached call
             result and raise WebService.CacheMiss if not found.
         @type cached: bool
+        @keyword service_cache: explicitly allow service to use its cache to
+            satisfy the request
+        @type service_cache: bool
         @return: mapping composed by package name as key and DocumentList as
             value
         @rtype: dict
@@ -1087,6 +1098,7 @@ class ClientWebService(WebService):
             "package_names": " ".join(package_names),
             "filter": " ".join([str(x) for x in document_type_filter]),
             "offset": offset,
+            "cache": service_cache,
         }
         objs = self._method_getter("get_documents", params, cache = cache,
             cached = cached, require_credentials = False)
