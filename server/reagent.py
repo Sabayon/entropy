@@ -25,10 +25,6 @@ from entropy.const import etpConst, const_kill_threads
 from entropy.server.interfaces import Server
 from text_tools import print_menu
 
-# Check if we need to disable colors
-if not is_stdout_a_tty():
-    nocolor()
-
 help_opts = [
     None,
     (0, " ~ reagent ~ ", 1,
@@ -39,6 +35,7 @@ help_opts = [
     (1, '--help', 2, _('this output')),
     (1, '--version', 1, _('print version')),
     (1, '--nocolor', 1, _('disable colorized output')),
+    (1, '--color', 2, _('force colorized output')),
     None,
     (0, _('Application Options'), 0, None),
     None,
@@ -166,9 +163,12 @@ for n in range(len(options)):
 
 # preliminary options parsing
 _options = []
+force_color = False
 for opt in options:
-    if opt == "--nocolor":
+    if opt in ["--nocolor", "-N"]:
         nocolor()
+    elif opt in ["--color", "-C"]:
+        force_color = True
     elif opt in ["--quiet", "-q"]:
         etpUi['quiet'] = True
     elif opt in ["--verbose", "-v"]:
@@ -180,6 +180,10 @@ for opt in options:
     else:
         _options.append(opt)
 options = _options
+
+# Check if we need to disable colors
+if (not force_color) and (not is_stdout_a_tty()):
+    nocolor()
 
 # print help
 if not options or ("--help" in options) or ("-h" in options):
