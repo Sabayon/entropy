@@ -1,3 +1,81 @@
+commit 45622fa2fe99c09c8c78e2f4a39bd9b6da93fcff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 17:25:51 2011 +0200
+
+    Release Entropy 1.0_beta3
+
+commit 934982279dbe1d462a6dcc42f957412aba830b1e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 17:13:41 2011 +0200
+
+    [po] update translations
+
+commit ffb7c9dd17f9cf26afb356c1bd9359ebfefe4bff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 17:13:27 2011 +0200
+
+    [activator] add --color option, see bug #2381
+
+commit 43a07fce7186d4023d7f14a9375ca90c6e9ea3a5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 17:13:07 2011 +0200
+
+    [reagent] add --color option, see bug #2381
+
+commit 41f816ea9fcea6907367a1712f50d4d35cfdfb4e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 17:12:13 2011 +0200
+
+    [equo] add --color option, see bug #2381
+
+commit bc63e0fee8d2e64054e7130ea8006f7ee3f63441
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 27 17:11:21 2011 +0200
+
+    [entropy.db] EntropyRepositoryBase.__filterUse: add backward compatibility, if use flag is not listed, it's considered disabled
+
+commit 9693f3e630fa3847dcdb5c79e78611f007e9a5b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 27 17:06:59 2011 +0200
+
+    [entropy.db] EntropyRepositoryBase.__filterUse: now that disabled use flags are recorded, fine tune use-defaults logic
+
+commit 72ea943a527cda23460456e86a80281840c7619e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Apr 27 11:38:53 2011 +0200
+
+    [entropy.spm] add disabled use flags to package use flags metadata
+
+commit a932c8e9a13c76c71c327ea4477be15b6a065ecb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 22:57:37 2011 +0200
+
+    [sulfur] fix UGC error box layout
+
+commit a88030f1bbb90a6cdbcec9aa7203ab979518505c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 22:56:50 2011 +0200
+
+    [sulfur] remove credentials if UGC login fails
+
+commit 160f1cefccf9c7d2232074b115db24c55689b240
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 22:29:30 2011 +0200
+
+    [sulfur] reduce UGC data queue size
+
+commit 24f8c8cfd8f2a85398758922e07f5bda629df876
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 14:09:36 2011 +0200
+
+    [equo] inform user when we're about to respawn equo
+
+commit 6d51f7a306a48f5215f39c49d501d160bd385797
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Apr 26 12:21:48 2011 +0200
+
+    Tagging Entropy version 1.0_beta2
+
 commit 612e436ca1ce80aaba792c83e4f745c9e7b47770
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Apr 26 12:21:31 2011 +0200
