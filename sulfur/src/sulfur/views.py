@@ -1787,6 +1787,7 @@ class EntropyPackageView:
             if cached:
                 mycache = True
 
+            got_something = False
             for package_name in package_names:
                 # sorry web service, we need data this way
                 try:
@@ -1796,38 +1797,38 @@ class EntropyPackageView:
                 except WebService.WebServiceException as err:
                     continue
 
-            got_something = False
-            # get document urls, store to local cache
-            for icon_doc in icon_docs:
-                cache_key = package_name, icon_doc.repository_id()
-                if cache_key in self.__pkg_ugc_icon_local_path_cache:
-                    const_debug_write(__name__,
-                        "_fetch_icons: already in cache: %s" % (
-                            cache_key,))
-                    continue
-                try:
-                    local_path = webserv.get_document_url(icon_doc,
-                        cache = mycache)
-                except ClientWebService.DocumentError as err:
-                    const_debug_write(__name__,
-                        "_fetch_icons: document error: %s" % (
-                            err,))
-                    continue
+                # get document urls, store to local cache
+                for icon_doc in icon_docs:
+                    cache_key = package_name, icon_doc.repository_id()
+                    if cache_key in self.__pkg_ugc_icon_local_path_cache:
+                        const_debug_write(__name__,
+                            "_fetch_icons: already in cache: %s" % (
+                                cache_key,))
+                        continue
+                    try:
+                        local_path = webserv.get_document_url(icon_doc,
+                            cache = mycache)
+                    except ClientWebService.DocumentError as err:
+                        const_debug_write(__name__,
+                            "_fetch_icons: document error: %s" % (
+                                err,))
+                        continue
 
-                if not cached:
-                    # we're running this as forked process
+                    if not cached:
+                        # we're running this as forked process
+                        break
+
+                    try:
+                        self.__pkg_ugc_icon_cache.pop(cache_key)
+                    except KeyError:
+                        pass
+                    self.__pkg_ugc_icon_local_path_cache[cache_key] = local_path
+                    got_something = True
+                    const_debug_write(__name__,
+                        "_ugc_cache_icons: pushed to cache: %s, %s" % (
+                            cache_key, local_path,))
                     break
 
-                try:
-                    self.__pkg_ugc_icon_cache.pop(cache_key)
-                except KeyError:
-                    pass
-                self.__pkg_ugc_icon_local_path_cache[cache_key] = local_path
-                got_something = True
-                const_debug_write(__name__,
-                    "_ugc_cache_icons: pushed to cache: %s, %s" % (
-                        cache_key, local_path,))
-                break
             return got_something
 
         def _fetch_icons_parent():
