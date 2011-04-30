@@ -1,3 +1,21 @@
+commit 4e84aad0950721522d99791ffc519baf21fd8037
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 30 09:56:18 2011 +0200
+
+    Release Entropy 1.0_beta5
+
+commit 257470546721d82c627a25e011c7e0472ce3f3e8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 30 09:55:10 2011 +0200
+
+    [sulfur] _ugc_cache_icons._fetch_icons: fix function logic
+
+commit 594074e9bf7bb26021b0b2a6110fb95691be1166
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Apr 29 18:21:05 2011 +0200
+
+    Tagging Entropy version 1.0_beta4
+
 commit 8bcfda56f33e67a0df7afaf63d682aa1c7f40206
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Apr 29 18:21:01 2011 +0200
