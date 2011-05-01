@@ -1721,8 +1721,9 @@ class CalculatorsMixin:
                     revdep_db = self.open_repository(revdep_repo_id)
                     revdep_keyslot = revdep_db.retrieveKeySlotAggregated(
                         revdep_pkg_id)
-                    revdep_keyslot = entropy.dep.remove_tag_from_slot(
-                        revdep_keyslot)
+                    if revdep_keyslot is not None:
+                        revdep_keyslot = entropy.dep.remove_tag_from_slot(
+                            revdep_keyslot)
                     if revdep_keyslot != keyslot:
                         filtered_reverse_deps.add(revdep_match)
                 reverse_deps = filtered_reverse_deps
