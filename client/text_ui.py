@@ -2013,7 +2013,7 @@ def remove_packages(entropy_client, packages = None, atomsdata = None,
 
         removal_queue = []
 
-        if look_for_orphaned_packages:
+        if look_for_orphaned_packages and deps:
             try:
                 removal_queue += entropy_client.get_removal_queue(
                     plain_removal_queue, deep = deep, recursive = recursive,
