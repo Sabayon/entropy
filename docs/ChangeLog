@@ -1,3 +1,21 @@
+commit 7398f692263c0df57d8311c398c0fbf335ffa9b6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 08:17:58 2011 +0200
+
+    Release Entropy 1.0_beta6
+
+commit d9f9c709dda7de94ce2c47eb75d111f882122c54
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 08:17:41 2011 +0200
+
+    [equo] use execvp() instead of execv()
+
+commit 889ffd82bfb227e364f175e5447a24b70fe3d693
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Apr 30 09:56:25 2011 +0200
+
+    Tagging Entropy version 1.0_beta5
+
 commit 4e84aad0950721522d99791ffc519baf21fd8037
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Apr 30 09:56:18 2011 +0200
