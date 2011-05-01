@@ -608,7 +608,7 @@ class RepositoryMixin:
 
         content = [x for x in content if x not in filter_lines]
         for repoid in ordered_repository_list:
-            for x in content:
+            for x in repolines:
                 repoidline = x.split("|")[0].strip()
                 if (repoid == repoidline) and (x in repolines_map):
                     content.append(repolines_map[x])
