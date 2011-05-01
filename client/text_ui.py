@@ -541,7 +541,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
 def _upgrade_packages_respawn(entropy_client):
     # It might be an Entropy bug and Entropy was proritized in the
     # install queue, ignoring the rest of available packages.
-    # So, respawning myself again using execv() should be a much
+    # So, respawning myself again using execvp() should be a much
     # better idea.
     update, remove, fine, spm_fine = entropy_client.calculate_updates()
     if update:
@@ -549,7 +549,7 @@ def _upgrade_packages_respawn(entropy_client):
             _("There are more updates to install, reloading Entropy"),) ))
         # then spawn a new process
         entropy_client.shutdown()
-        os.execv(sys.argv[0], sys.argv)
+        os.execvp(sys.argv[0], sys.argv)
 
 def branch_hop(entropy_client, branch):
 
