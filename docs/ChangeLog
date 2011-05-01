@@ -1,3 +1,21 @@
+commit 7c43c424a900331883e38a096984435c28de7ed8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 08:22:36 2011 +0200
+
+    Release Entropy 1.0_beta8
+
+commit 81505e123d422c5f25e745d1bd3d85f464fdcad6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 08:21:56 2011 +0200
+
+    [equo] fix equo remove --nodeps, see bug #2389
+
+commit 20777d7f03a69f98e671c7d1e2a52d947274471f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 08:21:49 2011 +0200
+
+    Tagging Entropy version 1.0_beta7
+
 commit 98bee11a7f74c59deb5eff24112d4a01f21a3310
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun May 1 08:21:46 2011 +0200
