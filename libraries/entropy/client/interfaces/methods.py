@@ -594,7 +594,7 @@ class RepositoryMixin:
                 content = [x.strip() for x in f.readlines()]
 
         repolines = []
-        filter_lines = set()
+        filter_lines = []
         repolines_map = {}
         for line in content:
             key, value = entropy.tools.extract_setting(line)
@@ -603,7 +603,8 @@ class RepositoryMixin:
                 key = key.replace("\t", "")
                 if key in ("repository", "#repository", "##repository"):
                     repolines.append(value)
-                    filter_lines.add(line)
+                    if line not in filter_lines:
+                        filter_lines.append(line)
                     repolines_map[value] = line
 
         content = [x for x in content if x not in filter_lines]
@@ -611,7 +612,14 @@ class RepositoryMixin:
             for x in repolines:
                 repoidline = x.split("|")[0].strip()
                 if (repoid == repoidline) and (x in repolines_map):
-                    content.append(repolines_map[x])
+                    line = repolines_map[x]
+                    content.append(line)
+                    if line in filter_lines:
+                        filter_lines.remove(line)
+
+        # write the rest of commented repolines
+        for x in filter_lines:
+            content.append(x)
 
         repo_conf = etpConst['repositoriesconf']
         tmp_repo_conf = repo_conf + ".cfg_save"
