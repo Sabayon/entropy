@@ -69,6 +69,11 @@ for xopt in sys.argv:
         except ValueError:
             continue
 
+if DAEMON_DEBUG:
+    # redirect possible exception tracebacks to log file
+    sys.stderr = DAEMON_LOG
+    sys.stdout = DAEMON_LOG
+
 def write_output(*args, **kwargs):
     message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
     global PREVIOUS_PROGRESS
@@ -543,8 +548,19 @@ class UpdatesDaemon(dbus.service.Object):
         sys_set = SysSet()
         for repoid in sys_set['repositories']['available']:
 
+            if DAEMON_DEBUG:
+                write_output(
+                    "get_repo_status: scanning repository: %s" % (
+                        repoid,))
+
             repo_rev = Entropy.get_repository(repoid).revision(repoid)
             online_rev = Entropy.get_repository(repoid).remote_revision(repoid)
+
+            if DAEMON_DEBUG:
+                write_output(
+                    "get_repo_status: local rev: %s, remote rev: %s" % (
+                        repo_rev, online_rev,))
+
             if (online_rev == -1) or (repo_rev != online_rev):
 
                 if DAEMON_DEBUG:
