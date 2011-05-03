@@ -34,7 +34,8 @@ from entropy.db.exceptions import IntegrityError, OperationalError, Error, \
     DatabaseError
 from entropy.core.settings.base import SystemSettings
 from entropy.services.client import WebService
-from entropy.client.services.interfaces import RepositoryWebService
+from entropy.client.services.interfaces import RepositoryWebService, \
+    RepositoryWebServiceFactory
 
 import entropy.tools
 
@@ -177,7 +178,14 @@ class AvailablePackagesRepositoryUpdater(object):
     @property
     def _webservices(self):
         if self.__webservices is None:
-            self.__webservices = self._entropy.RepositoryWebServices()
+            if hasattr(self._entropy, "RepositoryWebServices"):
+                self.__webservices = self._entropy.RepositoryWebServices()
+            else:
+                # in case self._entropy is a simple TextInterface()
+                # like how it's called in remote_revision().
+                self.__webservices = RepositoryWebServiceFactory(self._entropy)
+                # cross fingers!
+
         return self.__webservices
 
     @property

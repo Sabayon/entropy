@@ -33,6 +33,7 @@ from entropy.cache import EntropyCacher
 from entropy.const import const_debug_write, const_setup_file, etpConst, \
     const_convert_to_rawstring, const_isunicode, const_isstring, \
     const_convert_to_unicode, const_isstring, const_debug_enabled
+from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import EntropyException
 import entropy.tools
 import entropy.dep
@@ -237,6 +238,8 @@ class WebService(object):
     def __init__(self, entropy_client, repository_id):
         """
         WebService constructor.
+        NOTE: This base class must NOT use any Entropy Client specific method
+        and MUST rely on what is provided by it's parent class TextInterface.
 
         @param entropy_client: Entropy Client interface
         @type entropy_client: entropy.client.interfaces.client.Client
@@ -313,7 +316,7 @@ class WebService(object):
         Get SystemSettings instance
         """
         if self.__settings is None:
-            self.__settings = self._entropy.Settings()
+            self.__settings = SystemSettings()
         return self.__settings
 
     @property
