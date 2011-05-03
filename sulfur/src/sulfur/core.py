@@ -30,8 +30,6 @@ from entropy.misc import ParallelTask
 from entropy.core import Singleton
 from sulfur.setup import const
 
-FORK_PIDS = []
-
 CURRENT_CURSOR = None
 
 STATUS_BAR_CONTEXT_IDS = {
@@ -124,29 +122,6 @@ def normal_cursor(mainwin):
         mainwin.set_sensitive(True)
     global CURRENT_CURSOR
     CURRENT_CURSOR = None
-
-def fork_function(child_function, parent_function):
-    # Uber suber optimized stuffffz
-
-    def do_wait(pid):
-        os.waitpid(pid, 0)
-        FORK_PIDS.remove(pid)
-        gobject.idle_add(parent_function)
-
-    pid = os.fork()
-    if pid != 0:
-        const_debug_write(__name__, "_fork_function: enter %s" % (
-            child_function,))
-        FORK_PIDS.append(pid)
-        if parent_function is not None:
-            task = ParallelTask(do_wait, pid)
-            task.start()
-        const_debug_write(__name__, "_fork_function: leave %s" % (
-            child_function,))
-    else:
-        sys.excepthook = sys.__excepthook__
-        child_function()
-        os._exit(0)
 
 def resize_image(max_width, image_path, new_image_path):
     shutil.copy2(image_path, new_image_path)

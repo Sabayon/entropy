@@ -58,7 +58,7 @@ from sulfur.entropyapi import Equo, QueueExecutor
 from sulfur.setup import SulfurConf, const, fakeoutfile, fakeinfile, \
     cleanMarkupString
 from sulfur.widgets import SulfurConsole
-from sulfur.core import UI, Controller, FORK_PIDS, fork_function, \
+from sulfur.core import UI, Controller, \
     busy_cursor, normal_cursor, get_entropy_webservice, Privileges
 from sulfur.views import *
 from sulfur.filters import Filter
@@ -254,14 +254,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def quit(self, widget = None, event = None, sysexit = 0):
 
         SulfurSignals.emit('application_quit')
-
-        def do_kill(pid):
-            try:
-                os.kill(pid, signal.SIGTERM)
-            except OSError:
-                pass
-        for pid in FORK_PIDS:
-            do_kill(pid)
 
         if hasattr(self, '_entropy'):
             entropy.tools.release_entropy_locks(self._entropy)

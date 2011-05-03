@@ -38,7 +38,7 @@ import entropy.dep
 import entropy.tools
 
 from sulfur.event import SulfurSignals
-from sulfur.core import UI, busy_cursor, normal_cursor, fork_function, \
+from sulfur.core import UI, busy_cursor, normal_cursor, \
     resize_image, resize_image_height, load_url, get_entropy_webservice, \
         Privileges
 from sulfur.setup import const, cleanMarkupString, SulfurConf

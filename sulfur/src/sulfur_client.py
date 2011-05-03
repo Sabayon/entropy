@@ -29,20 +29,11 @@ from entropy.exceptions import PermissionDenied
 from sulfur import SulfurApplication
 from sulfur.dialogs import ExceptionDialog
 from sulfur.setup import const
-from sulfur.core import FORK_PIDS
 
 MAIN_APP = None
 
-def kill_pid(pid):
-    try:
-        os.kill(pid, signal.SIGTERM)
-    except OSError:
-        pass
-
 def kill_threads():
     entropy.tools.kill_threads()
-    for pid in FORK_PIDS:
-        kill_pid(pid)
 
 """
 debug options:

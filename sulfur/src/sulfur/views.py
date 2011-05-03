@@ -33,7 +33,7 @@ from entropy.dep import dep_getkey
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI, busy_cursor, normal_cursor, \
-    STATUS_BAR_CONTEXT_IDS, resize_image, fork_function, \
+    STATUS_BAR_CONTEXT_IDS, resize_image, \
     get_entropy_webservice, Privileges
 from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage, EntropyPackage
@@ -1836,17 +1836,15 @@ class EntropyPackageView:
                             cache_key, local_path,))
                     break
 
-            return got_something
-
-        def _fetch_icons_parent():
-            if _fetch_icons(cache, True):
+            if got_something:
                 self._emit_ugc_update()
 
         with Privileges():
-            # run as separate process, avoid blocking the UI
-            def _forked_func():
-                return _fetch_icons(cache, False)
-            fork_function(_forked_func, _fetch_icons_parent)
+            def _parallel_func():
+                _fetch_icons(cache, False)
+                _fetch_icons(cache, True)
+            th = ParallelTask(_parallel_func)
+            th.start()
 
     def __ugc_dnd_updates_clear_cache(self, *args):
 
@@ -2410,7 +2408,6 @@ class EntropyPackageView:
             #            sync_item,))
             return
 
-        self._ugc_metadata_sync_exec_cache.add(sync_item)
         if not self._ugc_available(repoid):
             if const_debug_enabled():
                 const_debug_write(__name__,
@@ -2429,13 +2426,13 @@ class EntropyPackageView:
                 const_debug_write(__name__,
                     "__new_ugc_pixbuf_stash_fetch: enqueued!! %s" % (
                         sync_item,))
+            self._ugc_metadata_sync_exec_cache.add(sync_item)
         except self.queue_full_exception as err:
             # argh! queue full!
             if const_debug_enabled():
                 const_debug_write(__name__,
                     "__new_ugc_pixbuf_stash_fetch: ARGH QUEUE FULL %s" % (
                         sync_item,))
-            pass
 
     def new_ugc_pixbuf(self, column, cell, model, myiter):
 
@@ -2453,9 +2450,10 @@ class EntropyPackageView:
             cell.set_property('visible', False)
         else:
             # delay a bit, to avoid overloading the UI
-            gobject.timeout_add_seconds(8,
-                self.__new_ugc_pixbuf_stash_fetch, pkg,
-                priority = gobject.PRIORITY_LOW)
+            if not self._ugc_icon_load_queue.full():
+                gobject.timeout_add_seconds(8,
+                    self.__new_ugc_pixbuf_stash_fetch, pkg,
+                    priority = gobject.PRIORITY_LOW)
             cell.set_property('visible', True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
