@@ -1,3 +1,45 @@
+commit b602fbf34c76b1daa0a6955a02f2fe75a4fe4527
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 18:49:15 2011 +0200
+
+    Release Entropy 1.0_beta10
+
+commit 227c66a60cdcefbad25e7124a393168125db5fd2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 18:48:53 2011 +0200
+
+    [services] entropy-updates-service: disable debug mode by default
+
+commit 374f19d2c55b7b4ae213626d2dff846b5241d9bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 18:47:25 2011 +0200
+
+    [entropy.client.interfaces.db] make AvailablePackagesRepository.remote_revision() work again (fixes Magneto)
+
+commit 1d47dfd01929c66b22baf3078812bdbee327912c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 18:25:43 2011 +0200
+
+    [services] entropy-updates-service: add more debugging output, redirect stderr/stdout to log file
+
+commit 553af1bdb019160fd8894a27947d4e6f96b74bf4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 18:24:10 2011 +0200
+
+    [magneto] since notify-python is crap, use attach_to_status_icon and catch AttributeError
+
+commit b48a5caa9b493e08e184192e03b9e586f20623a3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 18:23:22 2011 +0200
+
+    [magneto] restory compatibility with libnotify 0.7
+
+commit dc9186172cdf9987e66b15b1ff109675b4e9908b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 14:52:31 2011 +0200
+
+    Tagging Entropy version 1.0_beta9
+
 commit e1e8bbdf8bb4200882edea0d676a2ac641176482
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue May 3 14:52:12 2011 +0200
