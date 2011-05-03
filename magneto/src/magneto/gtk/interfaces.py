@@ -153,7 +153,9 @@ class Magneto(MagnetoCore):
             elif urgency == 'low':
                 n.set_urgency(pynotify.URGENCY_LOW)
             self.last_alert = (title, text)
-            n.attach_to_status_icon(self.status_icon)
+            if hasattr(n, "attach_to_status_icon"):
+                # this has been dropped from libnotify 0.7
+                n.attach_to_status_icon(self.status_icon)
             n.show()
             return False
 
