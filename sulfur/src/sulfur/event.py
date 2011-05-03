@@ -37,5 +37,7 @@ gobject.signal_new("pkg_properties__ugc_tab_clicked", _SulfurSignals,
     gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
 gobject.signal_new("updates_available", _SulfurSignals,
     gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (int,))
+gobject.signal_new("application_quit", _SulfurSignals,
+    gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
 
 SulfurSignals = _SulfurSignals()

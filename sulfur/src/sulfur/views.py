@@ -692,6 +692,8 @@ class EntropyPackageView:
         self.queue_full_exception = Full
         self.queue_empty_exception = Empty
 
+        SulfurSignals.connect('application_quit', self.__quit)
+
         self.__pkg_ugc_icon_local_path_cache = {}
         self.__pkg_ugc_icon_cache = {}
         # avoid DoS, lol
@@ -700,6 +702,11 @@ class EntropyPackageView:
         if self._ugc_status:
             # deferred loading, speedup UI init
             gobject.timeout_add_seconds(15, self._ugc_icon_thread.start)
+
+    def __quit(self, *args):
+        const_debug_write(__name__, "__quit called")
+        if hasattr(self, "_ugc_icon_thread"):
+            self._ugc_icon_thread.kill()
 
     def __update_ugc_event(self, event):
         self.view.queue_draw()

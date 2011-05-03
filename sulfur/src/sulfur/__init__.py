@@ -253,6 +253,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def quit(self, widget = None, event = None, sysexit = 0):
 
+        SulfurSignals.emit('application_quit')
+
         def do_kill(pid):
             try:
                 os.kill(pid, signal.SIGTERM)
