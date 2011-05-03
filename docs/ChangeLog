@@ -1,3 +1,51 @@
+commit e1e8bbdf8bb4200882edea0d676a2ac641176482
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 14:52:12 2011 +0200
+
+    Release Entropy 1.0_beta9
+
+commit fcacd42efa5b9179a07c5794e1c0da2d7f9eee5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 14:50:48 2011 +0200
+
+    [sulfur] improve CellRendererStars rendering speed dramatically
+
+commit 19440e96cf234c7281ed2b2b2ffe9dde18ce673a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 14:23:34 2011 +0200
+
+    [sulfur] avoid using fork_function completely, it can easily cause deadlocks
+
+commit 99d735e7445194ea0334c04fdde3f63e10624b0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 3 13:42:25 2011 +0200
+
+    [sulfur] create "application_quit" signal and spawn it on application quit
+
+commit dae5bf3516ca6beedfebebbbbbeebaee550d2954
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 16:36:05 2011 +0200
+
+    [entropy.client.interfaces.dep] validate retrieveKeySlotAggregated outcome before processing
+
+commit a01fa77e7ac0ee5827887a916658f708420ab0a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 16:17:58 2011 +0200
+
+    [entropy.client.interfaces.methods] write disabled repositories too in __write_ordered_repositories_entries
+
+commit 83e910a3d5fb0f99cc0a1cbf1123c39b648140c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 16:04:40 2011 +0200
+
+    [entropy.client.interfaces.methods] fix typo in Client.__write_ordered_repositories_entries, close bug #2385
+
+commit 329515353f180c2ffeb3700e0a3a1eeccb12ad73
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 1 08:22:38 2011 +0200
+
+    Tagging Entropy version 1.0_beta8
+
 commit 7c43c424a900331883e38a096984435c28de7ed8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun May 1 08:22:36 2011 +0200
