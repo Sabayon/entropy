@@ -1143,6 +1143,8 @@ class PortagePlugin(SpmPlugin):
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
         data['useflags'].extend(portage_metadata['ENABLED_USE'])
+        # consider forced use flags always on
+        data['useflags'].extend(portage_metadata['USE_FORCE'])
         for my_use in portage_metadata['DISABLED_USE']:
             data['useflags'].append("-"+my_use)
 
@@ -3720,6 +3722,7 @@ class PortagePlugin(SpmPlugin):
         metadata['DISABLED_USE'] = disabled_use
         use = raw_use + [x for x in use_force if x not in raw_use]
         metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use])
+        metadata['USE_FORCE'] = sorted(use_force)
 
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
