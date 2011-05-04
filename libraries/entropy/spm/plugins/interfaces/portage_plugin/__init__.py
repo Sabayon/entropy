@@ -1142,21 +1142,8 @@ class PortagePlugin(SpmPlugin):
         data['provide'] = set(portage_metadata['PROVIDE'].split())
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
-        for my_use in portage_metadata['USE']:
-            if my_use in portage_metadata['USE_MASK']:
-                continue
-            if my_use in portage_metadata['USE_FORCE']:
-                data['useflags'].append(my_use)
-                continue
-            if my_use in portage_metadata['ENABLED_USE']:
-                data['useflags'].append(my_use)
-
+        data['useflags'].extend(portage_metadata['ENABLED_USE'])
         for my_use in portage_metadata['DISABLED_USE']:
-            if my_use in portage_metadata['USE_MASK']:
-                continue
-            if my_use in portage_metadata['USE_FORCE']:
-                data['useflags'].append("-"+my_use)
-                continue
             data['useflags'].append("-"+my_use)
 
         # useflags must be a set, as returned by entropy.db.getPackageData
@@ -3695,21 +3682,17 @@ class PortagePlugin(SpmPlugin):
     def _get_useflags_mask(self):
         return self._portage.settings.usemask
 
-    def _resolve_useflags(self, iuse_list, use_list):
+    def _resolve_useflags(self, iuse_list, use_list, use_force):
         use = set()
         disabled_use = set()
-        use_mask = self._get_useflags_mask()
-        use_force = self._get_useflags_force()
         plus = const_convert_to_rawstring("+")
         minus = const_convert_to_rawstring("-")
         for myiuse in iuse_list:
             if myiuse[0] in (plus, minus,):
                 myiuse = myiuse[1:]
-            if ((myiuse in use_list) or (myiuse in use_force)) and \
-                (myiuse not in use_mask):
+            if ((myiuse in use_list) or (myiuse in use_force)):
                 use.add(myiuse)
-            elif ((myiuse not in use_list) or (myiuse in use_mask)) and \
-                (myiuse not in use_force):
+            elif (myiuse not in use_list) and (myiuse not in use_force):
                 disabled_use.add(myiuse)
         return use, disabled_use
 
@@ -3723,28 +3706,26 @@ class PortagePlugin(SpmPlugin):
             'RDEPEND': my_rdepend,
             'PROVIDE': my_provide,
             'SRC_URI': my_src_uri,
-            'USE_MASK': sorted(self._get_useflags_mask()),
-            'USE_FORCE': sorted(self._get_useflags_force()),
         }
 
         # generate USE flags metadata
+        use_force = self._get_useflags_force()
         raw_use = my_use.split()
         enabled_use, disabled_use = self._resolve_useflags(
-            my_iuse.split(), raw_use)
+            my_iuse.split(), raw_use, use_force)
         enabled_use = sorted(enabled_use)
         disabled_use = sorted(disabled_use)
 
         metadata['ENABLED_USE'] = enabled_use
         metadata['DISABLED_USE'] = disabled_use
-        use = raw_use + [x for x in metadata['USE_FORCE'] if x not in raw_use]
-        metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use if \
-            x not in metadata['USE_MASK']])
+        use = raw_use + [x for x in use_force if x not in raw_use]
+        metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use])
 
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
                 deps = self._portage.dep.use_reduce(metadata[k],
-                    uselist = enabled_use, masklist = metadata['USE_MASK'],
-                    is_src_uri = (k == "SRC_URI"), eapi = my_eapi)
+                    uselist = enabled_use, is_src_uri = (k == "SRC_URI"),
+                    eapi = my_eapi)
                 if k == "LICENSE":
                     deps = self._paren_license_choose(deps)
                 else:
