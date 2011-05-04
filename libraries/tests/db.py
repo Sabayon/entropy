@@ -697,15 +697,14 @@ class EntropyRepositoryTest(unittest.TestCase):
         valid_test_deps = [
             "%s[%s(+)]" % (key, "doesntexistforsure"),
             "%s[-%s(-)]" % (key, "doesntexistforsure"),
-            "%s[-%s(+)]" % (key, "doesntexistforsure"), # this will fail
             "%s[%s(+)]" % (key, "kernel_linux"),
-            "%s[%s(-)]" % (key, "kernel_linux"),
-            "%s[%s(-)]" % (key, "kernel_linux"),
+            "%s[-%s(-)]" % (key, "kernel_linux"),
         ]
         invalid_test_deps = [
             "%s[%s(-)]" % (key, "doesntexistforsure"),
             "%s[-%s(+)]" % (key, "kernel_linux"),
-            "%s[-%s(-)]" % (key, "kernel_linux"),
+            "%s[-%s(+)]" % (key, "doesntexistforsure"),
+            "%s[%s(-)]" % (key, "kernel_linux"),
         ]
         for dep in valid_test_deps:
             self.assertEqual((1, 0), self.test_db.atomMatch(dep))
