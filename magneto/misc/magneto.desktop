@@ -1,7 +1,7 @@
 [Desktop Entry]
 Name=Magneto Updates Notifier
 Comment=Magneto is the Entropy Updates Notification Applet
-Icon=magneto.png
+Icon=magneto
 Exec=magneto --startup-delay=30
 Type=Application
 Terminal=false
