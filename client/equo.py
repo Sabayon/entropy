@@ -34,7 +34,7 @@ except ImportError:
 
 from entropy.output import red, darkred, darkgreen, TextInterface, \
     print_generic, print_error, print_warning, readtext, nocolor, \
-    is_stdout_a_tty, bold, purple, blue
+    is_stdout_a_tty, bold, purple, teal, blue
 from text_tools import print_menu, print_bashcomp, read_equo_release
 from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 import entropy.tools
@@ -400,15 +400,25 @@ help_opts_extended = [
     None,
 ]
 
+def _warn_live_system():
+    if entropy.tools.islive():
+        print_warning("")
+        print_warning(purple("Entropy is running off a Live System"))
+        print_warning(teal("Performance and stability could get severely compromised"))
+        print_warning("")
+
 def _do_text_ui(main_cmd, options):
+    _warn_live_system()
     import text_ui
     return text_ui.package([main_cmd] + options)
 
 def _do_text_repos(main_cmd, options):
+    _warn_live_system()
     import text_repositories
     return text_repositories.repositories([main_cmd] + options)
 
 def _do_text_security(main_cmd, options):
+    _warn_live_system()
     import text_security
     return text_security.security(options)
 
@@ -417,14 +427,17 @@ def _do_text_query(main_cmd, options):
     return text_query.query(options)
 
 def _do_text_smart(main_cmd, options):
+    _warn_live_system()
     import text_smart
     return text_smart.smart(options)
 
 def _do_text_conf(main_cmd, options):
+    _warn_live_system()
     import text_configuration
     return text_configuration.configurator(options)
 
 def _do_text_cache(main_cmd, options):
+    _warn_live_system()
     import text_cache
     return text_cache.cache(options)
 
@@ -433,6 +446,7 @@ def _do_search(main_cmd, options):
     return text_query.query([main_cmd] + options)
 
 def _do_text_rescue(main_cmd, options):
+    _warn_live_system()
     if main_cmd == "database":
         print_warning("")
         print_warning("'%s' %s: '%s'" % (
@@ -448,6 +462,7 @@ def _do_text_ugc(main_cmd, options):
     return text_ugc.ugc(options)
 
 def _do_text_community(main_cmd, options):
+    _warn_live_system()
     comm_err_msg = _("You need to install sys-apps/entropy-server. :-) Do it !")
     etpConst['community']['mode'] = True
 
