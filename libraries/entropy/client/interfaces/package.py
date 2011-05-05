@@ -2613,33 +2613,34 @@ class Package:
         else:
             protected = False # it's not a file
 
-        if protected and os.path.lexists(fromfile) and \
-            (not os.path.exists(fromfile)) and os.path.islink(fromfile):
-            # broken symlink, don't protect
-            self._entropy.logger.log(
-                "[Package]",
-                etpConst['logging']['normal_loglevel_id'],
-                "WARNING!!! Failed to handle file protection for: " \
-                "%s, broken symlink in package" % (
-                    fromfile,
+        if fromfile is not None:
+            if protected and os.path.lexists(fromfile) and \
+                (not os.path.exists(fromfile)) and os.path.islink(fromfile):
+                # broken symlink, don't protect
+                self._entropy.logger.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "WARNING!!! Failed to handle file protection for: " \
+                    "%s, broken symlink in package" % (
+                        fromfile,
+                    )
                 )
-            )
-            msg = _("Cannot protect broken symlink")
-            mytxt = "%s:" % (
-                purple(msg),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 1,
-                level = "warning",
-                header = brown("   ## ")
-            )
-            self._entropy.output(
-                tofile,
-                level = "warning",
-                header = brown("   ## ")
-            )
-            protected = False
+                msg = _("Cannot protect broken symlink")
+                mytxt = "%s:" % (
+                    purple(msg),
+                )
+                self._entropy.output(
+                    mytxt,
+                    importance = 1,
+                    level = "warning",
+                    header = brown("   ## ")
+                )
+                self._entropy.output(
+                    fromfile,
+                    level = "warning",
+                    header = brown("   ## ")
+                )
+                protected = False
 
         if not protected:
             return in_mask, protected, tofile, do_continue
