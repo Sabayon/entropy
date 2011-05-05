@@ -1,3 +1,27 @@
+commit f1c5877732edf50814731fa8609588ac6f60f874
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 12:12:52 2011 +0200
+
+    Release Entropy 1.0_beta13
+
+commit a86a752dc699279d34020b2f930a6de47808360f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 12:12:24 2011 +0200
+
+    [entropy.client.interfaces.package] fromfile could be None, handle this in _handle_config_protect()
+
+commit 716829e841e6382991f052d10424940c41da737d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 11:40:00 2011 +0200
+
+    [po] update translations
+
+commit 27341f12ad8b3e0b595c13b9d4012fa07b33ceb8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 11:35:43 2011 +0200
+
+    Tagging Entropy version 1.0_beta12
+
 commit 78f7978bb2d6463fbffe5cf83847f5cae362d02d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu May 5 11:35:14 2011 +0200
