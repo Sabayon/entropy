@@ -513,6 +513,26 @@ class CalculatorsMixin:
                 push_to_cache(dependency, True)
                 continue
 
+            if dependency.endswith(etpConst['entropyordepquestion']):
+                # need to rewrite c_ids and dependency to only focus on
+                # the installed dep.
+                deps = dependency[:-1].split(etpConst['entropyordepsep'])
+                for dep in deps:
+                    or_c_ids, or_c_rc = self._installed_repository.atomMatch(
+                        dep, multiMatch = True)
+                    if or_c_rc != 0:
+                        continue
+                    common_c_ids = c_ids & or_c_ids
+                    if common_c_ids:
+                        if const_debug_enabled():
+                            const_debug_write(__name__,
+                            "_get_unsatisfied_dependencies, or dependency, selected => %s, from: %s" % (
+                                dep, deps,))
+                        # found it, rewrite dependency and c_ids
+                        dependency = dep
+                        c_ids = or_c_ids
+                        break
+
             # support for app-foo/foo-123~-1
             # -1 revision means, always pull the latest
             do_rev_deep = False
@@ -812,7 +832,6 @@ class CalculatorsMixin:
             if dependency.endswith(etpConst['entropyordepquestion']):
                 # or dependency!
                 deps = dependency[:-1].split(etpConst['entropyordepsep'])
-                matched_something = False
                 for dep in deps:
                     matches, rc = self.atom_match(dep, multi_match = True,
                         multi_repo = True)
