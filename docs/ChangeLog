@@ -1,3 +1,43 @@
+commit 78f7978bb2d6463fbffe5cf83847f5cae362d02d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 11:35:14 2011 +0200
+
+    Release Entropy 1.0_beta12
+
+commit e28211324149c1fbb73a32e43684c0a3e040567b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 11:33:50 2011 +0200
+
+    [entropy.client.interfaces.package] handle broken symlink in package file content, during installation
+    
+    libvirt ships with a broken symlink, that could lead Entropy to
+    crash with IOError exception at Spm.allocate_protected_file()
+    This commit handles this exact case.
+
+commit c224ef5f68d4763769d7b161cf6db3ec3eb35863
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 10:26:59 2011 +0200
+
+    [equo] warn if running off a Live System
+
+commit 48e2adb785723912d647a8d6485ee3857cdb581a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 10:26:48 2011 +0200
+
+    [sulfur] warn if running off a Live System
+
+commit f47cd8659f9359de580b6c74667183d863db0b12
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 5 10:17:08 2011 +0200
+
+    [sulfur] make sure "config_protect" and "config_protect_mask" metadata are available
+
+commit 37f66f42f502bc49a5644fe9a453b7b79ac3a7b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 4 19:32:20 2011 +0200
+
+    Tagging Entropy version 1.0_beta11
+
 commit 660abed922ca0e208affabc9ce769e6318c38f26
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed May 4 19:32:02 2011 +0200
