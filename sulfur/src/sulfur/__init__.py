@@ -129,6 +129,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             )
             self.safe_mode_txt = _("Safe Mode")
 
+        if entropy.tools.islive():
+            okDialog(None, "%s, %s" % (
+                _("Entropy Store is running off a Live System"),
+                _("performance could get severely compromised"),)
+            )
+
         self._startup_packages_install = None
         if not self._entropy.safe_mode:
             if packages_install or atoms_install:
