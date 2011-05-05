@@ -1127,10 +1127,12 @@ class PkgInfoMenu(MenuSkel):
         self.pkginfo_ui.triggerTextView.set_buffer(mtrigger)
 
         # CONFIG_PROTECT Stuff
-        for item in self._pkg_meta['config_protect'].split():
-            self.configProtectModel.append(None, [item, 'protect'])
-        for item in self._pkg_meta['config_protect_mask'].split():
-            self.configProtectModel.append(None, [item, 'mask'])
+        if 'config_protect' in self._pkg_meta:
+            for item in self._pkg_meta['config_protect'].split():
+                self.configProtectModel.append(None, [item, 'protect'])
+        if 'config_protect_mask' in self._pkg_meta:
+            for item in self._pkg_meta['config_protect_mask'].split():
+                self.configProtectModel.append(None, [item, 'mask'])
 
         return True
 
