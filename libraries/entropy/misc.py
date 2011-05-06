@@ -24,6 +24,7 @@ else:
     UrllibBaseHandler = urllib2.BaseHandler
 import logging
 import threading
+from collections import deque
 from entropy.const import etpConst, const_isunicode, \
     const_isfileobj, const_convert_log_level
 
@@ -74,7 +75,7 @@ class Lifo(object):
     def __init__(self):
         """ Lifo class constructor """
         object.__init__(self)
-        self.__buf = []
+        self.__buf = deque()
 
     def __nonzero__(self):
         """
@@ -108,7 +109,7 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        self.__buf.insert(0, item)
+        self.__buf.appendleft(item)
 
     def clear(self):
         """
@@ -117,7 +118,7 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        del self.__buf[:]
+        self.__buf.clear()
 
     def is_filled(self):
         """
@@ -141,14 +142,11 @@ class Lifo(object):
         @rtype: None
         """
         indexes = []
-        for index, buf_entry in enumerate(self.__buf):
-            if entry is buf_entry:
-                indexes.append(index)
-            elif entry == buf_entry:
-                indexes.append(index)
-        indexes.reverse()
-        for index in indexes:
-            self.__buf.pop(index)
+        while True:
+            try:
+                self._buf.remove(entry)
+            except ValueError:
+                break
 
     def pop(self):
         """
