@@ -144,7 +144,7 @@ class Lifo(object):
         indexes = []
         while True:
             try:
-                self._buf.remove(entry)
+                self.__buf.remove(entry)
             except ValueError:
                 break
 
