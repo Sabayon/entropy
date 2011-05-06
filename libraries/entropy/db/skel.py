@@ -2732,7 +2732,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         raise NotImplementedError()
 
     def retrieveReverseDependencies(self, package_id, atoms = False,
-        key_slot = False, exclude_deptypes = None):
+        key_slot = False, exclude_deptypes = None, extended = False):
         """
         Return reverse (or inverse) dependencies for given package.
 
@@ -2747,7 +2747,15 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             data. Please see etpConst['dependency_type_ids'] for valid values.
             Anything != int will raise AttributeError
         @type exclude_deptypes: iterable of ints
-        @return: reverse dependency list (tuple)
+        @keyword extended: if True, the original dependency string will
+            be returned along with the rest of information. So, if data
+            returned would be a list of package identifiers (int),
+            if extended = True this method will return a list of tuples
+            composed by (package_id, dep_string). Same for atoms = True and
+            key_slot = True.
+        @type extended: bool
+        @return: reverse dependency list (tuple) (or list of lists in case
+            of extended = True)
         @rtype: tuple or frozenset
         @raise AttributeError: if exclude_deptypes contains illegal values
         """

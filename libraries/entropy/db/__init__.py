@@ -3547,7 +3547,7 @@ class EntropyRepository(EntropyRepositoryBase):
         return flags
 
     def retrieveReverseDependencies(self, package_id, atoms = False,
-        key_slot = False, exclude_deptypes = None):
+        key_slot = False, exclude_deptypes = None, extended = False):
         """
         Reimplemented from EntropyRepositoryBase.
         """
@@ -3571,40 +3571,98 @@ class EntropyRepository(EntropyRepositoryBase):
                     dep_type,)
 
         if atoms:
-            cur = self._cursor().execute("""
-            SELECT baseinfo.atom FROM dependencies, baseinfo
-            WHERE baseinfo.idpackage = dependencies.idpackage %s AND
-            dependencies.iddependency IN ( %s )""" % (
-                excluded_deptypes_query, dep_ids_str,))
-            result = self._cur2frozenset(cur)
-        elif key_slot:
-            if self._isBaseinfoExtrainfo2010():
+            if extended:
                 cur = self._cursor().execute("""
-                SELECT baseinfo.category || "/" || baseinfo.name, baseinfo.slot
-                FROM baseinfo, dependencies
+                SELECT baseinfo.atom, dependenciesreference.dependency
+                FROM dependencies, baseinfo, dependenciesreference
+                WHERE baseinfo.idpackage = dependencies.idpackage %s AND
+                dependencies.iddependency =
+                    dependenciesreference.iddependency AND
+                dependencies.iddependency IN ( %s )""" % (
+                    excluded_deptypes_query, dep_ids_str,))
+                result = tuple(cur)
+            else:
+                cur = self._cursor().execute("""
+                SELECT baseinfo.atom FROM dependencies, baseinfo
                 WHERE baseinfo.idpackage = dependencies.idpackage %s AND
                 dependencies.iddependency IN ( %s )""" % (
                     excluded_deptypes_query, dep_ids_str,))
+                result = self._cur2frozenset(cur)
+        elif key_slot:
+            if self._isBaseinfoExtrainfo2010():
+                if extended:
+                    cur = self._cursor().execute("""
+                    SELECT baseinfo.category || "/" || baseinfo.name,
+                        baseinfo.slot, dependenciesreference.dependency
+                    FROM baseinfo, dependencies, dependenciesreference
+                    WHERE baseinfo.idpackage = dependencies.idpackage %s AND
+                    dependencies.iddependency =
+                        dependenciesreference.iddependency AND
+                    dependencies.iddependency IN ( %s )""" % (
+                        excluded_deptypes_query, dep_ids_str,))
+                else:
+                    cur = self._cursor().execute("""
+                    SELECT baseinfo.category || "/" || baseinfo.name,
+                        baseinfo.slot
+                    FROM baseinfo, dependencies
+                    WHERE baseinfo.idpackage = dependencies.idpackage %s AND
+                    dependencies.iddependency IN ( %s )""" % (
+                        excluded_deptypes_query, dep_ids_str,))
             else:
-                cur = self._cursor().execute("""
-                SELECT categories.category || "/" || baseinfo.name,baseinfo.slot
-                FROM baseinfo, categories, dependencies
-                WHERE baseinfo.idpackage = dependencies.idpackage AND
-                categories.idcategory = baseinfo.idcategory %s AND
-                dependencies.iddependency IN ( %s )""" % (
-                    excluded_deptypes_query, dep_ids_str,))
+                if extended:
+                    cur = self._cursor().execute("""
+                    SELECT categories.category || "/" || baseinfo.name,
+                        baseinfo.slot, dependenciesreference.dependency
+                    FROM baseinfo, categories,
+                        dependencies, dependenciesreference
+                    WHERE baseinfo.idpackage = dependencies.idpackage AND
+                    dependencies.iddependency =
+                        dependenciesreference.iddependency AND
+                    categories.idcategory = baseinfo.idcategory %s AND
+                    dependencies.iddependency IN ( %s )""" % (
+                        excluded_deptypes_query, dep_ids_str,))
+                else:
+                    cur = self._cursor().execute("""
+                    SELECT categories.category || "/" || baseinfo.name,
+                        baseinfo.slot
+                    FROM baseinfo, categories, dependencies
+                    WHERE baseinfo.idpackage = dependencies.idpackage AND
+                    categories.idcategory = baseinfo.idcategory %s AND
+                    dependencies.iddependency IN ( %s )""" % (
+                        excluded_deptypes_query, dep_ids_str,))
             result = tuple(cur)
         elif excluded_deptypes_query:
-            cur = self._cursor().execute("""
-            SELECT dependencies.idpackage FROM dependencies
-            WHERE %s AND dependencies.iddependency IN ( %s )""" % (
-                excluded_deptypes_query.lstrip("AND "), dep_ids_str,))
-            result = self._cur2frozenset(cur)
+            if extended:
+                cur = self._cursor().execute("""
+                SELECT dependencies.idpackage, dependenciesreference.dependency
+                FROM dependencies, dependenciesreference
+                WHERE %s AND
+                dependencies.iddependency =
+                    dependenciesreference.iddependency AND
+                dependencies.iddependency IN ( %s )""" % (
+                    excluded_deptypes_query.lstrip("AND "), dep_ids_str,))
+                result = tuple(cur)
+            else:
+                cur = self._cursor().execute("""
+                SELECT dependencies.idpackage FROM dependencies
+                WHERE %s AND dependencies.iddependency IN ( %s )""" % (
+                    excluded_deptypes_query.lstrip("AND "), dep_ids_str,))
+                result = self._cur2frozenset(cur)
         else:
-            cur = self._cursor().execute("""
-            SELECT dependencies.idpackage FROM dependencies
-            WHERE dependencies.iddependency IN ( %s )""" % (dep_ids_str,))
-            result = self._cur2frozenset(cur)
+            if extended:
+                cur = self._cursor().execute("""
+                SELECT dependencies.idpackage, dependenciesreference.dependency
+                FROM dependencies, dependenciesreference
+                WHERE
+                dependencies.iddependency =
+                    dependenciesreference.iddependency AND
+                dependencies.iddependency IN ( %s )""" % (dep_ids_str,))
+                result = tuple(cur)
+            else:
+                cur = self._cursor().execute("""
+                SELECT dependencies.idpackage FROM dependencies
+                WHERE dependencies.iddependency IN ( %s )""" % (dep_ids_str,))
+                result = self._cur2frozenset(cur)
 
         # avoid python3.x memleak
         del cached
