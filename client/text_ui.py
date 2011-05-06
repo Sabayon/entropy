@@ -531,7 +531,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         # Entropy Client SystemSettings plugin
         entropy_client.Settings().clear()
 
-    if update:
+    if update and not etpUi['pretend']:
         # if updates have been installed, check if there are more
         # to come (perhaps critical updates were installed)
         _upgrade_packages_respawn(entropy_client)
@@ -549,7 +549,7 @@ def _upgrade_packages_respawn(entropy_client):
             _("There are more updates to install, reloading Entropy"),) ))
         # then spawn a new process
         entropy_client.shutdown()
-        os.execvp(sys.argv[0], sys.argv)
+        os.execvp("equo", sys.argv)
 
 def branch_hop(entropy_client, branch):
 
