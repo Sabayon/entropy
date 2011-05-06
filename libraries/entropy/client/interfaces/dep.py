@@ -1557,30 +1557,46 @@ class CalculatorsMixin:
 
         return reverse_tree
 
-    def __filter_depends_multimatched_atoms(self, idpackage, repo_id, depends):
+    def __filter_depends_multimatched_atoms(self, idpackage, repo_id, depends,
+        filter_match_cache = None):
 
         remove_depends = set()
-        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
+        excluded_dep_types = (etpConst['dependency_type_ids']['bdepend_id'],)
+        if filter_match_cache is None:
+            filter_match_cache = {}
+        # filter_match_cache dramatically improves performance
+
         for d_idpackage, d_repo_id in depends:
 
-            dbconn = self.open_repository(d_repo_id)
-            mydeps = dbconn.retrieveDependencies(d_idpackage,
-                exclude_deptypes = excluded_dep_types)
+            cached = filter_match_cache.get((d_idpackage, d_repo_id))
+            if cached is None:
 
-            for mydep in mydeps:
+                my_remove_depends = set()
 
-                matches, rslt = dbconn.atomMatch(mydep,
-                    multiMatch = True)
-                if rslt != 0:
-                    continue
-                matches = set([(x, d_repo_id) for x in matches])
+                dbconn = self.open_repository(d_repo_id)
+                mydeps = dbconn.retrieveDependencies(d_idpackage,
+                    exclude_deptypes = excluded_dep_types)
 
-                if (idpackage, repo_id) in matches and len(matches) > 1:
-                    # are all in depends?
-                    for mymatch in matches:
-                        if mymatch not in depends:
-                            remove_depends.add((d_idpackage, d_repo_id))
-                            break
+                for mydep in mydeps:
+
+                    matches, rslt = dbconn.atomMatch(mydep,
+                        multiMatch = True)
+                    if rslt != 0:
+                        continue
+                    matches = set((x, d_repo_id) for x in matches)
+
+                    if len(matches) > 1:
+                        if (idpackage, repo_id) in matches:
+                            # are all in depends?
+                            matches -= depends
+                            if matches:
+                                # no, they aren't
+                                my_remove_depends.add((d_idpackage, d_repo_id))
+
+                filter_match_cache[(d_idpackage, d_repo_id)] = my_remove_depends
+                cached = my_remove_depends
+
+            remove_depends |= cached
 
         depends -= remove_depends
         return depends
@@ -1638,6 +1654,7 @@ class CalculatorsMixin:
         graph = Graph()
         not_removable_deps = set()
         deep_dep_map = {}
+        filter_multimatch_cache = {}
 
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
@@ -1755,7 +1772,8 @@ class CalculatorsMixin:
 
             if reverse_deps:
                 reverse_deps = self.__filter_depends_multimatched_atoms(
-                    pkg_id, repo_id, reverse_deps)
+                    pkg_id, repo_id, reverse_deps,
+                    filter_match_cache = filter_multimatch_cache)
             return reverse_deps
 
         def get_revdeps_lib(pkg_id, repo_id, repo_db):
@@ -1768,7 +1786,8 @@ class CalculatorsMixin:
 
             if reverse_deps:
                 reverse_deps = self.__filter_depends_multimatched_atoms(
-                    pkg_id, repo_id, reverse_deps)
+                    pkg_id, repo_id, reverse_deps,
+                    filter_match_cache = filter_multimatch_cache)
             # remove myself
             reverse_deps.discard((pkg_id, repo_id))
 
@@ -1844,16 +1863,15 @@ class CalculatorsMixin:
                     continue
 
             repo_db = self.open_repository(repo_id)
-            # validate package
-            if not repo_db.isPackageIdAvailable(pkg_id):
+
+            count += 1
+            p_atom = repo_db.retrieveAtom(pkg_id)
+            if p_atom is None:
                 if const_debug_enabled():
                     const_debug_write(__name__,
                     "\n_generate_reverse_dependency_tree %s not available!" % (
                     (pkg_id, repo_id),))
                 continue
-
-            count += 1
-            p_atom = repo_db.retrieveAtom(pkg_id)
             self.output(
                 blue(rem_dep_text + " %s" % (purple(p_atom),)),
                 importance = 0,
