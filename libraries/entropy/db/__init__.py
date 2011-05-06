@@ -6271,7 +6271,7 @@ class EntropyRepository(EntropyRepositoryBase):
             hash_str = hash_str.encode("utf-8")
         sha = hashlib.sha1()
         sha.update(hash_str)
-        cache_key = "__generateReverseDependenciesMetadata_" + \
+        cache_key = "__generateReverseDependenciesMetadata2_" + \
             sha.hexdigest()
         rev_deps_data = self._cacher.pop(cache_key)
         if rev_deps_data is not None:
@@ -6284,12 +6284,23 @@ class EntropyRepository(EntropyRepositoryBase):
 
             if iddep == -1:
                 continue
-            # not safe to use cache here, people messing with multiple
-            # instances can make this crash
-            package_id, rc = self.atomMatch(atom, useCache = False)
-            if package_id != -1:
-                obj = dep_data.setdefault(iddep, set())
-                obj.add(package_id)
+
+            if atom.endswith(etpConst['entropyordepquestion']):
+                or_atoms = atom[:-1].split(etpConst['entropyordepsep'])
+                for or_atom in or_atoms:
+                    # not safe to use cache here, people messing with multiple
+                    # instances can make this crash
+                    package_id, rc = self.atomMatch(or_atom, useCache = False)
+                    if package_id != -1:
+                        obj = dep_data.setdefault(iddep, set())
+                        obj.add(package_id)
+            else:
+                # not safe to use cache here, people messing with multiple
+                # instances can make this crash
+                package_id, rc = self.atomMatch(atom, useCache = False)
+                if package_id != -1:
+                    obj = dep_data.setdefault(iddep, set())
+                    obj.add(package_id)
 
         self._setLiveCache("reverseDependenciesMetadata",
                 dep_data)

@@ -20,7 +20,7 @@ from entropy.exceptions import RepositoryError, SystemDatabaseError, \
 from entropy.graph import Graph
 from entropy.misc import Lifo
 from entropy.cache import EntropyCacher
-from entropy.output import bold, darkgreen, darkred, blue, purple
+from entropy.output import bold, darkgreen, darkred, blue, purple, teal, brown
 from entropy.i18n import _
 from entropy.db.exceptions import IntegrityError, OperationalError, \
     DatabaseError, InterfaceError
@@ -1690,11 +1690,69 @@ class CalculatorsMixin:
                 filtered_deps.add((mydep, m_repo_id,))
             return filtered_deps
 
+        def _filter_simple_or_revdeps(pkg_id, repo_id, repo_db,
+            reverse_deps_ids):
+            # filter out reverse dependencies whose or dependencies
+            # are anyway satisfied
+            reverse_deps = set()
+            for dep_pkg_id, dep_str in reverse_deps_ids:
+                if dep_str.endswith(etpConst['entropyordepquestion']):
+                    or_dep_lst = dep_str[:-1].split(etpConst['entropyordepsep'])
+                    # how many are currently installed?
+                    or_dep_ids = set()
+                    for or_dep in or_dep_lst:
+                        or_pkg_id, or_rc = repo_db.atomMatch(or_dep)
+                        if or_rc == 0:
+                            or_dep_ids.add(or_pkg_id)
+                    if pkg_id in or_dep_ids:
+                        or_dep_ids.discard(pkg_id)
+                    if or_dep_ids:
+                        # drop already analyzed matches
+                        or_dep_matches = set((x, repo_id) for x in or_dep_ids)
+                        or_dep_matches -= match_cache
+                        if or_dep_matches:
+                            # we can ignore this
+                            if const_debug_enabled():
+                                const_debug_write(__name__,
+                                brown("\n_generate_reverse_dependency_tree" \
+                                    ".get_revdeps ignoring %s => %s " \
+                                    "due to: %s, for %s" % (
+                                    (pkg_id, repo_id),
+                                    self.open_repository(repo_id).retrieveAtom(
+                                        pkg_id),
+                                    dep_str,
+                                    self.open_repository(repo_id).retrieveAtom(
+                                        dep_pkg_id))))
+                            continue
+                        elif const_debug_enabled():
+                            const_debug_write(__name__,
+                                teal("\n_generate_reverse_dependency_tree" \
+                                ".get_revdeps cannot ignore %s :: %s " \
+                                ":: dep_str: %s, for : %s" % (
+                                (pkg_id, repo_id),
+                                self.open_repository(repo_id).retrieveAtom(
+                                    pkg_id),
+                                dep_str,
+                                self.open_repository(repo_id).retrieveAtom(
+                                    dep_pkg_id))))
+                reverse_deps.add((dep_pkg_id, repo_id))
+            return reverse_deps
+
         def get_revdeps(pkg_id, repo_id, repo_db):
             # obtain its inverse deps
-            reverse_deps = set((x, repo_id) for x in \
-                repo_db.retrieveReverseDependencies(
-                    pkg_id, exclude_deptypes = (pdepend_id, bdepend_id,)))
+            reverse_deps_ids = repo_db.retrieveReverseDependencies(
+                pkg_id, exclude_deptypes = (pdepend_id, bdepend_id,),
+                extended = True)
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                "\n_generate_reverse_dependency_tree.get_revdeps: " \
+                    "orig revdeps: %s => %s" % (sorted(reverse_deps_ids),
+                    sorted([repo_db.retrieveAtom(x[0]) for x in \
+                        reverse_deps_ids]),))
+
+            reverse_deps = _filter_simple_or_revdeps(pkg_id, repo_id, repo_db,
+                reverse_deps_ids)
+
             if reverse_deps:
                 reverse_deps = self.__filter_depends_multimatched_atoms(
                     pkg_id, repo_id, reverse_deps)
