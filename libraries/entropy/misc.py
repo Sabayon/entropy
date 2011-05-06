@@ -74,7 +74,7 @@ class Lifo(object):
     def __init__(self):
         """ Lifo class constructor """
         object.__init__(self)
-        self.__buf = {}
+        self.__buf = []
 
     def __nonzero__(self):
         """
@@ -97,11 +97,7 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        try:
-            idx = max(self.__buf)+1
-        except ValueError:
-            idx = 0
-        self.__buf[idx] = item
+        self.__buf.append(item)
 
     def insert(self, item):
         """
@@ -112,11 +108,7 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        try:
-            idx = min(self.__buf)-1
-        except ValueError:
-            idx = -1
-        self.__buf[idx] = item
+        self.__buf.insert(0, item)
 
     def clear(self):
         """
@@ -125,7 +117,7 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        self.__buf.clear()
+        del self.__buf[:]
 
     def is_filled(self):
         """
@@ -148,17 +140,15 @@ class Lifo(object):
         @return: None
         @rtype: None
         """
-        for key, buf_entry in tuple(self.__buf.items()):
-            # identity is generally faster, so try
-            # this first
-            if self.__buf is None: # shutting down py
-                break
+        indexes = []
+        for index, buf_entry in enumerate(self.__buf):
             if entry is buf_entry:
-                self.__buf.pop(key)
-                continue
-            if entry == buf_entry:
-                self.__buf.pop(key)
-                continue
+                indexes.append(index)
+            elif entry == buf_entry:
+                indexes.append(index)
+        indexes.reverse()
+        for index in indexes:
+            self.__buf.pop(index)
 
     def pop(self):
         """
@@ -169,12 +159,8 @@ class Lifo(object):
         @raise ValueError: if stack is empty
         """
         try:
-            idx = max(self.__buf)
-        except (ValueError, TypeError,):
-            raise ValueError("Lifo is empty")
-        try:
-            return self.__buf.pop(idx)
-        except (KeyError, TypeError,):
+            return self.__buf.pop()
+        except IndexError:
             raise ValueError("Lifo is empty")
 
 
