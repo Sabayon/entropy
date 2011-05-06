@@ -1619,7 +1619,12 @@ class MiscMixin:
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
                 # ouch, wtf?
                 raise
+            # lock already acquired, but might come from the same pid
+            stored_pid = pid_f.read(128).strip()
             pid_f.close()
+            if str(os.getpid()) == stored_pid:
+                # it's me, entropy (in case I called execv*)
+                return True
             return False # lock already acquired
 
         pid_f.truncate()
