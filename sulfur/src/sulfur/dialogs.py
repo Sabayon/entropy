@@ -180,6 +180,11 @@ class AddRepositoryWindow(MenuSkel):
             if not edit:
                 errors.append(_('Duplicated Repository Identifier'))
 
+        if repodata['repoid']:
+            valid = entropy.tools.validate_repository_id(repodata['repoid'])
+            if not valid:
+                errors.append(_("Invalid Repository Identifier"))
+
         if not repodata['description']:
             repodata['description'] = "No description"
 
