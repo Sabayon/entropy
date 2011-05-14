@@ -531,7 +531,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         # Entropy Client SystemSettings plugin
         entropy_client.Settings().clear()
 
-    if update and not etpUi['pretend']:
+    if update and (not etpUi['pretend']) and (not onlyfetch):
         # if updates have been installed, check if there are more
         # to come (perhaps critical updates were installed)
         _upgrade_packages_respawn(entropy_client)
