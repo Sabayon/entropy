@@ -839,7 +839,8 @@ def _show_package_removal_info(entropy_client, package_identifiers, manual = Fal
 
 def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None):
 
-    if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
+    if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']) and not \
+        etpUi['quiet']:
         # now print the selected packages
         print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
         totalatoms = len(found_pkg_atoms)
@@ -929,19 +930,18 @@ def _show_package_info(entropy_client, found_pkg_atoms, deps, action_name = None
 
             print_info("\t"+red("%s:\t\t" % (_("Action"),) )+" "+action)
 
-        if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
-            print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) ) + \
-                str(totalatoms))
+        print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) ) + \
+            str(totalatoms))
 
-        if etpUi['ask']:
-            if deps:
-                rc = entropy_client.ask_question("     %s" % (
-                    _("Would you like to continue with dependencies calculation ?"),) )
-            else:
-                rc = entropy_client.ask_question("     %s" % (
-                    _("Would you like to continue ?"),) )
-            if rc == _("No"):
-                return True, (126, -1)
+    if etpUi['ask'] and not etpUi['pretend']:
+        if deps:
+            rc = entropy_client.ask_question("     %s" % (
+                _("Would you like to continue with dependencies calculation ?"),) )
+        else:
+            rc = entropy_client.ask_question("     %s" % (
+                _("Would you like to continue ?"),) )
+        if rc == _("No"):
+            return True, (126, -1)
 
     return False, (0, 0)
 
@@ -1299,7 +1299,7 @@ def install_packages(entropy_client,
 
         if run_queue:
 
-            if (etpUi['ask'] or etpUi['pretend']):
+            if (etpUi['ask'] or etpUi['pretend']) and not etpUi['quiet']:
                 mytxt = "%s:" % (blue(_("These are the packages that would be installed")),)
                 print_info(red(" @@ ")+mytxt)
 
@@ -1429,7 +1429,7 @@ def install_packages(entropy_client,
                     repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
                     print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
 
-        if (run_queue) or (removal_queue) and not etpUi['quiet']:
+        if ((run_queue) or (removal_queue)) and not etpUi['quiet']:
             # show download info
             mytxt = "%s: %s" % (blue(_("Packages needing to be installed/updated/downgraded")), red(str(len(run_queue))),)
             print_info(red(" @@ ")+mytxt)
