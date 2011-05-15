@@ -426,7 +426,8 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
             dochecksum = dochecksum,
             deepdeps = True,
             multifetch = multifetch,
-            build_deps = build_deps
+            build_deps = build_deps,
+            emptydeps = replay
         )
         if rc[1] != 0:
             return rc
