@@ -1,3 +1,45 @@
+commit 4d871155ceddbae32f3b4dcdb7628512f6ae0bdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 17 00:08:35 2011 +0200
+
+    Release Entropy 1.0_beta16
+
+commit 9d53e66b4cc694e928741fa57866dd019df793f6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 15 21:22:54 2011 +0200
+
+    [equo] improve handling of --quiet in "equo install" and "equo upgrade"
+
+commit 83cbfde5e01f0ff6ea567c6bd38af358b20695e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun May 15 21:18:23 2011 +0200
+
+    [equo] fix equo upgrade "--replay" and "--empty" support
+
+commit ae6755081f76a5a31cb05d50e29a552e7506825c
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Sat May 14 19:30:08 2011 +0100
+
+    [i18n] Update es translation
+
+commit f3e7ac1ce47a04098d59b2012f5d7681c7175bb2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 14 10:16:38 2011 +0200
+
+    [equo] do not respawn equo during "equo upgrade" if --fetch is provided, close bug #2421
+
+commit 7238d36cac71d7f461f30451201a103a95a72456
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu May 12 14:42:13 2011 +0200
+
+    [sulfur] _validate_repo_submit: validate repository identifier
+
+commit 01f9b0cbf855666f469ae0f189515b30f634ae8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri May 6 19:19:46 2011 +0200
+
+    Tagging Entropy version 1.0_beta15
+
 commit 18bb05df4beb521324b0685aa3c0fc742774bbe8
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri May 6 19:19:28 2011 +0200
