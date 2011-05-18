@@ -1,3 +1,27 @@
+commit db20f8ac55c49f9ffd3eee4bf993083e4bced207
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 18 22:24:11 2011 +0200
+
+    Release Entropy 1.0_beta17
+
+commit 1cb6a1830514bdeb57310256c57157cc47803099
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 18 22:22:52 2011 +0200
+
+    [entropy.server] fix dep_rewrite logic when asking to remove dependencies
+
+commit cbd39ed145468c38c3f2725b3d21c7fbc7fcc31e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 17 14:08:40 2011 +0200
+
+    [conf] add Yes Optus Mirror (Australia) to repositories.conf.example
+
+commit b76623844951b4f0757d051d8d8e83312b465c96
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 17 00:08:41 2011 +0200
+
+    Tagging Entropy version 1.0_beta16
+
 commit 4d871155ceddbae32f3b4dcdb7628512f6ae0bdb
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue May 17 00:08:35 2011 +0200
