@@ -5392,6 +5392,10 @@ class Server(Client):
                     continue
                 matched_pattern = True
 
+                if not replaces:
+                    # then it's a removal
+                    dep_string_matched = True
+
                 for replace in replaces:
                     new_dep_string, number_of_subs_made = \
                         compiled_pattern.subn(replace, dep_string)
