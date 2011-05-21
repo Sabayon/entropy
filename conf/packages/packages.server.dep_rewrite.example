@@ -7,7 +7,7 @@
 
 # LINE CONSTRUCTION:
 # <::pkg::> <::dep_pattern::> <::dep_replace_1::> [<::dep_replace_2::> ...]
-# ::pkg:: = package containing dependency to match
+# ::pkg:: = package containing dependency to match, or * for catch-all
 # ::dep_pattern:: = regexp of dependency to match
 # ::dep_replace_1:: = replacement regexp
 # ::dep_replace_n:: = additional replacement regexps (producing more deps out
@@ -49,3 +49,8 @@
 #    media-gfx/foo ++!media-sound/bar
 # Generic example:
 #    media-gfx/foo ++media-sound/bar<3>
+
+# Secial case, catch-all keyword.
+# Apply a dep_rewrite rule to any package being added:
+#    * <::dep_pattern::> <::dep_replace_1::> [<::dep_replace_2::> ...]
+# In other words, set <::pkg::> to *

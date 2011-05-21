@@ -5287,7 +5287,11 @@ class Server(Client):
 
         rewrites_enabled = []
         for dep_string_rewrite, dep_pattern in dep_rewrite:
-            pkg_id, rc = tmp_repo.atomMatch(dep_string_rewrite)
+            # magic catch-all support
+            if dep_string_rewrite == "*":
+                pkg_id, rc = None, 0
+            else:
+                pkg_id, rc = tmp_repo.atomMatch(dep_string_rewrite)
             if rc == 0:
                 rewrites_enabled.append((dep_string_rewrite, dep_pattern))
         tmp_repo.close()
