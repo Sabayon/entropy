@@ -2044,23 +2044,56 @@ class PortagePlugin(SpmPlugin):
 
         return myebuild, moved_ebuild
 
-    def _pkg_setup(self, package_metadata, skip_if_found = False):
+    def _pkg_setup(self, package_metadata):
 
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         env_file = os.path.join(package_metadata['unpackdir'], "portage",
             package, "temp/environment")
 
-        if os.path.isfile(env_file) and skip_if_found:
+        if os.path.isfile(env_file):
             return 0
 
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
-        rc = self._portage_doebuild(ebuild, "setup",
-            "bintree", package, portage_tmpdir = package_metadata['unpackdir'],
-            licenses = package_metadata.get('accept_license'))
+
+        try:
+            rc = self._portage_doebuild(ebuild, "setup",
+                "bintree", package,
+                portage_tmpdir = package_metadata['unpackdir'],
+                licenses = package_metadata.get('accept_license'))
+        except Exception as e:
+            entropy.tools.print_traceback()
+
+            self.log_message(
+                "[SETUP] ATTENTION Cannot properly run SPM setup"
+                " phase for %s. Something bad happened."
+                " Exception %s" % (package, repr(e),))
+
+            mytxt = "%s: %s %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run Source Package Manager trigger for")),
+                bold(str(package)),
+            )
+            self.__output.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            mytxt = "%s. %s: %s [%s]" % (
+                brown(_("Please report it")),
+                bold(_("Attach this")),
+                darkred(etpConst['entropylogfile']),
+                brown(phase),
+            )
+            self.__output.output(
+                mytxt,
+                importance = 0,
+                header = red("   ## ")
+            )
+            rc = 1
 
         if rc != 0:
             self.log_message(
-                "[POST] ATTENTION Cannot properly run Source Package Manager"
+                "[SETUP] ATTENTION Cannot properly run Source Package Manager"
                 " setup phase for %s Something bad happened." % (package,)
             )
 
@@ -2076,9 +2109,10 @@ class PortagePlugin(SpmPlugin):
         if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
             return rc
 
+        rc = self._pkg_setup(package_metadata)
+        if rc != 0:
+            return rc
         try:
-
-            self._pkg_setup(package_metadata, skip_if_found = True)
 
             rc = self._portage_doebuild(ebuild, phase, "bintree",
                 package, portage_tmpdir = package_metadata['unpackdir'],
