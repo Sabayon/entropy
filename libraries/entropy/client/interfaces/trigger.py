@@ -138,13 +138,28 @@ class Trigger:
         if self._spm is not None:
             spm_class = self._entropy.Spm_class()
             phases_map = spm_class.package_phases_map()
+            found_preinstall = False
             while True:
                 if self._pkgdata['spm_phases'] != None:
                     if phases_map.get('preinstall') not \
                         in self._pkgdata['spm_phases']:
                         break
                 functions.append(self._trigger_spm_preinstall)
+                found_preinstall = True
                 break
+            # if found_preinstall is False, we have to call setup, if
+            # available. Otherwise, the spm package setup phase is never
+            # called.
+            append_setup = False
+            if not found_preinstall:
+                if self._pkgdata['spm_phases'] != None:
+                    if "setup" in self._pkgdata['spm_phases']:
+                        append_setup = True
+                else:
+                    append_setup = True
+            if append_setup:
+                functions.append(self._trigger_spm_setup)
+
 
         if self._pkgdata['trigger']:
             functions.append(self._trigger_call_ext_preinstall)
@@ -458,6 +473,15 @@ class Trigger:
                 header = red("   ## ")
             )
             return self._spm.execute_package_phase(self._pkgdata, 'preinstall')
+
+    def _trigger_spm_setup(self):
+        if self._spm is not None:
+            self._entropy.output(
+                "SPM: %s" % (brown(_("setup phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
+            return self._spm.execute_package_phase(self._pkgdata, 'setup')
 
     def _trigger_spm_preremove(self):
         if self._spm is not None:
