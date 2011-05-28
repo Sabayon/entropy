@@ -1,3 +1,39 @@
+commit 910f118e88f2231692ae39995dd9f5eba7cfa03d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 28 20:17:02 2011 +0200
+
+    Release Entropy 1.0_beta18
+
+commit 94c55061a7cdb6b56951c9af4606b10674b99704
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 28 20:12:58 2011 +0200
+
+    [entropy.client] Trigger: always execute the setup phase (if available) even when preinstall nor postinstall are set
+
+commit 94d3235dc84cd243fab5452a3422daf877aeaa84
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 28 20:12:28 2011 +0200
+
+    [entropy.spm] PortagePlugin: improve reliability of preinstall+setup phase execution
+
+commit e405d6c97ff465b08ff91f01ad869ffe565a28e7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 28 19:29:21 2011 +0200
+
+    [conf] improve entropy client defaults, as per bug #2420
+
+commit c5d270d4a182dbf134e7b576716e3ba525d789c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 21 23:19:45 2011 +0200
+
+    [entropy.server] add catch-all dep_rewrite syntax
+
+commit d1055e80f7125b0499b219930f3742962a06f25b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed May 18 22:24:13 2011 +0200
+
+    Tagging Entropy version 1.0_beta17
+
 commit db20f8ac55c49f9ffd3eee4bf993083e4bced207
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed May 18 22:24:11 2011 +0200
