@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2011-05-05 11:39+0200\n"
-"PO-Revision-Date: 2011-05-14 18:59-0000\n"
+"PO-Revision-Date: 2011-05-14 19:39-0000\n"
 "Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
 "Language-Team: Spanish <kde-i18n-doc@kde.org>\n"
 "Language: \n"
@@ -2740,9 +2740,8 @@ msgid "Installing package"
 msgstr "Instalando el paquete"
 
 #: ../../libraries/entropy/client/interfaces/package.py:3044
-#, fuzzy
 msgid "<3 debug files installation enabled <3"
-msgstr "Omitiendo instalación/eliminación del archivo"
+msgstr "<3 instalación de archivos para debug habilitada <3"
 
 #: ../../libraries/entropy/client/interfaces/package.py:3055
 msgid "An error occured while trying to install the package"
@@ -8540,7 +8539,7 @@ msgstr "subida completada correctamente"
 
 #: ../../sulfur/src/sulfur/__init__.py:2205
 msgid "Please make sure to read all the messages in the terminal below."
-msgstr ""
+msgstr "Asegúrate de leer todos los mensajes de la consola."
 
 #: ../../sulfur/src/sulfur/__init__.py:2208
 msgid "Oh, a fairytale gone bad!"
@@ -8676,9 +8675,8 @@ msgid "User configuration"
 msgstr "Configuración del usuario"
 
 #: ../../sulfur/src/sulfur/packages.py:1091
-#, fuzzy
 msgid "Try to update your repositories"
-msgstr "Prueba a actualizar los repositorios e inténtalo de nuevo"
+msgstr "Prueba a actualizar los repositorios"
 
 #: ../../sulfur/src/sulfur/packages.py:1094
 msgid "No updates available"
@@ -8695,11 +8693,11 @@ msgstr "Cargando, espera por favor..."
 
 #: ../../sulfur/src/sulfur/packages.py:1107
 msgid "The current view is loading."
-msgstr ""
+msgstr "La vista actual se está cargando."
 
 #: ../../sulfur/src/sulfur/packages.py:1108
 msgid "Be patient, sit down and relax."
-msgstr ""
+msgstr "Ten paciencia, siéntate y relájate."
 
 #: ../../sulfur/src/sulfur/packages.py:1117
 msgid "No packages found means nothing to show!"
