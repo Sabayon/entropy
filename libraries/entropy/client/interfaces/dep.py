@@ -758,7 +758,8 @@ class CalculatorsMixin:
 
         return new_packages
 
-    def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match):
+    def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match,
+        elements_cache):
 
         if const_debug_enabled():
             inst_atom = self._installed_repository.retrieveAtom(
@@ -787,7 +788,7 @@ class CalculatorsMixin:
                     broken_matches,))
 
         inverse_deps = self._lookup_inverse_dependencies(pkg_match,
-            installed_match)
+            installed_match, elements_cache)
         if const_debug_enabled():
             const_debug_write(__name__,
             "__generate_dependency_tree_inst_hooks "
@@ -1042,7 +1043,7 @@ class CalculatorsMixin:
                 # - inverse dependencies check
                 children_matches, broken_matches, inverse_deps = \
                     self.__generate_dependency_tree_inst_hooks(
-                        (cm_idpackage, cm_result), pkg_match)
+                        (cm_idpackage, cm_result), pkg_match, elements_cache)
                 # this is fine this way, these are strong inverse deps
                 # and their order is already written in stone
                 for inv_match in inverse_deps:
@@ -1094,7 +1095,7 @@ class CalculatorsMixin:
         del inverse_dep_stack_cache
         # if deps not found, we won't do dep-sorting at all
         if deps_not_found:
-            del stack
+            #del stack
             raise DependenciesNotFound(deps_not_found)
 
         return graph, conflicts
@@ -1164,7 +1165,7 @@ class CalculatorsMixin:
 
         return new_match
 
-    def _lookup_inverse_dependencies(self, match, clientmatch):
+    def _lookup_inverse_dependencies(self, match, clientmatch, elements_cache):
 
         cmpstat = self.get_package_action(match)
         if cmpstat == 0:
@@ -1216,6 +1217,29 @@ class CalculatorsMixin:
                 cmpstat = gpa(mymatch)
                 if cmpstat == 0:
                     continue
+                # this will take a life, also check if we haven't already
+                # pulled this match in.
+                # This happens because the reverse dependency string is
+                # too much generic and could pull in conflicting packages.
+                # NOTE: this is a hack and real weighted graph would be required
+                mymatches, rc = self.atom_match(key, match_slot = slot,
+                    multi_match = True)
+                got_it = None
+                for xmymatch in mymatches:
+                    if xmymatch in elements_cache:
+                        got_it = xmymatch
+                        break
+                if got_it is not None:
+                    if const_debug_enabled():
+                        atom = self.open_repository(mymatch[1]).retrieveAtom(
+                            mymatch[0])
+                        const_debug_write(__name__,
+                        "_lookup_inverse_dependencies, "
+                        "ignoring %s, %s -- because already pulled in as: %s" % (
+                            atom, mymatch, got_it,))
+                    # yeah, pulled in, ignore
+                    continue
+
                 if const_debug_enabled():
                     atom = self.open_repository(mymatch[1]).retrieveAtom(
                         mymatch[0])
@@ -1258,6 +1282,12 @@ class CalculatorsMixin:
 
             # not against myself
             if (idpackage, repo) == match:
+                continue
+
+            # not against the same key+slot
+            avail_keyslot = self.open_repository(repo
+                ).retrieveKeySlotAggregated(idpackage)
+            if keyslot == avail_keyslot:
                 continue
 
             if const_debug_enabled():
