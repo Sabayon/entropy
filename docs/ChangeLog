@@ -1,3 +1,27 @@
+commit c53266f911f4e7167be6f51075e8fe2690ff054f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 30 22:02:31 2011 +0200
+
+    Release Entropy 1.0_beta19
+
+commit 3e194202cb7e4583ddce596db078004aecf72fbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 30 20:34:36 2011 +0200
+
+    [entropy.client.interfaces.dep] properly filter out colliding packages when determining inverse dependencies
+
+commit 6e0d7923b2a1af42b1c92a3703eda45deee29aa6
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Mon May 30 17:10:29 2011 +0100
+
+    [i18n] Update es and nl translation
+
+commit 1778732439947312851c2897505d309f9aa98059
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat May 28 20:17:04 2011 +0200
+
+    Tagging Entropy version 1.0_beta18
+
 commit 910f118e88f2231692ae39995dd9f5eba7cfa03d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat May 28 20:17:02 2011 +0200
