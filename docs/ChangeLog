@@ -1,3 +1,43 @@
+commit 424cff10371c8a249d891de6d104d63fcf59cb87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 31 11:19:33 2011 +0200
+
+    Release Entropy 1.0_beta20
+
+commit bae5f223e0fd2446c8d28a64a14cb7e1b66a2db5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 31 11:19:19 2011 +0200
+
+    [todo] update TODO
+
+commit ed7b6d4dd8acc9b10112e1aa8adfda6056f5ffd6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 31 11:14:49 2011 +0200
+
+    [entropy.client.interfaces.dep] evaluate post-dependencies separately
+    
+    Evaluating post-dependencies together with direct dependencies
+    could cause unexpected packages to be pulled in due to cycles in
+    the dependency graph. This commits makes possible to cut these
+    cycles by filtering out dependencies already pulled in, in the same
+    scope.
+    
+    Example: nvidia-drivers pulls in nvidia-userspace which pulls in
+    nvidia-drivers as post-dependency. But given that we have more
+    nvidia-drivers packages in the same scope, this turned to be an issue
+
+commit 8f96964beb2cc2259ba67e03523a96fcb4c404af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 31 11:13:30 2011 +0200
+
+    [entropy.client.interfaces.dep] use set intersection instead of doubly nested for loops
+
+commit c1197fa99fabfbd0a27ab035c3ee68580fdccfc7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon May 30 22:02:34 2011 +0200
+
+    Tagging Entropy version 1.0_beta19
+
 commit c53266f911f4e7167be6f51075e8fe2690ff054f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon May 30 22:02:31 2011 +0200
