@@ -2,18 +2,18 @@ Backlog (raw)
 
   1.0:
 
-    - entropy.services: refactoring
-        rewrite UGC using HTTP protocol
+    - make possible to embed ebuild content inside db repo (and drop old schema checks)
 
-    - add disabled_useflags metadatum and fixup __filterUse()
-    - python3.x tests
-        entropy ugc fixes
-
-    - evaluate or-dependencies after complete dependency graph calculation.
-        definitely fixes or dependencies
+    - graph improvements:
+        - graph with or dependencies support
+        - graph with weighted edges (nvidia-userspace:0 must not collide with something
+          already pulled in)
 
     - complete README
+        - when upgrading branch, drop packages.db.critical
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
       - conditional deps support, implement in entropy.spm, class is there (add unit test)
+        test removal (reverse deps could be problematic?) -- add resolved dep
+        instead of full conditional?
