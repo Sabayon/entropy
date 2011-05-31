@@ -1223,13 +1223,9 @@ class CalculatorsMixin:
                 # too much generic and could pull in conflicting packages.
                 # NOTE: this is a hack and real weighted graph would be required
                 mymatches, rc = self.atom_match(key, match_slot = slot,
-                    multi_match = True)
-                got_it = None
-                for xmymatch in mymatches:
-                    if xmymatch in elements_cache:
-                        got_it = xmymatch
-                        break
-                if got_it is not None:
+                    multi_match = True, multi_repo = True)
+                got_it = mymatches & elements_cache
+                if got_it:
                     if const_debug_enabled():
                         atom = self.open_repository(mymatch[1]).retrieveAtom(
                             mymatch[0])
