@@ -853,13 +853,15 @@ class CalculatorsMixin:
 
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
         stack, deps_not_found, conflicts, unsat_cache, relaxed_deps,
-        build_deps, deep_deps, empty_deps, recursive, selected_matches):
+        build_deps, deep_deps, empty_deps, recursive, selected_matches,
+        elements_cache):
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
-        excluded_deptypes = None
+        excluded_deptypes = [etpConst['dependency_type_ids']['pdepend_id']]
         if not build_deps:
-            excluded_deptypes = [etpConst['dependency_type_ids']['bdepend_id']]
+            excluded_deptypes += [etpConst['dependency_type_ids']['bdepend_id']]
+
         myundeps = repo_db.retrieveDependenciesList(pkg_id,
             exclude_deptypes = excluded_deptypes,
             resolve_conditional_deps = False)
@@ -936,16 +938,32 @@ class CalculatorsMixin:
                     "__generate_dependency_tree_analyze_deplist " + \
                         "filtered UNSATISFIED dependencies => %s" % (myundeps,))
 
+        def _post_deps_filter(post_dep):
+            pkg_matches, rc = self.atom_match(post_dep,
+                multi_match = True, multi_repo = True)
+            commons = pkg_matches & elements_cache
+            if commons:
+                return False
+            return True
+
         post_deps = []
         # PDEPENDs support
-        if myundeps:
-            myundeps, post_deps = self._lookup_post_dependencies(repo_db,
-                pkg_id, myundeps)
+        myundeps, post_deps = self._lookup_post_dependencies(repo_db,
+            pkg_id, myundeps)
+        if (not empty_deps) and post_deps:
+            # validate post dependencies, make them not contain matches already
+            # pulled in, this cuts potential circular dependencies:
+            # nvidia-drivers pulls in nvidia-userspace which has nvidia-drivers
+            # listed as post-dependency
+            post_deps = list(filter(_post_deps_filter, post_deps))
+            post_deps = self._get_unsatisfied_dependencies(post_deps,
+                deep_deps = deep_deps, relaxed_deps = relaxed_deps,
+                depcache = unsat_cache)
 
-            if const_debug_enabled():
-                const_debug_write(__name__,
-                    "generate_dependency_tree POST dependencies ADDED => %s" % (
-                        post_deps,))
+        if const_debug_enabled():
+            const_debug_write(__name__,
+                "generate_dependency_tree POST dependencies ADDED => %s" % (
+                    post_deps,))
 
         deps = set()
         for unsat_dep in myundeps:
@@ -1068,7 +1086,7 @@ class CalculatorsMixin:
                     pkg_match, repo_db, stack, deps_not_found,
                     conflicts, unsatisfied_deps_cache, relaxed_deps,
                     build_deps, deep_deps, empty_deps, recursive,
-                    selected_matches)
+                    selected_matches, elements_cache)
 
             # eventually add our package match to depgraph
             graph.add(pkg_match, dep_matches)
@@ -1103,9 +1121,7 @@ class CalculatorsMixin:
     def _lookup_post_dependencies(self, repo_db, repo_idpackage,
         unsatisfied_deps):
 
-        post_deps = [x for x in \
-            repo_db.retrievePostDependencies(repo_idpackage) if x \
-            in unsatisfied_deps]
+        post_deps = repo_db.retrievePostDependencies(repo_idpackage)
 
         if const_debug_enabled():
             const_debug_write(__name__,
