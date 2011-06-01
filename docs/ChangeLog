@@ -1,3 +1,21 @@
+commit 16f7367d1e48707c16ec493de9083b256d1cee49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 1 14:20:56 2011 +0200
+
+    Release Entropy 1.0_beta21
+
+commit d86b2695d43cf489d802b2655e92cece75a6a578
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 1 14:20:38 2011 +0200
+
+    [entropy.spm] PortagePlugin: fix undefined reference
+
+commit 808d48c9045275092773d2eab453e4dbe4840a6d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue May 31 11:19:37 2011 +0200
+
+    Tagging Entropy version 1.0_beta20
+
 commit 424cff10371c8a249d891de6d104d63fcf59cb87
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue May 31 11:19:33 2011 +0200
