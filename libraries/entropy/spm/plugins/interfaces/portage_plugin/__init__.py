@@ -2082,7 +2082,7 @@ class PortagePlugin(SpmPlugin):
                 brown(_("Please report it")),
                 bold(_("Attach this")),
                 darkred(etpConst['entropylogfile']),
-                brown(phase),
+                brown("setup"),
             )
             self.__output.output(
                 mytxt,
