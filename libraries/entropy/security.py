@@ -1847,7 +1847,7 @@ class Repository:
         fingerprint = keymap[repository_identifier]
         try:
             pubkey = self.__export_key(fingerprint)
-        except GPGError as err:
+        except Repository.GPGError as err:
             raise KeyError(repr(err))
         return pubkey
 
