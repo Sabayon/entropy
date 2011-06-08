@@ -175,6 +175,10 @@ class AvailablePackagesRepositoryUpdater(object):
         self.__webservice = None
         self._repo_eapi = self.__get_repo_eapi()
 
+        avail_data = self._settings['repositories']['available']
+        if self._repository_id not in avail_data:
+            raise KeyError("Repository not available")
+
     @property
     def _webservices(self):
         if self.__webservices is None:
@@ -2383,8 +2387,11 @@ class AvailablePackagesRepository(CachedRepository, MaskableRepository):
         """
         Reimplemented from EntropyRepositoryBase
         """
-        return AvailablePackagesRepositoryUpdater(entropy_client, repository_id,
-            force, gpg).update()
+        try:
+            return AvailablePackagesRepositoryUpdater(entropy_client, repository_id,
+                force, gpg).update()
+        except KeyError:
+            return EntropyRepositoryBase.REPOSITORY_NOT_AVAILABLE
 
     @staticmethod
     def revision(repository_id):
