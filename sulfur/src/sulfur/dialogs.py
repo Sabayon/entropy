@@ -1122,7 +1122,7 @@ class PkgInfoMenu(MenuSkel):
         self.contentModel.append(None, [_("Please wait..."), ""])
         def _load_cont():
             self.contentModel.clear()
-            for path, typ in self._pkg_meta['content'].items():
+            for path, typ in self._pkg_meta.get('content', {}).items():
                 self.contentModel.append(None, [path, typ])
         gobject.idle_add(_load_cont)
 
