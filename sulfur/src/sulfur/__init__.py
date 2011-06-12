@@ -260,6 +260,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def quit(self, widget = None, event = None, sysexit = 0):
 
         SulfurSignals.emit('application_quit')
+        const_debug_write(__name__, "\n\t\t application_quit signal sent \n\n")
 
         if hasattr(self, '_entropy'):
             entropy.tools.release_entropy_locks(self._entropy)

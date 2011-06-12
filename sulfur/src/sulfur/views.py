@@ -692,6 +692,7 @@ class EntropyPackageView:
         self.queue_full_exception = Full
         self.queue_empty_exception = Empty
 
+        self._application_quit = False
         SulfurSignals.connect('application_quit', self.__quit)
 
         self.__pkg_ugc_icon_local_path_cache = {}
@@ -707,6 +708,7 @@ class EntropyPackageView:
         const_debug_write(__name__, "__quit called")
         if hasattr(self, "_ugc_icon_thread"):
             self._ugc_icon_thread.kill()
+        self._application_quit = True
 
     def __update_ugc_event(self, event):
         self.view.queue_draw()
@@ -1796,6 +1798,11 @@ class EntropyPackageView:
 
             got_something = False
             for package_name in package_names:
+
+                # quitting?
+                if self._application_quit:
+                    return
+
                 # sorry web service, we need data this way
                 try:
                     icon_docs = webserv.get_icons([package_name],
@@ -1812,6 +1819,11 @@ class EntropyPackageView:
                             "_fetch_icons: already in cache: %s" % (
                                 cache_key,))
                         continue
+
+                    # quitting?
+                    if self._application_quit:
+                        return
+
                     try:
                         local_path = webserv.get_document_url(icon_doc,
                             cache = mycache)
@@ -2241,6 +2253,9 @@ class EntropyPackageView:
 
     def _ugc_icon_queue_run(self):
 
+        if self._application_quit:
+            return
+
         const_debug_write(__name__, "_ugc_icon_queue_run called")
 
         pkgs = set()
@@ -2253,6 +2268,9 @@ class EntropyPackageView:
                 break
             pkgs.add(item)
             queue.task_done()
+
+        if self._application_quit:
+            return
 
         if pkgs:
             const_debug_write(__name__,
