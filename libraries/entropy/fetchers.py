@@ -1001,6 +1001,7 @@ class MultipleUrlFetcher(TextInterface):
 
             t = ParallelTask(do_download, self.__download_statuses, th_id,
                 downloader)
+            t.daemon = True
             self.__thread_pool[th_id] = t
             t.start()
 
