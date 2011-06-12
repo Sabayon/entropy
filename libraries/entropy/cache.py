@@ -278,6 +278,7 @@ class EntropyCacher(Singleton):
         self.__cache_buffer.clear()
         self.__cache_writer = TimeScheduled(EntropyCacher.WRITEBACK_TIMEOUT,
             self.__cacher)
+        self.__cache_writer.daemon = True
         self.__cache_writer.setName("EntropyCacher")
         self.__cache_writer.set_delay_before(True)
         self.__cache_writer.start()
