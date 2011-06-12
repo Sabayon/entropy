@@ -1226,8 +1226,13 @@ class ClientWebService(WebService):
         # This returns None if document is not accepted
         params = document.copy()
         params['package_name'] = package_name
+        # video requires huge timeout
+        timeout = None # default
+        if document.is_video():
+            timeout = 300.0
         remote_document = self._method_getter("add_document", params,
-            cache = False, require_credentials = True)
+            cache = False, require_credentials = True,
+            timeout = timeout)
         if remote_document is None:
             raise ClientWebService.DocumentError("Document not accepted")
 

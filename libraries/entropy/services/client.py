@@ -253,8 +253,7 @@ class WebService(object):
         self.__auth_storage = None
         self.__settings = None
         self.__cacher = None
-        # some data requires huge timeout (videos)
-        self._default_timeout_secs = 300.0
+        self._default_timeout_secs = 10.0
         self.__credentials_validated = False
 
         # check availability
@@ -294,7 +293,7 @@ class WebService(object):
         """
         Override default timeout setting a new one (in seconds).
         """
-        self._default_timeout_secs = int(secs)
+        self._default_timeout_secs = float(secs)
 
     def _set_transfer_callback(self, callback):
         """
@@ -415,7 +414,8 @@ class WebService(object):
         tmp_f.flush()
         return tmp_f, tmp_path
 
-    def _generic_post_handler(self, function_name, params, file_params):
+    def _generic_post_handler(self, function_name, params, file_params,
+        timeout):
         """
         Given a function name and the request data (dict format), do the actual
         HTTP request and return the response object to caller.
@@ -428,25 +428,29 @@ class WebService(object):
         @param file_params: mapping composed by file names as key and tuple
             composed by (file_name, file object) as values
         @type file_params: dict
+        @param timeout: socket timeout
+        @type timeout: float
         @return: tuple composed by the server response string or None
             (in case of empty response) and the HTTPResponse object (useful
                 for checking response status)
         @rtype: tuple
         """
+        if timeout is None:
+            timeout = self._default_timeout_secs
         multipart_boundary = "---entropy.services,boundary---"
         request_path = self._request_path.rstrip("/") + "/" + function_name
         const_debug_write(__name__,
             "WebService _generic_post_handler, calling: %s at %s -- %s,"
-            " tx_callback: %s" % (self._request_host, request_path,
-                params, self._transfer_callback,))
+            " tx_callback: %s, timeout: %s" % (self._request_host, request_path,
+                params, self._transfer_callback, timeout,))
         connection = None
         try:
             if self._request_protocol == "http":
                 connection = httplib.HTTPConnection(self._request_host,
-                    timeout = self._default_timeout_secs)
+                    timeout = timeout)
             elif self._request_protocol == "https":
                 connection = httplib.HTTPSConnection(self._request_host,
-                    timeout = self._default_timeout_secs)
+                    timeout = timeout)
             else:
                 raise WebService.RequestError("invalid request protocol",
                     method = function_name)
@@ -750,7 +754,8 @@ class WebService(object):
         return self._get_cached(cache_key)
 
     def _method_getter(self, func_name, params, cache = True,
-        cached = False, require_credentials = False, file_params = None):
+        cached = False, require_credentials = False, file_params = None,
+        timeout = None):
         """
         Given a function name and request parameters, do all the duties required
         to get a response from the Web Service. This method raises several
@@ -774,6 +779,8 @@ class WebService(object):
         @param file_params: mapping composed by file names as key and tuple
             composed by (file_name, file object) as values
         @type file_params: dict
+        @param timeout: provide specific socket timeout
+        @type timeout: float
         @return: the JSON response (dict format)
         @rtype: dict
         @raise WebService.UnsupportedParameters: if input parameters are invalid
@@ -822,7 +829,7 @@ class WebService(object):
         obj = None
         try:
             json_response, response = self._generic_post_handler(func_name,
-                params, file_params)
+                params, file_params, timeout)
 
             http_status = response.status
             if http_status not in (httplib.OK,):
