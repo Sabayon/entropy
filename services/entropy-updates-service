@@ -339,6 +339,7 @@ class UpdatesDaemon(dbus.service.Object):
                 update_repos = False
                 self.__trigger_disable_repos_update = False
             task = ParallelTask(self.__run_fetcher, update_repos = update_repos)
+            task.daemon = True
             task.start()
             #self.__run_fetcher()
         return self.__alive
@@ -359,6 +360,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         with self.__fetch_mutex:
             task = ParallelTask(self.__run_fetcher)
+            task.daemon = True
             task.start()
             #self.__run_fetcher()
         return self.__alive
