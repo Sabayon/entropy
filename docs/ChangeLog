@@ -1,3 +1,81 @@
+commit e58c5f844738f7acca97e014f0913cc18cb5b4fe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 23:24:10 2011 +0200
+
+    Release Entropy 1.0_rc1
+
+commit aa797f079e77215419f5dc60fbbb3ee4607945b8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 23:05:05 2011 +0200
+
+    [entropy.cache] EntropyCacher: use daemon threads
+
+commit 8172dba9815103085d7350193313da56e9f7187a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 23:04:17 2011 +0200
+
+    [entropy.fetchers] MultipleUrlFetcher: make UrlFetcher.download() thread, a daemon one
+
+commit 028193158b6fad8d97263fd5a6e4aa0ee39daf2b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 23:03:46 2011 +0200
+
+    [services] entropy-updates-service: make both threads, daemon ones
+
+commit d344908ec2394270e77449c91d7b134d92e1267f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 23:03:07 2011 +0200
+
+    [sulfur] make all the Web Services threads, daemon ones
+
+commit fd96568d0226ef10fecfb6637f513fdbd823406e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 22:29:20 2011 +0200
+
+    [entropy.client.interfaces.db] make the Web Services repository update routine daemon threads
+
+commit 712b47d3414181ef043a33ccf12285679cbd1c33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 16:36:45 2011 +0200
+
+    [sulfur] when application_quit signal is raised, stop any Web Services activity so that respective threads end asap
+
+commit 8a8fdead26ccb3c81e910fbf798096ad620bed5a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 16:27:18 2011 +0200
+
+    [entropy.client.services] lower socket timeout to sane values, keep it high for video uploads
+
+commit ab9472dfee10f7854fed37fd2ec9f709b53f4aab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 16:06:08 2011 +0200
+
+    [entropy.client.interfaces.client] add ETP_SPLITDEBUG option
+
+commit d3583e25ec556332f37b0081b309a91b6e2191a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 8 18:08:13 2011 +0200
+
+    [entropy.security] fix undefined reference "GPGError"
+
+commit 41f8ed3ee613443aef4352f73190d85887a0efaf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 8 18:06:52 2011 +0200
+
+    [sulfur] PkgInfoMenu: content metadata might not be available in package dict
+
+commit fe5d39c748d16799615e5967752de0c3664fb73c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 8 18:05:22 2011 +0200
+
+    [entropy.client.interfaces.db] AvailablePackagesRepositoryUpdater: raise KeyError if repository identifier is invalid
+
+commit d1d4564199a79c75f0ab061ab61679444d42fc1d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 1 14:20:59 2011 +0200
+
+    Tagging Entropy version 1.0_beta21
+
 commit 16f7367d1e48707c16ec493de9083b256d1cee49
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Jun 1 14:20:56 2011 +0200
