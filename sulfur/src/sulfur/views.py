@@ -692,7 +692,6 @@ class EntropyPackageView:
         self.queue_full_exception = Full
         self.queue_empty_exception = Empty
 
-        self._application_quit = False
         SulfurSignals.connect('application_quit', self.__quit)
 
         self.__pkg_ugc_icon_local_path_cache = {}
@@ -700,6 +699,7 @@ class EntropyPackageView:
         # avoid DoS, lol
         self._ugc_icon_load_queue = queue_class(8)
         self._ugc_icon_thread = TimeScheduled(3, self._ugc_icon_queue_run)
+        self._ugc_icon_thread.daemon = True
         if self._ugc_status:
             # deferred loading, speedup UI init
             gobject.timeout_add_seconds(15, self._ugc_icon_thread.start)
@@ -708,7 +708,6 @@ class EntropyPackageView:
         const_debug_write(__name__, "__quit called")
         if hasattr(self, "_ugc_icon_thread"):
             self._ugc_icon_thread.kill()
-        self._application_quit = True
 
     def __update_ugc_event(self, event):
         self.view.queue_draw()
@@ -1799,10 +1798,6 @@ class EntropyPackageView:
             got_something = False
             for package_name in package_names:
 
-                # quitting?
-                if self._application_quit:
-                    return
-
                 # sorry web service, we need data this way
                 try:
                     icon_docs = webserv.get_icons([package_name],
@@ -1819,10 +1814,6 @@ class EntropyPackageView:
                             "_fetch_icons: already in cache: %s" % (
                                 cache_key,))
                         continue
-
-                    # quitting?
-                    if self._application_quit:
-                        return
 
                     try:
                         local_path = webserv.get_document_url(icon_doc,
@@ -1856,6 +1847,7 @@ class EntropyPackageView:
                 _fetch_icons(cache, False)
                 _fetch_icons(cache, True)
             th = ParallelTask(_parallel_func)
+            th.daemon = True
             th.start()
 
     def __ugc_dnd_updates_clear_cache(self, *args):
@@ -1884,6 +1876,7 @@ class EntropyPackageView:
             self.__pkg_ugc_icon_local_path_cache.clear()
 
         th = ParallelTask(_do_parallel)
+        th.daemon = True
         th.start()
 
     def _ugc_drag_data_received(self, view, context, x, y, selection, drop_id,
@@ -2001,6 +1994,7 @@ class EntropyPackageView:
         self.view.queue_draw()
 
         t = ParallelTask(self.vote_submit_thread, repository, key, obj)
+        t.daemon = True
         t.start()
 
     def _ugc_login(self, webserv, repository):
@@ -2060,6 +2054,7 @@ class EntropyPackageView:
                                 repository, key, obj)
                         else:
                             t = ParallelTask(self.refresh_vote_info, obj)
+                            t.daemon = True
                             t.start()
                         return False
                     gobject.idle_add(_do_login)
@@ -2103,6 +2098,7 @@ class EntropyPackageView:
         gobject.timeout_add(0, do_refresh, msg)
         gobject.timeout_add_seconds(20, remove_ugc_sts)
         t = ParallelTask(self.refresh_vote_info, obj)
+        t.daemon = True
         t.start()
         return False
 
@@ -2253,9 +2249,6 @@ class EntropyPackageView:
 
     def _ugc_icon_queue_run(self):
 
-        if self._application_quit:
-            return
-
         const_debug_write(__name__, "_ugc_icon_queue_run called")
 
         pkgs = set()
@@ -2268,9 +2261,6 @@ class EntropyPackageView:
                 break
             pkgs.add(item)
             queue.task_done()
-
-        if self._application_quit:
-            return
 
         if pkgs:
             const_debug_write(__name__,
@@ -2291,6 +2281,7 @@ class EntropyPackageView:
             self._emit_ugc_update()
 
         th = ParallelTask(do_ugc_sync)
+        th.daemon = True
         th.start()
 
     def _get_cached_pkg_ugc_icon(self, pkg):
