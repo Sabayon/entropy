@@ -627,6 +627,11 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             data['packagehashes'] = tuple((x for x in data['packagehashes'] \
                 if x != "gpg"))
 
+        # support ETP_SPLITDEBUG
+        split_debug = os.getenv("ETP_SPLITDEBUG")
+        if split_debug is not None:
+            _splitdebug(split_debug)
+
         return data
 
     def post_setup(self, system_settings_instance):
