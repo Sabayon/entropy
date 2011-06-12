@@ -1458,6 +1458,12 @@ class AvailablePackagesRepositoryUpdater(object):
                 fetch_sts_map['error'] = True
                 fetch_sts_map['sem'].release()
                 return
+            except KeyboardInterrupt:
+                const_debug_write(__name__,
+                    "__handle_webserv_database_sync: keyboard interrupt")
+                fetch_sts_map['error'] = True
+                fetch_sts_map['sem'].release()
+                return
 
             if not pkg_meta:
                 const_debug_write(__name__,
@@ -1519,6 +1525,7 @@ class AvailablePackagesRepositoryUpdater(object):
                 return None
             th = ParallelTask(_do_fetch, fetch_sts_map, segment, count,
                 maxcount)
+            th.daemon = True
             th.start()
             threads.append(th)
 
