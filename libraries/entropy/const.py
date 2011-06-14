@@ -1599,5 +1599,15 @@ def const_get_stack():
     import inspect
     return inspect.stack()
 
+def const_get_cpus():
+    """
+    Return the number of CPUs/Cores the Operating system exposes
+
+    @return: number of CPUs/Cores available
+    @rtype: int
+    """
+    import multiprocessing
+    return multiprocessing.cpu_count()
+
 # load config
 initconfig_entropy_constants(etpSys['rootdir'])
