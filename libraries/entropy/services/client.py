@@ -585,7 +585,11 @@ class WebService(object):
             if self._transfer_callback is not None:
                 self._transfer_callback(current_len, total_length, True)
             while True:
-                chunk = response.read(65536)
+                try:
+                    chunk = response.read(65536)
+                except socket.error as err:
+                    raise WebService.RequestError(err,
+                        method = function_name)
                 if not chunk:
                     break
                 outcome += chunk
