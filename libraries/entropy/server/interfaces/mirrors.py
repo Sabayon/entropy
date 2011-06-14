@@ -14,14 +14,16 @@ import tempfile
 import shutil
 import time
 import errno
+import threading
+import multiprocessing
 
 from entropy.exceptions import EntropyPackageException
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple, teal
-from entropy.const import etpConst, const_get_int
+from entropy.const import etpConst, const_get_int, const_get_cpus
 from entropy.cache import EntropyCacher
 from entropy.i18n import _
-from entropy.misc import RSS
+from entropy.misc import RSS, ParallelTask
 from entropy.transceivers import EntropyTransceiver
 from entropy.transceivers.uri_handlers.skel import EntropyUriHandler
 from entropy.core.settings.base import SystemSettings
@@ -1519,7 +1521,19 @@ class Server(object):
         my_qa = self._entropy.QA()
         qa_total = len(packages_list)
         qa_count = 0
+
+        max_threads = const_get_cpus()
         qa_some_faulty = []
+        qa_sts_map = {
+            'sem': threading.Semaphore(max_threads),
+            'lock': threading.Lock(),
+        }
+
+        def _qa_check(upload_package):
+            result = my_qa.entropy_package_checks(upload_package)
+            if not result:
+                with qa_sts_map['lock']:
+                    qa_some_faulty.append(os.path.basename(upload_package))
 
         for upload_package in packages_list:
             qa_count += 1
@@ -1536,10 +1550,9 @@ class Server(object):
                 count = (qa_count, qa_total,)
             )
 
-            result = my_qa.entropy_package_checks(upload_package)
-            if not result:
-                # call wolfman-911
-                qa_some_faulty.append(os.path.basename(upload_package))
+            with qa_sts_map['sem']:
+                th = ParallelTask(_qa_check, upload_package)
+                th.start()
 
         if qa_some_faulty:
 
