@@ -5,6 +5,7 @@ sys.path.insert(0, '../')
 import os
 import unittest
 import tempfile
+import json
 from entropy.const import const_convert_to_unicode
 from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender, \
     FastRSS
@@ -223,6 +224,53 @@ class MiscTest(unittest.TestCase):
                 tmp_f.read().replace(" ", "").replace("\n", ""))
 
         os.remove(tmp_path)
+
+    def test_fast_rss_json_payload(self):
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        os.close(tmp_fd) # who cares
+        os.remove(tmp_path)
+
+        fast_rss = FastRSS(tmp_path)
+        self.assertTrue(fast_rss.is_new())
+        fast_rss.set_title("title").set_editor("editor").set_description(
+            "description").set_url("http://url").set_year("2011")
+
+        desc_data = {
+            "name": "hello.world",
+            "security": False,
+            "number": 123,
+            "float": 123.0,
+            "list": [1,2,3],
+        }
+        fast_rss.append("title1", "link1", json.dumps(desc_data), "1")
+        fast_rss.commit()
+
+        doc = fast_rss.get()
+        channel = doc.getElementsByTagName("channel").item(0)
+        item = channel.getElementsByTagName("item").item(0)
+        desc = item.getElementsByTagName("description").item(0)
+        json_data = desc.firstChild.data.strip()
+        desc_data_out = json.loads(json_data)
+        self.assertEqual(desc_data, desc_data_out)
+        del doc
+
+        # test append
+        fast_rss = FastRSS(tmp_path)
+        self.assertFalse(fast_rss.is_new())
+        fast_rss.append("title2", "link2", json.dumps(desc_data), "2")
+        fast_rss.commit()
+        doc = fast_rss.get()
+        channel = doc.getElementsByTagName("channel").item(0)
+        items = channel.getElementsByTagName("item")
+        self.assertEqual(len(items), 2)
+        for item in items:
+            desc = item.getElementsByTagName("description").item(0)
+            json_data = desc.firstChild.data.strip()
+            desc_data_out = json.loads(json_data)
+            self.assertEqual(desc_data, desc_data_out)
+
+        os.remove(tmp_path)
+
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:
