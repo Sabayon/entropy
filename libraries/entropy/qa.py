@@ -22,6 +22,7 @@ import os
 import sys
 import subprocess
 import tempfile
+import stat
 
 from entropy.output import TextInterface
 from entropy.misc import Lifo
@@ -551,6 +552,29 @@ class QAInterface(TextInterface, EntropyPluginStore):
         total = len(ldpaths)
         count = 0
         sys_root_len = len(etpConst['systemroot'])
+
+        def _are_elfs(dt):
+            currentdir, subdirs, files = dt
+
+            def _is_elf(item):
+                filepath = os.path.join(currentdir, item)
+                try:
+                    st = os.stat(filepath)
+                except (OSError, IOError):
+                    return None
+
+                if not stat.S_ISREG(st.st_mode):
+                    return None
+                # shared libraries must be always executable
+                if not (stat.S_IMODE(st.st_mode) & stat.S_IXUSR):
+                    return None
+
+                if not entropy.tools.is_elf_file(filepath):
+                    return None
+                return filepath[sys_root_len:]
+
+            return (x for x in map(_is_elf, files) if x is not None)
+
         for ldpath in sorted(ldpaths):
 
             if hasattr(task_bombing_func, '__call__'):
@@ -571,24 +595,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 ldpath = ldpath.encode(sys.getfilesystemencoding())
             mywalk_iter = os.walk(etpConst['systemroot'] + ldpath)
 
-            def mywimf(dt):
-
-                currentdir, subdirs, files = dt
-
-                def mymf(item):
-                    filepath = os.path.join(currentdir, item)
-                    if not os.access(filepath, os.R_OK):
-                        return 0
-                    if not os.path.isfile(filepath):
-                        return 0
-                    if not entropy.tools.is_elf_file(filepath):
-                        return 0
-                    return filepath[sys_root_len:]
-
-                return set([x for x in map(mymf, files) if not isinstance(x, int)])
-
-            for x in map(mywimf, mywalk_iter):
-                executables |= x
+            for x in map(_are_elfs, mywalk_iter):
+                executables.update(x)
 
         self.output(
             blue(_("Collecting broken executables")),
