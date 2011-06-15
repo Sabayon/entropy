@@ -15,6 +15,7 @@
 import os
 import sys
 import time
+import tempfile
 if sys.hexversion >= 0x3000000:
     import urllib.request, urllib.error, urllib.parse
     UrllibBaseHandler = urllib.request.BaseHandler
@@ -794,7 +795,6 @@ class RSS:
 
     """
 
-    # this is a relative import to avoid circular deps
     def __init__(self, filename, title, description, maxentries = 100):
 
         """
@@ -1103,6 +1103,293 @@ class RSS:
         rss_f.writelines(doc.toprettyxml(indent="    ").encode('utf-8'))
         rss_f.flush()
         rss_f.close()
+
+
+class FastRSS:
+
+    """
+
+    This is a fast class for handling RSS files through Python's
+    xml.dom.minidom module. It produces 100% W3C-complaint code.
+    Any functionality exposed works in O(1) time (apart from commit()
+    which is O(n)).
+    """
+
+    BASE_TITLE = "No title"
+    BASE_DESCRIPTION = "No description"
+    BASE_EDITOR = "No editor"
+    BASE_URL = etpConst['distro_website_url']
+    MAX_ENTRIES = -1
+    LANGUAGE = "en-EN"
+
+    def __init__(self, rss_file_path):
+        """
+        RSS constructor
+
+        @param rss_file_path: RSS file path (a new file will be created
+            if not found)
+        @type rss_file_path: string
+        """
+        from entropy.core.settings.base import SystemSettings
+        self.__system_settings = SystemSettings()
+        self.__feed_title = FastRSS.BASE_TITLE
+        self.__feed_description = FastRSS.BASE_DESCRIPTION
+        self.__feed_language = FastRSS.LANGUAGE
+        self.__feed_editor = FastRSS.BASE_EDITOR
+        self.__system_name = self.__system_settings['system']['name']
+        self.__feed_year = entropy.tools.get_year()
+        self.__title_changed = False
+        self.__link_updated = False
+        self.__description_updated = False
+        self.__language_updated = False
+        self.__year_updated = False
+        self.__editor_updated = False
+
+        self.__file = rss_file_path
+        self.__items = []
+        self.__itemscounter = 0
+        self.__maxentries = FastRSS.MAX_ENTRIES
+        self.__link = FastRSS.BASE_URL
+
+        from xml.dom import minidom
+        self.__minidom = minidom
+
+        self.__newly_created = not (os.path.isfile(self.__file) and \
+            os.access(self.__file, os.R_OK | os.F_OK))
+
+    def is_new(self):
+        """
+        Return whether the file has been newly created or not
+
+        @return: True, if rss is new
+        @rtype: bool
+        """
+        return self.__newly_created
+
+    def set_title(self, title):
+        """
+        Set feed title
+
+        @param title: rss feed title
+        @type title: string
+        @return: this instance, for chaining
+        """
+        self.__title_changed = True
+        self.__feed_title = title
+        return self
+
+    def set_language(self, language):
+        """
+        Set feed language
+
+        @param title: rss language
+        @type title: string
+        @return: this instance, for chaining
+        """
+        self.__language_updated = True
+        self.__feed_language = language
+        return self
+
+    def set_description(self, description):
+        """
+        Set feed description
+
+        @param description: rss feed description
+        @type description: string
+        @return: this instance, for chaining
+        """
+        self.__description_updated = True
+        self.__feed_description = description
+        return self
+
+    def set_max_entries(self, max_entries):
+        """
+        Set the maximum amount of rss feed entries, -1 for infinity
+
+        @param description: rss feed max entries value
+        @type description: int
+        @return: this instance, for chaining
+        """
+        self.__maxentries = max_entries
+        return self
+
+    def set_editor(self, editor):
+        """
+        Set rss feed editor name
+
+        @param editor: rss feed editor name
+        @type editor: string
+        @return: this instance, for chaining
+        """
+        self.__editor_updated = True
+        self.__feed_editor = editor
+        return self
+
+    def set_url(self, url):
+        """
+        Set rss feed url name
+
+        @param url: rss feed url
+        @type url: string
+        @return: this instance, for chaining
+        """
+        self.__link_updated = True
+        self.__link = url
+        return self
+
+    def set_year(self, year):
+        """
+        Set rss feed copyright year
+
+        @param url: rss feed copyright year
+        @type url: string
+        @return: this instance, for chaining
+        """
+        self.__year_updated = True
+        self.__feed_year = year
+        return self
+
+    def append(self, title, link, description, pub_date):
+        """
+        Add new entry
+
+        @param title: entry title
+        @type title: string
+        @param link: entry link
+        @type link: string
+        @param description: entry description
+        @type description: string
+        @param pubDate: entry publication date
+        @type pubDate: string
+        """
+        meta = {
+            "title": title,
+            "pubDate": pub_date or time.strftime("%a, %d %b %Y %X +0000"),
+            "description": description or "",
+            "link": link or "",
+            "guid": link or "",
+        }
+        self.__items.append(meta)
+
+    def commit(self):
+        """
+        Commit changes to file
+        """
+        is_new = self.is_new()
+
+        feed_copyright = "%s - (C) %s" % (
+            self.__system_name, self.__feed_year,
+        )
+
+        if not is_new:
+            doc = self.__minidom.parse(self.__file)
+            rss = doc.getElementsByTagName("rss")[0]
+            channel = doc.getElementsByTagName("channel")[0]
+            title = doc.getElementsByTagName("title")[0]
+            link = doc.getElementsByTagName("link")[0]
+            description = doc.getElementsByTagName("description")[0]
+            language = doc.getElementsByTagName("language")[0]
+            cright = doc.getElementsByTagName("copyright")[0]
+            editor = doc.getElementsByTagName("managingEditor")[0]
+
+            # update title
+            if self.__title_changed:
+                title.removeChild(title.firstChild)
+                title.appendChild(doc.createTextNode(self.__feed_title))
+                self.__title_changed = False
+
+            # update link
+            if self.__link_updated:
+                link.removeChild(link.firstChild)
+                link.appendChild(doc.createTextNode(self.__link))
+                self.__link_updated = False
+
+            # update description
+            if self.__description_updated:
+                description.removeChild(description.firstChild)
+                description.appendChild(doc.createTextNode(
+                    self.__feed_description))
+                self.__description_updated = False
+            # update language
+            if self.__language_updated:
+                language.removeChild(language.firstChild)
+                language.appendChild(doc.createTextNode(self.__feed_language))
+                self.__language_updated = False
+            # update copyright
+            if self.__year_updated:
+                cright.removeChild(cright.firstChild)
+                cright.appendChild(doc.createTextNode(feed_copyright))
+                self.__year_updated = False
+            # update managingEditor, if required
+            if self.__editor_updated:
+                editor.removeChild(editor.firstChild)
+                editor.appendChild(doc.createTextNode(self.__feed_editor))
+                self.__editor_updated = False
+        else:
+            doc = self.__minidom.Document()
+            rss = doc.createElement("rss")
+            rss.setAttribute("version", "2.0")
+            rss.setAttribute("xmlns:atom", "http://www.w3.org/2005/Atom")
+            channel = doc.createElement("channel")
+            # title
+            title = doc.createElement("title")
+            title.appendChild(doc.createTextNode(self.__feed_title))
+            channel.appendChild(title)
+            # link
+            link = doc.createElement("link")
+            link.appendChild(doc.createTextNode(self.__link))
+            channel.appendChild(link)
+            # description
+            description = doc.createElement("description")
+            description.appendChild(doc.createTextNode(self.__feed_description))
+            channel.appendChild(description)
+            # language
+            language = doc.createElement("language")
+            language.appendChild(doc.createTextNode(self.__feed_language))
+            channel.appendChild(language)
+            # copyright
+            cright = doc.createElement("copyright")
+            cright.appendChild(doc.createTextNode(feed_copyright))
+            channel.appendChild(cright)
+            # managingEditor
+            editor = doc.createElement("managingEditor")
+            editor.appendChild(doc.createTextNode(self.__feed_editor))
+            channel.appendChild(editor)
+
+        # append new items at the bottom
+        while self.__items:
+            meta = self.__items.pop(0)
+            item = doc.createElement("item")
+
+            for key in meta.keys():
+                obj = doc.createElement(key)
+                obj.appendChild(doc.createTextNode(meta[key]))
+                item.appendChild(obj)
+
+            channel.appendChild(item)
+
+        if self.__maxentries > 0:
+            # drop older ones, from the top
+            how_many = len(channel.childNodes)
+            to_remove = how_many - self.__maxentries
+            while to_remove > 0:
+                child_nodes = channel.childNodes
+                if not child_nodes:
+                    break
+                node = child_nodes[0]
+                channel.removeChild(node)
+                node.unlink()
+                to_remove -= 1
+
+        rss.appendChild(channel)
+        doc.appendChild(rss)
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.FastRSS.",
+            dir = os.path.dirname(self.__file))
+        with os.fdopen(tmp_fd, "wb") as rss_f:
+            rss_f.writelines(doc.toprettyxml(indent="    ").encode("UTF-8"))
+            rss_f.flush()
+        os.rename(tmp_path, self.__file)
+
 
 class LogFile:
 

@@ -2,9 +2,12 @@
 import sys
 sys.path.insert(0, '.')
 sys.path.insert(0, '../')
+import os
 import unittest
+import tempfile
 from entropy.const import const_convert_to_unicode
-from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender
+from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender, \
+    FastRSS
 
 class MiscTest(unittest.TestCase):
 
@@ -115,6 +118,111 @@ class MiscTest(unittest.TestCase):
         sender = EmailSender()
         sender.default_sender = def_send
         sender.send_text_email(mail_sender, mail_recipients, mail_sub, mail_msg)
+
+    def test_fast_rss(self):
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        os.close(tmp_fd) # who cares
+        os.remove(tmp_path)
+
+        fast_rss = FastRSS(tmp_path)
+        self.assertTrue(fast_rss.is_new())
+        fast_rss.set_title("title").set_editor("editor").set_description(
+            "description").set_url("http://url").set_year("2011")
+        fast_rss.append("title1", "link1", "description1", "1")
+        fast_rss.append("title", "link", "description", "0")
+        fast_rss.append("title2", "link2", "description2", "2")
+        fast_rss.commit()
+
+        expected_outcome = """\
+<?xml version="1.0" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+    <channel>
+        <title>
+            title
+        </title>
+        <link>
+            http://url
+        </link>
+        <description>
+            description
+        </description>
+        <language>
+            en-EN
+        </language>
+        <copyright>
+            Sabayon Linux - (C) 2011
+        </copyright>
+        <managingEditor>
+            editor
+        </managingEditor>
+        <item>
+            <guid>
+                link1
+            </guid>
+            <link>
+                link1
+            </link>
+            <description>
+                description1
+            </description>
+            <pubDate>
+                1
+            </pubDate>
+            <title>
+                title1
+            </title>
+        </item>
+        <item>
+            <guid>
+                link
+            </guid>
+            <link>
+                link
+            </link>
+            <description>
+                description
+            </description>
+            <pubDate>
+                0
+            </pubDate>
+            <title>
+                title
+            </title>
+        </item>
+        <item>
+            <guid>
+                link2
+            </guid>
+            <link>
+                link2
+            </link>
+            <description>
+                description2
+            </description>
+            <pubDate>
+                2
+            </pubDate>
+            <title>
+                title2
+            </title>
+        </item>
+    </channel>
+</rss>"""
+        with open(tmp_path, "r") as tmp_f:
+            self.assertEqual(
+                expected_outcome.replace(" ", "").replace("\n", ""),
+                tmp_f.read().replace(" ", "").replace("\n", ""))
+
+        # make sure metadata doesn't get screwed
+        fast_rss = FastRSS(tmp_path)
+        self.assertFalse(fast_rss.is_new())
+        fast_rss.commit()
+        with open(tmp_path, "r") as tmp_f:
+            self.assertEqual(
+                expected_outcome.replace(" ", "").replace("\n", ""),
+                tmp_f.read().replace(" ", "").replace("\n", ""))
+
+        os.remove(tmp_path)
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:
