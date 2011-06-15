@@ -1446,7 +1446,7 @@ class FastRSS:
         tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.FastRSS.",
             dir = os.path.dirname(self.__file))
         with os.fdopen(tmp_fd, "wb") as rss_f:
-            rss_f.writelines(doc.toprettyxml(indent="    ").encode("UTF-8"))
+            rss_f.write(doc.toprettyxml(indent="    ").encode("UTF-8"))
             rss_f.flush()
         const_set_chmod(tmp_path, 0o644)
         os.rename(tmp_path, self.__file)
