@@ -27,7 +27,7 @@ import logging
 import threading
 from collections import deque
 from entropy.const import etpConst, const_isunicode, \
-    const_isfileobj, const_convert_log_level
+    const_isfileobj, const_convert_log_level, const_set_chmod
 
 import entropy.tools
 
@@ -1448,6 +1448,7 @@ class FastRSS:
         with os.fdopen(tmp_fd, "wb") as rss_f:
             rss_f.writelines(doc.toprettyxml(indent="    ").encode("UTF-8"))
             rss_f.flush()
+        const_set_chmod(tmp_path, 0o644)
         os.rename(tmp_path, self.__file)
 
 
