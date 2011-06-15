@@ -1144,6 +1144,7 @@ class FastRSS:
         self.__language_updated = False
         self.__year_updated = False
         self.__editor_updated = False
+        self.__doc = None
 
         self.__file = rss_file_path
         self.__items = []
@@ -1271,10 +1272,16 @@ class FastRSS:
         }
         self.__items.append(meta)
 
-    def commit(self):
+    def get(self):
         """
-        Commit changes to file
+        Return xml.minidom Document object.
+
+        @return: the Document object
+        @rtype: xml.dom.Document object
         """
+        if self.__doc is not None:
+            return self.__doc
+
         is_new = self.is_new()
 
         feed_copyright = "%s - (C) %s" % (
@@ -1356,6 +1363,18 @@ class FastRSS:
             editor.appendChild(doc.createTextNode(self.__feed_editor))
             channel.appendChild(editor)
 
+        rss.appendChild(channel)
+        doc.appendChild(rss)
+        self.__doc = doc
+        return doc
+
+    def commit(self):
+        """
+        Commit changes to file
+        """
+        doc = self.get()
+        channel = doc.getElementsByTagName("channel")[0]
+
         # append new items at the bottom
         while self.__items:
             meta = self.__items.pop(0)
@@ -1381,8 +1400,6 @@ class FastRSS:
                 node.unlink()
                 to_remove -= 1
 
-        rss.appendChild(channel)
-        doc.appendChild(rss)
         tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.misc.FastRSS.",
             dir = os.path.dirname(self.__file))
         with os.fdopen(tmp_fd, "wb") as rss_f:
