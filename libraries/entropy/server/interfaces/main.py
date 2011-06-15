@@ -691,8 +691,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             data['rss']['parsable_name'] = setting
 
         def _rss_base_url(line, setting):
-            if not setting.endswith("/"):
-                setting += "/"
             data['rss']['base_url'] = setting
 
         def _rss_website_url(line, setting):
