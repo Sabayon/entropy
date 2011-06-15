@@ -155,6 +155,11 @@ max-rss-entries = 10000
 #
 # max-rss-light-entries = 100
 
+# syntax for rss-light-name:
+#    rss-light-name = <name.rss>
+#
+rss-light-name = updates.rss
+
 # RSS Editor E-mail (corresponding to managingEditor tag)
 # syntax for max-rss-entries:
 #    managing-editor = <email>

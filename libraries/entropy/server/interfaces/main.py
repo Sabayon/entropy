@@ -565,6 +565,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'rss': {
                 'enabled': etpConst['rss-feed'],
                 'name': etpConst['rss-name'],
+                'light_name': etpConst['rss-light-name'],
                 'parsable_name': etpConst['rss-parsable-name'],
                 'parsable_enabled': etpConst['rss-parsable-feed'],
                 'base_url': etpConst['rss-base-url'],
@@ -681,6 +682,9 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         def _rss_name(line, setting):
             data['rss']['name'] = setting
 
+        def _rss_light_name(line, setting):
+            data['rss']['light_name'] = setting
+
         def _rss_parsable_name(line, setting):
             data['rss']['parsable_name'] = setting
 
@@ -724,6 +728,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'syncspeedlimit': _syncspeedlimit,
             'rss-feed': _rss_feed,
             'rss-name': _rss_name,
+            'rss-light-name': _rss_light_name,
             'rss-parsable-feed': _rss_parsable_feed,
             'rss-parsable-name': _rss_parsable_name,
             'rss-base-url': _rss_base_url,
@@ -1218,8 +1223,9 @@ class Server(Client):
             branch = branch), srv_set['rss']['parsable_name'])
 
     def _get_local_repository_rsslight_file(self, repository_id, branch = None):
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return os.path.join(self._get_local_repository_dir(repository_id,
-            branch = branch), etpConst['rss-light-name'])
+            branch = branch), srv_set['rss']['light_name'])
 
     def _get_local_repository_notice_board_file(self, repository_id,
         branch = None):
