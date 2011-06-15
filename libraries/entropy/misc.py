@@ -1292,12 +1292,55 @@ class FastRSS:
             doc = self.__minidom.parse(self.__file)
             rss = doc.getElementsByTagName("rss")[0]
             channel = doc.getElementsByTagName("channel")[0]
-            title = doc.getElementsByTagName("title")[0]
-            link = doc.getElementsByTagName("link")[0]
-            description = doc.getElementsByTagName("description")[0]
-            language = doc.getElementsByTagName("language")[0]
-            cright = doc.getElementsByTagName("copyright")[0]
-            editor = doc.getElementsByTagName("managingEditor")[0]
+
+            titles = doc.getElementsByTagName("title")
+            if not titles:
+                title = doc.createElement("title")
+                title.appendChild(doc.createTextNode(self.__feed_title))
+                channel.appendChild(title)
+            else:
+                title = titles[0]
+
+            links = doc.getElementsByTagName("link")
+            if not links:
+                link = doc.createElement("link")
+                link.appendChild(doc.createTextNode(self.__link))
+                channel.appendChild(link)
+            else:
+                link = links[0]
+
+            descriptions = doc.getElementsByTagName("description")
+            if not descriptions:
+                description = doc.createElement("description")
+                description.appendChild(doc.createTextNode(
+                    self.__feed_description))
+                channel.appendChild(description)
+            else:
+                description = descriptions[0]
+
+            languages = doc.getElementsByTagName("language")
+            if not languages:
+                language = doc.createElement("language")
+                language.appendChild(doc.createTextNode(self.__feed_language))
+                channel.appendChild(language)
+            else:
+                language = languages[0]
+
+            crights = doc.getElementsByTagName("copyright")
+            if not crights:
+                cright = doc.createElement("copyright")
+                cright.appendChild(doc.createTextNode(feed_copyright))
+                channel.appendChild(cright)
+            else:
+                cright = crights[0]
+
+            editors = doc.getElementsByTagName("managingEditor")
+            if not editors:
+                editor = doc.createElement("managingEditor")
+                editor.appendChild(doc.createTextNode(self.__feed_editor))
+                channel.appendChild(editor)
+            else:
+                editor = editors[0]
 
             # update title
             if self.__title_changed:
