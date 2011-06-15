@@ -317,6 +317,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         srv_updates['light'][rss_atom] = {}
         srv_updates['light'][rss_atom]['description'] = \
             package_data['description']
+        srv_updates['light'][rss_atom]['homepage'] = \
+            package_data['homepage']
         srv_updates['light'][rss_atom]['package_id'] = package_id
         srv_updates['light'][rss_atom]['download'] = \
             package_data['download']
