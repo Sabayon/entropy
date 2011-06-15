@@ -507,6 +507,14 @@ class ServerPackagesRepositoryUpdater(object):
             if not download:
                 critical.append(data['database_rss_light_file'])
 
+        database_rss_parsable_file = \
+            self._entropy._get_local_repository_parsable_rss_file(
+                self._repository_id)
+        if os.path.isfile(database_rss_parsable_file) or download:
+            data['database_rss_parsable_file'] = database_rss_parsable_file
+            if not download:
+                critical.append(data['database_rss_parsable_file'])
+
         pkglist_file = self._entropy._get_local_pkglist_file(
             self._repository_id)
         data['pkglist_file'] = pkglist_file
