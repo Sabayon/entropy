@@ -22,6 +22,8 @@ import os
 import shutil
 import tempfile
 import time
+import json
+import socket
 
 from entropy.const import etpConst, const_setup_file
 from entropy.core import Singleton
@@ -29,7 +31,7 @@ from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, teal, \
     purple
-from entropy.misc import RSS
+from entropy.misc import FastRSS
 from entropy.cache import EntropyCacher
 from entropy.exceptions import OnlineMirrorError
 from entropy.security import Repository as RepositorySecurity
@@ -793,81 +795,125 @@ class ServerPackagesRepositoryUpdater(object):
 
     def _update_rss_feed(self):
 
-        product = self._settings['repositories']['product']
-        rss_path = self._entropy._get_local_repository_rss_file(
-            self._repository_id)
-        rss_light_path = self._entropy._get_local_repository_rsslight_file(
-            self._repository_id)
-        rss_dump_name = self._repository_id + etpConst['rss-dump-name']
-        db_revision_path = self._entropy._get_local_repository_revision_file(
-            self._repository_id)
+        plg_id = self._entropy.SYSTEM_SETTINGS_PLG_ID
+        srv_set = self._settings[plg_id]['server']
 
+        if not (srv_set['rss']['enabled'] and \
+            srv_set['rss']['parsable_enabled']):
+            # nothing enabled, no reason to stay here more
+            return
+
+        url = srv_set['rss']['base_url']
+        editor = srv_set['rss']['editor']
+        product = self._settings['repositories']['product']
         rss_title = "%s Online Repository Status" % (
             self._settings['system']['name'],)
         rss_description = \
             "Keep you updated on what's going on in the %s Repository." % (
                 self._settings['system']['name'],)
-
-        plg_id = self._entropy.SYSTEM_SETTINGS_PLG_ID
-        srv_set = self._settings[plg_id]['server']
-
-        rss_main = RSS(rss_path, rss_title, rss_description,
-            maxentries = srv_set['rss']['max_entries'])
+        rss_dump_name = self._repository_id + etpConst['rss-dump-name']
+        db_revision_path = self._entropy._get_local_repository_revision_file(
+            self._repository_id)
         # load dump
         db_actions = self._cacher.pop(rss_dump_name,
             cache_dir = self._entropy.CACHE_DIR)
-        if db_actions:
-            if os.path.isfile(db_revision_path) and \
-                os.access(db_revision_path, os.R_OK):
-                with open(db_revision_path, "r") as f_rev:
-                    revision = f_rev.readline().strip()
-            else:
-                revision = "N/A"
 
-            commitmessage = ''
-            if ServerRssMetadata()['commitmessage']:
-                commitmessage = ' :: ' + \
-                    ServerRssMetadata()['commitmessage']
+        if srv_set['rss']['enabled']:
 
-            title = ": " + self._settings['system']['name'] + " " + \
-                product[0].upper() + product[1:] + " " + \
-                self._settings['repositories']['branch'] + \
-                " :: Revision: " + revision + commitmessage
+            rss_path = self._entropy._get_local_repository_rss_file(
+                self._repository_id)
 
-            link = srv_set['rss']['base_url']
-            # create description
-            added_items = db_actions.get("added")
+            rss_main = FastRSS(rss_path)
+            rss_main.set_title(rss_title).set_description(
+                rss_description).set_max_entries(
+                    srv_set['rss']['max_entries']).set_url(url).set_editor(
+                        editor)
 
-            if added_items:
-                for atom in sorted(added_items):
-                    mylink = link + "?search=" + atom.split("~")[0] + \
-                        "&arch=" + etpConst['currentarch'] + "&product="+product
-                    description = atom + ": " + added_items[atom]['description']
-                    rss_main.add_item(title = "Added/Updated" + title,
-                        link = mylink, description = description)
-            removed_items = db_actions.get("removed")
+            if db_actions:
+                if os.path.isfile(db_revision_path) and \
+                    os.access(db_revision_path, os.R_OK):
+                    with open(db_revision_path, "r") as f_rev:
+                        revision = f_rev.readline().strip()
+                else:
+                    revision = "N/A"
 
-            if removed_items:
-                for atom in sorted(removed_items):
-                    description = atom + ": " + \
-                        removed_items[atom]['description']
-                    rss_main.add_item(title = "Removed" + title, link = link,
-                        description = description)
+                commitmessage = ''
+                if ServerRssMetadata()['commitmessage']:
+                    commitmessage = ' :: ' + \
+                        ServerRssMetadata()['commitmessage']
 
-            light_items = db_actions.get('light')
-            if light_items:
-                rss_light = RSS(rss_light_path, rss_title, rss_description,
-                    maxentries = srv_set['rss']['light_max_entries'])
+                title = ": " + self._settings['system']['name'] + " " + \
+                    product[0].upper() + product[1:] + " " + \
+                    self._settings['repositories']['branch'] + \
+                    " :: Revision: " + revision + commitmessage
+
+                link = srv_set['rss']['base_url']
+                # create description
+                added_items = db_actions.get("added")
+
+                if added_items:
+                    for atom in sorted(added_items):
+                        mylink = link + entropy.dep.remove_entropy_revision(
+                            atom)
+                        description = atom + ": " + \
+                            added_items[atom]['description']
+                        rss_main.append("Added/Updated" + title,
+                            mylink, description, None)
+                removed_items = db_actions.get("removed")
+
+                if removed_items:
+                    for atom in sorted(removed_items):
+                        description = atom + ": " + \
+                            removed_items[atom]['description']
+                        rss_main.append("Removed" + title,
+                            link, description, None)
+
+                rss_main.commit()
+
+                rss_light_path = \
+                    self._entropy._get_local_repository_rsslight_file(
+                        self._repository_id)
+                light_items = db_actions.get('light', {})
+
+                rss_light = FastRSS(rss_light_path)
+                rss_light.set_title(rss_title).set_description(
+                    rss_description).set_max_entries(
+                        srv_set['rss']['light_max_entries']).set_url(
+                            url).set_editor(editor)
+
                 for atom in sorted(light_items):
-                    mylink = link + "?search=" + atom.split("~")[0] + \
-                        "&arch=" + etpConst['currentarch'] + "&product=" + \
-                        product
+                    mylink = link + entropy.dep.remove_entropy_revision(
+                        atom)
                     description = light_items[atom]['description']
-                    rss_light.add_item(title = "[" + revision + "] " + atom,
-                        link = mylink, description = description)
-                rss_light.write_changes()
+                    rss_light.append("[" + revision + "] " + atom,
+                        mylink, description, None)
 
-        rss_main.write_changes()
+                if light_items:
+                    rss_light.commit()
+
+
+        if srv_set['rss']['parsable_enabled']:
+            rss_path = \
+                self._entropy._get_local_repository_parsable_rss_file(
+                    self._repository_id)
+            parsable_rss = FastRSS(rss_path)
+            parsable_rss.set_title(rss_title).set_description(
+                rss_description).set_url(url).set_editor(editor)
+            light_items = db_actions.get('light', {})
+            for atom in sorted(light_items):
+                mylink = link + entropy.dep.remove_entropy_revision(atom)
+                title = atom
+                desc_data = {
+                    'host': socket.gethostname(),
+                    'homepage': light_items[atom]['homepage'],
+                    # these two are new
+                    'package_id': light_items[atom].get('package_id', None),
+                    'download': light_items[atom].get('download', None),
+                }
+                parsable_rss.append(title, mylink, json.dumps(desc_data), None)
+            if light_items:
+                parsable_rss.commit()
+
         ServerRssMetadata().clear()
         EntropyCacher.clear_cache_item(rss_dump_name,
             cache_dir = self._entropy.CACHE_DIR)
@@ -1213,8 +1259,7 @@ class ServerPackagesRepositoryUpdater(object):
         """
         plg_id = self._entropy.SYSTEM_SETTINGS_PLG_ID
         srv_set = self._settings[plg_id]['server']
-        if srv_set['rss']['enabled']:
-            self._update_rss_feed()
+        self._update_rss_feed()
 
         broken_uris = set()
         disabled_eapis = sorted(srv_set['disabled_eapis'])

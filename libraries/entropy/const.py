@@ -390,12 +390,17 @@ def const_default_settings(rootdir):
         'distro_website_url': "http://www.sabayon.org",
         # enable/disable packages RSS feed feature
         'rss-feed': True,
+        # enable/disable packages RSS feed feature, parsable version
+        'rss-parsable-feed': True,
         # default name of the RSS feed
         'rss-name': "packages.rss",
-        'rss-light-name': "updates.rss", # light version
+        # default name for the parsable version of the RSS feed
+        'rss-parsable-name': "news.rss",
+         # light version of rss-name
+        'rss-light-name': "updates.rss",
         # default URL to the entropy web interface
         # (overridden in reagent.conf)
-        'rss-base-url': "http://pkg.sabayon.org/",
+        'rss-base-url': "http://packages.sabayon.org/",
         # default URL to the Operating System website
         # (overridden in reagent.conf)
         'rss-website-url': "http://www.sabayon.org/",

@@ -107,20 +107,31 @@ database-format = bz2
 # since Entropy 0.99.30.
 # nonfree-packages-directory-support = disable
 
-# Online RSS support to track changes of the things happened on the database.
-# Here are basic settings, like the ability to enable/disable this feature or
-# set the name of the feed.
-# Feed will be uploaded on the same packages.db.[bz2 | gz] directory
+# Human readable RSS feed handling, tracking repository changes.
 #
 # syntax for rss-feed:
 #    rss-feed = <enable/disable>
 #
 rss-feed = enable
 
+# Parsable RSS feed handling, tracking repository changes (for parsing purposes)
+# This RSS feed will only track newly generated packages, and can grow to
+# infinity.
+#
+# syntax for rss-parsable-feed:
+#    rss-parsable-feed = <enable/disable>
+#
+rss-parsable-feed = enable
+
 # syntax for rss-name:
 #    rss-name = <name.rss>
 #
 rss-name = packages.rss
+
+# syntax for rss-parsable-name:
+#    rss-parsable-name = <name.rss>
+#
+rss-parsable-name = news.rss
 
 # This option allows to specify a base URL for the <guid> and <link> RSS entry.
 # If you have the entropy web portal online, just add its path to index.py which
@@ -128,7 +139,7 @@ rss-name = packages.rss
 # syntax for rss-base-url:
 #    rss-base-url = <URL>
 #
-rss-base-url = http://pkg.sabayon.org/
+rss-base-url = http://packages.sabayon.org/?quicksearch=
 # This is just the website url that will be added to the RSS
 rss-website-url = http://www.sabayon.org/
 

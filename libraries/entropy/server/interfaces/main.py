@@ -281,7 +281,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         # save to disk
         self.__save_rss(srv_repo, rss_name, srv_updates)
 
-    def _write_rss_for_added_package(self, repo_db, package_data):
+    def _write_rss_for_added_package(self, repo_db, package_id, package_data):
 
         # setup variables we're going to use
         srv_repo = repo_db.repository_id()
@@ -317,6 +317,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         srv_updates['light'][rss_atom] = {}
         srv_updates['light'][rss_atom]['description'] = \
             package_data['description']
+        srv_updates['light'][rss_atom]['package_id'] = package_id
+        srv_updates['light'][rss_atom]['download'] = \
+            package_data['download']
 
         # save to disk
         self.__save_rss(srv_repo, rss_name, srv_updates)
@@ -333,7 +336,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         sys_set_plug = self.srv_sys_settings_plugin
         if self._settings[sys_set_plug]['server']['rss']['enabled']:
             self._write_rss_for_added_package(entropy_repository_instance,
-                package_data)
+                package_id, package_data)
 
         try:
             descdata = self._get_category_description_from_disk(
@@ -562,6 +565,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'rss': {
                 'enabled': etpConst['rss-feed'],
                 'name': etpConst['rss-name'],
+                'parsable_name': etpConst['rss-parsable-name'],
+                'parsable_enabled': etpConst['rss-parsable-feed'],
                 'base_url': etpConst['rss-base-url'],
                 'website_url': etpConst['rss-website-url'],
                 'editor': etpConst['rss-managing-editor'],
@@ -668,8 +673,16 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             if bool_setting is not None:
                 data['rss']['enabled'] = bool_setting
 
+        def _rss_parsable_feed(line, setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['rss']['parsable_enabled'] = bool_setting
+
         def _rss_name(line, setting):
             data['rss']['name'] = setting
+
+        def _rss_parsable_name(line, setting):
+            data['rss']['parsable_name'] = setting
 
         def _rss_base_url(line, setting):
             if not setting.endswith("/"):
@@ -711,6 +724,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'syncspeedlimit': _syncspeedlimit,
             'rss-feed': _rss_feed,
             'rss-name': _rss_name,
+            'rss-parsable-feed': _rss_parsable_feed,
+            'rss-parsable-name': _rss_parsable_name,
             'rss-base-url': _rss_base_url,
             'rss-website-url': _rss_website_url,
             'managing-editor': _managing_editor,
@@ -1195,6 +1210,12 @@ class Server(Client):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), srv_set['rss']['name'])
+
+    def _get_local_repository_parsable_rss_file(self, repository_id,
+        branch = None):
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        return os.path.join(self._get_local_repository_dir(repository_id,
+            branch = branch), srv_set['rss']['parsable_name'])
 
     def _get_local_repository_rsslight_file(self, repository_id, branch = None):
         return os.path.join(self._get_local_repository_dir(repository_id,
