@@ -22,10 +22,8 @@ import os
 import shutil
 import tempfile
 import time
-import json
-import socket
 
-from entropy.const import etpConst, const_setup_file
+from entropy.const import etpConst, const_setup_file, const_set_chmod
 from entropy.core import Singleton
 from entropy.db import EntropyRepository
 from entropy.transceivers import EntropyTransceiver
@@ -507,13 +505,13 @@ class ServerPackagesRepositoryUpdater(object):
             if not download:
                 critical.append(data['database_rss_light_file'])
 
-        database_rss_parsable_file = \
-            self._entropy._get_local_repository_parsable_rss_file(
+        database_changelog = \
+            self._entropy._get_local_repository_changelog_file(
                 self._repository_id)
-        if os.path.isfile(database_rss_parsable_file) or download:
-            data['database_rss_parsable_file'] = database_rss_parsable_file
+        if os.path.isfile(database_changelog) or download:
+            data['database_changelog_file'] = database_changelog
             if not download:
-                critical.append(data['database_rss_parsable_file'])
+                critical.append(data['database_changelog_file'])
 
         pkglist_file = self._entropy._get_local_pkglist_file(
             self._repository_id)
@@ -801,13 +799,12 @@ class ServerPackagesRepositoryUpdater(object):
 
         return True
 
-    def _update_rss_feed(self):
+    def _update_feeds(self):
 
         plg_id = self._entropy.SYSTEM_SETTINGS_PLG_ID
         srv_set = self._settings[plg_id]['server']
 
-        if not (srv_set['rss']['enabled'] and \
-            srv_set['rss']['parsable_enabled']):
+        if (not srv_set['rss']['enabled']) and (not srv_set['changelog']):
             # nothing enabled, no reason to stay here more
             return
 
@@ -826,6 +823,16 @@ class ServerPackagesRepositoryUpdater(object):
         db_actions = self._cacher.pop(rss_dump_name,
             cache_dir = self._entropy.CACHE_DIR)
 
+        if os.path.isfile(db_revision_path) and \
+            os.access(db_revision_path, os.R_OK):
+            with open(db_revision_path, "r") as f_rev:
+                revision = f_rev.readline().strip()
+        else:
+            revision = "N/A"
+
+        commit_msg = ServerRssMetadata()['commitmessage'] or \
+            "no commit message"
+
         if srv_set['rss']['enabled']:
 
             rss_path = self._entropy._get_local_repository_rss_file(
@@ -838,22 +845,11 @@ class ServerPackagesRepositoryUpdater(object):
                         editor)
 
             if db_actions:
-                if os.path.isfile(db_revision_path) and \
-                    os.access(db_revision_path, os.R_OK):
-                    with open(db_revision_path, "r") as f_rev:
-                        revision = f_rev.readline().strip()
-                else:
-                    revision = "N/A"
-
-                commitmessage = ''
-                if ServerRssMetadata()['commitmessage']:
-                    commitmessage = ' :: ' + \
-                        ServerRssMetadata()['commitmessage']
 
                 title = ": " + self._settings['system']['name'] + " " + \
                     product[0].upper() + product[1:] + " " + \
                     self._settings['repositories']['branch'] + \
-                    " :: Revision: " + revision + commitmessage
+                    " :: Revision: " + revision + ' :: ' + commit_msg
 
                 link = srv_set['rss']['base_url']
                 # create description
@@ -899,28 +895,54 @@ class ServerPackagesRepositoryUpdater(object):
                 if light_items:
                     rss_light.commit()
 
+        _uname = os.uname()
+        msg = "\n    ".join(commit_msg.split("\n"))
+        msg = msg.rstrip()
 
-        if srv_set['rss']['parsable_enabled']:
-            rss_path = \
-                self._entropy._get_local_repository_parsable_rss_file(
+        def _write_changelog_entry(changelog_f, atom, pkg_meta):
+            this_time = time.strftime("%a, %d %b %Y %X +0000")
+            changelog_str = """\
+commit %s; %s; %s
+Machine: %s; %s; %s
+Date:    %s
+Name:    %s
+
+    %s
+
+""" % (revision, pkg_meta['package_id'], pkg_meta['time_hash'], 
+            _uname[1], _uname[2], _uname[4], this_time, atom,
+            msg,)
+
+            # append at the bottom and don't care here
+            changelog_f.write(changelog_str)
+
+        light_items = db_actions.get('light')
+        if srv_set['changelog'] and db_actions and light_items:
+            changelog_path = \
+                self._entropy._get_local_repository_changelog_file(
                     self._repository_id)
-            parsable_rss = FastRSS(rss_path)
-            parsable_rss.set_title(rss_title).set_description(
-                rss_description).set_url(url).set_editor(editor)
-            light_items = db_actions.get('light', {})
-            for atom in sorted(light_items):
-                mylink = link + entropy.dep.remove_entropy_revision(atom)
-                title = atom
-                desc_data = {
-                    'host': socket.gethostname(),
-                    'homepage': light_items[atom]['homepage'],
-                    # these two are new
-                    'package_id': light_items[atom].get('package_id', None),
-                    'download': light_items[atom].get('download', None),
-                }
-                parsable_rss.append(title, mylink, json.dumps(desc_data), None)
-            if light_items:
-                parsable_rss.commit()
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                dir=os.path.dirname(changelog_path))
+            # unsafe, but not really a problem
+            os.close(tmp_fd)
+
+            with open(tmp_path, "w") as tmp_f:
+                for atom in sorted(light_items.keys()):
+                    pkg_meta = light_items[atom]
+                    _write_changelog_entry(tmp_f, atom, pkg_meta)
+
+                # append the rest of the file
+                if os.path.isfile(changelog_path):
+                    with open(changelog_path, "r") as changelog_f:
+                        chunk = changelog_f.read(16384)
+                        while chunk:
+                            tmp_f.write(chunk)
+                            chunk = changelog_f.read(16384)
+                tmp_f.flush()
+
+            const_set_chmod(tmp_path, 0o644)
+            # atomicity
+            os.rename(tmp_path, changelog_path)
 
         ServerRssMetadata().clear()
         EntropyCacher.clear_cache_item(rss_dump_name,
@@ -1267,7 +1289,7 @@ class ServerPackagesRepositoryUpdater(object):
         """
         plg_id = self._entropy.SYSTEM_SETTINGS_PLG_ID
         srv_set = self._settings[plg_id]['server']
-        self._update_rss_feed()
+        self._update_feeds()
 
         broken_uris = set()
         disabled_eapis = sorted(srv_set['disabled_eapis'])

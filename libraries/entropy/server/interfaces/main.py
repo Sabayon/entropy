@@ -17,6 +17,7 @@ import tempfile
 import time
 import re
 import errno
+import hashlib
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
@@ -314,14 +315,15 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             package_data['description']
         srv_updates['added'][rss_atom]['homepage'] = \
             package_data['homepage']
+
         srv_updates['light'][rss_atom] = {}
         srv_updates['light'][rss_atom]['description'] = \
             package_data['description']
         srv_updates['light'][rss_atom]['homepage'] = \
             package_data['homepage']
         srv_updates['light'][rss_atom]['package_id'] = package_id
-        srv_updates['light'][rss_atom]['download'] = \
-            package_data['download']
+        srv_updates['light'][rss_atom]['time_hash'] = \
+            hashlib.sha256(package_data['datecreation']).hexdigest()
 
         # save to disk
         self.__save_rss(srv_repo, rss_name, srv_updates)
@@ -564,12 +566,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'exp_based_scope': etpConst['expiration_based_scope'],
             'nonfree_packages_dir_support': False, # disabled by default for now
             'sync_speed_limit': None,
+            'changelog': True,
             'rss': {
                 'enabled': etpConst['rss-feed'],
                 'name': etpConst['rss-name'],
                 'light_name': etpConst['rss-light-name'],
-                'parsable_name': etpConst['rss-parsable-name'],
-                'parsable_enabled': etpConst['rss-parsable-feed'],
                 'base_url': etpConst['rss-base-url'],
                 'website_url': etpConst['rss-website-url'],
                 'editor': etpConst['rss-managing-editor'],
@@ -671,24 +672,21 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 speed_limit = None
             data['sync_speed_limit'] = speed_limit
 
+        def _changelog(line, setting):
+            bool_setting = entropy.tools.setting_to_bool(setting)
+            if bool_setting is not None:
+                data['changelog'] = bool_setting
+
         def _rss_feed(line, setting):
             bool_setting = entropy.tools.setting_to_bool(setting)
             if bool_setting is not None:
                 data['rss']['enabled'] = bool_setting
-
-        def _rss_parsable_feed(line, setting):
-            bool_setting = entropy.tools.setting_to_bool(setting)
-            if bool_setting is not None:
-                data['rss']['parsable_enabled'] = bool_setting
 
         def _rss_name(line, setting):
             data['rss']['name'] = setting
 
         def _rss_light_name(line, setting):
             data['rss']['light_name'] = setting
-
-        def _rss_parsable_name(line, setting):
-            data['rss']['parsable_name'] = setting
 
         def _rss_base_url(line, setting):
             data['rss']['base_url'] = setting
@@ -726,11 +724,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             # backward compatibility
             'sync-speed-limit': _syncspeedlimit,
             'syncspeedlimit': _syncspeedlimit,
+            'changelog': _changelog,
             'rss-feed': _rss_feed,
             'rss-name': _rss_name,
             'rss-light-name': _rss_light_name,
-            'rss-parsable-feed': _rss_parsable_feed,
-            'rss-parsable-name': _rss_parsable_name,
             'rss-base-url': _rss_base_url,
             'rss-website-url': _rss_website_url,
             'managing-editor': _managing_editor,
@@ -1216,11 +1213,11 @@ class Server(Client):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), srv_set['rss']['name'])
 
-    def _get_local_repository_parsable_rss_file(self, repository_id,
+    def _get_local_repository_changelog_file(self, repository_id,
         branch = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return os.path.join(self._get_local_repository_dir(repository_id,
-            branch = branch), srv_set['rss']['parsable_name'])
+            branch = branch), etpConst['changelog_filename'])
 
     def _get_local_repository_rsslight_file(self, repository_id, branch = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']

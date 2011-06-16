@@ -114,24 +114,18 @@ database-format = bz2
 #
 rss-feed = enable
 
-# Parsable RSS feed handling, tracking repository changes (for parsing purposes)
-# This RSS feed will only track newly generated packages, and can grow to
-# infinity.
+# Enable the generation of a ChangeLog-like file, containing package update
+# informations.
 #
-# syntax for rss-parsable-feed:
-#    rss-parsable-feed = <enable/disable>
+# syntax for changelog:
+#    changelog = <enable/disable>
 #
-rss-parsable-feed = enable
+changelog = enable
 
 # syntax for rss-name:
 #    rss-name = <name.rss>
 #
 rss-name = packages.rss
-
-# syntax for rss-parsable-name:
-#    rss-parsable-name = <name.rss>
-#
-rss-parsable-name = news.rss
 
 # This option allows to specify a base URL for the <guid> and <link> RSS entry.
 # If you have the entropy web portal online, just add its path to index.py which
