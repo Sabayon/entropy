@@ -1,3 +1,123 @@
+commit b06a09b4608b182b0307bc9ab56c01214dd979d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 16 21:55:20 2011 +0200
+
+    Release Entropy 1.0_rc2
+
+commit 81598b5fed4fc13ad977398f50d7f06914c50e86
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 16 16:38:09 2011 +0200
+
+    [entropy.server] drop parsable-rss feature in favour of a plain ChangeLog file
+    
+    ChangeLog file is now automatically generated basing on new packages
+    being added to repository. It can be disabled via server.conf's
+    "changelog = false" directive.
+    This file is supposed to grow to infinity and no size control is
+    going to be implemented.
+
+commit c2060349206ee32b291624ff98a1d040de3ee9e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 19:06:32 2011 +0200
+
+    [entropy.server] make rss-base-url passthru unfiltered
+
+commit f3ef8530838826c46ce9ac94a490f661135ec02f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 18:38:36 2011 +0200
+
+    [entropy.misc] FastRSS: use toxml() instead of toprettyxml() which looks buggy
+
+commit 1a3daca0317f5174e60e40d0d17d7429743e0c30
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 18:29:37 2011 +0200
+
+    [entropy.misc] FastRSS: fix typo in commit() use write() instead of writelines()
+
+commit 66b055813b87b679180d160ce8cdb73db4d18b75
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 18:23:11 2011 +0200
+
+    [entropy.misc] FastRSS: setup proper rss file permissions
+
+commit 1ae79303bda831973cf93bf0541ea1c1eb7b19e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 18:15:44 2011 +0200
+
+    [entropy.misc] FastRSS: be fault tolerant versus missing xml elements
+
+commit 2e66a727ec443c21a8b294b7f790e968bebc9ed2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 18:04:13 2011 +0200
+
+    [entropy.server] add missing metadata to RSS light blob
+
+commit 2d942fa002f32dc8cb070a01eb79eccf924ce49d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 18:01:20 2011 +0200
+
+    [entropy.server.mirrors] handle sync of the parsable rss file
+
+commit d874c929e45605ab8c29979cad91c8e7bd0c8713
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 17:49:32 2011 +0200
+
+    [entropy.server] make possible to change default RSS-light file name
+
+commit 2a0e7f7c9434a7346377755f72a541b9b0c935b2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 17:46:09 2011 +0200
+
+    [entropy.server] add support for generating parsable RSS feeds
+
+commit 9dd4e263e6fcc9cd8d53d3632852000c3889fcf4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 17:45:32 2011 +0200
+
+    [entropy.misc] FastRSS: implement get() method
+
+commit 7203cee3b4769fcf2984c246c786c34fd5f6f6f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 17:42:42 2011 +0200
+
+    [tests/misc] add more tests for FastRSS
+
+commit 40c732bd720f479c50f3c66bf1d00e84c4410711
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 14:33:34 2011 +0200
+
+    [entropy.misc] add FastRSS class, for fast RSS files generation
+
+commit 86c634e27ea54b25f7cb42f3e57d0b81895cfc55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 15 08:18:43 2011 +0200
+
+    [entropy.qa] slightly improve test_shared_objects() scanning performance
+
+commit 38cb7ddf789940fa983e728ccedb422b64493f87
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 14 23:08:19 2011 +0200
+
+    [entropy.server.interfaces.mirrors] parallelize QA checks, drastically improve speed, EXPERIMENTAL
+
+commit 469d95ccd6717fd45e5e116bd4287a30ec8b3c4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 14 22:43:21 2011 +0200
+
+    [entropy.const] add const_get_cpus()
+
+commit d963de2a07dea6a07bf4c70fbeb0895e77422f80
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 14 11:52:05 2011 +0200
+
+    [entropy.services.client] add missing socket.error exception handling while reading the HTTP response
+
+commit cdac7dd34e70afb521842718dcd2fb76fb34de7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 12 23:24:12 2011 +0200
+
+    Tagging Entropy version 1.0_rc1
+
 commit e58c5f844738f7acca97e014f0913cc18cb5b4fe
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jun 12 23:24:10 2011 +0200
