@@ -34,21 +34,30 @@ class Trigger:
 
     VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
 
-    def __init__(self, entropy_client, phase, package_metadata):
+    def __init__(self, entropy_client, action, phase, package_metadata,
+        action_metadata):
         """
         Trigger manager interface constructor.
 
         @param entropy_client: Entropy Client interface object
         @type entropy_client: entropy.client.interfaces.client.Client
+        @param action: package handling action, can be "install", "remove",
+            etc. see entropy.client.interfaces.package.Package
+        @type action: string
         @param phase: the package phase that is required to be run, can be
             either on of the Trigger.VALID_PHASES values.
         @type phase: string
         @param package_metadata: package metadata that can be used by
             this Trigger interface
         @type package_metadata: dict
+        @param action_metadata: trigger metadata bound to action (and not
+            to phase)
+        @type action_metadata: dict or None
         """
         self._entropy = entropy_client
         self._pkgdata = package_metadata
+        self._action = action
+        self._action_metadata = action_metadata
         self._prepared = False
         self._triggers = []
         self._trigger_data = {}
@@ -463,7 +472,8 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            return self._spm.execute_package_phase(self._pkgdata, 'postinstall')
+            return self._spm.execute_package_phase(self._action_metadata,
+                self._pkgdata, self._action, 'postinstall')
 
     def _trigger_spm_preinstall(self):
         if self._spm is not None:
@@ -472,7 +482,8 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            return self._spm.execute_package_phase(self._pkgdata, 'preinstall')
+            return self._spm.execute_package_phase(self._action_metadata,
+                self._pkgdata, self._action, 'preinstall')
 
     def _trigger_spm_setup(self):
         if self._spm is not None:
@@ -481,7 +492,8 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            return self._spm.execute_package_phase(self._pkgdata, 'setup')
+            return self._spm.execute_package_phase(self._action_metadata,
+                self._pkgdata, self._action, 'setup')
 
     def _trigger_spm_preremove(self):
         if self._spm is not None:
@@ -490,7 +502,8 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            return self._spm.execute_package_phase(self._pkgdata, 'preremove')
+            return self._spm.execute_package_phase(self._action_metadata,
+                self._pkgdata, self._action, 'preremove')
 
     def _trigger_spm_postremove(self):
         if self._spm is not None:
@@ -499,4 +512,5 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            return self._spm.execute_package_phase(self._pkgdata, 'postremove')
+            return self._spm.execute_package_phase(self._action_metadata,
+                self._pkgdata, self._action, 'postremove')

@@ -225,7 +225,8 @@ class EntropyRepositoryTest(unittest.TestCase):
 echo $@
 exit 42
 """ % (etpConst['trigger_sh_interpreter'],)
-        trigger = self.Client.Triggers('postinstall', pkgdata)
+        trigger = self.Client.Triggers(self._action, 'postinstall', pkgdata,
+            pkgdata)
         trigger.prepare()
         exit_st = trigger._do_trigger_call_ext_generic()
         trigger.kill()
@@ -243,7 +244,8 @@ import os
 os.system("echo hello")
 my_ext_status = 42
 """
-        trigger = self.Client.Triggers('postinstall', pkgdata)
+        trigger = self.Client.Triggers(self._action, 'postinstall', pkgdata,
+            pkgdata)
         trigger.prepare()
         exit_st = trigger._do_trigger_call_ext_generic()
         trigger.kill()
@@ -282,7 +284,8 @@ if stage == "postinstall":
 else:
     my_ext_status = 0
 """
-        trigger = self.Client.Triggers('postinstall', pkgdata)
+        trigger = self.Client.Triggers(self._action, 'postinstall', pkgdata,
+            pkgdata)
         trigger.prepare()
         exit_st = trigger._do_trigger_call_ext_generic()
         trigger.kill()

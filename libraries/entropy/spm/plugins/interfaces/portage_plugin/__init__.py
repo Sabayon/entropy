@@ -1776,8 +1776,8 @@ class PortagePlugin(SpmPlugin):
             def xreadlines(self):
                 return self._std.xreadlines()
 
-    def _portage_doebuild(self, myebuild, mydo, tree, cpv,
-        portage_tmpdir = None, licenses = None):
+    def _portage_doebuild(self, myebuild, action, action_metadata, mydo,
+        tree, cpv, portage_tmpdir = None, licenses = None):
 
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
         # tree = "bintree"
@@ -1823,6 +1823,13 @@ class PortagePlugin(SpmPlugin):
         mysettings['EAPI'] = "0"
         if 'EAPI' in metadata:
             mysettings['EAPI'] = metadata['EAPI']
+
+        # This is part of EAPI=4, but Portage doesn't set REPLACED_BY_VERSION
+        # if not inside dblink.treewalk(). So, we must set it here
+        if (action == "install") and (action_metadata is not None) and \
+            (mydo in ("prerm", "postrm")):
+            mysettings["REPLACED_BY_VERSION"] = action_metadata['version']
+            mysettings.backup_changes("REPLACED_BY_VERSION")
 
         # workaround for scripts asking for user intervention
         mysettings['ROOT'] = root
@@ -2044,7 +2051,7 @@ class PortagePlugin(SpmPlugin):
 
         return myebuild, moved_ebuild
 
-    def _pkg_setup(self, package_metadata):
+    def _pkg_setup(self, action_name, action_metadata, package_metadata):
 
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         env_file = os.path.join(package_metadata['unpackdir'], "portage",
@@ -2056,8 +2063,8 @@ class PortagePlugin(SpmPlugin):
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
 
         try:
-            rc = self._portage_doebuild(ebuild, "setup",
-                "bintree", package,
+            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+                "setup", "bintree", package,
                 portage_tmpdir = package_metadata['unpackdir'],
                 licenses = package_metadata.get('accept_license'))
         except Exception as e:
@@ -2099,7 +2106,8 @@ class PortagePlugin(SpmPlugin):
 
         return rc
 
-    def _pkg_fooinst(self, package_metadata, phase):
+    def _pkg_fooinst(self, action_metadata, package_metadata, action_name,
+        phase):
 
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
@@ -2109,13 +2117,14 @@ class PortagePlugin(SpmPlugin):
         if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
             return rc
 
-        rc = self._pkg_setup(package_metadata)
+        rc = self._pkg_setup(action_name, action_metadata, package_metadata)
         if rc != 0:
             return rc
         try:
 
-            rc = self._portage_doebuild(ebuild, phase, "bintree",
-                package, portage_tmpdir = package_metadata['unpackdir'],
+            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+                phase, "bintree", package,
+                portage_tmpdir = package_metadata['unpackdir'],
                 licenses = package_metadata.get('accept_license'))
 
             if rc != 0:
@@ -2159,7 +2168,7 @@ class PortagePlugin(SpmPlugin):
 
         return rc
 
-    def _pkg_foorm(self, package_metadata, phase):
+    def _pkg_foorm(self, action_metadata, package_metadata, action_name, phase):
 
         rc = 0
         moved_ebuild = None
@@ -2200,8 +2209,8 @@ class PortagePlugin(SpmPlugin):
 
         try:
             self._reload_portage_if_required(phase, package_metadata)
-            rc = self._portage_doebuild(ebuild, phase, "bintree",
-                package, portage_tmpdir = work_dir,
+            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+                phase, "bintree", package, portage_tmpdir = work_dir,
                 licenses = package_metadata.get('accept_license'))
         except Exception as e:
 
@@ -2250,19 +2259,23 @@ class PortagePlugin(SpmPlugin):
 
         return rc
 
-    def _pkg_preinst(self, package_metadata):
-        return self._pkg_fooinst(package_metadata, "preinst")
+    def _pkg_preinst(self, action_name, action_metadata, package_metadata):
+        return self._pkg_fooinst(action_metadata, package_metadata,
+            action_name, "preinst")
 
-    def _pkg_postinst(self, package_metadata):
-        return self._pkg_fooinst(package_metadata, "postinst")
+    def _pkg_postinst(self, action_name, action_metadata, package_metadata):
+        return self._pkg_fooinst(action_metadata, package_metadata,
+            action_name, "postinst")
 
-    def _pkg_prerm(self, package_metadata):
-        return self._pkg_foorm(package_metadata, "prerm")
+    def _pkg_prerm(self, action_name, action_metadata, package_metadata):
+        return self._pkg_foorm(action_metadata, package_metadata, action_name,
+            "prerm")
 
-    def _pkg_postrm(self, package_metadata):
-        return self._pkg_foorm(package_metadata, "postrm")
+    def _pkg_postrm(self, action_name, action_metadata, package_metadata):
+        return self._pkg_foorm(action_metadata, package_metadata, action_name,
+            "postrm")
 
-    def _pkg_config(self, package_metadata):
+    def _pkg_config(self, action_name, action_metadata, package_metadata):
 
         package = PortagePlugin._pkg_compose_atom(package_metadata)
         ebuild = self.get_installed_package_build_script_path(package)
@@ -2271,8 +2284,9 @@ class PortagePlugin(SpmPlugin):
 
         try:
 
-            rc = self._portage_doebuild(ebuild, "config", "bintree",
-                package, licenses = package_metadata.get('accept_license'))
+            rc = self._portage_doebuild(ebuild, action_name, action_metadata,
+                "config", "bintree", package,
+                licenses = package_metadata.get('accept_license'))
 
             if rc != 0:
                 return 3
@@ -2591,7 +2605,8 @@ class PortagePlugin(SpmPlugin):
         """
         return PortagePlugin._config_files_map.copy()
 
-    def execute_package_phase(self, package_metadata, phase_name):
+    def execute_package_phase(self, action_metadata, package_metadata,
+        action_name, phase_name):
         """
         Reimplemented from SpmPlugin class.
         """
@@ -2604,7 +2619,8 @@ class PortagePlugin(SpmPlugin):
             'postrm': self._pkg_postrm,
             'config': self._pkg_config,
         }
-        return phase_calls[portage_phase](package_metadata)
+        return phase_calls[portage_phase](action_name, action_metadata,
+            package_metadata)
 
     def _bump_vartree_mtime(self, portage_cpv):
         root = etpConst['systemroot'] + os.path.sep

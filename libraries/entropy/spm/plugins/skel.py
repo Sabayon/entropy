@@ -754,13 +754,22 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def execute_package_phase(self, package_metadata, phase_name):
+    def execute_package_phase(self, action_metadata, package_metadata,
+        action_name, phase_name):
         """
         Execute Source Package Manager package phase (postinstall, preinstall,
         preremove, postremove, etc).
 
+        @param action_metadata: metadata bound to the action and not to the
+            actual phase requested (for example, when updating a package,
+            during the removal phase, action_metadata contains the new
+            package -- being merged -- metadata)
+        @type action_metadata: dict or None
         @param package_metadata: Entropy package phase metadata
         @type package_metadata: dict
+        @param action_name: Entropy package action name, can be "install",
+            "remove"
+        @type action_name: string
         @param phase_name: name of the phase to call, must be a valid phase
             contained in package_phases() output.
         @type phase_name: string

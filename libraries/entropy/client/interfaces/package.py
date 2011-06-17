@@ -1417,7 +1417,8 @@ class Package:
             importance = 0,
             header = red("   ## ")
         )
-        return Spm.execute_package_phase(self.pkgmeta, "configure")
+        return Spm.execute_package_phase(self.pkgmeta, self.pkgmeta,
+            self._action, "configure")
 
 
     def __remove_package(self):
@@ -3111,8 +3112,10 @@ class Package:
 
     def _post_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
+        action_data = self.pkgmeta['triggers'].get('install')
         if pkgdata:
-            trigger = self._entropy.Triggers('postinstall', pkgdata)
+            trigger = self._entropy.Triggers(self._action, 'postinstall',
+                pkgdata, action_data)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -3122,8 +3125,10 @@ class Package:
 
     def _pre_install_step(self):
         pkgdata = self.pkgmeta['triggers'].get('install')
+        action_data = self.pkgmeta['triggers'].get('install')
         if pkgdata:
-            trigger = self._entropy.Triggers('preinstall', pkgdata)
+            trigger = self._entropy.Triggers(self._action, 'preinstall',
+                pkgdata, action_data)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -3133,8 +3138,10 @@ class Package:
 
     def _pre_remove_step(self):
         remdata = self.pkgmeta['triggers'].get('remove')
+        action_data = self.pkgmeta['triggers'].get('install')
         if remdata:
-            trigger = self._entropy.Triggers('preremove', remdata)
+            trigger = self._entropy.Triggers(self._action, 'preremove', remdata,
+            action_data)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -3206,8 +3213,10 @@ class Package:
 
     def _post_remove_step(self):
         remdata = self.pkgmeta['triggers'].get('remove')
+        action_data = self.pkgmeta['triggers'].get('install')
         if remdata:
-            trigger = self._entropy.Triggers('postremove', remdata)
+            trigger = self._entropy.Triggers(self._action, 'postremove',
+                remdata, action_data)
             do = trigger.prepare()
             if do:
                 trigger.run()
