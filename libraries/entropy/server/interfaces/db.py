@@ -22,6 +22,7 @@ import os
 import shutil
 import tempfile
 import time
+import bz2
 
 from entropy.const import etpConst, const_setup_file, const_set_chmod
 from entropy.core import Singleton
@@ -508,8 +509,11 @@ class ServerPackagesRepositoryUpdater(object):
         database_changelog = \
             self._entropy._get_local_repository_changelog_file(
                 self._repository_id)
+        compressed_database_changelog = \
+            self._entropy._get_local_repository_compressed_changelog_file(
+                self._repository_id)
         if os.path.isfile(database_changelog) or download:
-            data['database_changelog_file'] = database_changelog
+            data['database_changelog_file'] = compressed_database_changelog
             if not download:
                 critical.append(data['database_changelog_file'])
 
@@ -768,6 +772,24 @@ class ServerPackagesRepositoryUpdater(object):
                     uncompressed_db_filename)
                 entropy.tools.uncompress_file(compressed_file,
                     uncompressed_file, cmethod[0])
+
+            # uncompress changelog
+            uncompressed_changelog_name = \
+                os.path.basename(
+                    self._entropy._get_local_repository_changelog_file(
+                        self._repository_id))
+            compressed_changelog_name = \
+                os.path.basename(
+                self._entropy._get_local_repository_compressed_changelog_file(
+                    self._repository_id))
+
+            uncompressed_changelog = os.path.join(mytmpdir,
+                uncompressed_changelog_name)
+            compressed_changelog = os.path.join(mytmpdir,
+                compressed_changelog_name)
+            if os.path.isfile(compressed_changelog):
+                entropy.tools.uncompress_file(compressed_changelog,
+                    uncompressed_changelog, bz2.BZ2File)
 
             # now move
             for myfile in os.listdir(mytmpdir):
@@ -1435,6 +1457,14 @@ Name:    %s
             text_files)
         # Setup GPG signatures for files that are going to be uploaded
         self._create_upload_gpg_signatures(upload_data, gpg_to_sign_files)
+
+        # compress changelog
+        uncompressed_changelog = \
+            self._entropy._get_local_repository_changelog_file(
+                self._repository_id)
+        compressed_changelog = upload_data['database_changelog_file']
+        self._compress_file(uncompressed_changelog,
+            compressed_changelog, bz2.BZ2File)
 
         for uri in uris:
 

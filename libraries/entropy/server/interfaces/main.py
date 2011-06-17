@@ -1219,6 +1219,12 @@ class Server(Client):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['changelog_filename'])
 
+    def _get_local_repository_compressed_changelog_file(self, repository_id,
+        branch = None):
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        return os.path.join(self._get_local_repository_dir(repository_id,
+            branch = branch), etpConst['changelog_filename_compressed'])
+
     def _get_local_repository_rsslight_file(self, repository_id, branch = None):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         return os.path.join(self._get_local_repository_dir(repository_id,
