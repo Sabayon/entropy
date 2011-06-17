@@ -1,3 +1,27 @@
+commit d4eac9657bdbcb973abc7e93ea7ba35be07dc3f2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 12:37:10 2011 +0200
+
+    Release Entropy 1.0_rc4
+
+commit 1fed7f49d59d3fad904fc123ec074efb1d487975
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 12:35:47 2011 +0200
+
+    [entropy.server] respect semaphore maximum allowed threads limit
+
+commit 0f2390a107d0a9e32b5f62b115218422bd96bf0f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 12:35:06 2011 +0200
+
+    [entropy.client.interfaces.db] improve reliability of semaphore acquire()/release() handling
+
+commit a76acd3036aa20061551118594e49c0908088fbd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 10:48:56 2011 +0200
+
+    Tagging Entropy version 1.0_rc3
+
 commit a03f1195143b43cabe5b03d45bebb01953af5298
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 17 10:48:52 2011 +0200
