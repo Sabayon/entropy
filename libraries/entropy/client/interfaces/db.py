@@ -1443,63 +1443,62 @@ class AvailablePackagesRepositoryUpdater(object):
 
         def _do_fetch(fetch_sts_map, segment, count, maxcount):
             try:
-                pkg_meta = webserv.get_packages_metadata(segment)
-            except WebService.WebServiceException as err:
-                const_debug_write(__name__,
-                    "__handle_webserv_database_sync: error: %s" % (err,))
-                mytxt = "%s: %s" % (
-                    blue(_("Web Service communication error")),
-                    err,
-                )
-                self._entropy.output(
-                    mytxt, importance = 1, level = "info",
-                    header = "\t", count = (count, maxcount,)
-                )
-                fetch_sts_map['error'] = True
-                fetch_sts_map['sem'].release()
-                return
-            except KeyboardInterrupt:
-                const_debug_write(__name__,
-                    "__handle_webserv_database_sync: keyboard interrupt")
-                fetch_sts_map['error'] = True
-                fetch_sts_map['sem'].release()
-                return
-
-            if not pkg_meta:
-                const_debug_write(__name__,
-                    "__handle_webserv_database_sync: empty data: %s" % (
-                        pkg_meta,))
-                self._entropy.output(
-                    _("Web Service data error"), importance = 1, level = "info",
-                    header = "\t", count = (count, maxcount,)
-                )
-                fetch_sts_map['error'] = True
-                fetch_sts_map['sem'].release()
-                return
-
-            try:
-                for package_id, pkg_data in pkg_meta.items():
-                    dumpobj(
-                        "%s%s" % (self.WEBSERV_CACHE_ID, package_id,),
-                        pkg_data,
-                        ignore_exceptions = False
+                try:
+                    pkg_meta = webserv.get_packages_metadata(segment)
+                except WebService.WebServiceException as err:
+                    const_debug_write(__name__,
+                        "__handle_webserv_database_sync: error: %s" % (err,))
+                    mytxt = "%s: %s" % (
+                        blue(_("Web Service communication error")),
+                        err,
                     )
-            except (IOError, EOFError, OSError,) as e:
-                mytxt = "%s: %s: %s." % (
-                    blue(_("Local status")),
-                    darkred("Error storing data"),
-                    e,
-                )
-                self._entropy.output(
-                    mytxt, importance = 1, level = "info",
-                    header = "\t", count = (count, maxcount,)
-                )
-                fetch_sts_map['error'] = True
-                fetch_sts_map['sem'].release()
-                return
+                    self._entropy.output(
+                        mytxt, importance = 1, level = "info",
+                        header = "\t", count = (count, maxcount,)
+                    )
+                    fetch_sts_map['error'] = True
+                    return
+                except KeyboardInterrupt:
+                    const_debug_write(__name__,
+                        "__handle_webserv_database_sync: keyboard interrupt")
+                    fetch_sts_map['error'] = True
+                    return
 
-            fetch_sts_map['sem'].release()
-            return True
+                if not pkg_meta:
+                    const_debug_write(__name__,
+                        "__handle_webserv_database_sync: empty data: %s" % (
+                            pkg_meta,))
+                    self._entropy.output(
+                        _("Web Service data error"), importance = 1,
+                        level = "info", header = "\t",
+                        count = (count, maxcount,)
+                    )
+                    fetch_sts_map['error'] = True
+                    return
+
+                try:
+                    for package_id, pkg_data in pkg_meta.items():
+                        dumpobj(
+                            "%s%s" % (self.WEBSERV_CACHE_ID, package_id,),
+                            pkg_data,
+                            ignore_exceptions = False
+                        )
+                except (IOError, EOFError, OSError,) as e:
+                    mytxt = "%s: %s: %s." % (
+                        blue(_("Local status")),
+                        darkred("Error storing data"),
+                        e,
+                    )
+                    self._entropy.output(
+                        mytxt, importance = 1, level = "info",
+                        header = "\t", count = (count, maxcount,)
+                    )
+                    fetch_sts_map['error'] = True
+                    return
+
+                return True
+            finally:
+                fetch_sts_map['sem'].release()
 
         max_threads = 8
         fetch_sts_map = {
