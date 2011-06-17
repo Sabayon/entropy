@@ -1530,10 +1530,13 @@ class Server(object):
         }
 
         def _qa_check(upload_package):
-            result = my_qa.entropy_package_checks(upload_package)
-            if not result:
-                with qa_sts_map['lock']:
-                    qa_some_faulty.append(os.path.basename(upload_package))
+            try:
+                result = my_qa.entropy_package_checks(upload_package)
+                if not result:
+                    with qa_sts_map['lock']:
+                        qa_some_faulty.append(os.path.basename(upload_package))
+            finally:
+                qa_sts_map['sem'].release()
 
         for upload_package in packages_list:
             qa_count += 1
@@ -1550,9 +1553,9 @@ class Server(object):
                 count = (qa_count, qa_total,)
             )
 
-            with qa_sts_map['sem']:
-                th = ParallelTask(_qa_check, upload_package)
-                th.start()
+            qa_sts_map['sem'].acquire()
+            th = ParallelTask(_qa_check, upload_package)
+            th.start()
 
         if qa_some_faulty:
 
