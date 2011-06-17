@@ -753,33 +753,33 @@ class ServerPackagesRepositoryUpdater(object):
                     mirrors = [uri])
                 return False
 
-                # all fine then, we need to move data from mytmpdir
-                # to database_dir_path
+            # all fine then, we need to move data from mytmpdir
+            # to database_dir_path
 
-                # EAPI 1 -- unpack database
-                if 1 not in disabled_eapis:
-                    compressed_db_filename = os.path.basename(
-                        download_data['compressed_database_path'])
-                    uncompressed_db_filename = os.path.basename(
-                        database_path)
-                    compressed_file = os.path.join(mytmpdir,
-                        compressed_db_filename)
-                    uncompressed_file = os.path.join(mytmpdir,
-                        uncompressed_db_filename)
-                    entropy.tools.uncompress_file(compressed_file,
-                        uncompressed_file, cmethod[0])
+            # EAPI 1 -- unpack database
+            if 1 not in disabled_eapis:
+                compressed_db_filename = os.path.basename(
+                    download_data['compressed_database_path'])
+                uncompressed_db_filename = os.path.basename(
+                    database_path)
+                compressed_file = os.path.join(mytmpdir,
+                    compressed_db_filename)
+                uncompressed_file = os.path.join(mytmpdir,
+                    uncompressed_db_filename)
+                entropy.tools.uncompress_file(compressed_file,
+                    uncompressed_file, cmethod[0])
 
-                # now move
-                for myfile in os.listdir(mytmpdir):
-                    fromfile = os.path.join(mytmpdir, myfile)
-                    tofile = os.path.join(database_dir_path, myfile)
-                    try:
-                        os.rename(fromfile, tofile)
-                    except OSError as err:
-                        if err.errno != errno.EXDEV:
-                            raise
-                        shutil.move(fromfile, tofile)
-                    const_setup_file(tofile, etpConst['entropygid'], 0o664)
+            # now move
+            for myfile in os.listdir(mytmpdir):
+                fromfile = os.path.join(mytmpdir, myfile)
+                tofile = os.path.join(database_dir_path, myfile)
+                try:
+                    os.rename(fromfile, tofile)
+                except OSError as err:
+                    if err.errno != errno.EXDEV:
+                        raise
+                    shutil.move(fromfile, tofile)
+                const_setup_file(tofile, etpConst['entropygid'], 0o664)
 
             if os.path.isdir(mytmpdir):
                 shutil.rmtree(mytmpdir)
