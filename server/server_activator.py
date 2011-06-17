@@ -131,7 +131,7 @@ def _sync(entropy_server, options, just_tidy):
                         ServerRssMetadata()['commitmessage'] = commit_msg
 
                 elif rss_enabled:
-                    ServerRssMetadata()['commitmessage'] = "Autodriven Update"
+                    ServerRssMetadata()['commitmessage'] = "Automatic update"
 
             sts = _sync_remote_databases(entropy_server, repo)
             if sts == 0:
