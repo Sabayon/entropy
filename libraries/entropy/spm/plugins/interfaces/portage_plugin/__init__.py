@@ -1824,13 +1824,6 @@ class PortagePlugin(SpmPlugin):
         if 'EAPI' in metadata:
             mysettings['EAPI'] = metadata['EAPI']
 
-        # This is part of EAPI=4, but Portage doesn't set REPLACED_BY_VERSION
-        # if not inside dblink.treewalk(). So, we must set it here
-        if (action == "install") and (action_metadata is not None) and \
-            (mydo in ("prerm", "postrm")):
-            mysettings["REPLACED_BY_VERSION"] = action_metadata['version']
-            mysettings.backup_changes("REPLACED_BY_VERSION")
-
         # workaround for scripts asking for user intervention
         mysettings['ROOT'] = root
         mysettings['CD_ROOT'] = "/tmp"
@@ -1897,6 +1890,14 @@ class PortagePlugin(SpmPlugin):
 
         mydbapi.cpv_inject(cpv, metadata = metadata)
         mysettings.setcpv(cpv, mydb = mydbapi)
+
+        # This is part of EAPI=4, but Portage doesn't set REPLACED_BY_VERSION
+        # if not inside dblink.treewalk(). So, we must set it here
+        if (action == "install") and (action_metadata is not None) and \
+            (mydo in ("prerm", "postrm")):
+            # NOTE: this is done AFTER setcpv to avoid having it to reset
+            # this setting. It is better to NOT backup this variable
+            mysettings["REPLACED_BY_VERSION"] = action_metadata['version']
 
         # cached vartree class
         vartree = self._get_portage_vartree(root = root)
