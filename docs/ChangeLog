@@ -1,3 +1,33 @@
+commit a03f1195143b43cabe5b03d45bebb01953af5298
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 10:48:52 2011 +0200
+
+    Release Entropy 1.0_rc3
+
+commit 35559cf377037e160c3280109a354804f0946707
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 10:39:13 2011 +0200
+
+    [entropy.server.mirrors] handle compressed ChangeLog file
+
+commit 361a3ed0601410e3a31d35a03a88b9fc2f7d2100
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 10:16:53 2011 +0200
+
+    [entropy.server.interfaces.db] _download(): fix indentation error in code
+
+commit 334594a0055aee4aa7fdc984344230d560de6e60
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 08:45:00 2011 +0200
+
+    [activator] say "Automatic" instead of "Autodriven"
+
+commit a488dc09596b0686d30c687479dcea7daeb4b959
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jun 16 21:55:25 2011 +0200
+
+    Tagging Entropy version 1.0_rc2
+
 commit b06a09b4608b182b0307bc9ab56c01214dd979d2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jun 16 21:55:20 2011 +0200
