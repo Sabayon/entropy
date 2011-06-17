@@ -938,7 +938,10 @@ Name:    %s
             # append at the bottom and don't care here
             changelog_f.write(changelog_str)
 
-        light_items = db_actions.get('light')
+        if db_actions is None:
+            light_items = None
+        else:
+            light_items = db_actions.get('light')
         if srv_set['changelog'] and db_actions and light_items:
             changelog_path = \
                 self._entropy._get_local_repository_changelog_file(
