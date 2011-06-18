@@ -1,0 +1,227 @@
+#!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
+
+import os
+import sys
+import bz2
+# so that time function with use american locale
+for env in ("LANG", "LC_ALL", "LANGUAGE",):
+    os.environ[env] = "en_US.UTF-8"
+
+import time
+import calendar
+
+sys.path.insert(0, "../libraries")
+from entropy.const import etpConst
+from entropy.client.interfaces import Client
+import entropy.tools
+import entropy.dep
+
+
+def _print_help():
+    sys.stdout.write(
+        "entropy-repository-statistics <machine name> <repository id> <branch> <arch> <product> <repository dir> <output file>\n\n")
+
+def _handle_stat_lines(entropy_client, target_month, target_year,
+    changelog_file):
+
+    # update security advisories
+    security = entropy_client.Security()
+    adv_meta = security.get_advisories_metadata()
+    target_year_month = "%s%s" % (target_year, target_month)
+
+    pkg_map = {}
+    for glsa_id, val in adv_meta.items():
+        aff_meta = val.get("affected")
+        if not aff_meta:
+            continue
+        for pkg_key in aff_meta.keys():
+            if glsa_id.startswith(target_year_month):
+                obj = pkg_map.setdefault(pkg_key, set())
+                obj.add(glsa_id)
+
+    date_format_string = etpConst['changelog_date_format']
+    in_range = False
+    security_updates = 0
+    commit_lines = []
+    date_header = "Date: "
+    atom_header = "Name: "
+    commit_header = "commit"
+
+    with open(changelog_file, "r") as changelog_f:
+        line = changelog_f.readline()
+        commit_line = ""
+        do_break = False
+
+        while line:
+
+            if line.startswith(date_header):
+                # extract date and check it maches this_month
+                date_str = line.lstrip(date_header).strip()
+                time_obj = time.strptime(date_str, date_format_string)
+                if (time_obj.tm_year == target_year) and \
+                    (time_obj.tm_mon == target_month):
+                    in_range = True
+                elif in_range:
+                    # left the range, not worth parsing further, we're done
+                    in_range = False
+                    do_break = True
+
+            if in_range and line.startswith(atom_header):
+                atom = line.lstrip(atom_header).strip()
+                atom = entropy.dep.remove_entropy_revision(atom)
+                atom = entropy.dep.remove_tag(atom)
+                pkg_key = entropy.dep.dep_getkey(atom)
+                split_data = entropy.dep.catpkgsplit(atom)
+                glsa_lines = []
+                if split_data is not None:
+                    etp_cat, etp_name, ver, rev = split_data
+                    if rev != "r0":
+                        ver += "-"+rev
+
+                    glsa_ids = pkg_map.get(pkg_key, [])
+                    for glsa_id in glsa_ids:
+                        glsa_meta = adv_meta[glsa_id]
+                        aff_list = glsa_meta['affected'].get(pkg_key)
+                        if not aff_list:
+                            continue
+                        is_interesting_adv = False
+                        for vul_meta in aff_list:
+                            unaff_vers = vul_meta['unaff_vers']
+                            for unaff_ver in unaff_vers:
+                                ver_cmp = entropy.dep.compare_versions(
+                                    ver, unaff_ver)
+                                if ver_cmp >= 0:
+                                    is_interesting_adv = True
+                            if is_interesting_adv:
+                                break
+                        if is_interesting_adv:
+                            glsa_line = "GLSA:    %s (%s)\n" % (
+                                adv_meta[glsa_id]['url'],
+                                adv_meta[glsa_id]['title'])
+                            glsa_lines.append(glsa_line)
+                            security_updates += 1
+                    if glsa_lines:
+                        commit_line += "".join(glsa_lines)
+
+            if line.startswith(commit_header):
+                if in_range:
+                    commit_lines.append(commit_line)
+                commit_line = line
+            else:
+                commit_line += line
+
+            if do_break:
+                break
+            line = changelog_f.readline()
+
+    return commit_lines, security_updates
+
+def _calculate_stats(target_month, target_year, security_updates, stat_lines):
+    if security_updates < 0:
+        security_updates = "N/A"
+
+    stats = {
+        'bumps': len(stat_lines),
+        'recompiles': 0,
+        'revisions': 0,
+        'bumps/day': 0,
+        'security': security_updates,
+    }
+
+    package_ids = []
+    revisions = set()
+    for stat_line in stat_lines:
+        commit_line = stat_line.split("\n")[0].lstrip("commit").strip()
+        revision, package_id, pkg_hash = commit_line.split(";")
+        revisions.add(revision)
+        package_ids.append(int(package_id))
+
+    package_ids.sort()
+    if package_ids:
+        stats['recompiles'] = abs(package_ids[-1] - package_ids[0])
+    stats['revisions'] = len(revisions)
+
+    days_in_month = calendar.monthrange(target_year, target_month)[1]
+    stats['bumps/day'] = round(float(stats['bumps']) / days_in_month, 2)
+
+    return stats
+
+def _generate_statistics(entropy_client, machine, repository_id, branch,
+    arch, product, repository_dir, output_file):
+
+
+    changelog_file = os.path.join(repository_dir,
+        etpConst['changelog_filename'])
+    compressed_changelog_file = os.path.join(repository_dir,
+        etpConst['changelog_filename_compressed'])
+
+    if os.path.isfile(changelog_file):
+        os.remove(changelog_file)
+    entropy.tools.uncompress_file(compressed_changelog_file,
+        changelog_file, bz2.BZ2File)
+
+    target_month = int(os.getenv("ETP_M", int(time.strftime("%m")) - 1))
+    target_year = int(os.getenv("ETP_Y", time.strftime("%Y")))
+    if target_month == 0:
+        target_month = 12
+        target_year -= 1
+    stat_lines, security_updates = _handle_stat_lines(entropy_client,
+        target_month, target_year, changelog_file)
+
+    stats = _calculate_stats(target_month, target_year, security_updates,
+        stat_lines)
+
+    # header
+    header_str = """\
+Sabayon Entropy build server statistics
+Year:       %s
+Month:      %s
+-------------------------------------------------------------------------------
+Machine:    %s
+Repository: %s
+Branch:     %s
+Arch:       %s
+Product:    %s
+-------------------------------------------------------------------------------
+Package bumps:  %s
+Recompiles:     %s
+Revisions:      %s
+Bumps/day:      %s
+Security bumps: %s
+""" % (target_year, target_month, machine, repository_id, branch, arch, product,
+        stats['bumps'], stats['recompiles'], stats['revisions'],
+        stats['bumps/day'], stats['security'])
+
+    with open(output_file, "w") as out_f:
+        out_f.write(header_str)
+        out_f.write(("="*79) + "\n\n")
+
+        # changelog
+        for line in stat_lines:
+            out_f.write(line)
+        out_f.flush()
+
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if len(args) != 7:
+        _print_help()
+        raise SystemExit(1)
+
+    # this expects that:
+    # "equo update" is called
+    # "equo security update" is called
+
+    entropy_client = None
+    try:
+        entropy_client = Client()
+        machine, repository_id, branch, arch, product, \
+            repository_dir, output_file = args
+        rc = _generate_statistics(entropy_client,
+            machine, repository_id, branch, arch, product,
+            repository_dir, output_file)
+        raise SystemExit(rc)
+    finally:
+        if entropy_client is not None:
+            entropy_client.shutdown()
