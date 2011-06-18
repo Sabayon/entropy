@@ -849,6 +849,8 @@ class CalculatorsMixin:
 
         return set(map(_simple_or_dep_map, unsatisfied_deps))
 
+    DISABLE_AUTOCONFLICT = os.getenv("ETP_DISABLE_AUTOCONFLICT")
+
     def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
         stack, deps_not_found, conflicts, unsat_cache, relaxed_deps,
         build_deps, deep_deps, empty_deps, recursive, selected_matches,
@@ -881,6 +883,37 @@ class CalculatorsMixin:
                 "new dependency list => %s" % (myundeps,))
 
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
+
+        # XXX Experimental feature, make possible to override it XXX
+        if self.DISABLE_AUTOCONFLICT is None:
+            # check if there are unwritten conflicts? inside the installed
+            # packages repository
+            pkg_key = entropy.dep.dep_getkey(repo_db.retrieveAtom(pkg_id))
+            potential_conflicts = self._installed_repository.searchConflict(
+                pkg_key)
+
+            for dep_package_id, conflict_str in potential_conflicts:
+                confl_pkg_ids, confl_pkg_rc = repo_db.atomMatch(
+                    conflict_str, multiMatch = True)
+
+                # is this really me? ignore the rc, just go straight to ids
+                if pkg_id not in confl_pkg_ids:
+                    continue
+
+                # yes, this is really me!
+                dep_key_slot = self._installed_repository.retrieveKeySlot(
+                    dep_package_id)
+                if dep_key_slot is not None:
+                    dep_key, dep_slot = dep_key_slot
+                    dep_confl_str = "!%s%s%s" % (dep_key,
+                        etpConst['entropyslotprefix'], dep_slot)
+                    my_conflicts.add(dep_confl_str)
+                    if const_debug_enabled():
+                        const_debug_write(__name__,
+                        "__generate_dependency_tree_analyze_deplist "
+                        "adding auto-conflict => %s, conflict_str was: %s" % (
+                            dep_confl_str, conflict_str,))
+                    break
 
         # check conflicts
         if my_conflicts:
