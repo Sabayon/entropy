@@ -390,6 +390,7 @@ def const_default_settings(rootdir):
         'distro_website_url': "http://www.sabayon.org",
         'changelog_filename': "ChangeLog",
         'changelog_filename_compressed': "ChangeLog.bz2",
+        'changelog_date_format': "%a, %d %b %Y %X +0000",
         # enable/disable packages RSS feed feature
         'rss-feed': True,
         # default name of the RSS feed

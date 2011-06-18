@@ -922,7 +922,7 @@ class ServerPackagesRepositoryUpdater(object):
         msg = msg.rstrip()
 
         def _write_changelog_entry(changelog_f, atom, pkg_meta):
-            this_time = time.strftime("%a, %d %b %Y %X +0000")
+            this_time = time.strftime(etpConst['changelog_date_format'])
             changelog_str = """\
 commit %s; %s; %s
 Machine: %s; %s; %s
