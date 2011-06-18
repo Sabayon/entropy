@@ -1,3 +1,27 @@
+commit e97ddff74a74b9657edcd58dc4989c14e51ee345
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 09:59:51 2011 +0200
+
+    Release Entropy 1.0_rc7
+
+commit 253fb2074473614d10c81e0481bab425e42493eb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 09:49:44 2011 +0200
+
+    [entropy.client.interfaces.dep] drop auto-conflict feature, does more harm than good (kde-4.6.4)
+
+commit e42137fd49ce0a3e7031412ed08301d498d98139
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 00:57:40 2011 +0200
+
+    [entropy.server] db_actions can be None
+
+commit 0d8eb6b94c8ab443001a1f9102a70a08f4140336
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 17 22:48:43 2011 +0200
+
+    Tagging Entropy version 1.0_rc6
+
 commit e1d1886131343e7f5c66f5053a99dac83c71796b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 17 22:48:42 2011 +0200
