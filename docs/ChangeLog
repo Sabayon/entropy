@@ -1,3 +1,67 @@
+commit d43426a94e29774c7ec1c4e607ad3bb4cb418834
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 16:51:42 2011 +0200
+
+    Release Entropy 1.0_rc8
+
+commit a174d1a28bc9b01d0deb2aa08741925c6e613821
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 16:26:30 2011 +0200
+
+    [entropy.server] provide an initialized repo on _inject_database_into_packages
+    
+    This commit improves the general function performance by a lot.
+
+commit 0b884852c6f68c2a0d30ecb8dd0da9a1d01d65ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 16:26:03 2011 +0200
+
+    [entropy.client] make possible to provide an already initialized repo to _inject_entropy_database_into_package
+
+commit d42e2a144d4c2bc64629873b8ad8121707941292
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 12:46:41 2011 +0200
+
+    [equo] text_rescue: "equo rescue spmsync", drop "Are you ready?" question
+
+commit 5fd1e406d83ad862ed82043055784ad5cde388d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 11:28:23 2011 +0200
+
+    [entropy.server] _inject_database_into_packages: slightly improve speed
+
+commit a7acb6d7c9e9b7a7173f0a6bdb4be9f3c4731a4a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 09:24:06 2011 +0200
+
+    [entropy.server] make possible to disable the "broken reverse dependencies" QA check
+
+commit 1b0cba0787bb3a198d53d3f42a33e2fb92de2955
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 23:37:26 2011 +0200
+
+    [services] entropy-repository-statistics: add ChangeLog parser tool
+
+commit c7569661bd62da777d12b3a41715ffbbcbb239e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 23:36:54 2011 +0200
+
+    [entropy.server] move ChangeLog date format string to etpConst
+
+commit 2995a70a7eff264140aeefb825ce0d5d413fafb1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 19:49:29 2011 +0200
+
+    Revert "[entropy.client.interfaces.dep] drop auto-conflict feature, does more harm than good (kde-4.6.4)"
+    
+    This reverts commit 253fb2074473614d10c81e0481bab425e42493eb.
+
+commit e70cae4ca0434f48dc51f8a46334cb1e0452033d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 18 09:59:54 2011 +0200
+
+    Tagging Entropy version 1.0_rc7
+
 commit e97ddff74a74b9657edcd58dc4989c14e51ee345
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jun 18 09:59:51 2011 +0200
