@@ -463,10 +463,6 @@ def _database_spmsync(entropy_client):
         print_info(red(" %s." % (_("Entropy locked, giving up"),)))
         return 2
 
-    rc = entropy_client.ask_question(_("Are you ready ?"))
-    if rc == _("No"):
-        return 0
-
     acquired = entropy_client.lock_resources()
     if not acquired:
         print_info(red(" %s." % (_("Entropy locked during lock acquire"),)))
