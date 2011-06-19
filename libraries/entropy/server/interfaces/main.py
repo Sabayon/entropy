@@ -42,7 +42,8 @@ from entropy.qa import QAInterfacePlugin
 from entropy.security import Repository as RepositorySecurity
 from entropy.db.exceptions import ProgrammingError
 from entropy.client.interfaces import Client
-from entropy.client.interfaces.db import InstalledPackagesRepository
+from entropy.client.interfaces.db import InstalledPackagesRepository, \
+    GenericRepository
 
 import entropy.dep
 import entropy.tools
@@ -2520,7 +2521,37 @@ class Server(Client):
             repo_sec = None # gnupg not found, perhaps report it
 
         treeupdates_actions = dbconn.listAllTreeUpdatesActions()
+
+        # generate empty repository file and re-use it every time
+        # this improves the execution a lot
+        orig_fd, tmp_repo_orig_path = tempfile.mkstemp(
+            suffix="entropy.server._inject")
+        try:
+            empty_repo = GenericRepository(
+                readOnly = False,
+                dbFile = tmp_repo_orig_path,
+                name = None,
+                xcache = False,
+                indexing = False,
+                skipChecks = True)
+            empty_repo.initializeRepository()
+            empty_repo.bumpTreeUpdatesActions(treeupdates_actions)
+            empty_repo.commit()
+            empty_repo.close()
+        except Exception:
+            os.remove(tmp_repo_orig_path)
+            raise
+        finally:
+            os.close(orig_fd)
+
         for idpackage, package_path in injection_data:
+
+            tmp_fd, tmp_repo_file = tempfile.mkstemp(
+                suffix="entropy.server._inject_for")
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                with open(tmp_repo_orig_path, "rb") as empty_f:
+                    shutil.copyfileobj(empty_f, tmp_f)
+
             self.output(
                 "[%s|%s] %s: %s" % (
                     darkgreen(repository_id),
@@ -2535,7 +2566,8 @@ class Server(Client):
             )
             data = dbconn.getPackageData(idpackage)
             self._inject_entropy_database_into_package(
-                package_path, data, treeupdates_actions)
+                package_path, data, treeupdates_actions = treeupdates_actions,
+                    initialized_repository_path = tmp_repo_file)
 
             # GPG-sign package if GPG signature is set
             gpg_sign = None
