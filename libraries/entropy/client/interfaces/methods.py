@@ -2001,20 +2001,30 @@ class MiscMixin:
         return sorted(categories)
 
     def _inject_entropy_database_into_package(self, package_filename, data,
-        treeupdates_actions = None):
-        tmp_fd, tmp_path = tempfile.mkstemp()
+        treeupdates_actions = None, initialized_repository_path = None):
+
+        already_initialized = False
+        tmp_fd = None
+        if initialized_repository_path is not None:
+            tmp_path = initialized_repository_path
+            already_initialized = True
+        else:
+            tmp_fd, tmp_path = tempfile.mkstemp()
+
         try:
             dbconn = self.open_generic_repository(tmp_path)
-            dbconn.initializeRepository()
+            if not already_initialized:
+                dbconn.initializeRepository()
             dbconn.addPackage(data, revision = data['revision'])
-            if treeupdates_actions != None:
+            if treeupdates_actions is not None:
                 dbconn.bumpTreeUpdatesActions(treeupdates_actions)
             dbconn.commit()
             dbconn.close()
             entropy.tools.aggregate_entropy_metadata(package_filename, tmp_path)
         finally:
-            os.close(tmp_fd)
-            os.remove(tmp_path)
+            if not already_initialized:
+                os.close(tmp_fd)
+                os.remove(tmp_path)
 
     def quickpkg(self, *args, **kwargs):
         warnings.warn("Client.quickpkg() is now deprecated. " + \
