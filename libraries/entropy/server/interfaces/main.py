@@ -2519,6 +2519,7 @@ class Server(Client):
             )
             repo_sec = None # gnupg not found, perhaps report it
 
+        treeupdates_actions = dbconn.listAllTreeUpdatesActions()
         for idpackage, package_path in injection_data:
             self.output(
                 "[%s|%s] %s: %s" % (
@@ -2533,7 +2534,6 @@ class Server(Client):
                 back = True
             )
             data = dbconn.getPackageData(idpackage)
-            treeupdates_actions = dbconn.listAllTreeUpdatesActions()
             self._inject_entropy_database_into_package(
                 package_path, data, treeupdates_actions)
 
