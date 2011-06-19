@@ -159,3 +159,13 @@ rss-light-name = updates.rss
 #    managing-editor = <email>
 #
 managing-editor = 
+
+# Broken reverse dependencies QA check.
+# This routine is ran when packages are added to repositories reporting
+# package reverse dependencies that have broken library linking. For example
+# when a library get an ABI bump and reverse dependencies are not rebuilt.
+#
+# syntax for broken-reverse-deps:
+#    broken-reverse-deps = <enable/disable>
+# Default is "enable"
+broken-reverse-deps = enable

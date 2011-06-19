@@ -563,6 +563,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
             'disabled_eapis': set(),
+            'broken_revdeps_qa_check': True,
             'exp_based_scope': etpConst['expiration_based_scope'],
             'nonfree_packages_dir_support': False, # disabled by default for now
             'sync_speed_limit': None,
@@ -632,6 +633,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         def _server_basic_lang(line, setting):
             data['qa_langs'] = setting.strip().split()
+
+        def _broken_revdeps_qa(line, setting):
+            opt = entropy.tools.setting_to_bool(setting)
+            if opt is not None:
+                data['broken_revdeps_qa_check'] = opt
 
         def _repository_func(line, setting):
             try:
@@ -718,6 +724,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'expiration-based-scope': _exp_based_scope,
             'nonfree-packages-directory-support': _nf_packages_dir_sup,
             'disabled-eapis': _disabled_eapis,
+            'broken-reverse-deps': _broken_revdeps_qa,
             'server-basic-languages': _server_basic_lang,
             'repository': _repository_func,
             'database-format': _database_format,
@@ -4796,8 +4803,10 @@ class Server(Client):
         to repository.
         """
         self.missing_runtime_dependencies_test(package_matches, ask = ask)
-        my_qa = self.QA()
-        my_qa.test_reverse_dependencies_linking(self, package_matches)
+        my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        if my_settings['broken_revdeps_qa_check']:
+            my_qa = self.QA()
+            my_qa.test_reverse_dependencies_linking(self, package_matches)
 
     def add_packages_to_repository(self, repository_id, packages_data,
         ask = True):

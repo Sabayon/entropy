@@ -156,7 +156,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
         @rtype: bool
         """
 
-        scan_msg = blue(_("Now searching for broken reverse dependencies"))
+        scan_msg = blue(_("Searching for broken reverse dependencies"))
         self.output(
             "%s..." % (scan_msg,),
             importance = 1,
