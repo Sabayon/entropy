@@ -27,8 +27,8 @@ from entropy.output import print_error, print_info, print_warning, \
     purple, teal
 from entropy.const import etpConst, etpUi
 
-REAGENT_EXEC = "/usr/bin/reagent"
-ACTIVATOR_EXEC = "/usr/bin/activator"
+REAGENT_EXEC = "/usr/sbin/reagent"
+ACTIVATOR_EXEC = "/usr/sbin/activator"
 
 help_opts = [
     None,
