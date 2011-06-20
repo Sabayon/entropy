@@ -2524,9 +2524,12 @@ class Server(Client):
 
         # generate empty repository file and re-use it every time
         # this improves the execution a lot
-        orig_fd, tmp_repo_orig_path = tempfile.mkstemp(
-            suffix="entropy.server._inject")
+        orig_fd = None
+        tmp_repo_orig_path = None
         try:
+            orig_fd, tmp_repo_orig_path = tempfile.mkstemp(
+                prefix="entropy.server._inject")
+
             empty_repo = GenericRepository(
                 readOnly = False,
                 dbFile = tmp_repo_orig_path,
@@ -2542,32 +2545,46 @@ class Server(Client):
             os.remove(tmp_repo_orig_path)
             raise
         finally:
-            os.close(orig_fd)
+            if orig_fd is not None:
+                os.close(orig_fd)
 
         for idpackage, package_path in injection_data:
 
-            tmp_fd, tmp_repo_file = tempfile.mkstemp(
-                suffix="entropy.server._inject_for")
-            with os.fdopen(tmp_fd, "wb") as tmp_f:
-                with open(tmp_repo_orig_path, "rb") as empty_f:
-                    shutil.copyfileobj(empty_f, tmp_f)
+            tmp_repo_file = None
+            tmp_fd = None
+            try:
+                tmp_fd, tmp_repo_file = tempfile.mkstemp(
+                    prefix="entropy.server._inject_for")
+                with os.fdopen(tmp_fd, "wb") as tmp_f:
+                    with open(tmp_repo_orig_path, "rb") as empty_f:
+                        shutil.copyfileobj(empty_f, tmp_f)
 
-            self.output(
-                "[%s|%s] %s: %s" % (
-                    darkgreen(repository_id),
-                    brown(str(idpackage)),
-                    blue(_("injecting entropy metadata")),
-                    darkgreen(os.path.basename(package_path)),
-                ),
-                importance = 1,
-                level = "info",
-                header = blue(" @@ "),
-                back = True
-            )
-            data = dbconn.getPackageData(idpackage)
-            self._inject_entropy_database_into_package(
-                package_path, data, treeupdates_actions = treeupdates_actions,
+                self.output(
+                    "[%s|%s] %s: %s" % (
+                        darkgreen(repository_id),
+                        brown(str(idpackage)),
+                        blue(_("injecting entropy metadata")),
+                        darkgreen(os.path.basename(package_path)),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = blue(" @@ "),
+                    back = True
+                )
+                data = dbconn.getPackageData(idpackage)
+                self._inject_entropy_database_into_package(
+                    package_path, data,
+                    treeupdates_actions = treeupdates_actions,
                     initialized_repository_path = tmp_repo_file)
+            finally:
+                if tmp_repo_file is not None:
+                    os.remove(tmp_repo_file)
+                if tmp_fd is not None:
+                    try:
+                        os.close(tmp_fd)
+                    except OSError as err:
+                        if err.errno != errno.EBADF:
+                            raise
 
             # GPG-sign package if GPG signature is set
             gpg_sign = None
@@ -2602,6 +2619,8 @@ class Server(Client):
                 level = "info",
                 header = red(" @@ ")
             )
+
+        os.remove(tmp_repo_orig_path)
 
     def remove_packages(self, repository_id, package_ids):
         """
