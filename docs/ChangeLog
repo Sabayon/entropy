@@ -1,3 +1,28 @@
+commit 1918dc561519be8ba2a103d3d1bc62e63a156493
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:12:37 2011 +0200
+
+    Release Entropy 1.0_rc9
+
+commit e9642c7309e1a0666fc9215f6c3b0eabef4ce234
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:03:09 2011 +0200
+
+    [entropy.server] restore functionality of repository download
+    
+    Repository sync was malfunctioning when a download was required.
+    The return value of _download() was incorrect (False meant error,
+    while it should have been the other way around, returning a list
+    of broken mirrors).
+    Moreover, the download routine now uses packages.db.meta instead
+    of downloading all the meta files separately.
+
+commit 1c3683e05380818c1c4cb2a5adc1bbd3c952a4a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 19 16:51:45 2011 +0200
+
+    Tagging Entropy version 1.0_rc8
+
 commit d43426a94e29774c7ec1c4e607ad3bb4cb418834
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jun 19 16:51:42 2011 +0200
