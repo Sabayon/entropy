@@ -403,24 +403,17 @@ class ServerPackagesRepositoryUpdater(object):
         post_branch_mig_file = self._entropy._get_local_post_branch_mig_script(
             self._repository_id)
         if os.path.isfile(post_branch_mig_file) or download:
-            if download:
-                data['database_post_branch_hop_script'] = post_branch_mig_file
             extra_text_files.append(post_branch_mig_file)
 
         post_branch_upg_file = self._entropy._get_local_post_branch_upg_script(
             self._repository_id)
         if os.path.isfile(post_branch_upg_file) or download:
-            if download:
-                data['database_post_branch_upgrade_script'] = \
-                    post_branch_upg_file
             extra_text_files.append(post_branch_upg_file)
 
         post_repo_update_file = \
             self._entropy._get_local_post_repo_update_script(
                 self._repository_id)
         if os.path.isfile(post_repo_update_file) or download:
-            if download:
-                data['database_post_repo_update_script'] = post_repo_update_file
             extra_text_files.append(post_repo_update_file)
 
         database_ts_file = self._entropy._get_local_repository_timestamp_file(
@@ -433,62 +426,42 @@ class ServerPackagesRepositoryUpdater(object):
         database_package_mask_file = \
             self._entropy._get_local_repository_mask_file(self._repository_id)
         if os.path.isfile(database_package_mask_file) or download:
-            if download:
-                data['database_package_mask_file'] = database_package_mask_file
             extra_text_files.append(database_package_mask_file)
 
         database_package_system_mask_file = \
             self._entropy._get_local_repository_system_mask_file(
                 self._repository_id)
         if os.path.isfile(database_package_system_mask_file) or download:
-            if download:
-                data['database_package_system_mask_file'] = \
-                    database_package_system_mask_file
             extra_text_files.append(database_package_system_mask_file)
 
         database_package_confl_tagged_file = \
             self._entropy._get_local_repository_confl_tagged_file(
                 self._repository_id)
         if os.path.isfile(database_package_confl_tagged_file) or download:
-            if download:
-                data['database_package_confl_tagged_file'] = \
-                    database_package_confl_tagged_file
             extra_text_files.append(database_package_confl_tagged_file)
 
         database_license_whitelist_file = \
             self._entropy._get_local_repository_licensewhitelist_file(
                 self._repository_id)
         if os.path.isfile(database_license_whitelist_file) or download:
-            if download:
-                data['database_license_whitelist_file'] = \
-                    database_license_whitelist_file
             extra_text_files.append(database_license_whitelist_file)
 
         database_mirrors_file = \
             self._entropy._get_local_repository_mirrors_file(
                 self._repository_id)
         if os.path.isfile(database_mirrors_file) or download:
-            if download:
-                data['database_mirrors_file'] = \
-                    database_mirrors_file
             extra_text_files.append(database_mirrors_file)
 
         database_fallback_mirrors_file = \
             self._entropy._get_local_repository_fallback_mirrors_file(
                 self._repository_id)
         if os.path.isfile(database_fallback_mirrors_file) or download:
-            if download:
-                data['database_fallback_mirrors_file'] = \
-                    database_fallback_mirrors_file
             extra_text_files.append(database_fallback_mirrors_file)
 
         exp_based_pkgs_removal_file = \
             self._entropy._get_local_exp_based_pkgs_rm_whitelist_file(
                 self._repository_id)
         if os.path.isfile(exp_based_pkgs_removal_file) or download:
-            if download:
-                data['exp_based_pkgs_removal_file'] = \
-                    exp_based_pkgs_removal_file
             extra_text_files.append(exp_based_pkgs_removal_file)
 
         database_rss_file = self._entropy._get_local_repository_rss_file(
@@ -526,22 +499,16 @@ class ServerPackagesRepositoryUpdater(object):
         critical_updates_file = self._entropy._get_local_critical_updates_file(
             self._repository_id)
         if os.path.isfile(critical_updates_file) or download:
-            if download:
-                data['critical_updates_file'] = critical_updates_file
             extra_text_files.append(critical_updates_file)
 
         restricted_file = self._entropy._get_local_restricted_file(
             self._repository_id)
         if os.path.isfile(restricted_file) or download:
-            if download:
-                data['restricted_file'] = restricted_file
             extra_text_files.append(restricted_file)
 
         keywords_file = self._entropy._get_local_repository_keywords_file(
             self._repository_id)
         if os.path.isfile(keywords_file) or download:
-            if download:
-                data['keywords_file'] = keywords_file
             extra_text_files.append(keywords_file)
 
         webserv_file = self._entropy._get_local_repository_webserv_file(
@@ -557,6 +524,13 @@ class ServerPackagesRepositoryUpdater(object):
             # no need to add to extra_text_files, it will be added
             # afterwards
             gpg_signed_files.append(gpg_file)
+
+        # always sync metafiles file, it's cheap
+        data['metafiles_path'] = \
+            self._entropy._get_local_repository_compressed_metafiles_file(
+                self._repository_id)
+        critical.append(data['metafiles_path'])
+        gpg_signed_files.append(data['metafiles_path'])
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
@@ -578,13 +552,6 @@ class ServerPackagesRepositoryUpdater(object):
                 sn_f.flush()
             data['~~something_new_web'] = something_new_webinstall
             critical.append(data['~~something_new_web'])
-
-            # always push metafiles file, it's cheap
-            data['metafiles_path'] = \
-                self._entropy._get_local_repository_compressed_metafiles_file(
-                    self._repository_id)
-            critical.append(data['metafiles_path'])
-            gpg_signed_files.append(data['metafiles_path'])
 
             if 2 not in disabled_eapis:
 
@@ -645,8 +612,6 @@ class ServerPackagesRepositoryUpdater(object):
                 spm_syms[myname] = myfile
                 continue # we don't want symlinks
             if os.path.isfile(myfile) and os.access(myfile, os.R_OK):
-                if download:
-                    data[myname] = myfile
                 extra_text_files.append(myfile)
 
         # NOTE: for symlinks, we read their link and send a file with that
@@ -664,8 +629,6 @@ class ServerPackagesRepositoryUpdater(object):
             f_mkp.flush()
             f_mkp.close()
 
-            if download:
-                data[symname] = mytmpfile
             extra_text_files.append(mytmpfile)
 
         return data, critical, extra_text_files, tmp_dirs, gpg_signed_files
@@ -697,6 +660,8 @@ class ServerPackagesRepositoryUpdater(object):
         download_data, critical, text_files, tmp_dirs, \
             gpg_to_verify_files = self._get_files_to_sync(cmethod,
                 download = True, disabled_eapis = disabled_eapis)
+        broken_uris = set()
+
         try:
 
             mytmpdir = tempfile.mkdtemp(prefix = "entropy.server")
@@ -755,7 +720,8 @@ class ServerPackagesRepositoryUpdater(object):
                 )
                 self._mirrors.lock_mirrors(self._repository_id, False,
                     mirrors = [uri])
-                return False
+                broken_uris |= m_broken_uris
+                return broken_uris
 
             # all fine then, we need to move data from mytmpdir
             # to database_dir_path
@@ -791,6 +757,26 @@ class ServerPackagesRepositoryUpdater(object):
                 entropy.tools.uncompress_file(compressed_changelog,
                     uncompressed_changelog, bz2.BZ2File)
 
+            # unpack metafiles file
+            metafiles_unpack_done = entropy.tools.universal_uncompress(
+                download_data['metafiles_path'], mytmpdir,
+                    catch_empty = True)
+            if not metafiles_unpack_done:
+                self._entropy.output(
+                    "[repo:%s|%s|%s] %s %s" % (
+                        brown(self._repository_id),
+                        darkgreen(crippled_uri),
+                        red(_("errors")),
+                        blue(_("failed to unpack")),
+                        os.path.basename(download_data['metafiles_path']),
+                    ),
+                    importance = 0,
+                    level = "error",
+                    header = darkred(" !!! ")
+                )
+                broken_uris.add(uri)
+                return broken_uris
+
             # now move
             for myfile in os.listdir(mytmpdir):
                 fromfile = os.path.join(mytmpdir, myfile)
@@ -819,7 +805,7 @@ class ServerPackagesRepositoryUpdater(object):
                 except shutil.Error:
                     continue
 
-        return True
+        return broken_uris
 
     def _update_feeds(self):
 
