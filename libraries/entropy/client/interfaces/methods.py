@@ -990,7 +990,8 @@ class RepositoryMixin:
         @rtype: entropy.client.interfaces.db.GenericRepository
         """
         if temp_file is None:
-            tmp_fd, temp_file = tempfile.mkstemp()
+            tmp_fd, temp_file = tempfile.mkstemp(
+                prefix="entropy.client.methods.open_temp_repository")
             os.close(tmp_fd)
         if dbname is not None:
             # backward compatibility
@@ -1829,7 +1830,8 @@ class MiscMixin:
 
         for mirror in pkg_mirrors:
 
-            tmp_fd, tmp_path = tempfile.mkstemp()
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="entropy.client.methods.reorder_mirrors")
             try:
 
                 url_data = entropy.tools.spliturl(mirror)
@@ -2009,7 +2011,8 @@ class MiscMixin:
             tmp_path = initialized_repository_path
             already_initialized = True
         else:
-            tmp_fd, tmp_path = tempfile.mkstemp()
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="entropy.client.methods._inject_edb")
 
         try:
             dbconn = self.open_generic_repository(tmp_path)
@@ -2457,7 +2460,8 @@ class MatchMixin:
 
         for mask_file in new_mask_list:
 
-            tmp_fd, tmp_path = tempfile.mkstemp()
+            tmp_fd, tmp_path = tempfile.mkstemp(
+                prefix="entropy.client.methods._clear_match_gen")
 
             with open(mask_file, "r") as mask_f:
                 with os.fdopen(tmp_fd, "w") as tmp_f:
