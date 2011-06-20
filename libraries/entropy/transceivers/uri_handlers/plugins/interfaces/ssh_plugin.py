@@ -179,8 +179,9 @@ class EntropySshUriHandler(EntropyUriHandler):
 
     def _exec_cmd(self, args):
 
-        fd, tmp_path = tempfile.mkstemp()
-        fd_err, tmp_path_err = tempfile.mkstemp()
+        fd, tmp_path = tempfile.mkstemp(prefix="entropy.transceivers.ssh_plug")
+        fd_err, tmp_path_err = tempfile.mkstemp(
+            prefix="entropy.transceivers.ssh_plug")
         try:
             with os.fdopen(fd, "wb") as std_f:
                 with os.fdopen(fd_err, "wb") as std_f_err:
