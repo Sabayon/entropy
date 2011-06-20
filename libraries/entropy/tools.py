@@ -1191,9 +1191,11 @@ def generate_entropy_delta(pkg_path_a, pkg_path_b, hash_tag,
 
     tmp_fd_a, tmp_path_a = tempfile.mkstemp(dir=os.path.dirname(pkg_path_a))
     tmp_fd_b, tmp_path_b = tempfile.mkstemp(dir=os.path.dirname(pkg_path_b))
-    tmp_fd, tmp_path = tempfile.mkstemp()
+    tmp_fd, tmp_path = tempfile.mkstemp(
+        prefix="entropy.tools.generate_entropy_delta")
     os.close(tmp_fd)
-    tmp_fd_spm, tmp_path_spm = tempfile.mkstemp()
+    tmp_fd_spm, tmp_path_spm = tempfile.mkstemp(
+        prefix="entropy.tools.generate_entropy_delta")
     os.close(tmp_fd_spm)
 
     try:
@@ -2060,7 +2062,8 @@ def get_random_temp_file():
     @return: temporary, random file path
     @rtype: string
     """
-    fd, tmp_path = tempfile.mkstemp()
+    fd, tmp_path = tempfile.mkstemp(
+        prefix="entropy.tools.get_random_temp_file")
     os.close(fd)
     return tmp_path
 
