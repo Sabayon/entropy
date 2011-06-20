@@ -1,3 +1,57 @@
+commit a0674fc26599c3112520492572e96d2ae0202083
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:52:32 2011 +0200
+
+    Release Entropy 1.0_rc10
+
+commit 72698d7b3d0c39ffab30186afc0b1e805a21d43b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:52:12 2011 +0200
+
+    [activator] fix temp file leakage
+
+commit 0b699dceb41f50f13a2f49ee12e88fbab38a6940
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:50:34 2011 +0200
+
+    [entropy.client.interfaces] always use prefix= with mkstemp()
+
+commit 2d77ff85d818a57381ba70a7964fd3a1e7b19598
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:50:24 2011 +0200
+
+    [entropy.qa] always use prefix= with mkstemp()
+
+commit e4592e3902243b83e8d607611b6262024a00c691
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:47:54 2011 +0200
+
+    [entropy.spm] always use prefix= with mkstemp()
+
+commit 85a0db933ffc120128474c41b6af28d485245413
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:46:05 2011 +0200
+
+    [entropy.tools] always use prefix= with mkstemp()
+
+commit f1f4895922d0f8de80eebebc9312879315adb416
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:44:00 2011 +0200
+
+    [entropy.transceivers] when using mkstemp() always provide a prefix
+
+commit faf1756c9fad9cc523e70ca1b21a57d69d3eff71
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:37:51 2011 +0200
+
+    [entropy.server] make sure to close and remove the temporary files in _inject_database_into_packages
+
+commit d5711e15539c642903567c3dc457a21f151f70ed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:12:41 2011 +0200
+
+    Tagging Entropy version 1.0_rc9
+
 commit 1918dc561519be8ba2a103d3d1bc62e63a156493
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jun 20 10:12:37 2011 +0200
