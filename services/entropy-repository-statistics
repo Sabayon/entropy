@@ -4,6 +4,7 @@
 import os
 import sys
 import bz2
+import tempfile
 # so that time function with use american locale
 for env in ("LANG", "LC_ALL", "LANGUAGE",):
     os.environ[env] = "en_US.UTF-8"
@@ -150,24 +151,28 @@ def _calculate_stats(target_month, target_year, security_updates, stat_lines):
 def _generate_statistics(entropy_client, machine, repository_id, branch,
     arch, product, repository_dir, output_file):
 
+    tmp_fd = None
+    changelog_file = None
+    try:
+        tmp_fd, changelog_file = tempfile.mkstemp()
+        compressed_changelog_file = os.path.join(repository_dir,
+            etpConst['changelog_filename_compressed'])
 
-    changelog_file = os.path.join(repository_dir,
-        etpConst['changelog_filename'])
-    compressed_changelog_file = os.path.join(repository_dir,
-        etpConst['changelog_filename_compressed'])
+        entropy.tools.uncompress_file(compressed_changelog_file,
+            changelog_file, bz2.BZ2File)
 
-    if os.path.isfile(changelog_file):
-        os.remove(changelog_file)
-    entropy.tools.uncompress_file(compressed_changelog_file,
-        changelog_file, bz2.BZ2File)
-
-    target_month = int(os.getenv("ETP_M", int(time.strftime("%m")) - 1))
-    target_year = int(os.getenv("ETP_Y", time.strftime("%Y")))
-    if target_month == 0:
-        target_month = 12
-        target_year -= 1
-    stat_lines, security_updates = _handle_stat_lines(entropy_client,
-        target_month, target_year, changelog_file)
+        target_month = int(os.getenv("ETP_M", int(time.strftime("%m")) - 1))
+        target_year = int(os.getenv("ETP_Y", time.strftime("%Y")))
+        if target_month == 0:
+            target_month = 12
+            target_year -= 1
+        stat_lines, security_updates = _handle_stat_lines(entropy_client,
+            target_month, target_year, changelog_file)
+    finally:
+        if tmp_fd is not None:
+            os.close(tmp_fd)
+        if changelog_file is not None:
+            os.remove(changelog_file)
 
     stats = _calculate_stats(target_month, target_year, security_updates,
         stat_lines)
