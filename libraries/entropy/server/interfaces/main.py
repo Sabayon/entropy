@@ -1132,15 +1132,15 @@ class Server(Client):
 
     def _get_basedir_pkg_listing(self, base_dir, branch = None):
 
-        pkgs_dir_types = self._get_pkg_dir_names()
+        pkgs_dir_types = set(self._get_pkg_dir_names())
         basedir_raw_content = []
         entropy.tools.recursive_directory_relative_listing(
             basedir_raw_content, base_dir)
 
         pkg_ext = etpConst['packagesext']
-        pkg_list = [x for x in basedir_raw_content if \
-            x.split(os.path.sep)[0] in pkgs_dir_types and \
-                x.endswith(pkg_ext)]
+        pkg_list = [x for x in basedir_raw_content if x.endswith(pkg_ext)]
+        pkg_list = [x for x in pkg_list if \
+            x.split(os.path.sep)[0] in pkgs_dir_types]
 
         if branch is not None:
             branch_extractor = \
