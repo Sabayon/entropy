@@ -1226,7 +1226,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
         """
         from entropy.db import EntropyRepository
         from entropy.db.exceptions import Error
-        fd, tmp_path = tempfile.mkstemp()
+        fd, tmp_path = tempfile.mkstemp(
+            prefix="entropy.qa.__analyze_package_edb")
         dbc = None
         try:
             dump_rc = entropy.tools.dump_entropy_metadata(pkg_path, tmp_path)
