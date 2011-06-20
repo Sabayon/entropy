@@ -756,14 +756,6 @@ class Server(object):
 
         return dbstatus
 
-    def _create_file_checksum(self, file_path, checksum_path):
-        mydigest = entropy.tools.md5sum(file_path)
-        f_ck = open(checksum_path, "w")
-        mystring = "%s  %s\n" % (mydigest, os.path.basename(file_path),)
-        f_ck.write(mystring)
-        f_ck.flush()
-        f_ck.close()
-
     def mirror_locked(self, repository_id, uri):
         """
         Return whether mirror is locked.
@@ -847,12 +839,10 @@ class Server(object):
             branch = branch)
 
         pkg_ext = etpConst['packagesext']
-        pkg_md5_ext = etpConst['packagesmd5fileext']
         for package in upload_pkgs:
-            if package.endswith(pkg_ext) or package.endswith(pkg_md5_ext):
+            if package.endswith(pkg_ext):
                 upload_packages.add(package)
-                if package.endswith(pkg_ext):
-                    upload_files += 1
+                upload_files += 1
 
         return upload_files, upload_packages
 
@@ -871,12 +861,10 @@ class Server(object):
             branch = branch)
 
         pkg_ext = etpConst['packagesext']
-        pkg_md5_ext = etpConst['packagesmd5fileext']
         for package in pkg_files:
-            if package.endswith(pkg_ext) or package.endswith(pkg_md5_ext):
+            if package.endswith(pkg_ext):
                 local_packages.add(package)
-                if package.endswith(pkg_ext):
-                    local_files += 1
+                local_files += 1
 
         return local_files, local_packages
 
@@ -1300,8 +1288,6 @@ class Server(object):
         for remove_filepath, rel_path, size in removal_queue:
 
             remove_filename = os.path.basename(remove_filepath)
-            remove_filepath_hash = remove_filepath + \
-                etpConst['packagesmd5fileext']
             remove_filepath_exp = remove_filepath + \
                 etpConst['packagesexpirationfileext']
 
@@ -1321,8 +1307,6 @@ class Server(object):
 
             if os.path.isfile(remove_filepath):
                 os.remove(remove_filepath)
-            if os.path.isfile(remove_filepath_hash):
-                os.remove(remove_filepath_hash)
             if os.path.isfile(remove_filepath_exp):
                 os.remove(remove_filepath_exp)
 
@@ -1343,11 +1327,9 @@ class Server(object):
 
         branch = self._settings['repositories']['branch']
         for from_file, rel_file, size in copy_queue:
-            from_file_hash = from_file + etpConst['packagesmd5fileext']
 
             to_file = self._entropy.complete_local_package_path(rel_file,
                 repository_id)
-            to_file_hash = to_file+etpConst['packagesmd5fileext']
             expiration_file = to_file+etpConst['packagesexpirationfileext']
 
             self._entropy.output(
@@ -1365,8 +1347,6 @@ class Server(object):
             self._entropy._ensure_dir_path(os.path.dirname(to_file))
 
             shutil.copy2(from_file, to_file)
-            self._create_file_checksum(from_file, from_file_hash)
-            shutil.copy2(from_file_hash, to_file_hash)
 
             # clear expiration file
             if os.path.isfile(expiration_file):
@@ -1380,14 +1360,8 @@ class Server(object):
         queue_map = {}
 
         for upload_path, rel_path, size in upload_queue:
-
-            hash_file = upload_path + etpConst['packagesmd5fileext']
-            if not os.path.isfile(hash_file):
-                entropy.tools.create_md5_file(upload_path)
-
             rel_dir = os.path.dirname(rel_path)
             obj = queue_map.setdefault(rel_dir, [])
-            obj.append(hash_file)
             obj.append(upload_path)
 
         errors = False
@@ -1448,11 +1422,8 @@ class Server(object):
         queue_map = {}
 
         for download_path, rel_path, size in download_queue:
-            hash_file = download_path + etpConst['packagesmd5fileext']
-
             rel_dir = os.path.dirname(rel_path)
             obj = queue_map.setdefault(rel_dir, [])
-            obj.append(hash_file)
             obj.append(download_path)
 
         errors = False
@@ -1878,11 +1849,8 @@ class Server(object):
 
             source_pkgs = [source_pkg]
             gpg_file = source_pkg + etpConst['etpgpgextension']
-            md5_file = source_pkg + etpConst['packagesmd5fileext']
             if os.path.isfile(gpg_file):
                 source_pkgs.append(gpg_file)
-            if os.path.isfile(md5_file):
-                source_pkgs.append(md5_file)
 
             for pkg_path in source_pkgs:
                 dest_pkg_path = os.path.join(dest_pkg_dir,
@@ -2083,7 +2051,6 @@ class Server(object):
             obj = removal_map.setdefault(rel_dir, [])
             base_pkg = os.path.basename(package_rel)
             obj.append(base_pkg)
-            obj.append(base_pkg+etpConst['packagesmd5fileext'])
             obj.append(base_pkg+etpConst['etpgpgextension'])
 
         for uri in self._entropy.remote_packages_mirrors(repository_id):
@@ -2161,14 +2128,10 @@ class Server(object):
 
                 package_path = self._entropy.complete_local_package_path(
                     package_rel, repository_id)
-
-                package_path_hash = package_path + \
-                    etpConst['packagesmd5fileext']
                 package_path_expired = package_path + \
                     etpConst['packagesexpirationfileext']
 
-                my_rm_list = (package_path_hash, package_path,
-                    package_path_expired)
+                my_rm_list = (package_path, package_path_expired)
                 for myfile in my_rm_list:
                     if os.path.isfile(myfile):
                         self._entropy.output(

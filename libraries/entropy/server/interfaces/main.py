@@ -2024,9 +2024,6 @@ class Server(Client):
                 except OSError:
                     shutil.move(package_path, new_package_path)
 
-                # create md5 checksum
-                entropy.tools.create_md5_file(new_package_path)
-
                 # update database
                 dbconn.setDownloadURL(idpackage, download_url)
                 dbconn.commit()
@@ -2354,8 +2351,6 @@ class Server(Client):
 
             copy_data = [
                 (from_file, to_file,),
-                (from_file + etpConst['packagesmd5fileext'],
-                    to_file + etpConst['packagesmd5fileext'],),
                 (from_file + etpConst['packagesexpirationfileext'],
                     to_file + etpConst['packagesexpirationfileext'],)
             ]
@@ -2606,7 +2601,6 @@ class Server(Client):
                 signatures['sha256'], signatures['sha512'],
                 gpg_sign)
             dbconn.commit()
-            entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
             self.output(
                 "[%s|%s] %s: %s" % (

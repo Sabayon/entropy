@@ -180,20 +180,18 @@ exit ${?}
         Cleanup routine that removes expired webinstall package files.
         """
         for expired_file in sorted(expired_webinstall_files):
-            for path in (expired_file,
-                expired_file + etpConst['packagesmd5fileext']):
-                try:
-                    os.remove(path)
-                except OSError as err:
-                    self.output("%s %s: %s" % (
-                            teal("cannot remove"),
-                            path,
-                            repr(err),
-                        ),
-                        header = brown(" @@ "),
-                        level = "warning",
-                        importance = 1
-                    )
+            try:
+                os.remove(expired_file)
+            except OSError as err:
+                self.output("%s %s: %s" % (
+                        teal("cannot remove"),
+                        path,
+                        repr(err),
+                    ),
+                    header = brown(" @@ "),
+                    level = "warning",
+                    importance = 1
+                )
 
     def _prepare_base_package_repository(self):
         """
@@ -335,9 +333,6 @@ exit ${?}
                     bin_f.flush()
                 etp_f.flush()
             os.rename(tmp_etp_path, etp_path)
-            # not really atomic (the whole transaction) but for now
-            # md5 generation is not so important for us
-            entropy.tools.create_md5_file(etp_path)
 
         finally:
             if compressed_fd is not None:
