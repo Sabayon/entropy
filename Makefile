@@ -52,11 +52,13 @@ entropy-server-install:
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 	mkdir -p $(DESTDIR)$(PREFIX)/share/man/man1
+	mkdir -p $(DESTDIR)$(PREFIX)/sbin
 
 	install -m 644 conf/server.conf.example $(DESTDIR)/etc/entropy/
 
 	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
 	install -m 755 server/*.py $(DESTDIR)/$(LIBDIR)/entropy/server/
+	install -m 755 server/eit $(DESTDIR)$(PREFIX)/sbin
 	ln -sf /$(LIBDIR)/entropy/server/reagent.py $(DESTDIR)$(PREFIX)/sbin/reagent
 	ln -sf /$(LIBDIR)/entropy/server/activator.py $(DESTDIR)$(PREFIX)/sbin/activator
 

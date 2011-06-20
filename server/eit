@@ -1,0 +1,152 @@
+#!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
+"""
+
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
+
+    B{Entropy Package Manager Server Wrapper Tool}.
+
+"""
+import os
+import sys
+import subprocess
+sys.path.insert(0, '../libraries')
+sys.path.insert(1, '../client')
+sys.path.insert(2, '../server')
+sys.path.insert(3, '/usr/lib/entropy/client')
+sys.path.insert(4, '/usr/lib/entropy/libraries')
+sys.path.insert(5, '/usr/lib/entropy/server')
+
+from entropy.i18n import _
+import entropy.tools
+from text_tools import print_menu
+from entropy.output import print_error, print_info, print_warning, \
+    purple, teal
+from entropy.const import etpConst, etpUi
+
+REAGENT_EXEC = "/usr/bin/reagent"
+ACTIVATOR_EXEC = "/usr/bin/activator"
+
+help_opts = [
+    None,
+    (0, " ~ reagent ~ ", 1,
+        'Entropy Server Commands Wrapper - (C) %s' % (
+            entropy.tools.get_year(),) ),
+    None,
+    (0, _('Options'), 0, None),
+    None,
+    (1, 'checkout <repository>', 2, _('switch from a repository to another')),
+    (1, 'commit [<repository>]', 2, _('commit changes to repository')),
+    (1, 'cp <from> <to> [packages]', 1, _('copy packages from a repository to another')),
+    (1, 'log [<repository>]', 2, _('show log for repository')),
+    (1, 'mv <from> <to> [packages]', 1, _('move packages from a repository to another')),
+    (1, 'push [<repository>]', 2, _('push committed packages remotely')),
+    (1, 'repo', 4, _('show current repository')),
+    (1, 'rm [packages]', 3, _('remove packages from current repository')),
+    (1, 'status [<repository>]', 2, _('show current repositories status')),
+    None,
+]
+
+# TODO:
+# - selectively add packages to repository ? => add
+# - edit package dependencies ? => edit
+# - reset repository to remote status ? => reset
+# - branch repository ? => branch
+# - diff?
+
+options = sys.argv[1:]
+
+# print help
+if not options or ("--help" in options) or ("-h" in options):
+    print_menu(help_opts)
+    if len(options) < 1:
+        print_error("not enough parameters")
+        raise SystemExit(1)
+    raise SystemExit(0)
+
+def _exec_args(args):
+    os.execvpe(args[0], args, os.environ)
+
+def get_entropy_server(quiet = False):
+    if quiet:
+        etpUi['quiet'] = True
+    from entropy.server.interfaces import Server
+    return Server(community_repo = etpConst['community']['mode'])
+
+main_cmd = options.pop(0)
+
+if main_cmd == "status":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([REAGENT_EXEC, "status"] + options)
+
+elif (main_cmd == "checkout") and options and len(options) < 2:
+    repository_id = options.pop(0)
+    _exec_args((REAGENT_EXEC, "repo", "default", repository_id))
+
+elif main_cmd == "commit":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([REAGENT_EXEC, "update"] + options)
+
+elif main_cmd == "push":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([ACTIVATOR_EXEC, "sync"] + options)
+
+elif main_cmd == "mv" and len(options) > 2:
+    from_repo = options.pop(0)
+    to_repo = options.pop(0)
+    _exec_args([REAGENT_EXEC, "repo", "move", from_repo, to_repo] + options)
+
+elif main_cmd == "cp" and len(options) > 2:
+    from_repo = options.pop(0)
+    to_repo = options.pop(0)
+    _exec_args([REAGENT_EXEC, "repo", "copy", from_repo, to_repo] + options)
+
+elif main_cmd == "rm" and options:
+    _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
+
+elif main_cmd == "repo":
+    server = None
+    try:
+        server = get_entropy_server(quiet = True)
+        repository_id = server.repository()
+        repository_ids = server.repositories()
+        for repo_id in sorted(repository_ids):
+            if repo_id == repository_id:
+                print_warning(purple(repo_id) + " *")
+            else:
+                print_info(teal(repo_id))
+        raise SystemExit(0)
+    finally:
+        if server is not None:
+            server.shutdown()
+
+elif main_cmd == "log":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+
+    server = None
+    try:
+        server = get_entropy_server()
+        changelog_path = server._get_local_repository_compressed_changelog_file(
+            server.repository())
+        if os.path.isfile(changelog_path) and os.access(changelog_path, os.R_OK):
+            proc = subprocess.Popen(
+                "/bin/bzcat \"%s\" | ${PAGER:-/usr/bin/less}" % (
+                    changelog_path,), shell = True)
+            raise SystemExit(proc.wait())
+        else:
+            print_error("log is not available")
+            raise SystemExit(1)
+    finally:
+        if server is not None:
+            server.shutdown()
+
+else:
+    print_menu(help_opts)
+    raise SystemExit(1)
