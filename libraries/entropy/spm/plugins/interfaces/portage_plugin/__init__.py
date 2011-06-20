@@ -832,7 +832,8 @@ class PortagePlugin(SpmPlugin):
 
         def read_kern_vermagic(ko_path):
 
-            tmp_fd, tmp_file = tempfile.mkstemp()
+            tmp_fd, tmp_file = tempfile.mkstemp(
+                prefix="entropy.spm.portage._add_kernel_dependency_to_pkg")
             try:
                 with os.fdopen(tmp_fd, "w") as tmp_fw:
                     rc = subprocess.call((modinfo_path, "-F", "vermagic",
@@ -1916,7 +1917,8 @@ class PortagePlugin(SpmPlugin):
             oldsysstdout = sys.stdout
             oldsysstderr = sys.stderr
             if etpUi['mute']:
-                tmp_fd, tmp_file = tempfile.mkstemp()
+                tmp_fd, tmp_file = tempfile.mkstemp(
+                    prefix="entropy.spm.portage._portage_doebuild")
                 tmp_fw = os.fdopen(tmp_fd, "w")
                 sys.stdout = tmp_fw
                 sys.stderr = tmp_fw

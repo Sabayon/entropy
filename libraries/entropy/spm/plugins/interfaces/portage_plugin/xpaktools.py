@@ -30,7 +30,8 @@ def extract_xpak(tbz2file, tmpdir = None):
     @rtype: 
     """
     # extract xpak content
-    tmp_fd, tmp_path = tempfile.mkstemp()
+    tmp_fd, tmp_path = tempfile.mkstemp(
+        prefix="entropy.spm.portage.extract_xpak")
     os.close(tmp_fd)
     try:
         done = suck_xpak(tbz2file, tmp_path)
@@ -54,7 +55,8 @@ def read_xpak(tbz2file):
     @return: 
     @rtype: 
     """
-    tmp_fd, tmp_path = tempfile.mkstemp()
+    tmp_fd, tmp_path = tempfile.mkstemp(
+        prefix="entropy.spm.portage.read_xpak")
     os.close(tmp_fd)
     try:
         done = suck_xpak(tbz2file, tmp_path)
