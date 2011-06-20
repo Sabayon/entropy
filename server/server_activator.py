@@ -105,7 +105,8 @@ def _sync(entropy_server, options, just_tidy):
             if mirrors_tainted:
 
                 if (not do_noask) and rss_enabled:
-                    tmp_fd, tmp_commit_path = tempfile.mkstemp()
+                    tmp_fd, tmp_commit_path = tempfile.mkstemp(
+                        prefix="activator._sync")
                     with os.fdopen(tmp_fd, "w") as tmp_f:
                         tmp_f.write(DEFAULT_REPO_COMMIT_MSG)
                         if successfull_mirrors:
@@ -129,6 +130,8 @@ def _sync(entropy_server, options, just_tidy):
                                 commit_msg += line
                         print_generic(commit_msg)
                         ServerRssMetadata()['commitmessage'] = commit_msg
+
+                    os.remove(tmp_commit_path)
 
                 elif rss_enabled:
                     ServerRssMetadata()['commitmessage'] = "Automatic update"
