@@ -1087,41 +1087,41 @@ def _status(entropy_server):
     sys_settings_plugin_id = \
         etpConst['system_settings_plugins_ids']['server_plugin']
     repos_data = SYS_SET[sys_settings_plugin_id]['server']['repositories']
+    repo_id = entropy_server.repository()
 
-    for repo_id in sorted(repos_data):
-        repo_data = repos_data[repo_id]
-        repo_rev = entropy_server.local_repository_revision(repo_id)
-        store_dir = entropy_server._get_local_store_directory(repo_id)
-        upload_basedir = entropy_server._get_local_upload_directory(repo_id)
-        upload_files, upload_packages = \
-            entropy_server.Mirrors._calculate_local_upload_files(repo_id)
-        local_files, local_packages = \
-            entropy_server.Mirrors._calculate_local_package_files(repo_id)
+    repo_data = repos_data[repo_id]
+    repo_rev = entropy_server.local_repository_revision(repo_id)
+    store_dir = entropy_server._get_local_store_directory(repo_id)
+    upload_basedir = entropy_server._get_local_upload_directory(repo_id)
+    upload_files, upload_packages = \
+        entropy_server.Mirrors._calculate_local_upload_files(repo_id)
+    local_files, local_packages = \
+        entropy_server.Mirrors._calculate_local_package_files(repo_id)
 
-        toc = []
+    toc = []
 
-        toc.append("[%s] %s" % (purple(repo_id),
-            brown(repo_data['description']),))
-        toc.append(("  %s:" % (blue(_("local revision")),),
-            str(repo_rev),))
-        toc.append(("  %s:" % (darkgreen(_("local packages")),),
-            str(local_files),))
+    toc.append("[%s] %s" % (purple(repo_id),
+        brown(repo_data['description']),))
+    toc.append(("  %s:" % (blue(_("local revision")),),
+        str(repo_rev),))
+    toc.append(("  %s:" % (darkgreen(_("local packages")),),
+        str(local_files),))
 
-        store_pkgs = []
-        if os.path.isdir(store_dir):
-            store_pkgs = os.listdir(store_dir)
+    store_pkgs = []
+    if os.path.isdir(store_dir):
+        store_pkgs = os.listdir(store_dir)
 
-        toc.append(("  %s:" % (darkgreen(_("stored packages")),),
-            str(len(store_pkgs)),))
-        for pkg_rel in sorted(store_pkgs):
-            toc.append((" ", brown(pkg_rel)))
+    toc.append(("  %s:" % (darkgreen(_("stored packages")),),
+        str(len(store_pkgs)),))
+    for pkg_rel in sorted(store_pkgs):
+        toc.append((" ", brown(pkg_rel)))
 
-        toc.append(("  %s:" % (darkgreen(_("upload packages")),),
-            str(upload_files),))
-        for pkg_rel in sorted(upload_packages):
-            toc.append((" ", brown(pkg_rel)))
+    toc.append(("  %s:" % (darkgreen(_("upload packages")),),
+        str(upload_files),))
+    for pkg_rel in sorted(upload_packages):
+        toc.append((" ", brown(pkg_rel)))
 
-        print_table(toc)
+    print_table(toc)
 
     return 0
 
