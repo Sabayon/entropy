@@ -32,30 +32,34 @@ ACTIVATOR_EXEC = "/usr/sbin/activator"
 
 help_opts = [
     None,
-    (0, " ~ reagent ~ ", 1,
+    (0, " ~ eit ~ ", 1,
         'Entropy Server Commands Wrapper - (C) %s' % (
             entropy.tools.get_year(),) ),
     None,
     (0, _('Options'), 0, None),
     None,
+    (1, 'add <packages>', 3, _('commit to current repository only the provided packages')),
     (1, 'checkout <repository>', 2, _('switch from a repository to another')),
     (1, 'commit [<repository>]', 2, _('commit changes to repository')),
-    (1, 'cp <from> <to> [packages]', 1, _('copy packages from a repository to another')),
+    (1, 'cp <from> <to> <packages>', 1, _('copy packages from a repository to another')),
+    (1, 'deps <packages>', 3, _('edit package dependencies')),
+    (1, 'fit <package files>', 2, _('inject package files into the current repository')),
     (1, 'log [<repository>]', 2, _('show log for repository')),
-    (1, 'mv <from> <to> [packages]', 1, _('move packages from a repository to another')),
+    (1, 'mv <from> <to> <packages>', 1, _('move packages from a repository to another')),
     (1, 'push [<repository>]', 2, _('push committed packages remotely')),
     (1, 'repo', 4, _('show current repository')),
-    (1, 'rm [packages]', 3, _('remove packages from current repository')),
+    (1, 'rm <packages>', 3, _('remove packages from current repository')),
+    (1, 'search <package deps>', 2, _('search for privided package dependencies')),
+    (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
     (1, 'status [<repository>]', 2, _('show current repositories status')),
     None,
 ]
 
 # TODO:
-# - selectively add packages to repository ? => add
-# - edit package dependencies ? => edit
 # - reset repository to remote status ? => reset
 # - branch repository ? => branch
 # - diff?
+# - reagent options?
 
 options = sys.argv[1:]
 
@@ -83,6 +87,9 @@ if main_cmd == "status":
         os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "status"] + options)
 
+elif main_cmd == "add" and options:
+    _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
+
 elif (main_cmd == "checkout") and options and len(options) < 2:
     repository_id = options.pop(0)
     _exec_args((REAGENT_EXEC, "repo", "default", repository_id))
@@ -92,10 +99,19 @@ elif main_cmd == "commit":
         os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "update"] + options)
 
+elif main_cmd == "fit" and options:
+    _exec_args([REAGENT_EXEC, "inject"] + options)
+
 elif main_cmd == "push":
     if options:
         os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([ACTIVATOR_EXEC, "sync"] + options)
+
+elif main_cmd == "show" and options:
+    _exec_args([REAGENT_EXEC, "query", "match"] + options)
+
+elif main_cmd == "search" and options:
+    _exec_args([REAGENT_EXEC, "query", "search"] + options)
 
 elif main_cmd == "mv" and len(options) > 2:
     from_repo = options.pop(0)
@@ -106,6 +122,19 @@ elif main_cmd == "cp" and len(options) > 2:
     from_repo = options.pop(0)
     to_repo = options.pop(0)
     _exec_args([REAGENT_EXEC, "repo", "copy", from_repo, to_repo] + options)
+
+elif main_cmd == "deps" and options:
+    server = None
+    repository_id = None
+    try:
+        server = get_entropy_server(quiet = True)
+        # get current repository id
+        repository_id = server.repository()
+    finally:
+        if server is not None:
+            server.shutdown()
+
+    _exec_args([REAGENT_EXEC, "repo", "package-dep", repository_id] + options)
 
 elif main_cmd == "rm" and options:
     _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
