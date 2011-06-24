@@ -39,7 +39,9 @@ help_opts = [
     (0, _('Options'), 0, None),
     None,
     (1, 'add <packages>', 3, _('commit to current repository only the provided packages')),
+    (1, 'bump [<repository>]', 2, _('bump repository revision, this will force upload')),
     (1, 'checkout <repository>', 2, _('switch from a repository to another')),
+    (1, 'cleanup [<repository>]', 2, _('clean expired packages from a repository')),
     (1, 'commit [<repository>]', 2, _('commit changes to repository')),
     (1, 'cp <from> <to> <packages>', 1, _('copy packages from a repository to another')),
     (1, 'deps <packages>', 3, _('edit package dependencies')),
@@ -48,6 +50,7 @@ help_opts = [
     (1, 'mv <from> <to> <packages>', 1, _('move packages from a repository to another')),
     (1, 'push [<repository>]', 2, _('push committed packages remotely')),
     (1, 'repo', 4, _('show current repository')),
+    (1, 'reset [<repository>]', 2, _('reset repository to remote status')),
     (1, 'rm <packages>', 3, _('remove packages from current repository')),
     (1, 'search <package deps>', 2, _('search for privided package dependencies')),
     (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
@@ -56,18 +59,13 @@ help_opts = [
 ]
 
 # TODO:
-# - reset repository to remote status ? => reset
-# - branch repository ? => branch
 # - diff?
 # - interactive commit?
-# - create a new repo
 # - search for a tag
 # - search for a file (belongs)
 # - print graph and revgraph
-# - bump a repo (bump)
 # - mask, unmask
 # - libtest, deptest, pkgtest
-# - cleanup (clean)
 
 options = sys.argv[1:]
 
@@ -98,9 +96,19 @@ if main_cmd == "status":
 elif main_cmd == "add" and options:
     _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
+elif main_cmd == "bump":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([REAGENT_EXEC, "repo", "bump"])
+
 elif (main_cmd == "checkout") and options and len(options) < 2:
     repository_id = options.pop(0)
     _exec_args((REAGENT_EXEC, "repo", "default", repository_id))
+
+elif (main_cmd == "cleanup"):
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args((ACTIVATOR_EXEC, "tidy"))
 
 elif main_cmd == "commit":
     if options:
@@ -162,6 +170,27 @@ elif main_cmd == "repo":
     finally:
         if server is not None:
             server.shutdown()
+
+elif main_cmd == "reset":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+
+    server = None
+    try:
+        server = get_entropy_server()
+        rev_path = server._get_local_repository_revision_file(
+            server.repository())
+        try:
+            with open(rev_path, "w") as rev_f:
+                rev_f.write("0\n")
+        except (IOError, OSError) as err:
+            print_error("%s: %s" % (_("reset error"), err))
+            raise SystemExit(1)
+    finally:
+        if server is not None:
+            server.shutdown()
+
+    _exec_args([ACTIVATOR_EXEC, "repo", "sync"])
 
 elif main_cmd == "log":
     if options:
