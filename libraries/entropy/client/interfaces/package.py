@@ -239,7 +239,8 @@ class Package:
             # allowing client-side repository package metadata moves.
             original_repo = repo_db.getInstalledPackageRepository(pkg_id)
 
-            if (original_repo != repo) and (original_repo not in avail_data):
+            if (original_repo != repo) and (original_repo not in avail_data) \
+                and (original_repo is not None):
                 # build up a new uris list, at least try, hoping that
                 # repository is just shadowing original_repo
                 # for example: original_repo got copied to repository, without
@@ -892,7 +893,8 @@ class Package:
         # this is done in order to support "equo repo merge" feature
         # allowing client-side repository package metadata moves.
         original_repo = repo_db.getInstalledPackageRepository(package_id)
-        if (original_repo != repository) and (original_repo not in avail_data):
+        if (original_repo != repository) and (original_repo not in avail_data) \
+            and (original_repo is not None):
             # build up a new uris list, at least try, hoping that
             # repository is just shadowing original_repo
             # for example: original_repo got copied to repository, without
