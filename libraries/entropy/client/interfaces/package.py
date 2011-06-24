@@ -246,15 +246,16 @@ class Package:
                 # copying packages, which would be useless. like it happens
                 # with sabayon-weekly
                 uris = self.__build_uris_list(original_repo, repo)
-
-            if original_repo in avail_data:
-                uris = avail_data[original_repo]['packages'][::-1]
-                uris += avail_data[repo]['packages'][::-1]
-            elif original_repo in excluded_data:
-                uris = excluded_data[original_repo]['packages'][::-1]
-                uris += avail_data[repo]['packages'][::-1]
             else:
-                uris = avail_data[repo]['packages'][::-1]
+                if original_repo in avail_data:
+                    uris = avail_data[original_repo]['packages'][::-1]
+                    uris += avail_data[repo]['packages'][::-1]
+                elif original_repo in excluded_data:
+                    uris = excluded_data[original_repo]['packages'][::-1]
+                    uris += avail_data[repo]['packages'][::-1]
+                else:
+                    uris = avail_data[repo]['packages'][::-1]
+
             obj = repo_uris.setdefault(repo, [])
             # append at the beginning
             new_ones = [x for x in uris if x not in obj][::-1]
