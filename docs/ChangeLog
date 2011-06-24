@@ -1,3 +1,21 @@
+commit 130eb60255c6fdb1e248f064367fcc04e28ff60b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 19:56:23 2011 +0200
+
+    Release Entropy 1.0_rc14
+
+commit 24c58024fd0903dd3099c00b58c8e6564731f18a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 19:54:54 2011 +0200
+
+    [entropy.client.interfaces.package] cope with unavailable repository mirrors metadata, for shadow repositories
+
+commit b35b98f70c7da4f6c265d4a5a48a87d6c2e1693f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 19:30:56 2011 +0200
+
+    Tagging Entropy version 1.0_rc13
+
 commit 7b3e6aa376e9a445cd3032ad2b75390d3ab3f531
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 24 19:30:55 2011 +0200
