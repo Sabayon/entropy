@@ -1,3 +1,21 @@
+commit ce9be61c5d8b35cebf43c9c63b94b6bc6d04b820
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 18:21:22 2011 +0200
+
+    Release Entropy 1.0_rc12
+
+commit 4ca45c3f4c3091f5ba1cb6e4699908dcd5ad29bf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 18:21:06 2011 +0200
+
+    [po] Makefile: fix typo
+
+commit 949aa4b858d96de5ccd1456359f541eec15c4513
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:47:17 2011 +0200
+
+    Tagging Entropy version 1.0_rc11
+
 commit db30a2f666b07dabffec836c4f4819ff91cbfedc
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 24 15:47:13 2011 +0200
