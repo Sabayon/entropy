@@ -59,7 +59,15 @@ help_opts = [
 # - reset repository to remote status ? => reset
 # - branch repository ? => branch
 # - diff?
-# - reagent options?
+# - interactive commit?
+# - create a new repo
+# - search for a tag
+# - search for a file (belongs)
+# - print graph and revgraph
+# - bump a repo (bump)
+# - mask, unmask
+# - libtest, deptest, pkgtest
+# - cleanup (clean)
 
 options = sys.argv[1:]
 
