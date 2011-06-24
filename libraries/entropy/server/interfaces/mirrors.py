@@ -1495,6 +1495,7 @@ class Server(object):
 
         max_threads = const_get_cpus()
         qa_some_faulty = []
+        threads = []
         qa_sts_map = {
             'sem': threading.Semaphore(max_threads),
             'lock': threading.Lock(),
@@ -1526,7 +1527,11 @@ class Server(object):
 
             qa_sts_map['sem'].acquire()
             th = ParallelTask(_qa_check, upload_package)
+            threads.append(th)
             th.start()
+
+        for th in threads:
+            th.join()
 
         if qa_some_faulty:
 
