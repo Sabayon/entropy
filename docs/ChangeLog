@@ -1,3 +1,21 @@
+commit f7dd762decb0ab23e3f2fad233268238daab6839
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 22:42:04 2011 +0200
+
+    Release Entropy 1.0_rc17
+
+commit 51de9547dfba686664d13bff7ae38653f514aa61
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 22:41:39 2011 +0200
+
+    [entropy.client.interfaces.package] original_repo can be None
+
+commit d32cb4755cdb7578a25968bac7e7e3dd0f7d7375
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 22:09:56 2011 +0200
+
+    Tagging Entropy version 1.0_rc16
+
 commit 8aa71c564c97d71c6bc374aad47c69443eac6f2a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 24 22:09:54 2011 +0200
