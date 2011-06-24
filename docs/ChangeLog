@@ -1,3 +1,111 @@
+commit db30a2f666b07dabffec836c4f4819ff91cbfedc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:47:13 2011 +0200
+
+    Release Entropy 1.0_rc11
+
+commit e3c30687d421ca54f27325d3ed97c11dd9814d8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:46:51 2011 +0200
+
+    [server] eit: update implementation status
+
+commit 95fa18699c1ee5f3782437a9d8290a8f9ff7a58c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:46:23 2011 +0200
+
+    [entropy.core.settings.base] filter out invalid package mirrors URLs
+
+commit a8deb17e8de3837fb7a1a172a05acb55b42e882f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:43:13 2011 +0200
+
+    [entropy.core.settings.base] always validate repository database URL
+
+commit db11ff31687aead305b4c00f0496d0ecadf8ec03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:42:39 2011 +0200
+
+    [entropy.tools] is_valid_uri: catch ValueError exceptions (caused by malformed URL, for IPv6)
+
+commit a815c40cb993cc03f380dfef5b5d02c351f28635
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 15:01:03 2011 +0200
+
+    [entropy.core.settings.base] remove dead code
+
+commit c2845c0a859e48036dda3d812d9177c90f0e52ae
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 13:55:55 2011 +0200
+
+    [entropy.server] ServerPackagesRepositoryUpdater: "database_changelog_file" can be absent from upload_data
+
+commit f09aae1ab5bc5d15d0a62f442397f0e44419ef51
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 21 15:10:09 2011 +0200
+
+    [client] text_tools: fix undefined reference in print_menu
+
+commit 17b69d4a586e0f67c0a05c4120021964168ec77c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 21 15:06:46 2011 +0200
+
+    [reagent] improve "reagent status" output
+
+commit 4ae170f7f9dd0c8d701d290d89704f6256aa4ccf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 21 14:33:54 2011 +0200
+
+    [server] eit: add more wrapped options
+
+commit 17b3ae6223aa5c95d6da98cefc029ad818255b0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 21 14:21:25 2011 +0200
+
+    [reagent] make "reagent status" work only for current repository
+
+commit e829215bb474f9ca3c095f5016d7fae26cc4393a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 23:39:15 2011 +0200
+
+    [entropy.server] improve speed of _get_basedir_pkg_listing
+
+commit 10c8f512852b87dd457c6a986d4bc10f8a045283
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 23:32:42 2011 +0200
+
+    [server] eit: fix reagent/activator paths
+
+commit b9ebc3e4b3e229cc2bd351f650bbbbad364fc95d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 23:29:33 2011 +0200
+
+    [server] add eit, the "stupid entropy content tracker" (experimental wrapper over reagent and activator)
+
+commit 8f7268c272cd31554972b392693979850b9ce160
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 20:23:03 2011 +0200
+
+    [entropy.server] drop .md5 files handling support on repos, pretty useless
+
+commit db3aed4ee989b54105b2b358fb90c059f63c60e0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 17:49:41 2011 +0200
+
+    [services] entropy-repository-statistics: update permissions
+
+commit 949a4508a229d05f83a4178b06c175b01035eb2c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 17:48:45 2011 +0200
+
+    [services] entropy-repository-statistics: unpack the changelog file to a temp file
+
+commit 9822100755204b2dc37e15c708f216581479390e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jun 20 10:52:34 2011 +0200
+
+    Tagging Entropy version 1.0_rc10
+
 commit a0674fc26599c3112520492572e96d2ae0202083
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jun 20 10:52:32 2011 +0200
