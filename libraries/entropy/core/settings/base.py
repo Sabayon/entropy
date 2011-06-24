@@ -1039,6 +1039,9 @@ class SystemSettings(Singleton, EntropyPluginStore):
         repopackages = [x.strip() for x in repopackages.split() if x.strip()]
 
         for repo_package in repopackages:
+            if not entropy.tools.is_valid_uri(repo_package):
+                # filter out
+                continue
             new_repo_package = entropy.tools.expand_plain_package_mirror(
                 repo_package, product, reponame)
             if new_repo_package is None:
