@@ -990,6 +990,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         if not dbformat in etpConst['etpdatabasesupportedcformats']:
             mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
 
+        if not entropy.tools.is_valid_uri(repodatabase):
+            raise AttributeError("invalid repository database URL")
         mydata['plain_database'] = repodatabase
 
         mydata['database'] = repodatabase + os.path.sep + product + \
