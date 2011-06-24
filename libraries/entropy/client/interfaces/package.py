@@ -239,6 +239,14 @@ class Package:
             # allowing client-side repository package metadata moves.
             original_repo = repo_db.getInstalledPackageRepository(pkg_id)
 
+            if (original_repo != repo) and (original_repo not in avail_data):
+                # build up a new uris list, at least try, hoping that
+                # repository is just shadowing original_repo
+                # for example: original_repo got copied to repository, without
+                # copying packages, which would be useless. like it happens
+                # with sabayon-weekly
+                uris = self.__build_uris_list(original_repo, repo)
+
             if original_repo in avail_data:
                 uris = avail_data[original_repo]['packages'][::-1]
                 uris += avail_data[repo]['packages'][::-1]
@@ -858,6 +866,20 @@ class Package:
 
         return 0, data_transfer, resumed
 
+    def __build_uris_list(self, original_repo, repository):
+
+        avail_data = self._settings['repositories']['available']
+        product = self._settings['repositories']['product']
+        uris = []
+        plain_packages = avail_data[repository]['plain_packages']
+        for uri in plain_packages:
+            expanded_uri = entropy.tools.expand_plain_package_mirror(
+                uri, product, original_repo)
+            uris.append(expanded_uri)
+        uris.reverse()
+        uris.extend(avail_data[repository]['packages'][::-1])
+        return uris
+
 
     def _download_package(self, package_id, repository, download, save_path,
         digest = False, resume = True):
@@ -869,16 +891,25 @@ class Package:
         # this is done in order to support "equo repo merge" feature
         # allowing client-side repository package metadata moves.
         original_repo = repo_db.getInstalledPackageRepository(package_id)
-        if original_repo in avail_data:
-            uris = avail_data[original_repo]['packages'][::-1]
-            if repository in avail_data:
-                uris += avail_data[repository]['packages'][::-1]
-        elif original_repo in excluded_data:
-            uris = excluded_data[original_repo]['packages'][::-1]
-            if repository in avail_data:
-                uris += avail_data[repository]['packages'][::-1]
+        if (original_repo != repository) and (original_repo not in avail_data):
+            # build up a new uris list, at least try, hoping that
+            # repository is just shadowing original_repo
+            # for example: original_repo got copied to repository, without
+            # copying packages, which would be useless. like it happens
+            # with sabayon-weekly
+            uris = self.__build_uris_list(original_repo, repository)
         else:
-            uris = avail_data[repository]['packages'][::-1]
+            if original_repo in avail_data:
+                uris = avail_data[original_repo]['packages'][::-1]
+                if repository in avail_data:
+                    uris += avail_data[repository]['packages'][::-1]
+            elif original_repo in excluded_data:
+                uris = excluded_data[original_repo]['packages'][::-1]
+                if repository in avail_data:
+                    uris += avail_data[repository]['packages'][::-1]
+            else:
+                uris = avail_data[repository]['packages'][::-1]
+
         remaining = set(uris)
         mirror_status = StatusInterface()
 
