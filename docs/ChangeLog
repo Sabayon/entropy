@@ -1,3 +1,21 @@
+commit f9db52db1d18ab953e4f8d92d629ffb60414522a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 21:58:56 2011 +0200
+
+    Release Entropy 1.0_rc15
+
+commit 4caf63ab0d9db3afb62b130741aa6eb1c5a428d9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 21:58:22 2011 +0200
+
+    [entropy.server.mirrors] actually call thread.join() on all the spawned threads
+
+commit 39c7168578f3fb7e28d3cbcc0b307474b3723b32
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 19:56:25 2011 +0200
+
+    Tagging Entropy version 1.0_rc14
+
 commit 130eb60255c6fdb1e248f064367fcc04e28ff60b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 24 19:56:23 2011 +0200
