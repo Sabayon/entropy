@@ -730,6 +730,8 @@ def _repositories(entropy_server, options):
         dbpath = None
         if myopts:
             dbpath = myopts[0]
+        if dbpath is None:
+            return -10
         print_info(darkgreen(" * ")+red("%s: " % (
             _("Creating empty database to"),) ) + dbpath)
         if os.path.isfile(dbpath):
