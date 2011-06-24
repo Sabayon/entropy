@@ -1451,9 +1451,10 @@ Name:    %s
         uncompressed_changelog = \
             self._entropy._get_local_repository_changelog_file(
                 self._repository_id)
-        compressed_changelog = upload_data['database_changelog_file']
-        self._compress_file(uncompressed_changelog,
-            compressed_changelog, bz2.BZ2File)
+        compressed_changelog = upload_data.get('database_changelog_file')
+        if compressed_changelog is not None:
+            self._compress_file(uncompressed_changelog,
+                compressed_changelog, bz2.BZ2File)
 
         for uri in uris:
 
