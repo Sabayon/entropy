@@ -1827,9 +1827,13 @@ def is_valid_uri(url):
     @return: True if URI
     @rtype: bool
     """
-    if spliturl(url).scheme:
-        return True
-    return False
+    try:
+        if spliturl(url).scheme:
+            return True
+        return False
+    except ValueError:
+        # invalid IPv6 URL
+        return False
 
 def compress_tar_bz2(store_path, path_to_compress):
     """
