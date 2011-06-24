@@ -1,3 +1,21 @@
+commit 8aa71c564c97d71c6bc374aad47c69443eac6f2a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 22:09:54 2011 +0200
+
+    Release Entropy 1.0_rc16
+
+commit b2d42f3cac15043f174208cee20fbed8873d3195
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 22:09:24 2011 +0200
+
+    [entropy.client.interfaces.package] fix shadow repository mirrors list generation logic
+
+commit 3c57b28c1fb6506799fbd5266580c319a82f053d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 21:58:57 2011 +0200
+
+    Tagging Entropy version 1.0_rc15
+
 commit f9db52db1d18ab953e4f8d92d629ffb60414522a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 24 21:58:56 2011 +0200
