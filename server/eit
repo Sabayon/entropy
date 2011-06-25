@@ -45,28 +45,24 @@ help_opts = [
     (1, 'commit [<repository>]', 2, _('commit changes to repository')),
     (1, 'cp <from> <to> <packages>', 1, _('copy packages from a repository to another')),
     (1, 'deps <packages>', 3, _('edit package dependencies')),
+    (1, 'deptest', 4, _('edit package dependencies')),
     (1, 'fit <package files>', 2, _('inject package files into the current repository')),
-    (1, 'graph <packages> [--complete]', 2, _('show dependency graph of packages')),
+    (1, 'graph <packages> [--complete]', 1, _('show dependency graph of packages')),
+    (1, 'libtest [--dump]', 2, _('look for missing libraries')),
     (1, 'list [<repository>]', 2, _('list packages in repository')),
     (1, 'log [<repository>]', 2, _('show log for repository')),
     (1, 'mv <from> <to> <packages>', 1, _('move packages from a repository to another')),
-    (1, 'own <package files>', 3, _('show owners of files (in current repository)')),
+    (1, 'own <package files>', 2, _('show owners of files (in current repository)')),
     (1, 'push [<repository>]', 2, _('push committed packages remotely')),
     (1, 'repo', 4, _('show current repository')),
     (1, 'reset [<repository>]', 2, _('reset repository to remote status')),
-    (1, 'revgraph <packages> [--complete]', 2, _('show reverse dependency graph of packages')),
+    (1, 'revgraph <packages> [--complete]', 0, _('show reverse dependency graph of packages')),
     (1, 'rm <packages>', 3, _('remove packages from current repository')),
     (1, 'search <package deps>', 2, _('search for privided package dependencies')),
     (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
     (1, 'status [<repository>]', 2, _('show current repositories status')),
     None,
 ]
-
-# TODO:
-# - diff?
-# - interactive commit?
-# - mask, unmask
-# - libtest, deptest, pkgtest
 
 options = sys.argv[1:]
 
@@ -178,6 +174,13 @@ elif main_cmd == "graph" and options and \
 elif main_cmd == "revgraph" and options and \
     not ((len(set(options)) == 1) and ("--complete" in options)):
     _exec_args([REAGENT_EXEC, "query", "revgraph"] + options)
+
+elif main_cmd == "libtest" and options and \
+    not ((len(set(options)) == 1) and ("--dump" in options)):
+    _exec_args([REAGENT_EXEC, "libtest"] + options)
+
+elif main_cmd == "deptest":
+    _exec_args([REAGENT_EXEC, "deptest"])
 
 elif (main_cmd == "own") and options:
     _exec_args([REAGENT_EXEC, "query", "belongs"] + options)
