@@ -151,7 +151,7 @@ class AvailablePackagesRepositoryUpdater(object):
 
     def __init__(self, entropy_client, repository_id, force, gpg):
         self.__force = force
-        self.__big_sock_timeout = 10
+        self.__big_sock_timeout = 20
         self._repository_id = repository_id
         self._cacher = EntropyCacher()
         self._last_rev = -1
@@ -196,6 +196,7 @@ class AvailablePackagesRepositoryUpdater(object):
     def _webservice(self):
         if self.__webservice is None:
             self.__webservice = self._webservices.new(self._repository_id)
+            self.__webservice._set_timeout(self.__big_sock_timeout)
         return self.__webservice
 
     def __get_webserv_repository_metadata(self):
@@ -1500,7 +1501,10 @@ class AvailablePackagesRepositoryUpdater(object):
             finally:
                 fetch_sts_map['sem'].release()
 
-        max_threads = 8
+        # do not exagerate or you're going to need a way to block
+        # further requests as long as some threads are still running
+        # to avoid timeout errors
+        max_threads = 4
         fetch_sts_map = {
             'sem': threading.Semaphore(max_threads),
             'error': False,
