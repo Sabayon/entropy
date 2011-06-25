@@ -618,19 +618,25 @@ def readtext(request, password = False):
     return text
 
 def _my_raw_input(txt = ''):
-    if txt:
+    try:
+        import readline
+    except ImportError:
+        # not available? ignore
+        pass
+
+    if not txt:
+        txt = ""
+    if sys.hexversion >= 0x3000000:
         try:
-            sys.stdout.write(darkgreen(txt))
+            response = input(darkgreen(txt))
         except UnicodeEncodeError:
-            sys.stdout.write(darkgreen(txt.encode('utf-8')))
+            response = input(darkgreen(txt.encode('utf-8')))
+    else:
+        try:
+            response = raw_input(darkgreen(txt))
+        except UnicodeEncodeError:
+            response = raw_input(darkgreen(txt.encode('utf-8')))
     _flush_stdouterr()
-    response = ''
-    while True:
-        y = sys.stdin.read(1)
-        if y in ('\n', '\r',):
-            break
-        response += y
-        _flush_stdouterr()
 
     # try to convert to unicode, because responses are stored that
     # way, fix bug #2006.
