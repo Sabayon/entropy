@@ -1,3 +1,99 @@
+commit b1fce54d63a0a94c701324fadcb2b903dc4adbc2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 00:09:32 2011 +0200
+
+    Release Entropy 1.0_rc18
+
+commit e8eba617eb39110757c9d6430714b808f77983ce
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 00:06:57 2011 +0200
+
+    [entropy.client.interfaces.db] fine tune webservice based sync and timeout default parameters
+
+commit d200b3724c9e9d947f6a4d1f68da6bd59894449c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 23:37:22 2011 +0200
+
+    [entropy.db] EntropyRepositoryBase: directly handle install repository metadata
+
+commit 3f6bb27ce6dac85bdcb9cf584dcbfe4813b7a0f9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 21:53:30 2011 +0200
+
+    [entropy.output] improve _my_raw_input(), use readline if available
+
+commit cfa7476f9d2521f7e6018def1eaae5027d662cdb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 20:01:34 2011 +0200
+
+    [equo] add "--by-user" support to "equo query list installed" to list packages installed by user
+
+commit 8c247b94e29e5fbe629b60da0a652db2f2b124ac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 19:45:55 2011 +0200
+
+    [entropy.db] EntropyRepository: move sqlite's integrity_check() to EntropyRepository.integrity_check()
+
+commit 5ee8022ddb892c066496754a752a24a0e26cd310
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 19:45:13 2011 +0200
+
+    [entropy.db.skel] EntropyRepositoryBase: introduce integrity_check() method
+
+commit b0b8d3151d29738d13b6582d580f0eb60f7d4390
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 19:27:02 2011 +0200
+
+    [equo] text_rescue: small reliability update
+
+commit ad169bd7f9bb9e177a7ac40b747a69434d422bc6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 16:37:16 2011 +0200
+
+    [server] eit: add libtest, deptest options
+
+commit ec0fc124f521cc299ff826e0fc9447f22a860c08
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 11:34:09 2011 +0200
+
+    [po] update translations
+
+commit 427415690739e2f1f8472d23d4f31e64ff50f252
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 11:33:14 2011 +0200
+
+    [server] eit: implement "list", "graph", "revgraph", "own"
+
+commit d84003858cc190afd0d9ecb992a24e50956aa6e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 10:21:56 2011 +0200
+
+    [entropy.fetchers] call update() instead of _push_progress_to_output(), so that 3rdparties don't get stdout spammed
+
+commit 871fe266df78fd0675afd0d1776b5d520c7f3f97
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 10:21:37 2011 +0200
+
+    [sulfur] entropyapi: properly initialize variables in GuiUrlFetcher
+
+commit fc90756aa4188140ab85b742da1dd786ef8c14c0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 00:23:44 2011 +0200
+
+    [server] eit: add more handy wrapped functions
+
+commit 6db46677d1ec034dee585177fd88cf5646b1d352
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jun 25 00:01:17 2011 +0200
+
+    [reagent] fixup "reagent repo create-empty-database" command
+
+commit a2d30da62695d0e4451bc96d0b53a22729c207b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jun 24 22:42:05 2011 +0200
+
+    Tagging Entropy version 1.0_rc17
+
 commit f7dd762decb0ab23e3f2fad233268238daab6839
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jun 24 22:42:04 2011 +0200
