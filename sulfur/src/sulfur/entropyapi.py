@@ -457,6 +457,13 @@ class GuiUrlFetcher(UrlFetcher):
     _use_progress_bar = True
     progress = None
 
+    def __init__(self, *args, **kwargs):
+        UrlFetcher.__init__(self, *args, **kwargs)
+        self.__average = 0.0
+        self.__downloadedsize = 0
+        self.__remotesize = 0
+        self.__datatransfer = 0
+
     @staticmethod
     def enable_progress_bar(enable):
         GuiUrlFetcher._use_progress_bar = enable
