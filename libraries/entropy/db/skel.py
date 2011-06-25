@@ -1375,6 +1375,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'spm_repository': self.retrieveSpmRepository(package_id),
             'desktop_mime': [],
             'provided_mime': [],
+            'original_repository': self.getInstalledPackageRepository(package_id),
         }
 
         @rtype: dict
@@ -1476,6 +1477,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'spm_repository': self.retrieveSpmRepository(package_id),
             'desktop_mime': self.retrieveDesktopMime(package_id),
             'provided_mime': self.retrieveProvidedMime(package_id),
+            'original_repository': self.getInstalledPackageRepository(package_id),
         }
 
         return data

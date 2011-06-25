@@ -575,12 +575,15 @@ def _database_spmsync(entropy_client):
             mydata['revision'] = 9999 # can't do much more
             if oldidpackage:
                 mydata['revision'] = \
-                    entropy_client.installed_repository().retrieveRevision(oldidpackage)
+                    entropy_client.installed_repository().retrieveRevision(
+                        oldidpackage)
 
+            if "original_repository" in mydata:
+                del mydata['original_repository']
             idpk = entropy_client.installed_repository().handlePackage(mydata,
                 forcedRevision = mydata['revision'])
-            entropy_client.installed_repository().dropInstalledPackageFromStore(idpk)
-            entropy_client.installed_repository().storeInstalledPackage(idpk, "spm-db")
+            entropy_client.installed_repository().storeInstalledPackage(idpk,
+                "spm-db")
             os.remove(temp_pkg_path)
 
         print_info(brown(" @@ ") + \
@@ -702,7 +705,8 @@ def _database_generate(entropy_client):
 
         idpk = entropy_client.installed_repository().addPackage(mydata,
             revision = mydata['revision'], do_commit = False)
-        entropy_client.installed_repository().storeInstalledPackage(idpk, "spm-db")
+        entropy_client.installed_repository().storeInstalledPackage(idpk,
+            "spm-db")
         os.remove(temp_pkg_path)
 
     print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))

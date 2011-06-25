@@ -1996,6 +1996,10 @@ class Package:
         # there is no need to store changelog data into db
         if "changelog" in data:
             del data['changelog']
+        # we don't want it to be added now, we want to add install source
+        # info too.
+        if "original_repository" in data:
+            del data['original_repository']
 
         inst_repo = self._entropy.installed_repository()
 

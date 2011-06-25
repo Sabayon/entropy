@@ -2432,10 +2432,9 @@ class Server(Client):
                 header = red(" @@ "),
                 back = True
             )
+            data['original_repository'] = to_repository_id
             new_idpackage = todbconn.handlePackage(data)
             del data
-            todbconn.commit()
-            todbconn.storeInstalledPackage(new_idpackage, to_repository_id)
             todbconn.commit()
             package_ids_added.add(new_idpackage)
 
@@ -4440,7 +4439,7 @@ class Server(Client):
             license_callback = _package_injector_check_license,
             restricted_callback = _package_injector_check_restricted)
         self._pump_extracted_package_metadata(mydata, repository_id,
-            {'injected': inject,})
+            {'injected': inject, 'original_repository': repository_id})
         idpackage = dbconn.handlePackage(mydata)
         revision = dbconn.retrieveRevision(idpackage)
         # make sure that info have been written to disk
@@ -4499,11 +4498,7 @@ class Server(Client):
         # make sure that info have been written to disk, again
         dbconn.commit()
 
-        # add package info to our current server repository
-        dbconn.dropInstalledPackageFromStore(idpackage)
-        dbconn.storeInstalledPackage(idpackage, repository_id)
         atom = dbconn.retrieveAtom(idpackage)
-
         self.output(
             "[%s] %s: %s %s: %s" % (
                     darkgreen(repository_id),

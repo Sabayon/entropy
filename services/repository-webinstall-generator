@@ -282,6 +282,8 @@ exit ${?}
                 else:
                     cache_t, data = cached
 
+                if "original_repository" in data:
+                    del data['original_repository']
                 dest_package_id = dest_repo.addPackage(data,
                     revision = data['revision'],
                     do_commit = False,

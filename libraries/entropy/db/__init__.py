@@ -1047,6 +1047,11 @@ class EntropyRepository(EntropyRepositoryBase):
         if pkg_data.get('systempackage'):
             self._setSystemPackage(package_id, do_commit = False)
 
+        # this will always be optional ! (see entropy.client.interfaces.package)
+        original_repository = pkg_data.get('original_repository')
+        if original_repository is not None:
+            self.storeInstalledPackage(package_id, original_repository)
+
         # baseinfo and extrainfo are tainted
         # ensure that cache is clear even here
         self.clearCache()
@@ -5323,8 +5328,9 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         self._clearLiveCache("getInstalledPackageRepository")
         self._clearLiveCache("getInstalledPackageSource")
-        self._cursor().execute('INSERT into installedtable VALUES (?,?,?)',
-            (package_id, repoid, source,))
+        self._cursor().execute("""
+        INSERT OR REPLACE INTO installedtable VALUES (?,?,?)
+        """, (package_id, repoid, source,))
 
     def getInstalledPackageRepository(self, package_id):
         """

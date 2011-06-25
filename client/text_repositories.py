@@ -294,9 +294,6 @@ def _merge_repository(entropy_client, repo_ids, remove_conflicts = False):
                     do_commit = False)
             dest_pkg_id = dest_db.addPackage(pkg_meta,
                 do_commit = False, formatted_content = True)
-            # store source package repository so that package file will
-            # be fetched from the original location
-            dest_db.storeInstalledPackage(dest_pkg_id, source_repo)
 
         print_info("[%s] %s" % (
             teal(source_repo), blue(_("done merging packages")),))
