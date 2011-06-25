@@ -315,7 +315,7 @@ class UrlFetcher(TextInterface):
 
         self._init_vars()
         status = downloader()
-        self._push_progress_to_output()
+        self.update()
         return status
 
     def _setup_rsync_args(self):
@@ -977,7 +977,7 @@ class MultipleUrlFetcher(TextInterface):
             def update(self):
                 return self.__multiple_fetcher.update()
 
-            def _push_progress_to_output(self):
+            def _push_progress_to_output(self, *args):
                 return
 
             def handle_statistics(self, *args, **kwargs):
