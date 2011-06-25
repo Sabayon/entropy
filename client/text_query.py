@@ -64,9 +64,6 @@ def query(options):
             show_desc = True
         elif (opt == "--complete") and (first_opt in ("graph","revgraph")):
             complete_graph = True
-        elif opt.startswith("--"):
-            print_error(red(" %s." % (_("Wrong parameters"),) ))
-            return -10
         else:
             myopts.append(opt)
 
@@ -161,8 +158,22 @@ def query(options):
             mylistopts = options[1:]
             if len(mylistopts) > 0:
                 if mylistopts[0] == "installed":
+
+                    def by_user_filter(pkg_match):
+                        pkg_id, pkg_repo = pkg_match
+                        repo_db = etp_client.open_repository(pkg_repo)
+                        source_id = repo_db.getInstalledPackageSource(
+                            pkg_id)
+                        return source_id == etpConst['install_sources']['user']
+
+                    filter_func = None
+                    if "--by-user" in mylistopts:
+                        filter_func = by_user_filter
+
                     rc_status = list_packages(etp_client,
-                        etp_client.installed_repository())
+                        etp_client.installed_repository(),
+                        filter_func = filter_func)
+
                 elif mylistopts[0] == "available" and len(mylistopts) > 1:
                     repoid = mylistopts[1]
                     if repoid in etp_client.repositories():
@@ -1038,7 +1049,7 @@ def search_removal_dependencies(packages, entropy_client, entropy_repository,
 
 
 
-def list_packages(entropy_client, entropy_repository):
+def list_packages(entropy_client, entropy_repository, filter_func = None):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
@@ -1051,6 +1062,10 @@ def list_packages(entropy_client, entropy_repository):
         return 127
 
     pkg_ids = entropy_repository.listAllPackageIds(order_by = "atom")
+    if filter_func is not None:
+        pkg_mtc = filter(filter_func, [(x, entropy_repository.repository_id()) \
+            for x in pkg_ids])
+        pkg_ids = [x[0] for x in pkg_mtc]
 
     if not etpUi['quiet']:
         print_info(red(" @@ ")+blue("%s:" % (

@@ -682,6 +682,16 @@ list packages based on the chosen parameter below
 
 list installed packages
 
+
+=over
+
+=item [4] B<--by-user>
+
+only packages installed by user
+
+
+=back
+
 =item [3] B<available [repos]>
 
 list available packages
