@@ -42,7 +42,7 @@ from entropy.const import etpConst, const_setup_file, \
 from entropy.exceptions import SystemDatabaseError, \
     OperationNotPermitted, RepositoryPluginError, SPMError
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen
-from entropy.cache import EntropyCacher, MtimePingus
+from entropy.cache import EntropyCacher
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.exceptions import IntegrityError, Error, OperationalError, \
     DatabaseError
@@ -4856,6 +4856,19 @@ class EntropyRepository(EntropyRepositoryBase):
             self._setSetting("schema_revision",
                 str(EntropyRepository._SCHEMA_REVISION))
 
+    def integrity_check(self):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        cur = self._cursor().execute("PRAGMA quick_check(1)")
+        try:
+            check_data = cur.fetchone()[0]
+            if check_data != "ok":
+                raise ValueError()
+        except (IndexError, ValueError, TypeError,):
+            raise SystemDatabaseError(
+                "sqlite3 reports database being corrupted")
+
     def validate(self):
         """
         Reimplemented from EntropyRepositoryBase.
@@ -4869,48 +4882,10 @@ class EntropyRepository(EntropyRepositoryBase):
         # avoid python3.x memleak
         del cached
 
-        # use sqlite3 pragma
-        pingus = MtimePingus()
-        # since quick_check is slow, run it every 72 hours
-        action_str = "EntropyRepository.validate(%s)" % (self.name,)
-        passed = pingus.hours_passed(action_str, 72)
-        if passed:
-            # check if mtime is changed !
-            sha = hashlib.sha1()
-            try: # temporary db can cause this
-                mtime = repr(self.mtime())
-            except OSError:
-                mtime = "0.0"
-            hash_str = "%s|%s|%s|%s" % (
-                repr(self._db_path),
-                repr(etpConst['systemroot']),
-                repr(self.name),
-                mtime,
-            )
-            if sys.hexversion >= 0x3000000:
-                hash_str = hash_str.encode("utf-8")
-            cache_key = "_EntropyRepository_validate_" + sha.hexdigest()
-            cached = self._cacher.pop(cache_key)
-            if cached is None:
-                cur = self._cursor().execute("PRAGMA quick_check(1)")
-                try:
-                    check_data = cur.fetchone()[0]
-                    if check_data != "ok":
-                        raise ValueError()
-                except (IndexError, ValueError, TypeError,):
-                    mytxt = "sqlite3 reports database being corrupted"
-                    raise SystemDatabaseError(mytxt)
-                try:
-                    self._cacher.save(cache_key, True)
-                except IOError:
-                    # race condition, ignore
-                    pass
-            pingus.ping(action_str)
-
         mytxt = "Repository is corrupted, missing SQL tables!"
         cur = self._cursor().execute("""
-        SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND (
-            name = "extrainfo" OR name = "baseinfo" OR name = "keywords")
+        SELECT count(name) FROM SQLITE_MASTER WHERE type = "table" AND
+            name IN ("extrainfo", "baseinfo", "keywords")
         """)
         rslt = cur.fetchone()
         if rslt is None:

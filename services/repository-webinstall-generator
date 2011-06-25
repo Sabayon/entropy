@@ -522,6 +522,7 @@ def _generate(args):
                 xcache = True)
         try:
             repo.validate()
+            repo.integrity_check()
         except SystemDatabaseError:
             print_error(brown(_("Invalid repository.")))
             return 1

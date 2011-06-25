@@ -43,6 +43,7 @@ class ToolsTest(unittest.TestCase):
             self.assertNotEqual(tmp_path, None)
             dbconn = client.open_generic_repository(tmp_path)
             dbconn.validate()
+            dbconn.integrity_check()
             dbconn.listAllPackageIds()
             dbconn.close()
 

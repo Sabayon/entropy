@@ -780,11 +780,14 @@ def _database_check(entropy_client):
             )
             return -1
 
+    valid = True
     try:
-        valid = True
         entropy_client.installed_repository().validate()
-    except SystemDatabaseError:
+        entropy_client.installed_repository().integrity_check()
+    except SystemDatabaseError as err:
+        print_error(repr(err))
         valid = False
+
     if valid:
         client_repository_sanity_check()
     else:
