@@ -3441,6 +3441,14 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def integrity_check(self):
+        """
+        Validates Entropy repository by doing advanced integrity checks.
+
+        @raise SystemDatabaseError: when repository is not reliable
+        """
+        raise NotImplementedError()
+
     def alignDatabases(self, dbconn, force = False, output_header = "  ",
         align_limit = 300):
         """
