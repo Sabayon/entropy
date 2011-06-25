@@ -398,10 +398,13 @@ def _database_spmsync(entropy_client):
             pkg_counter = Spm.get_installed_package_metadata(spm_package,
                 "COUNTER")
         except KeyError:
+            print_error("cannot get COUNTER for %s" % (spm_package,))
             continue
         try:
             pkg_counter = int(pkg_counter)
         except ValueError:
+            print_error("cannot convert COUNTER for %s, %s" % (
+                spm_package, pkg_counter,))
             continue
         installed_packages.append((spm_package, pkg_counter,))
 
@@ -426,7 +429,7 @@ def _database_spmsync(entropy_client):
             continue
         if x[0] not in installed_spm_uids:
             # check if the package is in to_be_added
-            if (to_be_added):
+            if to_be_added:
                 atom = entropy_client.installed_repository().retrieveAtom(x[1])
                 add = True
                 if atom:
