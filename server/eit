@@ -23,8 +23,8 @@ sys.path.insert(5, '/usr/lib/entropy/server')
 from entropy.i18n import _
 import entropy.tools
 from text_tools import print_menu
-from entropy.output import print_error, print_info, print_warning, \
-    purple, teal
+from entropy.output import is_stdout_a_tty, nocolor, print_error, print_info, \
+    print_warning, purple, teal
 from entropy.const import etpConst, etpUi
 
 REAGENT_EXEC = "/usr/sbin/reagent"
@@ -33,7 +33,7 @@ ACTIVATOR_EXEC = "/usr/sbin/activator"
 help_opts = [
     None,
     (0, " ~ eit ~ ", 1,
-        'Entropy Server Commands Wrapper - (C) %s' % (
+        'The Stupid Entropy Content Tracker (wrapper) - (C) %s' % (
             entropy.tools.get_year(),) ),
     None,
     (0, _('Options'), 0, None),
@@ -46,11 +46,15 @@ help_opts = [
     (1, 'cp <from> <to> <packages>', 1, _('copy packages from a repository to another')),
     (1, 'deps <packages>', 3, _('edit package dependencies')),
     (1, 'fit <package files>', 2, _('inject package files into the current repository')),
+    (1, 'graph <packages> [--complete]', 2, _('show dependency graph of packages')),
+    (1, 'list [<repository>]', 2, _('list packages in repository')),
     (1, 'log [<repository>]', 2, _('show log for repository')),
     (1, 'mv <from> <to> <packages>', 1, _('move packages from a repository to another')),
+    (1, 'own <package files>', 3, _('show owners of files (in current repository)')),
     (1, 'push [<repository>]', 2, _('push committed packages remotely')),
     (1, 'repo', 4, _('show current repository')),
     (1, 'reset [<repository>]', 2, _('reset repository to remote status')),
+    (1, 'revgraph <packages> [--complete]', 2, _('show reverse dependency graph of packages')),
     (1, 'rm <packages>', 3, _('remove packages from current repository')),
     (1, 'search <package deps>', 2, _('search for privided package dependencies')),
     (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
@@ -61,13 +65,44 @@ help_opts = [
 # TODO:
 # - diff?
 # - interactive commit?
-# - search for a tag
-# - search for a file (belongs)
-# - print graph and revgraph
 # - mask, unmask
 # - libtest, deptest, pkgtest
 
 options = sys.argv[1:]
+
+import re
+opt_r = re.compile("^(\\-)([a-z]+)$")
+for n in range(len(options)):
+    if opt_r.match(options[n]):
+        x = options[n]
+        del options[n]
+        options.extend(["-%s" % (d,) for d in x[1:]])
+
+# preliminary options parsing
+_options = []
+no_color = False
+force_color = False
+for opt in options:
+    if opt in ["--nocolor", "-N"]:
+        nocolor()
+        no_color = True
+    elif opt in ["--color", "-C"]:
+        force_color = True
+    elif opt in ["--quiet", "-q"]:
+        etpUi['quiet'] = True
+    elif opt in ["--verbose", "-v"]:
+        etpUi['verbose'] = True
+    elif opt in ["--ask", "-a"]:
+        etpUi['ask'] = True
+    elif opt in ["--pretend", "-p"]:
+        etpUi['pretend'] = True
+    else:
+        _options.append(opt)
+options = _options
+
+# Check if we need to disable colors
+if (not force_color) and (not is_stdout_a_tty()):
+    nocolor()
 
 # print help
 if not options or ("--help" in options) or ("-h" in options):
@@ -78,7 +113,20 @@ if not options or ("--help" in options) or ("-h" in options):
     raise SystemExit(0)
 
 def _exec_args(args):
-    os.execvpe(args[0], args, os.environ)
+    myargs = []
+    if etpUi['quiet']:
+        myargs.append("--quiet")
+    if etpUi['verbose']:
+        myargs.append("--verbose")
+    if etpUi['ask']:
+        myargs.append("--ask")
+    if etpUi['pretend']:
+        myargs.append("--pretend")
+    if force_color:
+        myargs.append("--color")
+    if no_color:
+        myargs.append("--nocolor")
+    os.execvpe(args[0], args + myargs, os.environ)
 
 def get_entropy_server(quiet = False):
     if quiet:
@@ -105,7 +153,7 @@ elif (main_cmd == "checkout") and options and len(options) < 2:
     repository_id = options.pop(0)
     _exec_args((REAGENT_EXEC, "repo", "default", repository_id))
 
-elif (main_cmd == "cleanup"):
+elif main_cmd == "cleanup":
     if options:
         os.environ['ETP_REPO'] = options.pop(0)
     _exec_args((ACTIVATOR_EXEC, "tidy"))
@@ -115,8 +163,24 @@ elif main_cmd == "commit":
         os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "update"] + options)
 
-elif main_cmd == "fit" and options:
+elif (main_cmd == "fit") and options:
     _exec_args([REAGENT_EXEC, "inject"] + options)
+
+elif main_cmd == "list":
+    if options:
+        os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([REAGENT_EXEC, "query", "list"] + options)
+
+elif main_cmd == "graph" and options and \
+    not ((len(set(options)) == 1) and ("--complete" in options)):
+    _exec_args([REAGENT_EXEC, "query", "graph"] + options)
+
+elif main_cmd == "revgraph" and options and \
+    not ((len(set(options)) == 1) and ("--complete" in options)):
+    _exec_args([REAGENT_EXEC, "query", "revgraph"] + options)
+
+elif (main_cmd == "own") and options:
+    _exec_args([REAGENT_EXEC, "query", "belongs"] + options)
 
 elif main_cmd == "push":
     if options:
@@ -215,4 +279,5 @@ elif main_cmd == "log":
 
 else:
     print_menu(help_opts)
+    print_error("wrong parameters")
     raise SystemExit(1)
