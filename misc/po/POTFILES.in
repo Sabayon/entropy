@@ -71,6 +71,7 @@
 ../libraries/test_new_ugc.py
 ../libraries/test_payload.py
 ../libraries/test_portage.py
+../libraries/test.py
 ../libraries/test_qa.py
 ../libraries/test_qa_sets.py
 ../libraries/test_rsync.py
@@ -117,5 +118,6 @@
 ../magneto/src/magneto/core/__init__.py
 ../magneto/src/magneto/core/interfaces.py
 ../services/kernel-switcher
+../server/eit
 ../sulfur/src/sulfur/sulfur.glade
 ../magneto/src/magneto/gtk/magneto.glade
