@@ -161,7 +161,8 @@ class Server(object):
 
         return branch_data
 
-    def lock_mirrors(self, repository_id, lock, mirrors = None):
+    def lock_mirrors(self, repository_id, lock, mirrors = None,
+        unlock_locally = True):
         """
         Lock remote mirrors for given repository. In this way repository
         will be locked for both Entropy Server and Entropy Client instances.
@@ -173,6 +174,10 @@ class Server(object):
         @keyword mirrors: provide a list of repository mirrors and override
             the current ones (which are stored inside repository metadata)
         @type mirrors: list
+        @keyword unlock_locally: True, if local mirror lock file should be
+            handled too (in case of shadow repos local lock file should not
+            be touched)
+        @type unlock_locally: bool
         @return: True, if action is successfull
         @rtype: bool
         """
@@ -248,7 +253,7 @@ class Server(object):
                     rc_lock = self._do_mirror_lock(repository_id, uri, handler)
                 else:
                     rc_lock = self._do_mirror_unlock(repository_id, uri,
-                        handler)
+                        handler, unlock_locally = unlock_locally)
 
             if not rc_lock:
                 done = False
@@ -262,7 +267,8 @@ class Server(object):
         return done
 
 
-    def lock_mirrors_for_download(self, repository_id, lock, mirrors = None):
+    def lock_mirrors_for_download(self, repository_id, lock, mirrors = None,
+        unlock_locally = True):
         """
         This functions makes Entropy clients unable to download the repository
         from given mirrors.
@@ -274,6 +280,10 @@ class Server(object):
         @keyword mirrors: provide a list of repository mirrors and override
             the current ones (which are stored inside repository metadata)
         @type mirrors: list
+        @keyword unlock_locally: True, if local mirror lock file should be
+            handled too (in case of shadow repos local lock file should not
+            be touched)
+        @type unlock_locally: bool
         @return: True, if action is successfull
         @rtype: bool
         """
@@ -349,7 +359,8 @@ class Server(object):
                         dblock = False)
                 else:
                     rc_lock = self._do_mirror_unlock(repository_id, uri,
-                        handler, dblock = False)
+                        handler, dblock = False,
+                        unlock_locally = unlock_locally)
                 if not rc_lock:
                     done = False
 
@@ -419,7 +430,8 @@ class Server(object):
         return rc_upload
 
 
-    def _do_mirror_unlock(self, repository_id, uri, txc_handler, dblock = True):
+    def _do_mirror_unlock(self, repository_id, uri, txc_handler, dblock = True,
+        unlock_locally = True):
 
         repo_relative = \
             self._entropy._get_override_remote_repository_relative_path(
@@ -453,11 +465,13 @@ class Server(object):
                 level = "info",
                 header = darkgreen(" * ")
             )
-            if dblock:
-                self._entropy._remove_local_repository_lockfile(repository_id)
-            else:
-                self._entropy._remove_local_repository_download_lockfile(
-                    repository_id)
+            if unlock_locally:
+                if dblock:
+                    self._entropy._remove_local_repository_lockfile(
+                        repository_id)
+                else:
+                    self._entropy._remove_local_repository_download_lockfile(
+                        repository_id)
         else:
             self._entropy.output(
                 "[%s|%s] %s: %s - %s" % (
