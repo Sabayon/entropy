@@ -1525,6 +1525,9 @@ def const_kill_threads(wait_seconds = 120.0):
         if thread.get_ident() == running_t.ident:
             # do not try to kill myself
             continue
+        if running_t.daemon:
+            # will be killed by the VM
+            continue
         running_t.join(wait_seconds) # wait n seconds?
 
 def __const_handle_exception(etype, value, t_back):
