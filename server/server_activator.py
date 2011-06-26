@@ -544,22 +544,6 @@ def _repo(entropy_server, options):
 
     return -10
 
-def sync_remote_databases():
-    acquired = False
-    server = None
-    try:
-        server = get_entropy_server()
-        acquired = entropy.tools.acquire_entropy_locks(server)
-        if not acquired:
-            print_error(darkgreen(_("Another Entropy is currently running.")))
-            return 1
-        return _sync_remote_databases(server, server.repository())
-    finally:
-        if server is not None:
-            if acquired:
-                entropy.tools.release_entropy_locks(server)
-            server.shutdown()
-
 def _sync_remote_databases(entropy_server, repository_id):
 
     print_info(green(" * ")+red("%s:" % (
