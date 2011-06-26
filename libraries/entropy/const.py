@@ -30,6 +30,7 @@
 """
 import sys
 import os
+import time
 
 # check for potentially disruptive filesystem encoding setting.
 # Values different from UTF-8 are not supported and can cause
@@ -1574,13 +1575,21 @@ def const_debug_write(identifier, msg):
     @return: None
     """
     if etpUi['debug']:
+        # XXX: hierarchy violation, but hey, we're debugging shit
+        from entropy.output import brown, purple, teal, darkgreen, darkred
+        current_thread = threading.current_thread()
+        th_identifier = "[id:%s, name:%s, daemon:%s, ts:%s] %s" % (
+            brown(repr(current_thread.ident)),
+            purple(repr(current_thread.name)),
+            teal(repr(current_thread.daemon)), darkgreen(repr(time.time())),
+            darkred(identifier),)
         with _DEBUG_W_LOCK:
             if sys.hexversion >= 0x3000000:
                 sys.stdout.buffer.write(
-                    const_convert_to_rawstring(identifier) + \
+                    const_convert_to_rawstring(th_identifier) + \
                         b" " + const_convert_to_rawstring(msg) + b"\n")
             else:
-                sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
+                sys.stdout.write("%s: %s" % (th_identifier, msg + "\n"))
             sys.stdout.flush()
 
 def const_get_caller():
