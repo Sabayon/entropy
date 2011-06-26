@@ -1410,7 +1410,7 @@ class AvailablePackagesRepositoryUpdater(object):
             # nothing to sync, it seems, if force is True, fallback to EAPI2
             return False
 
-        threshold = 2000
+        threshold = 500
         # is it worth it?
         if len(added_ids) > threshold:
             mytxt = "%s: %s (%s: %s/%s)" % (
