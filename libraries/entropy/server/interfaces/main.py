@@ -818,12 +818,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 os.path.join(   sys_set['repositories']['product'],
                                 repoid
                             )
-            data['repositories'][repoid]['database_relative_path'] = \
-                os.path.join(   sys_set['repositories']['product'],
-                                repoid,
-                                "database",
-                                etpConst['currentarch']
-                            )
+            data['repositories'][repoid]['database_remote_path'] = \
+                ServerSystemSettingsPlugin.get_repository_remote_path(
+                    sys_set, repoid)
+            data['repositories'][repoid]['override_database_remote_path'] = None
 
         # Support for shell variables
         shell_repoid = os.getenv('ETP_REPO')
@@ -840,6 +838,27 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
+    @staticmethod
+    def get_repository_remote_path(system_settings, repository_id):
+        return system_settings['repositories']['product'] + "/" + \
+            repository_id + "/database/" + etpConst['currentarch']
+
+    @staticmethod
+    def set_override_remote_repository(system_settings, repository_id,
+        override_repository_id):
+        """
+        Used to set an overridden remote path where to push repository
+        database. This can be used for quickly testing repository changes
+        without directly overwriting the real repository.
+        """
+        repo_path = ServerSystemSettingsPlugin.get_repository_remote_path(
+            system_settings, override_repository_id)
+
+        sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        srv_data = system_settings[sys_settings_plugin_id]['server']
+        repo_data = srv_data['repositories'][repository_id]
+        repo_data['override_database_remote_path'] = repo_path
 
 class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -1156,7 +1175,12 @@ class Server(Client):
 
     def _get_remote_repository_relative_path(self, repository_id):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
-        return srv_set['repositories'][repository_id]['database_relative_path']
+        return srv_set['repositories'][repository_id]['database_remote_path']
+
+    def _get_override_remote_repository_relative_path(self, repository_id):
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        repo_data = srv_set['repositories'][repository_id]
+        return repo_data['override_database_remote_path']
 
     def _get_local_repository_file(self, repository_id, branch = None):
         return os.path.join(self._get_local_repository_dir(repository_id,

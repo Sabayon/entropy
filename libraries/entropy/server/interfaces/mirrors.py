@@ -114,6 +114,8 @@ class Server(object):
                 header = brown(" @@ ")
             )
 
+            # not using override data on purpose (remote url can be
+            # overridden...)
             branches_path = self._entropy._get_remote_repository_relative_path(
                 repository_id)
             txc = self._entropy.Transceiver(uri)
@@ -199,9 +201,14 @@ class Server(object):
                 back = True
             )
 
-            base_path = os.path.join(
-                self._entropy._get_remote_repository_relative_path(
-                    repository_id),
+            repo_relative = \
+                self._entropy._get_override_remote_repository_relative_path(
+                    repository_id)
+            if repo_relative is None:
+                repo_relative = \
+                    self._entropy._get_remote_repository_relative_path(
+                        repository_id)
+            base_path = os.path.join(repo_relative,
                 self._settings['repositories']['branch'])
             lock_file = os.path.join(base_path,
                 etpConst['etpdatabaselockfile'])
@@ -295,9 +302,14 @@ class Server(object):
             )
 
             lock_file = etpConst['etpdatabasedownloadlockfile']
-            my_path = os.path.join(
-                self._entropy._get_remote_repository_relative_path(
-                    repository_id),
+            repo_relative = \
+                self._entropy._get_override_remote_repository_relative_path(
+                    repository_id)
+            if repo_relative is None:
+                repo_relative = \
+                    self._entropy._get_remote_repository_relative_path(
+                        repository_id)
+            my_path = os.path.join(repo_relative,
                 self._settings['repositories']['branch'])
             lock_file = os.path.join(my_path, lock_file)
 
@@ -345,8 +357,14 @@ class Server(object):
 
     def _do_mirror_lock(self, repository_id, uri, txc_handler, dblock = True):
 
-        my_path = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repository_id),
+        repo_relative = \
+            self._entropy._get_override_remote_repository_relative_path(
+                repository_id)
+        if repo_relative is None:
+            repo_relative = self._entropy._get_remote_repository_relative_path(
+                repository_id)
+
+        my_path = os.path.join(repo_relative,
             self._settings['repositories']['branch'])
 
         # create path to lock file if it doesn't exist
@@ -403,8 +421,14 @@ class Server(object):
 
     def _do_mirror_unlock(self, repository_id, uri, txc_handler, dblock = True):
 
-        my_path = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repository_id),
+        repo_relative = \
+            self._entropy._get_override_remote_repository_relative_path(
+                repository_id)
+        if repo_relative is None:
+            repo_relative = self._entropy._get_remote_repository_relative_path(
+                repository_id)
+
+        my_path = os.path.join(repo_relative,
             self._settings['repositories']['branch'])
 
         crippled_uri = EntropyTransceiver.get_uri_name(uri)
@@ -619,8 +643,14 @@ class Server(object):
         cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
         if cmethod is None:
             raise AttributeError("Wrong repository compression method passed")
-        remote_dir = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repo),
+
+        repo_relative = \
+            self._entropy._get_override_remote_repository_relative_path(
+                repo)
+        if repo_relative is None:
+            repo_relative = self._entropy._get_remote_repository_relative_path(
+                repo)
+        remote_dir = os.path.join(repo_relative,
             self._settings['repositories']['branch'])
 
         # let raise exception if connection is impossible
@@ -732,8 +762,13 @@ class Server(object):
         @rtype: list
         """
         dbstatus = []
-        remote_dir = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repository_id),
+        repo_relative = \
+            self._entropy._get_override_remote_repository_relative_path(
+                repository_id)
+        if repo_relative is None:
+            repo_relative = self._entropy._get_remote_repository_relative_path(
+                repository_id)
+        remote_dir = os.path.join(repo_relative,
             self._settings['repositories']['branch'])
         lock_file = os.path.join(remote_dir, etpConst['etpdatabaselockfile'])
         down_lock_file = os.path.join(remote_dir,
@@ -772,8 +807,14 @@ class Server(object):
         lock_file = self._entropy._get_repository_lockfile(repository_id)
         lock_filename = os.path.basename(lock_file)
 
-        remote_dir = os.path.join(
-            self._entropy._get_remote_repository_relative_path(repository_id),
+        repo_relative = \
+            self._entropy._get_override_remote_repository_relative_path(
+                repository_id)
+        if repo_relative is None:
+            repo_relative = self._entropy._get_remote_repository_relative_path(
+                repository_id)
+
+        remote_dir = os.path.join(repo_relative,
             self._settings['repositories']['branch'])
         remote_lock_file = os.path.join(remote_dir, lock_filename)
 
@@ -2183,14 +2224,19 @@ class Server(object):
             header = blue(" @@ ")
         )
 
+        remote_dir = os.path.join(
+            self._entropy._get_remote_repository_relative_path(repository_id),
+                self._settings['repositories']['branch'])
+
         downloaded = False
         for uri in mirrors:
             crippled_uri = EntropyTransceiver.get_uri_name(uri)
+
             downloader = self.TransceiverServerHandler(
                 self._entropy, [uri],
                 [rss_path], download = True,
                 local_basedir = mytmpdir, critical_files = [rss_path],
-                repo = repository_id
+                txc_basedir = remote_dir, repo = repository_id
             )
             errors, m_fine_uris, m_broken_uris = downloader.go()
             if not errors:
@@ -2238,12 +2284,17 @@ class Server(object):
             header = blue(" @@ ")
         )
 
+        remote_dir = os.path.join(
+            self._entropy._get_remote_repository_relative_path(repository_id),
+                self._settings['repositories']['branch'])
+
         destroyer = self.TransceiverServerHandler(
             self._entropy,
             mirrors,
             [rss_file],
             critical_files = [rss_file],
             remove = True,
+            txc_basedir = remote_dir,
             repo = repository_id
         )
         errors, m_fine_uris, m_broken_uris = destroyer.go()
@@ -2298,12 +2349,16 @@ class Server(object):
             header = blue(" @@ ")
         )
 
+        remote_dir = os.path.join(
+            self._entropy._get_remote_repository_relative_path(repository_id),
+                self._settings['repositories']['branch'])
+
         uploader = self.TransceiverServerHandler(
             self._entropy,
             mirrors,
             [rss_path],
             critical_files = [rss_path],
-            repo = repository_id
+            txc_basedir = remote_dir, repo = repository_id
         )
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:

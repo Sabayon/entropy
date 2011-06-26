@@ -692,12 +692,23 @@ class ServerPackagesRepositoryUpdater(object):
             self._mirrors.lock_mirrors(self._repository_id, True,
                 mirrors = [uri])
 
+            repo_relative = \
+                self._entropy._get_override_remote_repository_relative_path(
+                    self._repository_id)
+            if repo_relative is None:
+                repo_relative = \
+                    self._entropy._get_remote_repository_relative_path(
+                        self._repository_id)
+            remote_dir = os.path.join(repo_relative,
+                self._settings['repositories']['branch'])
+
             # download
             downloader = self._mirrors.TransceiverServerHandler(
                 self._entropy, [uri],
                 [download_data[x] for x in download_data],
                 download = True, local_basedir = mytmpdir,
-                critical_files = critical, repo = self._repository_id)
+                critical_files = critical,
+                txc_basedir = remote_dir, repo = self._repository_id)
             errors, m_fine_uris, m_broken_uris = downloader.go()
             if errors:
                 x_uri, reason = m_broken_uris.pop()
@@ -1464,11 +1475,21 @@ Name:    %s
             if 3 not in disabled_eapis:
                 self._show_eapi3_upload_messages(crippled_uri, database_path)
 
+            repo_relative = \
+                self._entropy._get_override_remote_repository_relative_path(
+                    self._repository_id)
+            if repo_relative is None:
+                repo_relative = \
+                    self._entropy._get_remote_repository_relative_path(
+                        self._repository_id)
+            remote_dir = os.path.join(repo_relative,
+                self._settings['repositories']['branch'])
+
             uploader = self._mirrors.TransceiverServerHandler(
                 self._entropy, [uri],
                 [upload_data[x] for x in sorted(upload_data)],
                 critical_files = critical,
-                repo = self._repository_id
+                txc_basedir = remote_dir, repo = self._repository_id
             )
             errors, m_fine_uris, m_broken_uris = uploader.go()
             if errors:

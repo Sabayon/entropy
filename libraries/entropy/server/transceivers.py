@@ -59,13 +59,8 @@ class TransceiverServerHandler:
             self.download = False
 
         if not txc_basedir:
-            # default to database directory
-            branch = self._settings['repositories']['branch']
-            my_path = os.path.join(
-                self.Entropy._get_remote_repository_relative_path(repo), branch)
-            self.txc_basedir = my_path
-        else:
-            self.txc_basedir = txc_basedir
+            raise AttributeError("invalid txc_basedir passed")
+        self.txc_basedir = txc_basedir
 
         if not local_basedir:
             # default to database directory
