@@ -43,23 +43,25 @@ help_opts = [
     None,
     (0, _('Application Options'), 0, None),
     None,
-    (1, 'sync', 2, _('sync packages, database and also do some tidy')),
+    (1, 'sync', 3, _('sync packages, database and also do some tidy')),
         (2, '--branch=<branch>', 1, _('choose on what branch operating')),
-        (2, '--noask', 2, _('do not ask anything except critical things')),
+        (2, '--noask', 3, _('do not ask anything except critical things')),
         (2, '--syncall', 2, _('sync all the configured repositories')),
+    (1, 'syncas <repository>', 1, _('same as sync, but put repository database ONLY into a dummy repository')),
     None,
-    (1, 'tidy', 2, _('remove binary packages not in repositories and expired')),
+    (1, 'tidy', 3, _('remove binary packages not in repositories and expired')),
     None,
-    (1, 'packages', 1, _('package repositories handling functions')),
+    (1, 'packages', 2, _('package repositories handling functions')),
         (2, 'sync', 3, _('sync package repositories across primary mirrors')),
             (3, '--ask', 3, _('ask before making any changes')),
             (3, '--pretend', 2, _('only show what would be done')),
             (3, '--syncall', 2, _('sync all the configured repositories')),
             (3, '--do-packages-check', 1, _('also verify packages integrity')),
     None,
-    (1, 'repo', 1, _('repository handling functions')),
+    (1, 'repo', 3, _('repository handling functions')),
         (2, 'sync', 3, _('sync the current repository database across primary mirrors')),
             (3, '--syncall', 1, _('sync all the configured repositories')),
+        (2, 'syncas <repository>', 1, _('same as sync, but put repository database ONLY into a dummy repository')),
         (2, 'vacuum', 3, _('clean unavailable packages from mirrors (similar to tidy, but more nazi)')),
             (3, '--days=<days>', 1, _('expiration days [default is: 0, dangerous!]')),
         (2, 'lock', 3, _('lock the current repository database (server-side)')),
@@ -69,7 +71,7 @@ help_opts = [
         (2, 'lock-status', 2, _('show current lock status')),
 
     None,
-    (1, 'notice', 1, _('notice board handling functions')),
+    (1, 'notice', 3, _('notice board handling functions')),
         (2, 'add', 2, _('add a news item to the notice board')),
         (2, 'remove', 2, _('remove a news item from the notice board')),
         (2, 'read', 2, _('read the current notice board')),
@@ -150,6 +152,10 @@ install_exception_handler()
 if main_cmd == "sync":
     import server_activator
     rc = server_activator.sync(options)
+
+if main_cmd == "syncas":
+    import server_activator
+    rc = server_activator.syncas(options)
 
 elif main_cmd == "tidy":
     import server_activator

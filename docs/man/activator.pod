@@ -66,6 +66,10 @@ sync all the configured repositories
 =back
 
 
+=item B<syncas <repository>>
+
+same as sync, but put repository database ONLY into a dummy repository
+
 =item B<tidy>
 
 remove binary packages not in repositories and expired
@@ -124,6 +128,11 @@ sync the current repository database across primary mirrors
 sync all the configured repositories
 
 =back
+
+
+=item B<syncas <repository>>
+
+same as sync, but put repository database ONLY into a dummy repository
 
 
 =item B<vacuum>

@@ -16,7 +16,7 @@ from entropy.const import etpConst, etpUi
 from entropy.output import red, green, print_info, bold, darkgreen, blue, \
     darkred, brown, purple, teal, print_error, print_warning, readtext, \
         print_generic
-from entropy.server.interfaces import Server
+from entropy.server.interfaces import Server, ServerSystemSettingsPlugin
 from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
 from entropy.i18n import _
@@ -44,14 +44,37 @@ def sync(options, just_tidy = False):
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
-        return _sync(server, options, just_tidy)
+        return _sync(server, options, just_tidy, None)
     finally:
         if server is not None:
             if acquired:
                 entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
-def _sync(entropy_server, options, just_tidy):
+def syncas(options, just_tidy = False):
+    if not options:
+        return -10
+    # syncas, validate args
+    as_repository_id = options[0]
+    if not entropy.tools.validate_repository_id(as_repository_id):
+        return -10
+
+    acquired = False
+    server = None
+    try:
+        server = get_entropy_server()
+        acquired = entropy.tools.acquire_entropy_locks(server)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+            return 1
+        return _sync(server, [], just_tidy, as_repository_id)
+    finally:
+        if server is not None:
+            if acquired:
+                entropy.tools.release_entropy_locks(server)
+            server.shutdown()
+
+def _sync(entropy_server, options, just_tidy, as_repository_id):
 
     do_noask = False
     sync_all = False
@@ -102,7 +125,7 @@ def _sync(entropy_server, options, just_tidy):
             if not successfull_mirrors:
                 continue
 
-            if mirrors_tainted:
+            if mirrors_tainted and (as_repository_id is None):
 
                 if (not do_noask) and rss_enabled:
                     tmp_fd, tmp_commit_path = tempfile.mkstemp(
@@ -135,6 +158,11 @@ def _sync(entropy_server, options, just_tidy):
 
                 elif rss_enabled:
                     ServerRssMetadata()['commitmessage'] = "Automatic update"
+
+            if as_repository_id is not None:
+                # change repository push location
+                ServerSystemSettingsPlugin.set_override_remote_repository(
+                    entropy_server.Settings(), repo, as_repository_id)
 
             sts = _sync_remote_databases(entropy_server, repo)
             if sts == 0:
@@ -492,11 +520,28 @@ def _repo(entropy_server, options):
                 brown("%s: " % (_("DOWNLOAD"),) ) + db[2] + red("]"))
         return 0
 
-    elif cmd == "sync":
+    elif cmd in ("sync", "syncas"):
 
         repos = [repository_id]
-        if "--syncall" in args:
-            repos = entropy_server.repositories()
+        as_repository_id = None
+        if cmd == "sync":
+            if "--syncall" in args:
+                repos = entropy_server.repositories()
+        elif not args:
+            # syncas without repo
+            return -10
+        elif len(args) > 1:
+            # syncas, too many args
+            return -10
+        else:
+            # syncas, validate args
+            as_repository_id = args[0]
+            if not entropy.tools.validate_repository_id(as_repository_id):
+                return -10
+
+            # change repository push location
+            ServerSystemSettingsPlugin.set_override_remote_repository(
+                entropy_server.Settings(), repository_id, as_repository_id)
 
         rc = 0
         for repo in repos:
@@ -505,7 +550,14 @@ def _repo(entropy_server, options):
             if repo == etpConst['clientserverrepoid']:
                 continue
 
-            print_info(green(" * ")+red("%s ..." % (_("Syncing repositories"),) ))
+            if as_repository_id is not None:
+                print_info("%s %s %s => %s" % (
+                    green(" *"), teal(_("Syncing repository")),
+                    purple(repo), bold(as_repository_id),))
+            else:
+                print_info("%s %s %s" % (
+                    green(" *"), teal(_("Syncing repository")),
+                    purple(repo),))
             sts = _sync_remote_databases(entropy_server, repo)
             if sts != 0:
                 print_error(darkred(" !!! ") + \
