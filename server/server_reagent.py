@@ -1035,7 +1035,7 @@ def _update(entropy_server, options):
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
         store_dir = entropy_server._get_local_store_directory(
             entropy_server.repository())
-        for x in to_be_added:
+        for x in sorted(to_be_added):
             print_info(brown("    # ")+teal(x[0]))
             try:
                 entropy_server.Spm().generate_package(x[0], store_dir)
