@@ -1524,6 +1524,15 @@ class AvailablePackagesRepositoryUpdater(object):
                 header = "\t", back = True, count = (count, maxcount,)
             )
             fetch_sts_map['sem'].acquire()
+            if len(threads) >= max_threads:
+                const_debug_write(__name__,
+                    purple("joining all the parallel threads"))
+                # give them the chance to complete
+                # since long delays on socket could cause timeouts
+                for th in threads:
+                    th.join()
+                const_debug_write(__name__, purple("parallel threads joined"))
+                del threads[:]
             if fetch_sts_map['error']:
                 return None
             th = ParallelTask(_do_fetch, fetch_sts_map, segment, count,
