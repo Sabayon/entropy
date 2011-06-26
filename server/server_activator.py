@@ -166,7 +166,9 @@ def _sync(entropy_server, options, just_tidy, as_repository_id):
 
             sts = _sync_remote_databases(entropy_server, repo)
             if sts == 0:
-                entropy_server.Mirrors.lock_mirrors(repo, False)
+                # do not touch locking
+                entropy_server.Mirrors.lock_mirrors(repo, False,
+                    unlock_locally = (as_repository_id is None))
             if (sts == 0) and not do_noask:
                 q_rc = entropy_server.ask_question(
                     _("Should I continue with the tidy procedure ?"))
@@ -609,7 +611,7 @@ def _sync_remote_databases(entropy_server, repository_id):
             blue(str(revision)))
 
     local_revision = entropy_server.local_repository_revision(repository_id)
-    print_info(red("      * %s: " % (
+    print_info(red("    * %s: " % (
         _("Local revision currently at"),) ) + \
             blue(str(local_revision)))
 
