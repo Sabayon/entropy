@@ -1497,7 +1497,7 @@ class AvailablePackagesRepositoryUpdater(object):
                     fetch_sts_map['error'] = True
                     return
 
-                return True
+                return
             finally:
                 fetch_sts_map['sem'].release()
 
