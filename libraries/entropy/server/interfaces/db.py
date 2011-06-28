@@ -434,12 +434,6 @@ class ServerPackagesRepositoryUpdater(object):
         if os.path.isfile(database_package_system_mask_file) or download:
             extra_text_files.append(database_package_system_mask_file)
 
-        database_package_confl_tagged_file = \
-            self._entropy._get_local_repository_confl_tagged_file(
-                self._repository_id)
-        if os.path.isfile(database_package_confl_tagged_file) or download:
-            extra_text_files.append(database_package_confl_tagged_file)
-
         database_license_whitelist_file = \
             self._entropy._get_local_repository_licensewhitelist_file(
                 self._repository_id)

@@ -1176,24 +1176,6 @@ class PortagePlugin(SpmPlugin):
             data['dependencies'][kern_dep_key] = \
                 etpConst['dependency_type_ids']['rdepend_id']
 
-        # Conflicting tagged packages support
-        # Needs Entropy Client System Settings Plugin,
-        # but since entropy.server loads entropy.client, it's completely
-        # fine as of now.
-        key = data['category'] + "/" + data['name']
-        plug_data = etpConst['system_settings_plugins_ids']
-        client_sysset_plg_id = plug_data['client_plugin']
-        client_data = system_settings.get(client_sysset_plg_id, {})
-        confl_data = None
-
-        if client_data:
-            repo_data = client_data['repositories']
-            confl_data = repo_data['conflicting_tagged_packages'].get(key)
-
-        if confl_data:
-            for conflict in confl_data:
-                data['conflicts'].append(conflict)
-
         # conflicts must be a set, which is what is returned
         # by entropy.db.getPackageData
         data['conflicts'] = set(data['conflicts'])

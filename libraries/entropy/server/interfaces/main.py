@@ -1221,11 +1221,6 @@ class Server(Client):
         return os.path.join(self._get_local_repository_dir(repository_id,
             branch = branch), etpConst['etpdatabasesytemmaskfile'])
 
-    def _get_local_repository_confl_tagged_file(self, repository_id,
-        branch = None):
-        return os.path.join(self._get_local_repository_dir(repository_id,
-            branch = branch), etpConst['etpdatabaseconflictingtaggedfile'])
-
     def _get_local_repository_licensewhitelist_file(self, repository_id,
         branch = None):
         return os.path.join(self._get_local_repository_dir(repository_id,

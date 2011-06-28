@@ -98,7 +98,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'repos_license_whitelist': {},
             'repos_mask': {},
             'repos_system_mask': {},
-            'conflicting_tagged_packages': {},
             'repos_critical_updates': {},
             'repos_keywords': {},
         }
@@ -125,8 +124,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 etpConst['etpdatabaselicwhitelistfile'])
             sm_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasesytemmaskfile'])
-            ct_path = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabaseconflictingtaggedfile'])
             critical_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasecriticalfile'])
             keywords_path = os.path.join(repo_data['dbpath'],
@@ -148,8 +145,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
                     ".mtime"
-            if os.access(ct_path, os.R_OK) and os.path.isfile(ct_path):
-                confl_tagged[repoid] = ct_path
 
             if os.access(critical_path, os.R_OK) and \
                 os.path.isfile(critical_path):
@@ -177,9 +172,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 repos_sm_mask_setting)
             self.__repos_mtime['repos_system_mask'].update(
                 repos_sm_mask_mtime)
-
-            self.__repos_files['conflicting_tagged_packages'].update(
-                confl_tagged)
 
             self.__repos_files['repos_critical_updates'].update(
                 repos_critical_updates_setting)
@@ -392,7 +384,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'mask': {},
             'system_mask': [],
             'critical_updates': {},
-            'conflicting_tagged_packages': {},
             'repos_keywords': {},
         }
 
@@ -450,28 +441,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             data['critical_updates'][repoid] = \
                 entropy.tools.generic_file_content_parser(
                     self.__repos_files['repos_critical_updates'][repoid])
-
-
-        # conflicts map
-        # Parser returning packages that could have been installed because
-        # they aren't in the same scope, but ending up creating critical
-        # issues. You can see it as a configurable conflict map.
-        # keep priority order
-        repoids = [x for x in sys_settings_instance['repositories']['order'] \
-            if x in self.__repos_files['conflicting_tagged_packages']]
-        for repoid in repoids:
-            filepath = self.__repos_files['conflicting_tagged_packages'].get(
-                repoid)
-            if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
-                confl_f = open(filepath, "r")
-                content = confl_f.readlines()
-                confl_f.close()
-                content = [x.strip().rsplit("#", 1)[0].strip().split() for x \
-                    in content if not x.startswith("#") and x.strip()]
-                for mydata in content:
-                    if len(mydata) < 2:
-                        continue
-                    data['conflicting_tagged_packages'][mydata[0]] = mydata[1:]
 
         return data
 
