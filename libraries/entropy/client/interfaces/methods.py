@@ -161,7 +161,8 @@ class RepositoryMixin:
         @keyword mask_clear: clear package masking information if True
         @type mask_clear: bool
         """
-        for item in sorted(self._repodb_cache.keys()):
+        repo_cache = getattr(self, "_repodb_cache", {})
+        for item, val in repo_cache.items():
             repository_id, root = item
             # in-memory repositories cannot be closed
             # otherwise everything will be lost, to
@@ -170,11 +171,11 @@ class RepositoryMixin:
             if item in self._memory_db_instances:
                 continue
             try:
-                self._repodb_cache.pop(item).close(_token = repository_id)
+                repo_cache.pop(item).close(_token = repository_id)
             except OperationalError as err: # wtf!
                 sys.stderr.write("!!! Cannot close Entropy repos: %s\n" % (
                     err,))
-        self._repodb_cache.clear()
+        repo_cache.clear()
 
         # disable hooks during SystemSettings cleanup
         # otherwise it makes entropy.client.interfaces.repository crazy
