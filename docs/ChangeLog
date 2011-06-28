@@ -1,3 +1,111 @@
+commit 5a9be7b5d4fc7682e0b64d581842f6797fdaad06
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:13:32 2011 +0200
+
+    Release Entropy 1.0_rc19
+
+commit 4f8bd8c92df558a752f072f917e97b2b97a985be
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:12:35 2011 +0200
+
+    [entropy.*] remove tagged conflicting packages support, old and dusty piece of code, we now have packages dep_rewrite feature
+
+commit 5358a27dfa144f78ebcd954bf78e40ab89df302d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:09:02 2011 +0200
+
+    [entropy.server] close_repositories() is called by __del__, so make sure it's fault tolerant
+
+commit aa2c842324052dd7572354232e136636cf568065
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:08:32 2011 +0200
+
+    [entropy.server] make sure to always close the repository object
+
+commit 1765fd4becba9161a3a031c43c85763b3de38dac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:07:55 2011 +0200
+
+    [entropy.client] close_repositories() is called by __del__, so make it fault tolerant
+
+commit 51517dcb90f4e3a3b664b08a62aa80050b1b4cb2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:07:13 2011 +0200
+
+    [entropy.qa] move fd close() before remove()
+
+commit f2f73a209f64a61c6cd3c79266ae69228f714b83
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 23:06:05 2011 +0200
+
+    [activator] do not remove local lock when using "syncas"
+
+commit a95270e9be8a2984cf7e4445ef31ce282f9bd1cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 23:05:46 2011 +0200
+
+    [entropy.server] make possible to disable handling of repository local lock files
+
+commit 34b8055bf4147abf61f554007515b179c09e0ff4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 19:45:52 2011 +0200
+
+    [activator] implement "syncas" feature (to sync/push repository to temp locations, for testing)
+
+commit 6eaf623c28839b2af8348565152893076b6d459f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 19:45:04 2011 +0200
+
+    [entropy.server] make possible to override remote repository database directory (in order to implement push to different location)
+
+commit b3dab49d1b80072a14d9541d006c5eab32ac6889
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 18:29:36 2011 +0200
+
+    [activator] remove unused code
+
+commit 1166757135c8be175694f1973405621dfe8c5090
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 12:19:43 2011 +0200
+
+    [entropy.client.interfaces.db] no need to return True, _do_fetch runs in a separate thread now
+
+commit 44fea6871a8fac8bc76c7a41cd569dca764b7664
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 12:18:58 2011 +0200
+
+    [entropy.client.interfaces.db] to avoid socket timeouts, make sure to flush all the parallel downloads before starting another chunk
+
+commit 583316487e8c525b6b06d85629fefdeb2f391b20
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 12:18:18 2011 +0200
+
+    [entropy.client.interfaces.db] reduce diff sync threshold from 2000 to 500 package changes
+
+commit f84722013b616eed84a579338e5b0425ca71c4e5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 12:17:30 2011 +0200
+
+    [reagent] execute packages add queue in alphabetical order
+
+commit f416f976ac4338a4488a9066640b03834b6d6ba6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 12:14:19 2011 +0200
+
+    [entropy.const] const_debug_write: improve output (add colors) and provide thread information (as well as timestamp)
+
+commit e8b5dcf34a52c5a5149872691d062480dcfba710
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 12:13:42 2011 +0200
+
+    [entropy.const] const_kill_threads: no need to wait daemon threads
+
+commit 7f7acdd0c3009b2fc221cd7dcc18e7e795107389
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jun 26 00:09:36 2011 +0200
+
+    Tagging Entropy version 1.0_rc18
+
 commit b1fce54d63a0a94c701324fadcb2b903dc4adbc2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jun 26 00:09:32 2011 +0200
