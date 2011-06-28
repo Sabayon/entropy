@@ -3798,12 +3798,15 @@ class Server(Client):
         return 0
 
     def close_repositories(self, mask_clear = False):
-        for item in self._server_dbcache.keys():
-            try:
-                self._server_dbcache[item].close()
-            except ProgrammingError: # already closed?
-                pass
-        self._server_dbcache.clear()
+
+        srv_dbcache = self._server_dbcache
+        if srv_dbcache is not None:
+            for item in srv_dbcache.keys():
+                try:
+                    srv_dbcache[item].close()
+                except ProgrammingError: # already closed?
+                    pass
+            srv_dbcache.clear()
         if mask_clear:
             self._settings.clear()
 
