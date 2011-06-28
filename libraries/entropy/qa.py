@@ -1272,8 +1272,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
         finally:
             if dbc is not None:
                 dbc.close()
-            os.remove(tmp_path)
             os.close(fd)
+            os.remove(tmp_path)
 
         return valid
 
