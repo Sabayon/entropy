@@ -2558,11 +2558,12 @@ class Server(Client):
             empty_repo.initializeRepository()
             empty_repo.bumpTreeUpdatesActions(treeupdates_actions)
             empty_repo.commit()
-            empty_repo.close()
         except Exception:
             os.remove(tmp_repo_orig_path)
             raise
         finally:
+            if empty_repo is not None:
+                empty_repo.close()
             if orig_fd is not None:
                 os.close(orig_fd)
 
