@@ -85,6 +85,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertNotEqual(data['revision'], data2['revision'])
         data.pop('revision')
         data2.pop('revision')
+        del data2['original_repository']
         self.assertEqual(data, data2)
         self.assertEqual(idpackage, 1)
         self.assertEqual(idpackage2, 2)
@@ -102,7 +103,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_db.removePackage(idpackage)
         idpackage2 = test_db.handlePackage(data)
         rev2 = test_db.retrieveRevision(idpackage2)
-        self.assertEqual(data, test_db.getPackageData(idpackage2))
+        data2 = test_db.getPackageData(idpackage2)
+        del data2['original_repository']
+        self.assertEqual(data, data2)
         self.assertEqual(idpackage, 1)
         self.assertEqual(idpackage2, 2)
         self.assertEqual(rev, 0)

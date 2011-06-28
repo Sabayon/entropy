@@ -187,6 +187,7 @@ class DepTest(unittest.TestCase):
             data = spm.extract_package_metadata(path)
             idpackage = test_db.addPackage(data)
             data2 = test_db.getPackageData(idpackage)
+            del data2['original_repository']
             self.assertEqual(data, data2)
             deps.append(dep)
         deps.sort()
@@ -212,7 +213,9 @@ class DepTest(unittest.TestCase):
         for dep, path in pkgs.items():
             data = spm.extract_package_metadata(path)
             idpackage = test_db.addPackage(data)
-            self.assertEqual(data, test_db.getPackageData(idpackage))
+            data2 = test_db.getPackageData(idpackage)
+            del data2['original_repository']
+            self.assertEqual(data, data2)
             deps.append(dep)
         deps.sort()
         selected_matches = [(test_db.atomMatch(deps[2])[0],

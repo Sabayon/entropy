@@ -169,7 +169,9 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
-        self.assertEqual(data, dbconn.getPackageData(idpackage))
+        db_data = dbconn.getPackageData(idpackage)
+        del db_data['original_repository']
+        self.assertEqual(data, db_data)
         cs_data = dbconn.retrieveContentSafety(idpackage)
         for path, cs_info in cs_data.items():
             real_path = os.path.join(tmp_dir, path.lstrip("/"))
@@ -182,7 +184,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package()
         data = self.Spm.extract_package_metadata(test_pkg)
         idpackage = dbconn.addPackage(data)
-        self.assertEqual(data, dbconn.getPackageData(idpackage))
+        db_data = dbconn.getPackageData(idpackage)
+        del db_data['original_repository']
+        self.assertEqual(data, db_data)
         self.Client.remove_repository(self.mem_repoid)
         self.assertNotEqual(
             self.Client._memory_db_instances.get(self.mem_repoid), dbconn)
