@@ -2874,6 +2874,10 @@ class PortagePlugin(SpmPlugin):
                         dest_path = os.path.join(tmp_dir, f_name)
                         entropy.tools.movefile(f_path, dest_path,
                             src_basedir = copypath)
+                    # this should not really exist here
+                    if os.path.isdir(pkg_dir):
+                        shutil.rmtree(pkg_dir)
+                    os.rename(tmp_dir, pkg_dir)
                 except (IOError, OSError) as err:
                     mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                         brown(_("Cannot update Portage database to destination")),
@@ -2886,10 +2890,6 @@ class PortagePlugin(SpmPlugin):
                     )
                     shutil.rmtree(tmp_dir)
                     vdb_failed = True
-
-                if not vdb_failed:
-                    # then move atomically
-                    os.rename(tmp_dir, pkg_dir)
 
                 # this is a Unit Testing setting, so it's always not available
                 # unless in unit testing code
