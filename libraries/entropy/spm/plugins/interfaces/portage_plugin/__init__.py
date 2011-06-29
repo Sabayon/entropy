@@ -2864,23 +2864,32 @@ class PortagePlugin(SpmPlugin):
             # lock vdb before making changes
             with self._PortageVdbLocker(self):
 
-                if os.path.isdir(pkg_dir):
-                    shutil.rmtree(pkg_dir)
+                tmp_dir = tempfile.mkdtemp(dir=cat_dir,
+                    prefix="-MERGING-")
 
                 vdb_failed = False
                 try:
-                    shutil.copytree(copypath, pkg_dir)
-                except (IOError,) as e:
+                    for f_name in os.listdir(copypath):
+                        f_path = os.path.join(copypath, f_name)
+                        dest_path = os.path.join(tmp_dir, f_name)
+                        entropy.tools.movefile(f_path, dest_path,
+                            src_basedir = copypath)
+                except (IOError, OSError) as err:
                     mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                         brown(_("Cannot update Portage database to destination")),
-                        purple(pkg_dir), e,)
+                        purple(tmp_dir), err,)
                     self.__output.output(
                         mytxt,
                         importance = 1,
                         level = "warning",
                         header = darkred("   ## ")
                     )
+                    shutil.rmtree(tmp_dir)
                     vdb_failed = True
+
+                if not vdb_failed:
+                    # then move atomically
+                    os.rename(tmp_dir, pkg_dir)
 
                 # this is a Unit Testing setting, so it's always not available
                 # unless in unit testing code
