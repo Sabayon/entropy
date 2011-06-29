@@ -2867,6 +2867,7 @@ class PortagePlugin(SpmPlugin):
                 if os.path.isdir(pkg_dir):
                     shutil.rmtree(pkg_dir)
 
+                vdb_failed = False
                 try:
                     shutil.copytree(copypath, pkg_dir)
                 except (IOError,) as e:
@@ -2879,10 +2880,12 @@ class PortagePlugin(SpmPlugin):
                         level = "warning",
                         header = darkred("   ## ")
                     )
+                    vdb_failed = True
 
                 # this is a Unit Testing setting, so it's always not available
                 # unless in unit testing code
-                if not package_metadata.get('unittest_root'):
+                if not package_metadata.get('unittest_root') and \
+                    (not vdb_failed):
 
                     # Packages emerged with -B don't contain CONTENTS file
                     # in their metadata, so we have to create one
@@ -2904,8 +2907,12 @@ class PortagePlugin(SpmPlugin):
                         )
                         counter = -1
 
-                # from this point, every vardb change has to be committed
-                self._bump_vartree_mtime(spm_package)
+                if not vdb_failed:
+                    # from this point, every vardb change has to be committed
+                    self._bump_vartree_mtime(spm_package)
+                    # We also need to bump vdb mtime now, otherwise Portage
+                    # will potentially pick up wrong cache data
+                    os.utime(pkg_dir, None)
 
         user_inst_source = etpConst['install_sources']['user']
         if package_metadata['install_source'] != user_inst_source:
