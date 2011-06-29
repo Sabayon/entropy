@@ -1,3 +1,39 @@
+commit 1dcca1837dc05314177e38dd4880f4b817a85f3f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 29 11:33:58 2011 +0200
+
+    Release Entropy 1.0_rc20
+
+commit 02d2a2d43b53f3241b7f83150d310af7eb447494
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 29 11:33:02 2011 +0200
+
+    [entropy.spm] PortagePlugin: add_installed_package: improve reliability even more
+
+commit 5d803165c3d92c1fa39d88c0f76974e5ec54d117
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 29 11:26:14 2011 +0200
+
+    [entropy.spm] PortagePlugin: be more atomic when moving the pkg vdb dir to destination
+
+commit 99747e10ed583287a45d4cf0de87fbf9ef49e3d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jun 29 11:08:00 2011 +0200
+
+    [entropy.spm] PortagePlugin: make sure to also update vdb pkg dir mtime
+
+commit 7fff2821c35d3534033d343f245abf96186ffd5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:58:48 2011 +0200
+
+    [tests] fix tests
+
+commit dde8b10882ccb84de7d63ab0ba0229ec26beb060
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jun 28 11:13:36 2011 +0200
+
+    Tagging Entropy version 1.0_rc19
+
 commit 5a9be7b5d4fc7682e0b64d581842f6797fdaad06
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Jun 28 11:13:32 2011 +0200
