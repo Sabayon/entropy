@@ -2046,6 +2046,14 @@ class PortagePlugin(SpmPlugin):
             return 0
 
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
+        # is ebuild available ?
+        if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
+            self.log_message(
+                "[SETUP] ATTENTION Cannot properly run SPM setup"
+                " phase for %s. Ebuild path: %s not found." % (
+                    package, ebuild,)
+            )
+            return 1
 
         try:
             rc = self._portage_doebuild(ebuild, action_name, action_metadata,
@@ -2098,9 +2106,14 @@ class PortagePlugin(SpmPlugin):
         ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
         rc = 0
 
-        # is ebuild available
+        # is ebuild available ?
         if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
-            return rc
+            self.log_message(
+                "[PRE] ATTENTION Cannot properly run SPM %s"
+                " phase for %s. Ebuild path: %s not found." % (
+                    phase, package, ebuild,)
+            )
+            return 1
 
         rc = self._pkg_setup(action_name, action_metadata, package_metadata)
         if rc != 0:
@@ -2872,8 +2885,7 @@ class PortagePlugin(SpmPlugin):
                     for f_name in os.listdir(copypath):
                         f_path = os.path.join(copypath, f_name)
                         dest_path = os.path.join(tmp_dir, f_name)
-                        entropy.tools.movefile(f_path, dest_path,
-                            src_basedir = copypath)
+                        shutil.copy2(f_path, dest_path)
                     # this should not really exist here
                     if os.path.isdir(pkg_dir):
                         shutil.rmtree(pkg_dir)
