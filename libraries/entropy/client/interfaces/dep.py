@@ -1811,11 +1811,25 @@ class CalculatorsMixin:
 
             reverse_deps = _filter_simple_or_revdeps(pkg_id, repo_id, repo_db,
                 reverse_deps_ids)
+            if const_debug_enabled():
+                const_debug_write(__name__,
+                "\n_generate_reverse_dependency_tree.get_revdeps: " \
+                    "after filter: %s => %s" % (sorted(reverse_deps),
+                    sorted([repo_db.retrieveAtom(x[0]) for x in \
+                        reverse_deps]),))
 
             if reverse_deps:
                 reverse_deps = self.__filter_depends_multimatched_atoms(
                     pkg_id, repo_id, reverse_deps,
                     filter_match_cache = filter_multimatch_cache)
+                if const_debug_enabled():
+                    const_debug_write(__name__,
+                    "\n_generate_reverse_dependency_tree.get_revdeps: " \
+                        "after filter_depends: %s => %s" % (
+                            sorted(reverse_deps),
+                            sorted([repo_db.retrieveAtom(x[0]) for x in \
+                                reverse_deps]),))
+
             return reverse_deps
 
         def get_revdeps_lib(pkg_id, repo_id, repo_db):
