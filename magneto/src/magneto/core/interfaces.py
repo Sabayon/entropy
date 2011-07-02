@@ -134,6 +134,7 @@ class MagnetoCore(MagnetoCoreUI):
         self._dbus_path = "/notifier"
         self._signal_name = "signal_updates"
         self._updating_signal_name = "signal_updating"
+        self._integrity_signal_name = "signal_integrity_problem"
 
         self._menu_item_list = (
             ("disable_applet", _("_Disable Notification Applet"),
@@ -174,6 +175,9 @@ class MagnetoCore(MagnetoCoreUI):
                     self._updating_signal_name, self.updating_signal,
                     dbus_interface = self._dbus_interface
                 )
+                self._entropy_dbus_object.connect_to_signal(
+                    self._integrity_signal_name, self.integrity_signal,
+                    dbus_interface = self._dbus_interface)
             except dbus.exceptions.DBusException as e:
                 self._dbus_init_error_msg = repr(e)
                 # service not avail
@@ -252,6 +256,15 @@ class MagnetoCore(MagnetoCoreUI):
         self.update_tooltip(_("Repositories are being updated"))
         self.show_alert(_("Sabayon repositories status"),
             _("Repositories are being updated automatically")
+        )
+
+    def integrity_signal(self):
+        # all fine, no updates
+        self.update_tooltip(
+            _("Installed Packages Repository Integrity Problem"))
+        self.show_alert(
+            _("Installed Packages Repository Integrity"),
+            _("Integrity corruption detected, this might indicate a filesystem or system issue")
         )
 
     def is_system_on_batteries(self):
