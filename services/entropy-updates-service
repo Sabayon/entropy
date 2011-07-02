@@ -41,7 +41,8 @@ EntropyCacher.WRITEBACK_TIMEOUT = 120
 
 from entropy.misc import LogFile
 from entropy.i18n import _
-from entropy.exceptions import PermissionDenied, RepositoryError
+from entropy.exceptions import PermissionDenied, RepositoryError, \
+    SystemDatabaseError
 import entropy.tools as entropy_tools
 from entropy.client.interfaces import Client
 from entropy.fetchers import UrlFetcher
@@ -198,6 +199,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__is_working_mutex = Lock()
         self.__updater = None
         self.__entropy_cache_cleaner = None
+        self.__entropy_integrity_checker = None
         self.__system_changes_checker = None
         self.__client_ping_checker = None
         self.__oncall_updater = None
@@ -239,6 +241,8 @@ class UpdatesDaemon(dbus.service.Object):
             120, self.check_system_changes)
         self.__entropy_cache_cleaner = gobject.timeout_add_seconds(
             3600, self.cleanup_entropy_cache)
+        self.__entropy_integrity_checker = gobject.timeout_add_seconds(
+            300, self.entropy_integrity_check)
         if "--disable-timer" not in sys.argv:
             self.__client_ping_checker = gobject.timeout_add_seconds(
                 120, self.check_client_ping)
@@ -264,6 +268,9 @@ class UpdatesDaemon(dbus.service.Object):
 
             if self.__entropy_cache_cleaner is not None:
                 gobject.source_remove(self.__entropy_cache_cleaner)
+
+            if self.__entropy_integrity_checker is not None:
+                gobject.source_remove(self.__entropy_integrity_checker)
 
     def do_alert(self, string, msg, urgency = "critical"):
         write_output('alert: %s, %s, urgency: %s' % (string, msg, urgency,))
@@ -308,6 +315,39 @@ class UpdatesDaemon(dbus.service.Object):
 
                     if hasattr(entropy, 'clean_downloaded_packages'):
                         entropy.clean_downloaded_packages()
+                    return False
+
+                finally:
+                    if entropy is not None:
+                        self.__release_entropy_locks(entropy, pid_lock = False)
+                        entropy.shutdown()
+
+    def entropy_integrity_check(self):
+
+        if self.is_system_on_batteries():
+            # try again later
+            return self.__alive
+
+        with self.__is_working_mutex:
+
+            with self._privileges:
+                entropy = None
+                try:
+
+                    entropy = Entropy()
+                    acquired = self.__acquire_entropy_locks(entropy,
+                        pid_lock = False)
+                    if not acquired:
+                        return self.__alive # respawn later
+
+                    inst_repo = entropy.installed_repository()
+                    if inst_repo is not None:
+                        try:
+                            inst_repo.integrity_check()
+                        except SystemDatabaseError:
+                            self.signal_integrity_problem()
+
+                    # no need to run this further
                     return False
 
                 finally:
@@ -692,6 +732,14 @@ class UpdatesDaemon(dbus.service.Object):
     def signal_updates(self):
         if DAEMON_DEBUG:
             write_output("signal_updates: updates available!")
+        return False
+
+    # signal sent when installed packages repository is corrupted
+    @dbus.service.signal(dbus_interface = 'org.entropy.Client',
+        signature = '')
+    def signal_integrity_problem(self):
+        if DAEMON_DEBUG:
+            write_output("signal_integrity_problem: corrupted repository!")
         return False
 
     # signal sent when daemon is updating the repositories
