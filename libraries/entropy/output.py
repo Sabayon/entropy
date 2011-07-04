@@ -695,7 +695,7 @@ class TextInterface(object):
         @rtype: None
         """
 
-        if etpUi['quiet'] or etpUi['mute']:
+        if etpUi['mute']:
             return
 
         _flush_stdouterr()
