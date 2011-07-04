@@ -125,10 +125,15 @@ def _exec_args(args):
     os.execvpe(args[0], args + myargs, os.environ)
 
 def get_entropy_server(quiet = False):
-    if quiet:
-        etpUi['quiet'] = True
-    from entropy.server.interfaces import Server
-    return Server(community_repo = etpConst['community']['mode'])
+    oldquiet = etpUi['quiet']
+    try:
+        if quiet:
+            etpUi['quiet'] = True
+        from entropy.server.interfaces import Server
+        return Server(community_repo = etpConst['community']['mode'])
+    finally:
+        if quiet:
+            etpUi['quiet'] = oldquiet
 
 main_cmd = options.pop(0)
 
