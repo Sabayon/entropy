@@ -2340,8 +2340,8 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         @param package_id: package indentifier
         @type package_id: int
-        @return: list (frozenset) of tuples of length 2 composed by library
-            name and ELF class
+        @return: list (frozenset) of tuples of length 3 composed by library
+            name, path and ELF class
         @rtype: frozenset
         """
         raise NotImplementedError()
