@@ -4918,8 +4918,6 @@ class Server(Client):
             pkg_md5, pkg_slot, pkg_etpapi, \
             pkg_date, pkg_size, pkg_rev = repo_db.getBaseData(package_id)
             pkg_deps = repo_db.retrieveDependenciesList(package_id)
-            pkg_content = repo_db.retrieveContent(package_id,
-                order_by = "file")
             pkg_needed = repo_db.retrieveNeeded(package_id, extended = True)
             pkg_provided_libs = repo_db.retrieveProvidedLibraries(package_id)
 
@@ -4964,14 +4962,31 @@ class Server(Client):
             env['PKG_PROVIDED_LIBS'] = const_convert_to_rawstring("\n".join(
                 sorted(["%s|%s|%s" % (x, y, z) for x, y, z in \
                     pkg_provided_libs])))
-            env['PKG_CONTENT'] = const_convert_to_rawstring(
-                "\n".join(pkg_content))
 
             # now call the script
-            proc = subprocess.Popen(
-                [qa_exec], stdout = sys.stdout, stderr = sys.stderr,
-                stdin = sys.stdin, env = env)
-            rc = proc.wait()
+            try:
+                proc = subprocess.Popen(
+                    [qa_exec], stdout = sys.stdout, stderr = sys.stderr,
+                    stdin = sys.stdin, env = env)
+                rc = proc.wait()
+            except OSError as err:
+                self.output(
+                    "[%s] %s: %s, %s" % (
+                        purple("qa"),
+                        bold(_("cannot execute metadata QA hook for")),
+                        darkgreen(pkg_atom),
+                        repr(err),
+                    ),
+                    importance = 1,
+                    level = "error",
+                    header = darkred(" !!! "),
+                    count = (count, maxcount)
+                )
+                rc = 2
+                if etpUi['debug']:
+                    import pdb
+                    pdb.set_trace()
+
             if rc == 0:
                 # all good
                 continue
