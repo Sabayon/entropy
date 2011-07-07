@@ -1,3 +1,27 @@
+commit 2dba38141cced6c047fa8e601049296cdb0f839f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 7 22:57:18 2011 +0200
+
+    Release Entropy 1.0_rc23
+
+commit 352501133684d2b3718e03f882b78cf2fbf48441
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 7 22:56:45 2011 +0200
+
+    [entropy.server] _external_metadata_qa_hook_test: drop PKG_CONTENT, or E2BIG will be raised
+
+commit 21e5631c17f7e7e122f0edf84b72fa1022d98834
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 7 22:42:53 2011 +0200
+
+    [entropy.server] improve output wording
+
+commit 3fad7ddfe89470df04d976c8ea35423559244ddd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 7 15:32:35 2011 +0200
+
+    Tagging Entropy version 1.0_rc22
+
 commit b58c4be66d1d426f58c41d883e5ef6e0b242b099
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 7 15:32:29 2011 +0200
