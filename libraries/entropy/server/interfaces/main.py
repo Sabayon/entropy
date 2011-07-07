@@ -18,12 +18,15 @@ import time
 import re
 import errno
 import hashlib
+import subprocess
+import stat
 
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, etpUi, \
-    const_setup_file, const_get_stringtype, const_debug_write
+    const_setup_file, const_get_stringtype, const_debug_write, \
+    const_convert_to_rawstring
 from entropy.output import purple, red, darkgreen, \
     bold, brown, blue, darkred, teal
 from entropy.cache import EntropyCacher
@@ -2495,7 +2498,7 @@ class Server(Client):
         todbconn.clean()
 
         if package_ids_added:
-            self._add_packages_qa_libtests(
+            self._add_packages_qa_tests(
                 [(x, to_repository_id) for x in package_ids_added], ask = ask)
             # just run this to make dev aware
             self.dependencies_test(to_repository_id)
@@ -4860,16 +4863,177 @@ class Server(Client):
                 # save changes here again
                 dbconn.commit()
 
-    def _add_packages_qa_libtests(self, package_matches, ask = True):
+    def _external_metadata_qa_hook_test(self, package_matches):
+        """
+        Execute external metadata QA check, if executable exists.
+        Returns True for success, False for error. Warnings are not considered
+        blocking.
+        """
+        qa_exec = etpConst['etpserverqaexechook']
+        if not os.path.isfile(qa_exec):
+            return True
+        if not os.access(qa_exec, os.X_OK | os.R_OK | os.F_OK):
+            return True
+        # avoid privs escalation
+        st = os.stat(qa_exec)
+        file_uid = st[stat.ST_UID]
+        file_gid = st[stat.ST_GID]
+        if not ((file_uid == 0) and (file_gid == 0)):
+            self.output(
+                "[%s] %s: %s, %s" % (
+                    purple("qa"),
+                    brown(_("metadata QA hook")),
+                    purple(qa_exec),
+                    brown(_("not owned by uid and gid = 0")),
+                ),
+                importance = 1,
+                level = "error",
+                header = darkred(" !!! "),
+            )
+            return False
+
+        count = 0
+        maxcount = len(package_matches)
+        self.output(
+            "[%s] %s: %s" % (
+                purple("qa"),
+                teal(_("using metadata QA hook")),
+                darkgreen(qa_exec),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ "),
+            count = (count, maxcount)
+        )
+        qa_success = True
+        for package_id, repository_id in package_matches:
+            count += 1
+            repo_db = self.open_server_repository(repository_id,
+                read_only = False, no_upload = True)
+
+            pkg_atom, pkg_name, pkg_version, pkg_tag, \
+            pkg_description, pkg_category, pkg_chost, \
+            pkg_cflags, pkg_cxxflags, pkg_homepage, \
+            pkg_license, pkg_branch, pkg_uri, \
+            pkg_md5, pkg_slot, pkg_etpapi, \
+            pkg_date, pkg_size, pkg_rev = repo_db.getBaseData(package_id)
+            pkg_deps = repo_db.retrieveDependenciesList(package_id)
+            pkg_content = repo_db.retrieveContent(package_id,
+                order_by = "file")
+            pkg_needed = repo_db.retrieveNeeded(package_id, extended = True)
+            pkg_provided_libs = repo_db.retrieveProvidedLibraries(package_id)
+
+            self.output(
+                "[%s] %s: %s" % (
+                    purple("qa"),
+                    teal(_("using metadata QA hook")),
+                    darkgreen(qa_exec),
+                ),
+                importance = 1,
+                level = "info",
+                header = blue(" @@ "),
+                count = (count, maxcount)
+            )
+            env = os.environ.copy()
+            env['REPOSITORY_ID'] = const_convert_to_rawstring(repository_id)
+            env['PKG_ID'] = const_convert_to_rawstring(package_id)
+            env['PKG_ATOM'] = const_convert_to_rawstring(pkg_atom)
+            env['PKG_NAME'] = const_convert_to_rawstring(pkg_name)
+            env['PKG_VERSION'] = const_convert_to_rawstring(pkg_version)
+            env['PKG_TAG'] = const_convert_to_rawstring(pkg_tag or "")
+            env['PKG_DESCRIPTION'] = const_convert_to_rawstring(pkg_description)
+            env['PKG_CATEGORY'] = const_convert_to_rawstring(pkg_category)
+            env['PKG_CHOST'] = const_convert_to_rawstring(pkg_chost)
+            env['PKG_CFLAGS'] = const_convert_to_rawstring(pkg_cflags)
+            env['PKG_CXXFLAGS'] = const_convert_to_rawstring(pkg_cxxflags)
+            env['PKG_HOMEPAGE'] = const_convert_to_rawstring(pkg_homepage)
+            env['PKG_LICENSE'] = const_convert_to_rawstring(pkg_license)
+            env['PKG_BRANCH'] = const_convert_to_rawstring(pkg_branch)
+            env['PKG_DOWNLOAD'] = const_convert_to_rawstring(pkg_uri)
+            env['PKG_MD5'] = const_convert_to_rawstring(pkg_md5)
+            env['PKG_SLOT'] = const_convert_to_rawstring(pkg_slot)
+            env['PKG_ETPAPI'] = const_convert_to_rawstring(pkg_etpapi)
+            env['PKG_DATE'] = const_convert_to_rawstring(pkg_date)
+            env['PKG_SIZE'] = const_convert_to_rawstring(pkg_size)
+            env['PKG_REVISION'] = const_convert_to_rawstring(pkg_rev)
+            env['PKG_DEPS'] = const_convert_to_rawstring(
+                    "\n".join(sorted(pkg_deps)))
+            env['PKG_NEEDED_LIBS'] = const_convert_to_rawstring(
+                "\n".join(sorted(["%s|%s" % (x, y) \
+                    for x, y in pkg_needed])))
+            env['PKG_PROVIDED_LIBS'] = const_convert_to_rawstring("\n".join(
+                sorted(["%s|%s|%s" % (x, y, z) for x, y, z in \
+                    pkg_provided_libs])))
+            env['PKG_CONTENT'] = const_convert_to_rawstring(
+                "\n".join(pkg_content))
+
+            # now call the script
+            proc = subprocess.Popen(
+                [qa_exec], stdout = sys.stdout, stderr = sys.stderr,
+                stdin = sys.stdin, env = env)
+            rc = proc.wait()
+            if rc == 0:
+                # all good
+                continue
+            elif rc == 1:
+                self.output("",
+                    importance = 0,
+                    level = "warning",
+                    header = darkred(" !!! ")
+                )
+                self.output(
+                    "[%s] %s !" % (
+                        darkred("qa"),
+                        brown(_("attention, QA hook returned a warning")),
+                    ),
+                    importance = 1,
+                    level = "warning",
+                    header = darkred(" !!! "),
+                    count = (count, maxcount)
+                )
+                self.output("",
+                    importance = 0,
+                    level = "warning",
+                    header = darkred(" !!! ")
+                )
+            else:
+                # anything != 0 and 1 is considered error
+                self.output("",
+                    importance = 0,
+                    level = "warning",
+                    header = darkred(" !!! ")
+                )
+                self.output(
+                    "[%s] %s !" % (
+                        darkred("qa"),
+                        brown(_("attention, QA hook returned an error")),
+                    ),
+                    importance = 1,
+                    level = "error",
+                    header = darkred(" !!! "),
+                    count = (count, maxcount)
+                )
+                self.output("",
+                    importance = 0,
+                    level = "warning",
+                    header = darkred(" !!! ")
+                )
+                qa_success = False
+
+        return qa_success
+
+    def _add_packages_qa_tests(self, package_matches, ask = True):
         """
         Execute some generic QA checks for broken libraries on packages added
         to repository.
         """
         self.missing_runtime_dependencies_test(package_matches, ask = ask)
+        qa_success = self._external_metadata_qa_hook_test(package_matches)
         my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if my_settings['broken_revdeps_qa_check']:
             my_qa = self.QA()
             my_qa.test_reverse_dependencies_linking(self, package_matches)
+        return qa_success
 
     def add_packages_to_repository(self, repository_id, packages_data,
         ask = True):
@@ -4928,7 +5092,7 @@ class Server(Client):
                 )
                 # reinit librarypathsidpackage table
                 if idpackages_added:
-                    self._add_packages_qa_libtests(
+                    self._add_packages_qa_tests(
                         [(x, repository_id) for x in idpackages_added],
                         ask = ask)
                 if to_be_injected:
@@ -4944,7 +5108,7 @@ class Server(Client):
             dbconn.isPackageIdAvailable(x)))
 
         if idpackages_added:
-            self._add_packages_qa_libtests(
+            self._add_packages_qa_tests(
                 [(x, repository_id) for x in idpackages_added], ask = ask)
 
         # inject database into packages
