@@ -4926,8 +4926,8 @@ class Server(Client):
             self.output(
                 "[%s] %s: %s" % (
                     purple("qa"),
-                    teal(_("using metadata QA hook")),
-                    darkgreen(qa_exec),
+                    teal(_("metadata QA check for")),
+                    darkgreen(pkg_atom),
                 ),
                 importance = 1,
                 level = "info",
