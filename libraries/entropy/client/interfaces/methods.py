@@ -344,8 +344,8 @@ class RepositoryMixin:
             # remove cache, if any
             self._settings._clear_repository_cache(repoid = repoid)
 
-            # no need # avail_data[repoid]['plain_packages'] = \
-            # repository_metadata['plain_packages'][:]
+            avail_data[repoid]['plain_packages'] = \
+                repository_metadata.get('plain_packages', [])[:]
             avail_data[repoid]['packages'] = \
                 repository_metadata['packages'][:]
             smart_package = repository_metadata.get('smartpackage')
