@@ -1,3 +1,21 @@
+commit 24821a70c23e515d3a0c07c5d77f6b10f5d84599
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 8 19:54:31 2011 +0200
+
+    Release Entropy 1.0_rc24
+
+commit 097daf9760cfd534cfde9ff378a0cb16adabd452
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 8 19:53:55 2011 +0200
+
+    [entropy.client.interfaces] always provide plain_packages repo metadata, this fixes .etp installation
+
+commit 23e46ea807abd948672b500ac6dd68fad31be8cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 7 22:57:22 2011 +0200
+
+    Tagging Entropy version 1.0_rc23
+
 commit 2dba38141cced6c047fa8e601049296cdb0f839f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Jul 7 22:57:18 2011 +0200
