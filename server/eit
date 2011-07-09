@@ -147,7 +147,7 @@ if main_cmd == "status":
 elif main_cmd == "add" and options:
     _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
-elif main_cmd == "addto" and options and len(options) > 2:
+elif main_cmd == "addto" and options and len(options) > 1:
     os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
@@ -233,7 +233,7 @@ elif main_cmd == "deps" and options:
 elif main_cmd == "rm" and options:
     _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
 
-elif main_cmd == "rmfrom" and options and len(options) > 2:
+elif main_cmd == "rmfrom" and options and len(options) > 1:
     os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
 
