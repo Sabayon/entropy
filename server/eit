@@ -39,6 +39,7 @@ help_opts = [
     (0, _('Options'), 0, None),
     None,
     (1, 'add <packages>', 3, _('commit to current repository only the provided packages')),
+    (1, 'addto <repository> <packages>', 1, _('commit to give repository only the provided packages')),
     (1, 'bump [<repository>]', 2, _('bump repository revision, this will force upload')),
     (1, 'checkout <repository>', 2, _('switch from a repository to another')),
     (1, 'cleanup [<repository>]', 2, _('clean expired packages from a repository')),
@@ -58,6 +59,7 @@ help_opts = [
     (1, 'reset [<repository>]', 2, _('reset repository to remote status')),
     (1, 'revgraph <packages> [--complete]', 0, _('show reverse dependency graph of packages')),
     (1, 'rm <packages>', 3, _('remove packages from current repository')),
+    (1, 'rmfrom <repository> <packages>', 1, _('remove packages from given repository')),
     (1, 'search <package deps>', 2, _('search for privided package dependencies')),
     (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
     (1, 'status [<repository>]', 2, _('show current repositories status')),
@@ -145,6 +147,10 @@ if main_cmd == "status":
 elif main_cmd == "add" and options:
     _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
+elif main_cmd == "addto" and options and len(options) > 2:
+    os.environ['ETP_REPO'] = options.pop(0)
+    _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
+
 elif main_cmd == "bump":
     if options:
         os.environ['ETP_REPO'] = options.pop(0)
@@ -225,6 +231,10 @@ elif main_cmd == "deps" and options:
     _exec_args([REAGENT_EXEC, "repo", "package-dep", repository_id] + options)
 
 elif main_cmd == "rm" and options:
+    _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
+
+elif main_cmd == "rmfrom" and options and len(options) > 2:
+    os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
 
 elif main_cmd == "repo":
