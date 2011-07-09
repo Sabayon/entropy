@@ -88,6 +88,10 @@ equo-install:
 	# copy man page
 	install -m 644 docs/man/man1/equo.1 $(DESTDIR)$(PREFIX)/share/man/man1/
 
+	# copy zsh completion
+	mkdir -p $(DESTDIR)$(PREFIX)/share/zsh/site-functions
+	install -m 644 conf/_equo $(DESTDIR)$(PREFIX)/share/zsh/site-functions/
+
 
 updates-daemon-install:
 
