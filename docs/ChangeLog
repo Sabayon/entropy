@@ -1,3 +1,39 @@
+commit 6d772e4c9af340c1c8722c3d92b8fa84ae4d2970
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 15:50:02 2011 +0200
+
+    Release Entropy 1.0_rc25
+
+commit 9e09d46a5ede6c4de2e3e460b4810fe5028c2987
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 15:49:30 2011 +0200
+
+    [eit] add "addto" and "rmfrom" options
+
+commit efe94611628ce0973e99d95bf17eb87c0f54f29b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 15:47:48 2011 +0200
+
+    [entropy.fetchers] absolutely avoid any race condition while dividing by a dynamic value that can reach 0
+
+commit 1b9a46ed1947b5f0704f2a0698d9f37e920732d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 12:12:34 2011 +0200
+
+    [entropy.server] only print Entropy Server configuration status when etpUi['quiet'] is False
+
+commit 0434ca723091c5a58dcdbc9f17aab974a8519385
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 8 23:51:34 2011 +0200
+
+    [conf] repositories.conf: sorry Yes Optus Mirror, but you're freakingly slow and unresponsive
+
+commit 5602f926676666ce42244ef909b47df181609742
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 8 19:54:37 2011 +0200
+
+    Tagging Entropy version 1.0_rc24
+
 commit 24821a70c23e515d3a0c07c5d77f6b10f5d84599
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jul 8 19:54:31 2011 +0200
