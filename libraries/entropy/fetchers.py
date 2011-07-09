@@ -686,9 +686,12 @@ class UrlFetcher(TextInterface):
         # update progress info
         self.__downloadedsize = self.__localfile.tell()
         kbytecount = float(self.__downloadedsize)/1024
-        average = 0
-        if self.__remotesize > 0:
+        # avoid race condition with test and eval not being atomic
+        # this will always work
+        try:
             average = int((kbytecount/self.__remotesize)*100)
+        except ZeroDivisionError:
+            average = 0
         if average > 100:
             average = 100
         self.__average = average
