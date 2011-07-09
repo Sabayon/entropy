@@ -23,7 +23,7 @@ import warnings
 from datetime import datetime
 
 from entropy.i18n import _
-from entropy.const import etpConst, const_debug_write, etpSys, \
+from entropy.const import etpConst, etpUi, const_debug_write, etpSys, \
     const_setup_file, initconfig_entropy_constants, const_pid_exists, \
     const_setup_perms, const_setup_entropy_pid, \
     const_isstring, const_convert_to_unicode, const_isnumber, \
@@ -87,7 +87,7 @@ class RepositoryMixin:
             except RepositoryError as err:
 
                 ensure_closed_repo(repoid)
-                if quiet:
+                if quiet or etpUi['quiet']:
                     continue
 
                 t = _("Repository") + " " + const_convert_to_unicode(repoid) \
@@ -278,11 +278,13 @@ class RepositoryMixin:
             if not os.path.isfile(dbfile):
                 t = _("Repository %s hasn't been downloaded yet.") % (repoid,)
                 if repoid not in self._repo_error_messages_cache:
-                    self.output(
-                        darkred(t),
-                        importance = 2,
-                        level = "warning"
-                    )
+                    if not etpUi['quiet']:
+                        # don't want to have it printed if --quiet is on
+                        self.output(
+                            darkred(t),
+                            importance = 2,
+                            level = "warning"
+                        )
                     self._repo_error_messages_cache.add(repoid)
                 raise RepositoryError("RepositoryError: %s" % (t,))
 
