@@ -1868,7 +1868,7 @@ class Repository:
         return pubkey
 
     def install_key(self, repository_identifier, key_path,
-        ignore_nothing_imported = False):
+        ignore_nothing_imported = False, merge_key = False):
         """
         Add key to keyring.
 
@@ -1876,9 +1876,11 @@ class Repository:
         @type repository_identifier: string
         @param key_path: valid path to GPG key file
         @type key_path: string
-        @param ignore_nothing_imported: if True, ignore NothingImported
+        @keyword ignore_nothing_imported: if True, ignore NothingImported
             exception
         @type ignore_nothing_imported: bool
+        @keyword merge_key: add --import-options merge-only to gpg callback
+        @type merge_key: bool
         @return: fingerprint
         @rtype: string
         @raise KeyAlreadyInstalled: if key is already installed
@@ -1886,6 +1888,8 @@ class Repository:
         """
         args = self.__default_gpg_args(preserve_perms = False) + \
             ["--import", key_path]
+        if merge_key:
+            args += ["--import-options", "merge-only"]
         try:
             current_keys = set([x['fingerprint'] for x in self.__list_keys()])
         except OSError as err:
