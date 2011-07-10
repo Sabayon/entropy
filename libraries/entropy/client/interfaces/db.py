@@ -1262,20 +1262,57 @@ class AvailablePackagesRepositoryUpdater(object):
             header = "\t",
             back = True
         )
-        try:
-            fingerprint = repo_sec.install_key(self._repository_id,
-                gpg_path)
-        except RepositorySecurity.GPGError as err:
-            mytxt = "%s: %s" % (
-                darkred(_("Error during GPG key installation")),
-                err,
-            )
-            self._entropy.output(
-                mytxt,
-                level = "error",
-                header = "\t"
-            )
-            return False
+
+        try_ignore = False
+        while True:
+            try:
+                fingerprint = repo_sec.install_key(self._repository_id,
+                    gpg_path)
+            except RepositorySecurity.NothingImported as err:
+                if try_ignore:
+                    mytxt = "%s: %s" % (
+                        darkred(_("Error during GPG key installation")),
+                        err,
+                    )
+                    self._entropy.output(
+                        mytxt,
+                        level = "error",
+                        header = "\t"
+                    )
+                    return False
+                self._entropy.output(
+                    purple(_("GPG key seems already installed but not properly recorded, resetting")),
+                    level = "warning",
+                    header = "\t"
+                )
+                target_fingerprint = repo_sec.get_key_fingerprint(gpg_path)
+                if target_fingerprint is not None:
+                    # kill it, this is usually caused by shadow repos
+                    # like sabayon-weekly
+                    dead_repository_ids = set()
+                    for _repository_id, key_meta in repo_sec.get_keys().items():
+                        if key_meta['fingerprint'] == target_fingerprint:
+                            dead_repository_ids.add(_repository_id)
+                    for _repository_id in dead_repository_ids:
+                        try:
+                            repo_sec.delete_pubkey(_repository_id)
+                        except KeyError:
+                            # wtf, fault tolerance
+                            pass
+                try_ignore = True
+                continue
+            except RepositorySecurity.GPGError as err:
+                mytxt = "%s: %s" % (
+                    darkred(_("Error during GPG key installation")),
+                    err,
+                )
+                self._entropy.output(
+                    mytxt,
+                    level = "error",
+                    header = "\t"
+                )
+                return False
+            break
 
         mytxt = "%s: %s" % (
             purple(_("Successfully installed GPG key for repository")),
