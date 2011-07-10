@@ -823,8 +823,10 @@ def _update(entropy_server, options):
             r_request_seek_store = True
         elif opt == "--repackage":
             r_request_repackage = True
+            r_request_only_atoms = False
         elif opt == "--atoms":
             r_request_only_atoms = True
+            r_request_repackage = False
         elif opt == "--noask":
             r_request_ask = False
         elif opt == "--interactive":
