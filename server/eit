@@ -38,28 +38,30 @@ help_opts = [
     None,
     (0, _('Options'), 0, None),
     None,
-    (1, 'add <packages>', 3, _('commit to current repository only the provided packages')),
-    (1, 'addto <repository> <packages>', 1, _('commit to give repository only the provided packages')),
+    (1, 'add <pkgs>', 3, _('commit to current repository only the provided packages')),
+    (1, 'addto <repository> <pkgs>', 1, _('commit to give repository only the provided packages')),
     (1, 'bump [<repository>]', 2, _('bump repository revision, this will force upload')),
     (1, 'checkout <repository>', 2, _('switch from a repository to another')),
     (1, 'cleanup [<repository>]', 2, _('clean expired packages from a repository')),
     (1, 'commit [<repository>]', 2, _('commit changes to repository')),
-    (1, 'cp <from> <to> <packages>', 1, _('copy packages from a repository to another')),
-    (1, 'deps <packages>', 3, _('edit package dependencies')),
-    (1, 'deptest', 4, _('edit package dependencies')),
+    (1, 'cp <from> <to> <pkgs>', 2, _('copy packages from a repository to another')),
+    (1, 'deps <pkgs>', 3, _('edit package dependencies')),
+    (1, 'deptest [<repository>]', 2, _('edit package dependencies')),
     (1, 'fit <package files>', 2, _('inject package files into the current repository')),
-    (1, 'graph <packages> [--complete]', 1, _('show dependency graph of packages')),
+    (1, 'graph <pkgs> [--complete]', 1, _('show dependency graph of packages')),
     (1, 'libtest [--dump]', 2, _('look for missing libraries')),
     (1, 'list [<repository>]', 2, _('list packages in repository')),
     (1, 'log [<repository>]', 2, _('show log for repository')),
-    (1, 'mv <from> <to> <packages>', 1, _('move packages from a repository to another')),
+    (1, 'mv <from> <to> <pkgs>', 2, _('move packages from a repository to another')),
     (1, 'own <package files>', 2, _('show owners of files (in current repository)')),
     (1, 'push [<repository>]', 2, _('push committed packages remotely')),
+    (1, 'repack <pkgs>', 3, _('re-package list of packages in default repository')),
+    (1, 'repackin <repository> <pkgs>', 1, _('re-package list of packages in given repository')),
     (1, 'repo', 4, _('show current repository')),
     (1, 'reset [<repository>]', 2, _('reset repository to remote status')),
-    (1, 'revgraph <packages> [--complete]', 0, _('show reverse dependency graph of packages')),
-    (1, 'rm <packages>', 3, _('remove packages from current repository')),
-    (1, 'rmfrom <repository> <packages>', 1, _('remove packages from given repository')),
+    (1, 'revgraph <pkgs> [--complete]', 1, _('show reverse dependency graph of packages')),
+    (1, 'rm <pkgs>', 3, _('remove packages from current repository')),
+    (1, 'rmfrom <repository> <pkgs>', 1, _('remove packages from given repository')),
     (1, 'search <package deps>', 2, _('search for privided package dependencies')),
     (1, 'show <package deps>', 2, _('show matches for privided package dependencies')),
     (1, 'status [<repository>]', 2, _('show current repositories status')),
@@ -165,6 +167,17 @@ elif main_cmd == "addto" and options and len(options) > 1:
         os.environ['ETP_REPO'] = options.pop(0)
         _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
+elif main_cmd == "repack" and options:
+    _exec_args([REAGENT_EXEC, "update", "--atoms"] + options + \
+        ["--repackage"] + options)
+
+elif main_cmd == "repackin" and options and len(options) > 1:
+    avail_repos = _get_available_repositories()
+    if options[0] in avail_repos:
+        os.environ['ETP_REPO'] = options.pop(0)
+        _exec_args([REAGENT_EXEC, "update", "--atoms"] + options + \
+            ["--repackage"] + options)
+
 elif main_cmd == "bump":
     if options:
         avail_repos = _get_available_repositories()
@@ -213,6 +226,10 @@ elif main_cmd == "libtest" and options and \
     _exec_args([REAGENT_EXEC, "libtest"] + options)
 
 elif main_cmd == "deptest":
+    if options:
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "deptest"])
 
 elif (main_cmd == "own") and options:
