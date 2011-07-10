@@ -19,8 +19,8 @@ import time
 
 from entropy.const import const_debug_write, const_setup_perms, etpConst, \
     etpUi, const_set_nice_level, const_setup_file
-from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold, \
-    TextInterface
+from entropy.output import blue, darkred, red, darkgreen, purple, teal, brown, \
+    bold, TextInterface
 from entropy.dump import dumpobj, loadobj
 from entropy.cache import EntropyCacher
 from entropy.db import EntropyRepository
@@ -1639,10 +1639,7 @@ class AvailablePackagesRepositoryUpdater(object):
             return None
 
         # now that we have all stored, add
-        count = 0
-        maxcount = len(added_ids)
         for idpackage in added_ids:
-            count += 1
             mydata = self._cacher.pop("%s%s" % (self.WEBSERV_CACHE_ID,
                 idpackage,))
             if mydata is None:
@@ -1652,17 +1649,17 @@ class AvailablePackagesRepositoryUpdater(object):
                 )
                 self._entropy.output(
                     mytxt, importance = 1, level = "warning",
-                    header = "\t", count = (count, maxcount,)
+                    header = "  "
                 )
                 return False
 
             mytxt = "%s %s" % (
-                blue(_("Injecting package")),
-                darkgreen(mydata['atom']),
+                darkgreen("++"),
+                teal(mydata['atom']),
             )
             self._entropy.output(
                 mytxt, importance = 0, level = "info",
-                header = "\t", back = True, count = (count, maxcount,)
+                header = "  ", back = (not etpUi['verbose'])
             )
             try:
                 mydbconn.addPackage(
@@ -1677,29 +1674,22 @@ class AvailablePackagesRepositoryUpdater(object):
                     blue(_("repository error while adding packages")),
                     err,),
                     importance = 1, level = "warning",
-                    header = "\t", count = (count, maxcount,)
+                    header = "  "
                 )
                 return False
 
-        self._entropy.output(
-            blue(_("Packages injection complete")), importance = 0,
-            level = "info", header = "\t",
-        )
-
         # now remove
-        maxcount = len(removed_ids)
-        count = 0
         # preload atoms names to improve speed during removePackage
         atoms_map = dict((x, mydbconn.retrieveAtom(x),) for x in removed_ids)
         for idpackage in removed_ids:
             myatom = atoms_map.get(idpackage)
-            count += 1
-            mytxt = "%s: %s" % (
-                blue(_("Removing package")),
-                darkred(str(myatom)),)
+
+            mytxt = "%s %s" % (
+                darkred("--"),
+                purple(str(myatom)),)
             self._entropy.output(
                 mytxt, importance = 0, level = "info",
-                header = "\t", back = True, count = (count, maxcount,)
+                header = "  ", back = (not etpUi['verbose'])
             )
             try:
                 mydbconn.removePackage(idpackage, do_cleanup = False,
@@ -1708,15 +1698,9 @@ class AvailablePackagesRepositoryUpdater(object):
                 self._entropy.output(
                     blue(_("repository error while removing packages")),
                     importance = 1, level = "warning",
-                    header = "\t", count = (count, maxcount,)
+                    header = "  "
                 )
                 return False
-
-        self._entropy.output(
-            blue(_("Packages removal complete")),
-            importance = 0, level = "info",
-            header = "\t",
-        )
 
         mydbconn.commit()
         mydbconn.clearCache()
