@@ -4762,12 +4762,18 @@ class Server(Client):
                         )
 
             # ask confirmation
-            rc_question = self.ask_question(
-                "[%s] %s" % (
-                    purple(pkg_repo),
-                    teal(_("Do you agree?"))
-                )
-            )
+            while True:
+                try:
+                    rc_question = self.ask_question(
+                        "[%s] %s" % (
+                            purple(pkg_repo),
+                            teal(_("Do you agree?"))
+                        )
+                    )
+                except KeyboardInterrupt:
+                    # do not allow, we're in a critical region
+                    continue
+                break
             if rc_question == _("Yes"):
                 break
             # otherwise repeat everything again
