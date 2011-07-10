@@ -1,3 +1,78 @@
+commit 82411bb7a10ce35d8a0e75e0aabff1d84685034f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:56:14 2011 +0200
+
+    Release Entropy 1.0_rc26
+
+commit 7d858a10fd4b150d1ee85ec91979ca2058a056fd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:55:46 2011 +0200
+
+    [eit] always validate repository_id before setting ETP_REPO
+
+commit 53991190359c321941de30bca3346890764337f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:44:14 2011 +0200
+
+    [entropy.client.interfaces.db] properly handle GPG signature install w/shadow repos
+    
+    Shadow repositories are used to import other repos keys. So, if user
+    switch back to the original repo, Entropy is not able to import again
+    the same GPG key because gpg complains about having it already. So,
+    the entropy-side mapping (repo_id => key) cannot be updated easily.
+    Since it's impossible to reliably use gpg via fork()+exec(), it is
+    required to parse the current gpg key wanting to be imported, get its
+    fingerprint, look for repos with the same fingerprint and kill them from
+    the mapping. And in the end, retry the key installation.
+
+commit 5e1464a933a2a5ce0d6bac8d712aebfc842dc526
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:43:26 2011 +0200
+
+    [entropy.security] RepositorySecurity: add get_key_fingerprint()
+
+commit 736c3ad7bed1b39637256fda6c8e9038d098c0fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:17:14 2011 +0200
+
+    [entropy.security] fix install_key() with merge_key = True
+
+commit 9ca0487d6f46452d7b43bcb8c7568644c9ea2d39
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:13:52 2011 +0200
+
+    [entropy.client.interfaces.dep] tweak debug output
+
+commit 1d3bf0e3d2745c848feeec0f9f10a9b78b83ab70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:13:21 2011 +0200
+
+    [entropy.security] RepositorySecurity: add merge_key parameter to install_key()
+
+commit db68dff3febb8a3a7b4ec158957a8ce260fe1812
+Author: Robert David <robert.david.public@gmail.com>
+Date:   Sat Jul 9 22:29:55 2011 +0200
+
+    Add ZSH completion function
+
+commit f722912dd2f171cb86bdcd5862ae55511bb87c79
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 17:42:09 2011 +0200
+
+    [entropy.client.interfaces.methods] don't bug stderr with boring repository status messages if etpUi['quiet']
+
+commit 408767d366d6c79e184b72de55835ec0c260addc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 16:20:46 2011 +0200
+
+    [eit] fix rmfrom and addto options
+
+commit d9c1478bc2a1f77be8417dcba1329d7d57bf6c9b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 9 15:50:07 2011 +0200
+
+    Tagging Entropy version 1.0_rc25
+
 commit 6d772e4c9af340c1c8722c3d92b8fa84ae4d2970
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jul 9 15:50:02 2011 +0200
