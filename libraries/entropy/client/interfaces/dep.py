@@ -1125,8 +1125,8 @@ class CalculatorsMixin:
 
         if const_debug_enabled():
             const_debug_write(__name__,
-                "_lookup_post_dependencies POST dependencies => %s" % (
-                    post_deps,))
+                "_lookup_post_dependencies POST dependencies for %s => %s" % (
+                    (repo_idpackage, repo_db.repository_id()), post_deps,))
 
         if post_deps:
 
