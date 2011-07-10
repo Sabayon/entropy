@@ -137,23 +137,39 @@ def get_entropy_server(quiet = False):
         if quiet:
             etpUi['quiet'] = oldquiet
 
+def _get_available_repositories():
+    server = None
+    try:
+        server = get_entropy_server(quiet = True)
+        repository_ids = server.repositories()
+        return repository_ids
+    finally:
+        if server is not None:
+            server.shutdown()
+
 main_cmd = options.pop(0)
 
 if main_cmd == "status":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "status"] + options)
 
 elif main_cmd == "add" and options:
     _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
 elif main_cmd == "addto" and options and len(options) > 1:
-    os.environ['ETP_REPO'] = options.pop(0)
-    _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
+    avail_repos = _get_available_repositories()
+    if options[0] in avail_repos:
+        os.environ['ETP_REPO'] = options.pop(0)
+        _exec_args([REAGENT_EXEC, "update", "--atoms"] + options)
 
 elif main_cmd == "bump":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "repo", "bump"])
 
 elif (main_cmd == "checkout") and options and len(options) < 2:
@@ -162,12 +178,16 @@ elif (main_cmd == "checkout") and options and len(options) < 2:
 
 elif main_cmd == "cleanup":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args((ACTIVATOR_EXEC, "tidy"))
 
 elif main_cmd == "commit":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "update"] + options)
 
 elif (main_cmd == "fit") and options:
@@ -175,7 +195,9 @@ elif (main_cmd == "fit") and options:
 
 elif main_cmd == "list":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([REAGENT_EXEC, "query", "list"] + options)
 
 elif main_cmd == "graph" and options and \
@@ -198,7 +220,9 @@ elif (main_cmd == "own") and options:
 
 elif main_cmd == "push":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([ACTIVATOR_EXEC, "sync"] + options)
 
 elif main_cmd == "show" and options:
@@ -213,9 +237,11 @@ elif main_cmd == "mv" and len(options) > 2:
     _exec_args([REAGENT_EXEC, "repo", "move", from_repo, to_repo] + options)
 
 elif main_cmd == "cp" and len(options) > 2:
+    avail_repos = _get_available_repositories()
     from_repo = options.pop(0)
     to_repo = options.pop(0)
-    _exec_args([REAGENT_EXEC, "repo", "copy", from_repo, to_repo] + options)
+    if (from_repo in avail_repos) and (to_repo in avail_repos):
+        _exec_args([REAGENT_EXEC, "repo", "copy", from_repo, to_repo] + options)
 
 elif main_cmd == "deps" and options:
     server = None
@@ -234,8 +260,10 @@ elif main_cmd == "rm" and options:
     _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
 
 elif main_cmd == "rmfrom" and options and len(options) > 1:
-    os.environ['ETP_REPO'] = options.pop(0)
-    _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
+    avail_repos = _get_available_repositories()
+    if options[0] in avail_repos:
+        os.environ['ETP_REPO'] = options.pop(0)
+        _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
 
 elif main_cmd == "repo":
     server = None
@@ -255,7 +283,9 @@ elif main_cmd == "repo":
 
 elif main_cmd == "reset":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
 
     server = None
     try:
@@ -276,7 +306,9 @@ elif main_cmd == "reset":
 
 elif main_cmd == "log":
     if options:
-        os.environ['ETP_REPO'] = options.pop(0)
+        avail_repos = _get_available_repositories()
+        if options[0] in avail_repos:
+            os.environ['ETP_REPO'] = options.pop(0)
 
     server = None
     try:
