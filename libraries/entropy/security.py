@@ -1886,10 +1886,10 @@ class Repository:
         @raise KeyAlreadyInstalled: if key is already installed
         @raise NothingImported: if key_path contains garbage
         """
-        args = self.__default_gpg_args(preserve_perms = False) + \
-            ["--import", key_path]
+        args = self.__default_gpg_args(preserve_perms = False)
         if merge_key:
             args += ["--import-options", "merge-only"]
+        args += ["--import", key_path]
         try:
             current_keys = set([x['fingerprint'] for x in self.__list_keys()])
         except OSError as err:
