@@ -1443,12 +1443,12 @@ class Repository:
             del keymap[repoid]
         self.__write_keymap(keymap)
 
-    def __list_keys(self, secret = False):
+    def __list_keys(self, secret = False, homedir = None):
 
         which = 'keys'
         if secret:
             which = 'secret-keys'
-        args = self.__default_gpg_args() + \
+        args = self.__default_gpg_args(homedir = homedir) + \
             ["--list-%s" % (which,), "--fixed-list-mode", "--fingerprint",
                 "--with-colons"]
 
@@ -1867,6 +1867,41 @@ class Repository:
         pubkey = self.__export_key(fingerprint, key_type = "private")
         return pubkey
 
+    def get_key_fingerprint(self, key_path):
+        """
+        Return the fingerprint contained in the given key file, if any.
+        Otherwise return None.
+
+        @param key_path: valid path to GPG key file
+        @type key_path: string
+        """
+        tmp_dir = None
+        try:
+            tmp_dir = tempfile.mkdtemp(prefix=".entropy.security.get_fp")
+            args = self.__default_gpg_args(preserve_perms = False,
+                homedir = tmp_dir)
+            args += ["--import", key_path]
+
+            proc = subprocess.Popen(args, **self.__default_popen_args())
+            try:
+                # wait for process to terminate
+                proc_rc = proc.wait()
+            finally:
+                self.__default_popen_close(proc)
+
+            if proc_rc != 0:
+                return None
+
+            now_keys = set([x['fingerprint'] for x in self.__list_keys(
+                homedir = tmp_dir)])
+            if not now_keys:
+                return None
+            # NOTE: not supporting multiple keys, is this a problem?
+            return now_keys.pop()
+        finally:
+            if tmp_dir is not None:
+                shutil.rmtree(tmp_dir, True)
+
     def install_key(self, repository_identifier, key_path,
         ignore_nothing_imported = False, merge_key = False):
         """
@@ -1953,9 +1988,11 @@ class Repository:
         const_setup_perms(self.__keystore, etpConst['entropygid'],
             f_perms = 0o660)
 
-    def __default_gpg_args(self, preserve_perms = True):
+    def __default_gpg_args(self, preserve_perms = True, homedir = None):
+        if homedir is None:
+            homedir = self.__keystore
         args = [Repository._GPG_EXEC, "--no-tty", "--no-permission-warning",
-            "--no-greeting", "--homedir", self.__keystore]
+            "--no-greeting", "--homedir", homedir]
         if preserve_perms:
             args.append("--preserve-permissions")
         return args
