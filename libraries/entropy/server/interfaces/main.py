@@ -4963,13 +4963,13 @@ class Server(Client):
             env['PKG_SIZE'] = const_convert_to_rawstring(pkg_size)
             env['PKG_REVISION'] = const_convert_to_rawstring(pkg_rev)
             env['PKG_DEPS'] = const_convert_to_rawstring(
-                    "\n".join(sorted(pkg_deps)))
+                    "\n".join(pkg_deps))
             env['PKG_NEEDED_LIBS'] = const_convert_to_rawstring(
-                "\n".join(sorted(["%s|%s" % (x, y) \
-                    for x, y in pkg_needed])))
+                "\n".join(["%s|%s" % (x, y) \
+                    for x, y in pkg_needed]))
             env['PKG_PROVIDED_LIBS'] = const_convert_to_rawstring("\n".join(
-                sorted(["%s|%s|%s" % (x, y, z) for x, y, z in \
-                    pkg_provided_libs])))
+                ["%s|%s|%s" % (x, y, z) for x, y, z in \
+                    pkg_provided_libs]))
 
             # now call the script
             try:
