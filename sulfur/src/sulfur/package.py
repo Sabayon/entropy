@@ -9,12 +9,14 @@
     B{Entropy Package Manager Graphical Client}.
 
 """
+import threading
 
 from entropy.const import *
 from entropy.i18n import _
 import entropy.dep
 import entropy.tools
 from entropy.services.client import WebService
+from entropy.misc import ParallelTask
 
 from sulfur.entropyapi import Equo
 from sulfur.setup import cleanMarkupString, SulfurConf
@@ -43,6 +45,7 @@ class DummyEntropyPackage:
         self.repoid_clean = ''
         self.name = ''
         self.vote = -1
+        self.vote_delayed = -1
         self.color = None
         self.action = None
         self.dbconn = None
@@ -608,10 +611,18 @@ class EntropyPackage:
             return ENTROPY.Settings()['repositories']['branch']
         return self.dbconn.retrieveBranch(self.matched_id)
 
+    def _get_vote_cache(self, pkg_key):
+        return UGC_CACHE.get("votes_" + pkg_key)
+
+    def _get_vote_cache_2(self, pkg_key):
+        return UGC_CACHE["votes_" + pkg_key]
+
+    def _set_vote_cache(self, pkg_key, val):
+        UGC_CACHE["votes_" + pkg_key] = val
+
     def _get_vote_raw(self, pkg_key):
 
-        cache_key = "votes_" + pkg_key
-        cached = UGC_CACHE.get(cache_key)
+        cached = self._get_vote_cache(pkg_key)
         if cached == -1:
             return None
         if cached is not None:
@@ -619,7 +630,7 @@ class EntropyPackage:
 
         webserv = self._get_webservice()
         if webserv is None:
-            UGC_CACHE[cache_key] = -1
+            self._set_vote_cache(pkg_key, -1)
             return None
 
         # try to get vote for the single package first, if it fails,
@@ -632,20 +643,36 @@ class EntropyPackage:
 
         # found it?
         if vote is not None:
-            UGC_CACHE[cache_key] = vote
+            self._set_vote_cache(pkg_key, vote)
             return vote
         else:
-            UGC_CACHE[cache_key] = -1
+            self._set_vote_cache(pkg_key, -1)
 
         # fallback to available cache
         try:
             vote = webserv.get_available_votes(cache = True,
                 cached = True).get(pkg_key)
-            UGC_CACHE[cache_key] = vote
+            self._set_vote_cache(pkg_key, vote)
             return vote
         except WebService.CacheMiss:
-            UGC_CACHE[cache_key] = -1
+            self._set_vote_cache(pkg_key, -1)
             return None
+
+    def get_ugc_package_vote_delayed(self):
+        if self.pkgset:
+            return -1
+        atom = self.get_name()
+        if not atom:
+            return None
+        pkg_key = entropy.dep.dep_getkey(atom)
+        try:
+            vote_raw = self._get_vote_cache_2(pkg_key)
+        except KeyError:
+            vote_raw = None
+            # schedule a new task
+            th = ParallelTask(self._get_vote_raw, pkg_key)
+            th.start()
+        return vote_raw
 
     def get_ugc_package_vote(self):
         if self.pkgset:
@@ -957,6 +984,10 @@ class EntropyPackage:
     @property
     def vote(self):
         return self.get_ugc_package_vote()
+
+    @property
+    def vote_delayed(self):
+        return self.get_ugc_package_vote_delayed()
 
     @property
     def voteint(self):

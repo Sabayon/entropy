@@ -22,6 +22,7 @@ import gobject
 import gio
 import os
 import tempfile
+import threading
 
 from entropy.exceptions import RepositoryError, InvalidPackageSet
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants, \
@@ -1720,7 +1721,7 @@ class EntropyPackageView:
         #cell2.set_property('height', myheight)
         column2 = gtk.TreeViewColumn( self.pkgcolumn_text_rating, cell2 )
         column2.set_resizable( True )
-        column2.set_cell_data_func( cell2, self.get_stars_rating )
+        column2.set_cell_data_func(cell2, self.get_stars_rating)
         column2.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column2.set_fixed_width( self.stars_col_size )
         column2.set_expand(False)
@@ -1958,26 +1959,34 @@ class EntropyPackageView:
 
         # XXX cannot remove tmp_path now
 
-    def get_stars_rating( self, column, cell, model, myiter ):
-        obj = model.get_value( myiter, 0 )
-        if not obj:
+    def get_stars_rating(self, column, cell, model, myiter):
+        pkg = model.get_value(myiter, 0)
+        if not pkg:
             return
 
-        self.set_line_status(obj, cell)
+        last_pkg = getattr(self, "_last_get_stars_rating", None)
+        if last_pkg is pkg:
+            return
 
         try:
-            voted = obj.voted
-        except:
-            return
-        try:
-            mydata = obj.vote
-        except:
-            return
-        if mydata is None:
-            mydata = 0.0 # wtf!
+            self.set_line_status(pkg, cell)
+            try:
+                voted = pkg.voted
+            except:
+                return
+            try:
+                # vote_delayed loads the vote in parallel and until
+                # it's not ready returns None
+                mydata = pkg.vote_delayed
+            except:
+                return
+            if mydata is None:
+                mydata = 0.0 # wtf!
 
-        cell.value = float(mydata)
-        cell.value_voted = float(voted)
+            cell.value = float(mydata)
+            cell.value_voted = float(voted)
+        finally:
+            self._last_get_stars_rating = pkg
 
     def spawn_vote_submit(self, obj):
 
@@ -2199,7 +2208,7 @@ class EntropyPackageView:
             except gobject.GError:
                 return
             self._pixbuf_map[(filename, pix_dir,)] = pixbuf
-        cell.set_property('pixbuf', pixbuf)
+        cell.set_property("pixbuf", pixbuf)
 
     def set_pixbuf_to_image(self, img, filename, pix_dir = "packages"):
         try:
@@ -2217,7 +2226,7 @@ class EntropyPackageView:
         cell = gtk.CellRendererText()    # Size Column
         column = gtk.TreeViewColumn( hdr, cell )
         column.set_resizable( True )
-        column.set_cell_data_func( cell, self.get_data_text, property )
+        column.set_cell_data_func(cell, self.get_data_text, property)
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( size )
         column.set_expand(expand)
@@ -2229,23 +2238,34 @@ class EntropyPackageView:
         return column
 
     def get_data_text( self, column, cell, model, myiter, property ):
-        obj = model.get_value( myiter, 0 )
-        if obj:
+
+        pkg = model.get_value(myiter, 0)
+        if not pkg:
+            return
+
+        last_pkg = getattr(self, "_last_get_data_text", None)
+        if last_pkg is pkg:
+            return
+
+        try:
             if self.empty_mode:
                 w, h = self.view.get_size_request()
                 cell.set_fixed_size(w, h)
 
             try:
-                mydata = getattr( obj, property )
+                mydata = getattr(pkg, property)
                 cell.set_property('markup', mydata)
             except (ProgrammingError, OperationalError, TypeError,):
                 self.do_refresh_view = True
 
-            self.set_line_status(obj, cell)
-            if obj.color:
-                cell.set_property('foreground', obj.color)
+            self.set_line_status(pkg, cell)
+            color = pkg.color
+            if color:
+                cell.set_property('foreground', color)
             else:
                 cell.set_property('foreground', None)
+        finally:
+            self._last_get_data_text = pkg
 
     def _ugc_icon_queue_run(self):
 
@@ -2292,7 +2312,14 @@ class EntropyPackageView:
         except (ProgrammingError, OperationalError):
             return
 
-        const_debug_write(__name__, "_get_cached_pkg_ugc_icon called")
+        # validate variables...
+        if key is None:
+            return
+        if repoid is None:
+            return
+
+        const_debug_write(__name__,
+            "_get_cached_pkg_ugc_icon called for %s" % (key,))
 
         cache_key = (key, repoid,)
         cached = self.__pkg_ugc_icon_cache.get(cache_key)
@@ -2304,11 +2331,9 @@ class EntropyPackageView:
             #    cache_key,))
             return cached
 
-        # validate variables...
-        if key is None:
-            return
-        if repoid is None:
-            return
+        # push to cache asap, avoid multiple requests, let this request complete
+        # first...
+        self.__pkg_ugc_icon_cache[cache_key] = -1
 
         webserv = self._get_webservice(repoid)
         if webserv is None:
@@ -2396,6 +2421,12 @@ class EntropyPackageView:
                     "__new_ugc_pixbuf_stash_fetch UGC STATUS FALSE!")
             return
 
+        if self._ugc_icon_load_queue.full():
+            # return immediately
+            const_debug_write(__name__,
+                "__new_ugc_pixbuf_stash_fetch QUEUE ALREADY FULL!")
+            return
+
         #if const_debug_enabled():
         #    const_debug_write(__name__,
         #        "__new_ugc_pixbuf_stash_fetch going on for: %s" % (
@@ -2443,30 +2474,29 @@ class EntropyPackageView:
                     "__new_ugc_pixbuf_stash_fetch: ARGH QUEUE FULL %s" % (
                         sync_item,))
 
-    def new_ugc_pixbuf(self, column, cell, model, myiter):
+    def __set_visible(self, cell, visible):
+        cell.set_property("visible", visible)
 
-        pkg = model.get_value(myiter, 0)
-        if not pkg:
-            cell.set_property('visible', False)
-            return
+    def __new_ugc_pixbuf_runner(self, column, cell, pkg):
 
         self.set_line_status(pkg, cell)
 
         dummy_types = (SulfurConf.dummy_category, SulfurConf.dummy_empty)
         if pkg.dummy_type in dummy_types:
-            cell.set_property('visible', False)
+            self.__set_visible(cell, False)
         elif not self._ugc_status:
-            cell.set_property('visible', False)
+            self.__set_visible(cell, False)
         else:
             # delay a bit, to avoid overloading the UI
             if not self._ugc_icon_load_queue.full():
-                gobject.timeout_add_seconds(8,
+                th = ParallelTask(gobject.timeout_add_seconds, 10,
                     self.__new_ugc_pixbuf_stash_fetch, pkg,
                     priority = gobject.PRIORITY_LOW)
-            cell.set_property('visible', True)
+                th.start()
+            self.__set_visible(cell, True)
             pixbuf = self._get_cached_pkg_ugc_icon(pkg)
             if pixbuf:
-                cell.set_property('pixbuf', pixbuf)
+                cell.set_property("pixbuf", pixbuf)
             else:
 
                 # try to load icon from icon theme
@@ -2490,7 +2520,7 @@ class EntropyPackageView:
                         # unrecognized file format (gobject.GError)
                         pixbuf = None
                     if pixbuf is not None:
-                        cell.set_property('pixbuf', pixbuf)
+                        cell.set_property("pixbuf", pixbuf)
                         icon_theme_loaded = True
                         try:
                             repoid = pkg.repoid_clean
@@ -2505,14 +2535,32 @@ class EntropyPackageView:
                     self.set_pixbuf_to_cell(cell, self.ugc_generic_icon,
                         pix_dir = "ugc")
 
+    def new_ugc_pixbuf(self, column, cell, model, myiter):
+        pkg = model.get_value(myiter, 0)
+        if not pkg:
+            self.__set_visible(cell, False)
+            return
+        last_pkg = getattr(self, "_last_new_ugc_pixbuf", None)
+        if last_pkg is pkg:
+            return
+        self.__new_ugc_pixbuf_runner(column, cell, pkg)
+        self._last_new_ugc_pixbuf = pkg
+
     def new_pixbuf(self, column, cell, model, myiter):
         """ 
         Cell Data function for recent Column, shows pixmap
         if recent Value is True.
         """
-        pkg = model.get_value( myiter, 0 )
-        if pkg:
+        pkg = model.get_value(myiter, 0)
+        if not pkg:
+            self.__set_visible(cell, False)
+            return
 
+        last_pkg = getattr(self, "_last_new_pixbuf", None)
+        if last_pkg is pkg:
+            return
+
+        try:
             self.set_line_status(pkg, cell)
 
             if pkg.dummy_type == SulfurConf.dummy_empty:
@@ -2571,23 +2619,25 @@ class EntropyPackageView:
                     self.set_pixbuf_to_cell(cell, self.pkg_update)
                 elif pkg.queued == "d":
                     self.set_pixbuf_to_cell(cell, self.pkg_downgrade)
+        finally:
+            self._last_new_pixbuf = pkg
 
-        else:
-            cell.set_property( 'visible', False )
 
     def set_line_status(self, obj, cell, stype = "cell-background"):
+        color = None
         if obj.queued == "r":
-            cell.set_property(stype, '#FFE2A3')
+            color = '#FFE2A3'
         elif obj.queued == "u":
-            cell.set_property(stype, '#B7BEFF')
+            color = '#B7BEFF'
         elif obj.queued == "d":
-            cell.set_property(stype, '#A7D0FF')
+            color = '#A7D0FF'
         elif obj.queued == "i":
-            cell.set_property(stype, '#E9C8FF')
+            color = '#E9C8FF'
         elif obj.queued == "rr":
-            cell.set_property(stype, '#B7BEFF')
+            color = '#B7BEFF'
         elif not obj.queued:
-            cell.set_property(stype, None)
+            color = None
+        cell.set_property(stype, color)
 
     def select_all(self):
 
