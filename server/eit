@@ -221,9 +221,11 @@ elif main_cmd == "revgraph" and options and \
     not ((len(set(options)) == 1) and ("--complete" in options)):
     _exec_args([REAGENT_EXEC, "query", "revgraph"] + options)
 
-elif main_cmd == "libtest" and options and \
-    not ((len(set(options)) == 1) and ("--dump" in options)):
-    _exec_args([REAGENT_EXEC, "libtest"] + options)
+elif main_cmd == "libtest":
+    lt_options = []
+    if "--dump" in options:
+        lt_options.append("--dump")
+    _exec_args([REAGENT_EXEC, "libtest"] + lt_options)
 
 elif main_cmd == "deptest":
     if options:
