@@ -4768,7 +4768,8 @@ class Server(Client):
                         "[%s] %s" % (
                             purple(pkg_repo),
                             teal(_("Do you agree?"))
-                        )
+                        ),
+                        responses = (_("Yes"), _("Repeat"),)
                     )
                 except KeyboardInterrupt:
                     # do not allow, we're in a critical region
