@@ -1514,14 +1514,10 @@ Name:    %s
                     True, mirrors = [uri])
                 continue
 
-        if copy_back and os.path.isfile(backup_dbpath):
+        if copy_back:
             # copy db back
             self._entropy.close_repositories()
-            further_backup_dbpath = old_dbpath+".security_backup"
-            if os.path.isfile(further_backup_dbpath):
-                os.remove(further_backup_dbpath)
-            shutil.copy2(old_dbpath, further_backup_dbpath)
-            shutil.move(backup_dbpath, old_dbpath)
+            os.rename(backup_dbpath, old_dbpath)
 
         # remove temporary directories
         for tmp_dir in tmp_dirs:
