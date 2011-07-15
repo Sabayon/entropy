@@ -2,7 +2,7 @@ Backlog (raw)
 
   1.0:
 
-    - make possible to embed ebuild content inside db repo (and drop old schema checks)
+    - splitdebug: use separate files?
 
     - graph improvements:
         - graph with or dependencies support
@@ -11,9 +11,13 @@ Backlog (raw)
 
     - complete README
         - when upgrading branch, drop packages.db.critical
+    - use standard arguments parser?
+    - when entropy does pkg name moves, also update config files?
+        via SystemSettings, updatable config files list returned by plugins
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
       - conditional deps support, implement in entropy.spm, class is there (add unit test)
         test removal (reverse deps could be problematic?) -- add resolved dep
         instead of full conditional?
+        see how they interact with packages.server.dep_rewrite
