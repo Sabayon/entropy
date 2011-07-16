@@ -17,6 +17,7 @@
 import os
 import sys
 import time
+import copy
 
 from entropy.const import etpConst, etpUi, const_debug_write
 from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
@@ -309,11 +310,23 @@ def _mirror_sort(entropy_client, repo_ids):
 
     for repo_id in repo_ids:
         try:
-            entropy_client.reorder_mirrors(repo_id, dry_run = etpUi['pretend'])
+            repo_data = entropy_client.reorder_mirrors(repo_id,
+                dry_run = etpUi['pretend'])
         except KeyError:
             print_warning("[%s] %s" % (
                 purple(repo_id), blue(_("repository not available")),))
             continue
+        # show new order, this doesn't take into account fallback mirrors
+        # which are put at the end of the list by SystemSettings logic.
+        mirrors = copy.copy(repo_data['plain_packages'])
+        if mirrors and not etpUi['pretend']:
+            mirrors.reverse()
+            print_info("[%s] %s" % (
+                teal(repo_id), darkgreen(_("mirror order:")),))
+            count = 0
+            for mirror in mirrors:
+                count += 1
+                print_info("  %d. %s" % (count, brown(mirror),))
         print_info("[%s] %s" % (
             teal(repo_id), blue(_("mirrors sorted successfully")),))
     return 0
