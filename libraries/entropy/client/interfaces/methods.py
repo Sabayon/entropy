@@ -1817,6 +1817,7 @@ class MiscMixin:
         repo_data = None
         avail_data = self._settings['repositories']['available']
         excluded_data = self._settings['repositories']['excluded']
+        mirror_test_file = "MIRROR_TEST"
 
         if repository_id in avail_data:
             repo_data = avail_data[repository_id]
@@ -1829,7 +1830,7 @@ class MiscMixin:
         pkg_mirrors = repo_data['plain_packages']
         mirror_stats = {}
         mirror_cache = set()
-        retries = 3
+        retries = 2
 
         for mirror in pkg_mirrors:
 
@@ -1842,9 +1843,10 @@ class MiscMixin:
                 if hostname in mirror_cache:
                     continue
                 mirror_cache.add(hostname)
+                mirror_url = mirror + "/" + mirror_test_file
 
                 mytxt = "%s: %s" % (
-                    blue(_("Checking response time of")),
+                    blue(_("Checking speed of")),
                     purple(hostname),
                 )
                 self.output(
@@ -1855,20 +1857,25 @@ class MiscMixin:
                     back = True
                 )
 
-                start_time = time.time()
+                download_speeds = []
                 for idx in range(retries):
-                    fetcher = self._url_fetcher(mirror, tmp_path,
+                    fetcher = self._url_fetcher(mirror_url, tmp_path,
                         resume = False, show_speed = False)
-                    fetcher.download()
-                end_time = time.time()
+                    rc = fetcher.download()
+                    if rc not in ("-3", "-4"):
+                        download_speeds.append(fetcher.get_transfer_rate())
 
-                result_time = (end_time - start_time)/retries
-                mirror_stats[mirror] = result_time
+                result_speed = 0.0
+                if download_speeds:
+                    download_speeds.sort(reverse=True)
+                    # take the best
+                    result_speed = download_speeds[0]
+                mirror_stats[mirror] = result_speed
 
-                mytxt = "%s: %s, %s" % (
-                    blue(_("Mirror response time")),
+                mytxt = "%s: %s, %s/sec" % (
+                    blue(_("Mirror speed")),
                     purple(hostname),
-                    teal(str(result_time)),
+                    teal(str(entropy.tools.bytes_into_human(result_speed))),
                 )
                 self.output(
                     mytxt,
@@ -1882,7 +1889,7 @@ class MiscMixin:
 
         # calculate new order
         new_pkg_mirrors = sorted(mirror_stats.keys(),
-            key = lambda x: mirror_stats[x], reverse = True)
+            key = lambda x: mirror_stats[x])
         repo_data['plain_packages'] = new_pkg_mirrors
         self.remove_repository(repository_id)
         self.add_repository(repo_data)
