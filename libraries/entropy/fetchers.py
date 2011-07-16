@@ -315,7 +315,8 @@ class UrlFetcher(TextInterface):
 
         self._init_vars()
         status = downloader()
-        self.update()
+        if self.__show_speed:
+            self.update()
         return status
 
     def _setup_rsync_args(self):
