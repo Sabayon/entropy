@@ -363,6 +363,8 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
             if not missing:
                 continue
+            if not missing_extended:
+                continue
 
             missing_map[(package_id, repo)] = missing_extended
 
