@@ -55,6 +55,7 @@ help_opts = [
     (1, 'mv <from> <to> <pkgs>', 2, _('move packages from a repository to another')),
     (1, 'own <package files>', 2, _('show owners of files (in current repository)')),
     (1, 'push [<repository>]', 2, _('push committed packages remotely')),
+    (1, 'pushas <repository> <as repo>', 1, _('push committed packages to given fake repository')),
     (1, 'repack <pkgs>', 3, _('re-package list of packages in default repository')),
     (1, 'repackin <repository> <pkgs>', 1, _('re-package list of packages in given repository')),
     (1, 'repo', 4, _('show current repository')),
@@ -243,6 +244,12 @@ elif main_cmd == "push":
         if options[0] in avail_repos:
             os.environ['ETP_REPO'] = options.pop(0)
     _exec_args([ACTIVATOR_EXEC, "sync"] + options)
+
+elif main_cmd == "pushas" and len(options) == 2:
+    avail_repos = _get_available_repositories()
+    if options[0] in avail_repos:
+        os.environ['ETP_REPO'] = options.pop(0)
+        _exec_args([ACTIVATOR_EXEC, "syncas"] + options)
 
 elif main_cmd == "show" and options:
     _exec_args([REAGENT_EXEC, "query", "match"] + options)
