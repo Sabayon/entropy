@@ -132,11 +132,11 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     uninstall_exception_handler()
     entropy.tools.kill_threads()
 
-    # always slap exception data (including stack content)
-    entropy.tools.print_exception(tb_data = exc_tb)
-
     if exc_class is KeyboardInterrupt:
         raise SystemExit(1)
+
+    # always slap exception data (including stack content)
+    entropy.tools.print_exception(tb_data = exc_tb)
 
     raise exc_instance
 
