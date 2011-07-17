@@ -239,7 +239,8 @@ elif main_cmd == "deptest":
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
-            server.dependencies_test(server.repository())
+            for repository_id in server.repositories():
+                server.dependencies_test(repository_id)
             rc = 0
     finally:
         if server is not None:
