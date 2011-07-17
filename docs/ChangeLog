@@ -1,3 +1,191 @@
+commit e1e60b4c6986300ba55b4fc6e0b19e89894946e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 21:59:28 2011 +0200
+
+    Release Entropy 1.0_rc27
+
+commit 4134acfca59ad852766c352641f1f21954406eaf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 21:58:46 2011 +0200
+
+    [server] server_query: make all query tools able to go through all the available repositories
+
+commit f2597a0834d1db7bd97d0473cf7ae4828da80f42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 21:55:04 2011 +0200
+
+    [equo] text_query: make possible to provide a list of repository identifiers to graph_packages()
+
+commit 3740fb12313b9b3ce26520ec7f5474086d445636
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 21:52:51 2011 +0200
+
+    [equo] text_query: make possible to provide a list of repository identifiers to revgraph_packages()
+
+commit 1119d6f713e7d7f894b24b90280f6fd587919732
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 21:35:06 2011 +0200
+
+    [eit] implement "pushas" option
+
+commit 63160f964528be78952a4ef1b73587a07d009b5b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 18:00:00 2011 +0200
+
+    [todo] update TODO
+
+commit 730df29fc445dfed691add2ed672ecd706abfb5c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 17:59:35 2011 +0200
+
+    [reagent] execute dependencies test ("deptest") on all the available repositories
+
+commit e71dfaa32c3211d5eb29a0b8abaad6530672dd9a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 17:59:18 2011 +0200
+
+    [entropy.qa] trivial speedup fix
+
+commit 0f84a5f6df5eb8c523b96fc776576323d133c7e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 17:52:42 2011 +0200
+
+    [entropy.server] improve speed of _external_metadata_qa_hook_test by directly using str()
+
+commit f5056a1cca918cf58becfd4fcae52f4c3dc6de6a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 16:30:17 2011 +0200
+
+    [activator,reagent] do not print stack content in case of KeyboardInterrupt exception
+
+commit a248b0f5c32c943291145bc4d53503f4c9e2e182
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 16:24:10 2011 +0200
+
+    [activator] always print stack content on exception
+
+commit be0dbfcdfa111da3169ed0069255159058c5753b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 16:23:56 2011 +0200
+
+    [reagent] always print stack content on exception
+
+commit b83095ee46d7cf76d5b998667184126a2e781375
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 16:18:04 2011 +0200
+
+    [entropy.*] implement automatic config files update on package name moves
+
+commit fdb000354470c7785223b0d3f512f2198e2cb30b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 16 17:26:20 2011 +0200
+
+    [entropy.fetchers] UrlFetcher: if show_speed=False, do not call update()
+
+commit 2fa3fc020e954c0083936ace5a5ea8dbd469305e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 16 15:58:17 2011 +0200
+
+    [entropy.client.interfaces.methods] reorder_mirrors: use effective download speed instead of RTT
+
+commit 49ef3062b1795193ed28943c179f89aca4fcae28
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 16 15:58:04 2011 +0200
+
+    [equo] improve output of "equo repo mirrorsort"
+
+commit 2a324a52e6af6425253c16657bf2ee4599f3bb0b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 15 07:54:46 2011 +0200
+
+    [todo] update TODO
+
+commit 3ac14326892cc32cd64251bad58076d4a12e60a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 15 07:53:29 2011 +0200
+
+    [entropy.server] when adding missing runtime deps, make it clear how it's possible to repeat the whole editing
+
+commit a3d7813d3eadef1cf65ba62bcfc045c1e465e8e1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 15 07:49:13 2011 +0200
+
+    [eit] fix "libtest" args parsing
+
+commit e548df92da6b7aef0f9adfb71cec1f8130187ddc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 15 07:18:08 2011 +0200
+
+    [entropy.server] relax constraints during repo upload, backup db only once
+
+commit 129932ad9d7c7bb0316107508f3182d800ffc1c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Jul 13 08:21:27 2011 +0200
+
+    [sulfur] improve Entropy Packages TreeView cells rendering speed, by sticking to a more async strategy
+
+commit cc62b68b036d1ed19099c9eb8b1f3018eb900fa6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 12 15:32:06 2011 +0200
+
+    [conf] repositories.conf: make sure users don't touch example lines blindly
+
+commit bc32c45d9568be231f36504fca4d82034ec9dd26
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 12 10:01:02 2011 +0200
+
+    [conf] repositories.conf: add freelydifferent.com mirror
+
+commit 9ec98b966a1cf673e5b66990752cf40a5ab61946
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 11 15:13:56 2011 +0200
+
+    [entropy.server] _external_metadata_qa_hook_test: do not sort values
+
+commit 06ba47a869c3fddb438cd2930874018eec3c9f56
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 16:21:25 2011 +0200
+
+    [entropy.server] do not allow KeyboardInterrupt in critical region when asking question
+
+commit 9af7add38dd3e878f26148674e72e9a95fa4d2ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 16:14:47 2011 +0200
+
+    [entropy.client.interfaces.db] on repo update, if --verbose, print the list of added and removed pkgs
+
+commit 45ce3d9991b33f16240202b5bc1fa040addbfeed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 16:02:39 2011 +0200
+
+    [eit] add "repack" and "repackin" options
+
+commit 20cca25c6426b42395401eb9eb0d081fd5570072
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 15:58:04 2011 +0200
+
+    [reagent] fix handling of --atoms and --repackage order, both combinations (atoms first, then repackage, or vice versa) are fine now
+
+commit 8c96bb6fee609226f47412bf50b57b10497851a4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 14:41:45 2011 +0200
+
+    [conf] repositories.conf: just comment out Yes Optus mirror (slow RTT)
+
+commit 3d9d66efa0ea30fdf4b9797a46b7662df1ab066a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 14:41:29 2011 +0200
+
+    Revert "[conf] repositories.conf: sorry Yes Optus Mirror, but you're freakingly slow and unresponsive"
+    
+    This reverts commit 0434ca723091c5a58dcdbc9f17aab974a8519385.
+
+commit 3ab86c98cb7a37d0e5806cb1b8397098d5e3cdfd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 10 12:56:19 2011 +0200
+
+    Tagging Entropy version 1.0_rc26
+
 commit 82411bb7a10ce35d8a0e75e0aabff1d84685034f
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jul 10 12:56:14 2011 +0200
