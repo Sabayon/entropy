@@ -240,20 +240,26 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
 
     return 0
 
-def revgraph_packages(packages, entropy_client, complete = False):
+def revgraph_packages(packages, entropy_client, complete = False,
+    repository_ids = None):
 
-    entropy_repository = entropy_client.installed_repository()
-    for package in packages:
-        pkg_id, pkg_rc = entropy_repository.atomMatch(package)
-        if pkg_rc == 1:
-            continue
-        if not etpUi['quiet']:
-            print_info(brown(" @@ ")+darkgreen("%s %s..." % (
-                _("Reverse graphing installed package"), purple(package),) ))
+    if repository_ids is None:
+        repository_ids = [entropy_client.installed_repository().repository_id()]
 
-        g_pkg = entropy_repository.retrieveAtom(pkg_id)
-        _revgraph_package(pkg_id, g_pkg, entropy_repository,
-            show_complete = complete)
+    for repository_id in repository_ids:
+        entropy_repository = entropy_client.open_repository(repository_id)
+        for package in packages:
+            pkg_id, pkg_rc = entropy_repository.atomMatch(package)
+            if pkg_rc == 1:
+                continue
+            if not etpUi['quiet']:
+                print_info(brown(" @@ ")+darkgreen("%s %s..." % (
+                    _("Reverse graphing installed package"),
+                        purple(package),) ))
+
+            g_pkg = entropy_repository.retrieveAtom(pkg_id)
+            _revgraph_package(pkg_id, g_pkg, entropy_repository,
+                show_complete = complete)
 
     return 0
 
