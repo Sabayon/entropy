@@ -9,11 +9,7 @@ Backlog (raw)
         - graph with weighted edges (nvidia-userspace:0 must not collide with something
           already pulled in)
 
-    - complete README
-        - when upgrading branch, drop packages.db.critical
     - use standard arguments parser?
-    - when entropy does pkg name moves, also update config files?
-        via SystemSettings, updatable config files list returned by plugins
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
