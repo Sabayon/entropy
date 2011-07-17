@@ -406,10 +406,11 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
     del graph
     return 0
 
-def graph_packages(packages, entropy_client, complete = False):
+def graph_packages(packages, entropy_client, complete = False,
+    repository_ids = None):
 
     for package in packages:
-        match = entropy_client.atom_match(package)
+        match = entropy_client.atom_match(package, match_repo = repository_ids)
         if match[0] == -1:
             continue
         if not etpUi['quiet']:
