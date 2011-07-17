@@ -1,0 +1,133 @@
+# Fix poppler dependencies, we provide our own split deps
+media-gfx/pdf2svg (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+kde-base/okular (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-qt4-\2
+media-gfx/inkscape (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+gnustep-libs/popplerkit (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-text/texlive-core (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+media-gfx/gimp (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+net-print/cups (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-text/calibre (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-qt4-\2
+app-text/dvipdfmx (.*)app-text/poppler-(\d.*)(\[.*\])? \1app-text/poppler-base-\2
+dev-tex/luatex (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-misc/beagle (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-misc/tracker (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+app-office/krita (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-qt4-\2
+app-office/openoffice (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-text/evince (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+kde-misc/tellico (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-qt4-\2
+app-text/epdfview (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+app-text/xpdf (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-text/xournal (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+media-gfx/keyjnote (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+dev-games/openscenegraph (.*)app-text/poppler(.*)(\[.*\]) \1app-text/poppler-glib\2
+xfce-extra/tumbler (.*)app-text/poppler-(.*)(\[.*\]) \1app-text/poppler-glib-\2
+app-office/texmaker (.*)app-text/poppler(.*)(\[.*\]) \1app-text/poppler-qt4\2
+app-editors/gummi (.*)app-text/poppler(.*)(\[.*\]) \1app-text/poppler-glib\2
+
+app-office/libreoffice (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+app-office/impressive (.*)app-text/poppler-(.*)(\[.*\])? \1app-text/poppler-base-\2
+dev-python/python-poppler (.*)app-text/poppler(.*)(\[.*\]) \1app-text/poppler-glib\2
+sci-libs/gdal (.*)app-text/poppler(.*) \1app-text/poppler-base\2
+
+# Fix enigmail deps, to point to our split pinentry packages
+x11-plugins/enigmail (.*)app-crypt/pinentry(.*)\[gtk\] \1app-crypt/pinentry-gtk2\2
+x11-plugins/enigmail (.*)app-crypt/pinentry(.*)\[qt4\] \1app-crypt/pinentry-qt4\2
+
+# Fix virtualbox shitty dependencies
+app-emulation/virtualbox-guest-additions#2.6.31-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.31-sabayon
+app-emulation/virtualbox-guest-additions#2.6.32-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.32-sabayon
+app-emulation/virtualbox-guest-additions#2.6.33-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.33-sabayon
+app-emulation/virtualbox-guest-additions#2.6.34-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.34-sabayon
+app-emulation/virtualbox-guest-additions#2.6.35-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.35-sabayon
+app-emulation/virtualbox-guest-additions#2.6.36-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.36-sabayon
+app-emulation/virtualbox-guest-additions#2.6.37-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.37-sabayon
+app-emulation/virtualbox-guest-additions#2.6.38-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.38-sabayon
+app-emulation/virtualbox-guest-additions#2.6.39-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.39-sabayon
+app-emulation/virtualbox-guest-additions#2.6.40-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.40-sabayon
+app-emulation/virtualbox-guest-additions#2.6.41-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.41-sabayon
+app-emulation/virtualbox-guest-additions#2.6.42-sabayon (.*)x11-drivers/xf86-video-virtualbox-(.*) \1x11-drivers/xf86-video-virtualbox-\2#2.6.42-sabayon
+
+# drop virtualbox-modules dep from virtualbox-bin
+# 2011-02-08: DISABLED because vboxusers group is required but not created by virtualbox-bin 
+# app-emulation/virtualbox-bin (.*)app-emulation/virtualbox-modules-(.*) dev-libs/glib
+
+# Add conflict to net-im/ejabberd for ejabberd-babel
+# net-im/ejabberd ++!net-im/ejabberd-babel<2>
+
+# Force netbeans-ide to use our split subversion-java package
+dev-java/netbeans-ide (.*)dev-vcs/subversion(.*):0\[java\] \1dev-vcs/subversion-java\2:0
+
+# Drop kde-l10n* deps
+kde-misc/customizable-weather (.*)kde-base/kde-l10n(.*)
+media-gfx/digikam (.*)kde-base/kde-l10n(.*)
+dev-util/kdevelop (.*)kde-base/kde-l10n(.*)
+dev-util/kdevplatform (.*)kde-base/kde-l10n(.*)
+net-p2p/ktorrent (.*)kde-base/kde-l10n(.*)
+kde-misc/konq-plugins (.*)kde-base/kde-l10n(.*)
+net-wireless/bluedevil (.*)kde-base/kde-l10n(.*)
+net-libs/libktorrent (.*)kde-base/kde-l10n(.*)
+kde-misc/kcm-grub2 (.*)kde-base/kde-l10n(.*)
+kde-misc/wacomtablet (.*)kde-base/kde-l10n(.*)
+media-video/kaffeine (.*)kde-base/kde-l10n(.*)
+kde-misc/krename (.*)kde-base/kde-l10n(.*)
+kde-misc/tellico (.*)kde-base/kde-l10n(.*)
+media-sound/kwave (.*)kde-base/kde-l10n(.*)
+media-video/bangarang (.*)kde-base/kde-l10n(.*)
+media-video/kdenlive (.*)kde-base/kde-l10n(.*)
+kde-misc/kcm-gtk-config (.*)kde-base/kde-l10n(.*)
+kde-misc/plasma-smoothtasks (.*)kde-base/kde-l10n(.*)
+kde-misc/plasma-mpd-nowplayin (.*)kde-base/kde-l10n(.*)
+kde-misc/wicd-client-kde (.*)kde-base/kde-l10n(.*)
+media-video/2mandvd (.*)kde-base/kde-l10n(.*)
+app-cdr/k9copy (.*)kde-base/kde-l10n(.*)
+net-misc/smb4k (.*)kde-base/kde-l10n(.*)
+kde-misc/synaptiks (.*)kde-base/kde-l10n(.*)
+kde-base/kdepim-runtime (.*)kde-base/kde-l10n(.*)
+
+dev-util/kdevelop-php-docs (.*)kde-base/kde-l10n(.*)
+games-board/knights (.*)kde-base/kde-l10n(.*)
+kde-misc/kshutdown (.*)kde-base/kde-l10n(.*)
+kde-misc/plasma-mpd-nowplaying (.*)kde-base/kde-l10n(.*)
+media-sound/kid3 (.*)kde-base/kde-l10n(.*)
+media-video/loopy (.*)kde-base/kde-l10n(.*)
+x11-themes/nitrogen (.*)kde-base/kde-l10n(.*)
+
+
+# net-dns/avahi dep rewrites
+app-crypt/seahorse (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2  
+app-emulation/libvirt (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+dev-db/desktopcouch (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2  
+dev-python/kaa-base (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2  
+gnome-base/gnome-vfs:2 (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+gnome-base/gvfs:0 (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2  
+gnustep-base/gnustep-base (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2  
+kde-base/kdelibs (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+kde-base/krdc (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-gfx/sane-backends (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-libs/libgphoto2 (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-plugins/gmpc-avahi (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-sound/ario (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-sound/mpd (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-sound/mt-daapd (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-sound/mumble (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-sound/pulseaudio (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-sound/xmms2 (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-video/vlc (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+media-tv/xbmc (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-fs/samba (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-im/pidgin (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-libs/obby (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-misc/networkmanager (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-misc/remmina (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-misc/vino (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-voip/ekiga (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+net-voip/telepathy-salut (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+sys-auth/nss-mdns (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+sys-fs/owfs (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+www-apache/mod_dnssd (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+www-client/epiphany (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+x11-misc/service-discovery-applet (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+x11-misc/x11vnc (.*)net-dns/avahi(.*) \1net-dns/avahi-base\2
+
+# Fix gtk-3 deps
+media-video/kino (.*)x11-libs/gtk(.*) \1x11-libs/gtk\2:2

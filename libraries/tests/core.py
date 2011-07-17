@@ -6,6 +6,7 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
 from entropy.core import EntropyPluginStore, Singleton
+from entropy.core.settings.base import SystemSettings
 import tests._misc as _misc
 
 class CoreTest(unittest.TestCase):
@@ -37,6 +38,12 @@ class CoreTest(unittest.TestCase):
         self.assertEqual(store.get_plugins(), {plug_id: plug_object})
         store.drop_plugins()
         self.assertEqual(store.get_plugins(), {})
+
+    def test_plugin_updatable_config_files(self):
+        sys_set = SystemSettings()
+        files = sys_set.get_updatable_configuration_files(None)
+        self.assert_(isinstance(files, set))
+        self.assert_(files) # not empty
 
     def test_core_singleton(self):
         class myself(Singleton):

@@ -1,0 +1,9 @@
+app-admin/equo
+app-misc/sabayon-version
+dev-db/sqlite
+sys-apps/entropy
+sys-devel/gcc:4.5
+sys-libs/db:4.8
+virtual/cron   
+# virtual/linux-binary
+sys-auth/pambase

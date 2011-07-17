@@ -153,6 +153,40 @@ class SystemSettings(Singleton, EntropyPluginStore):
         EntropyPluginStore.remove_plugin(self, plugin_id)
         self.clear()
 
+    def get_updatable_configuration_files(self, repository_id):
+        """
+        Poll SystemSettings plugins and get a list of updatable configuration
+        files. For "updatable" it is meant, configuration files that expose
+        package matches (not just keys) at the beginning of new lines.
+        This makes possible to implement automatic configuration files updates
+        upon package name renames.
+
+        @param repository_id: repository identifier, if needed to return
+            a list of specific configuration files
+        @type repository_id: string or None
+        @return: list (set) of package files paths (must check for path avail)
+        @rtype: set
+        """
+        own_list = set([
+            self.__setting_files['keywords'],
+            self.__setting_files['mask'],
+            self.__setting_files['unmask'],
+            self.__setting_files['satisfied'],
+            self.__setting_files['system_mask'],
+        ])
+        # poll plugins
+        for plugin in self.get_plugins().values():
+            files = plugin.get_updatable_configuration_files(repository_id)
+            if files:
+                own_list.update(files)
+
+        for plugin in self.__external_plugins.values():
+            files = plugin.get_updatable_configuration_files(repository_id)
+            if files:
+                own_list.update(files)
+
+        return own_list
+
     def __setup_const(self):
 
         """

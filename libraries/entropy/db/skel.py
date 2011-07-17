@@ -13,17 +13,19 @@ import sys
 import shutil
 import warnings
 import hashlib
+import tempfile
 
 from entropy.i18n import _
 from entropy.exceptions import InvalidAtom
-from entropy.const import etpConst, const_cmp
+from entropy.const import etpConst, const_cmp, const_debug_write
 from entropy.output import TextInterface, brown, bold, red, blue, purple, \
     darkred
 from entropy.cache import EntropyCacher
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
 from entropy.exceptions import RepositoryPluginError
-from entropy.spm.plugins.factory import get_default_instance as get_spm
+from entropy.spm.plugins.factory import get_default_instance as get_spm, \
+    get_default_class as get_spm_class
 from entropy.db.exceptions import OperationalError
 
 import entropy.dep
@@ -1510,6 +1512,102 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         """
         raise NotImplementedError()
 
+    def _runConfigurationFilesUpdate(self, actions, files,
+        protect_overwrite = True):
+        """
+        Routine that takes all the executed actions and updates configuration
+        files.
+        """
+        spm_class = get_spm_class()
+        updated_files = set()
+
+        actions_map = {}
+        for action in actions:
+            command = action.split()
+            dep_key = entropy.dep.dep_getkey(command[1])
+            obj = actions_map.setdefault(dep_key, [])
+            obj.append(tuple(command))
+
+        def _workout_line(line):
+            if not line.strip():
+                return line
+            if line.lstrip().startswith("#"):
+                return line
+
+            split_line = line.split()
+            if not split_line:
+                return line
+
+            pkg_dep = split_line[0]
+            pkg_key = entropy.dep.dep_getkey(pkg_dep)
+
+            pkg_commands = actions_map.get(pkg_key)
+            if pkg_commands is None:
+                return line
+
+            for command in pkg_commands:
+                if command[0] == "move":
+                    dep_from, key_to = command[1:]
+                    dep_from_key = entropy.dep.dep_getkey(dep_from)
+                    # NOTE: dep matching not supported, only using key
+                    if dep_from_key == pkg_key:
+                        # found, replace package name
+                        split_line[0] = pkg_dep.replace(dep_from_key, key_to)
+                        new_line = " ".join(split_line) + "\n"
+                        const_debug_write(__name__,
+                            "_runConfigurationFilesUpdate: replacing: " + \
+                            "'%s' => '%s'" % (line, new_line,))
+                        line = new_line
+                        # keep going, since updates are incremental
+                # NOTE: slotmove not supported
+
+            return line
+
+        for file_path in files:
+            if not (os.path.isfile(file_path) and \
+                os.access(file_path, os.W_OK)):
+                continue
+            tmp_fd, tmp_path = None, None
+            try:
+                with open(file_path, "rb") as source_f:
+                    tmp_fd, tmp_path = tempfile.mkstemp(
+                        prefix="entropy.db._runConfigurationFilesUpdate",
+                        dir=os.path.dirname(file_path))
+                    with os.fdopen(tmp_fd, "wb") as dest_f:
+                        line = source_f.readline()
+                        while line:
+                            dest_f.write(_workout_line(line))
+                            line = source_f.readline()
+                    if protect_overwrite:
+                        new_file_path, prot_status = \
+                            spm_class.allocate_protected_file(
+                                tmp_path, file_path)
+                        if prot_status:
+                            # it has been replaced
+                            os.rename(tmp_path, new_file_path)
+                            updated_files.add(new_file_path)
+                        else:
+                            os.remove(tmp_path)
+                    else:
+                        os.rename(tmp_path, file_path)
+                    tmp_path = None
+                    tmp_fd = None
+            except (OSError, IOError,) as err:
+                const_debug_write(__name__, "error: %s" % (err,))
+                if tmp_path is not None:
+                    try:
+                        os.remove(tmp_path)
+                    except (OSError, IOError):
+                        pass
+                if tmp_fd is not None:
+                    try:
+                        os.close(tmp_fd)
+                    except (OSError, IOError):
+                        pass
+                continue
+
+        return updated_files
+
     def runTreeUpdatesActions(self, actions):
         """
         Method not suited for general purpose usage.
@@ -1541,6 +1639,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
 
         spm_moves = set()
         quickpkg_atoms = set()
+        executed_actions = []
         for action in actions:
             command = action.split()
             mytxt = "%s: %s: %s." % (
@@ -1556,11 +1655,17 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             )
             if command[0] == "move":
                 spm_moves.add(action)
-                quickpkg_atoms |= self._runTreeUpdatesMoveAction(command[1:],
+                move_actions = self._runTreeUpdatesMoveAction(command[1:],
                     quickpkg_atoms)
+                if move_actions:
+                    executed_actions.append(action)
+                quickpkg_atoms |= move_actions
             elif command[0] == "slotmove":
-                quickpkg_atoms |= self._runTreeUpdatesSlotmoveAction(command[1:],
+                slotmove_actions = self._runTreeUpdatesSlotmoveAction(command[1:],
                     quickpkg_atoms)
+                if slotmove_actions:
+                    executed_actions.append(action)
+                quickpkg_atoms |= slotmove_actions
 
             mytxt = "%s: %s." % (
                 bold(_("ENTROPY")),
@@ -1595,6 +1700,12 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             level = "info",
             header = brown(" @@ ")
         )
+
+        if executed_actions:
+            # something actually happened, update configuration files
+            files = self._settings.get_updatable_configuration_files(
+                self.repository_id())
+            self._runConfigurationFilesUpdate(executed_actions, files)
 
         # discard cache
         self.clearCache()

@@ -138,3 +138,11 @@ def get_security_pkg():
 
 def get_security_pkg_asc():
     return get_test_generic_package("security-advisories.tar.bz2.asc")
+
+def get_config_files_updates_test_files():
+    return [
+        get_test_generic_package("packages.db.critical"),
+        get_test_generic_package("packages.db.system_mask"),
+        get_test_generic_package("packages.server.dep_blacklist.test"),
+        get_test_generic_package("packages.server.dep_rewrite.test")
+    ]

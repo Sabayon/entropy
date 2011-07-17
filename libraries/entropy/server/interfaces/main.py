@@ -479,6 +479,41 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         lines = [x for x in lines if entropy.tools.is_valid_ascii(x)]
         return lines
 
+    def get_updatable_configuration_files(self, repository_id):
+        """
+        Overridden from SystemSettings.
+        """
+        files = set()
+        # hope that all the repos get synchronized with respect to
+        # package names moves
+        files.add(etpConst['etpdatabasedeprewritefile'])
+        files.add(etpConst['etpdatabasedepblacklistfile'])
+
+        if (repository_id is not None) and \
+            (repository_id in self._helper.repositories()):
+
+            critical_file = self._helper._get_local_critical_updates_file(
+                repository_id)
+            files.add(critical_file)
+            keywords_file = self._helper._get_local_repository_keywords_file(
+                repository_id)
+            files.add(keywords_file)
+            mask_file = self._helper._get_local_repository_mask_file(
+                repository_id)
+            files.add(mask_file)
+            bl_file = self._helper._get_missing_dependencies_blacklist_file(
+                repository_id)
+            files.add(bl_file)
+            restricted_file = self._helper._get_local_restricted_file(
+                repository_id)
+            files.add(restricted_file)
+            system_mask_file = \
+                self._helper._get_local_repository_system_mask_file(
+                    repository_id)
+            files.add(system_mask_file)
+
+        return files
+
     def dep_rewrite_parser(self, sys_set):
 
         cached = getattr(self, '_mod_rewrite_data', None)

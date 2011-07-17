@@ -58,6 +58,32 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_db_clearcache(self):
         self.test_db.clearCache()
 
+    def test_treeupdates_config_files_update(self):
+        files = _misc.get_config_files_updates_test_files()
+        actions = [
+            "move app-admin/anaconda app-admin/fuckaconda",
+            "slotmove app-admin/anaconda 0 2", # unsupported
+            "move media-sound/xmms2 media-sound/deadashell",
+            "move media-sound/pulseaudio media-sound/idiotaudio",
+            "move sys-auth/pambase sys-auth/fuckbase",
+            "move sys-devel/gcc sys-devel/fuckcc"
+        ]
+        config_map = {
+            '._cfg0000_packages.db.critical': 'faa50df927223bb6de967e33179803b7',
+            '._cfg0000_packages.db.system_mask': 'b7f536785e315f7c104c7185b0bfe608',
+            '._cfg0000_packages.server.dep_blacklist.test': '8180f9e89d57f788e5b4bab05e30d447',
+            '._cfg0000_packages.server.dep_rewrite.test': 'c31d66b7f03c725e586a6e22941b8082',
+        }
+        for file_path in files:
+            updated_files = self.test_db._runConfigurationFilesUpdate(actions,
+                [file_path])
+            self.assert_(len(updated_files) == 1)
+            updated_file = list(updated_files)[0]
+            md5sum = entropy.tools.md5sum(updated_file)
+            os.remove(updated_file)
+            updated_name = os.path.basename(updated_file)
+            self.assertEqual(config_map[updated_name], md5sum)
+
     def test_treeupdates_actions(self):
         self.assertEqual(self.test_db.listAllTreeUpdatesActions(), tuple())
 

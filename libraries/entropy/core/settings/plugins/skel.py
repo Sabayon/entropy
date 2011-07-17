@@ -16,7 +16,7 @@
 
 class SystemSettingsPlugin(object):
 
-    BASE_PLUGIN_API_VERSION = 1
+    BASE_PLUGIN_API_VERSION = 2
 
     """
 
@@ -83,6 +83,23 @@ class SystemSettingsPlugin(object):
         @rtype: string
         """
         return self.__plugin_id
+
+    def get_updatable_configuration_files(self, repository_id):
+        """
+        Return a list (set) of updatable configuration files for this plugin.
+        For "updatable" it is meant, configuration files that expose
+        package matches (not just keys) at the beginning of new lines.
+        This makes possible to implement automatic configuration files updates
+        upon package name renames.
+        Please override this method if interested in exposing conf files.
+
+        @param repository_id: repository identifier, if needed to return
+            a list of specific configuration files
+        @type repository_id: string or None
+        @return: list (set) of package files paths (must check for path avail)
+        @rtype: set
+        """
+        return None
 
     def add_parser(self, parser_id, parser_callable):
         """

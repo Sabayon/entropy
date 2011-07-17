@@ -219,6 +219,17 @@ class ServerPackagesRepository(CachedRepository):
         return ServerPackagesRepositoryUpdater(entropy_client, repository_id,
             force).update()
 
+    def _runConfigurationFilesUpdate(self, actions, files,
+        protect_overwrite = False):
+        """
+        Overridden from EntropyRepositoryBase.
+        Force protect_overwrite to always False. Per-repository config files
+        cannot be protected since their dirs are not listed inside the
+        configuration protected list.
+        """
+        return super(CachedRepository, self)._runConfigurationFilesUpdate(
+            actions, files, protect_overwrite = False)
+
     def handlePackage(self, pkg_data, forcedRevision = -1,
         formattedContent = False):
         """
