@@ -4,6 +4,11 @@
 # It can be used in case of Source Package Managers not properly
 # splitting packages (and thus, dependencies), making possible to
 # rewrite dependency strings without forking packages.
+#
+# PLEASE PRETTY PLEASE NOTE: in Entropy world, there are also conditional
+# dependencies, composed by multiple dep strings connected together with logical
+# AND or OR operators: ( app-foo/bar & foo-app/rab ) | app-nice/woot
+# Please take this into consideration when writing dep rewrites.
 
 # LINE CONSTRUCTION:
 # <::pkg::> <::dep_pattern::> <::dep_replace_1::> [<::dep_replace_2::> ...]
