@@ -2,19 +2,21 @@ Backlog (raw)
 
   1.0:
 
-    eit depsin
+    - eit depsin
 
     - splitdebug: use separate files?
         there must be a way to determine if the pkg comes in two pkg files
         one containing the debug data. => db field? mark the package file with
         sheep blood?
 
+    - more granular locking
+    - use a2x for generating man pages
+
     - graph improvements:
         - graph with or dependencies support
         - graph with weighted edges (nvidia-userspace:0 must not collide with something
           already pulled in)
 
-    - use a2x for generating man pages
 
   break backward compat:
       - enable baseinfo-extrainfo-2010 tables
