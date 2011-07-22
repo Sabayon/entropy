@@ -43,7 +43,7 @@ repository = sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonl
 # AArnet.edu/Internode, Australia
 repository = sabayonlinux.org||http://mirror.internode.on.net/pub/sabayonlinux/entropy ftp://mirror.aarnet.edu.au/pub/SabayonLinux/entropy rsync://mirror.aarnet.edu.au/sabayonlinux/entropy|
 # Instituto Federal de Educação, Ciência e Tecnologia do Cearà, Brazil
-repository = sabayonlinux.org||http://cerberus.itti.ifce.edu.br/entropy ftp://cerberus.itti.ifce.edu.br/entropy|
+repository = sabayonlinux.org||http://www2.itti.ifce.edu.br/sabayon/entropy|
 # Universidade Federal do Parana', Brazil
 repository = sabayonlinux.org||http://sabayon.c3sl.ufpr.br/entropy ftp://sabayon.c3sl.ufpr.br/sabayon/entropy rsync://sabayon.c3sl.ufpr.br/sabayon/entropy|
 # Cross-LFS Project mirror, United States
