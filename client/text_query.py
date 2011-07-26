@@ -238,6 +238,12 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
                 len(pkg_ids), brown(_("entries")),)))
             print_table(toc)
 
+    if (not pkg_data) and (not etpUi['quiet']):
+        toc = []
+        toc.append(("%s:" % (blue(_("Found")),), "%s %s" % (
+            0, brown(_("entries")),)))
+        print_table(toc)
+
     return 0
 
 def revgraph_packages(packages, entropy_client, complete = False,
