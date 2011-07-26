@@ -208,11 +208,12 @@ elif (main_cmd == "fit") and options:
     _exec_args([REAGENT_EXEC, "inject"] + options)
 
 elif main_cmd == "list":
+    myopts = []
     if options:
         avail_repos = _get_available_repositories()
         if options[0] in avail_repos:
-            os.environ['ETP_REPO'] = options.pop(0)
-    _exec_args([REAGENT_EXEC, "query", "list"] + options)
+            myopts += [options[0]]
+    _exec_args([REAGENT_EXEC, "query", "list"] + myopts)
 
 elif main_cmd == "graph" and options and \
     not ((len(set(options)) == 1) and ("--complete" in options)):

@@ -116,6 +116,8 @@ def query(myopts):
         elif cmd == "list":
             rc = 0
             for repository_id in entropy_server.repositories():
+                if myopts and (repository_id not in myopts):
+                    continue
                 repo_db = entropy_server.open_repository(repository_id)
                 if text_query.search_repository_packages(myopts, entropy_server, repo_db) != 0:
                     rc = 1
