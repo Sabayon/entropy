@@ -27,118 +27,123 @@ def query(myopts):
         return -10
 
     rc = -10
-    entropy_server = Server()
+    entropy_server = None
 
-    if cmd == "search":
+    try:
+        entropy_server = Server()
+        if cmd == "search":
 
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            count = 0
-            for mykeyword in myopts:
-                results = repo_db.searchPackages(mykeyword, order_by = "atom")
-                for result in results:
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                count = 0
+                for mykeyword in myopts:
+                    results = repo_db.searchPackages(mykeyword, order_by = "atom")
+                    for result in results:
+                        count += 1
+                        text_query.print_package_info(
+                            result[1],
+                            entropy_server,
+                            repo_db,
+                            installed_search = True,
+                            extended = True
+                        )
+
+                if not count:
+                    print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
+            rc = 0
+
+        elif cmd == "match":
+
+            # open read only
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                count = 0
+                for mykeyword in myopts:
+                    pkg_id, pkg_rc = repo_db.atomMatch(mykeyword)
+                    if pkg_id == -1:
+                        continue
                     count += 1
                     text_query.print_package_info(
-                        result[1],
+                        pkg_id,
                         entropy_server,
                         repo_db,
                         installed_search = True,
                         extended = True
                     )
 
-            if not count:
-                print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
-        rc = 0
+                if not count:
+                    print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
+                rc = 0
 
-    elif cmd == "match":
-
-        # open read only
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            count = 0
-            for mykeyword in myopts:
-                pkg_id, pkg_rc = repo_db.atomMatch(mykeyword)
-                if pkg_id == -1:
-                    continue
-                count += 1
-                text_query.print_package_info(
-                    pkg_id,
-                    entropy_server,
-                    repo_db,
-                    installed_search = True,
-                    extended = True
-                )
-
-            if not count:
-                print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
+        elif cmd == "tags":
             rc = 0
-
-    elif cmd == "tags":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if search_tagged_packages(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "sets":
-        rc = text_query.search_package_sets(myopts, entropy_server)
-    elif cmd == "files":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_files(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "belongs":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_belongs(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "description":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_descriptions(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "needed":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_needed_libraries(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "revdeps":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_reverse_dependencies(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "list":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_repository_packages(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "changelog":
-        rc = 0
-        for repository_id in entropy_server.repositories():
-            repo_db = entropy_server.open_repository(repository_id)
-            if text_query.search_changelog(myopts, entropy_server, repo_db) != 0:
-                rc = 1
-    elif cmd == "graph":
-        complete_graph = False
-        if "--complete" in myopts:
-            complete_grah = True
-            myopts = [x for x in myopts if x != "--complete"]
-        rc = text_query.graph_packages(myopts, entropy_server,
-            complete = complete_graph,
-            repository_ids = entropy_server.repositories())
-    elif cmd == "revgraph":
-        complete_graph = False
-        if "--complete" in myopts:
-            complete_grah = True
-            myopts = [x for x in myopts if x != "--complete"]
-        rc = text_query.revgraph_packages(myopts, entropy_server,
-            complete = complete_graph,
-            repository_ids = entropy_server.repositories())
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if search_tagged_packages(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "sets":
+            rc = text_query.search_package_sets(myopts, entropy_server)
+        elif cmd == "files":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_files(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "belongs":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_belongs(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "description":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_descriptions(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "needed":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_needed_libraries(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "revdeps":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_reverse_dependencies(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "list":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_repository_packages(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "changelog":
+            rc = 0
+            for repository_id in entropy_server.repositories():
+                repo_db = entropy_server.open_repository(repository_id)
+                if text_query.search_changelog(myopts, entropy_server, repo_db) != 0:
+                    rc = 1
+        elif cmd == "graph":
+            complete_graph = False
+            if "--complete" in myopts:
+                complete_grah = True
+                myopts = [x for x in myopts if x != "--complete"]
+            rc = text_query.graph_packages(myopts, entropy_server,
+                complete = complete_graph,
+                repository_ids = entropy_server.repositories())
+        elif cmd == "revgraph":
+            complete_graph = False
+            if "--complete" in myopts:
+                complete_grah = True
+                myopts = [x for x in myopts if x != "--complete"]
+            rc = text_query.revgraph_packages(myopts, entropy_server,
+                complete = complete_graph,
+                repository_ids = entropy_server.repositories())
+    finally:
+        if entropy_server is not None:
+            entropy_server.shutdown()
 
     return rc
 
