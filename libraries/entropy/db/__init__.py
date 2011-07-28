@@ -1100,7 +1100,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute(
                 "DELETE FROM baseinfo WHERE idpackage = (?)", (package_id,))
         else:
-            r_tup = (package_id,)*18
+            r_tup = (package_id,)*20
             self._cursor().executescript("""
                 DELETE FROM baseinfo WHERE idpackage = %d;
                 DELETE FROM extrainfo WHERE idpackage = %d;
@@ -1120,16 +1120,9 @@ class EntropyRepository(EntropyRepositoryBase):
                 DELETE FROM systempackages WHERE idpackage = %d;
                 DELETE FROM injected WHERE idpackage = %d;
                 DELETE FROM installedtable WHERE idpackage = %d;
+                DELETE FROM packagedesktopmime WHERE idpackage = %d;
+                DELETE FROM provided_mime WHERE idpackage = %d;
             """ % r_tup)
-            # TODO: incorportate in query above after 2011
-            if self._doesTableExist("packagedesktopmime"):
-                self._cursor().execute("""
-                DELETE FROM packagedesktopmime WHERE idpackage = (?)""",
-                (package_id,))
-            if self._doesTableExist("provided_mime"):
-                self._cursor().execute("""
-                DELETE FROM provided_mime WHERE idpackage = (?)""",
-                (package_id,))
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -1868,21 +1861,11 @@ class EntropyRepository(EntropyRepositoryBase):
         @param provides: list of atom strings
         @type provides: list
         """
-        # TODO: remove this before 31-12-2011
-        # this adds default provide information to set data if not available
-        my_provides = set()
-        for prov in provides:
-            if not isinstance(prov, (tuple, list)):
-                my_provides.add((prov, 0,))
-            else:
-                my_provides.add(tuple(prov))
-
-        default_provides = [x for x in my_provides if x[1]]
-
+        default_provides = [x for x in provides if x[1]]
 
         self._cursor().executemany("""
         INSERT into provide VALUES (?,?,?)
-        """, [(package_id, x, y,) for x, y in my_provides])
+        """, [(package_id, x, y,) for x, y in provides])
 
         if default_provides:
             # reset previously set default provides
@@ -2557,10 +2540,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('packagesets'):
-            return {}
-
         cur = self._cursor().execute("SELECT setname, dependency FROM packagesets")
         data = cur.fetchall()
 
@@ -2708,10 +2687,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('packagesignatures'):
-            return None, None, None, None
-
         try:
             cur = self._cursor().execute("""
             SELECT sha1, sha256, sha512, gpg FROM packagesignatures
@@ -2914,10 +2889,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('packagespmphases'):
-            return None
-
         cur = self._cursor().execute("""
         SELECT phases FROM packagespmphases WHERE idpackage = (?) LIMIT 1
         """, (package_id,))
@@ -2930,9 +2901,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('packagespmrepository'):
-            return None
         cur = self._cursor().execute("""
         SELECT repository FROM packagespmrepository
         WHERE idpackage = (?) LIMIT 1
@@ -3012,10 +2980,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('provided_libs'):
-            return frozenset()
-
         cur = self._cursor().execute("""
         SELECT library, path, elfclass FROM provided_libs
         WHERE idpackage = (?)
@@ -3216,10 +3180,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('automergefiles'):
-            self._createAutomergefilesTable()
-
         # like portage does
         self._connection().text_factory = const_convert_to_unicode
 
@@ -3315,10 +3275,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('packagechangelogs'):
-            return None
-
         if self._isBaseinfoExtrainfo2010():
             cur = self._cursor().execute("""
             SELECT packagechangelogs.changelog
@@ -3350,10 +3306,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         Reimplemented from EntropyRepositoryBase.
         """
-        # TODO: remove this before 31-12-2011
-        if not self._doesTableExist('packagechangelogs'):
-            return None
-
         self._connection().text_factory = const_convert_to_unicode
 
         cur = self._cursor().execute("""
@@ -5295,7 +5247,6 @@ class EntropyRepository(EntropyRepositoryBase):
                     e_hash = hash(tuple(cur))
 
         if include_signatures:
-            # TODO: remove this before 31-12-2011
             try:
                 # be optimistic and delay if condition, _doesColumnInTableExist
                 # is really slow
@@ -5303,6 +5254,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 SELECT idpackage, sha1,gpg FROM
                 packagesignatures %s""" % (package_id_order,))
             except OperationalError:
+                # TODO: remove this before 31-12-2011
                 if self._doesColumnInTableExist("packagesignatures", "gpg"):
                     # something is really wrong
                     raise
@@ -5354,7 +5306,6 @@ class EntropyRepository(EntropyRepositoryBase):
         """
         cached = self._getLiveCache("getInstalledPackageSource")
         if cached is None:
-            # TODO: drop this check in future, backward compatibility
             try:
                 # be optimistic, delay _doesColumnInTableExist as much as
                 # possible
@@ -5363,6 +5314,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 """)
                 cached = dict(cur)
             except OperationalError:
+                # TODO: drop this check in future, backward compatibility
                 if self._doesColumnInTableExist("installedtable", "source"):
                     # something is really wrong
                     raise
@@ -5861,8 +5813,6 @@ class EntropyRepository(EntropyRepositoryBase):
         self._setSetting("_baseinfo_extrainfo_2010", "1")
 
     def _foreignKeySupport(self):
-
-        # TODO: remove this before 31-12-2011
 
         # entropy.qa uses this name, must skip migration
         if self.name in ("qa_testing", "mem_repo"):
