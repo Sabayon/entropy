@@ -3622,7 +3622,8 @@ class Server(Client):
             # that every packages comes out with all of them.
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
-                xid, xuseless = self.atom_match(xdep)
+                xid, xuseless = self.atom_match(xdep,
+                    match_repo = server_repos)
                 if xid == -1:
                     deps_not_satisfied.add(xdep)
 
