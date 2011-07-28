@@ -2,8 +2,6 @@ Backlog (raw)
 
   1.0:
 
-    - eit depsin
-
     - splitdebug: use separate files?
         there must be a way to determine if the pkg comes in two pkg files
         one containing the debug data. => db field? mark the package file with
