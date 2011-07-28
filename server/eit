@@ -46,6 +46,7 @@ help_opts = [
     (1, 'commit [<repository>]', 2, _('commit changes to repository')),
     (1, 'cp <from> <to> <pkgs>', 2, _('copy packages from a repository to another')),
     (1, 'deps <pkgs>', 3, _('edit package dependencies')),
+    (1, 'depsin <repository> <pkgs>', 1, _('edit package dependencies in given repository')),
     (1, 'deptest [<repository>]', 2, _('edit package dependencies')),
     (1, 'fit <package files>', 2, _('inject package files into the current repository')),
     (1, 'graph <pkgs> [--complete]', 1, _('show dependency graph of packages')),
@@ -282,6 +283,12 @@ elif main_cmd == "deps" and options:
             server.shutdown()
 
     _exec_args([REAGENT_EXEC, "repo", "package-dep", repository_id] + options)
+
+elif main_cmd == "depsin" and len(options) > 1:
+    avail_repos = _get_available_repositories()
+    repository_id = options.pop(0)
+    if repository_id in avail_repos:
+        _exec_args([REAGENT_EXEC, "repo", "package-dep", repository_id] + options)
 
 elif main_cmd == "rm" and options:
     _exec_args([REAGENT_EXEC, "repo", "remove"] + options)
