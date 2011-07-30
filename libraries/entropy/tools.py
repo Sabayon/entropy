@@ -2918,20 +2918,40 @@ def release_lock(lock_file, lock_map):
         if err.errno != errno.ENOENT:
             raise
 
-def acquire_entropy_locks(entropy_client):
+def acquire_entropy_locks(entropy_client, blocking = False):
     """
     Acquire Entropy Client/Server file locks.
+
+    @param entropy_client: any Entropy Client based instance
+    @type entropy_client: entropy.client.interfaces.Client
+    @keyword blocking: acquire locks in blocking mode?
+    @type blocking: bool
     """
     locked = entropy_client.another_entropy_running()
     if locked:
         return False
+    return acquire_entropy_resources_locks(entropy_client,
+        blocking = blocking)
 
-    gave_up = entropy_client.wait_resources()
-    if gave_up:
-        return False
+def acquire_entropy_resources_locks(entropy_client, blocking = False):
+    """
+    Acquire Entropy Resources General Lock.
+    This lock is controlling write access to entropy package metadata and
+    other writeable destinations.
+    Can be unlocked by simply calling release_entropy_locks().
+
+    @param entropy_client: any Entropy Client based instance
+    @type entropy_client: entropy.client.interfaces.Client
+    @keyword blocking: acquire locks in blocking mode?
+    @type blocking: bool
+    """
+    if not blocking:
+        gave_up = entropy_client.wait_resources()
+        if gave_up:
+            return False
 
     # acquire resources lock
-    acquired = entropy_client.lock_resources()
+    acquired = entropy_client.lock_resources(blocking = blocking)
     if not acquired:
         return False
 
@@ -2940,5 +2960,8 @@ def acquire_entropy_locks(entropy_client):
 def release_entropy_locks(entropy_client):
     """
     Release Entropy Client/Server file locks.
+
+    @param entropy_client: any Entropy Client based instance
+    @type entropy_client: entropy.client.interfaces.Client
     """
     entropy_client.unlock_resources()
