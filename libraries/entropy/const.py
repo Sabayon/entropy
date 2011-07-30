@@ -716,11 +716,13 @@ def const_pid_exists(pid):
     try:
         os.kill(pid, signal.SIG_DFL)
         return 1
+    except OverflowError:
+        # pid is invalid int, signed integer is greater than maximum
+        return 0
     except OSError as err:
         return err.errno == errno.EPERM
 
-def const_setup_entropy_pid(just_read = False, force_handling = False,
-    blocking = False):
+def const_setup_entropy_pid(just_read = False, force_handling = False):
 
     """
     Setup Entropy pid file, if possible and if UID = 0 (root).
@@ -737,8 +739,6 @@ def const_setup_entropy_pid(just_read = False, force_handling = False,
     @keyword force_handling: force pid handling even if "--no-pid-handling" is
         given
     @type force_handling: bool
-    @keyword blocking: execute entropy pid lock acquisition in blocking mode?
-    @type blocking: bool
     @rtype: tuple
     @return: tuple composed by two bools, (if pid lock file has been acquired,
         locked resources)
@@ -751,40 +751,56 @@ def const_setup_entropy_pid(just_read = False, force_handling = False,
 
     setup_done = False
     locked = False
+    flags = fcntl.LOCK_EX # blocking mode, always
+
 
     # PID creation
     pid = os.getpid()
     pid_file = etpConst['pidfile']
     if os.path.isfile(pid_file) and os.access(pid_file, os.R_OK):
 
+        pid_f = None
         try:
-            with open(pid_file, "r") as pid_f:
+
+            try:
+                pid_f = open(pid_file, "a+")
+                # always running in blocking mode, no need to check
+                fcntl.flock(pid_f.fileno(), flags)
                 found_pid = str(pid_f.readline().strip())
-        except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
-            found_pid = "0000" # which is always invalid
+            except IOError as err:
+                if err.errno != errno.EROFS: # readonly filesystem
+                    raise
+                found_pid = "0000"
+            except (OSError, UnicodeEncodeError, UnicodeDecodeError,):
+                found_pid = "0000"
 
-        try:
-            found_pid = int(found_pid)
-        except ValueError:
-            found_pid = 0
+            try:
+                found_pid = int(found_pid)
+            except ValueError:
+                found_pid = 0
 
-        if found_pid != pid:
-            # is found_pid still running ?
-            if (found_pid != 0) and const_pid_exists(found_pid):
-                locked = True
-            elif (not just_read) and os.access(pid_file, os.W_OK):
-                try:
-                    with open(pid_file, "w") as pid_f:
+            if found_pid != pid:
+                # is found_pid still running ?
+                if (found_pid != 0) and const_pid_exists(found_pid):
+                    locked = True
+                elif (not just_read) and (pid_f is not None):
+                    try:
+                        pid_f.seek(0)
+                        pid_f.truncate()
                         pid_f.write(str(pid))
                         pid_f.flush()
-                except IOError as err:
-                    if err.errno != errno.EROFS: # readonly filesystem
-                        raise
-                try:
-                    const_chmod_entropy_pid()
-                except OSError:
-                    pass
-                setup_done = True
+                    except IOError as err:
+                        if err.errno != errno.EROFS: # readonly filesystem
+                            raise
+                    try:
+                        const_chmod_entropy_pid()
+                    except OSError:
+                        pass
+                    setup_done = True
+
+        finally:
+            if pid_f != None:
+                pid_f.close()
 
     elif not just_read:
 
@@ -799,23 +815,12 @@ def const_setup_entropy_pid(just_read = False, force_handling = False,
                     shutil.rmtree(pid_file)
 
             with open(pid_file, "a+") as pid_fw:
-
-                if blocking:
-                    flags = fcntl.LOCK_EX
-                else:
-                    flags = fcntl.LOCK_EX | fcntl.LOCK_NB
-                try:
-                    fcntl.flock(pid_fw.fileno(), flags)
-                    pid_fw.truncate()
-                    pid_fw.write(str(pid))
-                    pid_fw.flush()
-                except IOError as err:
-                    # already locked?
-                    if err.errno not in (errno.EACCES, errno.EAGAIN,):
-                        raise
-                    # lock is being acquired by somebody else
-                    # cannot write
-                    return False, locked
+                # always running in blocking mode
+                fcntl.flock(pid_fw.fileno(), flags)
+                pid_fw.seek(0)
+                pid_fw.truncate()
+                pid_fw.write(str(pid))
+                pid_fw.flush()
 
             try:
                 const_chmod_entropy_pid()
