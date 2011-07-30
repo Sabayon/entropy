@@ -1,0 +1,65 @@
+#!/usr/bin/python
+
+import sys
+import argparse
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(
+        description='Automated Portage Package Builder')
+
+    parser.add_argument("chroot", metavar="<chroot>",
+        help="chroot directory where to operate on")
+
+    parser.add_argument("repository", metavar="<repository>",
+        help="Entropy Repository where to stash new packages")
+
+    parser.add_argument("package", nargs='+', metavar="<package>",
+        help="package dependency to build")
+
+
+    parser.add_argument("--blocking",
+        help="when trying to acquire Entropy Server locks, block until success",
+        action="store_true")
+
+    parser.add_argument("--dependencies",
+        help="allow dependencies to be pulled in, if required",
+        action="store_true")
+
+    parser.add_argument("--downgrade",
+        help="allow package downgrade, if required",
+        action="store_true")
+
+    parser.add_argument("--emerge", metavar="<args str>",
+        help="custom emerge arguments",
+        default=None)
+
+    parser.add_argument("--gentle",
+        help="do not run if staged packages are present in Entropy repository",
+        action="store_true")
+
+    parser.add_argument("--prechroot", metavar="<exec>",
+        help="wrapper executable around chroot calls (eg: linux32)",
+        default=None)
+
+    parser.add_argument("--push",
+        help="push entropy package updates to online repository",
+        action="store_true")
+
+    parser.add_argument("--rebuild",
+        help="rebuild the package despite being already up-to-date",
+        action="store_true")
+
+    parser.add_argument("--sync",
+        help="sync Portage tree, and attached overlays, before starting",
+        action="store_true")
+
+    args = parser.parse_args(sys.argv[1:])
+    print args
+
+    raise SystemExit(0)
+
+
+# workflow:
+# - acquire entropy server lock
