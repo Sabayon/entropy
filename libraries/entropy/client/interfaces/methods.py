@@ -1540,7 +1540,8 @@ class MiscMixin:
         @return: True, if lock has been acquired. False otherwise.
         @rtype: bool
         """
-        acquired = self._create_pid_file_lock()
+        acquired = self._create_pid_file_lock(
+            etpConst['locks']['using_resources'])
         if acquired:
             MiscMixin.RESOURCES_LOCK_F_COUNT += 1
         return acquired
@@ -1603,13 +1604,12 @@ class MiscMixin:
             return True # locked
         return False
 
-    def _create_pid_file_lock(self):
+    def _create_pid_file_lock(self, pidfile):
 
         if MiscMixin.RESOURCES_LOCK_F_REF is not None:
             # already locked, reentrant lock
             return True
 
-        pidfile = etpConst['locks']['using_resources']
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir, 0o775)
