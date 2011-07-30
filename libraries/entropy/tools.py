@@ -2930,11 +2930,6 @@ def acquire_entropy_locks(entropy_client):
     if gave_up:
         return False
 
-    # entropy resources locked?
-    locked = entropy_client.resources_locked()
-    if locked:
-        return False
-
     # acquire resources lock
     acquired = entropy_client.lock_resources()
     if not acquired:
