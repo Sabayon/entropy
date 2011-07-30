@@ -1529,7 +1529,7 @@ class MiscMixin:
         """ @deprecated """
         const_setup_file(file_path, etpConst['entropygid'], 0o664)
 
-    def lock_resources(self):
+    def lock_resources(self, blocking = False):
         """
         Try to lock Entropy Resources (WRITE EXCLUSIVE lock file).
         Once this lock is acquired, it is possible to modify permanent
@@ -1537,11 +1537,14 @@ class MiscMixin:
         Please make sure to always acquire this lock if you intend to
         make changes to installed packages or available repositories.
 
+        @keyword blocking: execute in blocking mode?
+        @type blocking: bool
         @return: True, if lock has been acquired. False otherwise.
         @rtype: bool
         """
         acquired = self._create_pid_file_lock(
-            etpConst['locks']['using_resources'])
+            etpConst['locks']['using_resources'],
+            blocking = blocking)
         if acquired:
             MiscMixin.RESOURCES_LOCK_F_COUNT += 1
         return acquired
@@ -1604,7 +1607,7 @@ class MiscMixin:
             return True # locked
         return False
 
-    def _create_pid_file_lock(self, pidfile):
+    def _create_pid_file_lock(self, pidfile, blocking = False):
 
         if MiscMixin.RESOURCES_LOCK_F_REF is not None:
             # already locked, reentrant lock
@@ -1616,9 +1619,14 @@ class MiscMixin:
         const_setup_perms(lockdir, etpConst['entropygid'], recursion = False)
         mypid = os.getpid()
 
+        if blocking:
+            flags = fcntl.LOCK_EX
+        else:
+            flags = fcntl.LOCK_EX | fcntl.LOCK_NB
+
         pid_f = open(pidfile, "a+")
         try:
-            fcntl.flock(pid_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            fcntl.flock(pid_f.fileno(), flags)
         except IOError as err:
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
                 # ouch, wtf?
