@@ -719,7 +719,8 @@ def const_pid_exists(pid):
     except OSError as err:
         return err.errno == errno.EPERM
 
-def const_setup_entropy_pid(just_read = False, force_handling = False):
+def const_setup_entropy_pid(just_read = False, force_handling = False,
+    blocking = False):
 
     """
     Setup Entropy pid file, if possible and if UID = 0 (root).
@@ -731,11 +732,13 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     istance is currently owning the contained pid, the second bool of the tuple
     is True.
 
-    @param just_read: only read the current pid file, if any and if possible
+    @keyword just_read: only read the current pid file, if any and if possible
     @type just_read: bool
-    @param force_handling: force pid handling even if "--no-pid-handling" is
+    @keyword force_handling: force pid handling even if "--no-pid-handling" is
         given
     @type force_handling: bool
+    @keyword blocking: execute entropy pid lock acquisition in blocking mode?
+    @type blocking: bool
     @rtype: tuple
     @return: tuple composed by two bools, (if pid lock file has been acquired,
         locked resources)
@@ -797,8 +800,12 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
 
             with open(pid_file, "a+") as pid_fw:
 
+                if blocking:
+                    flags = fcntl.LOCK_EX
+                else:
+                    flags = fcntl.LOCK_EX | fcntl.LOCK_NB
                 try:
-                    fcntl.flock(pid_fw.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    fcntl.flock(pid_fw.fileno(), flags)
                     pid_fw.truncate()
                     pid_fw.write(str(pid))
                     pid_fw.flush()
