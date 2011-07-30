@@ -1,7 +1,87 @@
 #!/usr/bin/python
 
 import sys
+import os
 import argparse
+
+# Entropy imports
+sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/server')
+sys.path.insert(0,'/usr/lib/entropy/client')
+sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../server')
+sys.path.insert(0,'../client')
+
+from entropy.const import etpConst
+from entropy.output import print_error, print_info, print_warning
+from entropy.server.interfaces import Server
+
+import entropy.tools
+
+def get_entropy_server():
+    """
+    Return Entropy Server interface object.
+    """
+    return Server(community_repo = etpConst['community']['mode'])
+
+class EntropyResourceLock(object):
+    """
+    This class exposes a Lock-like interface for acquiring Entropy Server
+    resources.
+    """
+
+    class NotAcquired(Exception):
+        """ Raised when Entropy Resource Lock cannot be acquired """
+
+    def __init__(self, entropy_server, blocking):
+        """
+        EntropyResourceLock constructor.
+
+        @param entropy_server: Entropy Server instance
+        @type entropy_server: entropy.server.interfaces.Server
+        @param blocking: acquire lock in blocking mode?
+        @type blocking: bool
+        """
+        self._entropy = entropy_server
+        self._blocking = blocking
+        self.__inside_with_stmt = 0
+
+    def acquire(self):
+        acquired = entropy.tools.acquire_entropy_resources_locks(self._entropy,
+            blocking = self._blocking)
+        if not acquired:
+            raise EntropyResourceLock.NotAcquired("unable to acquire lock")
+
+    def release(self):
+        entropy.tools.release_entropy_locks(self._entropy)
+
+    def __enter__(self):
+        """
+        Acquire lock. Not thread-safe.
+        """
+        if self.__inside_with_stmt < 1:
+            self.acquire()
+        self.__inside_with_stmt += 1
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Release lock. Not thread-safe.
+        """
+        self.__inside_with_stmt -= 1
+        if self.__inside_with_stmt < 1:
+            self.release()
+
+
+class PackageBuilder(object):
+    """
+    Portage Package builder class
+    """
+    def __init__(self, entropy_server, package, params):
+        self._entropy = entropy_server
+        self._package = package
+        self._params = params
+        print self._package, self._params
 
 
 if __name__ == "__main__":
@@ -55,11 +135,25 @@ if __name__ == "__main__":
         help="sync Portage tree, and attached overlays, before starting",
         action="store_true")
 
-    args = parser.parse_args(sys.argv[1:])
-    print args
+    nsargs = parser.parse_args(sys.argv[1:])
+    if os.getuid() != 0:
+        # root access required
+        print_error("superuser access required")
+        raise SystemExit(1)
+
+    entropy_server = None
+    try:
+        entropy_server = get_entropy_server()
+        with EntropyResourceLock(entropy_server, nsargs.blocking):
+            for package in nsargs.package:
+                builder = PackageBuilder(entropy_server, package, nsargs)
+    except EntropyResourceLock.NotAcquired:
+        print_error("unable to acquire Entropy Resources lock")
+        raise SystemExit(1)
+    finally:
+        if entropy_server is not None:
+            entropy_server.shutdown()
 
     raise SystemExit(0)
 
 
-# workflow:
-# - acquire entropy server lock
