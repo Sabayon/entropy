@@ -1,5 +1,5 @@
 #!/bin/sh
-echo "auto-builder pre hook"
+echo "matter pre hook"
 echo "BUILDER_REPOSITORY_ID = ${BUILDER_REPOSITORY_ID}"
 echo "BUILDER_CHROOT_DIR = ${BUILDER_CHROOT_DIR}"
 real_builder_chroot_dir=$(realpath "${BUILDER_CHROOT_DIR}")

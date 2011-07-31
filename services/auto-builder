@@ -5,6 +5,7 @@ import os
 import shlex
 import signal
 import argparse
+import tempfile
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -14,7 +15,7 @@ sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
 
-from entropy.const import etpConst
+from entropy.const import etpConst, etpUi
 from entropy.output import print_error, print_info, print_warning, darkgreen, \
     purple
 from entropy.exceptions import PermissionDenied
@@ -62,6 +63,27 @@ def exec_chroot_cmd(args, chroot, pre_chroot = None, env = None):
             os.execvpe(myargs[0], myargs, env)
         else:
             os.execvp(myargs[0], myargs)
+    else:
+        try:
+            rcpid, rc = os.waitpid(pid, 0)
+        except KeyboardInterrupt:
+            rc = 1
+            os.kill(pid, signal.SIGTERM)
+        return rc
+
+def exec_chroot_function(function, chroot):
+    """
+    Execute a function inside a chroot.
+    """
+    pid = os.fork()
+    if pid == 0:
+        os.chroot(chroot)
+        os.chdir("/")
+        try:
+            rc = function()
+        except:
+            rc = 1
+        os._exit(rc)
     else:
         try:
             rcpid, rc = os.waitpid(pid, 0)
@@ -134,12 +156,14 @@ class PackageBuilder(object):
     OVERLAYS_SYNC_CMD = shlex.split(os.getenv("BUILDER_OVERLAYS_SYNC_CMD",
         DEFAULT_OVERLAYS_SYNC_CMD))
 
+    DEFAULT_PORTAGE_BUILD_ARGS = "--verbose --nospinner"
+    PORTAGE_BUILD_ARGS = os.getenv("BUILDER_PORTAGE_BUILD_ARGS",
+        DEFAULT_PORTAGE_BUILD_ARGS).split()
+
     def __init__(self, entropy_server, package, params):
         self._entropy = entropy_server
         self._package = package
         self._params = params
-        self._standard_environment = PackageBuilder._build_standard_environment(
-            self._params.repository, self._params.chroot)
 
     @staticmethod
     def _build_standard_environment(repository, chroot):
@@ -171,15 +195,191 @@ class PackageBuilder(object):
 
         print_info("spawning post hook: %s, passing exit status: %d" % (
             hook_name, exit_st,))
-        return exec_cmd([hook_name],
-            env = PackageBuilder._build_standard_environment(repository, 
-                chroot))
+        env = PackageBuilder._build_standard_environment(repository, 
+                chroot)
+        env["BUILDER_EXIT_STATUS"] = str(exit_st)
+        return exec_cmd([hook_name], env = env)
 
     def run(self):
         """
         Execute Package building action.
         """
+        print_info(
+            "spawning package build: %s, into chroot: %s, wrapper: %s" % (
+                self._package, self._params.chroot, self._params.prechroot))
+        return exec_chroot_function(self._run, self._params.chroot)
+
+    def _run(self):
+        """
+        Internal Package building method used after fork() + chroot().
+        Must return an exit status.
+        Must wrap all the external calls with prechroot args.
+        """
+        std_env = PackageBuilder._build_standard_environment(
+            self._params.repository, self._params.chroot)
+        std_env["BUILDER_PACKAGE_NAME"] = self._package
+        if self._params.prechroot is not None:
+            std_env["BUILDER_PRE_CHROOT"] = self._params.prechroot
+        print_info("BUILDER_PACKAGE_NAME = %s" % (self._package,))
+        if self._params.prechroot is not None:
+            print_info("BUILDER_PRE_CHROOT = %s" % (self._params.prechroot,))
+
+        # run pkgpre, if any
+        pkgpre = self._params.pkgpre
+        if pkgpre is not None:
+            print_info(
+                "spawning --pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                tmp_f.write(pkgpre.read())
+            try:
+                # now execute
+                os.chmod(tmp_path, 0o700)
+                exit_st = exec_cmd([tmp_path], env = std_env)
+                if exit_st != 0:
+                    return exit_st
+            finally:
+                os.remove(tmp_path)
+
+        # execute the update code
+        exit_st = self._run_builder(std_env)
+        if exit_st != 0:
+            return exit_st
+
+        # run pkgpre, if any
+        pkgpost = self._params.pkgpost
+        if pkgpost is not None:
+            print_info(
+                "spawning --pkgpost: %s, name: %s" % (pkgpost, pkgpost.name))
+            tmp_fd, tmp_path = tempfile.mkstemp(prefix="matter")
+            with os.fdopen(tmp_fd, "wb") as tmp_f:
+                tmp_f.write(pkgpost.read())
+            try:
+                # now execute
+                os.chmod(tmp_path, 0o700)
+                exit_st = exec_cmd([tmp_path], env = std_env)
+                if exit_st != 0:
+                    return exit_st
+            finally:
+                os.remove(tmp_path)
+
+        # so far, so good
         return 0
+
+    def _run_builder(self, env):
+        """
+        This method is called by _run and executes the whole package build
+        logic, including constraints validation given by argv parameters.
+        This function is called from within a chroot()'ed environment.
+        Please prefix any exec*-akile call with prechroot args.
+        """
+        import portage
+        import portage.versions
+        portdb = portage.portdb
+        portdb.freeze()
+        settings = portage.config(clone=portage.settings)
+        vardb = portage.db[settings["ROOT"]]["vartree"].dbapi
+        fakedb = portage.fakedbapi(settings=portage.settings)
+
+        best_visible = portdb.xmatch("bestmatch-visible", self._package)
+        if not best_visible:
+            # package not found, return error
+            print_error("cannot match: %s, aborting" % (self._package,))
+            return 1
+
+        print_info("matched: %s for %s" % (best_visible, self._package,))
+        # now determine what's the installed version.
+        best_installed = portage.best(vardb.match(self._package))
+        if not best_installed:
+            # package not installed, behaviour not supported atm
+            print_error("package not installed: %s, aborting" % (
+                self._package,))
+            return 1
+
+        print_info("found installed: %s for %s" % (best_installed,
+            self._package,))
+
+        # now compare
+        # -1 if best_installed is older than best_visible
+        # 1 if best_installed is newer than best_visible
+        # 0 if they are equal
+        cmp_res = portage.versions.pkgcmp(
+            portage.versions.pkgsplit(best_installed),
+            portage.versions.pkgsplit(best_visible))
+
+        if (cmp_res == 1) and not self._params.downgrade:
+            # downgrade in action and downgrade not allowed, aborting!
+            print_error(
+                "package: %s, would be downgraded from %s to %s, aborting" % (
+                    self._package, best_installed, best_visible,))
+            return 1
+
+        if (cmp_res == 0) and not self._params.rebuild:
+            # rebuild in action and rebuild not allowed, aborting!
+            print_error(
+                "package: %s, would be rebuilt to %s, aborting" % (
+                    self._package, best_visible,))
+            return 1
+
+        # at this point we can go ahead building self._package
+        print_info("starting to build: %s, to %s" % (self._package,
+            best_visible,))
+
+        from _emerge.depgraph import backtrack_depgraph
+        from _emerge.actions import load_emerge_config, action_build
+        from _emerge.create_depgraph_params import create_depgraph_params
+        from _emerge.main import parse_opts, post_emerge, \
+            validate_ebuild_environment
+        from _emerge.stdout_spinner import stdout_spinner
+
+        print_info("portage modules loaded with success")
+
+        emerge_settings, emerge_trees, mtimedb = \
+            load_emerge_config(trees=portage.db)
+        myaction, myopts, myfiles = parse_opts(
+            PackageBuilder.PORTAGE_BUILD_ARGS + ["="+best_visible])
+        spinner = None
+        if ("--quiet" not in myopts) or ("--nospinner" in myopts):
+            spinner = stdout_spinner()
+        params = create_depgraph_params(myopts, myaction)
+        success, graph, favorites = backtrack_depgraph(emerge_settings,
+            emerge_trees, myopts, params, myaction, myfiles, spinner)
+
+        if not success:
+            # print issues to stdout and give up
+            print_error("dependencies calculation failed for %s, aborting" % (
+                best_visible,))
+            graph.display_problems()
+            return 1
+        print_info("dependency graph generated successfully")
+
+        # list of _emerge.Package.Package objects
+        package_queue = graph.altlist()
+        dep_list = [p.cpv+"::"+p.repo for p in package_queue]
+
+        # calculate dependencies, if --dependencies is not enabled
+        # because we have to validate it
+        if (not self._params.dependencies) and (len(package_queue) > 1):
+            # package is pulling in dependencies, but --dependencies is not
+            # enabled. need to give up
+            deps = ", ".join(dep_list)
+            print_error(
+                "package %s is pulling in: %s, but --dependencies "
+                "not specified, aborting" % (best_visible, deps,))
+            return 1
+
+        print_info("about to build the following packages:")
+        for dep in dep_list:
+            print_info("  %s" % (dep,))
+
+        # re-calling action_build(), deps are re-calculated though
+        validate_ebuild_environment(emerge_trees)
+        retval = action_build(emerge_settings, emerge_trees, mtimedb,
+            myopts, myaction, myfiles, spinner)
+        post_emerge(myaction, myopts, myfiles, emerge_settings["ROOT"],
+            emerge_trees, mtimedb, retval)
+
+        return retval
 
     def sync(self):
         """
@@ -189,22 +389,24 @@ class PackageBuilder(object):
         pre_chroot = []
         if self._params.prechroot:
             pre_chroot.append(self._params.prechroot)
+        std_env = PackageBuilder._build_standard_environment(
+            self._params.repository, self._params.chroot)
         rc = exec_chroot_cmd(sync_cmd, self._params.chroot,
-            pre_chroot = pre_chroot,
-            env = self._standard_environment)
+            pre_chroot = pre_chroot, env = std_env)
         if rc != 0:
             return rc
 
         # overlays update
         overlay_cmd = PackageBuilder.OVERLAYS_SYNC_CMD
         return exec_chroot_cmd(overlay_cmd, self._params.chroot,
-            pre_chroot = pre_chroot,
-            env = self._standard_environment)
+            pre_chroot = pre_chroot, env = std_env)
 
 
 
 
 if __name__ == "__main__":
+
+    # TODO: rename to matter
 
     ENV_VARS_HELP = """\
 
@@ -213,15 +415,20 @@ Environment variables always exported into children:
 %s         =  chroot directory
 
 Environment variables for Package Builder module:
-
 %s   =  alternative command used to sync Portage
                               default: %s
 %s  =  alternative command used to sync Portage overlays
                               default: %s
+%s  = custom emerge arguments
+                              default: %s
 
-Environment variables passed to pre/post executables:
+Environment variables passed to --post executables:
+%s        = exit status from previous execution phases, useful for detecting
+                             execution errors.
 
-TODO
+Environment variables passed to --pkgpre/--pkgpost executables:
+%s       = name of the package that would be built
+%s         = executable wrapping all the exec*() calls
 
 """ % (
         purple("BUILDER_REPOSITORY_ID"),
@@ -229,7 +436,12 @@ TODO
         purple("BUILDER_PORTAGE_SYNC_CMD"),
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_SYNC_CMD),
         purple("BUILDER_OVERLAYS_SYNC_CMD"),
-        darkgreen(PackageBuilder.DEFAULT_OVERLAYS_SYNC_CMD),)
+        darkgreen(PackageBuilder.DEFAULT_OVERLAYS_SYNC_CMD),
+        purple("BUILDER_PORTAGE_BUILD_ARGS"),
+        darkgreen(PackageBuilder.DEFAULT_PORTAGE_BUILD_ARGS),
+        purple("BUILDER_EXIT_STATUS"),
+        purple("BUILDER_PACKAGE_NAME"),
+        purple("BUILDER_PRE_CHROOT"),)
 
     parser = argparse.ArgumentParser(
         description='Automated Portage Package Builder',
@@ -250,32 +462,30 @@ TODO
         help="when trying to acquire Entropy Server locks, block until success",
         action="store_true")
 
-    # TODO: implement
+    parser.add_argument("--community",
+        help="enforce Community Repository mode on Entropy Server",
+        action="store_true")
+
+    parser.add_argument("--debug",
+        help="print debug output",
+        action="store_true")
+
     parser.add_argument("--dependencies",
         help="allow dependencies to be pulled in, if required",
         action="store_true")
 
-    # TODO: implement
     parser.add_argument("--downgrade",
         help="allow package downgrade, if required",
         action="store_true")
 
-    # TODO: implement
-    parser.add_argument("--emerge", metavar="<args str>",
-        help="custom emerge arguments",
-        default=None)
-
-    # TODO: implement
     parser.add_argument("--gentle",
         help="do not run if staged packages are present in Entropy repository",
         action="store_true")
 
-    # TODO: implement
     parser.add_argument("--keep-going",
         help="keep going if any of the target packages failed to be updated",
         action="store_true")
 
-    # TODO: implement
     parser.add_argument("--prechroot", metavar="<exec>",
         help="wrapper executable around chroot calls (eg: linux32)",
         default=None)
@@ -285,17 +495,14 @@ TODO
         help="push entropy package updates to online repository",
         action="store_true")
 
-    # TODO: implement
     parser.add_argument("--rebuild",
         help="rebuild the package despite being already up-to-date",
         action="store_true")
 
-    # TODO: add more info on exported env vars
     parser.add_argument("--pkgpre", metavar="<exec>", type=file,
         help="executable to be called inside chroot before package building",
         default=None)
 
-    # TODO: add more info on exported env vars
     parser.add_argument("--pkgpost", metavar="<exec>", type=file,
         help="executable to be called inside chroot after package building",
         default=None)
@@ -318,11 +525,21 @@ TODO
         print_error("superuser access required")
         raise SystemExit(1)
 
+    if nsargs.community:
+        etpConst['community']['mode'] = True
+
     chroot_dir = nsargs.chroot
     if not (os.path.isdir(chroot_dir) and os.access(chroot_dir, os.R_OK)):
         # root access required
         print_error("<chroot> is not a valid directory")
         raise SystemExit(2)
+
+    if nsargs.debug:
+        print_warning(repr(nsargs))
+        # if just one, drop from argv, so that it doesn't interfere with
+        # entropy --debug support
+        if sys.argv.count("--debug") < 2:
+            etpUi['debug'] = False
 
     entropy_server = None
     repository_id = nsargs.repository
@@ -336,6 +553,18 @@ TODO
             raise SystemExit(3)
 
         with EntropyResourceLock(entropy_server, nsargs.blocking):
+
+            if nsargs.gentle:
+                # check if there is something to do
+                to_be_added, to_be_removed, to_be_injected = \
+                    entropy_server.scan_package_changes()
+                if to_be_added: # only check this, others we can ignore
+                    to_be_added = [x[0] for x in to_be_added]
+                    to_be_added.sort()
+                    print_error("--gentle specified, and unstaged packages found:")
+                    for name in to_be_added:
+                        print_warning("  " + name)
+                    raise SystemExit(5)
 
             cwd = os.getcwd()
             # setup
@@ -371,11 +600,14 @@ TODO
 
     except EntropyResourceLock.NotAcquired:
         print_error("unable to acquire Entropy Resources lock")
-        raise SystemExit(4)
+        raise SystemExit(42)
     finally:
         if entropy_server is not None:
             entropy_server.shutdown()
 
+    print_warning("")
+    print_warning("")
+    print_warning("Tasks complete, exit status: %d" % (exit_st,))
     raise SystemExit(exit_st)
 
 
