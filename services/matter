@@ -916,6 +916,10 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         help="when trying to acquire Entropy Server locks, block until success",
         action="store_true")
 
+    parser.add_argument("--commit",
+        help="commit built packages to repository",
+        action="store_true")
+
     parser.add_argument("--community",
         help="enforce Community Repository mode on Entropy Server",
         action="store_true")
@@ -928,10 +932,6 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         help="do not run if staged packages are present in Entropy repository",
         action="store_true")
 
-    parser.add_argument("--push",
-        help="push entropy package updates to online repository",
-        action="store_true")
-
     parser.add_argument("--pre", metavar="<exec>", type=file,
         help="executable to be called once for setup purposes",
         default=None)
@@ -939,6 +939,10 @@ Environment variables passed to --pkgpre/--pkgpost executables:
     parser.add_argument("--post", metavar="<exec>", type=file,
         help="executable to be called once for teardown purposes",
         default=None)
+
+    parser.add_argument("--push",
+        help="push entropy package updates to online repository (only if --commit)",
+        action="store_true")
 
     parser.add_argument("--sync",
         help="sync Portage tree, and attached overlays, before starting",
@@ -1072,7 +1076,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                         # portage calls setcwd()
                         os.chdir(cwd)
 
-                        if local_completed:
+                        if local_completed and nsargs.commit:
                             rc = PackageBuilder.commit(entropy_server,
                                 spec["repository"], local_completed)
                             if exit_st == 0 and rc != 0:
@@ -1080,7 +1084,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 if not keep_going:
                                     break
 
-                    if tainted_repositories and nsargs.push \
+                    if tainted_repositories and nsargs.push and nsargs.commit \
                             and not preserved_libs_error:
                         for repository in tainted_repositories:
                             rc = PackageBuilder.push(entropy_server,
