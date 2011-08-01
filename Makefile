@@ -61,6 +61,7 @@ entropy-server-install:
 	install -m 755 server/eit $(DESTDIR)$(PREFIX)/sbin
 	ln -sf /$(LIBDIR)/entropy/server/reagent.py $(DESTDIR)$(PREFIX)/sbin/reagent
 	ln -sf /$(LIBDIR)/entropy/server/activator.py $(DESTDIR)$(PREFIX)/sbin/activator
+	install -m 755 services/matter $(DESTDIR)$(PREFIX)/sbin
 
 	# copy man pages
 	install -m 644 docs/man/man1/reagent.1 $(DESTDIR)$(PREFIX)/share/man/man1/
