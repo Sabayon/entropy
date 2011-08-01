@@ -16,19 +16,34 @@ sys.path.insert(0,'../libraries')
 sys.path.insert(0,'../server')
 sys.path.insert(0,'../client')
 
-from entropy.const import etpConst, etpUi
-from entropy.output import print_error, print_info, print_warning, darkgreen, \
-    purple
+# Entropy imports
 from entropy.exceptions import PermissionDenied
+from entropy.const import etpConst, etpUi
+from entropy.output import print_info, print_error, print_warning, \
+    purple, darkgreen
+from entropy.exceptions import InvalidAtom, SPMError
 from entropy.server.interfaces import Server
 
 import entropy.tools
+import entropy.dep
 
-def get_entropy_server(repository_id):
+# Portage imports
+import portage
+import portage.versions
+
+from _emerge.depgraph import backtrack_depgraph
+from _emerge.actions import load_emerge_config, action_build
+from _emerge.create_depgraph_params import create_depgraph_params
+from _emerge.main import parse_opts, post_emerge, \
+    validate_ebuild_environment
+from _emerge.stdout_spinner import stdout_spinner
+
+
+def get_entropy_server(repository_id, community_mode):
     """
     Return Entropy Server interface object.
     """
-    return Server(community_repo = etpConst['community']['mode'],
+    return Server(community_repo = community_mode,
         default_repository = repository_id)
 
 def exec_cmd(args, env = None):
@@ -48,48 +63,6 @@ def exec_cmd(args, env = None):
             rc = 1
             os.kill(pid, signal.SIGTERM)
         return rc
-
-def exec_chroot_cmd(args, chroot, env = None):
-    """
-    Execute a command inside a chroot.
-    """
-    pid = os.fork()
-    if pid == 0:
-        os.chroot(chroot)
-        os.chdir("/")
-        if env is not None:
-            os.execvpe(args[0], args, env)
-        else:
-            os.execvp(args[0], args)
-    else:
-        try:
-            rcpid, rc = os.waitpid(pid, 0)
-        except KeyboardInterrupt:
-            rc = 1
-            os.kill(pid, signal.SIGTERM)
-        return rc
-
-def exec_chroot_function(function, chroot):
-    """
-    Execute a function inside a chroot.
-    """
-    pid = os.fork()
-    if pid == 0:
-        os.chroot(chroot)
-        os.chdir("/")
-        try:
-            rc = function()
-        except:
-            rc = 1
-        os._exit(rc)
-    else:
-        try:
-            rcpid, rc = os.waitpid(pid, 0)
-        except KeyboardInterrupt:
-            rc = 1
-            os.kill(pid, signal.SIGTERM)
-        return rc
-
 
 
 class EntropyResourceLock(object):
@@ -164,16 +137,13 @@ class PackageBuilder(object):
         self._params = params
 
     @staticmethod
-    def _build_standard_environment(repository, chroot):
+    def _build_standard_environment(repository):
         env = os.environ.copy()
         env["BUILDER_REPOSITORY_ID"] = repository
-        env["BUILDER_CHROOT_DIR"] = chroot
-        print_info("BUILDER_REPOSITORY_ID = %s" % (repository,))
-        print_info("BUILDER_CHROOT_DIR = %s" % (chroot,))
         return env
 
     @staticmethod
-    def setup(executable_hook_f, cwd, repository, chroot):
+    def setup(executable_hook_f, cwd, repository):
         hook_name = executable_hook_f.name
         if not hook_name.endswith("/"):
             # complete with current directory
@@ -181,11 +151,10 @@ class PackageBuilder(object):
 
         print_info("spawning pre hook: %s" % (hook_name,))
         return exec_cmd([hook_name],
-            env = PackageBuilder._build_standard_environment(repository, 
-                chroot))
+            env = PackageBuilder._build_standard_environment(repository))
 
     @staticmethod
-    def teardown(executable_hook_f, cwd, repository, chroot, exit_st):
+    def teardown(executable_hook_f, cwd, repository, exit_st):
         hook_name = executable_hook_f.name
         if not hook_name.endswith("/"):
             # complete with current directory
@@ -193,8 +162,7 @@ class PackageBuilder(object):
 
         print_info("spawning post hook: %s, passing exit status: %d" % (
             hook_name, exit_st,))
-        env = PackageBuilder._build_standard_environment(repository, 
-                chroot)
+        env = PackageBuilder._build_standard_environment(repository)
         env["BUILDER_EXIT_STATUS"] = str(exit_st)
         return exec_cmd([hook_name], env = env)
 
@@ -203,21 +171,13 @@ class PackageBuilder(object):
         Execute Package building action.
         """
         print_info(
-            "spawning package build: %s, into chroot: %s" % (
-                self._package, self._params.chroot))
-        return exec_chroot_function(self._run, self._params.chroot)
+            "spawning package build: %s" % (self._package,))
 
-    def _run(self):
-        """
-        Internal Package building method used after fork() + chroot().
-        Must return an exit status.
-        Must wrap all the external calls with prechroot args.
-        """
         # ignore exit status
         subprocess.call(["env-update"])
 
         std_env = PackageBuilder._build_standard_environment(
-            self._params.repository, self._params.chroot)
+            self._params.repository)
         std_env["BUILDER_PACKAGE_NAME"] = self._package
         print_info("BUILDER_PACKAGE_NAME = %s" % (self._package,))
 
@@ -267,10 +227,7 @@ class PackageBuilder(object):
         """
         This method is called by _run and executes the whole package build
         logic, including constraints validation given by argv parameters.
-        This function is called from within a chroot()'ed environment.
         """
-        import portage
-        import portage.versions
         portdb = portage.portdb
         portdb.freeze()
         settings = portage.config(clone=portage.settings)
@@ -328,13 +285,6 @@ class PackageBuilder(object):
         print_info("starting to build: %s, to %s" % (self._package,
             best_visible,))
 
-        from _emerge.depgraph import backtrack_depgraph
-        from _emerge.actions import load_emerge_config, action_build
-        from _emerge.create_depgraph_params import create_depgraph_params
-        from _emerge.main import parse_opts, post_emerge, \
-            validate_ebuild_environment
-        from _emerge.stdout_spinner import stdout_spinner
-
         print_info("portage modules loaded with success")
 
         emerge_settings, emerge_trees, mtimedb = \
@@ -379,28 +329,169 @@ class PackageBuilder(object):
         validate_ebuild_environment(emerge_trees)
         retval = action_build(emerge_settings, emerge_trees, mtimedb,
             myopts, myaction, myfiles, spinner)
+
+        # NOTE: this is a WORKAROUND for Portage's post_emerge() calling
+        # sys.exit() at the end.
+        sys_exit = sys.exit
+        sys.exit = lambda x: None
         post_emerge(myaction, myopts, myfiles, emerge_settings["ROOT"],
             emerge_trees, mtimedb, retval)
+        sys.exit = sys_exit
+
+        print_info("portage spawned, return value: %d" % (retval,))
 
         return retval
 
-    def sync(self):
+    @staticmethod
+    def sync(repository):
         """
         Execute Portage and Overlays sync
         """
         sync_cmd = PackageBuilder.PORTAGE_SYNC_CMD
         std_env = PackageBuilder._build_standard_environment(
-            self._params.repository, self._params.chroot)
-        rc = exec_chroot_cmd(sync_cmd, self._params.chroot,
-            env = std_env)
+            repository)
+        rc = exec_cmd(sync_cmd, env = std_env)
         if rc != 0:
             return rc
 
         # overlays update
         overlay_cmd = PackageBuilder.OVERLAYS_SYNC_CMD
-        return exec_chroot_cmd(overlay_cmd, self._params.chroot,
-            env = std_env)
+        return exec_cmd(overlay_cmd, env = std_env)
 
+    @staticmethod
+    def commit(entropy_server, repository, packages):
+        """
+        Commit packages to Entropy repository.
+        """
+        spm = entropy_server.Spm()
+        spm_atoms = set()
+        exit_st = 0
+
+        print_info("committing packages: %s, to repository: %s" % (
+            ", ".join(sorted(packages)), repository,))
+
+        # if we get here, something has been compiled
+        # successfully
+        for package in completed:
+            try:
+                spm_atom = spm.match_installed_package(package)
+                spm_atoms.add(spm_atom)
+            except InvalidAtom:
+                exit_st = 1
+                print_warning(
+                    "cannot find installed package: %s" % (
+                        package,))
+                continue
+
+        if not spm_atoms:
+            return exit_st
+
+        print_info("about to commit:")
+        spm_packages = sorted(spm_atoms)
+
+        for atom in spm_packages:
+            item_txt = atom
+
+            # this is a spm atom
+            spm_key = entropy.dep.dep_getkey(atom)
+            try:
+                spm_slot = spm.get_installed_package_metadata(
+                    atom, "SLOT")
+                spm_repo = spm.get_installed_package_metadata(
+                    atom, "repository")
+            except KeyError:
+                spm_slot = None
+                spm_repo = None
+
+            etp_repo = None
+            if spm_repo is not None:
+                pkg_id, repo_id = entropy_server.atom_match(spm_key,
+                    match_slot = spm_slot)
+                if repo_id != 1:
+                    repo_db = entropy_server.open_repository(repo_id)
+                    etp_repo = repo_db.retrieveSpmRepository(pkg_id)
+
+                    if (etp_repo is not None) and (etp_repo != spm_repo):
+                        item_txt += ' [%s {%s=>%s}]' % ("warning",
+                            etp_repo, spm_repo,)
+
+            print_info(item_txt)
+
+        # always stuff new configuration files here
+        # if --gentle was specified, the uncommitted stuff here belongs
+        # to our packages.
+        # if --gentle was NOT specified, we just don't give a shit
+        uncommitted = entropy_server._check_config_file_updates()
+        if uncommitted:
+            subprocess.call("echo -5 | etc-update", shell = True)
+        # test again
+        uncommitted = entropy_server._check_config_file_updates()
+        if uncommitted:
+            # ouch, wtf? better aborting
+            print_error("tried to commit configuration file changes and failed")
+            return 1
+
+        print_info("about to compress:")
+
+        store_dir = entropy_server._get_local_store_directory(repository)
+        package_paths = []
+        for atom in spm_packages:
+            print_info(atom)
+            try:
+                package_path = spm.generate_package(atom, store_dir)
+            except OSError:
+                entropy.tools.print_traceback()
+                print_error("problem during package generation, aborting")
+                return 1
+            except SPMError:
+                entropy.tools.print_traceback()
+                print_error("problem during package generation (2), aborting")
+                return 1
+            package_paths.append(package_path)
+
+        etp_pkg_files = [(x, False) for x in package_paths]
+        # NOTE: any missing runtime dependency will be added
+        # (beside those blacklisted), since this execution is not interactive
+        package_ids = entropy_server.add_packages_to_repository(
+            repository, etp_pkg_files, ask = False)
+        if package_ids:
+            # checking dependencies and print issues
+            entropy_server.dependencies_test(repository)
+        entropy_server.close_repositories()
+
+        return exit_st
+
+    @staticmethod
+    def push(entropy_server, repository):
+        """
+        Push staged packages in repository to online Entropy mirrors.
+        """
+        rc = PackageBuilder._push_packages(entropy_server, repository)
+        if rc != 0:
+            return rc
+        rc = PackageBuilder._push_repository(entropy_server, repository)
+        return rc
+
+    @staticmethod
+    def _push_packages(entropy_server, repository):
+        """
+        Upload newly built packages.
+        """
+        mirrors_tainted, mirrors_errors, successfull_mirrors, \
+            broken_mirrors, check_data = \
+                entropy_server.Mirrors.sync_packages(
+                    repository, ask = False, pretend = False)
+        if mirrors_errors and not successfull_mirrors:
+            return 1
+        return 0
+
+    @staticmethod
+    def _push_repository(entropy_server, repository):
+        """
+        Update remote repository.
+        """
+        sts = entropy_server.Mirrors.sync_repository(repository_id)
+        return sts
 
 
 
@@ -410,7 +501,6 @@ if __name__ == "__main__":
 
 Environment variables always exported into children:
 %s      =  repository identifier
-%s         =  chroot directory
 
 Environment variables for Package Builder module:
 %s   =  alternative command used to sync Portage
@@ -429,7 +519,6 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 
 """ % (
         purple("BUILDER_REPOSITORY_ID"),
-        purple("BUILDER_CHROOT_DIR"),
         purple("BUILDER_PORTAGE_SYNC_CMD"),
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_SYNC_CMD),
         purple("BUILDER_OVERLAYS_SYNC_CMD"),
@@ -443,9 +532,6 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         description='Automated Portage Package Builder',
         epilog=ENV_VARS_HELP,
         formatter_class=argparse.RawDescriptionHelpFormatter)
-
-    parser.add_argument("chroot", metavar="<chroot>",
-        help="chroot directory where to operate on")
 
     parser.add_argument("repository", metavar="<repository>",
         help="Entropy Repository where to stash new packages")
@@ -482,11 +568,6 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         help="keep going if any of the target packages failed to be updated",
         action="store_true")
 
-    parser.add_argument("--prechroot", metavar="<exec>",
-        help="wrapper executable around chroot calls (eg: linux32)",
-        default=None)
-
-    # TODO: implement
     parser.add_argument("--push",
         help="push entropy package updates to online repository",
         action="store_true")
@@ -496,19 +577,19 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         action="store_true")
 
     parser.add_argument("--pkgpre", metavar="<exec>", type=file,
-        help="executable to be called inside chroot before package building",
+        help="executable to be called before package building",
         default=None)
 
     parser.add_argument("--pkgpost", metavar="<exec>", type=file,
-        help="executable to be called inside chroot after package building",
+        help="executable to be called after package building",
         default=None)
 
     parser.add_argument("--pre", metavar="<exec>", type=file,
-        help="executable to be called once outside chroot for setup purposes",
+        help="executable to be called once for setup purposes",
         default=None)
 
     parser.add_argument("--post", metavar="<exec>", type=file,
-        help="executable to be called once outside chroot for teardown purposes",
+        help="executable to be called once for teardown purposes",
         default=None)
 
     parser.add_argument("--sync",
@@ -517,26 +598,13 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 
     nsargs = parser.parse_args(sys.argv[1:])
 
-    if (nsargs.prechroot is not None) and not \
-        os.getenv("BUILDER_PRECHROOT_DONE"):
-        # exec myself prefixing with prechroot arg
-        os.environ["BUILDER_PRECHROOT_DONE"] = "1"
-        argv = [nsargs.prechroot] + sys.argv
-        os.execvpe(argv[0], argv, os.environ)
-
     if os.getuid() != 0:
         # root access required
-        print_error("superuser access required")
+        sys.stderr.write("superuser access required\n")
         raise SystemExit(1)
 
     if nsargs.community:
         etpConst['community']['mode'] = True
-
-    chroot_dir = nsargs.chroot
-    if not (os.path.isdir(chroot_dir) and os.access(chroot_dir, os.R_OK)):
-        # root access required
-        print_error("<chroot> is not a valid directory")
-        raise SystemExit(2)
 
     if nsargs.debug:
         print_warning(repr(nsargs))
@@ -548,9 +616,12 @@ Environment variables passed to --pkgpre/--pkgpost executables:
     entropy_server = None
     repository_id = nsargs.repository
     exit_st = 0
+    cwd = os.getcwd()
+
     try:
         try:
-            entropy_server = get_entropy_server(repository_id)
+            entropy_server = get_entropy_server(repository_id,
+                etpConst['community']['mode'])
         except PermissionDenied:
             # repository not available or not configured
             print_error("<repository> is not a valid server-side repository")
@@ -570,35 +641,57 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                         print_warning("  " + name)
                     raise SystemExit(5)
 
-            cwd = os.getcwd()
+                # also check for uncommitted configuration files changed
+                problems = entropy_server._check_config_file_updates()
+                if problems:
+                    print_error(
+                        "some configuration files have to be merged manually")
+                    raise SystemExit(6)
+
             # setup
             if nsargs.pre:
-                rc = PackageBuilder.setup(nsargs.pre, cwd, nsargs.repository,
-                    nsargs.chroot)
+                rc = PackageBuilder.setup(nsargs.pre, cwd, nsargs.repository)
                 if rc != 0:
                     exit_st = rc
 
             if exit_st == 0:
 
                 if nsargs.sync:
-                    builder = PackageBuilder(entropy_server, None, nsargs)
-                    rc = builder.sync()
+                    rc = PackageBuilder.sync(nsargs.repository)
                     if rc != 0:
                         exit_st = rc
 
                 if (exit_st == 0) or nsargs.keep_going:
+                    completed = []
                     for package in nsargs.package:
                         builder = PackageBuilder(entropy_server, package,
                             nsargs)
                         rc = builder.run()
-                        if rc != 0:
+                        if rc == 0:
+                            completed.append(package)
+                        else:
                             exit_st = rc
                             if not nsargs.keep_going:
                                 break
 
+                    # portage calls setcwd()
+                    os.chdir(cwd)
+
+                    if completed:
+                        rc = PackageBuilder.commit(entropy_server,
+                            nsargs.repository, completed)
+                        if exit_st == 0 and rc != 0:
+                            exit_st = rc
+
+                        if rc == 0 and nsargs.push:
+                            rc = PackageBuilder.push(entropy_server,
+                                nsargs.repository)
+                            if exit_st == 0 and rc != 0:
+                                exit_st = rc
+
             if nsargs.post:
                 rc = PackageBuilder.teardown(nsargs.post, cwd,
-                    nsargs.repository, nsargs.chroot, exit_st)
+                    nsargs.repository, exit_st)
                 if exit_st == 0 and rc != 0:
                     exit_st = rc
 
