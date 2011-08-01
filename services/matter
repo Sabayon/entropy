@@ -19,7 +19,8 @@ sys.path.insert(0,'../client')
 
 # Entropy imports
 from entropy.exceptions import PermissionDenied
-from entropy.const import etpConst, etpUi, const_convert_to_unicode
+from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
+    const_get_stringtype
 from entropy.output import print_info, print_error, print_warning, \
     purple, darkgreen
 from entropy.exceptions import InvalidAtom, SPMError
@@ -393,7 +394,7 @@ class SpecParser:
             if check_dict is not None:
                 key, value = v_key, v_value
                 old_key = key
-            elif isinstance(old_key, get_stringtype()):
+            elif isinstance(old_key, const_get_stringtype()):
                 key = old_key
                 value = line.strip()
                 if not value:
@@ -406,7 +407,7 @@ class SpecParser:
             if not check_dict['cb'](value):
                 continue
             if key in mydict:
-                if isinstance(value, get_stringtype()):
+                if isinstance(value, const_get_stringtype()):
                     mydict[key] += " %s" % (value,)
                 elif isinstance(value, list):
                     mydict[key] += value
@@ -420,8 +421,8 @@ class SpecParser:
     def validate_parse(self, mydata):
         for param in self.vital_parameters:
             if param not in mydata:
-                raise SpecFileError(
-                    "SpecFileError: '%s' missing or invalid"
+                raise ValueError(
+                    "'%s' missing or invalid"
                     " '%s' parameter, it's vital. Your specification"
                     " file is incomplete!" % (self.file_object.name, param,)
                 )
@@ -1041,9 +1042,9 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                     completed = []
                     tainted_repositories = set()
                     preserved_libs_error = False
-                    keep_going = spec.get("keep-going", "no") == "yes"
                     for spec in specs:
 
+                        keep_going = spec.get("keep-going", "no") == "yes"
                         local_completed = []
 
                         for package in spec["packages"]:
