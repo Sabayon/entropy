@@ -29,6 +29,16 @@ rebuild: yes
 # Default is: no
 keep-going: yes
 
+# Allow new USE flags?
+# Valid values are either "yes" or "no"
+# Default is: no
+new-useflags: no
+
+# Allow removed USE flags?
+# Valid values are either "yes" or "no"
+# Default is: no
+removed-useflags: yes
+
 # Package pre execution script hook
 # Valid value is path to executable file
 # Env vars:

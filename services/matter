@@ -229,6 +229,14 @@ class MatterSpec(GenericSpecFunctions):
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
             },
+            'new-useflags': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+            },
+            'removed-useflags': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+            },
             'rebuild': {
                 'cb': self.valid_yes_no,
                 've': self.ve_string_stripper,
@@ -640,6 +648,41 @@ class PackageBuilder(object):
                 "not specified, aborting" % (best_visible, deps,))
             return 1
 
+        # inspect use flags changes
+        allow_new_useflags = self._params.get("new-useflags", "no") == "yes"
+        allow_removed_useflags = \
+            self._params.get("removed-useflags", "no") == "yes"
+
+        use_flags_give_up = False
+        if (not allow_new_useflags) or (not allow_removed_useflags):
+            # checking for use flag changes
+            for pkg in package_queue:
+                # frozenset
+                enabled_flags = pkg.use.enabled
+                inst_atom = portage.best(vardb.match(pkg.slot_atom))
+                if not inst_atom:
+                    # new package, ignore check
+                    continue
+                installed_flags = frozenset(
+                    vardb.aux_get(inst_atom, ["USE"])[0].split())
+
+                new_flags = enabled_flags - installed_flags
+                removed_flags = installed_flags - enabled_flags
+
+                if (not allow_new_useflags) and new_flags:
+                    print_error("ouch: %s wants these new USE flags: %s" % (
+                        p.cpv+"::"+p.repo, " ".join(sorted(new_flags)),))
+                    use_flags_give_up = True
+                if (not allow_removed_useflags) and removed_flags:
+                    print_error("ouch: %s has these USE flags removed: %s" % (
+                        p.cpv+"::"+p.repo, " ".join(sorted(removed_flags)),))
+                    use_flags_give_up = True
+
+        if use_flags_give_up:
+            print_error("cannot continue due to unmet USE flags constraint")
+            return 1
+
+        print_info("USE flags constraints are met for all the queued packages")
         print_info("about to build the following packages:")
         for dep in dep_list:
             print_info("  %s" % (dep,))
