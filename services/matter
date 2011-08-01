@@ -720,6 +720,22 @@ class PackageBuilder(object):
         return exec_cmd(overlay_cmd, env = std_env)
 
     @staticmethod
+    def check_preserved_libraries():
+        """
+        Ask portage whether there are preserved libraries on the system.
+        This usually indicates that Entropy packages should not be really
+        committed.
+
+        @return: True, if preserved libraries are found
+        @rtype: bool
+        """
+        import portage
+        settings = portage.config(clone=portage.settings)
+        vardb = portage.db[settings["ROOT"]]["vartree"].dbapi
+        vardb._plib_registry.load()
+        return vardb._plib_registry.hasEntries()
+
+    @staticmethod
     def commit(entropy_server, repository, packages):
         """
         Commit packages to Entropy repository.
@@ -1020,6 +1036,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                 if exit_st == 0:
                     completed = []
                     tainted_repositories = set()
+                    preserved_libs_error = False
+                    keep_going = spec.get("keep-going", "no") == "yes"
                     for spec in specs:
 
                         local_completed = []
@@ -1028,13 +1046,27 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                             builder = PackageBuilder(entropy_server, package,
                                 spec)
                             rc = builder.run()
+                            preserved_libs = \
+                                PackageBuilder.check_preserved_libraries()
+                            if preserved_libs:
+                                # abort, library breakages detected
+                                exit_st = 1
+                                print_error(
+                                    "preserved libraries detected, aborting")
+                                preserved_libs_error = True
+                                break
+
                             if rc == 0:
                                 local_completed.append(package)
                                 tainted_repositories.add(spec["repository"])
                             else:
                                 exit_st = rc
-                                if spec.get("keep-going", "no") == "no":
+                                if not keep_going:
                                     break
+
+                        if preserved_libs_error:
+                            # completely abort
+                            break
 
                         completed.extend(local_completed)
                         # portage calls setcwd()
@@ -1045,10 +1077,11 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 spec["repository"], local_completed)
                             if exit_st == 0 and rc != 0:
                                 exit_st = rc
-                                if spec.get("keep-going", "no") == "no":
+                                if not keep_going:
                                     break
 
-                    if tainted_repositories and nsargs.push:
+                    if tainted_repositories and nsargs.push \
+                            and not preserved_libs_error:
                         for repository in tainted_repositories:
                             rc = PackageBuilder.push(entropy_server,
                                 repository)
