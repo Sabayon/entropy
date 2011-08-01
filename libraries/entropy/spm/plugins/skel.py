@@ -353,8 +353,8 @@ class SpmPlugin(Singleton):
         @param file_save_path: exact path (including file name and extension)
             where package file is saved
         @type file_save_path: string
-        @return: None
-        @rtype: None
+        @return: package file path
+        @rtype: string
         @raise entropy.exception.SPMError: if unable to satisfy the request
         """
         raise NotImplementedError()
