@@ -7,6 +7,7 @@ import signal
 import argparse
 import tempfile
 import subprocess
+import errno
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -18,7 +19,7 @@ sys.path.insert(0,'../client')
 
 # Entropy imports
 from entropy.exceptions import PermissionDenied
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.output import print_info, print_error, print_warning, \
     purple, darkgreen
 from entropy.exceptions import InvalidAtom, SPMError
@@ -39,12 +40,11 @@ from _emerge.main import parse_opts, post_emerge, \
 from _emerge.stdout_spinner import stdout_spinner
 
 
-def get_entropy_server(repository_id, community_mode):
+def get_entropy_server(community_mode):
     """
     Return Entropy Server interface object.
     """
-    return Server(community_repo = community_mode,
-        default_repository = repository_id)
+    return Server(community_repo = community_mode)
 
 def exec_cmd(args, env = None):
     """
@@ -63,6 +63,7 @@ def exec_cmd(args, env = None):
             rc = 1
             os.kill(pid, signal.SIGTERM)
         return rc
+
 
 
 class EntropyResourceLock(object):
@@ -113,6 +114,322 @@ class EntropyResourceLock(object):
         if self.__inside_with_stmt < 1:
             self.release()
 
+class GenericSpecFunctions(object):
+
+    def ne_string(self, x):
+        return x, 'raw_unicode_escape'
+
+    def ne_list(self, x):
+        return x
+
+    def not_none(self, x):
+        return x is not None
+
+    def valid_integer(self, x):
+        try:
+            int(x)
+        except (TypeError, ValueError,):
+            return False
+        return True
+
+    def always_valid(self, *args):
+        return True
+
+    def valid_path(self, x):
+        return os.path.lexists(x)
+
+    def valid_file(self, x):
+        return os.path.isfile(x)
+
+    def valid_dir(self, x):
+        return os.path.isdir(x)
+
+    def ve_string_open_file_read(self, x):
+        try:
+            return open(x, "r")
+        except (IOError, OSError):
+            return None
+
+    def ve_string_stripper(self, x):
+        return const_convert_to_unicode(x).strip()
+
+    def ve_string_splitter(self, x):
+        return const_convert_to_unicode(x).strip().split()
+
+    def ve_integer_converter(self, x):
+        return int(x)
+
+    def valid_ascii(self, x):
+        try:
+            x = str(x)
+            return x
+        except (UnicodeDecodeError, UnicodeEncodeError,):
+            return ''
+
+    def valid_yes_no(self, x):
+        return x in ("yes", "no")
+
+    def valid_path_string(self, x):
+        try:
+            os.path.split(x)
+        except OSError:
+            return False
+        return True
+
+    def valid_path_string_first_list_item(self, x):
+        if not x:
+            return False
+        myx = x[0]
+        try:
+            os.path.split(myx)
+        except OSError:
+            return False
+        return True
+
+    def valid_comma_sep_list(self, x):
+        return [y.strip() for y in \
+            const_convert_to_unicode(x).split(",") if y.strip()]
+
+    def valid_path_list(self, x):
+        return [y.strip() for y in \
+            const_convert_to_unicode(x).split(",") if \
+                self.valid_path_string(y) and y.strip()]
+
+class MatterSpec(GenericSpecFunctions):
+
+    def vital_parameters(self):
+        """
+        Return a list of vital .spec file parameters
+
+        @return: list of vital .spec file parameters
+        @rtype: list
+        """
+        return ["packages", "repository"]
+
+    def parser_data_path(self):
+        """
+        Return a dictionary containing parameter names as key and
+        dict containing keys 've' and 'cb' which values are three
+        callable functions that respectively do value extraction (ve),
+        value verification (cb) and value modding (mod).
+
+        @return: data path dictionary (see ChrootSpec code for more info)
+        @rtype: dict
+        """
+        return {
+            'dependencies': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+            },
+            'downgrade': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+            },
+            'keep-going': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+            },
+            'rebuild': {
+                'cb': self.valid_yes_no,
+                've': self.ve_string_stripper,
+            },
+            'pkgpre': {
+                'cb': self.not_none,
+                've': self.ve_string_open_file_read,
+            },
+            'pkgpost': {
+                'cb': self.not_none,
+                've': self.ve_string_open_file_read,
+            },
+            'packages': {
+                'cb': self.always_valid,
+                've': self.ve_string_splitter,
+            },
+            'repository': {
+                'cb': self.ne_string,
+                've': self.ve_string_stripper,
+            },
+        }
+
+
+class SpecPreprocessor:
+
+    PREFIX = "%"
+    class PreprocessorError(Exception):
+        """ Error while preprocessing file """
+
+    def __init__(self, spec_file_obj):
+        self.__expanders = {}
+        self.__builtin_expanders = {}
+        self._spec_file_obj = spec_file_obj
+        self._add_builtin_expanders()
+
+    def add_expander(self, statement, expander_callback):
+        """
+        Add Preprocessor expander.
+
+        @param statement: statement to expand
+        @type statement: string
+        @param expand_callback: one argument callback that is used to expand
+            given line (line is raw format). Line is already pre-parsed and
+            contains a valid preprocessor statement that callback can handle.
+            Preprocessor callback should raise SpecPreprocessor.PreprocessorError
+            if line is malformed.
+        @type expander_callback: callable
+        @raise KeyError: if expander is already available
+        @return: a raw string (containing \n and whatever)
+        @rtype: string
+        """
+        return self._add_expander(statement, expander_callback, builtin = False)
+
+    def _add_expander(self, statement, expander_callback, builtin = False):
+        obj = self.__expanders
+        if builtin:
+            obj = self.__builtin_expanders
+        if statement in obj:
+            raise KeyError("expander %s already provided" % (statement,))
+        obj[SpecPreprocessor.PREFIX + statement] = \
+            expander_callback
+
+    def _add_builtin_expanders(self):
+        # import statement
+        self._add_expander("import", self._import_expander, builtin = True)
+
+    def _import_expander(self, line):
+
+        rest_line = line.split(" ", 1)[1].strip()
+        if not rest_line:
+            return line
+
+        spec_f = self._spec_file_obj
+        spec_f.seek(0)
+        lines = ''
+        try:
+            for line in spec_f.readlines():
+                # call recursively
+                split_line = line.split(" ", 1)
+                if split_line:
+                    expander = self.__builtin_expanders.get(split_line[0])
+                    if expander is not None:
+                        try:
+                            line = expander(line)
+                        except RuntimeError as err:
+                            raise SpecPreprocessor.PreprocessorError(
+                                "invalid preprocessor line: %s" % (err,))
+                lines += line
+        finally:
+            spec_f.seek(0)
+
+        return lines
+
+    def parse(self):
+
+        content = []
+        spec_f = self._spec_file_obj
+        spec_f.seek(0)
+
+        try:
+            for line in spec_f.readlines():
+                split_line = line.split(" ", 1)
+                if split_line:
+                    expander = self.__builtin_expanders.get(split_line[0])
+                    if expander is not None:
+                        line = expander(line)
+                content.append(line)
+        finally:
+            spec_f.seek(0)
+
+        final_content = []
+        for line in content:
+            split_line = line.split(" ", 1)
+            if split_line:
+                expander = self.__expanders.get(split_line[0])
+                if expander is not None:
+                    line = expander(line)
+            final_content.append(line)
+
+        final_content = (''.join(final_content)).split("\n")
+
+        return final_content
+
+
+class SpecParser:
+
+    def __init__(self, file_object):
+
+        self.file_object = file_object
+        self._preprocessor = SpecPreprocessor(self.file_object)
+
+        self.__plugin = MatterSpec()
+        self.vital_parameters = self.__plugin.vital_parameters()
+        self.parser_data_path = self.__plugin.parser_data_path()
+
+    def _parse_line_statement(self, line_stmt):
+        try:
+            key, value = line_stmt.split(":", 1)
+        except ValueError:
+            return None, None
+        key, value = key.strip(), value.strip()
+        return key, value
+
+    def parse(self):
+        mydict = {}
+        data = self._generic_parser()
+        # compact lines properly
+        old_key = None
+        for line in data:
+            key = None
+            value = None
+            v_key, v_value = self._parse_line_statement(line)
+            check_dict = self.parser_data_path.get(v_key)
+            if check_dict is not None:
+                key, value = v_key, v_value
+                old_key = key
+            elif isinstance(old_key, get_stringtype()):
+                key = old_key
+                value = line.strip()
+                if not value:
+                    continue
+            # gather again... key is changed
+            check_dict = self.parser_data_path.get(key)
+            if not isinstance(check_dict, dict):
+                continue
+            value = check_dict['ve'](value)
+            if not check_dict['cb'](value):
+                continue
+            if key in mydict:
+                if isinstance(value, get_stringtype()):
+                    mydict[key] += " %s" % (value,)
+                elif isinstance(value, list):
+                    mydict[key] += value
+                else:
+                    continue
+            else:
+                mydict[key] = value
+        self.validate_parse(mydict)
+        return mydict.copy()
+
+    def validate_parse(self, mydata):
+        for param in self.vital_parameters:
+            if param not in mydata:
+                raise SpecFileError(
+                    "SpecFileError: '%s' missing or invalid"
+                    " '%s' parameter, it's vital. Your specification"
+                    " file is incomplete!" % (self.file_object.name, param,)
+                )
+
+    def _generic_parser(self):
+        data = []
+        content = self._preprocessor.parse()
+        # filter comments and white lines
+        content = [x.strip().rsplit("#", 1)[0].strip() for x in content if \
+            not x.startswith("#") and x.strip()]
+        for line in content:
+            if line in data:
+                continue
+            data.append(line)
+        return data
+
 
 class PackageBuilder(object):
     """
@@ -137,13 +454,14 @@ class PackageBuilder(object):
         self._params = params
 
     @staticmethod
-    def _build_standard_environment(repository):
+    def _build_standard_environment(repository=None):
         env = os.environ.copy()
-        env["BUILDER_REPOSITORY_ID"] = repository
+        if repository is not None:
+            env["BUILDER_REPOSITORY_ID"] = repository
         return env
 
     @staticmethod
-    def setup(executable_hook_f, cwd, repository):
+    def setup(executable_hook_f, cwd):
         hook_name = executable_hook_f.name
         if not hook_name.endswith("/"):
             # complete with current directory
@@ -151,10 +469,10 @@ class PackageBuilder(object):
 
         print_info("spawning pre hook: %s" % (hook_name,))
         return exec_cmd([hook_name],
-            env = PackageBuilder._build_standard_environment(repository))
+            env = PackageBuilder._build_standard_environment())
 
     @staticmethod
-    def teardown(executable_hook_f, cwd, repository, exit_st):
+    def teardown(executable_hook_f, cwd, exit_st):
         hook_name = executable_hook_f.name
         if not hook_name.endswith("/"):
             # complete with current directory
@@ -162,7 +480,7 @@ class PackageBuilder(object):
 
         print_info("spawning post hook: %s, passing exit status: %d" % (
             hook_name, exit_st,))
-        env = PackageBuilder._build_standard_environment(repository)
+        env = PackageBuilder._build_standard_environment()
         env["BUILDER_EXIT_STATUS"] = str(exit_st)
         return exec_cmd([hook_name], env = env)
 
@@ -177,12 +495,12 @@ class PackageBuilder(object):
         subprocess.call(["env-update"])
 
         std_env = PackageBuilder._build_standard_environment(
-            self._params.repository)
+            repository=self._params["repository"])
         std_env["BUILDER_PACKAGE_NAME"] = self._package
         print_info("BUILDER_PACKAGE_NAME = %s" % (self._package,))
 
         # run pkgpre, if any
-        pkgpre = self._params.pkgpre
+        pkgpre = self._params.get("pkgpre")
         if pkgpre is not None:
             print_info(
                 "spawning --pkgpre: %s, name: %s" % (pkgpre, pkgpre.name))
@@ -204,7 +522,7 @@ class PackageBuilder(object):
             return exit_st
 
         # run pkgpre, if any
-        pkgpost = self._params.pkgpost
+        pkgpost = self._params.get("pkgpost")
         if pkgpost is not None:
             print_info(
                 "spawning --pkgpost: %s, name: %s" % (pkgpost, pkgpost.name))
@@ -267,14 +585,14 @@ class PackageBuilder(object):
             portage.versions.pkgsplit(best_installed),
             portage.versions.pkgsplit(best_visible))
 
-        if (cmp_res == 1) and not self._params.downgrade:
+        if (cmp_res == 1) and (self._params.get("downgrade", "no") == "no"):
             # downgrade in action and downgrade not allowed, aborting!
             print_error(
                 "package: %s, would be downgraded from %s to %s, aborting" % (
                     self._package, best_installed, best_visible,))
             return 1
 
-        if (cmp_res == 0) and not self._params.rebuild:
+        if (cmp_res == 0) and (self._params.get("rebuild", "no") == "no"):
             # rebuild in action and rebuild not allowed, aborting!
             print_error(
                 "package: %s, would be rebuilt to %s, aborting" % (
@@ -312,7 +630,8 @@ class PackageBuilder(object):
 
         # calculate dependencies, if --dependencies is not enabled
         # because we have to validate it
-        if (not self._params.dependencies) and (len(package_queue) > 1):
+        if (self._params.get("dependencies", "no") == "no") \
+                and (len(package_queue) > 1):
             # package is pulling in dependencies, but --dependencies is not
             # enabled. need to give up
             deps = ", ".join(dep_list)
@@ -343,13 +662,12 @@ class PackageBuilder(object):
         return retval
 
     @staticmethod
-    def sync(repository):
+    def sync():
         """
         Execute Portage and Overlays sync
         """
         sync_cmd = PackageBuilder.PORTAGE_SYNC_CMD
-        std_env = PackageBuilder._build_standard_environment(
-            repository)
+        std_env = PackageBuilder._build_standard_environment()
         rc = exec_cmd(sync_cmd, env = std_env)
         if rc != 0:
             return rc
@@ -490,7 +808,7 @@ class PackageBuilder(object):
         """
         Update remote repository.
         """
-        sts = entropy_server.Mirrors.sync_repository(repository_id)
+        sts = entropy_server.Mirrors.sync_repository(repository)
         return sts
 
 
@@ -499,13 +817,11 @@ if __name__ == "__main__":
 
     ENV_VARS_HELP = """\
 
-Environment variables always exported into children:
-%s      =  repository identifier
-
 Environment variables for Package Builder module:
-%s   =  alternative command used to sync Portage
+%s       =  repository identifier
+%s    =  alternative command used to sync Portage
                               default: %s
-%s  =  alternative command used to sync Portage overlays
+%s   =  alternative command used to sync Portage overlays
                               default: %s
 %s  = custom emerge arguments
                               default: %s
@@ -533,12 +849,9 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         epilog=ENV_VARS_HELP,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
-    parser.add_argument("repository", metavar="<repository>",
-        help="Entropy Repository where to stash new packages")
-
     # * instead of + in order to support --sync only tasks
-    parser.add_argument("package", nargs='*', metavar="<package>",
-        help="package dependency to build")
+    parser.add_argument("spec", nargs='+', metavar="<spec>", type=file,
+        help="matter spec file")
 
     parser.add_argument("--blocking",
         help="when trying to acquire Entropy Server locks, block until success",
@@ -552,37 +865,13 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         help="print debug output",
         action="store_true")
 
-    parser.add_argument("--dependencies",
-        help="allow dependencies to be pulled in, if required",
-        action="store_true")
-
-    parser.add_argument("--downgrade",
-        help="allow package downgrade, if required",
-        action="store_true")
-
     parser.add_argument("--gentle",
         help="do not run if staged packages are present in Entropy repository",
-        action="store_true")
-
-    parser.add_argument("--keep-going",
-        help="keep going if any of the target packages failed to be updated",
         action="store_true")
 
     parser.add_argument("--push",
         help="push entropy package updates to online repository",
         action="store_true")
-
-    parser.add_argument("--rebuild",
-        help="rebuild the package despite being already up-to-date",
-        action="store_true")
-
-    parser.add_argument("--pkgpre", metavar="<exec>", type=file,
-        help="executable to be called before package building",
-        default=None)
-
-    parser.add_argument("--pkgpost", metavar="<exec>", type=file,
-        help="executable to be called after package building",
-        default=None)
 
     parser.add_argument("--pre", metavar="<exec>", type=file,
         help="executable to be called once for setup purposes",
@@ -596,7 +885,14 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         help="sync Portage tree, and attached overlays, before starting",
         action="store_true")
 
-    nsargs = parser.parse_args(sys.argv[1:])
+    try:
+        nsargs = parser.parse_args(sys.argv[1:])
+    except IOError as err:
+        print dir(err)
+        if err.errno == errno.ENOENT:
+            sys.stderr.write(err.strerror + ": " + err.filename + "\n")
+            raise SystemExit(1)
+        raise
 
     if os.getuid() != 0:
         # root access required
@@ -613,19 +909,36 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         if sys.argv.count("--debug") < 2:
             etpUi['debug'] = False
 
+    # parse spec files
+    specs = []
+    for spec_f in nsargs.spec:
+        spec = SpecParser(spec_f)
+        data = spec.parse()
+        if data:
+            specs.append(data)
+
+    if not specs:
+        sys.stderr.write("invalid spec files provided\n")
+        raise SystemExit(1)
+
     entropy_server = None
-    repository_id = nsargs.repository
     exit_st = 0
     cwd = os.getcwd()
 
     try:
         try:
-            entropy_server = get_entropy_server(repository_id,
-                etpConst['community']['mode'])
+            entropy_server = get_entropy_server(etpConst['community']['mode'])
         except PermissionDenied:
             # repository not available or not configured
-            print_error("<repository> is not a valid server-side repository")
+            print_error("no valid server-side repositories configured")
             raise SystemExit(3)
+
+        # validate repository entries of spec metadata
+        avail_repos = entropy_server.repositories()
+        for spec in specs:
+            if spec["repository"] not in avail_repos:
+                print_error("invalid repository %s" % (spec["repository"],))
+                raise SystemExit(10)
 
         with EntropyResourceLock(entropy_server, nsargs.blocking):
 
@@ -650,48 +963,58 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 
             # setup
             if nsargs.pre:
-                rc = PackageBuilder.setup(nsargs.pre, cwd, nsargs.repository)
+                rc = PackageBuilder.setup(nsargs.pre, cwd)
                 if rc != 0:
                     exit_st = rc
 
             if exit_st == 0:
 
                 if nsargs.sync:
-                    rc = PackageBuilder.sync(nsargs.repository)
+                    rc = PackageBuilder.sync()
                     if rc != 0:
                         exit_st = rc
 
-                if (exit_st == 0) or nsargs.keep_going:
+                if exit_st == 0:
                     completed = []
-                    for package in nsargs.package:
-                        builder = PackageBuilder(entropy_server, package,
-                            nsargs)
-                        rc = builder.run()
-                        if rc == 0:
-                            completed.append(package)
-                        else:
-                            exit_st = rc
-                            if not nsargs.keep_going:
-                                break
+                    tainted_repositories = set()
+                    for spec in specs:
 
-                    # portage calls setcwd()
-                    os.chdir(cwd)
+                        local_completed = []
 
-                    if completed:
-                        rc = PackageBuilder.commit(entropy_server,
-                            nsargs.repository, completed)
-                        if exit_st == 0 and rc != 0:
-                            exit_st = rc
+                        for package in spec["packages"]:
+                            builder = PackageBuilder(entropy_server, package,
+                                spec)
+                            rc = builder.run()
+                            if rc == 0:
+                                local_completed.append(package)
+                                tainted_repositories.add(spec["repository"])
+                            else:
+                                exit_st = rc
+                                if spec.get("keep-going", "no") == "no":
+                                    break
 
-                        if rc == 0 and nsargs.push:
+                        completed.extend(local_completed)
+                        # portage calls setcwd()
+                        os.chdir(cwd)
+
+                        if local_completed:
+                            rc = PackageBuilder.commit(entropy_server,
+                                spec["repository"], local_completed)
+                            if exit_st == 0 and rc != 0:
+                                exit_st = rc
+                                if spec.get("keep-going", "no") == "no":
+                                    break
+
+                    if tainted_repositories and nsargs.push:
+                        for repository in tainted_repositories:
                             rc = PackageBuilder.push(entropy_server,
-                                nsargs.repository)
+                                repository)
                             if exit_st == 0 and rc != 0:
                                 exit_st = rc
 
             if nsargs.post:
                 rc = PackageBuilder.teardown(nsargs.post, cwd,
-                    nsargs.repository, exit_st)
+                    exit_st)
                 if exit_st == 0 and rc != 0:
                     exit_st = rc
 
