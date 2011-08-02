@@ -59,7 +59,7 @@ def inject(options):
             server.repository(), etp_pkg_files)
         if idpackages:
             # checking dependencies and print issues
-            server.dependencies_test(server.repository())
+            server.extended_dependencies_test([server.repository()])
         server.close_repositories()
 
     finally:
@@ -1065,7 +1065,8 @@ def _update(entropy_server, options):
 
     if idpackages:
         # checking dependencies and print issues
-        entropy_server.dependencies_test(entropy_server.repository())
+        entropy_server.extended_dependencies_test(
+            [entropy_server.repository()])
     entropy_server.close_repositories()
     print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
     return 0

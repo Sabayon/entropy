@@ -2536,7 +2536,7 @@ class Server(Client):
             self._add_packages_qa_tests(
                 [(x, to_repository_id) for x in package_ids_added], ask = ask)
             # just run this to make dev aware
-            self.dependencies_test(to_repository_id)
+            self.extended_dependencies_test([to_repository_id])
 
         return switched
 
@@ -3629,6 +3629,31 @@ class Server(Client):
                     deps_not_satisfied.add(xdep)
 
         return deps_not_satisfied
+
+    def extended_dependencies_test(self, repository_ids):
+        """
+        Test repository against missing dependencies.
+        Moreover, the base repository (the first listed in server.conf)
+        is tested by itself, since it must always be self-contained.
+
+        @param repository_ids: list of repository identifiers to test
+        @type repository_ids: list
+        @return: list (set) of unsatisfied dependencies
+        @rtype: set
+        """
+        # just run this to make dev aware
+        unsatisfied_deps = set()
+        for repository_id in repository_ids:
+            unsatisfied_deps |= self.dependencies_test(repository_id)
+
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        base_repository_id = srv_set['base_repository_id']
+        if base_repository_id is not None:
+            # dependency test base repository, which must always be
+            # self-contained
+            unsatisfied_deps |= self.dependencies_test(base_repository_id,
+                match_repo = [base_repository_id])
+        return unsatisfied_deps
 
     def dependencies_test(self, repository_id, match_repo = None):
         """

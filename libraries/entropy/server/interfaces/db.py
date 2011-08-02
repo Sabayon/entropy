@@ -1656,14 +1656,10 @@ Name:    %s
                         )
                     return 5, set(), set()
 
-            # also test if the base repository is self contained
-            base_deps_not_found = self._entropy.dependencies_test(
-                base_repo, match_repo = [base_repo])
-
             # missing dependencies QA test
-            deps_not_found = self._entropy.dependencies_test(
-                self._repository_id)
-            if (deps_not_found or base_deps_not_found) \
+            deps_not_found = self._entropy.extended_dependencies_test(
+                [self._repository_id])
+            if deps_not_found \
                 and not self._entropy.community_repo:
 
                 self._entropy.output(

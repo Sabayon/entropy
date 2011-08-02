@@ -239,17 +239,7 @@ elif main_cmd == "deptest":
         if not acquired:
             print_error(darkgreen(_("Another Entropy is currently running.")))
         else:
-            for repository_id in server.repositories():
-                server.dependencies_test(repository_id)
-
-            sys_settings_plugin_id = \
-                etpConst['system_settings_plugins_ids']['server_plugin']
-            srv_data = server.Settings()[sys_settings_plugin_id]['server']
-            base_repository_id = srv_data['base_repository_id']
-            # also check if base repository is self-contained
-            if base_repository_id is not None:
-                server.dependencies_test(base_repository_id,
-                    match_repo = [base_repository_id])
+            server.extended_dependencies_test(server.repositories())
             rc = 0
     finally:
         if server is not None:
