@@ -998,6 +998,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
     entropy_server = None
     exit_st = 0
     cwd = os.getcwd()
+    # This application doesn't like implicit inteactivity
+    etpUi['interactive'] = False
 
     try:
         try:
