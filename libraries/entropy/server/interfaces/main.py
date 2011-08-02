@@ -3581,10 +3581,12 @@ class Server(Client):
 
         return not_found
 
-    def _deps_tester(self, default_repository_id):
+    def _deps_tester(self, default_repository_id, match_repo = None):
 
         sys_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(sys_set['repositories'].keys())
+        if match_repo is None:
+            match_repo = server_repos
         installed_packages = set()
         # if a default repository is passed, we will just test against it
         if default_repository_id:
@@ -3595,7 +3597,6 @@ class Server(Client):
                 no_upload = True, do_treeupdates = False)
             installed_packages |= set([(x, repo) for x in \
                 dbconn.listAllPackageIds()])
-
 
         deps_not_satisfied = set()
         length = str((len(installed_packages)))
@@ -3623,18 +3624,20 @@ class Server(Client):
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
                 xid, xuseless = self.atom_match(xdep,
-                    match_repo = server_repos)
+                    match_repo = match_repo)
                 if xid == -1:
                     deps_not_satisfied.add(xdep)
 
         return deps_not_satisfied
 
-    def dependencies_test(self, repository_id):
+    def dependencies_test(self, repository_id, match_repo = None):
         """
         Test repository against missing dependencies.
 
         @param repository_id: repository identifier
         @type repository_id: string
+        @keyword match_repo: list of repositories to look for missing deps
+        @type match_repo: list
         @return: list (set) of unsatisfied dependencies
         @rtype: set
         """
@@ -3648,7 +3651,10 @@ class Server(Client):
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(srv_set['repositories'].keys())
-        deps_not_matched = self._deps_tester(repository_id)
+        if match_repo is not None:
+            server_repo = match_repos
+        deps_not_matched = self._deps_tester(repository_id,
+            match_repo = match_repo)
 
         if deps_not_matched:
 
