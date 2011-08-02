@@ -606,7 +606,7 @@ class PackageBuilder(object):
             print_error(
                 "package: %s, would be rebuilt to %s, aborting" % (
                     self._package, best_visible,))
-            return 1
+            return 0
 
         # at this point we can go ahead building self._package
         print_info("starting to build: %s, to %s" % (self._package,
