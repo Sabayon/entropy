@@ -1656,9 +1656,9 @@ Name:    %s
                         )
                     return 5, set(), set()
 
-            base_deps_not_found = set()
-            if base_repo != self._repository_id:
-                base_deps_not_found = self._entropy.dependencies_test(base_repo)
+            # also test if the base repository is self contained
+            base_deps_not_found = self._entropy.dependencies_test(
+                base_repo, match_repo = [base_repo])
 
             # missing dependencies QA test
             deps_not_found = self._entropy.dependencies_test(
