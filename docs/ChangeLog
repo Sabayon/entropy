@@ -1,3 +1,219 @@
+commit 7f544dfa2f1c2876650aaf4b11cf6e51e6401d67
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 07:29:11 2011 +0200
+
+    Release Entropy 1.0_rc28
+
+commit a13ec7aa8297e6c0d9d6358522fd48586e512fd0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 21:46:42 2011 +0200
+
+    [matter] fixup some undefined references
+
+commit 2c680a9c31a4f1bbaf6ca309cf501c5608a62871
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 21:44:59 2011 +0200
+
+    [matter] make entropy repo commit optional via --commit
+
+commit b66bae0d211907ce101081756a16f60a940752fb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 21:39:35 2011 +0200
+
+    [matter] add preserved-libs QA check
+
+commit b110b867d450d7c10d0d72704579c0bfccf6b7c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 19:39:34 2011 +0200
+
+    [matter] add USE flags constraints support
+
+commit 897e73e93a6a2eade8c4cc96d3550cfd62c75783
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 16:50:23 2011 +0200
+
+    [matter] complete initial development, add .spec files support
+
+commit 711cb17ad717bad98e43410604f3f4a18f91a886
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 14:52:54 2011 +0200
+
+    [matter] rename example dir
+
+commit cb1183b75a225dd9f5b54822307e34109e504b62
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 14:43:19 2011 +0200
+
+    [Makefile] install matter with entropy-server
+
+commit 2e00418c0ea3fd8e1da3936c4ec252c3813fa8d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 14:42:16 2011 +0200
+
+    [matter] complete initial implementation
+
+commit eb90a2f4b9f3a06be80ece51c8dd507f0083e8e4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 11:06:28 2011 +0200
+
+    [entropy.spm.skel] update docstring for generate_package()
+
+commit b0e7fbe74c7db38ddee9e7ea21cc1c1b9b61c3de
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 1 00:36:55 2011 +0200
+
+    [matter] correctly handle 32bit chroots over 64bit systems, improve code
+
+commit cd61c1c34728274084a091b02edb41620875bcdf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 31 23:17:05 2011 +0200
+
+    [matter] rename auto-builder to matter
+
+commit 69c8daeb39266730d56ed29e3e9e239e1bbab997
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 31 23:16:26 2011 +0200
+
+    [auto-builder] more work towards feature completion
+
+commit 1b299ad36cd048dda9a43c7e5e744da928675cc3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 31 12:05:06 2011 +0200
+
+    [auto-builder] implement pre/post hooks, continue initial development
+
+commit 8e2c86c66f35b2734c6db5658a0923e8b5df06c5
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 23:16:08 2011 +0200
+
+    [auto-builder] add basic entropy locks handling
+
+commit ea7e5af4c175d24ff98c03c5b03cd614dad217d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 23:02:57 2011 +0200
+
+    [entropy.tools] acquire_entropy_locks: make it modular, add acquire_entropy_resources_locks
+
+commit 59db6b8dbd1cc6863a9afa794a46a309e00eae14
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 22:56:37 2011 +0200
+
+    [entropy.const] const_setup_entropy_pid: make pid handling completely atomic and blocking (required by auto-builder)
+
+commit 5d1ec48fc65a91c4ffe2d6ca0e4546666525a19d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 22:23:19 2011 +0200
+
+    [entropy.client.interfaces.methods] lock_resources: add support for blocking mode
+
+commit e664c7ae63f6f03c1e49df56f49a8756bc446169
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 22:21:16 2011 +0200
+
+    [entropy.tools] acquire_entropy_locks: remove useless duplicated call
+
+commit d9fad847ee028220c860b7e475ca0cc13aab2117
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 22:20:19 2011 +0200
+
+    [entropy.client.interfaces.methods] _create_pid_file_lock: get lock file via function call arguments
+
+commit 56c374de362fe0ed00f923f89a7fadac1a529a88
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 22:16:26 2011 +0200
+
+    [entropy.const] const_setup_entropy_pid: add support for blocking entropy pid locking
+
+commit c4d4a49789aa8227e044dd6a5c76b57816fcf48e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jul 30 17:19:35 2011 +0200
+
+    [services] add auto-builder application prototype for review
+
+commit 3e6f43cfbe2d6795b150ba325545ed4f61aed54a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 28 18:06:30 2011 +0200
+
+    [entropy.server] when running dependencies test, always match against given list of repository identifiers
+
+commit 27d3275a07b5c024c74d736e243a7ac7a761611a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 28 08:07:05 2011 +0200
+
+    [entropy.db] deprecate some ancient backward compatibility code
+
+commit 90578f6bb68b5069e19a446ef9967084ea00c897
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 28 07:28:11 2011 +0200
+
+    [todo] update TODO
+
+commit b492249c359c7d3abed4c9a701cf8f8bd78e26a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 28 07:19:11 2011 +0200
+
+    [eit] add "depsin" option
+
+commit 2e299ddf7518b49495f817bd2d0020eedd93a4ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 26 09:07:52 2011 +0200
+
+    [reagent] fix "reagent query list"
+
+commit 6c41ad57d78b5a55f30ef82c1cc0c4411311a830
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 26 09:03:54 2011 +0200
+
+    [reagent] make possible to list content from specific repositories
+
+commit 32f4bf82f06ea835f577a017c8f0572968ed32cd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 26 08:58:14 2011 +0200
+
+    [equo] search_repository_packages: print something when no results are found
+
+commit 166d1bcd106fe7715cd6c4aabec0ab4e297d86af
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jul 26 08:52:14 2011 +0200
+
+    [reagent] shutdown Entropy Server instance once done
+
+commit fe5b6557ccb873c9bc3662770d4c044e9b77746b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 22 19:24:11 2011 +0200
+
+    [conf] repositories.conf: update itti.ifce.edu.br mirror URL
+
+commit 3c8ca760cd4eccc020bb44c8861f38357d26594d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jul 22 19:10:10 2011 +0200
+
+    [todo] update TODO
+
+commit 76179ac326f01b30044f00b4fbf2a5e84d4b972e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 21 13:52:38 2011 +0200
+
+    [todo] update TODO
+
+commit 544b257707b7b0ceeaedec795da42a9b740f4edd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Jul 21 13:52:18 2011 +0200
+
+    [conf] packages.server.dep_rewrite: add more documentation
+
+commit da8d3b367d8331e1c2d160d83dd54039c55ef5fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jul 18 20:17:10 2011 +0200
+
+    [todo] update TODO
+
+commit a2d5e52c3c01f0d8025895b72e0f1a6196dd9b3c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jul 17 21:59:36 2011 +0200
+
+    Tagging Entropy version 1.0_rc27
+
 commit e1e60b4c6986300ba55b4fc6e0b19e89894946e1
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Jul 17 21:59:28 2011 +0200
