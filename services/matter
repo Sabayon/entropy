@@ -554,6 +554,7 @@ class PackageBuilder(object):
         """
         This method is called by _run and executes the whole package build
         logic, including constraints validation given by argv parameters.
+        NOTE: negative errors indicate warnings that can be skipped.
         """
         portdb = portage.portdb
         portdb.freeze()
@@ -599,14 +600,14 @@ class PackageBuilder(object):
             print_error(
                 "package: %s, would be downgraded from %s to %s, aborting" % (
                     self._package, best_installed, best_visible,))
-            return 1
+            return -1
 
         if (cmp_res == 0) and (self._params.get("rebuild", "no") == "no"):
             # rebuild in action and rebuild not allowed, aborting!
             print_error(
                 "package: %s, would be rebuilt to %s, aborting" % (
                     self._package, best_visible,))
-            return 0
+            return -1
 
         # at this point we can go ahead building self._package
         print_info("starting to build: %s, to %s" % (self._package,
@@ -630,7 +631,7 @@ class PackageBuilder(object):
             print_error("dependencies calculation failed for %s, aborting" % (
                 best_visible,))
             graph.display_problems()
-            return 1
+            return -1
         print_info("dependency graph generated successfully")
 
         # list of _emerge.Package.Package objects
@@ -647,7 +648,7 @@ class PackageBuilder(object):
             print_error(
                 "package %s is pulling in: %s, but --dependencies "
                 "not specified, aborting" % (best_visible, deps,))
-            return 1
+            return -1
 
         # inspect use flags changes
         allow_new_useflags = self._params.get("new-useflags", "no") == "yes"
@@ -681,7 +682,7 @@ class PackageBuilder(object):
 
         if use_flags_give_up:
             print_error("cannot continue due to unmet USE flags constraint")
-            return 1
+            return -1
 
         print_info("USE flags constraints are met for all the queued packages")
         print_info("about to build the following packages:")
@@ -1074,6 +1075,9 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                             if rc == 0:
                                 local_completed.append(package)
                                 tainted_repositories.add(spec["repository"])
+                            elif rc < 0:
+                                # ignore warning and go ahead
+                                continue
                             else:
                                 exit_st = rc
                                 if not keep_going:
