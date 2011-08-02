@@ -1,3 +1,63 @@
+commit 51cd80cb9d5cd77d284af3d28f001e5d66acd795
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 19:47:04 2011 +0200
+
+    Release Entropy 1.0_rc30
+
+commit e7d2957b3b75b957d742a560ed13b5c4a23e56f4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 19:15:37 2011 +0200
+
+    [matter] completely avoid interactive stuff
+
+commit 026c2632888ff32c9de8b33d97d23d535c88a719
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 19:08:30 2011 +0200
+
+    [matter] move most errors to warning status and let the execution continue
+
+commit 6aaa278c91fbc8c0f8196083b88458f04ba45266
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 19:02:53 2011 +0200
+
+    [matter] consider rebuild status not an error
+
+commit 86e3b1c785f6f598130066d58e2ca0a24070ae4d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 18:09:39 2011 +0200
+
+    [matter] run preserved-libraries check before doing anything if --gentle is enabled
+
+commit a2a0cac1941d39091c4cd316db529e8cbbdf4883
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 18:01:17 2011 +0200
+
+    [matter] improve user interaction
+
+commit 1a934f5988db991b39709173bb1cdc4a06781f55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 17:55:59 2011 +0200
+
+    [matter] update env vars, BUILDER_* -> MATTER_*
+
+commit 09db576b3aa2ce9efaf1c77a27da7866dad6da29
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 17:37:19 2011 +0200
+
+    [entropy.server] fix super() usage
+
+commit 44dc33121b32757d7c2749313014bf52e1e989d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 17:31:52 2011 +0200
+
+    [entropy.server] improve missing dependencies QA tests
+
+commit 85134845e0e78747b750dddefb64cb5bcc3b16d1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 08:22:34 2011 +0200
+
+    Tagging Entropy version 1.0_rc29
+
 commit 3258b7f4bc8a423f91c496e45272cc287edf1fb6
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 2 08:22:31 2011 +0200
