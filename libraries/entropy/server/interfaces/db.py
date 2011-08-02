@@ -227,7 +227,7 @@ class ServerPackagesRepository(CachedRepository):
         cannot be protected since their dirs are not listed inside the
         configuration protected list.
         """
-        return super(CachedRepository, self)._runConfigurationFilesUpdate(
+        return super(ServerPackagesRepository, self)._runConfigurationFilesUpdate(
             actions, files, protect_overwrite = False)
 
     def handlePackage(self, pkg_data, forcedRevision = -1,
