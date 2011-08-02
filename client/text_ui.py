@@ -1589,7 +1589,7 @@ def install_packages(entropy_client,
         return action
 
     licenses = {}
-    if not os.getenv("ETP_NONINTERACTIVE"):
+    if etpUi['interactive']:
         ### Before even starting the fetch, make sure that the user accepts their licenses
         licenses = entropy_client.get_licenses_to_accept(run_queue)
         # is there ACCEPT_LICENSE in ENV?

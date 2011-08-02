@@ -97,6 +97,7 @@ etpSys = {
 }
 
 etpUi = {
+    'interactive': os.getenv("ETP_NONINTERACTIVE") is None,
     'debug': False,
     'quiet': False,
     'verbose': False,
