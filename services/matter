@@ -252,7 +252,7 @@ class MatterSpec(GenericSpecFunctions):
             },
             'packages': {
                 'cb': self.always_valid,
-                've': self.ve_string_splitter,
+                've': self.valid_comma_sep_list,
             },
             'repository': {
                 'cb': self.ne_string,
