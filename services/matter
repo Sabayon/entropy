@@ -446,15 +446,15 @@ class PackageBuilder(object):
     """
 
     DEFAULT_PORTAGE_SYNC_CMD = "emerge --sync"
-    PORTAGE_SYNC_CMD = shlex.split(os.getenv("BUILDER_PORTAGE_SYNC_CMD",
+    PORTAGE_SYNC_CMD = shlex.split(os.getenv("MATTER_PORTAGE_SYNC_CMD",
         DEFAULT_PORTAGE_SYNC_CMD))
 
     DEFAULT_OVERLAYS_SYNC_CMD = "layman -S"
-    OVERLAYS_SYNC_CMD = shlex.split(os.getenv("BUILDER_OVERLAYS_SYNC_CMD",
+    OVERLAYS_SYNC_CMD = shlex.split(os.getenv("MATTER_OVERLAYS_SYNC_CMD",
         DEFAULT_OVERLAYS_SYNC_CMD))
 
     DEFAULT_PORTAGE_BUILD_ARGS = "--verbose --nospinner"
-    PORTAGE_BUILD_ARGS = os.getenv("BUILDER_PORTAGE_BUILD_ARGS",
+    PORTAGE_BUILD_ARGS = os.getenv("MATTER_PORTAGE_BUILD_ARGS",
         DEFAULT_PORTAGE_BUILD_ARGS).split()
 
     def __init__(self, entropy_server, package, params):
@@ -466,7 +466,7 @@ class PackageBuilder(object):
     def _build_standard_environment(repository=None):
         env = os.environ.copy()
         if repository is not None:
-            env["BUILDER_REPOSITORY_ID"] = repository
+            env["MATTER_REPOSITORY_ID"] = repository
         return env
 
     @staticmethod
@@ -490,7 +490,7 @@ class PackageBuilder(object):
         print_info("spawning post hook: %s, passing exit status: %d" % (
             hook_name, exit_st,))
         env = PackageBuilder._build_standard_environment()
-        env["BUILDER_EXIT_STATUS"] = str(exit_st)
+        env["MATTER_EXIT_STATUS"] = str(exit_st)
         return exec_cmd([hook_name], env = env)
 
     def run(self):
@@ -505,8 +505,8 @@ class PackageBuilder(object):
 
         std_env = PackageBuilder._build_standard_environment(
             repository=self._params["repository"])
-        std_env["BUILDER_PACKAGE_NAME"] = self._package
-        print_info("BUILDER_PACKAGE_NAME = %s" % (self._package,))
+        std_env["MATTER_PACKAGE_NAME"] = self._package
+        print_info("MATTER_PACKAGE_NAME = %s" % (self._package,))
 
         # run pkgpre, if any
         pkgpre = self._params.get("pkgpre")
@@ -894,15 +894,15 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 %s       = name of the package that would be built
 
 """ % (
-        purple("BUILDER_REPOSITORY_ID"),
-        purple("BUILDER_PORTAGE_SYNC_CMD"),
+        purple("MATTER_REPOSITORY_ID"),
+        purple("MATTER_PORTAGE_SYNC_CMD"),
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_SYNC_CMD),
-        purple("BUILDER_OVERLAYS_SYNC_CMD"),
+        purple("MATTER_OVERLAYS_SYNC_CMD"),
         darkgreen(PackageBuilder.DEFAULT_OVERLAYS_SYNC_CMD),
-        purple("BUILDER_PORTAGE_BUILD_ARGS"),
+        purple("MATTER_PORTAGE_BUILD_ARGS"),
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_BUILD_ARGS),
-        purple("BUILDER_EXIT_STATUS"),
-        purple("BUILDER_PACKAGE_NAME"),)
+        purple("MATTER_EXIT_STATUS"),
+        purple("MATTER_PACKAGE_NAME"),)
 
     parser = argparse.ArgumentParser(
         description='Automated Portage Package Builder',
@@ -1110,5 +1110,3 @@ Environment variables passed to --pkgpre/--pkgpost executables:
     print_warning("")
     print_warning("Tasks complete, exit status: %d" % (exit_st,))
     raise SystemExit(exit_st)
-
-

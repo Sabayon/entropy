@@ -42,13 +42,13 @@ removed-useflags: yes
 # Package pre execution script hook
 # Valid value is path to executable file
 # Env vars:
-# BUILDER_PACKAGE_NAME       = name of the package that would be built
+# MATTER_PACKAGE_NAME       = name of the package that would be built
 # pkgpre: /home/fabio/repos/entropy/services/matter_examples/pkgpre.sh
 
 # Package build post execution script hook, executed for each package
 # Valid value is path to executable file
 # Env vars:
-# BUILDER_PACKAGE_NAME       = name of the package that would be built
+# MATTER_PACKAGE_NAME       = name of the package that would be built
 # pkgpost: /home/fabio/repos/entropy/services/matter_examples/pkgpost.sh
 
 # For more info regarding exported environment variables, please see:
