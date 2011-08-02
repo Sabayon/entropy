@@ -1028,6 +1028,13 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                         "some configuration files have to be merged manually")
                     raise SystemExit(6)
 
+                preserved_libs = \
+                    PackageBuilder.check_preserved_libraries()
+                if preserved_libs:
+                    print_error(
+                        "preserved libraries are found on system, aborting.")
+                    raise SystemExit(7)
+
             # setup
             if nsargs.pre:
                 rc = PackageBuilder.setup(nsargs.pre, cwd)
