@@ -241,6 +241,15 @@ elif main_cmd == "deptest":
         else:
             for repository_id in server.repositories():
                 server.dependencies_test(repository_id)
+
+            sys_settings_plugin_id = \
+                etpConst['system_settings_plugins_ids']['server_plugin']
+            srv_data = server.Settings()[sys_settings_plugin_id]['server']
+            base_repository_id = srv_data['base_repository_id']
+            # also check if base repository is self-contained
+            if base_repository_id is not None:
+                server.dependencies_test(base_repository_id,
+                    match_repo = [base_repository_id])
             rc = 0
     finally:
         if server is not None:
@@ -306,7 +315,6 @@ elif main_cmd == "cleanup":
                 entropy.tools.release_entropy_locks(server)
             server.shutdown()
 
-# deptest tool
 elif main_cmd == "spm":
     import server_reagent
     rc = server_reagent.spm(options)
