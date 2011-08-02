@@ -960,7 +960,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 
     if os.getuid() != 0:
         # root access required
-        sys.stderr.write("superuser access required\n")
+        print_error("superuser access required")
         raise SystemExit(1)
 
     if nsargs.community:
@@ -982,7 +982,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
             specs.append(data)
 
     if not specs:
-        sys.stderr.write("invalid spec files provided\n")
+        print_error("invalid spec files provided")
         raise SystemExit(1)
 
     entropy_server = None
@@ -1003,6 +1003,9 @@ Environment variables passed to --pkgpre/--pkgpost executables:
             if spec["repository"] not in avail_repos:
                 print_error("invalid repository %s" % (spec["repository"],))
                 raise SystemExit(10)
+
+        if nsargs.blocking:
+            print_info("--blocking enabled, please wait for locks...")
 
         with EntropyResourceLock(entropy_server, nsargs.blocking):
 
@@ -1102,6 +1105,9 @@ Environment variables passed to --pkgpre/--pkgpost executables:
     except EntropyResourceLock.NotAcquired:
         print_error("unable to acquire Entropy Resources lock")
         raise SystemExit(42)
+    except KeyboardInterrupt:
+        print_error("Keyboard interruption")
+        raise SystemExit(100)
     finally:
         if entropy_server is not None:
             entropy_server.shutdown()
