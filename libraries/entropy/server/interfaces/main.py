@@ -3652,7 +3652,7 @@ class Server(Client):
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         server_repos = list(srv_set['repositories'].keys())
         if match_repo is not None:
-            server_repo = match_repos
+            server_repo = match_repo
         deps_not_matched = self._deps_tester(repository_id,
             match_repo = match_repo)
 
