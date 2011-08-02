@@ -1,3 +1,39 @@
+commit 3258b7f4bc8a423f91c496e45272cc287edf1fb6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 08:22:31 2011 +0200
+
+    Release Entropy 1.0_rc29
+
+commit 2d227fd8827b19d602673cc03523ea2e4a7bb69f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 08:20:45 2011 +0200
+
+    [reagent] deptest: also check base repository and make sure it's self-contained
+
+commit 0e4c6e2ed8090edf8f652e00dcd8b93c2e90d97f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 08:20:33 2011 +0200
+
+    [entropy.server] fix typo
+
+commit 24fb3c4419e4e5497ad8fbbb603c36bf0815ec17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 08:16:36 2011 +0200
+
+    [entropy.server] properly test base repository against missing deps
+
+commit 10bb39312812d71dc68a5622ccf6801161142a5f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 08:12:57 2011 +0200
+
+    [entropy.server] dependencies_test: restore original behaviour, making possible to exploit more use cases
+
+commit cdc8bc3a2f84bab8faca133290a81a8c7aa36ca1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 2 07:29:21 2011 +0200
+
+    Tagging Entropy version 1.0_rc28
+
 commit 7f544dfa2f1c2876650aaf4b11cf6e51e6401d67
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Tue Aug 2 07:29:11 2011 +0200
