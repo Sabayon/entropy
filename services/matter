@@ -617,8 +617,17 @@ class PackageBuilder(object):
 
         emerge_settings, emerge_trees, mtimedb = \
             load_emerge_config(trees=portage.db)
+        # non interactive properties
+        builtin_args = ["--accept-properties=-interactive"]
         myaction, myopts, myfiles = parse_opts(
-            PackageBuilder.PORTAGE_BUILD_ARGS + ["="+best_visible])
+            PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args + \
+                ["="+best_visible])
+        if "--pretend" in myopts:
+            print_warning("cannot use --pretend emerge argument, you idiot")
+            del myopts["--pretend"]
+        if "--ask" in myopts:
+            print_warning("cannot use --ask emerge argument, you idiot")
+            del myopts["--ask"]
         spinner = None
         if ("--quiet" not in myopts) or ("--nospinner" in myopts):
             spinner = stdout_spinner()
