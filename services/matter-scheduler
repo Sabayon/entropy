@@ -1,0 +1,67 @@
+#!/usr/bin/python
+
+import os
+import sys
+import argparse
+import subprocess
+
+if __name__ == "__main__":
+
+    DEFAULT_PARTICLES_DIR = "/particles"
+    PARTICLES_DIR = os.getenv("PARTICLES_DIR", DEFAULT_PARTICLES_DIR)
+    DEFAULT_MATTER_ARGS = "--commit --gentle --push"
+    MATTER_ARGS = os.getenv("MATTER_ARGS", DEFAULT_MATTER_ARGS)
+
+    CHROOT_SCRIPT = """\
+cd "${PARTICLES_DIR}" || exit 1
+git pull || exit 1
+particles=$(find "${PARTICLES_DIR}" -name "*.particle" | xargs)
+if [ -n "${particles}" ]; then
+    matter ${MATTER_ARGS} ${particles}
+    exit ${?}
+fi
+exit 1
+"""
+
+    ENV_VARS_HELP = """\
+Environment variables:
+%s  =  path inside chroot containing Matter spec files (also called particles)
+                  default: %s
+%s    =  custom "matter" arguments
+                  default: %s
+""" % (
+        "PARTICLES_DIR",
+        DEFAULT_PARTICLES_DIR,
+        "MATTER_ARGS",
+        DEFAULT_MATTER_ARGS,)
+
+    parser = argparse.ArgumentParser(
+        description='Entropy Matter, execution scheduler',
+        epilog=ENV_VARS_HELP,
+        formatter_class=argparse.RawDescriptionHelpFormatter)
+
+    parser.add_argument("chroot", metavar="<chroot>",
+        help="path to chroot")
+
+    nsargs = parser.parse_args(sys.argv[1:])
+
+    chroot_dir = nsargs.chroot
+    if not os.path.isdir(chroot_dir):
+        sys.stderr.write("chroot directory is not available\n")
+        raise SystemExit(1)
+
+    if os.getuid() != 0:
+        sys.stderr.write("root access required\n")
+        raise SystemExit(1)
+
+    os.environ["PARTICLES_DIR"] = PARTICLES_DIR
+    os.environ["MATTER_ARGS"] = MATTER_ARGS
+    os.chroot(chroot_dir)
+    os.chdir("/")
+    try:
+        rc = subprocess.call(CHROOT_SCRIPT, shell=True)
+    except Exception as err:
+        sys.stderr.write(repr(err) + "\n")
+        rc = 1
+
+    raise SystemExit(rc)
