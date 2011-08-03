@@ -523,7 +523,11 @@ class PackageBuilder(object):
                 sys.stderr.write(repr(exc) + "\n")
                 os._exit(1)
         else:
-            rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
+            try:
+                rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
+            except Exception as exc:
+                os.kill(pid, signal.SIGTERM)
+                exit_st = 1
             if exit_st != 0:
                 return exit_st
 
@@ -761,7 +765,11 @@ class PackageBuilder(object):
                 sys.stderr.write(repr(exc) + "\n")
                 os._exit(1)
         else:
-            rcpid, rc = os.waitpid(pid, os.P_WAIT)
+            try:
+                rcpid, rc = os.waitpid(pid, os.P_WAIT)
+            except Exception as exc:
+                os.kill(pid, signal.SIGTERM)
+                rc = 1
             if rc == 0:
                 return False
             return True
