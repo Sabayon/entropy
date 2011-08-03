@@ -481,7 +481,7 @@ def upgrade_packages(entropy_client, onlyfetch = False, replay = False,
         if not etpUi['pretend']:
 
             rc = 1
-            if not os.getenv("ETP_NONINTERACTIVE"):
+            if etpUi['interactive']:
                 rm_options = [_("Yes"), _("No"), _("Selective")]
                 def fake_callback(s):
                     return s
