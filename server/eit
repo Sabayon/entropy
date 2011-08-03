@@ -50,6 +50,7 @@ help_opts = [
     (1, 'deptest [<repository>]', 2, _('edit package dependencies')),
     (1, 'fit <package files>', 2, _('inject package files into the current repository')),
     (1, 'graph <pkgs> [--complete]', 1, _('show dependency graph of packages')),
+    (1, 'init <repository>', 2, _('initialize repository (erasing all its content)')),
     (1, 'libtest [--dump]', 2, _('look for missing libraries')),
     (1, 'list [<repository>]', 2, _('list packages in repository')),
     (1, 'log [<repository>]', 2, _('show log for repository')),
@@ -223,6 +224,13 @@ elif main_cmd == "graph" and options and \
 elif main_cmd == "revgraph" and options and \
     not ((len(set(options)) == 1) and ("--complete" in options)):
     _exec_args([REAGENT_EXEC, "query", "revgraph"] + options)
+
+elif (main_cmd == "init") and options and len(options) < 2:
+    repository_id = options.pop(0)
+    avail_repos = _get_available_repositories()
+    if repository_id in avail_repos:
+        os.environ['ETP_REPO'] = repository_id
+        _exec_args((REAGENT_EXEC, "repo", "init"))
 
 elif main_cmd == "libtest":
     lt_options = []
