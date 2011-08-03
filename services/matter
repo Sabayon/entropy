@@ -29,17 +29,6 @@ from entropy.server.interfaces import Server
 import entropy.tools
 import entropy.dep
 
-# Portage imports
-import portage
-import portage.versions
-
-from _emerge.depgraph import backtrack_depgraph
-from _emerge.actions import load_emerge_config, action_build
-from _emerge.create_depgraph_params import create_depgraph_params
-from _emerge.main import parse_opts, post_emerge, \
-    validate_ebuild_environment
-from _emerge.stdout_spinner import stdout_spinner
-
 
 def get_entropy_server(community_mode):
     """
@@ -59,7 +48,7 @@ def exec_cmd(args, env = None):
             os.execvp(args[0], args)
     else:
         try:
-            rcpid, rc = os.waitpid(pid, 0)
+            rcpid, rc = os.waitpid(pid, os.P_WAIT)
         except KeyboardInterrupt:
             rc = 1
             os.kill(pid, signal.SIGTERM)
@@ -526,9 +515,17 @@ class PackageBuilder(object):
                 os.remove(tmp_path)
 
         # execute the update code
-        exit_st = self._run_builder(std_env)
-        if exit_st != 0:
-            return exit_st
+        pid = os.fork()
+        if pid == 0:
+            try:
+                os._exit(self._run_builder(std_env))
+            except Exception as exc:
+                sys.stderr.write(repr(exc) + "\n")
+                os._exit(1)
+        else:
+            rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
+            if exit_st != 0:
+                return exit_st
 
         # run pkgpre, if any
         pkgpost = self._params.get("pkgpost")
@@ -556,6 +553,15 @@ class PackageBuilder(object):
         logic, including constraints validation given by argv parameters.
         NOTE: negative errors indicate warnings that can be skipped.
         """
+        from _emerge.depgraph import backtrack_depgraph
+        from _emerge.actions import load_emerge_config, action_build
+        from _emerge.create_depgraph_params import create_depgraph_params
+        from _emerge.main import parse_opts, post_emerge, \
+            validate_ebuild_environment
+        from _emerge.stdout_spinner import stdout_spinner
+        import portage.versions
+        import portage
+
         portdb = portage.portdb
         portdb.freeze()
         settings = portage.config(clone=portage.settings)
@@ -741,11 +747,24 @@ class PackageBuilder(object):
         @return: True, if preserved libraries are found
         @rtype: bool
         """
-        import portage
-        settings = portage.config(clone=portage.settings)
-        vardb = portage.db[settings["ROOT"]]["vartree"].dbapi
-        vardb._plib_registry.load()
-        return vardb._plib_registry.hasEntries()
+        pid = os.fork()
+        if pid == 0:
+            try:
+                import portage
+                settings = portage.config(clone=portage.settings)
+                vardb = portage.db[settings["ROOT"]]["vartree"].dbapi
+                vardb._plib_registry.load()
+                if vardb._plib_registry.hasEntries():
+                    os._exit(1)
+                os._exit(0)
+            except Exception as exc:
+                sys.stderr.write(repr(exc) + "\n")
+                os._exit(1)
+        else:
+            rcpid, rc = os.waitpid(pid, os.P_WAIT)
+            if rc == 0:
+                return False
+            return True
 
     @staticmethod
     def commit(entropy_server, repository, packages):
