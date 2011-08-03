@@ -1722,8 +1722,7 @@ class Server(Client):
                 purple(repository_id), darkgreen(_("initializing repository")),
             ),
             importance = 1,
-            level = "info", header = darkgreen(" * "),
-            back = True
+            level = "info", header = darkgreen(" * ")
         )
         self.close_repositories()
 
