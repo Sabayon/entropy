@@ -8,7 +8,7 @@ Backlog (raw)
         sheep blood?
 
     - more granular locking
-    - use a2x for generating man pages
+    - ditch reagent and activator in favour of eit
 
     - graph improvements:
         - graph with or dependencies support
