@@ -167,9 +167,9 @@ manage a repository
 =over
 
 
-=item B<--initialize>
+=item B<init>
 
-(re)initialize the current repository database
+(re)initialize the current repository
 
 
 =item B<bump>
