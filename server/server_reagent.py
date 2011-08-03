@@ -719,7 +719,7 @@ def _repositories(entropy_server, options):
     elif cmd == "multiremove":
         return _multiremove_packages(entropy_server, myopts)
 
-    elif cmd == "--initialize":
+    elif cmd == "init":
         rc = entropy_server.initialize_repository(default_repository_id)
         if rc == 0:
             print_info(darkgreen(" * ") + \
