@@ -705,6 +705,7 @@ class PackageBuilder(object):
 
         # NOTE: this is a WORKAROUND for Portage's post_emerge() calling
         # sys.exit() at the end.
+        # Fixed in Portage >=2.2_alpha50
         sys_exit = sys.exit
         sys.exit = lambda x: None
         post_emerge(myaction, myopts, myfiles, emerge_settings["ROOT"],
@@ -915,7 +916,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         purple("MATTER_PACKAGE_NAME"),)
 
     parser = argparse.ArgumentParser(
-        description='Automated Portage Package Builder',
+        description='Automated Packages Builder',
         epilog=ENV_VARS_HELP,
         formatter_class=argparse.RawDescriptionHelpFormatter)
 
@@ -964,7 +965,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
     except IOError as err:
         print dir(err)
         if err.errno == errno.ENOENT:
-            sys.stderr.write(err.strerror + ": " + err.filename + "\n")
+            print_error(err.strerror + ": " + err.filename)
             raise SystemExit(1)
         raise
 
