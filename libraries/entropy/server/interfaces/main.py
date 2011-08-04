@@ -4875,9 +4875,13 @@ class Server(Client):
 
         @param package_matches: list of Entropy package matches
         @type package_matches: list
+        @return: list (set) of tuples of length 2 of missing sonames
+            [(soname, elfclass), ...]
+        @rtype: set
         """
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         base_repository_id = srv_set['base_repository_id']
+        missing_sonames = set()
 
         def _resolve_needed(repo, library, elfclass, multi_repo):
 
@@ -4917,6 +4921,7 @@ class Server(Client):
                 resolved = _resolve_needed(repo, library, elfclass,
                     not is_base_repo)
                 if not resolved:
+                    missing_sonames.add((library, elfclass))
                     atom = repo.retrieveAtom(package_id)
 
                     if first_out:
@@ -4946,6 +4951,7 @@ class Server(Client):
                 level = "warning",
                 header = darkred(" !!! ")
             )
+        return missing_sonames
 
     def missing_runtime_dependencies_test(self, package_matches, ask = True,
         bump_packages = False):
