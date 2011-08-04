@@ -4909,6 +4909,20 @@ class Server(Client):
             # found nothing
             return False
 
+        def _look_for_available_soname(current_repo_id, library, elfclass):
+            where = frozenset()
+            for repo_id in self.repositories():
+                if repo_id == current_repo_id:
+                    # already searched here
+                    continue
+                other_repo = self.open_repository(repo_id)
+                resolved_needed = other_repo.resolveNeeded(library,
+                    elfclass = elfclass, extended = True)
+                if not resolved_needed:
+                    continue
+                where = [(x, repo_id, y) for x, y in resolved_needed]
+                break
+            return where
 
         first_out = True
         for package_id, repository_id in package_matches:
@@ -4932,7 +4946,7 @@ class Server(Client):
                         )
                         first_out = False
                     self.output(
-                        "[%s] %s %s: %s,%s" % (
+                        "[%s] %s %s: %s, %s" % (
                             purple("qa"),
                             teal(atom),
                             purple(
@@ -4945,6 +4959,24 @@ class Server(Client):
                         level = "warning",
                         header = darkred(" !!! "),
                     )
+                    # perhaps the lib is in some other repo?
+                    resolved_needed = _look_for_available_soname(
+                        repository_id, library, elfclass)
+                    for pkg_id, repo_id, path in resolved_needed:
+                        atom = self.open_repository(repo_id).retrieveAtom(
+                            pkg_id)
+                        self.output(
+                            "%s: %s, %s" % (
+                                brown(_("provided by")),
+                                darkgreen(atom),
+                                path,
+                            ),
+                            importance = 0,
+                            level = "warning",
+                            header = darkred(" #   "),
+                        )
+
+
         if not first_out:
             self.output("",
                 importance = 0,
