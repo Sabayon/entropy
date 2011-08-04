@@ -206,22 +206,22 @@ def search_repository_packages(packages, entropy_client, entropy_repository):
                 teal(_("Repository is not available")))
         return 127
 
-    if not packages:
-        packages = [entropy_repository.retrieveAtom(x) for x in \
-            entropy_repository.listAllPackageIds(order_by = "atom")]
+    if packages:
+        pkg_data = {}
+        for real_package in packages:
+            obj = pkg_data.setdefault(real_package, set())
 
-    pkg_data = {}
-    for real_package in packages:
-        obj = pkg_data.setdefault(real_package, set())
+            slot = entropy.dep.dep_getslot(real_package)
+            tag = entropy.dep.dep_gettag(real_package)
+            package = entropy.dep.remove_slot(real_package)
+            package = entropy.dep.remove_tag(package)
 
-        slot = entropy.dep.dep_getslot(real_package)
-        tag = entropy.dep.dep_gettag(real_package)
-        package = entropy.dep.remove_slot(real_package)
-        package = entropy.dep.remove_tag(package)
-
-        pkg_ids = entropy_repository.searchPackages(package, slot = slot,
-            tag = tag, just_id = True, order_by = "atom")
-        obj.update(pkg_ids)
+            pkg_ids = entropy_repository.searchPackages(package, slot = slot,
+                tag = tag, just_id = True, order_by = "atom")
+            obj.update(pkg_ids)
+    else:
+        pkg_data = dict((atom, (pkg_id,)) for atom, pkg_id, branch in \
+            entropy_repository.listAllPackages())
 
     key_sorter = lambda x: entropy_repository.retrieveAtom(x)
     for package in sorted(pkg_data):
