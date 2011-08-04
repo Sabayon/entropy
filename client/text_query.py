@@ -1066,7 +1066,7 @@ def list_packages(entropy_client, entropy_repository, filter_func = None):
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ") + \
-            darkgreen("%s..." % (_("Installed Search"),)))
+            darkgreen("%s..." % (_("Listing Packages"),)))
 
     if entropy_repository is None:
         if not etpUi['quiet']:
@@ -1079,10 +1079,6 @@ def list_packages(entropy_client, entropy_repository, filter_func = None):
         pkg_mtc = filter(filter_func, [(x, entropy_repository.repository_id()) \
             for x in pkg_ids])
         pkg_ids = [x[0] for x in pkg_mtc]
-
-    if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue("%s:" % (
-            _("These are the installed packages"),) ))
 
     for pkg_id in pkg_ids:
         atom = entropy_repository.retrieveAtom(pkg_id)
@@ -1105,6 +1101,9 @@ def list_packages(entropy_client, entropy_repository, filter_func = None):
                 branchinfo + " " + atom)
         else:
             print_generic(atom)
+
+    if not pkg_ids and not etpUi['quiet']:
+        print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
 
     return 0
 
