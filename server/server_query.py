@@ -119,7 +119,7 @@ def query(myopts):
                 if myopts and (repository_id not in myopts):
                     continue
                 repo_db = entropy_server.open_repository(repository_id)
-                if text_query.search_repository_packages([], entropy_server, repo_db) != 0:
+                if text_query.list_packages(entropy_server, repo_db) != 0:
                     rc = 1
         elif cmd == "changelog":
             rc = 0
