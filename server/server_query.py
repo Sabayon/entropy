@@ -48,7 +48,7 @@ def query(myopts):
                             extended = True
                         )
 
-                if not count:
+                if (not count) and (not etpUi['quiet']):
                     print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
             rc = 0
 
@@ -71,7 +71,7 @@ def query(myopts):
                         extended = True
                     )
 
-                if not count:
+                if (not count) and (not etpUi['quiet']):
                     print_warning(red(" * ")+red("%s." % (_("Nothing found"),) ))
                 rc = 0
 
