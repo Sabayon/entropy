@@ -4855,15 +4855,101 @@ class Server(Client):
                     raise
         return missing_deps
 
+    def missing_runtime_libraries_test(self, package_matches):
+        """
+        Use collected packages ELF metadata (retrieveNeeded(),
+        retrieveProvidedLibraries()) to look for potentially missing
+        shared libraries. This is very handy in case of library breakages
+        across multiple server-side repositories.
+        For example: you bump libfoo, which provides new library, the SPM forces
+        you to rebuild foouser, which uses libfoo. You put both into a testing
+        repository but then you only move foouser to the base repository without
+        realizing the potential breakage users could run into.
+        However, since there can be false positives, this routine cannot block
+        you from doing this mistakes.
+        Please note that the base repository is the first listed in server.conf
+        and will always be considered as self-contained, meaning that all the
+        dependencies and sonames must be available within the same.
+        The code first tries to resolve the soname inside the same repository,
+        then falls back to other ones, if any.
+
+        @param package_matches: list of Entropy package matches
+        @type package_matches: list
+        """
+        srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+        base_repository_id = srv_set['base_repository_id']
+
+        def _resolve_needed(repo, library, elfclass, multi_repo):
+
+            resolved_needed = repo.resolveNeeded(library,
+                elfclass = elfclass)
+
+            if not resolved_needed and not multi_repo:
+                # sorry, can't find it
+                return False
+            elif resolved_needed and not multi_repo:
+                # no need go to through other repos, done!
+                return True
+
+            for repo_id in self.repositories():
+                if repo_id == repo.repository_id():
+                    # already searched here
+                    continue
+                other_repo = self.open_repository(repo_id)
+                resolved_needed = other_repo.resolveNeeded(library,
+                    elfclass = elfclass)
+                if resolved_needed:
+                    # found !
+                    return True
+
+            # found nothing
+            return False
+
+
+        for package_id, repository_id in package_matches:
+
+            is_base_repo = repository_id == base_repository_id
+            repo = self.open_repository(repository_id)
+            # list of (needed, elfclass)
+            needed = repo.retrieveNeeded(package_id, extended = True)
+            for library, elfclass in needed:
+                resolved = _resolve_needed(repo, library, elfclass,
+                    not is_base_repo)
+                if not resolved:
+                    atom = repo.retrieveAtom(package_id)
+
+                    self.output("",
+                        importance = 0,
+                        level = "warning",
+                        header = darkred(" !!! ")
+                    )
+                    self.output(
+                        "[%s] %s %s: %s,%s" % (
+                            purple("qa"),
+                            teal(atom),
+                            purple(
+                                _("requires the following (not found) library")
+                            ),
+                            brown(library),
+                            elfclass,
+                        ),
+                        importance = 1,
+                        level = "warning",
+                        header = darkred(" !!! "),
+                    )
+                    self.output("",
+                        importance = 0,
+                        level = "warning",
+                        header = darkred(" !!! ")
+                    )
+
     def missing_runtime_dependencies_test(self, package_matches, ask = True,
         bump_packages = False):
         """
         Use Entropy QA interface to check package matches against missing
         runtime dependencies, adding them.
-        NOTE: this method does not update metadata inside package. This can
-        change in future.
 
-        @param package_matches:
+        @param package_matches: list of Entropy package matches
         @type package_matches: list
         @keyword ask: if missing runtime dependencies should be validated
             interactively
@@ -5116,6 +5202,7 @@ class Server(Client):
         to repository.
         """
         self.missing_runtime_dependencies_test(package_matches, ask = ask)
+        self.missing_runtime_libraries_test(package_matches)
         qa_success = self._external_metadata_qa_hook_test(package_matches)
         my_settings = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
         if my_settings['broken_revdeps_qa_check']:
