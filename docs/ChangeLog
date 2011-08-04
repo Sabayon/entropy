@@ -1,3 +1,81 @@
+commit 1489bfedba0b23d2b5534a298c08b993ccca58d7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 10:26:04 2011 +0200
+
+    Release Entropy 1.0_rc32
+
+commit 1e9fb24734870a6aec230861c09b87147d03f9a7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 01:11:51 2011 +0200
+
+    [matter] improve waitpid() error handling
+
+commit bbe82b461d463b03e20d394d1d1d781a66b674e3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 00:59:32 2011 +0200
+
+    [matter] always execute portage code in a separate process, to avoid portage cache oddities with xmatch()
+
+commit 05d950a0c4dd4c1e612f38a0c222bd29fbf3eda4
+Author: Daniel Halens Rodríguez <daniel.halens@sabayon.org>
+Date:   Wed Aug 3 18:04:52 2011 +0100
+
+    [i18n] Update pt translation
+
+commit 5af3bd95ac2d397e57145ac3ac7ca1a889ebe59d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 17:26:14 2011 +0200
+
+    [matter] always check for preserved libs, even when --gentle is not specified
+
+commit eda3c0298b0b6c4284f01e226381c805ca58e1c9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 17:19:48 2011 +0200
+
+    [matter] add chroot scheduler
+
+commit d82896c1a406e68468ade06f3df2b3c8fbaaf04a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 17:19:38 2011 +0200
+
+    [matter] some trivial tweaks
+
+commit cbcaa0680c14ade812bdd612d401dbf38e034d55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 09:56:29 2011 +0200
+
+    [todo] update TODO
+
+commit 92c599b9283fcb7361c997bad0d8d2caa45321a0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 09:54:44 2011 +0200
+
+    [€ntropy.server] trivial output tweak
+
+commit 731597942e6b442387a1a58284545602a5405186
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 09:54:15 2011 +0200
+
+    [eit] add "init" option
+
+commit 4caae7aef7501a5b6e83a65fde4b119458cbbe08
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 09:52:00 2011 +0200
+
+    [man] update reagent man page
+
+commit 58a298bd44ba709cc6dc2ff0d5a827f3430394ca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 09:51:21 2011 +0200
+
+    [reagent] fix repo initialization code
+
+commit 716de574de774ad378927aaca27bb23e8bba4099
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Wed Aug 3 09:42:03 2011 +0200
+
+    Tagging Entropy version 1.0_rc31
+
 commit 4edb7cb8481457135d65d6bd97aebe0ab0665655
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Wed Aug 3 09:41:57 2011 +0200
