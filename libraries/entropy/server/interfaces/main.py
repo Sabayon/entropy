@@ -4858,7 +4858,7 @@ class Server(Client):
     def missing_runtime_libraries_test(self, package_matches):
         """
         Use collected packages ELF metadata (retrieveNeeded(),
-        retrieveProvidedLibraries()) to look for potentially missing
+        resolveNeeded()) to look for potentially missing
         shared libraries. This is very handy in case of library breakages
         across multiple server-side repositories.
         For example: you bump libfoo, which provides new library, the SPM forces
@@ -4906,6 +4906,7 @@ class Server(Client):
             return False
 
 
+        first_out = True
         for package_id, repository_id in package_matches:
 
             is_base_repo = repository_id == base_repository_id
@@ -4918,11 +4919,13 @@ class Server(Client):
                 if not resolved:
                     atom = repo.retrieveAtom(package_id)
 
-                    self.output("",
-                        importance = 0,
-                        level = "warning",
-                        header = darkred(" !!! ")
-                    )
+                    if first_out:
+                        self.output("",
+                            importance = 0,
+                            level = "warning",
+                            header = darkred(" !!! ")
+                        )
+                        first_out = False
                     self.output(
                         "[%s] %s %s: %s,%s" % (
                             purple("qa"),
@@ -4937,11 +4940,12 @@ class Server(Client):
                         level = "warning",
                         header = darkred(" !!! "),
                     )
-                    self.output("",
-                        importance = 0,
-                        level = "warning",
-                        header = darkred(" !!! ")
-                    )
+        if not first_out:
+            self.output("",
+                importance = 0,
+                level = "warning",
+                header = darkred(" !!! ")
+            )
 
     def missing_runtime_dependencies_test(self, package_matches, ask = True,
         bump_packages = False):
