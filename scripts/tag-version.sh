@@ -30,3 +30,5 @@ git tag $new_tag HEAD
 # Push changes upstream
 git push
 git push --tags
+
+ssh pkg.sabayon.org /sabayon/bin/tarball-new-entropy
