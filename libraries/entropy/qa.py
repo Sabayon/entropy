@@ -540,11 +540,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
                     if not silent:
                         self.output(
-                            "%s %s: %s, ELF class: %s" % (
+                            "[%s] %s %s: %s, ELF class: %s" % (
+                                purple(repository_id),
                                 teal(atom),
-                                purple(
-                                    _("requires the following library")
-                                ),
+                                purple(_("requires")),
                                 brown(library),
                                 elfclass,
                             ),
@@ -579,6 +578,15 @@ class QAInterface(TextInterface, EntropyPluginStore):
                             level = "warning",
                             header = darkred("   "),
                         )
+
+        if not silent:
+            if missing_sonames:
+                self.output("", level = "info", importance = 0)
+            else:
+                self.output(
+                    _("no missing runtime libraries found"),
+                    level = "info",
+                    importance = 1)
 
         return missing_sonames
 
