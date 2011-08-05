@@ -5133,7 +5133,8 @@ class Server(Client):
                 importance = 1,
                 level = "info",
                 header = blue(" @@ "),
-                count = (count, maxcount)
+                count = (count, maxcount),
+                back = True
             )
             env = os.environ.copy()
             env['REPOSITORY_ID'] = str(repository_id)
