@@ -382,7 +382,7 @@ look for unsatisfied dependencies
 
 =item B<libtest>
 
-look for missing libraries
+look for missing libraries (scan system)
 
 =over
 
@@ -391,6 +391,10 @@ look for missing libraries
 dump results to files
 
 =back
+
+=item B<linktest  [excluded libraries]>
+
+look for missing libraries (scan repository metadata)
 
 =item B<pkgtest>
 

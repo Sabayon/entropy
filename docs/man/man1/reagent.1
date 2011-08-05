@@ -124,7 +124,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2011-08-03" "perl v5.12.3" "Entropy"
+.TH REAGENT 1 "2011-08-05" "perl v5.12.3" "Entropy"
 .\" For nroff, turn off justification.  Always turn off hyphenation; it makes
 .\" way too many mistakes in technical documents.
 .if n .ad l
@@ -412,7 +412,7 @@ scan new packages available in \s-1SPM\s0
 look for unsatisfied dependencies
 .IP "\fBlibtest\fR" 4
 .IX Item "libtest"
-look for missing libraries
+look for missing libraries (scan system)
 .RS 4
 .IP "\fB\-\-dump\fR" 4
 .IX Item "--dump"
@@ -420,6 +420,9 @@ dump results to files
 .RE
 .RS 4
 .RE
+.IP "\fBlinktest  [excluded libraries]\fR" 4
+.IX Item "linktest  [excluded libraries]"
+look for missing libraries (scan repository metadata)
 .IP "\fBpkgtest\fR" 4
 .IX Item "pkgtest"
 verify the integrity of local package files
@@ -454,6 +457,6 @@ Hey! \fBThe above document had some coding errors, which are explained below:\fR
 .IP "Around line 312:" 4
 .IX Item "Around line 312:"
 \&'=item' outside of any '=over'
-.IP "Around line 412:" 4
-.IX Item "Around line 412:"
+.IP "Around line 416:" 4
+.IX Item "Around line 416:"
 You forgot a '=back' before '=head1'
