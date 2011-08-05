@@ -26,7 +26,8 @@ import stat
 
 from entropy.output import TextInterface
 from entropy.misc import Lifo
-from entropy.const import etpConst, etpSys, const_debug_write, const_debug_write
+from entropy.const import etpConst, etpSys, const_debug_write, \
+    const_debug_write, const_convert_to_rawstring
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown, \
     teal
 from entropy.exceptions import PermissionDenied, SystemDatabaseError
@@ -406,6 +407,180 @@ class QAInterface(TextInterface, EntropyPluginStore):
                     _warn_soname(soname, elf_class)
 
         return missing_map
+
+    def test_missing_runtime_libraries(self, entropy_client, package_matches,
+        base_repository_id = None, excluded_libraries = None, silent = False):
+        """
+        Use collected packages ELF metadata (retrieveNeeded(),
+        resolveNeeded()) to look for potentially missing
+        shared libraries. This is very handy in case of library breakages
+        across multiple server-side repositories.
+        For example: you bump libfoo, which provides new library, the SPM forces
+        you to rebuild foouser, which uses libfoo. You put both into a testing
+        repository but then you only move foouser to the base repository without
+        realizing the potential breakage users could run into.
+        However, since there can be false positives, this routine cannot block
+        you from doing this mistakes.
+        Please note that the base repository is the first listed in server.conf
+        and will always be considered as self-contained, meaning that all the
+        dependencies and sonames must be available within the same.
+        The code first tries to resolve the soname inside the same repository,
+        then falls back to other ones, if any.
+
+        @param entropy_client: Entropy Client instance
+        @type entropy_client: entropy.client.interfaces.client.Client based
+            instance object
+        @param package_matches: list of Entropy package matches
+        @type package_matches: list
+        @return: list (set) of tuples of length 2 of missing sonames
+            [(soname, elfclass), ...]
+        @keyword base_repository_id: repository identifier supposed to be
+            used as main (or base) repository
+        @type base_repository_id: string
+        @keyword excluded_libraries: list of libraries that should not be
+            verified (perhaps, libGL.so.1 in Gentoo/Sabayon)
+        @type excluded_libraries: set
+        @keyword silent: no output is print to stdout
+        @type silent: bool
+        @rtype: set
+        """
+        missing_sonames = set()
+        if excluded_libraries is None:
+            excluded_libraries = set()
+
+        def _resolve_needed_content_fallback(repo, pkg_id, library):
+            # at this point, perhaps the library is self contained in the
+            # package itself, and in non-standard path. so, let's see if
+            # it's in the content metadata before giving up.
+            # Since this is expensive, try to first match it in
+            # pre-hashed metadata (via resolveNeeded())
+            file_names = set((os.path.basename(x) for x in \
+                repo.retrieveContent(pkg_id)))
+            # NOTE: we assume that ELF class is the same as the one requested,
+            # because we're not allowed to poll the live system.
+            # perhaps in future we could collect more metadata.
+            return library in file_names
+
+        def _resolve_needed(repo, pkg_id, library, elfclass, multi_repo):
+
+            resolved_needed = repo.resolveNeeded(library,
+                elfclass = elfclass)
+
+            if not resolved_needed and not multi_repo:
+                # sorry, can't find it
+                return _resolve_needed_content_fallback(repo, pkg_id, library)
+            elif resolved_needed and not multi_repo:
+                # no need go to through other repos, done!
+                return True
+
+            for repo_id in entropy_client.repositories():
+                if repo_id == repo.repository_id():
+                    # already searched here
+                    continue
+                other_repo = entropy_client.open_repository(repo_id)
+                resolved_needed = other_repo.resolveNeeded(library,
+                    elfclass = elfclass)
+                if resolved_needed:
+                    # found !
+                    return True
+
+            return _resolve_needed_content_fallback(repo, pkg_id, library)
+
+        def _look_for_available_soname(current_repo_id, library, elfclass):
+            where = frozenset()
+            for repo_id in entropy_client.repositories():
+                if repo_id == current_repo_id:
+                    # already searched here
+                    continue
+                other_repo = entropy_client.open_repository(repo_id)
+                resolved_needed = other_repo.resolveNeeded(library,
+                    elfclass = elfclass, extended = True)
+                if not resolved_needed:
+                    continue
+                where = [(x, repo_id, y) for x, y in resolved_needed]
+                break
+            return where
+
+        count = 0
+        maxcount = len(package_matches)
+        for package_id, repository_id in package_matches:
+
+            count += 1
+            repo = entropy_client.open_repository(repository_id)
+            atom = repo.retrieveAtom(package_id)
+
+            if not silent:
+                scan_msg = "%s, %s:" % (
+                    blue(_("determining missing libraries")),
+                    darkgreen(atom),
+                )
+                self.output(
+                    "[repo:%s] %s" % (
+                        darkgreen(repository_id),
+                        scan_msg,
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = blue(" @@ "),
+                    back = True,
+                    count = (count, maxcount,)
+                )
+
+            is_base_repo = repository_id == base_repository_id
+
+            # list of (needed, elfclass)
+            needed = repo.retrieveNeeded(package_id, extended = True)
+            for library, elfclass in needed:
+                if library in excluded_libraries:
+                    continue
+                resolved = _resolve_needed(repo, package_id, library, elfclass,
+                    not is_base_repo)
+                if not resolved:
+                    missing_sonames.add((library, elfclass))
+
+                    if not silent:
+                        self.output(
+                            "%s %s: %s, ELF class: %s" % (
+                                teal(atom),
+                                purple(
+                                    _("requires the following library")
+                                ),
+                                brown(library),
+                                elfclass,
+                            ),
+                            importance = 1,
+                            level = "warning",
+                            header = " ",
+                        )
+                    # perhaps the lib is in some other repo?
+                    resolved_needed = _look_for_available_soname(
+                        repository_id, library, elfclass)
+                    for pkg_id, repo_id, path in resolved_needed:
+                        atom = entropy_client.open_repository(
+                            repo_id).retrieveAtom(pkg_id)
+                        if not silent:
+                            self.output(
+                                "%s: %s, %s" % (
+                                    brown(_("provided by")),
+                                    darkgreen(atom),
+                                    path,
+                                ),
+                                importance = 0,
+                                level = "warning",
+                                header = darkred("   "),
+                            )
+                    if not resolved_needed and not silent:
+                        self.output(
+                            "%s: %s" % (
+                                brown(_("provided by")),
+                                darkgreen(_("no packages")),
+                            ),
+                            importance = 0,
+                            level = "warning",
+                            header = darkred("   "),
+                        )
+
+        return missing_sonames
 
     def test_shared_objects(self, entropy_repository, broken_symbols = False,
         task_bombing_func = None, self_dir_check = True,
@@ -824,7 +999,7 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
         mylibs = {}
         for myfile in mycontent:
-            myfile = myfile.encode('raw_unicode_escape')
+            myfile = const_convert_to_rawstring(myfile)
             if not os.access(myfile, os.R_OK):
                 continue
             if not os.path.isfile(myfile):
