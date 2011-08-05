@@ -117,8 +117,9 @@ help_opts = [
         (2, 'new [categories]', 2, _('scan new packages available in SPM')),
     None,
     (1, 'deptest', 2, _('look for unsatisfied dependencies')),
-    (1, 'libtest', 2, _('look for missing libraries')),
+    (1, 'libtest', 2, _('look for missing libraries (scan system)')),
         (2, '--dump', 2, _('dump results to files')),
+    (1, 'linktest [excluded libraries]', 1, _('look for missing libraries (scan repository metadata)')),
     (1, 'pkgtest', 2, _('verify the integrity of local package files')),
     None,
     (1, 'cleanup', 2, _('remove downloaded packages and clean temp. directories)')),
@@ -278,6 +279,34 @@ elif main_cmd == "libtest":
         else:
             rc = server.test_shared_objects(server.repository(),
                 dump_results_to_file = dump)
+    finally:
+        if server is not None:
+            if acquired:
+                entropy.tools.release_entropy_locks(server)
+            server.shutdown()
+
+elif main_cmd == "linktest":
+    acquired = False
+    server = None
+    rc = 1
+    try:
+        server = get_entropy_server()
+        acquired = entropy.tools.acquire_entropy_locks(server)
+        if not acquired:
+            print_error(darkgreen(_("Another Entropy is currently running.")))
+        else:
+            srv_set = server.Settings()[Server.SYSTEM_SETTINGS_PLG_ID]['server']
+            base_repository_id = srv_set['base_repository_id']
+            qa = server.QA()
+            for repository_id in server.repositories():
+                repo = server.open_repository(repository_id)
+                found_something = qa.test_missing_runtime_libraries(
+                    server,
+                    [(x, repository_id) for x in repo.listAllPackageIds()],
+                    base_repository_id = base_repository_id,
+                    excluded_libraries = options)
+                if not found_something:
+                    rc = 0
     finally:
         if server is not None:
             if acquired:

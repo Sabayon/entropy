@@ -51,7 +51,8 @@ help_opts = [
     (1, 'fit <package files>', 2, _('inject package files into the current repository')),
     (1, 'graph <pkgs> [--complete]', 1, _('show dependency graph of packages')),
     (1, 'init <repository>', 2, _('initialize repository (erasing all its content)')),
-    (1, 'libtest [--dump]', 2, _('look for missing libraries')),
+    (1, 'libtest [--dump]', 2, _('look for missing libraries (scan system)')),
+    (1, 'linktest [<excl libs>]', 2, _('look for missing libraries (scan repository metadata)')),
     (1, 'list [<repository>]', 2, _('list packages in repository')),
     (1, 'log [<repository>]', 2, _('show log for repository')),
     (1, 'mv <from> <to> <pkgs>', 2, _('move packages from a repository to another')),
@@ -237,6 +238,9 @@ elif main_cmd == "libtest":
     if "--dump" in options:
         lt_options.append("--dump")
     _exec_args([REAGENT_EXEC, "libtest"] + lt_options)
+
+elif main_cmd == "linktest":
+    _exec_args([REAGENT_EXEC, "linktest"] + options)
 
 elif main_cmd == "deptest":
     if options:
