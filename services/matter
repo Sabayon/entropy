@@ -457,11 +457,8 @@ class PackageBuilder(object):
         self._tot_spec = tot_spec
         self._pkg_number = pkg_number
         self._tot_pkgs = tot_pkgs
-        self._queue = Queue()
         self._built_packages = []
-        self._not_found_queue = Queue()
         self._not_found_packags = []
-        self._not_installed_queue = Queue()
         self._not_installed_packages = []
 
     @staticmethod
@@ -558,12 +555,18 @@ class PackageBuilder(object):
             finally:
                 os.remove(tmp_path)
 
+        pkg_queue = Queue()
+        not_found_queue = Queue()
+        not_installed_queue = Queue()
+
         # execute the update code
         pid = os.fork()
         if pid == 0:
             try:
-                os._exit(self._run_builder(std_env))
+                os._exit(self._run_builder(std_env, pkg_queue,
+                    not_found_queue, not_installed_queue))
             except Exception as exc:
+                entropy.tools.print_traceback()
                 sys.stderr.write(repr(exc) + "\n")
                 os._exit(1)
         else:
@@ -579,21 +582,18 @@ class PackageBuilder(object):
 
         print_info("builder terminated, exit status: %d" % (exit_st,))
 
-        queues = [(self._queue, self._built_packages, "queue"),
-            (self._not_found_queue, self._not_found_packags, "not_found"),
-            (self._not_installed_queue, self._not_installed_packages,
+        queues = [(pkg_queue, self._built_packages, "queue"),
+            (not_found_queue, self._not_found_packags, "not_found"),
+            (not_installed_queue, self._not_installed_packages,
                 "not_installed")]
 
         for queue, lst, queue_name in queues:
-            while not queue.empty():
+            while True:
                 try:
-                    lst.append(queue.get(False, timeout=10))
-                except EmptyQueue as err:
-                    # race condition? is it really possible? perhaps process is
-                    # not dead? resurrected from afterlife?
-                    sys.stderr.write("WTF? [" + queue_name + "] " + \
-                        repr(err) + "\n")
-                    continue
+                    lst.append(queue.get(False))
+                except EmptyQueue:
+                    break
+            queue.close()
 
         # run pkgpre, if any
         pkgpost = self._params.get("pkgpost")
@@ -614,7 +614,8 @@ class PackageBuilder(object):
 
         return exit_st
 
-    def _run_builder(self, env):
+    def _run_builder(self, env, pkg_queue, not_found_queue,
+            not_installed_queue):
         """
         This method is called by _run and executes the whole package build
         logic, including constraints validation given by argv parameters.
@@ -644,23 +645,33 @@ class PackageBuilder(object):
         settings.lock()
 
         best_visible = portdb.xmatch("bestmatch-visible", self._package)
-        if not best_visible:
-            # package not found, return error
-            print_error("cannot match: %s, aborting" % (self._package,))
-            self._not_found_queue.put(self._package)
-            self._not_found_queue.join_thread()
-            return 1
+        try:
+            if not best_visible:
+                # package not found, return error
+                print_error("cannot match: %s, aborting" % (self._package,))
+                not_found_queue.put(self._package)
+                pkg_queue.close()
+                pkg_queue.join_thread()
+                return 1
+        finally:
+            not_found_queue.close()
+            not_found_queue.join_thread()
 
         print_info("matched: %s for %s" % (best_visible, self._package,))
         # now determine what's the installed version.
         best_installed = portage.best(vardb.match(self._package))
-        if not best_installed:
-            # package not installed, behaviour not supported atm
-            print_error("package not installed: %s, aborting" % (
-                self._package,))
-            self._not_installed_queue.put(self._package)
-            self._not_installed_queue.join_thread()
-            return 1
+        try:
+            if not best_installed:
+                # package not installed, behaviour not supported atm
+                print_error("package not installed: %s, aborting" % (
+                    self._package,))
+                not_installed_queue.put(self._package)
+                pkg_queue.close()
+                pkg_queue.join_thread()
+                return 1
+        finally:
+            not_installed_queue.close()
+            not_found_queue.join_thread()
 
         print_info("found installed: %s for %s" % (best_installed,
             self._package,))
@@ -682,6 +693,8 @@ class PackageBuilder(object):
             print_warning(
                 "package: %s, would be downgraded from %s to %s, aborting" % (
                     self._package, best_installed, best_visible,))
+            pkg_queue.close()
+            pkg_queue.join_thread()
             return 0
 
         if (is_rebuild) and (not allow_rebuild):
@@ -689,6 +702,8 @@ class PackageBuilder(object):
             print_warning(
                 "package: %s, would be rebuilt to %s, aborting" % (
                     self._package, best_visible,))
+            pkg_queue.close()
+            pkg_queue.join_thread()
             return 0
 
         # at this point we can go ahead building self._package
@@ -723,6 +738,8 @@ class PackageBuilder(object):
             print_warning("dependencies calculation failed for %s, aborting" % (
                 best_visible,))
             graph.display_problems()
+            pkg_queue.close()
+            pkg_queue.join_thread()
             return 0
         print_info("dependency graph generated successfully")
 
@@ -740,6 +757,8 @@ class PackageBuilder(object):
             print_warning(
                 "package %s is pulling in: %s, but --dependencies "
                 "not specified, aborting" % (best_visible, deps,))
+            pkg_queue.close()
+            pkg_queue.join_thread()
             return 0
 
         # inspect use flags changes
@@ -774,6 +793,8 @@ class PackageBuilder(object):
 
         if use_flags_give_up:
             print_warning("cannot continue due to unmet USE flags constraint")
+            pkg_queue.close()
+            pkg_queue.join_thread()
             return 0
 
         print_info("USE flags constraints are met for all the queued packages")
@@ -796,8 +817,9 @@ class PackageBuilder(object):
                 # but I guess there is no better and more reliable way
                 # with current Portage API
                 print_info("package: %s, successfully built" % (cpv,))
-                self._queue.put(cpv)
-        self._queue.join_thread()
+                pkg_queue.put(cpv)
+        pkg_queue.close()
+        pkg_queue.join_thread()
 
         # NOTE: this is a WORKAROUND for Portage's post_emerge() calling
         # sys.exit() at the end.
