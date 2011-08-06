@@ -575,6 +575,7 @@ class PackageBuilder(object):
         logic, including constraints validation given by argv parameters.
         NOTE: negative errors indicate warnings that can be skipped.
         """
+        os.environ['ACCEPT_PROPERTIES'] = "* -interactive"
         from _emerge.depgraph import backtrack_depgraph
         from _emerge.actions import load_emerge_config, action_build
         from _emerge.create_depgraph_params import create_depgraph_params
