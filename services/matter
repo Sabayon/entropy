@@ -1180,6 +1180,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 built_packages = builder.get_built_packages()
                                 print_info("built packages, in queue: %s" % (
                                     built_packages,))
+                                # make some room
+                                print_info("")
                                 local_completed.extend(built_packages)
                                 tainted_repositories.add(spec["repository"])
                             elif rc < 0:
