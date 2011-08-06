@@ -459,6 +459,10 @@ class PackageBuilder(object):
         self._tot_pkgs = tot_pkgs
         self._queue = Queue()
         self._built_packages = []
+        self._not_found_queue = Queue()
+        self._not_found_packags = []
+        self._not_installed_queue = Queue()
+        self._not_installed_packages = []
 
     @staticmethod
     def _build_standard_environment(repository=None):
@@ -510,7 +514,19 @@ class PackageBuilder(object):
         """
         Return the list of successfully built packages.
         """
-        return self._built_packages[:]
+        return self._built_packages
+
+    def get_not_found_packages(self):
+        """
+        Return the list of packages that haven't been found in Portage.
+        """
+        return self._not_found_packags
+
+    def get_not_installed_packages(self):
+        """
+        Return the list of packages that haven't been found on the System.
+        """
+        return self._not_installed_packages
 
     def run(self):
         """
@@ -562,14 +578,22 @@ class PackageBuilder(object):
                 exit_st = 1
 
         print_info("builder terminated, exit status: %d" % (exit_st,))
-        while not self._queue.empty():
-            try:
-                self._built_packages.append(self._queue.get(False, timeout=10))
-            except EmptyQueue as err:
-                # race condition? is it really possible? perhaps process is
-                # not dead? resurrected from afterlife?
-                sys.stderr.write("WTF? " + repr(err) + "\n")
-                continue
+
+        queues = [(self._queue, self._built_packages, "queue"),
+            (self._not_found_queue, self._not_found_packags, "not_found"),
+            (self._not_installed_queue, self._not_installed_packages,
+                "not_installed")]
+
+        for queue, lst, queue_name in queues:
+            while not queue.empty():
+                try:
+                    lst.append(queue.get(False, timeout=10))
+                except EmptyQueue as err:
+                    # race condition? is it really possible? perhaps process is
+                    # not dead? resurrected from afterlife?
+                    sys.stderr.write("WTF? [" + queue_name + "] " + \
+                        repr(err) + "\n")
+                    continue
 
         # run pkgpre, if any
         pkgpost = self._params.get("pkgpost")
@@ -623,6 +647,7 @@ class PackageBuilder(object):
         if not best_visible:
             # package not found, return error
             print_error("cannot match: %s, aborting" % (self._package,))
+            self._not_found_queue.put(self._package)
             return 1
 
         print_info("matched: %s for %s" % (best_visible, self._package,))
@@ -632,6 +657,7 @@ class PackageBuilder(object):
             # package not installed, behaviour not supported atm
             print_error("package not installed: %s, aborting" % (
                 self._package,))
+            self._not_installed_queue.put(self._package)
             return 1
 
         print_info("found installed: %s for %s" % (best_installed,
@@ -1148,6 +1174,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 
                 if exit_st == 0:
                     completed = []
+                    not_found = []
+                    not_installed = []
                     tainted_repositories = set()
                     preserved_libs_error = False
                     spec_count = 0
@@ -1166,6 +1194,9 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 spec, spec_count, tot_spec, pkg_count,
                                 tot_pkgs)
                             rc = builder.run()
+                            not_found.extend(builder.get_not_found_packages())
+                            not_installed.extend(
+                                builder.get_not_installed_packages())
                             preserved_libs = \
                                 PackageBuilder.check_preserved_libraries()
                             if preserved_libs:
@@ -1215,6 +1246,17 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 repository)
                             if exit_st == 0 and rc != 0:
                                 exit_st = rc
+
+                    # print summary
+                    print_info("")
+                    print_info("Summary:")
+                    print_info("Packages built: %s" % (
+                        " ".join(completed),))
+                    print_info("Packages not found: %s" % (
+                        " ".join(not_found),))
+                    print_info("Packages not installed: %s" % (
+                        " ".join(not_installed),))
+                    print_info("")
 
             if nsargs.post:
                 rc = PackageBuilder.teardown(nsargs.post, cwd,
