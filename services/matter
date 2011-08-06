@@ -8,6 +8,7 @@ import argparse
 import tempfile
 import subprocess
 import errno
+from multiprocessing import Process, Queue
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -455,6 +456,8 @@ class PackageBuilder(object):
         self._tot_spec = tot_spec
         self._pkg_number = pkg_number
         self._tot_pkgs = tot_pkgs
+        self._queue = Queue()
+        self._built_packages = []
 
     @staticmethod
     def _build_standard_environment(repository=None):
@@ -502,6 +505,12 @@ class PackageBuilder(object):
             purple(str(self._tot_pkgs)),)
         return my_str
 
+    def get_built_packages(self):
+        """
+        Return the list of successfully built packages.
+        """
+        return self._built_packages[:]
+
     def run(self):
         """
         Execute Package building action.
@@ -533,23 +542,18 @@ class PackageBuilder(object):
                 os.remove(tmp_path)
 
         # execute the update code
-        pid = os.fork()
-        if pid == 0:
+        proc = Process(target = self._run_builder, args = (std_env,))
+        proc.start()
+        proc.join()
+        exit_st = proc.exitcode
+        while not self._queue.empty():
             try:
-                os._exit(self._run_builder(std_env))
-            except Exception as exc:
-                sys.stderr.write(repr(exc) + "\n")
-                os._exit(1)
-        else:
-            try:
-                rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
-            except Exception as exc:
-                try:
-                    os.kill(pid, signal.SIGTERM)
-                except OSError as err:
-                    if err.errno != errno.ESRCH:
-                        raise
-                exit_st = 1
+                self._built_packages.append(self._queue.get(False, timeout=10))
+            except Queue.Empty as err:
+                # race condition? is it really possible? perhaps process is
+                # not dead? resurrected from afterlife?
+                sys.stderr.write("WTF? " + repr(err) + "\n")
+                continue
 
         # run pkgpre, if any
         pkgpost = self._params.get("pkgpost")
@@ -625,14 +629,18 @@ class PackageBuilder(object):
             portage.versions.pkgsplit(best_installed),
             portage.versions.pkgsplit(best_visible))
 
-        if (cmp_res == 1) and (self._params.get("downgrade", "no") == "no"):
+        allow_rebuild = self._params.get("rebuild", "no") == "yes"
+        allow_downgrade = self._params.get("downgrade", "no") == "yes"
+        is_rebuild = cmp_res == 0
+
+        if (cmp_res == 1) and (not allow_downgrade):
             # downgrade in action and downgrade not allowed, aborting!
             print_warning(
                 "package: %s, would be downgraded from %s to %s, aborting" % (
                     self._package, best_installed, best_visible,))
             return 0
 
-        if (cmp_res == 0) and (self._params.get("rebuild", "no") == "no"):
+        if (is_rebuild) and (not allow_rebuild):
             # rebuild in action and rebuild not allowed, aborting!
             print_warning(
                 "package: %s, would be rebuilt to %s, aborting" % (
@@ -647,7 +655,8 @@ class PackageBuilder(object):
 
         emerge_settings, emerge_trees, mtimedb = \
             load_emerge_config(trees=portage.db)
-        # non interactive properties
+        # non interactive properties, this is not really required
+        # accept-properties just sets os.environ...
         builtin_args = ["--accept-properties=-interactive"]
         myaction, myopts, myfiles = parse_opts(
             PackageBuilder.PORTAGE_BUILD_ARGS + builtin_args + \
@@ -732,6 +741,18 @@ class PackageBuilder(object):
         validate_ebuild_environment(emerge_trees)
         retval = action_build(emerge_settings, emerge_trees, mtimedb,
             myopts, myaction, myfiles, spinner)
+
+        for pkg in package_queue:
+            cpv = p.cpv
+            pkg_inst_match = portage.best(vardb.match(cpv))
+            if pkg_inst_match:
+                # add to build queue
+                # NOTE: this doesn't actually know what packages have been
+                # actually built successfully if retval != 0
+                # but I guess there is no better and more reliable way
+                # with current Portage API
+                print_info("package: %s, successfully built" % (cpv,))
+                self._queue.put(cpv)
 
         # NOTE: this is a WORKAROUND for Portage's post_emerge() calling
         # sys.exit() at the end.
@@ -1140,7 +1161,10 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 break
 
                             if rc == 0:
-                                local_completed.append(package)
+                                built_packages = builder.get_built_packages()
+                                print_info("built packages, in queue: %s" % (
+                                    built_packages,))
+                                local_completed.extend(built_packages)
                                 tainted_repositories.add(spec["repository"])
                             elif rc < 0:
                                 # ignore warning and go ahead
