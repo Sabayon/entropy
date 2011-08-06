@@ -491,7 +491,7 @@ class PackageBuilder(object):
         """
         Return a string used as stdout/stderr header text.
         """
-        my_str = "{%d of %d particles | %d of %d packages} " % (
+        my_str = "{%s of %s particles | %s of %s packages} " % (
             darkgreen(str(self._spec_number)),
             purple(str(self._tot_spec)),
             darkgreen(str(self._pkg_number)),
@@ -504,7 +504,7 @@ class PackageBuilder(object):
         """
         header = self._build_execution_header_output()
         print_info(
-            "spawning package build: %s" % (self._package,))
+            header + "spawning package build: %s" % (self._package,))
 
         # ignore exit status
         subprocess.call(["env-update"])
