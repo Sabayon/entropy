@@ -670,7 +670,7 @@ class PackageBuilder(object):
             print_warning("cannot use --ask emerge argument, you idiot")
             del myopts["--ask"]
         spinner = None
-        if ("--quiet" not in myopts) or ("--nospinner" in myopts):
+        if ("--quiet" not in myopts) or ("--nospinner" not in myopts):
             spinner = stdout_spinner()
         params = create_depgraph_params(myopts, myaction)
         success, graph, favorites = backtrack_depgraph(emerge_settings,
