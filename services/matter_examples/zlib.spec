@@ -3,7 +3,7 @@
 # List of packages required to be built.
 # Comma separated, example: app-foo/bar, bar-baz/foo
 # Mandatory, cannot be empty
-packages: sys-libs/zlib
+packages: sys-libs/zlib, asd-foo/foo
 
 # Entropy repository where to commit packages
 # Mandatory, cannot be empty
@@ -22,7 +22,7 @@ downgrade: no
 # Allow package rebuild?
 # Valid values are either "yes" or "no"
 # Default is: no
-rebuild: yes
+rebuild: no
 
 # Make possible to continue if one or more packages fail to build?
 # Valid values are either "yes" or "no"

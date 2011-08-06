@@ -648,6 +648,7 @@ class PackageBuilder(object):
             # package not found, return error
             print_error("cannot match: %s, aborting" % (self._package,))
             self._not_found_queue.put(self._package)
+            self._not_found_queue.join_thread()
             return 1
 
         print_info("matched: %s for %s" % (best_visible, self._package,))
@@ -658,6 +659,7 @@ class PackageBuilder(object):
             print_error("package not installed: %s, aborting" % (
                 self._package,))
             self._not_installed_queue.put(self._package)
+            self._not_installed_queue.join_thread()
             return 1
 
         print_info("found installed: %s for %s" % (best_installed,
@@ -795,6 +797,7 @@ class PackageBuilder(object):
                 # with current Portage API
                 print_info("package: %s, successfully built" % (cpv,))
                 self._queue.put(cpv)
+        self._queue.join_thread()
 
         # NOTE: this is a WORKAROUND for Portage's post_emerge() calling
         # sys.exit() at the end.
