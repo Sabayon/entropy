@@ -50,7 +50,7 @@ removed-useflags: yes
 # Env vars:
 # MATTER_PACKAGE_NAME       = name of the package that would be built
 # To the pkgpost hook, is given one argv parameter, corresponding to the
-# build exit status, which is 0 for no issues, <0 for warnings, >0 for errors.
+# build exit status, which is 0 for no issues, != 0 for issue.
 # If pkgpost hook returns != 0 exit status, this will replace the exit status
 # of the build procedure, which gets returned by build caller (so you have a
 # good change of making the whole matter execution abort).
