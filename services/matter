@@ -8,6 +8,7 @@ import argparse
 import tempfile
 import subprocess
 import errno
+from Queue import Empty as EmptyQueue
 from multiprocessing import Process, Queue
 
 # Entropy imports
@@ -549,7 +550,7 @@ class PackageBuilder(object):
         while not self._queue.empty():
             try:
                 self._built_packages.append(self._queue.get(False, timeout=10))
-            except Queue.Empty as err:
+            except EmptyQueue as err:
                 # race condition? is it really possible? perhaps process is
                 # not dead? resurrected from afterlife?
                 sys.stderr.write("WTF? " + repr(err) + "\n")
