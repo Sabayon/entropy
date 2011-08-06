@@ -528,8 +528,6 @@ class PackageBuilder(object):
             except Exception as exc:
                 os.kill(pid, signal.SIGTERM)
                 exit_st = 1
-            if exit_st != 0:
-                return exit_st
 
         # run pkgpre, if any
         pkgpost = self._params.get("pkgpost")
@@ -542,14 +540,13 @@ class PackageBuilder(object):
             try:
                 # now execute
                 os.chmod(tmp_path, 0o700)
-                exit_st = exec_cmd([tmp_path], env = std_env)
-                if exit_st != 0:
-                    return exit_st
+                post_exit_st = exec_cmd([tmp_path, str(exit_st)], env = std_env)
+                if post_exit_st != 0:
+                    return post_exit_st
             finally:
                 os.remove(tmp_path)
 
-        # so far, so good
-        return 0
+        return exit_st
 
     def _run_builder(self, env):
         """
