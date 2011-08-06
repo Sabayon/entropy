@@ -568,8 +568,6 @@ class PackageBuilder(object):
             finally:
                 os.remove(tmp_path)
 
-        if exit_st == 0:
-            subprocess.call(["env-update"])
         return exit_st
 
     def _run_builder(self, env):
@@ -744,6 +742,7 @@ class PackageBuilder(object):
             emerge_trees, mtimedb, retval)
         sys.exit = sys_exit
 
+        subprocess.call(["env-update"])
         print_info("portage spawned, return value: %d" % (retval,))
 
         return retval
