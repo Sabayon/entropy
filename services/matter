@@ -465,6 +465,10 @@ class PackageBuilder(object):
 
     @staticmethod
     def setup(executable_hook_f, cwd):
+
+        # ignore exit status
+        subprocess.call(["env-update"])
+
         hook_name = executable_hook_f.name
         if not hook_name.endswith("/"):
             # complete with current directory
@@ -505,9 +509,6 @@ class PackageBuilder(object):
         header = self._build_execution_header_output()
         print_info(
             header + "spawning package build: %s" % (self._package,))
-
-        # ignore exit status
-        subprocess.call(["env-update"])
 
         std_env = PackageBuilder._build_standard_environment(
             repository=self._params["repository"])
@@ -567,6 +568,8 @@ class PackageBuilder(object):
             finally:
                 os.remove(tmp_path)
 
+        if exit_st == 0:
+            subprocess.call(["env-update"])
         return exit_st
 
     def _run_builder(self, env):
