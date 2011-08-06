@@ -547,6 +547,7 @@ class PackageBuilder(object):
         proc.start()
         proc.join()
         exit_st = proc.exitcode
+        print_info("builder terminated, exit status: %d" % (exit_st,))
         while not self._queue.empty():
             try:
                 self._built_packages.append(self._queue.get(False, timeout=10))
