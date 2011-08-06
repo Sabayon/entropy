@@ -1,3 +1,247 @@
+commit a4a3d8fe9db980f83f01ad92e9f8a9ed90c616ee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 23:17:21 2011 +0200
+
+    Release Entropy 1.0_rc33
+
+commit b60637d4d181a2962ae7027f19eb9eba0cd855bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 23:16:24 2011 +0200
+
+    [entropy.server] fix non-interactive usage of __user_filter_out_missing_deps()
+
+commit f041332b4120ee21c91d69ed74dcb14c0e833c37
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 22:58:06 2011 +0200
+
+    [matter] rewrite multiprocessing.Queue usage
+
+commit abe1e7cb8852e1b58b00bb251ac2959938f92b7e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 20:07:37 2011 +0200
+
+    [matter] fix multiprocess.Queue handling for this architecture
+
+commit f8ef78c75a5fb72b8f2d505f3b5072d274a36391
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 19:38:56 2011 +0200
+
+    [matter] a final touch to the output
+
+commit 2023e1588fc65459276af5c8adea94d00279ecac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 19:25:12 2011 +0200
+
+    [matter] collect more statistics while running builds
+
+commit 117a1df596cff0a267001e3f3f7bddd7a459b3a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 18:23:35 2011 +0200
+
+    [matter] keep a new line after each run
+
+commit 4e3b7b98d36f9222c46c330a92c5dff574cba09e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 18:08:21 2011 +0200
+
+    [entropy.qa] add support for externally inferred (via config files) broken libraries for test_missing_runtime_libraries()
+
+commit fe7cd91b1dad4d65f294c81bb2d168f84a3f9b8d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 15:46:37 2011 +0200
+
+    [matter] revert Process() usage, closes fds, not wanted
+
+commit e6bb32fa69262aeae9953d69db4919c94b9ae985
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 15:42:29 2011 +0200
+
+    [matter] fixup spinner handling
+
+commit 199e4b3692800995e1b894a99044349d060ee747
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 15:27:26 2011 +0200
+
+    [matter] add termination output for builder
+
+commit 7d0eb69dc3ddf29dd1416e0c24c1012081187c70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 15:22:53 2011 +0200
+
+    [matter] fix Queue.Empty usage
+
+commit 9e0cb61ca9db8b9dea6abeb96edc8e8eb052276e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 15:20:18 2011 +0200
+
+    [matter] use multiprocessing module, improve handling of built packages
+
+commit ccd49982a79f637ae17271fe6ab895d847014516
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 14:41:32 2011 +0200
+
+    [matter] run env-update only AFTER packages build
+
+commit 9273ee5320e938c02242b060492602ecb5fd248b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 14:40:25 2011 +0200
+
+    [matter] run env-update only when there has been some package update, and at the beginning
+
+commit dd5eb2a98462a13687bb08038a6b1f5b470de1b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 14:37:05 2011 +0200
+
+    [matter] also set ACCEPT_PROPERTIES="* -interactive" env var
+
+commit ca63f7f12173cfaaf05e2ccd593b87b3b9c3a9ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 12:50:14 2011 +0200
+
+    [matter] increment pkg_count
+
+commit b2f5ea7dd93206ec14bf25bb8284283c1173e825
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 12:49:08 2011 +0200
+
+    [matter] fix typo in string format
+
+commit d17f0600c8d3ef0645d6064ce5f8c50f1865771a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 12:34:09 2011 +0200
+
+    [matter] provide info regarding build status
+
+commit 4e36efb0772997c695334c8235062a6f4b675b03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 12:12:11 2011 +0200
+
+    [matter] only return >=0 out of _run_builder()
+
+commit a903ced2893d5052d224c4dd2634abd5837c30a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 11:58:08 2011 +0200
+
+    [matter] change pkgpre hook specifications
+
+commit 7a18ac3477550870fc1a4fdd968bdcefeb9bfa5e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 11:49:01 2011 +0200
+
+    [eit] fix "eit commit" arguments validation
+
+commit 68d7e798bace1d83bf82174d699bf0ef103c02d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 5 22:58:58 2011 +0200
+
+    [po] update translations
+
+commit dc864e3a58f7520a38dc809357dea6536fa5449e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 5 22:58:45 2011 +0200
+
+    [man] update reagent man page
+
+commit 7b521b924bb12d54cd09c6d9edd4b36d03a57c10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 5 22:58:03 2011 +0200
+
+    [server] add support for linktest
+
+commit 8b62b034fe7c1775ab9d5608b8d1de8b35a6eddb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 5 22:57:37 2011 +0200
+
+    [entropy.qa] beautify output of test_missing_runtime_libraries()
+
+commit 438e194470c86bcd4ad111827373db24f85a17c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 5 22:40:05 2011 +0200
+
+    [entropy.server,entropy.qa] move test_missing_runtime_libraries to entropy.qa, make it reusable
+
+commit 46d67f25704f881608ae37ce30d54f611b90b548
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Aug 5 19:04:13 2011 +0200
+
+    [entropy.server] improve output of _external_metadata_qa_hook_test()
+
+commit 8ec0edd6af57356f6ad1efff8e4a90de59146ff0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 17:01:36 2011 +0200
+
+    [entropy.server] missing_runtime_libraries_test: also print info regarding possible library owners
+
+commit c769c073b3f5a988f84af9375b6dcc8c225a30d0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 16:50:00 2011 +0200
+
+    [entropy.server] missing_runtime_libraries_test: also return collected data
+
+commit a7732fefd6cb0ab93f864fe418ea2aafbe4dc8ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 16:48:23 2011 +0200
+
+    [entropy.server] tweak missing_runtime_libraries_test() output
+
+commit a97c2821a796c41e7eca7fe8db4f39f03b1078b0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 16:39:16 2011 +0200
+
+    [entropy.server] add missing runtime libraries QA
+    
+    Use collected packages ELF metadata (retrieveNeeded(),
+    resolveNeeded()) to look for potentially missing
+    shared libraries. This is very handy in case of library breakages
+    across multiple server-side repositories.
+    For example: you bump libfoo, which provides new library, the SPM forces
+    you to rebuild foouser, which uses libfoo. You put both into a testing
+    repository but then you only move foouser to the base repository without
+    realizing the potential breakage users could run into.
+    However, since there can be false positives, this routine cannot block
+    you from doing this mistakes.
+    Please note that the base repository is the first listed in server.conf
+    and will always be considered as self-contained, meaning that all the
+    dependencies and sonames must be available within the same.
+    The code first tries to resolve the soname inside the same repository,
+    then falls back to other ones, if any.
+
+commit 2a88b2c2acb733579fcb5bec7450936b517ffb70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 12:01:18 2011 +0200
+
+    [reagent] fix output of "search" and "match" when --quiet is enabled
+
+commit a510cbe5e25d73ab1c7be190536c1765676e5a17
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 11:44:07 2011 +0200
+
+    [reagent/eit] dramatically improve "eit list" & "regent query list" speed
+
+commit f064788df9c10ad9ef71b4d42d7fe168e96b3b37
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 11:43:11 2011 +0200
+
+    [equo] text_query: improve list_packages() output
+
+commit ae2ae9720c4459de0f77c0727ccff7cb7a4cb445
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 11:42:03 2011 +0200
+
+    [equo] text_query.search_repository_packages: improve speed
+
+commit ebebb75459fcf5715e743be01d5bc0e54b60b25a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 10:31:08 2011 +0200
+
+    [scripts] update version tagging script to also generate tarball
+
+commit d4caaa7041ea2f9886f30fe5f2cccdc2871e1e03
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Thu Aug 4 10:26:08 2011 +0200
+
+    Tagging Entropy version 1.0_rc32
+
 commit 1489bfedba0b23d2b5534a298c08b993ccca58d7
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Thu Aug 4 10:26:04 2011 +0200
