@@ -220,6 +220,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
             'broken_syms': etpConst['confdir']+"/brokensyms.conf",
             'broken_libs_mask': etpConst['confdir']+"/brokenlibsmask.conf",
+            'broken_links_mask': etpConst['confdir']+"/brokenlinksmask.conf",
             'hw_hash': etpConst['confdir']+"/.hw.hash",
             'system': etpConst['entropyconf'],
             'repositories': etpConst['repositoriesconf'],
@@ -230,7 +231,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'license_accept', 'system_mask', 'system_package_sets',
             'system_dirs', 'system_dirs_mask', 'extra_ldpaths',
             'system', 'system_rev_symlinks', 'hw_hash',
-            'broken_syms', 'broken_libs_mask'
+            'broken_syms', 'broken_libs_mask', 'broken_links_mask'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
@@ -799,6 +800,16 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: dict
         """
         return self.__generic_parser(self.__setting_files['broken_libs_mask'])
+
+    def _broken_links_mask_parser(self):
+        """
+        Parser returning a list of broken library linking libraries which are
+        always considered sane.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        return self.__generic_parser(self.__setting_files['broken_links_mask'])
 
     def _hw_hash_parser(self):
         """

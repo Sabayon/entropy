@@ -447,6 +447,11 @@ class QAInterface(TextInterface, EntropyPluginStore):
         missing_sonames = set()
         if excluded_libraries is None:
             excluded_libraries = set()
+        else:
+            excluded_libraries = set(excluded_libraries)
+
+        # update content taken from brokenlinksmask.conf
+        excluded_libraries.update(self._settings['broken_links_mask'])
 
         def _resolve_needed_content_fallback(repo, pkg_id, library):
             # at this point, perhaps the library is self contained in the
@@ -540,12 +545,12 @@ class QAInterface(TextInterface, EntropyPluginStore):
 
                     if not silent:
                         self.output(
-                            "[%s] %s %s: %s, ELF class: %s" % (
+                            "[%s] %s %s: %s, class: %s" % (
                                 purple(repository_id),
                                 teal(atom),
                                 purple(_("requires")),
                                 brown(library),
-                                elfclass,
+                                darkgreen(str(elfclass)),
                             ),
                             importance = 1,
                             level = "warning",
@@ -584,9 +589,10 @@ class QAInterface(TextInterface, EntropyPluginStore):
                 self.output("", level = "info", importance = 0)
             else:
                 self.output(
-                    _("no missing runtime libraries found"),
+                    darkgreen(_("no missing runtime libraries found")),
                     level = "info",
-                    importance = 1)
+                    importance = 1
+                )
 
         return missing_sonames
 
