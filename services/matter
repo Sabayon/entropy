@@ -1217,8 +1217,10 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                                 tainted_repositories.add(spec["repository"])
                             elif rc < 0:
                                 # ignore warning and go ahead
+                                print_info("")
                                 continue
                             else:
+                                print_info("")
                                 exit_st = rc
                                 if not keep_going:
                                     break
@@ -1249,7 +1251,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
 
                     # print summary
                     print_info("")
-                    print_info("Summary:")
+                    print_info("Summary")
                     print_info("Packages built: %s" % (
                         " ".join(completed),))
                     print_info("Packages not found: %s" % (
