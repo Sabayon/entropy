@@ -9,7 +9,7 @@ import tempfile
 import subprocess
 import errno
 from Queue import Empty as EmptyQueue
-from multiprocessing import Process, Queue
+from multiprocessing import Queue
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -543,10 +543,24 @@ class PackageBuilder(object):
                 os.remove(tmp_path)
 
         # execute the update code
-        proc = Process(target = self._run_builder, args = (std_env,))
-        proc.start()
-        proc.join()
-        exit_st = proc.exitcode
+        pid = os.fork()
+        if pid == 0:
+            try:
+                os._exit(self._run_builder(std_env))
+            except Exception as exc:
+                sys.stderr.write(repr(exc) + "\n")
+                os._exit(1)
+        else:
+            try:
+                rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
+            except Exception as exc:
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except OSError as err:
+                    if err.errno != errno.ESRCH:
+                        raise
+                exit_st = 1
+
         print_info("builder terminated, exit status: %d" % (exit_st,))
         while not self._queue.empty():
             try:
