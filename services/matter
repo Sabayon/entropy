@@ -446,10 +446,15 @@ class PackageBuilder(object):
     PORTAGE_BUILD_ARGS = os.getenv("MATTER_PORTAGE_BUILD_ARGS",
         DEFAULT_PORTAGE_BUILD_ARGS).split()
 
-    def __init__(self, entropy_server, package, params):
+    def __init__(self, entropy_server, package, params, spec_number, tot_spec,
+        pkg_number, tot_pkgs):
         self._entropy = entropy_server
         self._package = package
         self._params = params
+        self._spec_number = spec_number
+        self._tot_spec = tot_spec
+        self._pkg_number = pkg_number
+        self._tot_pkgs = tot_pkgs
 
     @staticmethod
     def _build_standard_environment(repository=None):
@@ -482,10 +487,22 @@ class PackageBuilder(object):
         env["MATTER_EXIT_STATUS"] = str(exit_st)
         return exec_cmd([hook_name], env = env)
 
+    def _build_execution_header_output(self):
+        """
+        Return a string used as stdout/stderr header text.
+        """
+        my_str = "{%d of %d particles | %d of %d packages} " % (
+            darkgreen(str(self._spec_number)),
+            purple(str(self._tot_spec)),
+            darkgreen(str(self._pkg_number)),
+            purple(str(self._tot_pkgs)),)
+        return my_str
+
     def run(self):
         """
         Execute Package building action.
         """
+        header = self._build_execution_header_output()
         print_info(
             "spawning package build: %s" % (self._package,))
 
@@ -1093,14 +1110,20 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                     completed = []
                     tainted_repositories = set()
                     preserved_libs_error = False
+                    spec_count = 0
+                    tot_spec = len(specs)
                     for spec in specs:
 
+                        spec_count += 1
                         keep_going = spec.get("keep-going", "no") == "yes"
                         local_completed = []
 
+                        pkg_count = 0
+                        tot_pkgs = len(spec["packages"])
                         for package in spec["packages"]:
                             builder = PackageBuilder(entropy_server, package,
-                                spec)
+                                spec, spec_count, tot_spec, pkg_count,
+                                tot_pkgs)
                             rc = builder.run()
                             preserved_libs = \
                                 PackageBuilder.check_preserved_libraries()
