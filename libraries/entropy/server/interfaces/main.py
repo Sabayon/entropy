@@ -4670,8 +4670,11 @@ class Server(Client):
         if not ask:
             # not interactive, add everything
             for pkg_match, missing_extended in missing_map.items():
+                if not missing_extended:
+                    continue
                 obj = missing_deps.setdefault(pkg_match, set())
-                obj.update(missing_extended.values())
+                for dep_list in missing_extended.values():
+                    obj.update(dep_list)
             return missing_deps
 
         header_txt = """\
