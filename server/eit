@@ -205,7 +205,9 @@ elif main_cmd == "commit":
         avail_repos = _get_available_repositories()
         if options[0] in avail_repos:
             os.environ['ETP_REPO'] = options.pop(0)
-    _exec_args([REAGENT_EXEC, "update"] + options)
+            _exec_args([REAGENT_EXEC, "update"] + options)
+    else:
+        _exec_args([REAGENT_EXEC, "update"] + options)
 
 elif (main_cmd == "fit") and options:
     _exec_args([REAGENT_EXEC, "inject"] + options)
