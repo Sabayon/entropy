@@ -44,10 +44,14 @@ def exec_cmd(args, env = None):
     """
     pid = os.fork()
     if pid == 0:
-        if env is not None:
-            os.execvpe(args[0], args, env)
-        else:
-            os.execvp(args[0], args)
+        try:
+            if env is not None:
+                os.execvpe(args[0], args, env)
+            else:
+                os.execvp(args[0], args)
+        except Exception as exc:
+            entropy.tools.print_traceback()
+            os._exit(1)
     else:
         try:
             rcpid, rc = os.waitpid(pid, os.P_WAIT)
@@ -565,6 +569,8 @@ class PackageBuilder(object):
             try:
                 rc = self._run_builder(std_env, pkg_queue,
                     not_found_queue, not_installed_queue)
+            except KeyboardInterrupt:
+                os._exit(1)
             except Exception as exc:
                 entropy.tools.print_traceback()
                 sys.stderr.write(repr(exc) + "\n")
@@ -580,6 +586,13 @@ class PackageBuilder(object):
         else:
             try:
                 rcpid, exit_st = os.waitpid(pid, os.P_WAIT)
+            except KeyboardInterrupt:
+                try:
+                    os.kill(pid, signal.SIGTERM)
+                except OSError as err:
+                    if err.errno != errno.ESRCH:
+                        raise
+                exit_st = 1
             except Exception as exc:
                 try:
                     os.kill(pid, signal.SIGTERM)
@@ -857,12 +870,17 @@ class PackageBuilder(object):
                 if vardb._plib_registry.hasEntries():
                     os._exit(1)
                 os._exit(0)
+            except KeyboardInterrupt:
+                os._exit(1)
             except Exception as exc:
                 sys.stderr.write(repr(exc) + "\n")
                 os._exit(1)
         else:
             try:
                 rcpid, rc = os.waitpid(pid, os.P_WAIT)
+            except KeyboardInterrupt:
+                os.kill(pid, signal.SIGTERM)
+                rc = 1
             except Exception as exc:
                 os.kill(pid, signal.SIGTERM)
                 rc = 1
@@ -1282,7 +1300,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         print_error("unable to acquire Entropy Resources lock")
         raise SystemExit(42)
     except KeyboardInterrupt:
-        print_error("Keyboard interruption")
+        print_error("Keyboard Interrupt, pid: %s" % (os.getpid(),))
         raise SystemExit(100)
     finally:
         if entropy_server is not None:
