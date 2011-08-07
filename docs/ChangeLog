@@ -1,3 +1,51 @@
+commit 03c3c86bfa94273a37e441549db45f354e3bfada
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 18:39:25 2011 +0200
+
+    Release Entropy 1.0_rc34
+
+commit e6b257251f43d8ba33dc7716409ffcb2a52985b1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 18:13:07 2011 +0200
+
+    [matter] implement lock file handling, useful for other apps interaction
+
+commit 7cb3a46817a1195cf7f5a073f21e945feecd31d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 17:47:39 2011 +0200
+
+    [matter] move the main app code to matter_main()
+
+commit 022c66d14e3d520b52120e40733a44f6413e62ab
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 12:40:38 2011 +0200
+
+    [matter] keep track of packages not able to build properly
+
+commit 4695682fb31e657eb766dd0e1263f6a1fb3ca034
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 11:52:50 2011 +0200
+
+    [matter] catch KeyboardInterrupt separately when using os.fork()
+
+commit 8102b6efad09f9f47a6f06d8357625f30b1bfb5a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 11:36:52 2011 +0200
+
+    [matter] improve reliability of multiprocessing.Queue usage
+
+commit da4e202489a5426f509efd4a47cbd4c7a4e0583b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 11:19:50 2011 +0200
+
+    [matter] fix typo
+
+commit 60a14844b91f9ab3e0f5a3b7debf35047e6a7826
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Aug 6 23:17:32 2011 +0200
+
+    Tagging Entropy version 1.0_rc33
+
 commit a4a3d8fe9db980f83f01ad92e9f8a9ed90c616ee
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Aug 6 23:17:21 2011 +0200
