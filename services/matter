@@ -8,8 +8,9 @@ import argparse
 import tempfile
 import subprocess
 import errno
+import fcntl
 from Queue import Empty as EmptyQueue
-from multiprocessing import Queue
+from multiprocessing import Queue, Lock
 
 # Entropy imports
 sys.path.insert(0,'/usr/lib/entropy/libraries')
@@ -91,6 +92,74 @@ class EntropyResourceLock(object):
 
     def release(self):
         entropy.tools.release_entropy_locks(self._entropy)
+
+    def __enter__(self):
+        """
+        Acquire lock. Not thread-safe.
+        """
+        if self.__inside_with_stmt < 1:
+            self.acquire()
+        self.__inside_with_stmt += 1
+        return self
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Release lock. Not thread-safe.
+        """
+        self.__inside_with_stmt -= 1
+        if self.__inside_with_stmt < 1:
+            self.release()
+
+class MatterResourceLock(object):
+    """
+    This class exposes a Lock-like interface for acquiring Matter lock file.
+    """
+
+    LOCK_FILE_PATH = "/var/tmp/.matter_resource.lock"
+
+    class NotAcquired(Exception):
+        """ Raised when Lock cannot be acquired """
+
+    def __init__(self, blocking):
+        """
+        MatterResourceLock constructor.
+
+        @param blocking: acquire lock in blocking mode?
+        @type blocking: bool
+        """
+        self._blocking = blocking
+        self.__inside_with_stmt = 0
+        self.__lock_f = None
+        self.__call_lock = Lock()
+
+    def acquire(self):
+        """
+        Acquire the lock file.
+        """
+        file_path = MatterResourceLock.LOCK_FILE_PATH
+        if self._blocking:
+            flags = fcntl.LOCK_EX | fcntl.LOCK_NB
+        else:
+            flags = fcntl.LOCK_EX
+
+        with self.__call_lock:
+            if self.__lock_f is None:
+                self.__lock_f = open(file_path, "wb")
+                try:
+                    fcntl.flock(self.__lock_f.fileno(), flags)
+                except IOError as err:
+                    if err.errno not in (errno.EACCES, errno.EAGAIN,):
+                        # ouch, wtf?
+                        raise
+                    raise MatterResourceLock.NotAcquired(
+                        "unable to acquire lock")
+
+    def release(self):
+        with self.__call_lock:
+            if self.__lock_f is not None:
+                fcntl.flock(self.__lock_f.fileno(), fcntl.LOCK_UN)
+                self.__lock_f.close()
+                self.__lock_f = None
 
     def __enter__(self):
         """
@@ -1068,6 +1137,9 @@ def matter_main(entropy_server, nsargs, cwd, specs):
                 "some configuration files have to be merged manually")
             raise SystemExit(6)
 
+    print_info("matter loaded, starting to scan particles, pid: %s" % (
+        os.getpid(),))
+
     # setup
     if nsargs.pre:
         rc = PackageBuilder.setup(nsargs.pre, cwd)
@@ -1202,6 +1274,8 @@ Environment variables passed to --post executables:
 Environment variables passed to --pkgpre/--pkgpost executables:
 %s       = name of the package that would be built
 
+Matter Resources Lock file you can use to detect if matter is running:
+%s (--blocking switch makes it acquire in blocking mode)
 """ % (
         purple("MATTER_REPOSITORY_ID"),
         purple("MATTER_PORTAGE_SYNC_CMD"),
@@ -1211,7 +1285,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
         purple("MATTER_PORTAGE_BUILD_ARGS"),
         darkgreen(PackageBuilder.DEFAULT_PORTAGE_BUILD_ARGS),
         purple("MATTER_EXIT_STATUS"),
-        purple("MATTER_PACKAGE_NAME"),)
+        purple("MATTER_PACKAGE_NAME"),
+        darkgreen(MatterResourceLock.LOCK_FILE_PATH),)
 
     parser = argparse.ArgumentParser(
         description='Automated Packages Builder',
@@ -1319,10 +1394,14 @@ Environment variables passed to --pkgpre/--pkgpost executables:
             print_info("--blocking enabled, please wait for locks...")
 
         with EntropyResourceLock(entropy_server, nsargs.blocking):
-            matter_main(entropy_server, nsargs, cwd, specs)
+            with MatterResourceLock(nsargs.blocking):
+                matter_main(entropy_server, nsargs, cwd, specs)
 
     except EntropyResourceLock.NotAcquired:
         print_error("unable to acquire Entropy Resources lock")
+        raise SystemExit(42)
+    except MatterResourceLock.NotAcquired:
+        print_error("unable to acquire Matter Resources lock")
         raise SystemExit(42)
     except KeyboardInterrupt:
         print_error("Keyboard Interrupt, pid: %s" % (os.getpid(),))
