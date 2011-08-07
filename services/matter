@@ -671,7 +671,7 @@ class PackageBuilder(object):
                 return 1
         finally:
             not_installed_queue.close()
-            not_found_queue.join_thread()
+            not_installed_queue.join_thread()
 
         print_info("found installed: %s for %s" % (best_installed,
             self._package,))
@@ -714,6 +714,7 @@ class PackageBuilder(object):
 
         emerge_settings, emerge_trees, mtimedb = \
             load_emerge_config(trees=portage.db)
+
         # non interactive properties, this is not really required
         # accept-properties just sets os.environ...
         builtin_args = ["--accept-properties=-interactive"]
