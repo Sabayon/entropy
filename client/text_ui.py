@@ -1628,7 +1628,7 @@ def install_packages(entropy_client,
                 if choice not in (0, 1, 2, 3):
                     continue
                 if choice == 0:
-                    return 0, 0
+                    return 126, -1
                 elif choice == 1: # read
                     filename = get_text_license(key, match[1])
                     viewer = get_file_pager()
