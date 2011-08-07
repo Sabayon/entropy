@@ -464,6 +464,7 @@ class PackageBuilder(object):
         self._built_packages = []
         self._not_found_packags = []
         self._not_installed_packages = []
+        self._not_merged_packages = []
 
     @staticmethod
     def _build_standard_environment(repository=None):
@@ -529,6 +530,12 @@ class PackageBuilder(object):
         """
         return self._not_installed_packages
 
+    def get_not_merged_packages(self):
+        """
+        Return the list of packages that haven't been able to compile.
+        """
+        return self._not_merged_packages
+
     def run(self):
         """
         Execute Package building action.
@@ -562,13 +569,15 @@ class PackageBuilder(object):
         pkg_queue = Queue()
         not_found_queue = Queue()
         not_installed_queue = Queue()
+        not_merged_queue = Queue()
 
         # execute the update code
         pid = os.fork()
         if pid == 0:
             try:
                 rc = self._run_builder(std_env, pkg_queue,
-                    not_found_queue, not_installed_queue)
+                    not_found_queue, not_installed_queue,
+                    not_merged_queue)
             except KeyboardInterrupt:
                 os._exit(1)
             except Exception as exc:
@@ -582,6 +591,8 @@ class PackageBuilder(object):
                 not_found_queue.join_thread()
                 not_installed_queue.close()
                 not_installed_queue.join_thread()
+                not_merged_queue.close()
+                not_merged_queue.join_thread()
             os._exit(rc)
         else:
             try:
@@ -606,7 +617,8 @@ class PackageBuilder(object):
         queues = [(pkg_queue, self._built_packages, "queue"),
             (not_found_queue, self._not_found_packags, "not_found"),
             (not_installed_queue, self._not_installed_packages,
-                "not_installed")]
+                "not_installed"),
+            (not_merged_queue, self._not_merged_packages, "not_merged")]
 
         for queue, lst, queue_name in queues:
             while True:
@@ -636,7 +648,7 @@ class PackageBuilder(object):
         return exit_st
 
     def _run_builder(self, env, pkg_queue, not_found_queue,
-            not_installed_queue):
+            not_installed_queue, not_merged_queue):
         """
         This method is called by _run and executes the whole package build
         logic, including constraints validation given by argv parameters.
@@ -809,15 +821,17 @@ class PackageBuilder(object):
         retval = action_build(emerge_settings, emerge_trees, mtimedb,
             myopts, myaction, myfiles, spinner)
 
+        not_merged = []
+        if retval != 0:
+            merge_list = mtimedb.get("resume", {}).get("mergelist")
+            for merge_type, merge_root, merge_atom, merge_act in merge_list:
+                not_merged.append(merge_atom)
+                not_merged_queue.put(merge_atom)
+
         for pkg in package_queue:
             cpv = p.cpv
-            pkg_inst_match = portage.best(vardb.match(cpv))
-            if pkg_inst_match:
+            if cpv not in not_merged:
                 # add to build queue
-                # NOTE: this doesn't actually know what packages have been
-                # actually built successfully if retval != 0
-                # but I guess there is no better and more reliable way
-                # with current Portage API
                 print_info("package: %s, successfully built" % (cpv,))
                 pkg_queue.put(cpv)
 
@@ -1206,6 +1220,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                     completed = []
                     not_found = []
                     not_installed = []
+                    not_merged = []
                     tainted_repositories = set()
                     preserved_libs_error = False
                     spec_count = 0
@@ -1227,6 +1242,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                             not_found.extend(builder.get_not_found_packages())
                             not_installed.extend(
                                 builder.get_not_installed_packages())
+                            not_merged.extend(
+                                builder.get_not_merged_packages())
                             preserved_libs = \
                                 PackageBuilder.check_preserved_libraries()
                             if preserved_libs:
@@ -1284,6 +1301,8 @@ Environment variables passed to --pkgpre/--pkgpost executables:
                     print_info("Summary")
                     print_info("Packages built: %s" % (
                         " ".join(completed),))
+                    print_info("Packages not built: %s" % (
+                        " ".join(not_merged),))
                     print_info("Packages not found: %s" % (
                         " ".join(not_found),))
                     print_info("Packages not installed: %s" % (
