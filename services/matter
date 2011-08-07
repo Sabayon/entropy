@@ -61,7 +61,6 @@ def exec_cmd(args, env = None):
         return rc
 
 
-
 class EntropyResourceLock(object):
     """
     This class exposes a Lock-like interface for acquiring Entropy Server
@@ -916,7 +915,7 @@ class PackageBuilder(object):
 
         # if we get here, something has been compiled
         # successfully
-        for package in completed:
+        for package in packages:
             try:
                 spm_atom = spm.match_installed_package(package)
                 spm_atoms.add(spm_atom)
@@ -1038,6 +1037,150 @@ class PackageBuilder(object):
         return sts
 
 
+def matter_main(entropy_server, nsargs, cwd, specs):
+    """
+    Main application code run after all the resources setup.
+    """
+    exit_st = 0
+
+    preserved_libs = PackageBuilder.check_preserved_libraries()
+    if preserved_libs:
+        print_error(
+            "preserved libraries are found on system, aborting.")
+        raise SystemExit(7)
+
+    if nsargs.gentle:
+        # check if there is something to do
+        to_be_added, to_be_removed, to_be_injected = \
+            entropy_server.scan_package_changes()
+        if to_be_added: # only check this, others we can ignore
+            to_be_added = [x[0] for x in to_be_added]
+            to_be_added.sort()
+            print_error("--gentle specified, and unstaged packages found:")
+            for name in to_be_added:
+                print_warning("  " + name)
+            raise SystemExit(5)
+
+        # also check for uncommitted configuration files changed
+        problems = entropy_server._check_config_file_updates()
+        if problems:
+            print_error(
+                "some configuration files have to be merged manually")
+            raise SystemExit(6)
+
+    # setup
+    if nsargs.pre:
+        rc = PackageBuilder.setup(nsargs.pre, cwd)
+        if rc != 0:
+            exit_st = rc
+
+    if exit_st == 0:
+
+        if nsargs.sync:
+            rc = PackageBuilder.sync()
+            if rc != 0:
+                exit_st = rc
+
+        if exit_st == 0:
+            completed = []
+            not_found = []
+            not_installed = []
+            not_merged = []
+            tainted_repositories = set()
+            preserved_libs_error = False
+            spec_count = 0
+            tot_spec = len(specs)
+            for spec in specs:
+
+                spec_count += 1
+                keep_going = spec.get("keep-going", "no") == "yes"
+                local_completed = []
+
+                pkg_count = 0
+                tot_pkgs = len(spec["packages"])
+                for package in spec["packages"]:
+                    pkg_count += 1
+                    builder = PackageBuilder(entropy_server, package,
+                        spec, spec_count, tot_spec, pkg_count,
+                        tot_pkgs)
+                    rc = builder.run()
+                    not_found.extend(builder.get_not_found_packages())
+                    not_installed.extend(
+                        builder.get_not_installed_packages())
+                    not_merged.extend(
+                        builder.get_not_merged_packages())
+                    preserved_libs = \
+                        PackageBuilder.check_preserved_libraries()
+                    if preserved_libs:
+                        # abort, library breakages detected
+                        exit_st = 1
+                        print_error(
+                            "preserved libraries detected, aborting")
+                        preserved_libs_error = True
+                        break
+
+                    if rc == 0:
+                        built_packages = builder.get_built_packages()
+                        print_info("built packages, in queue: %s" % (
+                            built_packages,))
+                        # make some room
+                        print_info("")
+                        local_completed.extend(built_packages)
+                        tainted_repositories.add(spec["repository"])
+                    elif rc < 0:
+                        # ignore warning and go ahead
+                        print_info("")
+                        continue
+                    else:
+                        print_info("")
+                        exit_st = rc
+                        if not keep_going:
+                            break
+
+                if preserved_libs_error:
+                    # completely abort
+                    break
+
+                completed.extend(local_completed)
+                # portage calls setcwd()
+                os.chdir(cwd)
+
+                if local_completed and nsargs.commit:
+                    rc = PackageBuilder.commit(entropy_server,
+                        spec["repository"], local_completed)
+                    if exit_st == 0 and rc != 0:
+                        exit_st = rc
+                        if not keep_going:
+                            break
+
+            if tainted_repositories and nsargs.push and nsargs.commit \
+                    and not preserved_libs_error:
+                for repository in tainted_repositories:
+                    rc = PackageBuilder.push(entropy_server,
+                        repository)
+                    if exit_st == 0 and rc != 0:
+                        exit_st = rc
+
+            # print summary
+            print_info("")
+            print_info("Summary")
+            print_info("Packages built: %s" % (
+                " ".join(completed),))
+            print_info("Packages not built: %s" % (
+                " ".join(not_merged),))
+            print_info("Packages not found: %s" % (
+                " ".join(not_found),))
+            print_info("Packages not installed: %s" % (
+                " ".join(not_installed),))
+            print_info("")
+
+    if nsargs.post:
+        rc = PackageBuilder.teardown(nsargs.post, cwd,
+            exit_st)
+        if exit_st == 0 and rc != 0:
+            exit_st = rc
+
+    raise SystemExit(exit_st)
 
 if __name__ == "__main__":
 
@@ -1176,144 +1319,7 @@ Environment variables passed to --pkgpre/--pkgpost executables:
             print_info("--blocking enabled, please wait for locks...")
 
         with EntropyResourceLock(entropy_server, nsargs.blocking):
-
-            preserved_libs = \
-                PackageBuilder.check_preserved_libraries()
-            if preserved_libs:
-                print_error(
-                    "preserved libraries are found on system, aborting.")
-                raise SystemExit(7)
-
-            if nsargs.gentle:
-                # check if there is something to do
-                to_be_added, to_be_removed, to_be_injected = \
-                    entropy_server.scan_package_changes()
-                if to_be_added: # only check this, others we can ignore
-                    to_be_added = [x[0] for x in to_be_added]
-                    to_be_added.sort()
-                    print_error("--gentle specified, and unstaged packages found:")
-                    for name in to_be_added:
-                        print_warning("  " + name)
-                    raise SystemExit(5)
-
-                # also check for uncommitted configuration files changed
-                problems = entropy_server._check_config_file_updates()
-                if problems:
-                    print_error(
-                        "some configuration files have to be merged manually")
-                    raise SystemExit(6)
-
-            # setup
-            if nsargs.pre:
-                rc = PackageBuilder.setup(nsargs.pre, cwd)
-                if rc != 0:
-                    exit_st = rc
-
-            if exit_st == 0:
-
-                if nsargs.sync:
-                    rc = PackageBuilder.sync()
-                    if rc != 0:
-                        exit_st = rc
-
-                if exit_st == 0:
-                    completed = []
-                    not_found = []
-                    not_installed = []
-                    not_merged = []
-                    tainted_repositories = set()
-                    preserved_libs_error = False
-                    spec_count = 0
-                    tot_spec = len(specs)
-                    for spec in specs:
-
-                        spec_count += 1
-                        keep_going = spec.get("keep-going", "no") == "yes"
-                        local_completed = []
-
-                        pkg_count = 0
-                        tot_pkgs = len(spec["packages"])
-                        for package in spec["packages"]:
-                            pkg_count += 1
-                            builder = PackageBuilder(entropy_server, package,
-                                spec, spec_count, tot_spec, pkg_count,
-                                tot_pkgs)
-                            rc = builder.run()
-                            not_found.extend(builder.get_not_found_packages())
-                            not_installed.extend(
-                                builder.get_not_installed_packages())
-                            not_merged.extend(
-                                builder.get_not_merged_packages())
-                            preserved_libs = \
-                                PackageBuilder.check_preserved_libraries()
-                            if preserved_libs:
-                                # abort, library breakages detected
-                                exit_st = 1
-                                print_error(
-                                    "preserved libraries detected, aborting")
-                                preserved_libs_error = True
-                                break
-
-                            if rc == 0:
-                                built_packages = builder.get_built_packages()
-                                print_info("built packages, in queue: %s" % (
-                                    built_packages,))
-                                # make some room
-                                print_info("")
-                                local_completed.extend(built_packages)
-                                tainted_repositories.add(spec["repository"])
-                            elif rc < 0:
-                                # ignore warning and go ahead
-                                print_info("")
-                                continue
-                            else:
-                                print_info("")
-                                exit_st = rc
-                                if not keep_going:
-                                    break
-
-                        if preserved_libs_error:
-                            # completely abort
-                            break
-
-                        completed.extend(local_completed)
-                        # portage calls setcwd()
-                        os.chdir(cwd)
-
-                        if local_completed and nsargs.commit:
-                            rc = PackageBuilder.commit(entropy_server,
-                                spec["repository"], local_completed)
-                            if exit_st == 0 and rc != 0:
-                                exit_st = rc
-                                if not keep_going:
-                                    break
-
-                    if tainted_repositories and nsargs.push and nsargs.commit \
-                            and not preserved_libs_error:
-                        for repository in tainted_repositories:
-                            rc = PackageBuilder.push(entropy_server,
-                                repository)
-                            if exit_st == 0 and rc != 0:
-                                exit_st = rc
-
-                    # print summary
-                    print_info("")
-                    print_info("Summary")
-                    print_info("Packages built: %s" % (
-                        " ".join(completed),))
-                    print_info("Packages not built: %s" % (
-                        " ".join(not_merged),))
-                    print_info("Packages not found: %s" % (
-                        " ".join(not_found),))
-                    print_info("Packages not installed: %s" % (
-                        " ".join(not_installed),))
-                    print_info("")
-
-            if nsargs.post:
-                rc = PackageBuilder.teardown(nsargs.post, cwd,
-                    exit_st)
-                if exit_st == 0 and rc != 0:
-                    exit_st = rc
+            matter_main(entropy_server, nsargs, cwd, specs)
 
     except EntropyResourceLock.NotAcquired:
         print_error("unable to acquire Entropy Resources lock")
