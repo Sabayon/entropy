@@ -761,8 +761,10 @@ class PortagePlugin(SpmPlugin):
         vartree = trees["vartree"]
         dblnk = self._portage.dblink(pkgcat, pkgname, "/", vartree.settings,
             treetype="vartree", vartree=vartree)
+        locked = False
         if etpConst['uid'] == 0:
             dblnk.lockdb()
+            locked = True
 
         # store package file in temporary directory, then move
         # atomicity ftw
@@ -797,7 +799,8 @@ class PortagePlugin(SpmPlugin):
         # appending xpak informations
         tbz2 = xpak.tbz2(tmp_file)
         tbz2.recompose(dbdir)
-        dblnk.unlockdb()
+        if locked:
+            dblnk.unlockdb()
         # now do atomic move
         try:
             os.rename(tmp_file, file_save_path)
