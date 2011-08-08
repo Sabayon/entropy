@@ -429,7 +429,7 @@ def const_default_settings(rootdir):
         'userpackagesetsid': "__user__",
         'cachedumpext': ".dmp",
         'packagesext': ".tbz2",
-        'packagesdebugext': ".dbg",
+        'packagesdebugext': ".debug.tar.bz2",
         'packagesext_webinstall': ".etp",
         # entropy package files binary delta extension
         'packagesdeltaext': ".edelta",
