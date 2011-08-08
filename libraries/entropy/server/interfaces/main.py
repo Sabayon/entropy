@@ -5111,6 +5111,16 @@ class Server(Client):
                 )
                 qa_success = False
 
+        self.output(
+            "[%s] %s" % (
+                purple("qa"),
+                teal(_("metadata QA check complete")),
+            ),
+            importance = 1,
+            level = "info",
+            header = blue(" @@ ")
+        )
+
         return qa_success
 
     def _add_packages_qa_tests(self, package_matches, ask = True):
