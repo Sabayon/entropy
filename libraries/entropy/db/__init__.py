@@ -4884,7 +4884,6 @@ class EntropyRepository(EntropyRepositoryBase):
             self._createProvidedLibs()
 
         # added on Aug. 2011
-        self._cursor().execute("DROP TABLE packagedownloads")
         if not self._doesTableExist("packagedownloads"):
             self._createPackageDownloadsTable()
 
