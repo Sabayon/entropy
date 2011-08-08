@@ -24,7 +24,8 @@ import tarfile
 import time
 
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
-    const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms
+    const_convert_to_unicode, const_convert_to_rawstring, const_setup_perms, \
+    const_setup_file
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidAtom, EntropyException
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
@@ -843,10 +844,12 @@ class PortagePlugin(SpmPlugin):
         if locked:
             dblnk.unlockdb()
         # now do atomic move
+        const_setup_file(tmp_file, etpConst['entropygid'], 0o644)
         os.rename(tmp_file, file_save_path)
         generated_package_files.append(file_save_path)
 
         if debug_tar is not None:
+            const_setup_file(debug_tmp_file, etpConst['entropygid'], 0o644)
             os.rename(debug_tmp_file, debug_file_save_path)
             generated_package_files.append(debug_file_save_path)
 
