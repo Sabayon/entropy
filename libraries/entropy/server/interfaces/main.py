@@ -2599,78 +2599,79 @@ class Server(Client):
             if orig_fd is not None:
                 os.close(orig_fd)
 
-        for idpackage, package_path in injection_data:
+        try:
+            for idpackage, package_path in injection_data:
 
-            tmp_repo_file = None
-            tmp_fd = None
-            try:
-                tmp_fd, tmp_repo_file = tempfile.mkstemp(
-                    prefix="entropy.server._inject_for")
-                with os.fdopen(tmp_fd, "wb") as tmp_f:
-                    with open(tmp_repo_orig_path, "rb") as empty_f:
-                        shutil.copyfileobj(empty_f, tmp_f)
+                tmp_repo_file = None
+                tmp_fd = None
+                try:
+                    tmp_fd, tmp_repo_file = tempfile.mkstemp(
+                        prefix="entropy.server._inject_for")
+                    with os.fdopen(tmp_fd, "wb") as tmp_f:
+                        with open(tmp_repo_orig_path, "rb") as empty_f:
+                            shutil.copyfileobj(empty_f, tmp_f)
 
+                    self.output(
+                        "[%s|%s] %s: %s" % (
+                            darkgreen(repository_id),
+                            brown(str(idpackage)),
+                            blue(_("injecting entropy metadata")),
+                            darkgreen(os.path.basename(package_path)),
+                        ),
+                        importance = 1,
+                        level = "info",
+                        header = blue(" @@ "),
+                        back = True
+                    )
+                    data = dbconn.getPackageData(idpackage)
+                    self._inject_entropy_database_into_package(
+                        package_path, data,
+                        treeupdates_actions = treeupdates_actions,
+                        initialized_repository_path = tmp_repo_file)
+                finally:
+                    if tmp_repo_file is not None:
+                        os.remove(tmp_repo_file)
+                    if tmp_fd is not None:
+                        try:
+                            os.close(tmp_fd)
+                        except OSError as err:
+                            if err.errno != errno.EBADF:
+                                raise
+
+                # GPG-sign package if GPG signature is set
+                gpg_sign = None
+                if repo_sec is not None:
+                    gpg_sign = self._get_gpg_signature(repo_sec, repository_id,
+                        package_path)
+
+                digest = entropy.tools.md5sum(package_path)
+                # update digest
+                dbconn.setDigest(idpackage, digest)
+                # update signatures
+                signatures = data['signatures'].copy()
+                for hash_key in sorted(signatures):
+                    if hash_key == "gpg": # gpg already created
+                        continue
+                    hash_func = getattr(entropy.tools, hash_key)
+                    signatures[hash_key] = hash_func(package_path)
+                dbconn.setSignatures(idpackage, signatures['sha1'],
+                    signatures['sha256'], signatures['sha512'],
+                    gpg_sign)
+                dbconn.commit()
+                const_setup_file(package_path, etpConst['entropygid'], 0o664)
                 self.output(
                     "[%s|%s] %s: %s" % (
                         darkgreen(repository_id),
                         brown(str(idpackage)),
-                        blue(_("injecting entropy metadata")),
+                        blue(_("injection complete")),
                         darkgreen(os.path.basename(package_path)),
                     ),
                     importance = 1,
                     level = "info",
-                    header = blue(" @@ "),
-                    back = True
+                    header = red(" @@ ")
                 )
-                data = dbconn.getPackageData(idpackage)
-                self._inject_entropy_database_into_package(
-                    package_path, data,
-                    treeupdates_actions = treeupdates_actions,
-                    initialized_repository_path = tmp_repo_file)
-            finally:
-                if tmp_repo_file is not None:
-                    os.remove(tmp_repo_file)
-                if tmp_fd is not None:
-                    try:
-                        os.close(tmp_fd)
-                    except OSError as err:
-                        if err.errno != errno.EBADF:
-                            raise
-
-            # GPG-sign package if GPG signature is set
-            gpg_sign = None
-            if repo_sec is not None:
-                gpg_sign = self._get_gpg_signature(repo_sec, repository_id,
-                    package_path)
-
-            digest = entropy.tools.md5sum(package_path)
-            # update digest
-            dbconn.setDigest(idpackage, digest)
-            # update signatures
-            signatures = data['signatures'].copy()
-            for hash_key in sorted(signatures):
-                if hash_key == "gpg": # gpg already created
-                    continue
-                hash_func = getattr(entropy.tools, hash_key)
-                signatures[hash_key] = hash_func(package_path)
-            dbconn.setSignatures(idpackage, signatures['sha1'],
-                signatures['sha256'], signatures['sha512'],
-                gpg_sign)
-            dbconn.commit()
-            const_setup_file(package_path, etpConst['entropygid'], 0o664)
-            self.output(
-                "[%s|%s] %s: %s" % (
-                    darkgreen(repository_id),
-                    brown(str(idpackage)),
-                    blue(_("injection complete")),
-                    darkgreen(os.path.basename(package_path)),
-                ),
-                importance = 1,
-                level = "info",
-                header = red(" @@ ")
-            )
-
-        os.remove(tmp_repo_orig_path)
+        finally:
+            os.remove(tmp_repo_orig_path)
 
     def remove_packages(self, repository_id, package_ids):
         """
