@@ -171,6 +171,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         idpackage = dbconn.addPackage(data)
         db_data = dbconn.getPackageData(idpackage)
         del db_data['original_repository']
+        del db_data['extra_download']
         self.assertEqual(data, db_data)
         cs_data = dbconn.retrieveContentSafety(idpackage)
         for path, cs_info in cs_data.items():
@@ -186,6 +187,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         idpackage = dbconn.addPackage(data)
         db_data = dbconn.getPackageData(idpackage)
         del db_data['original_repository']
+        del db_data['extra_download']
         self.assertEqual(data, db_data)
         self.Client.remove_repository(self.mem_repoid)
         self.assertNotEqual(

@@ -2411,6 +2411,21 @@ class Server(Client):
                 (from_file + etpConst['packagesexpirationfileext'],
                     to_file + etpConst['packagesexpirationfileext'],)
             ]
+            extra_downloads = dbconn.retrieveExtraDownload(idpackage)
+            for extra_download in extra_downloads:
+                # just need the first entry, "download"
+                extra_rel = extra_download['download']
+
+                from_extra = self.complete_local_package_path(extra_rel,
+                    repo)
+                if not os.path.isfile(from_extra):
+                    from_extra = self.complete_local_upload_package_path(
+                        extra_rel, repo)
+
+                to_extra = self.complete_local_upload_package_path(
+                    extra_rel, to_repository_id)
+
+                copy_data.append((from_extra, to_extra))
 
             for from_item, to_item in copy_data:
                 self.output(
@@ -2475,6 +2490,8 @@ class Server(Client):
             if repo_sec is not None:
                 data['signatures']['gpg'] = self._get_gpg_signature(repo_sec,
                     to_repository_id, to_file)
+
+                # FIXME: re-gpg sign every element in extra_download
 
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
@@ -4503,7 +4520,7 @@ class Server(Client):
                 return False
         return True
 
-    def _package_injector(self, repository_id, package_file, inject = False):
+    def _package_injector(self, repository_id, package_files, inject = False):
 
         srv_set = self._settings[Server.SYSTEM_SETTINGS_PLG_ID]['server']
 
@@ -4520,6 +4537,7 @@ class Server(Client):
 
         dbconn = self.open_server_repository(repository_id, read_only = False,
             no_upload = True)
+        package_file = package_files[0]
         self.output(
             "[%s] %s: %s" % (
                     darkgreen(repository_id),
@@ -4534,8 +4552,61 @@ class Server(Client):
         mydata = self.Spm().extract_package_metadata(package_file,
             license_callback = _package_injector_check_license,
             restricted_callback = _package_injector_check_restricted)
+
+        try:
+            repo_sec = RepositorySecurity()
+        except RepositorySecurity.GPGError as err:
+            # GPG not available
+            repo_sec = None
+
+        def _generate_extra_download(path, down_type):
+            extra_url = entropy.tools.create_package_dirpath(mydata['branch'],
+                nonfree = False, restricted = False) + "/" + \
+                    os.path.basename(path)
+            md5 = entropy.tools.md5sum(path)
+            sha1 = entropy.tools.sha1(path)
+            sha256 = entropy.tools.sha256(path)
+            sha512 = entropy.tools.sha512(path)
+            gpg = None
+            if repo_sec is not None:
+                gpg = self._get_gpg_signature(repo_sec, repository_id, path)
+            edw = {
+                'download': extra_url,
+                'type': down_type,
+                'md5': md5,
+                'sha1': sha1,
+                'sha256': sha256,
+                'sha512': sha512,
+                'gpg': gpg,
+            }
+            return edw
+
+        # ~~~
+        # Support for separate debug package files
+        extra_files = package_files[1:]
+        debuginfo_files = []
+        for extra_filepath in extra_files:
+            if extra_filepath.endswith(etpConst['packagesdebugext']):
+                debuginfo_files.append(extra_filepath)
+        for debuginfo_filepath in debuginfo_files:
+            extra_files.remove(debuginfo_filepath)
+
+        extra_download = []
+        for debuginfo_filepath in debuginfo_files:
+            extra_download.append(
+                _generate_extra_download(debuginfo_filepath, "debug"))
+
+        for extra_filepath in extra_files:
+            extra_download.append(
+                _generate_extra_download(extra_filepath, "data"))
+
         self._pump_extracted_package_metadata(mydata, repository_id,
-            {'injected': inject, 'original_repository': repository_id})
+            {
+                'injected': inject,
+                'original_repository': repository_id,
+                'extra_download': extra_download,
+            }
+        )
         idpackage = dbconn.handlePackage(mydata)
         revision = dbconn.retrieveRevision(idpackage)
         # make sure that info have been written to disk
@@ -4636,15 +4707,38 @@ class Server(Client):
         destination_dir = os.path.dirname(destination_path)
         self._ensure_dir_path(destination_dir)
 
-        try:
-            os.rename(package_file, destination_path)
-        except OSError:
-            shutil.move(package_file, destination_path)
+        # since destination_path determines the final path name
+        # make sure it corresponds to the one in package_files
+        # but copy the object first (shallow)
+        move_files = package_files[:]
+        package_file = move_files[0]
+        # rename to final name first
+        final_path = os.path.join(os.path.dirname(package_file),
+            os.path.basename(destination_path))
+        if package_file != final_path:
+            os.rename(package_file, final_path)
+            move_files[0] = final_path
+
+        # run in reverse order, this way, the base package file will
+        # be moved at the end, resulting in improved reliability.
+        destination_paths = []
+        for package_file in reversed(move_files):
+            final_path = os.path.join(destination_dir,
+                os.path.basename(package_file))
+            destination_paths.append(final_path)
+            try:
+                os.rename(package_file, final_path)
+            except OSError as err:
+                if err.errno != errno.EXDEV:
+                    raise
+                shutil.move(package_file, final_path)
 
         # make sure that info have been written to disk, again
         dbconn.commit()
 
-        return idpackage, destination_path
+        # reverse it again, since we wrote it reversed already
+        destination_paths.reverse()
+        return idpackage, destination_paths
 
     # this function changes the final repository package filename
     def _setup_repository_package_filename(self, dbconn, idpackage):
@@ -5150,7 +5244,11 @@ class Server(Client):
 
         @param repository_id: repository identifier
         @type repository_id: string
-        @param packages_data: list of tuples composed by (path, bool)
+        @param packages_data: list of tuples composed by ([path, path1], bool)
+            The first path object represents the main package file.
+            While the others represent further package files.
+            If one ends with eptConst['packagesdebugext'], it will be considered
+            as debuginfo package file.
         @type packages_data: list
         @return: list (set) of package identifiers added
         @rtype: set
@@ -5160,28 +5258,52 @@ class Server(Client):
         idpackages_added = set()
         to_be_injected = set()
 
-        for package_filepath, inject in packages_data:
+        for package_filepaths, inject in packages_data:
 
             mycount += 1
-            self.output(
-                "[%s] %s: %s" % (
-                    darkgreen(repository_id),
-                    blue(_("adding package")),
-                    darkgreen(os.path.basename(package_filepath)),
-                ),
-                importance = 1,
-                level = "info",
-                header = blue(" @@ "),
+            for package_filepath in package_filepaths:
+                header = blue(" @@ ")
                 count = (mycount, maxcount,)
-            )
+                if package_filepaths[0] != package_filepath:
+                    self.output(
+                        "%s" % (
+                            brown(os.path.basename(package_filepath)),
+                        ),
+                        importance = 1,
+                        level = "info",
+                        header = teal("     # ")
+                    )
+                else:
+                    self.output(
+                        "[%s] %s: %s" % (
+                            darkgreen(repository_id),
+                            blue(_("adding package")),
+                            darkgreen(os.path.basename(package_filepath)),
+                        ),
+                        importance = 1,
+                        level = "info",
+                        header = blue(" @@ "),
+                        count = (mycount, maxcount,)
+                    )
+
+            if inject and len(package_filepaths) == 1:
+                # just make sure user is aware of the fact that no separate
+                # debug packages will be made.
+                self.output(
+                    "%s" % (
+                        brown(_("injected package, no separate debug package")),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = teal("     !! ")
+                )
 
             try:
                 # add to database
-                idpackage, destination_path = self._package_injector(
-                    repository_id, package_filepath,
-                    inject = inject)
+                idpackage, destination_paths = self._package_injector(
+                    repository_id, package_filepaths, inject = inject)
                 idpackages_added.add(idpackage)
-                to_be_injected.add((idpackage, destination_path))
+                to_be_injected.add((idpackage, destination_paths[0]))
             except Exception as err:
                 entropy.tools.print_traceback()
                 self.output(

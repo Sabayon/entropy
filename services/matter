@@ -1050,7 +1050,7 @@ class PackageBuilder(object):
         for atom in spm_packages:
             print_info(atom)
             try:
-                package_path = spm.generate_package(atom, store_dir)
+                pkg_list = spm.generate_package(atom, store_dir)
             except OSError:
                 entropy.tools.print_traceback()
                 print_error("problem during package generation, aborting")
@@ -1059,9 +1059,9 @@ class PackageBuilder(object):
                 entropy.tools.print_traceback()
                 print_error("problem during package generation (2), aborting")
                 return 1
-            package_paths.append(package_path)
+            package_paths.append(pkg_list)
 
-        etp_pkg_files = [(x, False) for x in package_paths]
+        etp_pkg_files = [(pkg_list, False) for pkg_list in package_paths]
         # NOTE: any missing runtime dependency will be added
         # (beside those blacklisted), since this execution is not interactive
         package_ids = entropy_server.add_packages_to_repository(

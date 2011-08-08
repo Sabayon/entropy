@@ -350,7 +350,7 @@ class PortagePlugin(SpmPlugin):
         'global_make_profile': "/etc/make.profile",
     }
 
-    PLUGIN_API_VERSION = 6
+    PLUGIN_API_VERSION = 7
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -445,6 +445,13 @@ class PortagePlugin(SpmPlugin):
         into macro categories called "groups").
         """
         return PortagePackageGroups()
+
+    @staticmethod
+    def binary_packages_extensions():
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        return ["tbz2"]
 
     def package_metadata_keys(self):
         """
@@ -746,15 +753,15 @@ class PortagePlugin(SpmPlugin):
             return matches[-1]
         return ''
 
-    def generate_package(self, package, file_save_path):
+    def generate_package(self, package, file_save_dir, builtin_debug = False):
         """
         Reimplemented from SpmPlugin class.
         """
         pkgcat, pkgname = package.split("/", 1)
-        if not os.path.isdir(file_save_path):
-            os.makedirs(file_save_path)
-        file_save_path += os.path.sep + pkgcat + ":" + \
-            pkgname + etpConst['packagesext']
+        file_save_name = file_save_dir + os.path.sep + pkgcat + ":" + \
+            pkgname
+        file_save_path = file_save_name + etpConst['packagesext']
+
         dbdir = os.path.join(self._get_vdb_path(), pkgcat, pkgname)
 
         trees = self._portage.db["/"]
@@ -766,14 +773,39 @@ class PortagePlugin(SpmPlugin):
             dblnk.lockdb()
             locked = True
 
+        generated_package_files = []
         # store package file in temporary directory, then move
         # atomicity ftw
-        tmp_fd, tmp_file = tempfile.mkstemp(dir = etpConst['entropyunpackdir'])
+        tmp_fd, tmp_file = tempfile.mkstemp(dir = file_save_dir,
+            prefix = "entropy.spm.Portage.generate_package._tar")
+        os.close(tmp_fd)
         # cannot use fdopen with tarfile
         tar = tarfile.open(tmp_file, mode = "w:bz2")
+        debug_tar = None
+        debug_tmp_file = None
+        debug_file_save_path = None
+        if not builtin_debug:
+            # since we cannot add entropy revision yet, we at least use
+            # the timestamp (md5 hashed) as part of the filename
+            cur_t = time.time()
+            m = hashlib.md5()
+            m.update(repr(cur_t))
+            debug_file_save_path = file_save_path + "." + m.hexdigest() + \
+                etpConst['packagesdebugext']
+            debug_tmp_fd, debug_tmp_file = tempfile.mkstemp(
+                dir = file_save_dir,
+                prefix = "entropy.spm.Portage.generate_package._debug_tar")
+            os.close(debug_tmp_fd)
+            debug_tar = tarfile.open(debug_tmp_file, mode = "w:bz2")
 
         contents = dblnk.getcontents()
         paths = sorted(contents)
+
+        def _is_debug_path(obj):
+            for debug_path in etpConst['splitdebug_dirs']:
+                if obj.startswith(debug_path):
+                    return True
+            return False
 
         for path in paths:
             try:
@@ -789,35 +821,46 @@ class PortagePlugin(SpmPlugin):
                 lpath = os.path.realpath(lpath)
             tarinfo = tar.gettarinfo(lpath, arcname)
 
+            tar_obj = None
+            if debug_tar is not None:
+                if _is_debug_path(path):
+                    tar_obj = debug_tar
+            if tar_obj is None:
+                tar_obj = tar
+
             if stat.S_ISREG(exist.st_mode):
                 with open(path, "rb") as f:
-                    tar.addfile(tarinfo, f)
+                    tar_obj.addfile(tarinfo, f)
             else:
-                tar.addfile(tarinfo)
+                tar_obj.addfile(tarinfo)
 
         tar.close()
+        if debug_tar is not None:
+            debug_tar.close()
         # appending xpak informations
         tbz2 = xpak.tbz2(tmp_file)
         tbz2.recompose(dbdir)
         if locked:
             dblnk.unlockdb()
         # now do atomic move
-        try:
-            os.rename(tmp_file, file_save_path)
-        except OSError:
-            # atomicity not possible
-            shutil.move(tmp_file, file_save_path)
+        os.rename(tmp_file, file_save_path)
+        generated_package_files.append(file_save_path)
 
-        if os.path.isfile(file_save_path) and \
-            os.access(file_save_path, os.F_OK | os.R_OK):
-            return file_save_path
+        if debug_tar is not None:
+            os.rename(debug_tmp_file, debug_file_save_path)
+            generated_package_files.append(debug_file_save_path)
 
-        raise SPMError("SPMError: Spm:generate_package %s: %s %s" % (
-                _("error"),
-                file_save_path,
-                _("not found"),
-            )
-        )
+        for package_file in generated_package_files:
+            if not (os.path.isfile(package_file) and \
+                os.access(package_file, os.F_OK | os.R_OK)):
+                raise SPMError("SPMError: Spm:generate_package %s: %s %s" % (
+                        _("error"),
+                        package_file,
+                        _("not found"),
+                    )
+                )
+
+        return generated_package_files
 
     def _add_kernel_dependency_to_pkg(self, pkg_data, pkg_dir_prefix):
 
@@ -2365,14 +2408,9 @@ class PortagePlugin(SpmPlugin):
 
             mydest = entropy_server._get_local_store_directory(repo)
             try:
-                mypath = self.generate_package(myatom, mydest)
+                pkg_list = self.generate_package(myatom, mydest)
             except Exception:
                 entropy.tools.print_traceback()
-                # remove broken bin before raising
-                mypath = os.path.join(mydest,
-                    os.path.basename(myatom) + etpConst['packagesext'])
-                if os.path.isfile(mypath):
-                    os.remove(mypath)
                 mytxt = "%s: %s: %s, %s." % (
                     bold(_("WARNING")),
                     red(_("Cannot complete quickpkg for atom")),
@@ -2386,8 +2424,8 @@ class PortagePlugin(SpmPlugin):
                     header = darkred(" * ")
                 )
                 continue
-            package_paths.add(mypath)
-        packages_data = [(x, False,) for x in package_paths]
+            package_paths.add(pkg_list)
+        packages_data = [(pkg_list, False,) for pkg_list in package_paths]
         idpackages = entropy_server.add_packages_to_repository(repo,
             packages_data, ask = etpUi['interactive'])
 

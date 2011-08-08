@@ -188,6 +188,7 @@ class DepTest(unittest.TestCase):
             idpackage = test_db.addPackage(data)
             data2 = test_db.getPackageData(idpackage)
             del data2['original_repository']
+            del data2['extra_download']
             self.assertEqual(data, data2)
             deps.append(dep)
         deps.sort()
@@ -215,6 +216,7 @@ class DepTest(unittest.TestCase):
             idpackage = test_db.addPackage(data)
             data2 = test_db.getPackageData(idpackage)
             del data2['original_repository']
+            del data2['extra_download']
             self.assertEqual(data, data2)
             deps.append(dep)
         deps.sort()

@@ -1378,6 +1378,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'desktop_mime': [],
             'provided_mime': [],
             'original_repository': self.getInstalledPackageRepository(package_id),
+            'extra_download': self.retrieveExtraDownload(package_id),
         }
 
         @rtype: dict
@@ -1480,6 +1481,7 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
             'desktop_mime': self.retrieveDesktopMime(package_id),
             'provided_mime': self.retrieveProvidedMime(package_id),
             'original_repository': self.getInstalledPackageRepository(package_id),
+            'extra_download': self.retrieveExtraDownload(package_id),
         }
 
         return data
@@ -2248,6 +2250,25 @@ class EntropyRepositoryBase(TextInterface, EntropyRepositoryPluginStore):
         @return: tuple of length 3, sha1, sha256, sha512 package extra
             hashes if available, otherwise the same but with None as values.
         @rtype: tuple
+        """
+        raise NotImplementedError()
+
+    def retrieveExtraDownload(self, package_id, down_type = None):
+        """
+        Retrieve a list of extra package file URLs for package identifier.
+        These URLs usually contain extra files that can be optionally installed
+        by Entropy Client, for example: debug files.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @keyword down_type: retrieve data for a given entry type.
+            Currently supported entry types are: "debug", "data".
+        @type down_type: string
+        @return: list (tuple) of dict containing "download", "type", "md5",
+            "sha1","sha256", "sha512", "gpg" keys. "download" contains the
+            relative URL (like the one returned by retrieveDownloadURL())
+        @rtype: tuple
+        @raise AttributeError: if provided down_type value is invalid
         """
         raise NotImplementedError()
 

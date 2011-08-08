@@ -22,7 +22,7 @@ import entropy.tools
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 6
+    BASE_PLUGIN_API_VERSION = 7
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -102,6 +102,18 @@ class SpmPlugin(Singleton):
 
         @return: configuration files map
         @rtype: dict
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def binary_packages_extensions():
+        """
+        Return a list of file extensions belonging to binary packages.
+        The list cannot be empty. Elements must be provided without the
+        leading dot (for tar.gz, provide "tar.gz" and not ".tar.gz")
+
+        @return: list of supported packages extensions
+        @rtype: list
         """
         raise NotImplementedError()
 
@@ -343,7 +355,7 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def generate_package(self, package, file_save_path):
+    def generate_package(self, package, file_save_path, builtin_debug = False):
         """
         Generate a package tarball file for given package, from running system.
         All the information is recomposed from system.
@@ -353,8 +365,12 @@ class SpmPlugin(Singleton):
         @param file_save_path: exact path (including file name and extension)
             where package file is saved
         @type file_save_path: string
-        @return: package file path
-        @rtype: string
+        @keyword builtin_debug: embed debug files into the generated package
+            file. If False, another package file is generated and appended to
+            the return list.
+        @type builtin_debug: bool
+        @return: list of package file paths, the first is the main one
+        @rtype: list
         @raise entropy.exception.SPMError: if unable to satisfy the request
         """
         raise NotImplementedError()

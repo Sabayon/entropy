@@ -437,6 +437,18 @@ class EntropyRepository(EntropyRepositoryBase):
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
+                CREATE TABLE packagedownloads (
+                    idpackage INTEGER,
+                    download VARCHAR,
+                    type VARCHAR,
+                    md5 VARCHAR,
+                    sha1 VARCHAR,
+                    sha256 VARCHAR,
+                    sha512 VARCHAR,
+                    gpg BLOB,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+
                 CREATE TABLE provided_mime (
                     mimetype VARCHAR,
                     idpackage INTEGER,
@@ -1004,6 +1016,11 @@ class EntropyRepository(EntropyRepositoryBase):
             self._insertSignatures(package_id, sha1, sha256, sha512,
                 gpg = gpg)
 
+        # extra package download URLs
+        if pkg_data.get('extra_download'):
+            extra_download = pkg_data['extra_download']
+            self._insertExtraDownload(package_id, extra_download)
+
         if pkg_data.get('provided_libs'):
             self._insertProvidedLibraries(package_id, pkg_data['provided_libs'])
 
@@ -1123,6 +1140,11 @@ class EntropyRepository(EntropyRepositoryBase):
                 DELETE FROM packagedesktopmime WHERE idpackage = %d;
                 DELETE FROM provided_mime WHERE idpackage = %d;
             """ % r_tup)
+            # Added on Aug. 2011
+            if self._doesTableExist("packagedownloads"):
+                self._cursor().execute("""
+                DELETE FROM packagedownloads WHERE idpackage = (?)""",
+                (package_id,))
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -1746,6 +1768,32 @@ class EntropyRepository(EntropyRepositoryBase):
             self._cursor().execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?)
             """, (package_id, sha1, sha256, sha512))
+
+    def _insertExtraDownload(self, package_id, package_downloads_data):
+        """
+        Insert extra package files download objects to repository.
+
+        @param package_id: package indentifier
+        @type package_id: int
+        @param package_downloads_data: list of dict composed by
+            (download, type, md5, sha1, sha256, sha512, gpg) as keys
+        @type package_downloads_data: list
+        """
+        def _do_insert():
+            self._cursor().executemany("""
+            INSERT INTO packagedownloads VALUES (?,?,?,?,?,?,?,?)
+            """, [(package_id, edw['download'], edw['type'], edw['md5'], \
+                    edw['sha1'], edw['sha256'], edw['sha512'], edw['gpg']) \
+                        for edw in package_downloads_data])
+
+        try:
+            # be optimistic and delay if condition
+            _do_insert()
+        except OperationalError:
+            if self._doesTableExist("packagedownloads"):
+                raise
+            self._createPackageDownloadsTable()
+            _do_insert()
 
     def _insertDesktopMime(self, package_id, metadata):
         """
@@ -2704,6 +2752,39 @@ class EntropyRepository(EntropyRepositoryBase):
         if data:
             return data
         return None, None, None, None
+
+    def retrieveExtraDownload(self, package_id, down_type = None):
+        """
+        Reimplemented from EntropyRepositoryBase.
+        """
+        down_type_str = ""
+        params = [package_id]
+        if down_type is not None:
+            down_type_str = " AND down_type = (?)"
+            params.append(down_type)
+
+        try:
+            cur = self._cursor().execute("""
+            SELECT download, type, md5, sha1, sha256, sha512, gpg
+            FROM packagedownloads WHERE idpackage = (?)
+            """ + down_type_str, params)
+        except OperationalError:
+            if self._doesTableExist("packagedownloads"):
+                raise
+            return tuple()
+
+        result = []
+        for download, d_type, md5, sha1, sha256, sha512, gpg in cur.fetchall():
+            result.append({
+                "download": download,
+                "type": d_type,
+                "md5": md5,
+                "sha1": sha1,
+                "sha256": sha256,
+                "sha512": sha512,
+                "gpg": gpg,
+            })
+        return tuple(result)
 
     def retrieveName(self, package_id):
         """
@@ -4799,6 +4880,10 @@ class EntropyRepository(EntropyRepositoryBase):
         if not self._doesTableExist('provided_libs'):
             self._createProvidedLibs()
 
+        # added on Aug. 2011
+        if not self._doesTableExist("packagedownloads"):
+            self._createPackageDownloadsTable()
+
         # added on Sept. 2010, keep forever? ;-)
         self._migrateBaseinfoExtrainfo()
 
@@ -5448,6 +5533,7 @@ class EntropyRepository(EntropyRepositoryBase):
         self._createProvidedLibsIndex()
         self._createDesktopMimeIndex()
         self._createProvidedMimeIndex()
+        self._createPackageDownloadsIndex()
         if not self._isBaseinfoExtrainfo2010():
             self._createLicensesIndex()
             self._createCategoriesIndex()
@@ -5515,6 +5601,17 @@ class EntropyRepository(EntropyRepositoryBase):
                 ON automergefiles ( idpackage );
                 CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
                 ON automergefiles ( configfile, md5 );
+            """)
+        except OperationalError:
+            pass
+
+    def _createPackageDownloadsIndex(self):
+        try:
+            self._cursor().executescript("""
+                CREATE INDEX IF NOT EXISTS packagedownloads_idpackage
+                ON packagedownloads ( idpackage );
+                CREATE INDEX IF NOT EXISTS packagedownloads_idpackage_type
+                ON packagedownloads ( idpackage, type );
             """)
         except OperationalError:
             pass
@@ -5974,6 +6071,22 @@ class EntropyRepository(EntropyRepositoryBase):
             )
             do_create()
 
+    def _createPackageDownloadsTable(self):
+        self._cursor().executescript("""
+            CREATE TABLE packagedownloads (
+                idpackage INTEGER,
+                download VARCHAR,
+                type VARCHAR,
+                md5 VARCHAR,
+                sha1 VARCHAR,
+                sha256 VARCHAR,
+                sha512 VARCHAR,
+                gpg BLOB,
+                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+            );
+        """)
+        self._clearLiveCache("_doesTableExist")
+        self._clearLiveCache("_doesColumnInTableExist")
 
     def _generateProvidedLibsMetadata(self):
 

@@ -86,6 +86,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         data.pop('revision')
         data2.pop('revision')
         del data2['original_repository']
+        del data2['extra_download']
         self.assertEqual(data, data2)
         self.assertEqual(idpackage, 1)
         self.assertEqual(idpackage2, 2)
@@ -105,6 +106,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         rev2 = test_db.retrieveRevision(idpackage2)
         data2 = test_db.getPackageData(idpackage2)
         del data2['original_repository']
+        del data2['extra_download']
         self.assertEqual(data, data2)
         self.assertEqual(idpackage, 1)
         self.assertEqual(idpackage2, 2)
@@ -116,7 +118,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         tmp_test_pkg = test_pkg+".tmp"
         shutil.copy2(test_pkg, tmp_test_pkg)
         added = self.Server.add_packages_to_repository(
-            self.Server.repository(), [(tmp_test_pkg, False,)],
+            self.Server.repository(), [([tmp_test_pkg], False,)],
             ask = False)
         self.assertEqual(set([1]), added)
         def do_stat():
@@ -131,7 +133,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         tmp_test_pkg = test_pkg+".tmp"
         shutil.copy2(test_pkg, tmp_test_pkg)
         added = self.Server.add_packages_to_repository(
-            self.Server.repository(), [(tmp_test_pkg, False,)],
+            self.Server.repository(), [([tmp_test_pkg], False,)],
             ask = False)
         self.assertEqual(set([1]), added)
         def do_stat():

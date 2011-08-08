@@ -42,24 +42,37 @@ def inject(options):
             print_error(darkgreen(_("Another Entropy is currently running.")))
             return 1
 
+        extensions = server.Spm_class().binary_packages_extensions()
+
         etp_pkg_files = []
         for opt in options:
             opt = os.path.realpath(opt)
             if not (os.path.isfile(opt) and os.access(opt, os.R_OK)):
                 print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
                 return 1
-            etp_pkg_files.append(opt)
+            found = False
+            for ext in extensions:
+                if opt.endswith("."+ext):
+                    etp_pkg_files.append(opt)
+                    found = True
+                    break
+            if not found:
+                print_error(darkred(" * ") + \
+                    bold(opt) + red(" is invalid package file."))
+                return 1
 
         if not etp_pkg_files:
             print_error(red(_("no package specified.")))
             return 2
 
-        etp_pkg_files = [(x, True,) for x in etp_pkg_files]
+        # in this case, no split package files are provided
+        repository_id = server.repository()
+        etp_pkg_files = [([x], True,) for x in etp_pkg_files]
         idpackages = server.add_packages_to_repository(
-            server.repository(), etp_pkg_files)
+            repository_id, etp_pkg_files)
         if idpackages:
             # checking dependencies and print issues
-            server.extended_dependencies_test([server.repository()])
+            server.extended_dependencies_test([repository_id])
         server.close_repositories()
 
     finally:
@@ -850,6 +863,7 @@ def _update(entropy_server, options):
     key_sorter = lambda x: \
         entropy_server.open_repository(x[1]).retrieveAtom(x[0])
     repository_id = entropy_server.repository()
+    generated_packages = []
 
     if not r_request_seek_store:
 
@@ -1023,7 +1037,7 @@ def _update(entropy_server, options):
                 rc = entropy_server.ask_question(">>   %s (%s %s)" % (
                         _("Would you like to package them now ?"),
                         _("inside"),
-                        entropy_server.repository(),
+                        repository_id,
                     )
                 )
                 if rc == _("No"):
@@ -1035,40 +1049,33 @@ def _update(entropy_server, options):
 
         # package them
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
-        store_dir = entropy_server._get_local_store_directory(
-            entropy_server.repository())
+        store_dir = entropy_server._get_local_store_directory(repository_id)
         for x in sorted(to_be_added):
             print_info(brown("    # ")+teal(x[0]))
             try:
-                entropy_server.Spm().generate_package(x[0], store_dir)
+                pkg_list = entropy_server.Spm().generate_package(x[0],
+                    store_dir)
+                generated_packages.append(pkg_list)
             except OSError:
                 entropy.tools.print_traceback()
                 print_info(brown("    !!! ")+bold("%s..." % (
                     _("Ignoring broken Spm entry, please recompile it"),) ))
 
-    store_dir = entropy_server._get_local_store_directory(
-        entropy_server.repository())
-    etp_pkg_files = []
-    if os.path.isdir(store_dir):
-        etp_pkg_files = os.listdir(store_dir)
-    if not etp_pkg_files:
+    if not generated_packages:
         print_info(brown(" * ")+red(_("Nothing to do, check later.")))
         # then exit gracefully
         return 0
 
-    local_store_dir = entropy_server._get_local_store_directory(
-        entropy_server.repository())
-    etp_pkg_files = [(os.path.join(local_store_dir, x), False) \
-        for x in etp_pkg_files]
+    etp_pkg_files = [(pkg_list, False) for pkg_list in generated_packages]
     idpackages = entropy_server.add_packages_to_repository(
-        entropy_server.repository(), etp_pkg_files)
+        repository_id, etp_pkg_files)
 
     if idpackages:
         # checking dependencies and print issues
-        entropy_server.extended_dependencies_test(
-            [entropy_server.repository()])
+        entropy_server.extended_dependencies_test([repository_id])
     entropy_server.close_repositories()
-    print_info(green(" * ")+red("%s: " % (_("Statistics"),) )+blue("%s: " % (_("Entries handled"),) )+bold(str(len(idpackages))))
+    print_info(green(" * ") + red("%s: " % (_("Statistics"),) ) + \
+        blue("%s: " % (_("Entries handled"),) ) + bold(str(len(idpackages))))
     return 0
 
 def status():

@@ -1176,10 +1176,23 @@ class Server(object):
         local_packages, remote_packages, remote_packages_data):
 
         upload_queue = set()
+        extra_upload_queue = set()
         download_queue = set()
+        extra_download_queue = set()
         removal_queue = set()
         fine_queue = set()
         branch = self._settings['repositories']['branch']
+
+        def _account_extra_packages(local_package, queue):
+            repo = self._entropy.open_repository(repository_id)
+            package_id = repo.getPackageIdFromDownload(local_package)
+            # NOTE: package_id can be == -1 because there might have been
+            # some packages in the queues that have been bumped more than
+            # once, thus, not available in repository.
+            if package_id != -1:
+                extra_downloads = repo.retrieveExtraDownload(package_id)
+                for extra_download in extra_downloads:
+                    queue.add(extra_download['download'])
 
         for local_package in upload_packages:
 
@@ -1199,6 +1212,7 @@ class Server(object):
                 if local_size != remote_size:
                     # size does not match, adding to the upload queue
                     upload_queue.add(local_package)
+                    _account_extra_packages(local_package, extra_upload_queue)
                 else:
                     # just move from upload to packages
                     fine_queue.add(local_package)
@@ -1206,6 +1220,7 @@ class Server(object):
             else:
                 # always force upload of packages in uploaddir
                 upload_queue.add(local_package)
+                _account_extra_packages(local_package, extra_upload_queue)
 
         # if a package is in the packages directory but not online,
         # we have to upload it we have local_packages and remote_packages
@@ -1225,10 +1240,13 @@ class Server(object):
                     # size does not match, adding to the upload queue
                     if local_package not in fine_queue:
                         upload_queue.add(local_package)
+                        _account_extra_packages(local_package,
+                            extra_upload_queue)
             else:
                 # this means that the local package does not exist
                 # so, we need to download it
                 upload_queue.add(local_package)
+                _account_extra_packages(local_package, extra_upload_queue)
 
         # Fill download_queue and removal_queue
         for remote_package in remote_packages:
@@ -1254,6 +1272,8 @@ class Server(object):
                         removal_queue.add(remote_package)
                         # then add to the download queue
                         download_queue.add(remote_package)
+                        _account_extra_packages(remote_package,
+                            extra_download_queue)
             else:
                 # this means that the local package does not exist
                 # so, we need to download it
@@ -1261,6 +1281,8 @@ class Server(object):
                 if not remote_package.endswith(
                     EntropyUriHandler.TMP_TXC_FILE_EXT):
                     download_queue.add(remote_package)
+                    _account_extra_packages(remote_package,
+                        extra_download_queue)
 
         # Collect packages that don't exist anymore in the database
         # so we can filter them out from the download queue
@@ -1289,6 +1311,8 @@ class Server(object):
         # be downloaded
         download_queue = set([x for x in download_queue if x not in \
             upload_queue])
+        upload_queue |= extra_upload_queue
+        download_queue |= extra_download_queue
 
         return upload_queue, download_queue, removal_queue, fine_queue
 
@@ -1772,8 +1796,9 @@ class Server(object):
             try:
 
                 # QA checks
-                qa_package_files = [x[0] for x in upload if x[0] \
-                    not in upload_queue_qa_checked]
+                pkg_ext = etpConst['packagesext']
+                qa_package_files = [x[0] for x in upload if (x[0] \
+                    not in upload_queue_qa_checked) and x[0].endswith(pkg_ext)]
                 upload_queue_qa_checked |= set(qa_package_files)
 
                 self._run_package_files_qa_checks(repository_id,
@@ -2114,7 +2139,11 @@ class Server(object):
 
         # split queue by remote directories to work on
         removal_map = {}
+        dbconn = self._entropy.open_server_repository(repository_id,
+            just_reading = True)
+        extra_removal = []
         for package_rel in removal:
+
             rel_path = self._entropy.complete_remote_package_relative_path(
                 package_rel, repository_id)
             rel_dir = os.path.dirname(rel_path)
@@ -2122,6 +2151,23 @@ class Server(object):
             base_pkg = os.path.basename(package_rel)
             obj.append(base_pkg)
             obj.append(base_pkg+etpConst['etpgpgextension'])
+            package_id = dbconn.getPackageIdFromDownload(package_rel)
+            if package_id == -1:
+                # wtf?
+                continue
+
+            extra_downloads = dbconn.retrieveExtraDownload(package_id)
+            for extra_download in extra_downloads:
+                extra_rel = extra_download['download']
+                extra_removal.append(extra_rel)
+                rel_path = self._entropy.complete_remote_package_relative_path(
+                    extra_rel, repository_id)
+                rel_dir = os.path.dirname(rel_path)
+                obj = removal_map.setdefault(rel_dir, [])
+                base_pkg = os.path.basename(extra_rel)
+                obj.append(base_pkg)
+
+        removal.extend(extra_removal)
 
         for uri in self._entropy.remote_packages_mirrors(repository_id):
 
@@ -2201,25 +2247,27 @@ class Server(object):
             package_path_expired = package_path + \
                 etpConst['packagesexpirationfileext']
 
+            # .expired for all the paths in removal doesn't sound
+            # that ok but since we handle ENOENT, that's fine
             my_rm_list = (package_path, package_path_expired)
             for myfile in my_rm_list:
-                if os.path.isfile(myfile):
-                    self._entropy.output(
-                        "[%s] %s: %s" % (
-                            brown(branch),
-                            blue(_("removing")),
-                            darkgreen(myfile),
-                        ),
-                        importance = 1,
-                        level = "info",
-                        header = brown(" @@ ")
-                    )
-                    try:
-                        os.remove(myfile)
-                    except OSError as err:
-                        # handle race conditions
-                        if err.errno != errno.ENOENT:
-                            raise
+                try:
+                    os.remove(myfile)
+                except OSError as err:
+                    # handle race conditions
+                    if err.errno != errno.ENOENT:
+                        raise
+                    continue
+                self._entropy.output(
+                    "[%s] %s: %s" % (
+                        brown(branch),
+                        blue(_("removed")),
+                        darkgreen(myfile),
+                    ),
+                    importance = 1,
+                    level = "info",
+                    header = brown(" @@ ")
+                )
 
         return done
 
