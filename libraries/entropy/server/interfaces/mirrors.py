@@ -1925,7 +1925,9 @@ class Server(object):
                     os.path.basename(pkg_path))
                 try:
                     os.rename(pkg_path, dest_pkg_path)
-                except OSError: # on different hard drives?
+                except OSError as err: # on different hard drives?
+                    if err.errno != errno.EXDEV:
+                        raise
                     shutil.move(pkg_path, dest_pkg_path)
 
             # clear expiration file
