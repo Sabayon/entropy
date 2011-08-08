@@ -2190,36 +2190,36 @@ class Server(object):
                 header = blue(" @@ ")
             )
 
-            ##
-            # remove locally
-            ##
+        ##
+        # remove locally
+        ##
 
-            for package_rel in removal:
+        for package_rel in removal:
 
-                package_path = self._entropy.complete_local_package_path(
-                    package_rel, repository_id)
-                package_path_expired = package_path + \
-                    etpConst['packagesexpirationfileext']
+            package_path = self._entropy.complete_local_package_path(
+                package_rel, repository_id)
+            package_path_expired = package_path + \
+                etpConst['packagesexpirationfileext']
 
-                my_rm_list = (package_path, package_path_expired)
-                for myfile in my_rm_list:
-                    if os.path.isfile(myfile):
-                        self._entropy.output(
-                            "[%s] %s: %s" % (
-                                brown(branch),
-                                blue(_("removing")),
-                                darkgreen(myfile),
-                            ),
-                            importance = 1,
-                            level = "info",
-                            header = brown(" @@ ")
-                        )
-                        try:
-                            os.remove(myfile)
-                        except OSError as err:
-                            # handle race conditions
-                            if err.errno != errno.ENOENT:
-                                raise
+            my_rm_list = (package_path, package_path_expired)
+            for myfile in my_rm_list:
+                if os.path.isfile(myfile):
+                    self._entropy.output(
+                        "[%s] %s: %s" % (
+                            brown(branch),
+                            blue(_("removing")),
+                            darkgreen(myfile),
+                        ),
+                        importance = 1,
+                        level = "info",
+                        header = brown(" @@ ")
+                    )
+                    try:
+                        os.remove(myfile)
+                    except OSError as err:
+                        # handle race conditions
+                        if err.errno != errno.ENOENT:
+                            raise
 
         return done
 
