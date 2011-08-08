@@ -1391,6 +1391,9 @@ def dump_entropy_metadata(entropy_package_file, entropy_metadata_file):
         old_mmap = None
         try:
             f_size = os.lstat(entropy_package_file).st_size
+            if f_size <= 0:
+                # WTF!
+                return False
             # avoid security flaw caused by file size growing race condition
             # we conside the file size static
             if f_size < mmap_size_th:
