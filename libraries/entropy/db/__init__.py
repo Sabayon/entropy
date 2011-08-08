@@ -441,6 +441,7 @@ class EntropyRepository(EntropyRepositoryBase):
                     idpackage INTEGER,
                     download VARCHAR,
                     type VARCHAR,
+                    size INTEGER,
                     md5 VARCHAR,
                     sha1 VARCHAR,
                     sha256 VARCHAR,
@@ -1776,15 +1777,15 @@ class EntropyRepository(EntropyRepositoryBase):
         @param package_id: package indentifier
         @type package_id: int
         @param package_downloads_data: list of dict composed by
-            (download, type, md5, sha1, sha256, sha512, gpg) as keys
+            (download, type, size, md5, sha1, sha256, sha512, gpg) as keys
         @type package_downloads_data: list
         """
         def _do_insert():
             self._cursor().executemany("""
-            INSERT INTO packagedownloads VALUES (?,?,?,?,?,?,?,?)
-            """, [(package_id, edw['download'], edw['type'], edw['md5'], \
-                    edw['sha1'], edw['sha256'], edw['sha512'], edw['gpg']) \
-                        for edw in package_downloads_data])
+            INSERT INTO packagedownloads VALUES (?,?,?,?,?,?,?,?,?)
+            """, [(package_id, edw['download'], edw['type'], edw['size'],
+                    edw['md5'], edw['sha1'], edw['sha256'], edw['sha512'],
+                    edw['gpg']) for edw in package_downloads_data])
 
         try:
             # be optimistic and delay if condition
@@ -2765,7 +2766,7 @@ class EntropyRepository(EntropyRepositoryBase):
 
         try:
             cur = self._cursor().execute("""
-            SELECT download, type, md5, sha1, sha256, sha512, gpg
+            SELECT download, type, size, md5, sha1, sha256, sha512, gpg
             FROM packagedownloads WHERE idpackage = (?)
             """ + down_type_str, params)
         except OperationalError:
@@ -2774,10 +2775,12 @@ class EntropyRepository(EntropyRepositoryBase):
             return tuple()
 
         result = []
-        for download, d_type, md5, sha1, sha256, sha512, gpg in cur.fetchall():
+        for download, d_type, size, md5, sha1, sha256, sha512, gpg in \
+            cur.fetchall():
             result.append({
                 "download": download,
                 "type": d_type,
+                "size": size,
                 "md5": md5,
                 "sha1": sha1,
                 "sha256": sha256,
@@ -4881,6 +4884,7 @@ class EntropyRepository(EntropyRepositoryBase):
             self._createProvidedLibs()
 
         # added on Aug. 2011
+        self._cursor().execute("DROP TABLE packagedownloads")
         if not self._doesTableExist("packagedownloads"):
             self._createPackageDownloadsTable()
 
@@ -6077,6 +6081,7 @@ class EntropyRepository(EntropyRepositoryBase):
                 idpackage INTEGER,
                 download VARCHAR,
                 type VARCHAR,
+                size INTEGER,
                 md5 VARCHAR,
                 sha1 VARCHAR,
                 sha256 VARCHAR,

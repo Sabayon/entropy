@@ -4563,6 +4563,7 @@ class Server(Client):
             extra_url = entropy.tools.create_package_dirpath(mydata['branch'],
                 nonfree = False, restricted = False) + "/" + \
                     os.path.basename(path)
+            size = entropy.tools.get_file_size(path)
             md5 = entropy.tools.md5sum(path)
             sha1 = entropy.tools.sha1(path)
             sha256 = entropy.tools.sha256(path)
@@ -4573,6 +4574,7 @@ class Server(Client):
             edw = {
                 'download': extra_url,
                 'type': down_type,
+                'size': size,
                 'md5': md5,
                 'sha1': sha1,
                 'sha256': sha256,
