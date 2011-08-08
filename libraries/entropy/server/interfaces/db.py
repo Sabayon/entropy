@@ -710,7 +710,7 @@ class ServerPackagesRepositoryUpdater(object):
             # download
             downloader = self._mirrors.TransceiverServerHandler(
                 self._entropy, [uri],
-                [download_data[x] for x in download_data],
+                [download_data[x] for x in sorted(download_data)],
                 download = True, local_basedir = mytmpdir,
                 critical_files = critical,
                 txc_basedir = remote_dir, repo = self._repository_id)
