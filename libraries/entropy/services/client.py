@@ -60,7 +60,8 @@ class WebServiceFactory(object):
         """
         object.__init__(self)
         if not issubclass(web_service_class, WebService):
-            raise InvalidWebServiceFactory("invalid web_service_class")
+            raise WebServiceFactory.InvalidWebServiceFactory(
+                "invalid web_service_class")
         self._entropy = entropy_client
         self._service_class = web_service_class
 
