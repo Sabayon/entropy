@@ -4979,8 +4979,7 @@ class Server(Client):
             ),
             importance = 1,
             level = "info",
-            header = blue(" @@ "),
-            count = (count, maxcount)
+            header = blue(" @@ ")
         )
         qa_success = True
         for package_id, repository_id in package_matches:
