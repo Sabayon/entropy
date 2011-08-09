@@ -1967,6 +1967,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
             pass
 
     tar = None
+    extracted_something = False
     try:
 
         try:
@@ -1997,6 +1998,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
 
 
             tar.extract(tarinfo, encoded_path)
+            extracted_something = True
             deleter_counter -= 1
             if deleter_counter == 0:
                 del tar.members[:]
@@ -2036,7 +2038,7 @@ def uncompress_tarball(filepath, extract_path = None, catch_empty = False):
             del tar.members[:]
             tar.close()
 
-    if os.listdir(extract_path):
+    if extracted_something:
         return 0
     if catch_empty:
         return 0
