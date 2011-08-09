@@ -1,3 +1,203 @@
+commit b27592bc8c0fa1ee8173e043bac45493dd6a635e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 22:17:54 2011 +0200
+
+    Release Entropy 1.0_rc35
+
+commit c586f705cb9ee7ea22b2c2408a17e2faa3a75139
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 22:17:00 2011 +0200
+
+    [todo] update TODO
+
+commit c0ac76d3d47360fcc5a115fa0fd24892220ed5a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 17:03:17 2011 +0200
+
+    [entropy.debug] add GraphDrawer class
+
+commit eca7078313453644a389ed788589543724d7d524
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 17:02:55 2011 +0200
+
+    [entropy.graph] add Graph._graph_debug method
+
+commit 1157454a1abc8a96eac1e53551b42861766d8700
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 14:17:14 2011 +0200
+
+    [po] update translations
+
+commit 69900bd2dcafca8cc26212cc60c6273ae7b37dac
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 13:05:24 2011 +0200
+
+    [entropy.const] const_setup_entropy_pid: deal with EACCES, pid directory might not be writeable
+
+commit 22a25ca4f43a6c1dc3aeedc08b95db3eaaed1266
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 13:02:27 2011 +0200
+
+    [entropy.server] re-generate extra_download GPG data when moving package across repos
+
+commit 4074f8d4a68de6d293e9f599315f4b6140991f94
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 12:41:16 2011 +0200
+
+    [sulfur] implement support for split package files
+
+commit 3f85e2af46f64add4e66c41a8740a1e796a1341d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 12:41:04 2011 +0200
+
+    [equo] implement support for split package files
+
+commit 91d2b4b93c816b0b9535dec6fbec4328a728c2a8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 12:40:38 2011 +0200
+
+    [entropy.client] implement support for split package files
+
+commit ccd2b569fca323ee8f8e875cd3f52b1ffdae51bb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 12:02:08 2011 +0200
+
+    [entropy.db] update schema for packagedownloads, add on-disk size column
+
+commit 5546d77c69973c44dd41c97fc3449a21a86ba064
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 11:55:49 2011 +0200
+
+    [entropy.tools] add get_uncompressed_size function
+
+commit 8f60f3ecd5116084d3a4791d0fdc1e5f1fc1b6e9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 11:33:45 2011 +0200
+
+    [entropy.spm] PortagePlugin.extract_package_metadata: correctly account on-disk size
+    
+    entropy.tools.sum_file_sizes_hardlinks() should always get files only.
+    Otherwise the accounted on-disk size can grow indefinitely.
+
+commit d5d63dba6bbdf774857e9b8d896b6744b9cf307c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 08:54:34 2011 +0200
+
+    [entropy.tools] uncompress_tarball: do not use os.listdir() to prove that tarball has been uncompressed
+
+commit 711c66038e48768a9430faafbc497eae24db3416
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Aug 9 08:54:03 2011 +0200
+
+    [entropy.spm] PortagPlugin.generate_package: improve entropy of debug package file name hash
+
+commit 286b70c530141118df5284fc79eeaf65e7403b5d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 22:18:33 2011 +0200
+
+    [entropy.spm] PortagePlugin.generate_package() chmod 0644 generated files
+
+commit 4e15c9915d544006ef84cc8b63e480c52404ba99
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 22:17:35 2011 +0200
+
+    [entropy.const] change default extension for debug package file
+
+commit 6d5db82f6730f0f31778acd476db17157dcd5c42
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 21:06:13 2011 +0200
+
+    [entropy.db] remove debug code
+
+commit 14fa75edbb06e0ffa95c8459b8c26cabbde65cde
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 21:05:39 2011 +0200
+
+    [entropy.db] change schema of packagedownloads table, add size column
+
+commit 3ae8e6ae93c843750a817c45bcb62dd2c89cdcb4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 18:16:54 2011 +0200
+
+    [entropy.server] make possible to split package file into multiple "extra" package files
+    
+    This introduces a backward-compatible feature (server-side in this commit)
+    that makes possible to associate more than one package file to a single
+    package_id. This opens the door to a wide range of future opportunities
+    but also makes possible to decouple debuginfo files from the rest.
+
+commit ddd289f766a573a85dc89c40c1f1592c5fb1903e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 18:14:41 2011 +0200
+
+    [entropy.tools] dump_entropy_metadata(): check if file is empty before using mmap()
+
+commit 2a186df4e63986b95429d94a00501a7d7764f6d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 14:39:38 2011 +0200
+
+    [entropy.server.db] when downloading the repository, execute the download actions in alphabetical order for atomicity
+
+commit 061328d31b28f7650468d248d2b3909cc7345867
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 14:25:22 2011 +0200
+
+    [entropy.server] beautify metadata QA check output
+
+commit d6aac292342ba18246f70ef27c9a9f422783a951
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 12:18:58 2011 +0200
+
+    [entropy.services] fix undefined reference
+
+commit ed2a745b0b790868aa5a2a096106213328272afe
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 11:51:58 2011 +0200
+
+    [entropy.server.mirrors] fix loop nesting in tidy_mirrors()
+
+commit bc858bb3d6f99e7f1137fa99a78627ab6914caf1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 11:10:27 2011 +0200
+
+    [entropy.server.main] improve os.rename() exception handling
+
+commit af17476bf280d56850a4aa49be99a7499bda34f7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 11:09:54 2011 +0200
+
+    [entropy.server] improve os.rename() exception handling
+
+commit 6158d523bc0ee97744818c104c682f13958c2a70
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 06:42:00 2011 +0200
+
+    [entropy.spm] PortagePlugin.generate_package: unlock vardb only when locked
+
+commit 3caeb36f861904a938a9620d54ef9ae4cce26555
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 06:38:28 2011 +0200
+
+    [entropy.server] _external_metadata_qa_hook_test: improve output
+
+commit 0e169cd9f339c290a42e7d00adba54e39dab5d0e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Aug 8 06:19:03 2011 +0200
+
+    [entropy.server] make sure to remove tmp_repo_orig_path
+
+commit 3167370543c23af53b3414d44d5e7d512a0a642e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 23:56:47 2011 +0200
+
+    [equo] fix "equo install" when "Quit" option is selected after license menu. Fix Sabayon bug 2605
+
+commit dbc3af1ed2a6d83ad64ee84b3ae10c1e5fa9e384
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Aug 7 18:39:38 2011 +0200
+
+    Tagging Entropy version 1.0_rc34
+
 commit 03c3c86bfa94273a37e441549db45f354e3bfada
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sun Aug 7 18:39:25 2011 +0200
