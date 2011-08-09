@@ -2470,6 +2470,8 @@ class Server(Client):
             # before inserting new pkg, drop GPG signature and re-sign
             old_gpg = copy.copy(data['signatures']['gpg'])
             data['signatures']['gpg'] = None
+            for extra_download in data['extra_download']:
+                extra_download['gpg'] = None
             try:
                 repo_sec = RepositorySecurity()
             except RepositorySecurity.GPGError as err:
@@ -2491,7 +2493,11 @@ class Server(Client):
                 data['signatures']['gpg'] = self._get_gpg_signature(repo_sec,
                     to_repository_id, to_file)
 
-                # FIXME: re-gpg sign every element in extra_download
+                for extra_download in data['extra_download']:
+                    to_extra = self.complete_local_upload_package_path(
+                        extra_download['download'], to_repository_id)
+                    extra_download['gpg'] = self._get_gpg_signature(repo_sec,
+                        to_repository_id, to_extra)
 
             self.output(
                 "[%s=>%s|%s] %s: %s" % (
