@@ -404,6 +404,13 @@ class Queue:
 
         return result
 
+    def __get_disksize(self, pkg, force_debug):
+        cl_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        misc_data = self.Entropy.Settings()[cl_id]['misc']
+        if misc_data['splitdebug'] or force_debug:
+            return pkg.disksize_debug
+        return pkg.disksize
+
     def elaborate_install(self, xlist, actions, deep_deps, accept,
         always_ask = False):
 
@@ -503,9 +510,9 @@ class Queue:
                     ok = False
                     size = 0
                     for x in install_todo:
-                        size += x.disksize
+                        size += self.__get_disksize(x, False)
                     for x in remove_todo:
-                        size -= x.disksize
+                        size -= self.__get_disksize(x, False)
                     if size > 0:
                         bottom_text = _("Needed disk space")
                     else:
@@ -606,7 +613,7 @@ class Queue:
                     ok = False
                     size = 0
                     for x in todo:
-                        size += x.disksize
+                        size += self.__get_disksize(x, True)
                     if size > 0:
                         bottom_text = _("Freed space")
                     else:

@@ -564,33 +564,45 @@ class EntropyPackage:
         else:
             return self.dbconn.retrieveDescription(self.matched_id)
 
-    def get_download_size(self):
+    def get_download_size(self, debug = False):
         if self.pkgset:
             return 0
-        return self.dbconn.retrieveSize(self.matched_id)
+        size = self.dbconn.retrieveSize(self.matched_id)
+        extra_downloads = self.dbconn.retrieveExtraDownload(self.matched_id)
+        for extra_download in extra_downloads:
+            if (not debug) and (extra_download['type'] == "debug"):
+                continue
+            size += extra_download['size']
+        return size
 
-    def get_disk_size(self):
+    def get_disk_size(self, debug = False):
         if self.pkgset:
             return 0
-        return self.dbconn.retrieveOnDiskSize(self.matched_id)
+        size = self.dbconn.retrieveOnDiskSize(self.matched_id)
+        extra_downloads = self.dbconn.retrieveExtraDownload(self.matched_id)
+        for extra_download in extra_downloads:
+            if (not debug) and (extra_download['type'] == "debug"):
+                continue
+            size += extra_download['disksize']
+        return size
 
-    def get_proper_size(self):
+    def get_proper_size(self, debug = False):
         if self.from_installed:
-            return self.get_disk_sizeFmt()
+            return self.get_disk_sizeFmt(debug = debug)
         else:
-            return self.get_download_sizeFmt()
+            return self.get_download_sizeFmt(debug = debug)
 
-    def get_download_sizeFmt(self):
+    def get_download_sizeFmt(self, debug = False):
         if self.pkgset:
             return 0
-        return entropy.tools.bytes_into_human(
-            self.dbconn.retrieveSize(self.matched_id))
+        return entropy.tools.bytes_into_human(self.get_download_size(
+            debug = debug))
 
-    def get_disk_sizeFmt(self):
+    def get_disk_sizeFmt(self, debug = False):
         if self.pkgset:
             return 0
-        return entropy.tools.bytes_into_human(
-            self.dbconn.retrieveOnDiskSize(self.matched_id))
+        return entropy.tools.bytes_into_human(self.get_disk_size(
+            debug = debug))
 
     def get_arch(self):
         return etpConst['currentarch']
@@ -943,23 +955,43 @@ class EntropyPackage:
 
     @property
     def size(self):
-        return self.get_download_size()
+        return self.get_download_size(debug = False)
+
+    @property
+    def size_debug(self):
+        return self.get_download_size(debug = True)
 
     @property
     def intelligentsizeFmt(self):
-        return self.get_proper_size()
+        return self.get_proper_size(debug = False)
+
+    @property
+    def intelligentsizeDebugFmt(self):
+        return self.get_proper_size(debug = True)
 
     @property
     def sizeFmt(self):
-        return self.get_download_sizeFmt()
+        return self.get_download_sizeFmt(debug = False)
+
+    @property
+    def sizeDebugFmt(self):
+        return self.get_download_sizeFmt(debug = True)
 
     @property
     def disksize(self):
-        return self.get_disk_size()
+        return self.get_disk_size(debug = False)
+
+    @property
+    def disksize_debug(self):
+        return self.get_disk_size(debug = True)
 
     @property
     def disksizeFmt(self):
-        return self.get_disk_sizeFmt()
+        return self.get_disk_sizeFmt(debug = False)
+
+    @property
+    def disksizeDebugFmt(self):
+        return self.get_disk_sizeFmt(debug = True)
 
     @property
     def arch(self):
