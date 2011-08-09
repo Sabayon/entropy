@@ -1047,6 +1047,40 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
     return True
 
+def get_uncompressed_size(compressed_file):
+    """
+    Return the size of uncompressed data of a tarball (compression algos that
+    tarfile supports).
+
+    @param compressed_file: path to compressed file
+    @type compressed_file: string
+    @return: size of the data inside the tarball
+    @rtype: int
+    """
+    tar = None
+    accounted_size = 0
+    try:
+
+        try:
+            tar = tarfile.open(compressed_file, "r")
+        except tarfile.ReadError:
+            return accounted_size
+        except EOFError:
+            return accounted_size
+
+        for tarinfo in tar:
+            accounted_size += tarinfo.size
+        del tar.members[:]
+
+    except EOFError:
+        return accounted_size
+
+    finally:
+        if tar is not None:
+            tar.close()
+
+    return accounted_size
+
 def unpack_gzip(gzipfilepath):
     """
     Unpack .gz file.
