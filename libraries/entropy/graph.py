@@ -517,5 +517,12 @@ class Graph(object):
         """
         return [x.item() for x in self.__graph.values()]
 
+    def _graph_debug(self):
+        """
+        This method is used by entropy.debug module and it's not meant for
+        general consumption.
+        """
+        return self.__graph
+
 
 __all__ = ["Graph"]
