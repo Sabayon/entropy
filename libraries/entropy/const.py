@@ -770,7 +770,8 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                 fcntl.flock(pid_f.fileno(), flags)
                 found_pid = str(pid_f.readline().strip())
             except IOError as err:
-                if err.errno != errno.EROFS: # readonly filesystem
+                if err.errno not in (errno.EROFS, errno.EACCES):
+                    # readonly filesystem or permission denied
                     raise
                 found_pid = "0000"
             except (OSError, UnicodeEncodeError, UnicodeDecodeError,):
