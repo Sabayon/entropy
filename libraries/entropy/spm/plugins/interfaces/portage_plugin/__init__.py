@@ -791,6 +791,7 @@ class PortagePlugin(SpmPlugin):
             cur_t = time.time()
             m = hashlib.md5()
             m.update(repr(cur_t))
+            m.update(repr(package))
             debug_file_save_path = file_save_path + "." + m.hexdigest() + \
                 etpConst['packagesdebugext']
             debug_tmp_fd, debug_tmp_file = tempfile.mkstemp(
