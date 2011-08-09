@@ -1262,7 +1262,6 @@ class Package:
 
                 if dlcheck == 0:
                     do_store_mtime()
-                    self.pkgmeta['verified'] = True
                     match = True
                     break # file downloaded successfully
 
@@ -1325,111 +1324,94 @@ class Package:
             if rc != 0:
                 break
 
+        if rc == 0:
+            self.pkgmeta['verified'] = True
         return rc
 
-    def __unpack_package(self):
+    def __unpack_package(self, download, package_path, image_dir, pkg_dbpath):
 
-        if not self.pkgmeta['merge_from']:
-            self._entropy.logger.log(
-                "[Package]",
-                etpConst['logging']['normal_loglevel_id'],
-                "Unpacking package: %s" % (self.pkgmeta['atom'],)
-            )
-        else:
-            self._entropy.logger.log(
-                "[Package]",
-                etpConst['logging']['normal_loglevel_id'],
-                "Merging package: %s" % (self.pkgmeta['atom'],)
-            )
+        mytxt = "%s: %s" % (
+            blue(_("Unpacking")),
+            red(os.path.basename(download)),
+        )
+        self._entropy.output(
+            mytxt,
+            importance = 1,
+            level = "info",
+            header = red("   ## ")
+        )
+        self._entropy.logger.log(
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
+            "Unpacking package: %s" % (download,)
+        )
 
-        unpack_dir = self.pkgmeta['unpackdir']
-        unpack_dir_raw = self.pkgmeta['unpackdir'].encode('raw_unicode_escape')
+        # removed in the meantime? at least try to cope
+        if not os.path.isfile(package_path):
 
-        if os.path.isdir(unpack_dir):
-            shutil.rmtree(unpack_dir_raw)
-        elif os.path.isfile(unpack_dir):
-            os.remove(unpack_dir_raw)
-        os.makedirs(self.pkgmeta['imagedir'])
-
-        if not os.path.isfile(self.pkgmeta['pkgpath']) and \
-            not self.pkgmeta['merge_from']:
-
-            if os.path.isdir(self.pkgmeta['pkgpath']):
-                shutil.rmtree(self.pkgmeta['pkgpath'])
-            if os.path.islink(self.pkgmeta['pkgpath']):
-                os.remove(self.pkgmeta['pkgpath'])
+            # must be fault-tolerant
+            if os.path.isdir(package_path):
+                shutil.rmtree(package_path)
+            if os.path.islink(package_path):
+                os.remove(package_path)
             self.pkgmeta['verified'] = False
             rc = self._fetch_step()
             if rc != 0:
                 return rc
 
-        if not self.pkgmeta['merge_from']:
-
+        # pkg_dbpath is only non-None for the base package file
+        # extra package files don't carry any other edb information
+        if pkg_dbpath is not None:
             # extract entropy database from package file
             # in order to avoid having to read content data
             # from the repository database, which, in future
             # is allowed to not provide such info.
-            pkg_dbdir = os.path.dirname(self.pkgmeta['pkgdbpath'])
+            pkg_dbdir = os.path.dirname(pkg_dbpath)
             if not os.path.isdir(pkg_dbdir):
                 os.makedirs(pkg_dbdir, 0o755)
-
             # extract edb
-            entropy.tools.dump_entropy_metadata(self.pkgmeta['pkgpath'],
-                self.pkgmeta['pkgdbpath'])
+            entropy.tools.dump_entropy_metadata(package_path, pkg_dbpath)
 
-            unpack_tries = 3
-            while True:
-                if unpack_tries <= 0:
-                    return 1
-                unpack_tries -= 1
-                try:
-                    rc = entropy.tools.uncompress_tarball(
-                        self.pkgmeta['pkgpath'],
-                        extract_path = self.pkgmeta['imagedir'],
-                        catch_empty = True
-                    )
-                except EOFError as err:
-                    self._entropy.logger.log(
-                        "[Package]", etpConst['logging']['normal_loglevel_id'], 
-                        "EOFError on " + self.pkgmeta['pkgpath'] + " " + \
-                        repr(err)
-                    )
-                    entropy.tools.print_traceback()
-                    # try again until unpack_tries goes to 0
-                    rc = 1
-                except Exception as err:
-                    self._entropy.logger.log(
-                        "[Package]",
-                        etpConst['logging']['normal_loglevel_id'],
-                        "Ouch! error while unpacking " + \
-                            self.pkgmeta['pkgpath'] + " " + repr(err)
-                    )
-                    entropy.tools.print_traceback()
-                    # try again until unpack_tries goes to 0
-                    rc = 1
+        unpack_tries = 3
+        while True:
+            if unpack_tries <= 0:
+                return 1
+            unpack_tries -= 1
+            try:
+                rc = entropy.tools.uncompress_tarball(
+                    package_path,
+                    extract_path = image_dir,
+                    catch_empty = True
+                )
+            except EOFError as err:
+                self._entropy.logger.log(
+                    "[Package]", etpConst['logging']['normal_loglevel_id'],
+                    "EOFError on " + package_path + " " + \
+                    repr(err)
+                )
+                entropy.tools.print_traceback()
+                # try again until unpack_tries goes to 0
+                rc = 1
+            except Exception as err:
+                self._entropy.logger.log(
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
+                    "Ouch! error while unpacking " + \
+                        package_path + " " + repr(err)
+                )
+                entropy.tools.print_traceback()
+                # try again until unpack_tries goes to 0
+                rc = 1
 
-                if rc == 0:
-                    break
+            if rc == 0:
+                break
 
-                # try to download it again
-                self.pkgmeta['verified'] = False
-                f_rc = self._fetch_step()
-                if f_rc != 0:
-                    return f_rc
-
-        else:
-
-            pid = os.fork()
-            if pid > 0:
-                os.waitpid(pid, 0)
-            else:
-                self.__fill_image_dir(self.pkgmeta['merge_from'],
-                    self.pkgmeta['imagedir'])
-                os._exit(0)
-
-        spm_class = self._entropy.Spm_class()
-        # call Spm unpack hook
-        return spm_class.entropy_install_unpack_hook(self._entropy, self.pkgmeta)
+            # try to download it again
+            self.pkgmeta['verified'] = False
+            f_rc = self._fetch_step()
+            if f_rc != 0:
+                return f_rc
+        return 0
 
 
     def __configure_package(self):
@@ -2000,6 +1982,10 @@ class Package:
         # info too.
         if "original_repository" in data:
             del data['original_repository']
+        # rewrite extra_download metadata with the currently provided,
+        # and accepted extra_download items (in case of splitdebug being
+        # disable, we're not going to add those entries, for example)
+        data['extra_download'] = self.pkgmeta['extra_download']
 
         inst_repo = self._entropy.installed_repository()
 
@@ -2145,6 +2131,7 @@ class Package:
         splitdebug, splitdebug_dirs = self.pkgmeta['splitdebug'], \
             self.pkgmeta['splitdebug_dirs']
         items_installed = set()
+        file_items_installed = set()
         self.pkgmeta['items_not_installed'] = set()
 
         # setup image_dir properly
@@ -2484,8 +2471,7 @@ class Package:
 
             # moving file using the raw format
             try:
-                done = movefile(fromfile, tofile,
-                    src_basedir = image_dir)
+                done = movefile(fromfile, tofile, src_basedir = image_dir)
             except (IOError,) as err:
                 # try to move forward, sometimes packages might be
                 # fucked up and contain broken things
@@ -2528,6 +2514,7 @@ class Package:
             item_dir = os.path.realpath(os.path.dirname(tofile))
             item_inst = os.path.join(item_dir, os.path.basename(tofile))
             items_installed.add(item_inst)
+            file_items_installed.add(item_inst)
 
             if protected:
                 # add to disk cache
@@ -2899,26 +2886,35 @@ class Package:
 
     def _fetch_step(self):
 
-        mytxt = "%s: %s" % (blue(_("Downloading archive")),
-            red(os.path.basename(self.pkgmeta['download'])),)
-        self._entropy.output(
-            mytxt,
-            importance = 1,
-            level = "info",
-            header = red("   ## ")
-        )
-        pkg_disk_path = self.__get_fetch_disk_path(self.pkgmeta['download'])
+        if self.pkgmeta['verified']:
+            return 0
 
-        rc = 0
-        if not self.pkgmeta['verified']:
-
-            rc = self._download_package(
+        def _fetch(download, checksum):
+            mytxt = "%s: %s" % (blue(_("Downloading")),
+                red(os.path.basename(download)),)
+            self._entropy.output(
+                mytxt,
+                importance = 1,
+                level = "info",
+                header = red("   ## ")
+            )
+            pkg_disk_path = self.__get_fetch_disk_path(download)
+            return self._download_package(
                 self.pkgmeta['idpackage'],
                 self.pkgmeta['repository'],
-                self.pkgmeta['download'],
+                download,
                 pkg_disk_path,
-                self.pkgmeta['checksum']
+                checksum
             )
+
+        rc = _fetch(self.pkgmeta['download'], self.pkgmeta['checksum'])
+        if rc == 0:
+            # go ahead with extra_download
+            for extra_download in self.pkgmeta['extra_download']:
+                rc = _fetch(extra_download['download'],
+                    extra_download['md5'])
+                if rc != 0:
+                    break
 
         if rc == 0:
             return 0
@@ -3006,38 +3002,79 @@ class Package:
         return 0
 
     def _checksum_step(self):
-        return self._match_checksum(self.pkgmeta['idpackage'],
+        base_pkg_rc = self._match_checksum(self.pkgmeta['idpackage'],
             self.pkgmeta['repository'], self.pkgmeta['checksum'],
             self.pkgmeta['download'], self.pkgmeta['signatures'])
+        if base_pkg_rc != 0:
+            return base_pkg_rc
+        # now go with extra_download
+        for extra_download in self.pkgmeta['extra_download']:
+            download = extra_download['download']
+            checksum = extra_download['md5']
+            signatures = {
+                'sha1': extra_download['sha1'],
+                'sha256': extra_download['sha256'],
+                'sha512': extra_download['sha512'],
+                'gpg': extra_download['gpg'],
+            }
+            extra_rc = self._match_checksum(self.pkgmeta['idpackage'],
+                self.pkgmeta['repository'], checksum, download, signatures)
+            if extra_rc != 0:
+                return extra_rc
+        self.pkgmeta['verified'] = True
+        return 0
 
     def _multi_checksum_step(self):
         return self.multi_match_checksum()
 
+    def _merge_from_unpack_step(self):
+
+        mytxt = "%s: %s" % (
+            blue(_("Merging package")),
+            red(os.path.basename(self.pkgmeta['atom'])),
+        )
+        self._entropy.output(
+            mytxt,
+            importance = 1,
+            level = "info",
+            header = red("   ## ")
+        )
+        self._entropy.logger.log(
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
+            "Merging package: %s" % (self.pkgmeta['atom'],)
+        )
+        self.__fill_image_dir(self.pkgmeta['merge_from'],
+            self.pkgmeta['imagedir'])
+        spm_class = self._entropy.Spm_class()
+        # call Spm unpack hook
+        return spm_class.entropy_install_unpack_hook(self._entropy,
+            self.pkgmeta)
+
     def _unpack_step(self):
 
-        if not self.pkgmeta['merge_from']:
-            mytxt = "%s: %s" % (
-                blue(_("Unpacking package")),
-                red(os.path.basename(self.pkgmeta['download'])),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 1,
-                level = "info",
-                header = red("   ## ")
-        )
-        else:
-            mytxt = "%s: %s" % (
-                blue(_("Merging package")),
-                red(os.path.basename(self.pkgmeta['atom'])),
-            )
-            self._entropy.output(
-                mytxt,
-                importance = 1,
-                level = "info",
-                header = red("   ## ")
-            )
-        rc = self.__unpack_package()
+        unpack_dir = self.pkgmeta['unpackdir']
+        unpack_dir_raw = unpack_dir.encode('raw_unicode_escape')
+
+        if os.path.isdir(unpack_dir):
+            shutil.rmtree(unpack_dir)
+        elif os.path.isfile(unpack_dir):
+            os.remove(unpack_dir)
+        os.makedirs(unpack_dir)
+
+        rc = self.__unpack_package(self.pkgmeta['download'],
+            self.pkgmeta['pkgpath'], self.pkgmeta['imagedir'],
+            self.pkgmeta['pkgdbpath'])
+
+        if rc == 0:
+            for extra_download in self.pkgmeta['extra_download']:
+                download = extra_download['download']
+                pkgpath = self.__get_fetch_disk_path(download)
+                rc = self.__unpack_package(download, pkgpath,
+                    self.pkgmeta['imagedir'], None)
+                if rc != 0:
+                    break
+
         if rc != 0:
             if rc == 512:
                 errormsg = "%s. %s. %s: 512" % (
@@ -3059,7 +3096,12 @@ class Package:
                 level = "error",
                 header = red("   ## ")
             )
-        return rc
+            return rc
+
+        spm_class = self._entropy.Spm_class()
+        # call Spm unpack hook
+        return spm_class.entropy_install_unpack_hook(self._entropy,
+            self.pkgmeta)
 
     def _install_step(self):
         mytxt = "%s: %s" % (
@@ -3380,7 +3422,7 @@ class Package:
 
         def do_multi_fetch():
             self._xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
-                len(self.pkgmeta['multi_fetch_list']), _("packages"),)
+                len(self.pkgmeta['multi_fetch_list']) / 2, _("packages"),)
             self._entropy.set_title(self._xterm_title)
             return self._multi_fetch_step()
 
@@ -3404,18 +3446,20 @@ class Package:
             return self._multi_checksum_step()
 
         def do_unpack():
-            if not self.pkgmeta['merge_from']:
-                mytxt = _("Unpacking")
-                self._xterm_title += ' %s: %s' % (
-                    mytxt,
-                    os.path.basename(self.pkgmeta['download']),
-                )
-            else:
+            if self.pkgmeta['merge_from']:
                 mytxt = _("Merging")
                 self._xterm_title += ' %s: %s' % (
                     mytxt,
                     os.path.basename(self.pkgmeta['atom']),
                 )
+                self._entropy.set_title(self._xterm_title)
+                return self._merge_from_unpack_step()
+
+            mytxt = _("Unpacking")
+            self._xterm_title += ' %s: %s' % (
+                mytxt,
+                os.path.basename(self.pkgmeta['download']),
+            )
             self._entropy.set_title(self._xterm_title)
             return self._unpack_step()
 
@@ -3776,6 +3820,11 @@ class Package:
         self.pkgmeta['versiontag'] = tag
         self.pkgmeta['revision'] = rev
 
+        extra_download = dbconn.retrieveExtraDownload(idpackage)
+        if not self.pkgmeta['splitdebug']:
+            extra_download = [x for x in extra_download if \
+                x['type'] != "debug"]
+        self.pkgmeta['extra_download'] = extra_download
         self.pkgmeta['category'] = dbconn.retrieveCategory(idpackage)
         self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
         self.pkgmeta['name'] = dbconn.retrieveName(idpackage)
@@ -3901,10 +3950,10 @@ class Package:
         # to respect Spm order
         self.pkgmeta['steps'].append("preinstall")
         self.pkgmeta['steps'].append("install")
-        if (self.pkgmeta['removeidpackage'] != -1):
+        if self.pkgmeta['removeidpackage'] != -1:
             self.pkgmeta['steps'].append("preremove")
         self.pkgmeta['steps'].append("install_clean")
-        if (self.pkgmeta['removeidpackage'] != -1):
+        if self.pkgmeta['removeidpackage'] != -1:
             self.pkgmeta['steps'].append("postremove")
             self.pkgmeta['steps'].append("postremove_install")
         self.pkgmeta['steps'].append("install_spm")
@@ -3966,6 +4015,7 @@ class Package:
 
         if sources:
             self.pkgmeta['edelta_support'] = False
+            self.pkgmeta['extra_download'] = tuple()
             self.pkgmeta['download'] = dbconn.retrieveSources(idpackage,
                 extended = True)
         else:
@@ -3981,6 +4031,11 @@ class Package:
                 'gpg': gpg,
             }
             self.pkgmeta['signatures'] = signatures
+            extra_download = dbconn.retrieveExtraDownload(idpackage)
+            if not self.pkgmeta['splitdebug']:
+                extra_download = [x for x in extra_download if \
+                    x['type'] != "debug"]
+            self.pkgmeta['extra_download'] = extra_download
             self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
 
         if not self.pkgmeta['download']:
@@ -3990,11 +4045,22 @@ class Package:
         self.pkgmeta['verified'] = False
         self.pkgmeta['steps'] = []
         if not repository.endswith(etpConst['packagesext']) and not sources:
+
             dl_check = self.__check_pkg_path_download(self.pkgmeta['download'],
                 None)
+            dl_fetch = dl_check < 0
+
+            if not dl_fetch:
+                for extra_download in self.pkgmeta['extra_download']:
+                    dl_check = self.__check_pkg_path_download(
+                        extra_download['download'], None)
+                    if dl_check < 0:
+                        # dl_check checked again right below
+                        break
 
             if dl_check < 0:
                 self.pkgmeta['steps'].append("fetch")
+
             if dochecksum:
                 self.pkgmeta['steps'].append("checksum")
 
@@ -4019,21 +4085,30 @@ class Package:
                     recursion = False, uid = etpConst['uid'])
             return 0
 
+        def _check_matching_size(download, size):
+            d_path = self.__get_fetch_disk_path(download)
+            if os.access(d_path, os.R_OK) and os.path.isfile(d_path):
+                # check size first
+                with open(d_path, "rb") as f:
+                    f.seek(0, os.SEEK_END)
+                    disk_size = f.tell()
+                return size == disk_size
+            return False
+
+        matching_size = _check_matching_size(self.pkgmeta['download'],
+            dbconn.retrieveSize(idpackage))
+        if matching_size:
+            for extra_download in self.pkgmeta['extra_download']:
+                matching_size = _check_matching_size(
+                    extra_download['download'],
+                    extra_download['size'])
+                if not matching_size:
+                    break
+
         # downloading binary package
         # if file exists, first checksum then fetch
-        down_path = self.__get_fetch_disk_path(self.pkgmeta['download'])
-        self.pkgmeta['pkgpath'] = down_path # provide for convenience
-        # and uniformity with "install" action
-        if os.access(down_path, os.R_OK) and os.path.isfile(down_path):
-
-            # check size first
-            repo_size = dbconn.retrieveSize(idpackage)
-            f = open(down_path, "r")
-            f.seek(0, os.SEEK_END)
-            disk_size = f.tell()
-            f.close()
-            if repo_size == disk_size:
-                self.pkgmeta['steps'].reverse()
+        if matching_size:
+            self.pkgmeta['steps'].reverse()
 
         return 0
 
@@ -4066,6 +4141,29 @@ class Package:
         temp_fetch_list = []
         temp_checksum_list = []
         temp_already_downloaded_count = 0
+
+        def _setup_download(download, size, idpackage, repository, digest,
+                signatures):
+
+            if dochecksum:
+                obj = (idpackage, repository, download, digest,
+                    signatures)
+                temp_checksum_list.append(obj)
+
+            if self.__check_pkg_path_download(download, None) < 0:
+                obj = (idpackage, repository, download, digest, signatures)
+                temp_fetch_list.append(obj)
+            else:
+                down_path = self.__get_fetch_disk_path(download)
+                if os.path.isfile(down_path):
+                    with open(down_path, "r") as f:
+                        f.seek(0, os.SEEK_END)
+                        disk_size = f.tell()
+                    if size == disk_size:
+                        return 1
+            return 0
+
+
         for idpackage, repository in matches:
 
             if repository.endswith(etpConst['packagesext']):
@@ -4082,33 +4180,33 @@ class Package:
 
             download = dbconn.retrieveDownloadURL(idpackage)
             digest = dbconn.retrieveDigest(idpackage)
-
             sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
+            size = dbconn.retrieveSize(idpackage)
             signatures = {
                 'sha1': sha1,
                 'sha256': sha256,
                 'sha512': sha512,
                 'gpg': gpg,
             }
+            temp_already_downloaded_count += _setup_download(download, size,
+                idpackage, repository, digest, signatures)
 
-
-            if dochecksum:
-                obj = (idpackage, repository, download, digest, signatures,)
-                temp_checksum_list.append(obj)
-
-            repo_size = dbconn.retrieveSize(idpackage)
-            if self.__check_pkg_path_download(download, None) < 0:
-                obj = (idpackage, repository, download, digest, signatures,)
-                temp_fetch_list.append(obj)
-                continue
-
-            down_path = self.__get_fetch_disk_path(download)
-            if os.path.isfile(down_path):
-                with open(down_path, "r") as f:
-                    f.seek(0, os.SEEK_END)
-                    disk_size = f.tell()
-                if repo_size == disk_size:
-                    temp_already_downloaded_count += 1
+            extra_downloads = dbconn.retrieveExtraDownload(idpackage)
+            if not self.pkgmeta['splitdebug']:
+                extra_downloads = [x for x in extra_downloads if \
+                    x['type'] != "debug"]
+            for extra_download in extra_downloads:
+                download = extra_download['download']
+                size = extra_download['size']
+                digest = extra_download['md5']
+                signatures = {
+                    'sha1': extra_download['sha1'],
+                    'sha256': extra_download['sha256'],
+                    'sha512': extra_download['sha512'],
+                    'gpg': extra_download['gpg'],
+                }
+                temp_already_downloaded_count += _setup_download(download,
+                    size, idpackage, repository, digest, signatures)
 
         self.pkgmeta['steps'] = []
         self.pkgmeta['multi_fetch_list'] = temp_fetch_list
