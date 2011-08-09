@@ -9,7 +9,10 @@
     B{Entropy Package Manager Debug classes}.
 
 """
-from entropy.const import const_debug_write
+import os
+import tempfile
+
+from entropy.const import const_debug_write, const_setup_file, etpConst
 
 class DebugList(list):
 
@@ -174,3 +177,90 @@ class DebugList(list):
             self, args, kwargs))
         return list.sort(self, *args, **kwargs)
 
+
+class GraphDrawer(object):
+
+    """
+    GraphDrawer is a draw generator for entropy.graph.Graph objects using
+    pydot library, which uses Graphviz.
+    It requires pydot installed.
+    NOTE for packagers: this is debug code included in the entropy core library.
+    It doesn't mean you're allowed to include pydot as entropy dependency.
+    If you do so, the same class will be wiped out and you'll be fucked ;-)
+
+    """
+
+    def __init__(self, entropy_client, graph):
+        """
+        GraphDrawer Constructor.
+
+        @param entropy_client: Entropy Client interfaces
+        @type entropy_client: entropy.client.interfaces.client.Client
+        @param graph: a finalized entropy.graph.Graph object ready to be drawed
+        @type graph: entropy.graph.Graph
+        """
+        self._entropy = entropy_client
+        self._entropy_graph = graph
+        import pydot
+        self._pydot = pydot
+
+    def _generate_pydot(self):
+
+        def _get_name(pkg_match):
+            pkg_id, repo_id = pkg_match
+            repo = self._entropy.open_repository(repo_id)
+            name = "%s::%s,%d" % (repo.retrieveAtom(pkg_id),
+                repo_id, pkg_id)
+            return name
+
+        graph = self._pydot.Dot(graph_name="Packages",
+            graph_type="digraph", suppress_disconnected=True)
+
+        # thanks
+        # key = package match
+        # value = entropy.graph.GraphNode object
+        raw_graph = self._entropy_graph._graph_debug()
+        # first add all the nodes
+        name_map = {}
+        for pkg_match in raw_graph.keys():
+            name = _get_name(pkg_match)
+            name_map[pkg_match] = name
+            node = self._pydot.Node(name)
+            graph.add_node(node)
+        # now add edges
+        for pkg_match, graph_node in raw_graph.items():
+            # list of GraphArchSet
+            outgoing_arches = [x for x in graph_node.arches() if \
+                graph_node.is_arch_outgoing(x)]
+            for arch in outgoing_arches:
+                arch_pkg_matches = [x.item() for x in arch.endpoints()]
+                for arch_pkg_match in arch_pkg_matches:
+                    edge = self._pydot.Edge(name_map[pkg_match],
+                        name_map[arch_pkg_match])
+                    graph.add_edge(edge)
+
+        return graph
+
+    def generate_png(self):
+        """
+        Generate a PNG from current Graph content.
+        """
+        graph = self._generate_pydot()
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.graph",
+            suffix=".png")
+        os.close(tmp_fd)
+        graph.write_png(tmp_path)
+        const_setup_file(tmp_path, etpConst['entropygid'], 0o644)
+        return tmp_path
+
+    def generate_dot(self):
+        """
+        Generate RAW dot file that can be used to feed graphviz
+        """
+        graph = self._generate_pydot()
+        tmp_fd, tmp_path = tempfile.mkstemp(prefix="entropy.graph",
+            suffix=".dot")
+        os.close(tmp_fd)
+        graph.write_raw(tmp_path)
+        const_setup_file(tmp_path, etpConst['entropygid'], 0o644)
+        return tmp_path
